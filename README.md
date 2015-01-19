@@ -4,7 +4,7 @@
 Вики модуля [https://bitbucket.org/andrey_ryabin/sprint.migration/wiki/Home](https://bitbucket.org/andrey_ryabin/sprint.migration/wiki/Home)
 
 
-создаем скрипт для запуска миграций через консоль
+Создаем скрипт для запуска миграций через консоль
 migrate.php
 
 его содержимое:
@@ -23,16 +23,16 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 
 Доступные команды
 -------------------------
-* Create <description> add new migration with description
-* Status get migrations list
-* Migrate --up --down - up or down all migrations
-* Up <count> up <count> migrations
-* Down <count> down <count> migrations
-* Execute <version> --up --down up or down this migration
-* Redo <version> down+up this migration
-* Help
+* **create** <description> add new migration with description
+* **status** get migrations list
+* **migrate** --up --down - up or down all migrations
+* **up** <count> up <count> migrations
+* **down** <count> down <count> migrations
+* **execute** <version> --up --down up or down this migration
+* **redo** <version> down+up this migration
+* **help**
 
-пример вызова команд
+Пример вызова команд
 -------------------------
 * php migrate.php migrate
 * php migrate.php execute Version20150119122646 --down
