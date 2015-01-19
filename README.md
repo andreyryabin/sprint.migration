@@ -1,9 +1,6 @@
 Модуль миграций для CMS Битрикс ([http://www.1c-bitrix.ru/](http://www.1c-bitrix.ru/)), помогающий синхронизировать изменения между нескольким копиями бд. 
 --------------------------------------------------------------------------------------------------------
 
-Вики модуля [https://bitbucket.org/andrey_ryabin/sprint.migration/wiki/Home](https://bitbucket.org/andrey_ryabin/sprint.migration/wiki/Home)
-
-
 Создаем скрипт для запуска миграций через консоль
 migrate.php
 
