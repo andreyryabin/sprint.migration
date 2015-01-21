@@ -1,5 +1,9 @@
 <?php
 
+global $MESS;
+
+IncludeModuleLangFile(__FILE__);
+
 Class sprint_migration extends CModule
 {
     var $MODULE_ID = "sprint.migration";
@@ -22,11 +26,11 @@ Class sprint_migration extends CModule
 
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
-        $this->MODULE_NAME = $arModuleVersion["MODULE_NAME"];
-        $this->MODULE_DESCRIPTION = $arModuleVersion["MODULE_DESCRIPTION"];
 
-        $this->PARTNER_NAME = "Andrey Ryabin";
-        $this->PARTNER_URI = "http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/";
+        $this->MODULE_NAME = GetMessage("SPRINT_MIGRATION_MODULE_NAME");
+        $this->MODULE_DESCRIPTION = GetMessage("SPRINT_MIGRATION_MODULE_DESCRIPTION");
+        $this->PARTNER_NAME = GetMessage("SPRINT_MIGRATION_PARTNER_NAME");
+        $this->PARTNER_URI = GetMessage("SPRINT_MIGRATION_PARTNER_URI");
     }
 
     function DoInstall() {
