@@ -25,7 +25,7 @@ Class sprint_migration extends CModule
         $this->MODULE_NAME = $arModuleVersion["MODULE_NAME"];
         $this->MODULE_DESCRIPTION = $arModuleVersion["MODULE_DESCRIPTION"];
 
-        $this->PARTNER_NAME = "Андрей Рябин";
+        $this->PARTNER_NAME = "Andrey Ryabin";
         $this->PARTNER_URI = "http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/";
     }
 

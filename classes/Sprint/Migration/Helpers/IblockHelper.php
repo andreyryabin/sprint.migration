@@ -4,19 +4,19 @@ namespace Sprint\Migration\Helpers;
 
 /**
  * PROPERTY_TYPE:USER_TYPE
- * S:DateTime - Ð”Ð°Ñ‚Ð°/Ð’Ñ€ÐµÐ¼Ñ
- * S:ElementXmlID - ÐŸÑ€Ð¸Ð²ÑÐ·ÐºÐ° Ðº ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð°Ð¼ Ð¿Ð¾ XML_ID
- * S:FileMan - ÐŸÑ€Ð¸Ð²ÑÐ·ÐºÐ° Ðº Ñ„Ð°Ð¹Ð»Ñƒ (Ð½Ð° ÑÐµÑ€Ð²ÐµÑ€Ðµ)
- * S:HTML - HTML/Ñ‚ÐµÐºÑÑ‚
- * E:EList - ÐŸÑ€Ð¸Ð²ÑÐ·ÐºÐ° Ðº ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð°Ð¼ Ð² Ð²Ð¸Ð´Ðµ ÑÐ¿Ð¸ÑÐºÐ°
- * N:Sequence - Ð¡Ñ‡ÐµÑ‚Ñ‡Ð¸Ðº
- * E:EAutocomplete - ÐŸÑ€Ð¸Ð²ÑÐ·ÐºÐ° Ðº ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð°Ð¼ Ñ Ð°Ð²Ñ‚Ð¾Ð·Ð°Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸ÐµÐ¼
- * E:SKU - ÐŸÑ€Ð¸Ð²ÑÐ·ÐºÐ° Ðº Ñ‚Ð¾Ð²Ð°Ñ€Ð°Ð¼ (SKU)
- * S:UserID - ÐŸÑ€Ð¸Ð²ÑÐ·ÐºÐ° Ðº Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŽ
- * S:map_google - ÐŸÑ€Ð¸Ð²ÑÐ·ÐºÐ° Ðº ÐºÐ°Ñ€Ñ‚Ðµ Google Maps
- * S:map_yandex - ÐŸÑ€Ð¸Ð²ÑÐ·ÐºÐ° Ðº Ð¯Ð½Ð´ÐµÐºÑ.ÐšÐ°Ñ€Ñ‚Ðµ
- * S:video - Ð’Ð¸Ð´ÐµÐ¾
- * S:TopicID - ÐŸÑ€Ð¸Ð²ÑÐ·ÐºÐ° Ðº Ñ‚ÐµÐ¼Ðµ Ñ„Ð¾Ñ€ÑƒÐ¼Ð°
+ * S:DateTime - Äàòà/Âðåìÿ
+ * S:ElementXmlID - Ïðèâÿçêà ê ýëåìåíòàì ïî XML_ID
+ * S:FileMan - Ïðèâÿçêà ê ôàéëó (íà ñåðâåðå)
+ * S:HTML - HTML/òåêñò
+ * E:EList - Ïðèâÿçêà ê ýëåìåíòàì â âèäå ñïèñêà
+ * N:Sequence - Ñ÷åò÷èê
+ * E:EAutocomplete - Ïðèâÿçêà ê ýëåìåíòàì ñ àâòîçàïîëíåíèåì
+ * E:SKU - Ïðèâÿçêà ê òîâàðàì (SKU)
+ * S:UserID - Ïðèâÿçêà ê ïîëüçîâàòåëþ
+ * S:map_google - Ïðèâÿçêà ê êàðòå Google Maps
+ * S:map_yandex - Ïðèâÿçêà ê ßíäåêñ.Êàðòå
+ * S:video - Âèäåî
+ * S:TopicID - Ïðèâÿçêà ê òåìå ôîðóìà
  */
 class IblockHelper
 {
@@ -94,7 +94,7 @@ class IblockHelper
 
     public function addElement($iblockId, $fields, $props = array()) {
         $default = array(
-            "NAME" => "Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚",
+            "NAME" => "Ýëåìåíò",
             "IBLOCK_SECTION_ID" => false,
             "ACTIVE" => "Y",
             "PREVIEW_TEXT" => "",
@@ -186,9 +186,9 @@ class IblockHelper
             'SORT' => 100,
             'LANG' => Array(
                 'ru' => Array(
-                    'NAME' => 'ÐšÐ°Ñ‚Ð°Ð»Ð¾Ð³',
-                    'SECTION_NAME' => 'Ð Ð°Ð·Ð´ÐµÐ»Ñ‹',
-                    'ELEMENT_NAME' => 'Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚Ñ‹'
+                    'NAME' => 'Êàòàëîã',
+                    'SECTION_NAME' => 'Ðàçäåëû',
+                    'ELEMENT_NAME' => 'Ýëåìåíòû'
                 ),
                 'en' => Array(
                     'NAME' => 'Catalog',

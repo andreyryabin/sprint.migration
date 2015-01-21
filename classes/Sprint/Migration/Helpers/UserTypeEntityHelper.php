@@ -3,21 +3,21 @@
 namespace Sprint\Migration\Helpers;
 /**
  * USER_TYPE_ID
- * video Р’РёРґРµРѕ
- * string РЎС‚СЂРѕРєР°
- * integer Р¦РµР»РѕРµ С‡РёСЃР»Рѕ
- * double Р§РёСЃР»Рѕ
+ * video Видео
+ * string Строка
+ * integer Целое число
+ * double Число
  * datetime
- * Р”Р°С‚Р° СЃРѕ РІСЂРµРјРµРЅРµРј
- * date Р”Р°С‚Р°
- * boolean Р”Р°/РќРµС‚
- * file Р¤Р°Р№Р»
- * enumeration РЎРїРёСЃРѕРє
- * iblock_section РџСЂРёРІСЏР·РєР° Рє СЂР°Р·РґРµР»Р°Рј РёРЅС„. Р±Р»РѕРєРѕРІ
- * iblock_element РџСЂРёРІСЏР·РєР° Рє СЌР»РµРјРµРЅС‚Р°Рј РёРЅС„. Р±Р»РѕРєРѕРІ
- * vote РћРїСЂРѕСЃ
- * string_formatted РЁР°Р±Р»РѕРЅ
- * SHOW_FILTER    N РЅРµ РїРѕРєР°Р·С‹РІР°С‚СЊ    I С‚РѕС‡РЅРѕРµ СЃРѕРІРїР°РґРµРЅРёРµ    E РїРѕРёСЃРє РїРѕ РјР°СЃРєРµ    S РїРѕРёСЃРє РїРѕ РїРѕРґСЃС‚СЂРѕРєРµ
+ * Дата со временем
+ * date Дата
+ * boolean Да/Нет
+ * file Файл
+ * enumeration Список
+ * iblock_section Привязка к разделам инф. блоков
+ * iblock_element Привязка к элементам инф. блоков
+ * vote Опрос
+ * string_formatted Шаблон
+ * SHOW_FILTER    N не показывать    I точное совпадение    E поиск по маске    S поиск по подстроке
  */
 
 class UserTypeEntityHelper

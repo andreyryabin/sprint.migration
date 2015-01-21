@@ -10,8 +10,8 @@ class EventHelper
         $default = array(
             "LID" => 'ru',
             "EVENT_NAME" => 'EVENT_NAME',
-            "NAME" => 'РќР°Р·РІР°РЅРёРµ',
-            "DESCRIPTION" => 'РћРїРёСЃР°РЅРёРµ',
+            "NAME" => 'Название',
+            "DESCRIPTION" => 'Описание',
             'SORT' => '',
         );
 
@@ -31,9 +31,9 @@ class EventHelper
             'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
             'EMAIL_TO' => '#EMAIL_TO#',
             'BCC' => '',
-            'SUBJECT' => 'РўРµРјР° СЃРѕРѕР±С‰РµРЅРёСЏ',
+            'SUBJECT' => 'Тема сообщения',
             'BODY_TYPE' => 'text',
-            'MESSAGE' => 'РўРµРєСЃС‚ СЃРѕРѕР±С‰РµРЅРёСЏ',
+            'MESSAGE' => 'Текст сообщения',
         );
 
         $fields = array_merge($default, $fields);
