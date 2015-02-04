@@ -44,7 +44,7 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 или
 **/bitrix/php_interface/migrations**
 или 
-**задается в настройках модуля
+**задается в настройках модуля**
 
 Пример файла миграции:
 -------------------------
