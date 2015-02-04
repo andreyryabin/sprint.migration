@@ -49,47 +49,52 @@ class Console
 
     }
 
-    protected function executeStatus($mode = '--new') {
+
+    protected function executeStatus($mode = '--info') {
         $versions = $this->getMigrationManager()->getVersions();
 
         $mode = ($mode && in_array($mode, array('--new', '--all','--info'))) ? $mode : '--new';
 
         if ($mode == '--all'){
+            $cnt = 0;
             foreach ($versions as $item) {
                 $color = str_replace(array('is_new', 'is_success', 'is_404'), array('red', 'green', 'blue'), $item['type']);
                 $name = $item['version'];
                 $this->out('[%s]%s[/]', $color, $name);
+                $cnt++;
             }
+            $this->out('Found %d migrations', $cnt);
         }
 
         if ($mode == '--new'){
+            $cnt = 0;
             foreach ($versions as $item) {
-                if (!in_array($item['type'], array('is_new', 'is_404'))){
+                if ($item['type'] != 'is_new'){
                     continue;
                 }
 
                 $color = str_replace(array('is_new', 'is_success', 'is_404'), array('red', 'green', 'blue'), $item['type']);
                 $name = $item['version'];
                 $this->out('[%s]%s[/]', $color, $name);
+                $cnt++;
             }
+            $this->out('Found %d migrations', $cnt);
         }
 
         if ($mode == '--info'){
-            $cnt = array();
+            $info = array(
+                'is_new' => array('title' => 'New migrations','cnt' => 0,'color' => 'red'),
+                'is_success' => array('title' => 'Success','cnt' => 0,'color' => 'green'),
+                'is_404' => array('title' => 'Unknown','cnt' => 0,'color' => 'blue'),
+            );
+
             foreach ($versions as $item) {
                 $type = $item['type'];
-                if (!isset($cnt[$type])){
-                    $cnt[$type] = 0;
-                }
-
-                $cnt[$type]++;
+                $info[$type]['cnt']++;
             }
 
-            $descr = array('is_new' => 'New', 'is_success' => 'Success', 'is_404' => 'NotFound');
-
-            foreach ($cnt as $type=>$val){
-                $color = str_replace(array('is_new', 'is_success', 'is_404'), array('red', 'green', 'blue'), $type);
-                $this->out('[%s]%s[/]: %d', $color, $descr[$type], $val);
+            foreach ($info as $type=>$aItem){
+                $this->out('[%s]%s[/]: %d', $aItem['color'], $aItem['title'], $aItem['cnt']);
             }
         }
 
