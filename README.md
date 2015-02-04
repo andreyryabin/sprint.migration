@@ -23,11 +23,11 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 Доступные команды
 -------------------------
 * **create** <description> add new migration with description
-* **status** get migrations list
-* **migrate** --up --down - up or down all migrations
+* **status** get migrations list (--new, --all, --info)
+* **migrate** (--up,--down) - up or down all migrations
 * **up** <count> up <count> migrations
 * **down** <count> down <count> migrations
-* **execute** <version> --up --down up or down this migration
+* **execute** <version> (--up,--down) up or down this migration
 * **redo** <version> down+up this migration
 * **help**
 
@@ -43,8 +43,8 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 **/local/php_interface/migrations**
 или
 **/bitrix/php_interface/migrations**
-
-
+или 
+**задается в настройках модуля
 
 Пример файла миграции:
 -------------------------

@@ -49,13 +49,50 @@ class Console
 
     }
 
-    protected function executeStatus() {
+    protected function executeStatus($mode = '--new') {
         $versions = $this->getMigrationManager()->getVersions();
-        foreach ($versions as $item) {
-            $color = str_replace(array('is_new', 'is_success', 'is_404'), array('red', 'green', 'blue'), $item['type']);
-            $name = $item['version'];
-            $this->out('[%s]%s[/]', $color, $name);
+
+        $mode = ($mode && in_array($mode, array('--new', '--all','--info'))) ? $mode : '--new';
+
+        if ($mode == '--all'){
+            foreach ($versions as $item) {
+                $color = str_replace(array('is_new', 'is_success', 'is_404'), array('red', 'green', 'blue'), $item['type']);
+                $name = $item['version'];
+                $this->out('[%s]%s[/]', $color, $name);
+            }
         }
+
+        if ($mode == '--new'){
+            foreach ($versions as $item) {
+                if (!in_array($item['type'], array('is_new', 'is_404'))){
+                    continue;
+                }
+
+                $color = str_replace(array('is_new', 'is_success', 'is_404'), array('red', 'green', 'blue'), $item['type']);
+                $name = $item['version'];
+                $this->out('[%s]%s[/]', $color, $name);
+            }
+        }
+
+        if ($mode == '--info'){
+            $cnt = array();
+            foreach ($versions as $item) {
+                $type = $item['type'];
+                if (!isset($cnt[$type])){
+                    $cnt[$type] = 0;
+                }
+
+                $cnt[$type]++;
+            }
+
+            $descr = array('is_new' => 'New', 'is_success' => 'Success', 'is_404' => 'NotFound');
+
+            foreach ($cnt as $type=>$val){
+                $color = str_replace(array('is_new', 'is_success', 'is_404'), array('red', 'green', 'blue'), $type);
+                $this->out('[%s]%s[/]: %d', $color, $descr[$type], $val);
+            }
+        }
+
     }
 
     protected function executeMigrate($up = '--up') {

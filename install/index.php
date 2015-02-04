@@ -42,12 +42,6 @@ Class sprint_migration extends CModule
             CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sprint.migration/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
         }
 
-        if (is_dir($_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/')) {
-            mkdir($_SERVER["DOCUMENT_ROOT"] . "/local/php_interface/migrations", BX_DIR_PERMISSIONS);
-        } else {
-            mkdir($_SERVER["DOCUMENT_ROOT"] . "/bitrix/php_interface/migrations", BX_DIR_PERMISSIONS);
-        }
-
     }
 
     function DoUninstall() {

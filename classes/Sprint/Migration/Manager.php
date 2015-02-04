@@ -8,18 +8,34 @@ class Manager
     protected $migrationPath = '';
 
     public function __construct() {
-        if (is_file($_SERVER['DOCUMENT_ROOT'] . '/local/modules/sprint.migration/templates/version.php')) {
-            $this->versionTemplate = $_SERVER['DOCUMENT_ROOT'] . '/local/modules/sprint.migration/templates/version.php';
-        } else {
-            $this->versionTemplate = $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/templates/version.php';
-        }
+        $this->migrationPath = $_SERVER['DOCUMENT_ROOT'] . $this->getMigrationDir();
+        $this->versionTemplate = __DIR__  . '/../../../templates/version.php';
+    }
 
+    public function getMigrationDir(){
+        $dir = \COption::GetOptionString('sprint.migration', 'migration_dir', '');
+        if (!empty($dir) && is_dir($_SERVER['DOCUMENT_ROOT'] . $dir)){
+            return $dir;
+        }
 
         if (is_dir($_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/')) {
-            $this->migrationPath = $_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/migrations/';
+            $dir = '/local/php_interface/migrations/';
         } else {
-            $this->migrationPath = $_SERVER['DOCUMENT_ROOT'] . '/bitrix/php_interface/migrations/';
+            $dir = '/bitrix/php_interface/migrations/';
         }
+
+        if (!is_dir($_SERVER['DOCUMENT_ROOT'] . $dir)){
+            mkdir($_SERVER['DOCUMENT_ROOT'] . $dir, BX_DIR_PERMISSIONS);
+        }
+
+        return $dir;
+    }
+
+    public function setMigrationDir($dir){
+        if (is_dir($_SERVER['DOCUMENT_ROOT'] . $dir)){
+            \COption::SetOptionString('sprint.migration','migration_dir',$dir);
+        }
+
     }
 
     public function getVersions() {

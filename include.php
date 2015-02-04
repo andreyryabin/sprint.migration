@@ -1,6 +1,5 @@
 <?php
 
-
 \CModule::IncludeModule('iblock');
 
 //autoload psr-0
