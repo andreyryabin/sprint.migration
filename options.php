@@ -25,7 +25,7 @@ $tabControl = new CAdminTabControl("tabControl", $aTabs);
 
 if(isset($_POST['migration_dir']) && check_bitrix_sessid()) {
 
-    $manager->setMigrationDir($_POST['migration_dir']);
+    $manager->setMigrationDir(trim($_POST['migration_dir']));
 }
 ?>
 

@@ -4,38 +4,62 @@ namespace Sprint\Migration;
 
 class Manager
 {
-    protected $versionTemplate = '';
-    protected $migrationPath = '';
+
+    private $options = array();
+    private $path = '';
+
+    private $optionsFile = '';
 
     public function __construct() {
-        $this->migrationPath = $_SERVER['DOCUMENT_ROOT'] . $this->getMigrationDir();
-        $this->versionTemplate = __DIR__  . '/../../../templates/version.php';
+        if (is_dir($_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/')) {
+            $this->path = '/local/php_interface/';
+        } else {
+            $this->path = '/bitrix/php_interface/';
+        }
+
+        $this->optionsFile = $_SERVER['DOCUMENT_ROOT'] . $this->path . 'migrations.cfg.php';
+        if (is_file($this->optionsFile)){
+            $this->options = include $this->optionsFile;
+        }
     }
 
     public function getMigrationDir(){
-        $dir = \COption::GetOptionString('sprint.migration', 'migration_dir', '');
+        $dir = $this->getOption('migration_dir', '');
+
         if (!empty($dir) && is_dir($_SERVER['DOCUMENT_ROOT'] . $dir)){
             return $dir;
         }
 
-        if (is_dir($_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/')) {
-            $dir = '/local/php_interface/migrations/';
-        } else {
-            $dir = '/bitrix/php_interface/migrations/';
-        }
-
+        $dir = $this->path . 'migrations/';
         if (!is_dir($_SERVER['DOCUMENT_ROOT'] . $dir)){
-            mkdir($_SERVER['DOCUMENT_ROOT'] . $dir, BX_DIR_PERMISSIONS);
+            mkdir($_SERVER['DOCUMENT_ROOT'] . $dir , BX_DIR_PERMISSIONS);
         }
-
+        
         return $dir;
     }
 
     public function setMigrationDir($dir){
         if (is_dir($_SERVER['DOCUMENT_ROOT'] . $dir)){
-            \COption::SetOptionString('sprint.migration','migration_dir',$dir);
+            $this->setOption('migration_dir', $dir);
         }
+    }
 
+    public function getVersionTemplateFile(){
+        $file = $this->getOption('migration_template', '');
+        if (!empty($file) && is_file($_SERVER['DOCUMENT_ROOT'] . $file)){
+            return $_SERVER['DOCUMENT_ROOT'] . $file;
+        } else {
+            return __DIR__  . '/../../../templates/version.php';
+        }
+    }
+
+    protected function getOption($name, $default){
+        return (isset($this->options[$name])) ? $this->options[$name] : $default;
+    }
+
+    protected function setOption($name, $val){
+        $this->options[$name] = $val;
+        \file_put_contents($this->optionsFile, '<?php /* sprint.migration module config */ return ' . var_export($this->options, 1) . ';', LOCK_EX);
     }
 
     public function getVersions() {
@@ -211,7 +235,8 @@ class Manager
     }
 
     protected function getFiles() {
-        $Directory = new \DirectoryIterator($this->migrationPath);
+        $dir = $_SERVER['DOCUMENT_ROOT'] . $this->getMigrationDir();
+        $Directory = new \DirectoryIterator($dir);
         $files = array();
         /* @var $item \SplFileInfo */
         foreach ($Directory as $item) {
@@ -315,7 +340,7 @@ class Manager
     }
 
     protected function getFileName($versionName) {
-        return $this->migrationPath . $versionName . '.php';
+        return $_SERVER['DOCUMENT_ROOT'] . $this->getMigrationDir() . $versionName . '.php';
     }
 
     protected function checkName($versionName) {
@@ -329,7 +354,7 @@ class Manager
 
         ob_start();
 
-        include($this->versionTemplate);
+        include($this->getVersionTemplateFile());
 
         $html = ob_get_clean();
 
