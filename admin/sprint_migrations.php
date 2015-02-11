@@ -114,10 +114,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
                     <span><?= $aItem['version'] ?></span>
                 </a>
                 <?if ($aItem['type'] == 'is_new'): ?>
-                    <input onclick="migrationExecute('<?= $aItem['version'] ?>', 1);" value="выполнить" type="button">
+                    <input onclick="migrationExecute('<?= $aItem['version'] ?>', 1);" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <?endif ?>
                 <?if ($aItem['type'] == 'is_success'): ?>
-                    <input onclick="migrationExecute('<?= $aItem['version'] ?>', 0);" value="откатить" type="button">
+                    <input onclick="migrationExecute('<?= $aItem['version'] ?>', 0);" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
                 <?endif ?>
                 <div id="migration_item_<?= $aItem['version'] ?>_descr"></div>
             </div>
