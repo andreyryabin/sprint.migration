@@ -232,5 +232,28 @@ class IblockHelper
         return $id;
     }
 
+    public function mergeIblockFields($iblockId, $fields){
+        $default = \CIBlock::GetFields($iblockId);
+        $fields = $this->arraySoftMerge($default, $fields);
+        \CIBlock::SetFields($iblockId, $fields);
+    }
 
+        protected function arraySoftMerge($default, $fields){
+        foreach ($default as $key => $val){
+            if (isset($fields[$key])) {
+                if (is_array($val) && is_array($fields[$key])){
+                    $default[$key] = $this->arraySoftMerge($val, $fields[$key]);
+                } else {
+                    $default[$key] = $fields[$key];
+                }
+            }
+            unset($fields[$key]);
+        }
+
+        foreach ($fields as $key=>$val){
+            $default[$key] = $val;
+        }
+
+        return $default;
+    }
 }
