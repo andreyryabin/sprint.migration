@@ -347,7 +347,7 @@ class Manager
         return preg_match('/^Version\d+$/i', $versionName);
     }
 
-    public function renderVersionFile($vars = array()) {
+    protected function renderVersionFile($vars = array()) {
         if (is_array($vars)) {
             extract($vars, EXTR_SKIP);
         }
