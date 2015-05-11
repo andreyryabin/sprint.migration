@@ -1,7 +1,11 @@
 <?
 global $APPLICATION;
 
-IncludeModuleLangFile(__FILE__);
+if (defined('BX_UTF') && BX_UTF === true){
+    IncludeModuleLangFile(__FILE__, 'ru_utf8');
+} else {
+    IncludeModuleLangFile(__FILE__, 'ru');
+}
 
 if ($APPLICATION->GetGroupRight("sprint.migration") != "D") {
     $aMenu = array(

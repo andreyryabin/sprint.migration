@@ -1,6 +1,11 @@
 <?
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
-IncludeModuleLangFile(__FILE__);
+
+if (defined('BX_UTF') && BX_UTF === true){
+    IncludeModuleLangFile(__FILE__, 'ru_utf8');
+} else {
+    IncludeModuleLangFile(__FILE__, 'ru');
+}
 
 global $APPLICATION;
 $APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATIONS'));

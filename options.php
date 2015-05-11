@@ -7,7 +7,11 @@ if (!($MODULE_RIGHT >= "R")){
     $APPLICATION->AuthForm("ACCESS_DENIED");
 }
 
-IncludeModuleLangFile(__FILE__);
+if (defined('BX_UTF') && BX_UTF === true){
+    IncludeModuleLangFile(__FILE__, 'ru_utf8');
+} else {
+    IncludeModuleLangFile(__FILE__, 'ru');
+}
 
 CModule::IncludeModule($module_id);
 $manager = new Sprint\Migration\Manager();
