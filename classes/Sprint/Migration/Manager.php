@@ -72,7 +72,7 @@ class Manager
     }
 
     public function executeVersion($name, $up = true) {
-        $version = $this->finvVersionByName($name);
+        $version = $this->findVersionByName($name);
         if ($version) {
             if ($up && $version['type'] == 'is_new') {
                 return $this->doVersionUp($name);
@@ -185,7 +185,7 @@ class Manager
     }
 
 
-    protected function finvVersionByName($name) {
+    protected function findVersionByName($name) {
         $list = $this->findVersions('up');
         foreach ($list as $val) {
             if ($val['version'] == $name) {

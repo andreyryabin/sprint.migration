@@ -187,7 +187,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         color: #00a;
     }
 </style>
-<div id="migration_progress" style="margin:0px"></div>
+<div id="migration_progress" style="margin:0px 0px 10px 0px;"></div>
 
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
     array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_LIST1')),
@@ -262,6 +262,11 @@ $tabControl1->BeginNextTab();
                     $('#migration_progress').html(result).show();
                 }
 
+                migrationUnlockButtons();
+
+            },
+            error: function(result){
+                migrationUnlockButtons();
             }
         });
     }

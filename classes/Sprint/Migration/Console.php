@@ -5,20 +5,18 @@ namespace Sprint\Migration;
 class Console
 {
 
-    protected $colors = array();
+    
     protected $help = array();
     protected $manager = null;
 
-
     public function __construct() {
-        $this->initColors();
         $this->initHelp();
     }
 
     public function execFromArgs($args) {
 
         if (empty($args) || count($args) <= 1) {
-            $this->out('available commands:');
+            Out::out('available commands:');
             $this->executeHelp();
             return false;
         }
@@ -28,7 +26,7 @@ class Console
         $method = 'execute' . $this->camelizeText($method);
 
         if (!method_exists($this, $method)) {
-            $this->out('command %s not found', $method);
+            Out::out('command %s not found', $method);
             return false;
         }
 
@@ -45,7 +43,7 @@ class Console
 
     protected function executeCreate($descr = '') {
         $ok = $this->getMigrationManager()->createVersionFile($descr);
-        $this->out($ok ? '[green]success[/]' : '[red]error[/]');
+        Out::out($ok ? '[green]success[/]' : '[red]error[/]');
 
     }
 
@@ -58,12 +56,11 @@ class Console
         if ($mode == '--all'){
             $cnt = 0;
             foreach ($versions as $item) {
-                $color = str_replace(array('is_new', 'is_success', 'is_404'), array('red', 'green', 'blue'), $item['type']);
                 $name = $item['version'];
-                $this->out('[%s]%s[/]', $color, $name);
+                Out::out('[%s]%s[/]', $item['type'], $name);
                 $cnt++;
             }
-            $this->out('Found %d migrations', $cnt);
+            Out::out('Found %d migrations', $cnt);
         }
 
         if ($mode == '--new'){
@@ -73,19 +70,18 @@ class Console
                     continue;
                 }
 
-                $color = str_replace(array('is_new', 'is_success', 'is_404'), array('red', 'green', 'blue'), $item['type']);
                 $name = $item['version'];
-                $this->out('[%s]%s[/]', $color, $name);
+                Out::out('[%s]%s[/]', $item['type'], $name);
                 $cnt++;
             }
-            $this->out('Found %d migrations', $cnt);
+            Out::out('Found %d migrations', $cnt);
         }
 
         if ($mode == '--info'){
             $info = array(
-                'is_new' => array('title' => 'New migrations','cnt' => 0,'color' => 'red'),
-                'is_success' => array('title' => 'Success','cnt' => 0,'color' => 'green'),
-                'is_404' => array('title' => 'Unknown','cnt' => 0,'color' => 'blue'),
+                'is_new' => array('title' => 'New migrations','cnt' => 0),
+                'is_success' => array('title' => 'Success','cnt' => 0),
+                'is_404' => array('title' => 'Unknown','cnt' => 0),
             );
 
             foreach ($versions as $item) {
@@ -94,7 +90,7 @@ class Console
             }
 
             foreach ($info as $type=>$aItem){
-                $this->out('[%s]%s[/]: %d', $aItem['color'], $aItem['title'], $aItem['cnt']);
+                Out::out('[%s]%s[/]: %d', $type, $aItem['title'], $aItem['cnt']);
             }
         }
 
@@ -103,14 +99,14 @@ class Console
     protected function executeMigrate($up = '--up') {
         if ($up == '--up') {
             $cnt = $this->getMigrationManager()->executeMigrateUp();
-            $this->out('Migrations up: [green]%d[/]', $cnt);
+            Out::out('Migrations up: [green]%d[/]', $cnt);
 
         } elseif ($up == '--down') {
             $cnt = $this->getMigrationManager()->executeMigrateDown();
-            $this->out('Migrations down: [red]%d[/]', $cnt);
+            Out::out('Migrations down: [red]%d[/]', $cnt);
 
         } else {
-            $this->out('[red]required params not found[/]');
+            Out::out('[red]required params not found[/]');
         }
     }
 
@@ -118,9 +114,9 @@ class Console
         $cnt = (int)$cnt;
         if ($cnt > 0) {
             $cntSuccess = $this->getMigrationManager()->executeMigrateUp($cnt);
-            $this->out('Migrations up: [green]%d[/]', $cntSuccess);
+            Out::out('Migrations up: [green]%d[/]', $cntSuccess);
         } else {
-            $this->out('[red]required COUNT not found[/]');
+            Out::out('[red]required COUNT not found[/]');
         }
     }
 
@@ -128,9 +124,9 @@ class Console
         $cnt = (int)$cnt;
         if ($cnt > 0) {
             $cntSuccess = $this->getMigrationManager()->executeMigrateDown($cnt);
-            $this->out('Migrations up: [green]%d[/]', $cntSuccess);
+            Out::out('Migrations up: [green]%d[/]', $cntSuccess);
         } else {
-            $this->out('[red]required COUNT not found[/]');
+            Out::out('[red]required COUNT not found[/]');
         }
 
     }
@@ -138,12 +134,12 @@ class Console
     protected function executeExecute($version, $up = '--up') {
         if ($version && $up == '--up') {
             $ok = $this->getMigrationManager()->executeVersion($version, true);
-            $this->out($ok ? '[green]success[/]' : '[red]error[/]');
+            Out::out($ok ? '[green]success[/]' : '[red]error[/]');
         } elseif ($version && $up == '--down') {
             $ok = $this->getMigrationManager()->executeVersion($version, false);
-            $this->out($ok ? '[green]success[/]' : '[red]error[/]');
+            Out::out($ok ? '[green]success[/]' : '[red]error[/]');
         } else {
-            $this->out('[red]required params not found[/]');
+            Out::out('[red]required params not found[/]');
         }
     }
 
@@ -155,10 +151,10 @@ class Console
             $ok1 = $ok1 ? '[green]success[/]' : '[red]error[/]';
             $ok2 = $ok2 ? '[green]success[/]' : '[red]error[/]';
 
-            $this->out('%s+%s', $ok1, $ok2);
+            Out::out('%s+%s', $ok1, $ok2);
 
         } else {
-            $this->out('[red]required params not found[/]');
+            Out::out('[red]required params not found[/]');
         }
     }
 
@@ -170,39 +166,16 @@ class Console
                 $val = ltrim($val, 'execute');
 
                 if (isset($this->help[$val])) {
-                    $this->out('[green]%s[/] %s', $val, $this->help[$val]);
+                    Out::out('[green]%s[/] %s', $val, $this->help[$val]);
                 } else {
-                    $this->out($val);
+                    Out::out($val);
                 }
             }
         }
     }
 
-    protected function out($msg, $var1 = null, $var2 = null) {
-        ob_end_flush();
 
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
 
-        foreach ($this->colors as $key => $val) {
-            $msg = str_replace('[' . $key . ']', "\033[" . $val . "m", $msg);
-        }
-
-        $msg = str_replace('[/]', "\033[0m", $msg);
-
-        echo $msg . "\n";
-
-        @ob_flush();
-    }
-
-    protected function initColors() {
-        $this->colors['blue'] = '0;34';
-        $this->colors['green'] = '0;32';
-        $this->colors['red'] = '0;31';
-        $this->colors['yellow'] = '1;33';
-    }
 
     protected function initHelp() {
         $this->help['Create'] = '[yellow]<description>[/] add new migration with description';

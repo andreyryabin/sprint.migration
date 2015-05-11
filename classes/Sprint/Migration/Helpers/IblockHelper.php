@@ -3,23 +3,14 @@
 namespace Sprint\Migration\Helpers;
 
 /**
- * PROPERTY_TYPE:USER_TYPE
- * S:DateTime - Дата/Время
- * S:ElementXmlID - Привязка к элементам по XML_ID
- * S:FileMan - Привязка к файлу (на сервере)
- * S:HTML - HTML/текст
- * E:EList - Привязка к элементам в виде списка
- * N:Sequence - Счетчик
- * E:EAutocomplete - Привязка к элементам с автозаполнением
- * E:SKU - Привязка к товарам (SKU)
- * S:UserID - Привязка к пользователю
- * S:map_google - Привязка к карте Google Maps
- * S:map_yandex - Привязка к Яндекс.Карте
- * S:video - Видео
- * S:TopicID - Привязка к теме форума
+ * Class IblockHelper
+ * @package Sprint\Migration\Helpers
+ * @help http://dev.1c-bitrix.ru/api_help/iblock/classes/ciblockproperty/getlist.php
  */
 class IblockHelper
 {
+
+    public $lastError = '';
 
     public function addIblockTypeIfNotExists($fields) {
         $id = $fields['ID'];
@@ -48,6 +39,8 @@ class IblockHelper
     }
 
     public function deleteProperty($iblockId, $propertyCode) {
+        $this->lastError = '';
+
         $propId = $this->getPropertyId($iblockId, $propertyCode);
         if (!$propId) {
             return false;
@@ -56,22 +49,30 @@ class IblockHelper
         $ib = new \CIBlockProperty;
         $ok = $ib->Delete($propId);
 
+        $this->lastError = $ib->LAST_ERROR;
+
         return $ok;
     }
 
     public function updateProperty($iblockId, $propertyCode, $fields) {
+        $this->lastError = '';
+
         $propId = $this->getPropertyId($iblockId, $propertyCode);
         if (!$propId) {
             return false;
         }
 
-        $oIblockProperty = new \CIBlockProperty();
-        $ok = $oIblockProperty->Update($propId, $fields);
+        $ib = new \CIBlockProperty();
+        $ok = $ib->Update($propId, $fields);
+
+        $this->lastError = $ib->LAST_ERROR;
 
         return $ok;
     }
 
     public function addSection($iblockId, $fields) {
+        $this->lastError = '';
+
         $default = Array(
             "ACTIVE" => "Y",
             "IBLOCK_SECTION_ID" => false,
@@ -86,15 +87,19 @@ class IblockHelper
         $fields = array_merge($default, $fields);
         $fields["IBLOCK_ID"] = $iblockId;
 
-        $section = new \CIBlockSection;
-        $id = $section->Add($fields);
+        $ib = new \CIBlockSection;
+        $id = $ib->Add($fields);
+
+        $this->lastError = $ib->LAST_ERROR;
 
         return $id;
     }
 
     public function addElement($iblockId, $fields, $props = array()) {
+        $this->lastError = '';
+
         $default = array(
-            "NAME" => "Элемент",
+            "NAME" => "Р­Р»РµРјРµРЅС‚",
             "IBLOCK_SECTION_ID" => false,
             "ACTIVE" => "Y",
             "PREVIEW_TEXT" => "",
@@ -108,8 +113,10 @@ class IblockHelper
             $fields['PROPERTY_VALUES'] = $props;
         }
 
-        $element = new \CIBlockElement;
-        $id = $element->Add($fields);
+        $ib = new \CIBlockElement;
+        $id = $ib->Add($fields);
+
+        $this->lastError = $ib->LAST_ERROR;
 
         return $id;
     }
@@ -151,6 +158,8 @@ class IblockHelper
     }
 
     protected function addProperty($iblockId, $fields) {
+        $this->lastError = '';
+
         $default = array(
             'IBLOCK_ID' => $iblockId,
             'NAME' => '',
@@ -175,10 +184,16 @@ class IblockHelper
 
         $ib = new \CIBlockProperty;
         $id = $ib->Add($fields);
+
+        $this->lastError = $ib->LAST_ERROR;
+
         return $id;
     }
 
     protected function addIblockType($fields) {
+
+        $this->lastError = '';
+
         $default = Array(
             'ID' => '',
             'SECTIONS' => 'Y',
@@ -186,14 +201,14 @@ class IblockHelper
             'SORT' => 100,
             'LANG' => Array(
                 'ru' => Array(
-                    'NAME' => 'Каталог',
-                    'SECTION_NAME' => 'Разделы',
-                    'ELEMENT_NAME' => 'Элементы'
+                    'NAME' => 'Catalog',
+                    'SECTION_NAME' => 'Sections',
+                    'ELEMENT_NAME' => 'Elements'
                 ),
                 'en' => Array(
                     'NAME' => 'Catalog',
                     'SECTION_NAME' => 'Sections',
-                    'ELEMENT_NAME' => 'Products'
+                    'ELEMENT_NAME' => 'Elements'
                 ),
             )
         );
@@ -202,10 +217,15 @@ class IblockHelper
 
         $ib = new \CIBlockType;
         $res = $ib->Add($fields);
+
+        $this->lastError = $ib->LAST_ERROR;
+
         return ($res) ? $fields['ID'] : 0;
     }
 
     protected function addIblock($fields) {
+        $this->lastError = '';
+
         $default = array(
             'ACTIVE' => 'Y',
             'NAME' => '',
@@ -229,6 +249,7 @@ class IblockHelper
         $ib = new \CIBlock;
         $id = $ib->Add($fields);
 
+        $this->lastError = $ib->LAST_ERROR;
         return $id;
     }
 
@@ -255,5 +276,9 @@ class IblockHelper
         }
 
         return $default;
+    }
+
+    public function getLastError($stripTags=true){
+        return ($stripTags) ? strip_tags($this->lastError) : $this->lastError;
     }
 }
