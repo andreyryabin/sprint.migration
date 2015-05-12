@@ -25,6 +25,8 @@ class Out
         'yellow' => '#aa0',
     );
 
+    private static $needEol = false;
+    
     public static function out($msg, $var1 = null, $var2 = null) {
         if (func_num_args() > 1) {
             $params = func_get_args();
@@ -41,9 +43,13 @@ class Out
 
         } else {
             $msg = self::prepareToConsole($msg);
-            fwrite(STDOUT, $msg . PHP_EOL);
+            if (self::$needEol){
+                self::$needEol = false;
+                fwrite(STDOUT, PHP_EOL . $msg . PHP_EOL);
+            } else {
+                fwrite(STDOUT, $msg . PHP_EOL);
+            }
         }
-
     }
 
     public static function outProgress($msg, $val, $total){
@@ -64,13 +70,9 @@ class Out
             echo "$msg $val/$total <br/>";
 
         } else {
+            self::$needEol = true;
             $msg = self::prepareToConsole($msg);
-            if ($val >= $total){
-                fwrite(STDOUT, "\r$msg $val/$total%" . PHP_EOL);
-            } else {
-                fwrite(STDOUT, "\r$msg $val/$total%");
-            }
-
+            fwrite(STDOUT, "\r$msg $val/$total");
         }
 
     }

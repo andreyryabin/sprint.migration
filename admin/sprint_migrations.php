@@ -113,16 +113,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
         <?foreach ($versions as $aItem): ?>
 
             <div class="c-migration-block">
-                <a href="#" title="<?= GetMessage('SPRINT_MIGRATION_DESCR1') ?>"
-                   onclick="migrationMigrationDescr('<?= $aItem['version'] ?>');return false;"
-                   class="c-migration-item-<?= $aItem['type'] ?>">
+                <a href="#" title="<?= GetMessage('SPRINT_MIGRATION_DESCR1') ?>" onclick="migrationMigrationDescr('<?= $aItem['version'] ?>');return false;" class="c-migration-item-<?= $aItem['type'] ?>">
                     <span><?= $aItem['version'] ?></span>
                 </a>
                 <?if ($aItem['type'] == 'is_new'): ?>
-                    <input onclick="migrationExecute('<?= $aItem['version'] ?>', 1);" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
+                    <input class="c-migration-btn" onclick="migrationExecute('<?= $aItem['version'] ?>', 1);" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <?endif ?>
                 <?if ($aItem['type'] == 'is_success'): ?>
-                    <input onclick="migrationExecute('<?= $aItem['version'] ?>', 0);" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
+                    <input class="c-migration-btn" onclick="migrationExecute('<?= $aItem['version'] ?>', 0);" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
                 <?endif ?>
                 <div id="migration_item_<?= $aItem['version'] ?>_descr"></div>
             </div>
@@ -206,19 +204,17 @@ $tabControl1->BeginNextTab();
     <td class="adm-detail-content-cell-l" style="width:40%;">&nbsp;</td>
     <td class="adm-detail-content-cell-r" style="width:60%">
         <?= GetMessage('SPRINT_MIGRATION_DESCR2') ?>
-        <textarea style="width: 90%" rows="3" id="migration_migration_descr"
-                  name="migration_migration_descr"></textarea>
-        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();" class="button">
+        <textarea style="width: 90%" rows="3" id="migration_migration_descr" name="migration_migration_descr"></textarea>
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();" class="c-migration-btn button">
     </td>
 </tr>
 <? $tabControl1->Buttons(); ?>
 
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" onclick="migrationMigrationsUpConfirm();" class="c-migration-btn adm-btn-save" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" onclick="migrationMigrationsDownConfirm();" class="c-migration-btn button" />
 
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" onclick="migrationMigrationsUpConfirm();"
-       class="adm-btn-save">
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" onclick="migrationMigrationsDownConfirm();"
-       class="button">
-<input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid">
+
+<input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
 <? $tabControl1->End(); ?>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
@@ -273,12 +269,12 @@ $tabControl1->BeginNextTab();
 
     function migrationUnlockButtons() {
         CloseWaitWindow();
-        $('.adm-btn-save').attr('disabled', false);
+        $('.c-migration-btn').attr('disabled', false);
     }
 
     function migrationLockButtons() {
         ShowWaitWindow();
-        $('.adm-btn-save').attr('disabled', true);
+        $('.c-migration-btn').attr('disabled', true);
 
     }
 
