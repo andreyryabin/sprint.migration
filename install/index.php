@@ -1,8 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../classes/Sprint/Migration/Loc.php';
-
-Class sprint_migration extends \CModule
+Class sprint_migration extends CModule
 {
     var $MODULE_ID = "sprint.migration";
 
@@ -24,6 +22,8 @@ Class sprint_migration extends \CModule
 
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
+
+        require_once __DIR__ . '/../classes/Sprint/Migration/Loc.php';
 
         $this->MODULE_NAME = Sprint\Migration\Loc::getMessage("SPRINT_MIGRATION_MODULE_NAME");
         $this->MODULE_DESCRIPTION = Sprint\Migration\Loc::getMessage("SPRINT_MIGRATION_MODULE_DESCRIPTION");
