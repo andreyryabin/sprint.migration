@@ -1,5 +1,6 @@
 <?php
 
+
 Class sprint_migration extends CModule
 {
     var $MODULE_ID = "sprint.migration";
@@ -24,11 +25,12 @@ Class sprint_migration extends CModule
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
 
         require_once __DIR__ . '/../classes/Sprint/Migration/Loc.php';
+        \Sprint\Migration\Loc::includeLangFile();
 
-        $this->MODULE_NAME = Sprint\Migration\Loc::getMessage("SPRINT_MIGRATION_MODULE_NAME");
-        $this->MODULE_DESCRIPTION = Sprint\Migration\Loc::getMessage("SPRINT_MIGRATION_MODULE_DESCRIPTION");
-        $this->PARTNER_NAME = Sprint\Migration\Loc::getMessage("SPRINT_MIGRATION_PARTNER_NAME");
-        $this->PARTNER_URI = Sprint\Migration\Loc::getMessage("SPRINT_MIGRATION_PARTNER_URI");
+        $this->MODULE_NAME = GetMessage("SPRINT_MIGRATION_MODULE_NAME");
+        $this->MODULE_DESCRIPTION = GetMessage("SPRINT_MIGRATION_MODULE_DESCRIPTION");
+        $this->PARTNER_NAME = GetMessage("SPRINT_MIGRATION_PARTNER_NAME");
+        $this->PARTNER_URI = GetMessage("SPRINT_MIGRATION_PARTNER_URI");
     }
 
     function DoInstall() {

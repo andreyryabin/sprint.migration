@@ -22,3 +22,6 @@ spl_autoload_register(function ($className) {
         }
     }
 });
+
+
+\Sprint\Migration\Loc::includeLangFile();

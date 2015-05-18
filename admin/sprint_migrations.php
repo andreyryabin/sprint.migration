@@ -4,7 +4,7 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_ad
 \CModule::IncludeModule("sprint.migration");
 
 global $APPLICATION;
-$APPLICATION->SetTitle(Sprint\Migration\Loc::getMessage('SPRINT_MIGRATIONS'));
+$APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATIONS'));
 
 
 
@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_de
 
     $version = isset($_POST['version']) ? $_POST['version'] : 0;
     $descr = $manager->getVersionDescription($version);
-    $descr = !empty($descr) ? $descr : Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_NO_DESCRSPRINT_MIGRATIONS');
+    $descr = !empty($descr) ? $descr : GetMessage('SPRINT_MIGRATION_NO_DESCRSPRINT_MIGRATIONS');
     ?>
     <div class="c-migration-descr"><?= $descr ?></div>
     <?
@@ -109,21 +109,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
         <?foreach ($versions as $aItem): ?>
 
             <div class="c-migration-block">
-                <a href="#" title="<?= Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_DESCR1') ?>" onclick="migrationMigrationDescr('<?= $aItem['version'] ?>');return false;" class="c-migration-item-<?= $aItem['type'] ?>">
+                <a href="#" title="<?= GetMessage('SPRINT_MIGRATION_DESCR1') ?>" onclick="migrationMigrationDescr('<?= $aItem['version'] ?>');return false;" class="c-migration-item-<?= $aItem['type'] ?>">
                     <span><?= $aItem['version'] ?></span>
                 </a>
                 <?if ($aItem['type'] == 'is_new'): ?>
-                    <input class="c-migration-btn" onclick="migrationExecute('<?= $aItem['version'] ?>', 1);" value="<?= Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_UP') ?>" type="button">
+                    <input class="c-migration-btn" onclick="migrationExecute('<?= $aItem['version'] ?>', 1);" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <?endif ?>
                 <?if ($aItem['type'] == 'is_success'): ?>
-                    <input class="c-migration-btn" onclick="migrationExecute('<?= $aItem['version'] ?>', 0);" value="<?= Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
+                    <input class="c-migration-btn" onclick="migrationExecute('<?= $aItem['version'] ?>', 0);" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
                 <?endif ?>
                 <div id="migration_item_<?= $aItem['version'] ?>_descr"></div>
             </div>
 
         <?endforeach ?>
     <?else: ?>
-        <?= Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_LIST_EMPTY') ?>
+        <?= GetMessage('SPRINT_MIGRATION_LIST_EMPTY') ?>
     <?endif ?>
     <?
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
@@ -184,7 +184,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 <div id="migration_progress" style="margin:0px 0px 10px 0px;"></div>
 
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
-    array("DIV" => "tab2", "TAB" => Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_LIST1')),
+    array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_LIST1')),
 ));
 
 $tabControl1->Begin();
@@ -199,15 +199,15 @@ $tabControl1->BeginNextTab();
 <tr>
     <td class="adm-detail-content-cell-l" style="width:40%;">&nbsp;</td>
     <td class="adm-detail-content-cell-r" style="width:60%">
-        <?= Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_DESCR2') ?>
+        <?= GetMessage('SPRINT_MIGRATION_DESCR2') ?>
         <textarea style="width: 90%" rows="3" id="migration_migration_descr" name="migration_migration_descr"></textarea>
-        <input type="button" value="<?= Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();" class="c-migration-btn button">
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();" class="c-migration-btn button">
     </td>
 </tr>
 <? $tabControl1->Buttons(); ?>
 
-<input type="button" value="<?= Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_UP') ?>" onclick="migrationMigrationsUpConfirm();" class="c-migration-btn adm-btn-save" />
-<input type="button" value="<?= Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_DOWN') ?>" onclick="migrationMigrationsDownConfirm();" class="c-migration-btn button" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" onclick="migrationMigrationsUpConfirm();" class="c-migration-btn adm-btn-save" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" onclick="migrationMigrationsDownConfirm();" class="c-migration-btn button" />
 
 
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
@@ -217,14 +217,14 @@ $tabControl1->BeginNextTab();
 <script language="JavaScript">
 
     function migrationMigrationsUpConfirm() {
-        if (confirm('<?=Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_UP_CONFIRM')?>')) {
+        if (confirm('<?=GetMessage('SPRINT_MIGRATION_UP_CONFIRM')?>')) {
             migrationLockButtons();
             migrationExecuteStep('migrations_up', {});
         }
     }
 
     function migrationMigrationsDownConfirm() {
-        if (confirm('<?=Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_DOWN_CONFIRM')?>')) {
+        if (confirm('<?=GetMessage('SPRINT_MIGRATION_DOWN_CONFIRM')?>')) {
             migrationLockButtons();
             migrationExecuteStep('migrations_down', {});
         }

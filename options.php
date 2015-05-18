@@ -13,7 +13,7 @@ $manager = new Sprint\Migration\Manager();
 
 $aTabs = array(
     array(
-        "DIV" => "edit1", "TAB" => Sprint\Migration\Loc::getMessage("SPRINT_MIGRATION_SETTINGS"), "ICON" => "pull_path", "TITLE" => Sprint\Migration\Loc::getMessage("SPRINT_MIGRATION_SETTINGS"),
+        "DIV" => "edit1", "TAB" => GetMessage("SPRINT_MIGRATION_SETTINGS"), "ICON" => "pull_path", "TITLE" => GetMessage("SPRINT_MIGRATION_SETTINGS"),
     ),
 );
 
@@ -33,18 +33,18 @@ if(isset($_POST['migration_dir']) && check_bitrix_sessid()) {
     ?>
 
     <tr>
-        <td><?=Sprint\Migration\Loc::getMessage("SPRINT_MIGRATION_MIGRATION_DIR")?>:</td>
+        <td><?=GetMessage("SPRINT_MIGRATION_MIGRATION_DIR")?>:</td>
         <td><input id="migration_dir" type="text" size="40" value="<?=$manager->getMigrationDir()?>" name="migration_dir"></td>
     </tr>
 
 
     <?$tabControl->Buttons();?>
 
-    <input type="submit" name="Update" value="<?echo Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_SAVE')?>" class="adm-btn-save">
+    <input type="submit" name="Update" value="<?echo GetMessage('SPRINT_MIGRATION_SAVE')?>" class="adm-btn-save">
     <?$tabControl->End();?>
 
 </form>
 
 <?=BeginNote();?>
-<?echo Sprint\Migration\Loc::getMessage('SPRINT_MIGRATION_MORE_INFO')?>: <a href="https://bitbucket.org/andrey_ryabin/sprint.migration">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
+<?echo GetMessage('SPRINT_MIGRATION_MORE_INFO')?>: <a href="https://bitbucket.org/andrey_ryabin/sprint.migration">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
 <?=EndNote();?>

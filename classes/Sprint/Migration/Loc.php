@@ -5,24 +5,13 @@ namespace Sprint\Migration;
 class Loc
 {
 
-    protected static $messages = array();
+    public static function includeLangFile() {
+        global $MESS;
 
-    public static function getMessage($code) {
-        self::loadLoc();
-        return isset(self::$messages[$code]) ? self::$messages[$code] : $code;
-    }
-
-    protected static function loadLoc() {
-        if (empty(self::$messages)) {
-            $MESS = array();
-
-            if (self::isUtf8()){
-                include __DIR__ . '/../../../localization/ru_utf8.php';
-            } else {
-                include __DIR__ . '/../../../localization/ru_windows1251.php';
-            }
-
-            self::$messages = $MESS;
+        if (self::isUtf8()){
+            include __DIR__ . '/../../../localization/ru_utf8.php';
+        } else {
+            include __DIR__ . '/../../../localization/ru_windows1251.php';
         }
     }
 
