@@ -1,8 +1,7 @@
 <?php
 
+//for 2.0.3 to 2.0.4
 
-
-//for 2.0.4
 function Sprint_DeleteDirRec($path)
 {
     if (!file_exists($path))
