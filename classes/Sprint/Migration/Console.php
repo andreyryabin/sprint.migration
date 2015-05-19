@@ -26,7 +26,7 @@ class Console
         $method = 'execute' . $this->camelizeText($method);
 
         if (!method_exists($this, $method)) {
-            Out::out('command %s not found', $method);
+            Out::outError('command %s not found', $method);
             return false;
         }
 
@@ -42,8 +42,13 @@ class Console
     }
 
     protected function executeCreate($descr = '') {
-        $ok = $this->getMigrationManager()->createVersionFile($descr);
-        Out::out($ok ? '[green]success[/]' : '[red]error[/]');
+        $versionName = $this->getMigrationManager()->createVersionFile($descr);
+        if ($versionName){
+            Out::outSuccess('%s created', $versionName);
+        } else {
+            Out::outError('error');
+        }
+
 
     }
 

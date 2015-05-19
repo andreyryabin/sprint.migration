@@ -149,7 +149,7 @@ class Manager
         ));
         $file = $this->getFileName($version);
         file_put_contents($file, $str);
-        return is_file($file);
+        return is_file($file) ? $version : false;
     }
 
 

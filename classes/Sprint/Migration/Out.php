@@ -47,7 +47,7 @@ class Out
             \CAdminMessage::ShowMessage(array("MESSAGE" => $msg, 'HTML' => true, 'TYPE' => 'OK'));
 
         } else {
-            self::outDefault($msg);
+            self::outDefault('[green]' . $msg . '[/]');
         }
     }
 
@@ -62,7 +62,7 @@ class Out
             \CAdminMessage::ShowMessage(array("MESSAGE" => $msg, 'HTML' => true, 'TYPE' => 'ERROR'));
 
         } else {
-            self::outDefault($msg);
+            self::outDefault('[red]' . $msg . '[/]');
         }
     }
 
