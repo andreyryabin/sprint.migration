@@ -33,11 +33,41 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
+        self::outDefault($msg);
+    }
+
+    public static function outSuccess($msg, $var1 = null, $var2 = null){
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $msg = call_user_func_array('sprintf', $params);
+        }
+
         if (self::canOutAsAdminMessage()) {
             $msg = self::prepareToHtml($msg);
             \CAdminMessage::ShowMessage(array("MESSAGE" => $msg, 'HTML' => true, 'TYPE' => 'OK'));
 
-        } elseif (self::canOutAsHtml()){
+        } else {
+            self::outDefault($msg);
+        }
+    }
+
+    public static function outError($msg, $var1 = null, $var2 = null){
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $msg = call_user_func_array('sprintf', $params);
+        }
+
+        if (self::canOutAsAdminMessage()) {
+            $msg = self::prepareToHtml($msg);
+            \CAdminMessage::ShowMessage(array("MESSAGE" => $msg, 'HTML' => true, 'TYPE' => 'ERROR'));
+
+        } else {
+            self::outDefault($msg);
+        }
+    }
+
+    protected static function outDefault($msg){
+        if (self::canOutAsHtml()){
             $msg = self::prepareToHtml($msg);
             echo "$msg <br/>";
 

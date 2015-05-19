@@ -159,11 +159,14 @@ class Manager
                 $ok = $version->up();
                 if ($ok !== false) {
                     $this->addRecord($name);
+                    Out::outSuccess('%s update success', $name);
                     return true;
                 }
 
+                Out::outError('%s update error', $name);
 
             } catch (\Exception $e) {
+                Out::outError('%s update error: %s', $name, $e->getMessage());
             }
         }
         return false;
@@ -175,10 +178,14 @@ class Manager
                 $ok = $version->down();
                 if ($ok !== false) {
                     $this->removeRecord($name);
+                    Out::outSuccess('%s downgrade success', $name);
                     return true;
                 }
 
+                Out::outError('%s downgrade error', $name);
+
             } catch (\Exception $e) {
+                Out::outError('%s downgrade error: %s', $name, $e->getMessage());
             }
         }
         return false;
