@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration;
 
+use Sprint\Migration\Exceptions\Restart;
+
 class Manager
 {
 
@@ -9,6 +11,8 @@ class Manager
     private $path = '';
 
     private $optionsFile = '';
+
+    private $restarts = array();
 
     public function __construct() {
         if (is_dir($_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/')) {
@@ -71,15 +75,15 @@ class Manager
         return ($version) ? $version->getDescription() : '';
     }
 
-    public function executeVersion($name, $up = true) {
+    public function executeVersion($name, $up = true, $params = array()) {
         $version = $this->findVersionByName($name);
         if ($version) {
             if ($up && $version['type'] == 'is_new') {
-                return $this->doVersionUp($name);
+                return $this->doVersionUp($name, $params);
             }
 
             if (!$up && $version['type'] == 'is_success') {
-                return $this->doVersionDown($name);
+                return $this->doVersionDown($name, $params);
             }
 
         }
@@ -133,6 +137,9 @@ class Manager
         return $cntSuccess;
     }
 
+    public function getRestartParamsIfExists($name){
+        return (isset($this->restarts[$name])) ? $this->restarts[$name] : 0;
+    }
 
     public function createVersionFile($description = '') {
         $description = preg_replace("/\r\n|\r|\n/", '<br/>', $description);
@@ -153,10 +160,15 @@ class Manager
     }
 
 
-    protected function doVersionUp($name) {
+
+    protected function doVersionUp($name, $params = array()) {
         if ($version = $this->initVersion($name)) {
             try {
+
+                $version->setParams($params);
+
                 $ok = $version->up();
+
                 if ($ok !== false) {
                     $this->addRecord($name);
                     Out::outSuccess('%s update success', $name);
@@ -165,6 +177,9 @@ class Manager
 
                 Out::outError('%s update error', $name);
 
+            } catch (Restart $e){
+                $this->restarts[$name] = array('version' => $name, 'up'=>1, 'params' => $version->getParams());
+
             } catch (\Exception $e) {
                 Out::outError('%s update error: %s', $name, $e->getMessage());
             }
@@ -172,10 +187,14 @@ class Manager
         return false;
     }
 
-    protected function doVersionDown($name) {
+    protected function doVersionDown($name, $params = array()) {
         if ($version = $this->initVersion($name)) {
             try {
+
+                $version->setParams($params);
+
                 $ok = $version->down();
+
                 if ($ok !== false) {
                     $this->removeRecord($name);
                     Out::outSuccess('%s downgrade success', $name);
@@ -183,6 +202,8 @@ class Manager
                 }
 
                 Out::outError('%s downgrade error', $name);
+            } catch (Restart $e){
+                $this->restarts[$name] = array('version' => $name, 'up'=>0, 'params' => $version->getParams());
 
             } catch (\Exception $e) {
                 Out::outError('%s downgrade error: %s', $name, $e->getMessage());

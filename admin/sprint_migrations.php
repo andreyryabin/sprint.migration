@@ -70,13 +70,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     $version = isset($_POST['version']) ? $_POST['version'] : 0;
     $up = !empty($_POST['up']) ? true : false;
 
-    $success = $manager->executeVersion($version, $up);
+    $params = !empty($_POST['params']) ? $_POST['params'] : array();
+
+    $success = $manager->executeVersion($version, $up, $params);
 
     ?>
+    <?if ($restData = $manager->getRestartParamsIfExists($version)):?>
+        <script>
+            migrationExecuteStep('migration_execute', <?=json_encode($restData)?>);
+        </script>
+    <?else: ?>
 
     <script>
         migrationMigrationList();
     </script>
+    <?endif ?>
 
     <?
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");

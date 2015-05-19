@@ -2,29 +2,34 @@
 
 namespace Sprint\Migration;
 
+use Sprint\Migration\Exceptions\Restart;
+
 abstract class Version
 {
 
     protected $description = "";
 
-    private $stepMethods = array();
+    protected $params = array();
 
     abstract public function up();
 
     abstract public function down();
 
+
     public function getDescription() {
         return (string)$this->description;
     }
 
-
-    public function registerStepMethod($name, $cntSteps, $timeout){
-        $class = get_class($this);
-        $this->stepMethods[] = array('class'=>$class, 'method' => $name, 'steps' => $cntSteps, 'timeout' => $timeout);
+    public function restart(){
+        Throw new Restart();
     }
 
-    public function getStepMethods(){
-        return $this->stepMethods;
+    public function getParams(){
+        return $this->params;
+    }
+
+    public function setParams($params = array()){
+        $this->params = $params;
     }
 }
 
