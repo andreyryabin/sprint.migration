@@ -159,7 +159,6 @@ class Manager
                 $ok = $version->up();
                 if ($ok !== false) {
                     $this->addRecord($name);
-                    Out::outSuccess('%s update success', $name);
                     return true;
                 }
 
@@ -178,7 +177,6 @@ class Manager
                 $ok = $version->down();
                 if ($ok !== false) {
                     $this->removeRecord($name);
-                    Out::outSuccess('%s downgrade success', $name);
                     return true;
                 }
 
