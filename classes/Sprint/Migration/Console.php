@@ -139,10 +139,10 @@ class Console
     protected function executeExecute($version, $up = '--up') {
         if ($version && $up == '--up') {
             $ok = $this->getMigrationManager()->executeVersion($version, true);
-            Out::out($ok ? '[green]success[/]' : '[red]error[/]');
+            Out::out($ok ? '[green]%s success[/]' : '[red]%s error[/]', $version);
         } elseif ($version && $up == '--down') {
             $ok = $this->getMigrationManager()->executeVersion($version, false);
-            Out::out($ok ? '[green]success[/]' : '[red]error[/]');
+            Out::out($ok ? '[green]%s success[/]' : '[red]%s error[/]', $version);
         } else {
             Out::out('[red]required params not found[/]');
         }
