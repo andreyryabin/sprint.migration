@@ -15,7 +15,7 @@ class Loc
         }
     }
 
-    protected static function isUtf8() {
+    public static function isUtf8() {
         return (defined('BX_UTF') && BX_UTF === true);
     }
 
