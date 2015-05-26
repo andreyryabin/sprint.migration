@@ -6,91 +6,56 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_ad
 global $APPLICATION;
 $APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATIONS'));
 
-
-
 $manager = new Sprint\Migration\Manager();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migrations_up" && check_bitrix_sessid('send_sessid')) {
-    require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
-
-    $success = $manager->executeMigrateUp(1);
-
-    ?>
-    <?if ($success): ?>
-        <script>
-            migrationExecuteStep('migration_list', {}, function (data) {
-                $('#migration_migrations').empty().html(data);
-                migrationExecuteStep('migrations_up', {});
-            });
-        </script>
-    <?else: ?>
-        <script>
-            migrationMigrationList();
-        </script>
-    <?endif ?>
-
-    <?
-    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
-    die();
-}
-
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migrations_down" && check_bitrix_sessid('send_sessid')) {
-    require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
-
-    $success = $manager->executeMigrateDown(1);
-
-    ?>
-    <?if ($success == 1): ?>
-        <script>
-            migrationExecuteStep('migration_list', {}, function (data) {
-                $('#migration_migrations').empty().html(data);
-                migrationExecuteStep('migrations_down', {});
-            });
-        </script>
-    <?else: ?>
-        <script>
-            migrationMigrationList();
-        </script>
-    <?endif ?>
-
-    <?
-    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
-    die();
-}
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sessid')) {
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
-    $version = isset($_POST['version']) ? $_POST['version'] : 0;
-    $up = !empty($_POST['up']) ? true : false;
-
     $params = !empty($_POST['params']) ? $_POST['params'] : array();
+    $version = isset($_POST['version']) ? $_POST['version'] : 0;
+    $action = !empty($_POST['action']) ? $_POST['action'] : 0;
+    $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
 
-    $success = $manager->executeVersion($version, $up, $params);
+    if (!$version){
+        if ($nextAction == 'up'){
+            $version = $manager->getNextMigrationForUp();
+            $action = 'up';
+        } elseif ($nextAction == 'down') {
+            $version = $manager->getNextMigrationForDown();
+            $action = 'down';
+        }
+    }
 
-    ?>
-    <?if ($restData = $manager->getRestartParamsIfExists($version)):?>
-        <script>
-            migrationExecuteStep('migration_execute', <?=json_encode($restData)?>);
-        </script>
-    <?else: ?>
+    if ($version && $action){
+        $success = $manager->executeVersion($version, $action, $params);
+        if ($manager->needRestart($version)){
 
-    <script>
-        migrationMigrationList();
-    </script>
-    <?endif ?>
+            $json = json_encode(array(
+                'params' => $manager->getRestartParams($version),
+                'action' => $action,
+                'version' => $version,
+                'next_action' => $nextAction
+            ));
 
-    <?
+            ?><script>migrationExecuteStep('migration_execute', <?=$json?>);</script><?
+        } elseif ($nextAction){
+            ?><script>migrationExecuteStep('migration_execute', {next_action: '<?=$nextAction?>'});</script><?
+        } else {
+            ?><script>migrationMigrationList();</script><?
+        }
+    } else {
+        ?><script>migrationMigrationList();</script><?
+    }
+
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
     die();
 }
-
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_descr" && check_bitrix_sessid('send_sessid')) {
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
@@ -98,6 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_de
     $version = isset($_POST['version']) ? $_POST['version'] : 0;
     $descr = $manager->getVersionDescription($version);
     $descr = !empty($descr) ? $descr : GetMessage('SPRINT_MIGRATION_NO_DESCRSPRINT_MIGRATIONS');
+
     ?>
     <div class="c-migration-descr"><?= $descr ?></div>
     <?
@@ -121,10 +87,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
                     <span><?= $aItem['version'] ?></span>
                 </a>
                 <?if ($aItem['type'] == 'is_new'): ?>
-                    <input class="c-migration-btn" onclick="migrationExecute('<?= $aItem['version'] ?>', 1);" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
+                    <input class="c-migration-btn" onclick="migrationExecuteStep('migration_execute', {version: '<?=$aItem['version']?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <?endif ?>
                 <?if ($aItem['type'] == 'is_success'): ?>
-                    <input class="c-migration-btn" onclick="migrationExecute('<?= $aItem['version'] ?>', 0);" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
+                    <input class="c-migration-btn" onclick="migrationExecuteStep('migration_execute', {version: '<?=$aItem['version']?>', action: 'down'});" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
                 <?endif ?>
                 <div id="migration_item_<?= $aItem['version'] ?>_descr"></div>
             </div>
@@ -226,22 +192,16 @@ $tabControl1->BeginNextTab();
 
     function migrationMigrationsUpConfirm() {
         if (confirm('<?=GetMessage('SPRINT_MIGRATION_UP_CONFIRM')?>')) {
-            migrationLockButtons();
-            migrationExecuteStep('migrations_up', {});
+            migrationExecuteStep('migration_execute', {next_action: 'up'});
         }
     }
 
     function migrationMigrationsDownConfirm() {
         if (confirm('<?=GetMessage('SPRINT_MIGRATION_DOWN_CONFIRM')?>')) {
-            migrationLockButtons();
-            migrationExecuteStep('migrations_down', {});
+            migrationExecuteStep('migration_execute', {next_action  : 'down'});
         }
     }
 
-    function migrationExecute(version, up) {
-        migrationLockButtons();
-        migrationExecuteStep('migration_execute', {version: version, up: up});
-    }
 
     function migrationExecuteStep(step_code, postData, succesCallback) {
         migrationLockButtons();
@@ -283,7 +243,6 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationCreateMigration() {
-        migrationLockButtons();
         migrationExecuteStep('migration_create', {description: $('#migration_migration_descr').val()}, function (data) {
             $('#migration_migration_descr').val('');
             migrationMigrationList();
@@ -291,18 +250,14 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationMigrationList() {
-        migrationLockButtons();
         migrationExecuteStep('migration_list', {}, function (data) {
             $('#migration_migrations').empty().html(data);
-            migrationUnlockButtons();
         });
     }
 
     function migrationMigrationDescr(version) {
-        migrationLockButtons();
         migrationExecuteStep('migration_descr', {version: version}, function (data) {
             $('#migration_item_' + version + '_descr').empty().html(data);
-            migrationUnlockButtons();
         });
     }
 

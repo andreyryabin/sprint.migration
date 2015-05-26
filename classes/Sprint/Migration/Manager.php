@@ -75,70 +75,41 @@ class Manager
         return ($version) ? $version->getDescription() : '';
     }
 
-    public function executeVersion($name, $up = true, $params = array()) {
-        $version = $this->findVersionByName($name);
-        if ($version) {
-            if ($up && $version['type'] == 'is_new') {
-                return $this->doVersionUp($name, $params);
-            }
-
-            if (!$up && $version['type'] == 'is_success') {
-                return $this->doVersionDown($name, $params);
-            }
-
+    public function executeVersion($name, $action = 'up', $params = array()) {
+        $action = ($action && $action == 'up') ? 'up' : 'down';
+        if ($action == 'up'){
+            return $this->doVersionUp($name, $params);
+        } else {
+            return $this->doVersionDown($name, $params);
         }
+    }
 
+    public function getNextMigrationForUp() {
+        $versions = $this->findVersions('up');
+        foreach ($versions as $item) {
+            if ($item['type'] == 'is_new') {
+                return $item['version'];
+            }
+        }
         return false;
     }
 
-    public function executeMigrateUp($cnt = 0) {
-        $cnt = (int)$cnt;
-
-        $versions = $this->findVersions('up');
-        $cntSuccess = 0;
-
-        foreach ($versions as $item) {
-
-            if ($item['type'] == 'is_new') {
-
-                if ($this->doVersionUp($item['version'])) {
-                    $cntSuccess++;
-                }
-
-                if ($cnt > 0 && $cnt == $cntSuccess) {
-                    break;
-                }
-            }
-        }
-
-        return $cntSuccess;
-    }
-
-    public function executeMigrateDown($cnt = 0) {
-        $cnt = (int)$cnt;
-
+    public function getNextMigrationForDown(){
         $versions = $this->findVersions('down');
-        $cntSuccess = 0;
 
         foreach ($versions as $item) {
-
             if ($item['type'] == 'is_success') {
-
-                if ($this->doVersionDown($item['version'])) {
-                    $cntSuccess++;
-                }
-
-                if ($cnt > 0 && $cnt == $cntSuccess) {
-                    break;
-                }
+                return $item['version'];
             }
         }
-
-        return $cntSuccess;
+        return false;
     }
 
-    public function getRestartParamsIfExists($name){
-        return (isset($this->restarts[$name])) ? $this->restarts[$name] : 0;
+    public function needRestart($name){
+        return (isset($this->restarts[$name])) ? 1 : 0;
+    }
+    public function getRestartParams($name){
+        return $this->restarts[$name];
     }
 
     public function createVersionFile($description = '') {
@@ -171,14 +142,13 @@ class Manager
 
                 if ($ok !== false) {
                     $this->addRecord($name);
-                    Out::outSuccess('%s update success', $name);
                     return true;
                 }
 
                 Out::outError('%s update error', $name);
 
             } catch (Restart $e){
-                $this->restarts[$name] = array('version' => $name, 'up'=>1, 'params' => $version->getParams());
+                $this->restarts[$name] = $version->getParams();
 
             } catch (\Exception $e) {
                 Out::outError('%s update error: %s', $name, $e->getMessage());
@@ -197,13 +167,12 @@ class Manager
 
                 if ($ok !== false) {
                     $this->removeRecord($name);
-                    Out::outSuccess('%s downgrade success', $name);
                     return true;
                 }
 
                 Out::outError('%s downgrade error', $name);
             } catch (Restart $e){
-                $this->restarts[$name] = array('version' => $name, 'up'=>0, 'params' => $version->getParams());
+                $this->restarts[$name] = $version->getParams();
 
             } catch (\Exception $e) {
                 Out::outError('%s downgrade error: %s', $name, $e->getMessage());
