@@ -115,6 +115,7 @@ class Manager
     public function createVersionFile($description = '') {
         $description = preg_replace("/\r\n|\r|\n/", '<br/>', $description);
         $description = strip_tags($description);
+        $description = addslashes($description);
 
         $originTz = date_default_timezone_get();
         date_default_timezone_set('Europe/Moscow');

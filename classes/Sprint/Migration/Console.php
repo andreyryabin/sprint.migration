@@ -133,7 +133,7 @@ class Console
             } else {
                 Out::out($ok ? '[green]success[/]' : '[red]error[/]');
             }            
-            
+
         } else {
             Out::out('[red]required params not found[/]');
         }
