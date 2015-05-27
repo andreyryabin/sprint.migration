@@ -8,62 +8,15 @@ class Manager
 {
 
     private $options = array();
-    private $path = '';
-
-    private $optionsFile = '';
-
     private $restarts = array();
 
     public function __construct() {
-        if (is_dir($_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/')) {
-            $this->path = '/local/php_interface/';
-        } else {
-            $this->path = '/bitrix/php_interface/';
+
+        if ($file = $this->getConfigFile()){
+            $this->options = include $file;
         }
 
-        $this->optionsFile = $_SERVER['DOCUMENT_ROOT'] . $this->path . 'migrations.cfg.php';
-        if (is_file($this->optionsFile)){
-            $this->options = include $this->optionsFile;
-        }
-    }
-
-    public function getMigrationDir(){
-        $dir = $this->getOption('migration_dir', '');
-
-        if (!empty($dir) && is_dir($_SERVER['DOCUMENT_ROOT'] . $dir)){
-            return $dir;
-        }
-
-        $dir = $this->path . 'migrations/';
-        if (!is_dir($_SERVER['DOCUMENT_ROOT'] . $dir)){
-            mkdir($_SERVER['DOCUMENT_ROOT'] . $dir , BX_DIR_PERMISSIONS);
-        }
-        
-        return $dir;
-    }
-
-    public function setMigrationDir($dir){
-        if (is_dir($_SERVER['DOCUMENT_ROOT'] . $dir)){
-            $this->setOption('migration_dir', $dir);
-        }
-    }
-
-    public function getVersionTemplateFile(){
-        $file = $this->getOption('migration_template', '');
-        if (!empty($file) && is_file($_SERVER['DOCUMENT_ROOT'] . $file)){
-            return $_SERVER['DOCUMENT_ROOT'] . $file;
-        } else {
-            return __DIR__  . '/../../../templates/version.php';
-        }
-    }
-
-    protected function getOption($name, $default){
-        return (isset($this->options[$name])) ? $this->options[$name] : $default;
-    }
-
-    protected function setOption($name, $val){
-        $this->options[$name] = $val;
-        \file_put_contents($this->optionsFile, '<?php /* sprint.migration module config */ return ' . var_export($this->options, 1) . ';', LOCK_EX);
+         Db::createTablesIfNotExists();
     }
 
     public function getVersions() {
@@ -77,11 +30,21 @@ class Manager
 
     public function executeVersion($name, $action = 'up', $params = array()) {
         $action = ($action && $action == 'up') ? 'up' : 'down';
-        if ($action == 'up'){
+
+        $version = $this->findVersionByName($name);
+        if (!$version) {
+            return false;
+        }
+
+        if ($action == 'up' && $version['type'] == 'is_new') {
             return $this->doVersionUp($name, $params);
-        } else {
+        }
+
+        if ($action == 'down' && $version['type'] == 'is_success') {
             return $this->doVersionDown($name, $params);
         }
+
+        return false;
     }
 
     public function getNextMigrationForUp() {
@@ -108,6 +71,7 @@ class Manager
     public function needRestart($name){
         return (isset($this->restarts[$name])) ? 1 : 0;
     }
+
     public function getRestartParams($name){
         return $this->restarts[$name];
     }
@@ -130,8 +94,6 @@ class Manager
         file_put_contents($file, $str);
         return is_file($file) ? $version : false;
     }
-
-
 
     protected function doVersionUp($name, $params = array()) {
         if ($version = $this->initVersion($name)) {
@@ -184,13 +146,32 @@ class Manager
 
 
     protected function findVersionByName($name) {
-        $list = $this->findVersions('up');
-        foreach ($list as $val) {
-            if ($val['version'] == $name) {
-                return $val;
-            }
+        if (!$this->checkName($name)){
+            return false;
         }
-        return false;
+
+        $record = Db::findByName($name)->Fetch();
+        $file = $this->getFileName($name);
+
+        $isRecord = !empty($record);
+        $isFile = file_exists($file);
+
+        if (!$isRecord && !$isFile){
+            return false;
+        }
+
+        if ($isRecord && $isFile) {
+            $type = 'is_success';
+        } elseif (!$isRecord && $isFile) {
+            $type = 'is_new';
+        } else {
+            $type = 'is_404';
+        }
+
+        return array(
+            'type' => $type,
+            'version' => $name,
+        );
     }
 
     protected function findVersions($sort = 'up') {
@@ -208,7 +189,7 @@ class Manager
 
         $result = array();
         foreach ($merge as $val) {
-            $num = str_replace('Version', '', $val);
+
             $isRecord = in_array($val, $records);
             $isFile = in_array($val, $files);
 
@@ -223,7 +204,6 @@ class Manager
             $aItem = array(
                 'type' => $type,
                 'version' => $val,
-                'number' => $num,
             );
 
             $result[] = $aItem;
@@ -233,11 +213,10 @@ class Manager
     }
 
     protected function getFiles() {
-        $dir = $_SERVER['DOCUMENT_ROOT'] . $this->getMigrationDir();
-        $Directory = new \DirectoryIterator($dir);
+        $directory = new \DirectoryIterator($this->getMigrationDir());
         $files = array();
         /* @var $item \SplFileInfo */
-        foreach ($Directory as $item) {
+        foreach ($directory as $item) {
             $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
             if ($this->checkName($fileName)) {
                 $files[] = $fileName;
@@ -248,14 +227,7 @@ class Manager
     }
 
     protected function getRecords() {
-        $this->createTableIfNotExists();
-
-        if ($this->isMssql()) {
-            $dbResult = $this->getDb()->Query('select * from sprint_migration_versions');
-        } else {
-            $dbResult = $this->getDb()->Query('SELECT * FROM `sprint_migration_versions`');
-        }
-
+        $dbResult = Db::findAll();
 
         $records = array();
         while ($aItem = $dbResult->Fetch()) {
@@ -269,50 +241,16 @@ class Manager
 
     protected function addRecord($versionName) {
         if ($this->checkName($versionName)) {
-            if ($this->isMssql()) {
-                return $this->getDb()->Query(sprintf('if not exists(select version from sprint_migration_versions where version=\'%s\')
-                    begin
-                        INSERT INTO sprint_migration_versions (version) VALUES	(\'%s\')
-                    end', $versionName, $versionName));
-
-            } else {
-                return $this->getDb()->Query(sprintf('INSERT IGNORE INTO `sprint_migration_versions` SET `version` = "%s"', $versionName));
-            }
-
-
+            return Db::addRecord($versionName);
         }
         return false;
     }
 
     protected function removeRecord($versionName) {
         if ($this->checkName($versionName)) {
-            if ($this->isMssql()) {
-                return $this->getDb()->Query(sprintf('DELETE FROM sprint_migration_versions WHERE version = \'%s\'', $versionName));
-            } else {
-                return $this->getDb()->Query(sprintf('DELETE FROM `sprint_migration_versions` WHERE `version` = "%s"', $versionName));
-            }
+            return Db::removeRecord($versionName);
         }
         return false;
-    }
-
-    protected function createTableIfNotExists() {
-        if ($this->isMssql()) {
-            $this->getDb()->Query('if not exists (SELECT * FROM sysobjects WHERE name=\'sprint_migration_versions\' AND xtype=\'U\')
-                begin
-                    CREATE TABLE sprint_migration_versions
-                    (id int IDENTITY (1,1) NOT NULL,
-                    version varchar(255) NOT NULL,
-                    PRIMARY KEY (id),
-                    UNIQUE (version))
-                end');
-
-        } else {
-            $this->getDb()->Query('CREATE TABLE IF NOT EXISTS `sprint_migration_versions`(
-			  `id` MEDIUMINT NOT NULL AUTO_INCREMENT NOT NULL,
-			  `version` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-			  PRIMARY KEY (id), UNIQUE KEY(version)
-			)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;');
-        }
     }
 
     /* @return Version */
@@ -338,7 +276,7 @@ class Manager
     }
 
     protected function getFileName($versionName) {
-        return $_SERVER['DOCUMENT_ROOT'] . $this->getMigrationDir() . $versionName . '.php';
+        return $this->getMigrationDir() . '/'.$versionName . '.php';
     }
 
     protected function checkName($versionName) {
@@ -359,13 +297,33 @@ class Manager
         return $html;
     }
 
-    /* @return \CDatabase */
-    public function getDb() {
-        return $GLOBALS['DB'];
+    protected function getConfigFile(){
+        $file = Utils::getPhpInterfaceDir() . '/migrations.cfg.php';
+        return is_file($file) ? $file : false;
     }
 
-    public function isMssql() {
-        return ($GLOBALS['DBType'] == 'mssql');
+
+    protected function getMigrationDir(){
+        if (!empty($this->options['migration_dir']) && is_dir(Utils::getDocRoot() . $this->options['migration_dir'])){
+            return Utils::getDocRoot() . $this->options['migration_dir'];
+        }
+
+        $dir = Utils::getPhpInterfaceDir() . '/migrations';
+        if (!is_dir($dir)){
+            mkdir($dir , BX_DIR_PERMISSIONS);
+        }
+        return $dir;
     }
+
+    protected function getVersionTemplateFile(){
+        if (!empty($this->options['migration_template']) && is_file(Utils::getDocRoot() . $this->options['migration_template'])){
+            return Utils::getDocRoot() . $this->options['migration_template'];
+        } else {
+            return Utils::getModuleDir() . '/templates/version.php';
+        }
+    }
+
+
+
 
 }

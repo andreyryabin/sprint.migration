@@ -113,7 +113,7 @@ class Out
             $msg = str_replace('[' . $key . ']', "\033[" . $val . "m", $msg);
         }
 
-        if (!Loc::isUtf8() && function_exists('iconv')){
+        if (!Utils::isUtf8() && function_exists('iconv')){
             $msg = iconv('windows-1251', 'utf-8', $msg);
         }
 

@@ -10,8 +10,8 @@ class EventHelper
         $default = array(
             "LID" => 'ru',
             "EVENT_NAME" => 'EVENT_NAME',
-            "NAME" => 'Название',
-            "DESCRIPTION" => 'Описание',
+            "NAME" => 'NAME',
+            "DESCRIPTION" => 'DESCRIPTION',
             'SORT' => '',
         );
 
@@ -31,9 +31,9 @@ class EventHelper
             'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
             'EMAIL_TO' => '#EMAIL_TO#',
             'BCC' => '',
-            'SUBJECT' => 'Тема сообщения',
+            'SUBJECT' => 'SUBJECT',
             'BODY_TYPE' => 'text',
-            'MESSAGE' => 'Текст сообщения',
+            'MESSAGE' => 'MESSAGE',
         );
 
         $fields = array_merge($default, $fields);
@@ -61,12 +61,12 @@ class EventHelper
     }
 
     public function updateEventMessage($eventName, $fields) {
+        $filter = array();
 
         if (!is_array($eventName)) {
-            $filter = array(
-                "TYPE_ID" => $eventName,
-            );
+            $filter['TYPE_ID'] = $eventName;
         }
+
         $this->updateEventMessageByFilter($filter, $fields);
     }
 
