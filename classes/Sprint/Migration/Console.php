@@ -43,50 +43,27 @@ class Console
     }
 
 
-    public function executeStatus($mode = '--info') {
+    public function executeStatus() {
         $versions = $this->manager->getVersions();
 
-        $mode = ($mode && in_array($mode, array('--new', '--all', '--info'))) ? $mode : '--new';
-
-        if ($mode == '--all') {
-            $cnt = 0;
-            foreach ($versions as $item) {
-                $name = $item['version'];
-                Out::out('[%s]%s[/]', $item['type'], $name);
-                $cnt++;
-            }
-            Out::out('Found %d migrations', $cnt);
+        foreach ($versions as $item) {
+            $name = $item['version'];
+            Out::out('[%s]%s[/]', $item['type'], $name);
         }
 
-        if ($mode == '--new') {
-            $cnt = 0;
-            foreach ($versions as $item) {
-                if ($item['type'] != 'is_new') {
-                    continue;
-                }
+        $info = array(
+            'is_new' => array('title' => 'New migrations', 'cnt' => 0),
+            'is_success' => array('title' => 'Success', 'cnt' => 0),
+            'is_404' => array('title' => 'Unknown', 'cnt' => 0),
+        );
 
-                $name = $item['version'];
-                Out::out('[%s]%s[/]', $item['type'], $name);
-                $cnt++;
-            }
-            Out::out('Found %d migrations', $cnt);
+        foreach ($versions as $item) {
+            $type = $item['type'];
+            $info[$type]['cnt']++;
         }
 
-        if ($mode == '--info') {
-            $info = array(
-                'is_new' => array('title' => 'New migrations', 'cnt' => 0),
-                'is_success' => array('title' => 'Success', 'cnt' => 0),
-                'is_404' => array('title' => 'Unknown', 'cnt' => 0),
-            );
-
-            foreach ($versions as $item) {
-                $type = $item['type'];
-                $info[$type]['cnt']++;
-            }
-
-            foreach ($info as $type => $aItem) {
-                Out::out('[%s]%s[/]: %d', $type, $aItem['title'], $aItem['cnt']);
-            }
+        foreach ($info as $type => $aItem) {
+            Out::out('[%s]%s[/]: %d', $type, $aItem['title'], $aItem['cnt']);
         }
 
     }
@@ -196,15 +173,12 @@ class Console
 
     protected function doExecuteOnce($version, $action = 'up', $params = array()) {
         $action = ($action == 'up') ? 'up' : 'down';
-
         $ok = $this->manager->executeVersion($version, $action, $params);
-
         if ($this->manager->needRestart($version)) {
             $params = $this->manager->getRestartParams($version);
-            $this->doExecuteOnce($version, $action, $params);
-        } else {
-            return $ok;
+            $ok = $this->doExecuteOnce($version, $action, $params);
         }
+        return $ok;
     }
 
     protected function camelizeText($str, $prefix = '') {
@@ -221,12 +195,13 @@ class Console
 
     protected function initHelp() {
         $this->help['Create'] = '<description> add new migration with description';
-        $this->help['Status'] = '[b]--new, --all, --info[/] get migrations list';
-        $this->help['Migrate'] = '--up --down up or down all migrations';
-        $this->help['Execute'] = '<version> --up --down up or down this migration';
-        $this->help['Redo'] = '<version> down+up this migration';
+        $this->help['Status'] = 'get migrations list';
+        $this->help['Migrate'] = '[b]--up[/] --down up or down all migrations';
         $this->help['Up'] = '<limit> up limit migrations';
         $this->help['Down'] = '<limit> down migrations';
+
+        $this->help['Execute'] = '<version> [b]--up[/] --down up or down this migration';
+        $this->help['Redo'] = '<version> down+up this migration';
     }
 
 }

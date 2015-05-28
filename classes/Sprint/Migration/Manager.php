@@ -123,6 +123,8 @@ class Manager
         if ($version = $this->initVersion($name)) {
             try {
 
+                unset($this->restarts[$name]);
+
                 $version->setParams($params);
 
                 $ok = $version->up();
@@ -147,6 +149,8 @@ class Manager
     protected function doVersionDown($name, $params = array()) {
         if ($version = $this->initVersion($name)) {
             try {
+
+                unset($this->restarts[$name]);
 
                 $version->setParams($params);
 
