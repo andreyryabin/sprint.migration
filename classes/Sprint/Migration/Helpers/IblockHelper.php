@@ -99,7 +99,7 @@ class IblockHelper
         $this->lastError = '';
 
         $default = array(
-            "NAME" => "Элемент",
+            "NAME" => "element",
             "IBLOCK_SECTION_ID" => false,
             "ACTIVE" => "Y",
             "PREVIEW_TEXT" => "",

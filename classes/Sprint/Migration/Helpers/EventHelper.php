@@ -9,9 +9,9 @@ class EventHelper
     public function addEventType($eventName, $fields) {
         $default = array(
             "LID" => 'ru',
-            "EVENT_NAME" => 'EVENT_NAME',
+            "EVENT_NAME" => 'event_name',
             "NAME" => 'NAME',
-            "DESCRIPTION" => 'DESCRIPTION',
+            "DESCRIPTION" => 'description',
             'SORT' => '',
         );
 
@@ -31,9 +31,9 @@ class EventHelper
             'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
             'EMAIL_TO' => '#EMAIL_TO#',
             'BCC' => '',
-            'SUBJECT' => 'SUBJECT',
+            'SUBJECT' => 'subject',
             'BODY_TYPE' => 'text',
-            'MESSAGE' => 'MESSAGE',
+            'MESSAGE' => 'message',
         );
 
         $fields = array_merge($default, $fields);

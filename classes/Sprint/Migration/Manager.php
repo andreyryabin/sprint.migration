@@ -20,7 +20,52 @@ class Manager
     }
 
     public function getVersions() {
-        return $this->findVersions('up');
+        return $this->findVersions('asc');
+    }
+
+    public function getVersionsFor($action = 'up') {
+        $action = ($action == 'up') ? 'up' : 'down';
+
+        $result = array();
+        if ($action == 'up'){
+            $versions = $this->findVersions('asc');
+            foreach ($versions as $item) {
+                if ($item['type'] == 'is_new') {
+                    $result[] = $item['version'];
+                }
+            }
+        } else {
+            $versions = $this->findVersions('desc');
+            foreach ($versions as $item) {
+                if ($item['type'] == 'is_success') {
+                    $result[] = $item['version'];
+                }
+            }
+        }
+
+
+        return $result;
+    }
+
+    public function getNextVersionForUp() {
+        $versions = $this->findVersions('asc');
+        foreach ($versions as $item) {
+            if ($item['type'] == 'is_new') {
+                return $item['version'];
+            }
+        }
+        return false;
+    }
+
+    public function getNextVersionForDown(){
+        $versions = $this->findVersions('desc');
+
+        foreach ($versions as $item) {
+            if ($item['type'] == 'is_success') {
+                return $item['version'];
+            }
+        }
+        return false;
     }
 
     public function getVersionDescription($versionName) {
@@ -47,27 +92,6 @@ class Manager
         return false;
     }
 
-    public function getNextMigrationForUp() {
-        $versions = $this->findVersions('up');
-        foreach ($versions as $item) {
-            if ($item['type'] == 'is_new') {
-                return $item['version'];
-            }
-        }
-        return false;
-    }
-
-    public function getNextMigrationForDown(){
-        $versions = $this->findVersions('down');
-
-        foreach ($versions as $item) {
-            if ($item['type'] == 'is_success') {
-                return $item['version'];
-            }
-        }
-        return false;
-    }
-
     public function needRestart($name){
         return (isset($this->restarts[$name])) ? 1 : 0;
     }
@@ -90,7 +114,7 @@ class Manager
             'version' => $version,
             'description' => $description,
         ));
-        $file = $this->getFileName($version);
+        $file = $this->getVersionFile($version);
         file_put_contents($file, $str);
         return is_file($file) ? $version : false;
     }
@@ -108,13 +132,13 @@ class Manager
                     return true;
                 }
 
-                Out::outError('%s update error', $name);
+                Out::outError('%s error', $name);
 
             } catch (Restart $e){
                 $this->restarts[$name] = $version->getParams();
 
             } catch (\Exception $e) {
-                Out::outError('%s update error: %s', $name, $e->getMessage());
+                Out::outError('%s error: %s', $name, $e->getMessage());
             }
         }
         return false;
@@ -133,12 +157,12 @@ class Manager
                     return true;
                 }
 
-                Out::outError('%s downgrade error', $name);
+                Out::outError('%s error', $name);
             } catch (Restart $e){
                 $this->restarts[$name] = $version->getParams();
 
             } catch (\Exception $e) {
-                Out::outError('%s downgrade error: %s', $name, $e->getMessage());
+                Out::outError('%s error: %s', $name, $e->getMessage());
             }
         }
         return false;
@@ -151,7 +175,7 @@ class Manager
         }
 
         $record = Db::findByName($name)->Fetch();
-        $file = $this->getFileName($name);
+        $file = $this->getVersionFile($name);
 
         $isRecord = !empty($record);
         $isFile = file_exists($file);
@@ -174,14 +198,14 @@ class Manager
         );
     }
 
-    protected function findVersions($sort = 'up') {
-        $records = $this->getRecords();
-        $files = $this->getFiles();
+    protected function findVersions($sort = 'asc') {
+        $records = $this->getVersionRecords();
+        $files = $this->getVersionFiles();
 
         $merge = array_merge($records, $files);
         $merge = array_unique($merge);
 
-        if ($sort && $sort == 'up') {
+        if ($sort && $sort == 'asc') {
             sort($merge);
         } else {
             rsort($merge);
@@ -212,7 +236,7 @@ class Manager
         return $result;
     }
 
-    protected function getFiles() {
+    protected function getVersionFiles() {
         $directory = new \DirectoryIterator($this->getMigrationDir());
         $files = array();
         /* @var $item \SplFileInfo */
@@ -226,7 +250,7 @@ class Manager
         return $files;
     }
 
-    protected function getRecords() {
+    protected function getVersionRecords() {
         $dbResult = Db::findAll();
 
         $records = array();
@@ -257,7 +281,7 @@ class Manager
     protected function initVersion($versionName) {
         $file = false;
         if ($this->checkName($versionName)) {
-            $file = $this->getFileName($versionName);
+            $file = $this->getVersionFile($versionName);
         }
 
         if (!$file || !file_exists($file)) {
@@ -275,7 +299,7 @@ class Manager
         return $obj;
     }
 
-    protected function getFileName($versionName) {
+    protected function getVersionFile($versionName) {
         return $this->getMigrationDir() . '/'.$versionName . '.php';
     }
 

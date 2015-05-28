@@ -24,4 +24,5 @@ $MESS["SPRINT_MIGRATION_DOWN_CONFIRM"] = "Откатить все выполненные миграции?";
 $MESS["SPRINT_MIGRATION_GENERATE"] = "Создать";
 $MESS["SPRINT_MIGRATION_UP"] = "выполнить";
 $MESS["SPRINT_MIGRATION_DOWN"] = "откатить";
+$MESS["SPRINT_MIGRATION_LIST"] = "обновить";
 ?>

@@ -5,11 +5,11 @@ namespace Sprint\Migration;
 class Console
 {
 
-    
     protected $help = array();
     protected $manager = null;
 
     public function __construct() {
+        $this->manager = new Manager();
         $this->initHelp();
     }
 
@@ -33,32 +33,22 @@ class Console
         call_user_func_array(array($this, $method), $args);
     }
 
-    /* @return Manager */
-    protected function getMigrationManager() {
-        if (is_null($this->manager)) {
-            $this->manager = new Manager();
-        }
-        return $this->manager;
-    }
-
     public function executeCreate($descr = '') {
-        $versionName = $this->getMigrationManager()->createVersionFile($descr);
-        if ($versionName){
+        $versionName = $this->manager->createVersionFile($descr);
+        if ($versionName) {
             Out::outSuccess('%s created', $versionName);
         } else {
             Out::outError('error');
         }
-
-
     }
 
 
     public function executeStatus($mode = '--info') {
-        $versions = $this->getMigrationManager()->getVersions();
+        $versions = $this->manager->getVersions();
 
-        $mode = ($mode && in_array($mode, array('--new', '--all','--info'))) ? $mode : '--new';
+        $mode = ($mode && in_array($mode, array('--new', '--all', '--info'))) ? $mode : '--new';
 
-        if ($mode == '--all'){
+        if ($mode == '--all') {
             $cnt = 0;
             foreach ($versions as $item) {
                 $name = $item['version'];
@@ -68,10 +58,10 @@ class Console
             Out::out('Found %d migrations', $cnt);
         }
 
-        if ($mode == '--new'){
+        if ($mode == '--new') {
             $cnt = 0;
             foreach ($versions as $item) {
-                if ($item['type'] != 'is_new'){
+                if ($item['type'] != 'is_new') {
                     continue;
                 }
 
@@ -82,11 +72,11 @@ class Console
             Out::out('Found %d migrations', $cnt);
         }
 
-        if ($mode == '--info'){
+        if ($mode == '--info') {
             $info = array(
-                'is_new' => array('title' => 'New migrations','cnt' => 0),
-                'is_success' => array('title' => 'Success','cnt' => 0),
-                'is_404' => array('title' => 'Unknown','cnt' => 0),
+                'is_new' => array('title' => 'New migrations', 'cnt' => 0),
+                'is_success' => array('title' => 'Success', 'cnt' => 0),
+                'is_404' => array('title' => 'Unknown', 'cnt' => 0),
             );
 
             foreach ($versions as $item) {
@@ -94,7 +84,7 @@ class Console
                 $info[$type]['cnt']++;
             }
 
-            foreach ($info as $type=>$aItem){
+            foreach ($info as $type => $aItem) {
                 Out::out('[%s]%s[/]: %d', $type, $aItem['title'], $aItem['cnt']);
             }
         }
@@ -103,42 +93,69 @@ class Console
 
     public function executeMigrate($up = '--up') {
         if ($up == '--up') {
-            $cnt = $this->getMigrationManager()->executeMigrateUp();
-            Out::out('Migrations up: [green]%d[/]', $cnt);
+            $success = $this->doExecuteAll('up');
+            Out::out('Migrations up: [green]%d[/]', $success);
 
         } elseif ($up == '--down') {
-            $cnt = $this->getMigrationManager()->executeMigrateDown();
-            Out::out('Migrations down: [red]%d[/]', $cnt);
+            $success = $this->doExecuteAll('down');
+            Out::out('Migrations down: [red]%d[/]', $success);
 
         } else {
             Out::out('[red]required params not found[/]');
         }
     }
 
-     public function executeExecute($version, $up = '--up', $params = array()) {
+    public function executeUp($limit = 1) {
+        $limit = (int)$limit;
+        if ($limit > 0) {
+            $success = $this->doExecuteAll('up', $limit);
+            Out::out('Migrations up: [green]%d[/]', $success);
+        } else {
+            Out::out('[red]required COUNT not found[/]');
+        }
+    }
+
+    public function executeDown($limit = 1) {
+        $limit = (int)$limit;
+        if ($limit > 0) {
+            $success = $this->doExecuteAll('down', $limit);
+            Out::out('Migrations down: [green]%d[/]', $success);
+        } else {
+            Out::out('[red]required COUNT not found[/]');
+        }
+    }
+
+    public function executeExecute($version, $up = '--up') {
         if ($version && $up == '--up') {
-            $ok = $this->getMigrationManager()->executeVersion($version, 'up', $params);
-            
-            if ($this->getMigrationManager()->needRestart($version)){
-                $params = $this->getMigrationManager()->getRestartParams($version);
-                $this->executeExecute($version, $up, $params);
-            } else {
-                Out::out($ok ? '[green]success[/]' : '[red]error[/]');    
-            }
+
+            $ok = $this->doExecuteOnce($version, 'up');
+            Out::out($ok ? '[green]%s success[/]' : '[red]%s error[/]', $version);
+
         } elseif ($version && $up == '--down') {
-            $ok = $this->getMigrationManager()->executeVersion($version, 'down');
-            if ($this->getMigrationManager()->needRestart($version)){
-                $params = $this->getMigrationManager()->getRestartParams($version);
-                $this->executeExecute($version, $up, $params);
-            } else {
-                Out::out($ok ? '[green]success[/]' : '[red]error[/]');
-            }            
+
+            $ok = $this->doExecuteOnce($version, 'down');
+            Out::out($ok ? '[green]%s success[/]' : '[red]%s error[/]', $version);
+
 
         } else {
             Out::out('[red]required params not found[/]');
         }
     }
 
+    public function executeRedo($version) {
+        if ($version) {
+            $ok1 = $this->doExecuteOnce($version, 'down');
+            $ok2 = $this->doExecuteOnce($version, 'up');
+
+            $ok1 = $ok1 ? '[green]success[/]' : '[red]error[/]';
+            $ok2 = $ok2 ? '[green]success[/]' : '[red]error[/]';
+
+            Out::out('%s %s+%s', $version, $ok1, $ok2);
+
+        } else {
+            Out::out('[red]required params not found[/]');
+        }
+    }
 
     public function executeHelp() {
         $res = get_class_methods($this);
@@ -156,11 +173,38 @@ class Console
         }
     }
 
-    protected function initHelp() {
-        $this->help['Create'] = '[yellow]<description>[/] add new migration with description';
-        $this->help['Status'] = 'get migrations list';
-        $this->help['Migrate'] = '[yellow]--up --down[/] - up or down all migrations';
-        $this->help['Execute'] = '[yellow]<version>[/] [yellow]--up --down[/] up or down this migration';
+
+    protected function doExecuteAll($action = 'up', $limit = 0) {
+        $action = ($action == 'up') ? 'up' : 'down';
+        $limit = (int)$limit;
+
+        $success = 0;
+
+        $items = $this->manager->getVersionsFor($action);
+        foreach ($items as $version) {
+            if ($this->doExecuteOnce($version, $action)) {
+                $success++;
+            }
+
+            if ($limit > 0 && $limit == $success) {
+                break;
+            }
+        }
+
+        return $success;
+    }
+
+    protected function doExecuteOnce($version, $action = 'up', $params = array()) {
+        $action = ($action == 'up') ? 'up' : 'down';
+
+        $ok = $this->manager->executeVersion($version, $action, $params);
+
+        if ($this->manager->needRestart($version)) {
+            $params = $this->manager->getRestartParams($version);
+            $this->doExecuteOnce($version, $action, $params);
+        } else {
+            return $ok;
+        }
     }
 
     protected function camelizeText($str, $prefix = '') {
@@ -175,8 +219,14 @@ class Console
         return implode('', $tmp);
     }
 
+    protected function initHelp() {
+        $this->help['Create'] = '<description> add new migration with description';
+        $this->help['Status'] = '[b]--new, --all, --info[/] get migrations list';
+        $this->help['Migrate'] = '--up --down up or down all migrations';
+        $this->help['Execute'] = '<version> --up --down up or down this migration';
+        $this->help['Redo'] = '<version> down+up this migration';
+        $this->help['Up'] = '<limit> up limit migrations';
+        $this->help['Down'] = '<limit> down migrations';
+    }
 
 }
-
-
-

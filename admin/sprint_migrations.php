@@ -24,10 +24,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
 
     if (!$version){
         if ($nextAction == 'up'){
-            $version = $manager->getNextMigrationForUp();
+            $version = $manager->getNextVersionForUp();
             $action = 'up';
         } elseif ($nextAction == 'down') {
-            $version = $manager->getNextMigrationForDown();
+            $version = $manager->getNextVersionForDown();
             $action = 'down';
         }
     }
@@ -182,7 +182,7 @@ $tabControl1->BeginNextTab();
 
 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" onclick="migrationMigrationsUpConfirm();" class="c-migration-btn adm-btn-save" />
 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" onclick="migrationMigrationsDownConfirm();" class="c-migration-btn button" />
-
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_LIST') ?>" onclick="migrationMigrationList();" class="c-migration-btn button" />
 
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
 <? $tabControl1->End(); ?>

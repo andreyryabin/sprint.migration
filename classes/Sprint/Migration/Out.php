@@ -5,24 +5,16 @@ namespace Sprint\Migration;
 class Out
 {
 
-    protected static $colorsConsole = array(
-        'is_404' => '0;34',
-        'is_success' => '0;32',
-        'is_new' => '0;31',
-        'blue' => '0;34',
-        'green' => '0;32',
-        'red' => '0;31',
-        'yellow' => '1;33',
-    );
-
-    protected static $colorsDefault = array(
-        'is_404' => '#00a',
-        'is_success' => '#080',
-        'is_new' => '#a00',
-        'blue' => '#00a',
-        'green' => '#080',
-        'red' => '#a00',
-        'yellow' => '#aa0',
+    protected static $colors = array(
+        '/' => array("\x1b[0m", '</span>'),
+        'is_404' => array("\x1b[0;34m", '<span style=\"color:"#00a">'),
+        'is_success' => array("\x1b[0;32m", '<span style=\"color:"#080">'),
+        'is_new' => array("\x1b[0;31m", '<span style=\"color:"#a00">'),
+        'blue' => array("\x1b[0;34m", '<span style=\"color:"#00a">'),
+        'green' => array("\x1b[0;32m", '<span style=\"color:"#080">'),
+        'red' => array("\x1b[0;31m", '<span style=\"color:"#a00">'),
+        'yellow' => array("\x1b[1;33m", '<span style=\"color:"#aa0">'),
+        'b' => array("\x1b[1m", '<span style=\"font-weight:bold;color:"#000">')
     );
 
     private static $needEol = false;
@@ -109,22 +101,22 @@ class Out
 
 
     protected static function prepareToConsole($msg){
-        foreach (self::$colorsConsole as $key => $val) {
-            $msg = str_replace('[' . $key . ']', "\033[" . $val . "m", $msg);
+        foreach (self::$colors as $key => $val) {
+            $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
 
         if (!Utils::isUtf8() && function_exists('iconv')){
             $msg = iconv('windows-1251', 'utf-8', $msg);
         }
 
-        return str_replace('[/]', "\033[0m", $msg);
+        return $msg;
     }
 
     protected static function prepareToHtml($msg){
-        foreach (self::$colorsDefault as $key => $val) {
-            $msg = str_replace('[' . $key . ']', "<span style=\"color:" . $val . "\">", $msg);
+        foreach (self::$colors as $key => $val) {
+            $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
-        return str_replace('[/]', "</span>", $msg);
+        return $msg;
     }
     
     protected function canOutAsAdminMessage(){
