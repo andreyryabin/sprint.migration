@@ -16,7 +16,7 @@ class Console
     public function execFromArgs($args) {
 
         if (empty($args) || count($args) <= 1) {
-            Out::out('available commands:');
+            Out::out('Available commands:');
             $this->executeHelp();
             return false;
         }
@@ -26,7 +26,7 @@ class Console
         $method = 'execute' . $this->camelizeText($method);
 
         if (!method_exists($this, $method)) {
-            Out::outError('command %s not found', $method);
+            Out::outError('Command %s not found', $method);
             return false;
         }
 
@@ -38,7 +38,7 @@ class Console
         if ($versionName) {
             Out::outSuccess('%s created', $versionName);
         } else {
-            Out::outError('error');
+            Out::outError('Error');
         }
     }
 
@@ -78,7 +78,7 @@ class Console
             Out::out('Migrations down: [red]%d[/]', $success);
 
         } else {
-            Out::out('[red]required params not found[/]');
+            Out::out('[red]Required params not found[/]');
         }
     }
 
@@ -88,7 +88,7 @@ class Console
             $success = $this->doExecuteAll('up', $limit);
             Out::out('Migrations up: [green]%d[/]', $success);
         } else {
-            Out::out('[red]required COUNT not found[/]');
+            Out::out('[red]Required params not found[/]');
         }
     }
 
@@ -98,7 +98,7 @@ class Console
             $success = $this->doExecuteAll('down', $limit);
             Out::out('Migrations down: [green]%d[/]', $success);
         } else {
-            Out::out('[red]required COUNT not found[/]');
+            Out::out('[red]Required params not found[/]');
         }
     }
 
@@ -115,7 +115,7 @@ class Console
 
 
         } else {
-            Out::out('[red]required params not found[/]');
+            Out::out('[red]Required params not found[/]');
         }
     }
 
@@ -130,7 +130,7 @@ class Console
             Out::out('%s %s+%s', $version, $ok1, $ok2);
 
         } else {
-            Out::out('[red]required params not found[/]');
+            Out::out('[red]Required params not found[/]');
         }
     }
 
