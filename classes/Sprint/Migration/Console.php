@@ -42,14 +42,17 @@ class Console
         }
     }
 
-
-    public function executeStatus() {
+    public function executeList() {
         $versions = $this->manager->getVersions();
 
         foreach ($versions as $item) {
             $name = $item['version'];
             Out::out('[%s]%s[/]', $item['type'], $name);
         }
+    }
+
+    public function executeStatus() {
+        $versions = $this->manager->getVersions();
 
         $info = array(
             'is_new' => array('title' => 'New migrations', 'cnt' => 0),
@@ -135,17 +138,10 @@ class Console
     }
 
     public function executeHelp() {
-        $res = get_class_methods($this);
-
-        foreach ($res as $val) {
-            if (false !== strpos($val, 'execute')) {
-                $val = ltrim($val, 'execute');
-
-                if (isset($this->help[$val])) {
-                    Out::out('[green]%s[/] %s', $val, $this->help[$val]);
-                } else {
-                    Out::out($val);
-                }
+        foreach ($this->help as $cmd=>$text){
+            $method = 'execute' . $this->camelizeText($cmd);
+            if (method_exists($this, $method)){
+                Out::out('[green]%s[/] %s', $cmd, $text);
             }
         }
     }
@@ -200,14 +196,15 @@ class Console
     }
 
     protected function initHelp() {
-        $this->help['Create'] = '<description> add new migration with description';
-        $this->help['Status'] = 'get migrations list';
-        $this->help['Migrate'] = '[b]--up[/] --down up or down all migrations';
-        $this->help['Up'] = '<limit> up limit migrations';
-        $this->help['Down'] = '<limit> down migrations';
+        $this->help['create'] = '<description> add new migration with description';
+        $this->help['status'] = 'get migrations info';
+        $this->help['list'] = 'get migrations list';
+        $this->help['migrate'] = '[b]--up[/] --down up or down all migrations';
+        $this->help['up'] = '<limit> up limit migrations';
+        $this->help['down'] = '<limit> down migrations';
 
-        $this->help['Execute'] = '<version> [b]--up[/] --down up or down this migration';
-        $this->help['Redo'] = '<version> down+up this migration';
+        $this->help['execute'] = '<version> [b]--up[/] --down up or down this migration';
+        $this->help['redo'] = '<version> down+up this migration';
     }
 
 }
