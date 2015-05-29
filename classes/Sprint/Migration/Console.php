@@ -171,13 +171,19 @@ class Console
         return $success;
     }
 
-    protected function doExecuteOnce($version, $action = 'up', $params = array()) {
+    protected function doExecuteOnce($version, $action = 'up') {
         $action = ($action == 'up') ? 'up' : 'down';
-        $ok = $this->manager->executeVersion($version, $action, $params);
-        if ($this->manager->needRestart($version)) {
-            $params = $this->manager->getRestartParams($version);
-            $ok = $this->doExecuteOnce($version, $action, $params);
-        }
+        $params = array();
+        do {
+            $restart = 0;
+            $ok = $this->manager->executeVersion($version, $action, $params);
+            if ($this->manager->needRestart($version)) {
+                $params = $this->manager->getRestartParams($version);
+                $restart = 1;
+            }
+
+        } while ($restart == 1);
+
         return $ok;
     }
 
