@@ -28,7 +28,6 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 * **migrate** --up --down up or down all migrations
 * **up** <limit> up limit migrations
 * **down** <limit> down migrations
-
 * **execute** <version> --up --down up or down this migration
 * **redo** <version> down+up this migration
 

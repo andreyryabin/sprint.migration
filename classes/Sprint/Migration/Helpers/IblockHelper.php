@@ -29,6 +29,11 @@ class IblockHelper
         return $iblockId;
     }
 
+    public function deleteIblockIfExists($iblockCode){
+        $iblockId = $this->getIblockId($iblockCode);
+        return ($iblockId) ? \CIBlock::Delete($iblockId) : false;
+    }
+
     public function addPropertyIfNotExists($iblockId, $fields) {
         $code = $fields['CODE'];
         $propId = $this->getPropertyId($iblockId, $code);

@@ -1,9 +1,6 @@
 <?php
 
-\CModule::IncludeModule('iblock');
-
 //autoload psr-0
-
 spl_autoload_register(function ($className) {
     $includeNamespace = 'Sprint\\Migration';
     $includePath = __DIR__ . '/classes';
@@ -24,4 +21,5 @@ spl_autoload_register(function ($className) {
     }
 });
 
+\CModule::IncludeModule('iblock');
 \Sprint\Migration\Utils::includeLangFile();

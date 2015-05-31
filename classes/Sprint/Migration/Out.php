@@ -28,6 +28,31 @@ class Out
         self::outDefault($msg);
     }
 
+    public static function outProgress($msg, $val, $total){
+        $val = (int) $val;
+        $total = (int) $total;
+
+        if (self::canOutAsAdminMessage()) {
+            \CAdminMessage::ShowMessage(array(
+                "MESSAGE" => $msg,
+                "DETAILS" => "#PROGRESS_BAR#",
+                "HTML" => true,
+                "TYPE" => "PROGRESS",
+                "PROGRESS_TOTAL" => $total,
+                "PROGRESS_VALUE" => $val,
+            ));
+        } elseif (self::canOutAsHtml()) {
+            $msg = self::prepareToHtml($msg);
+            echo "$msg $val/$total <br/>";
+
+        } else {
+            self::$needEol = true;
+            $msg = self::prepareToConsole($msg);
+            fwrite(STDOUT, "\r$msg $val/$total");
+        }
+
+    }
+
     public static function outSuccess($msg, $var1 = null, $var2 = null){
         if (func_num_args() > 1) {
             $params = func_get_args();
@@ -74,32 +99,6 @@ class Out
         }
     }
 
-    public static function outProgress($msg, $val, $total){
-        $val = (int) $val;
-        $total = (int) $total;
-
-        if (self::canOutAsAdminMessage()) {
-            \CAdminMessage::ShowMessage(array(
-                "MESSAGE" => $msg,
-                "DETAILS" => "#PROGRESS_BAR#",
-                "HTML" => true,
-                "TYPE" => "PROGRESS",
-                "PROGRESS_TOTAL" => $total,
-                "PROGRESS_VALUE" => $val,
-            ));
-        } elseif (self::canOutAsHtml()) {
-            $msg = self::prepareToHtml($msg);
-            echo "$msg $val/$total <br/>";
-
-        } else {
-            self::$needEol = true;
-            $msg = self::prepareToConsole($msg);
-            fwrite(STDOUT, "\r$msg $val/$total");
-        }
-
-    }
-
-
     protected static function prepareToConsole($msg){
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
@@ -127,6 +126,3 @@ class Out
         return (!empty($_SERVER['HTTP_HOST'])) ? 1 : 0;
     }    
 }
-
-
-
