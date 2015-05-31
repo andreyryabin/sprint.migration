@@ -7,14 +7,14 @@ class Out
 
     protected static $colors = array(
         '/' => array("\x1b[0m", '</span>'),
-        'is_404' => array("\x1b[0;34m", '<span style=\"color:"#00a">'),
-        'is_success' => array("\x1b[0;32m", '<span style=\"color:"#080">'),
-        'is_new' => array("\x1b[0;31m", '<span style=\"color:"#a00">'),
-        'blue' => array("\x1b[0;34m", '<span style=\"color:"#00a">'),
-        'green' => array("\x1b[0;32m", '<span style=\"color:"#080">'),
-        'red' => array("\x1b[0;31m", '<span style=\"color:"#a00">'),
-        'yellow' => array("\x1b[1;33m", '<span style=\"color:"#aa0">'),
-        'b' => array("\x1b[1m", '<span style=\"font-weight:bold;color:"#000">')
+        'is_404' => array("\x1b[0;34m", '<span style="color:#00a">'),
+        'is_success' => array("\x1b[0;32m", '<span style="color:#080">'),
+        'is_new' => array("\x1b[0;31m", '<span style="color:#a00">'),
+        'blue' => array("\x1b[0;34m", '<span style="color:#00a">'),
+        'green' => array("\x1b[0;32m", '<span style="color:#080">'),
+        'red' => array("\x1b[0;31m", '<span style="color:#a00">'),
+        'yellow' => array("\x1b[1;33m", '<span style="color:#aa0">'),
+        'b' => array("\x1b[1m", '<span style="font-weight:bold;color:#000">')
     );
 
     private static $needEol = false;

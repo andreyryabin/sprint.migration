@@ -7,7 +7,7 @@ use \Sprint\Migration\Helpers\UserTypeEntityHelper;
 
 class Version20150520000001 extends Version {
 
-    protected $description = "Инфоблок новости";
+    protected $description = "Добавляем инфоблок новости";
 
     public function up(){
         $helper = new IblockHelper();
@@ -28,8 +28,6 @@ class Version20150520000001 extends Version {
             )
         ));
 
-
-
         $iblockId1 = $helper->addIblockIfNotExists(array(
             'NAME' => 'Новости',
             'CODE' => 'content_news',
@@ -38,15 +36,12 @@ class Version20150520000001 extends Version {
             'DETAIL_PAGE_URL' => '#SITE_DIR#/news/#ELEMENT_ID#'
         ));
 
-
         $helper->addPropertyIfNotExists($iblockId1, array(
             'NAME' => 'Ссылка',
             'CODE' => 'LINK',
         ));
 
         $this->outSuccess('Инфоблок создан');
-
-
 
     }
 
@@ -59,7 +54,6 @@ class Version20150520000001 extends Version {
         } else {
             $this->outError('Ошибка удаления инфоблока');
         }
-
     }
 
 }

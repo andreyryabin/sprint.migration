@@ -52,21 +52,16 @@ class Console
     }
 
     public function executeStatus() {
-        $versions = $this->manager->getVersions();
+        $summ = $this->manager->getVersionsSummary();
 
-        $info = array(
-            'is_new' => array('title' => 'New migrations', 'cnt' => 0),
-            'is_success' => array('title' => 'Success', 'cnt' => 0),
-            'is_404' => array('title' => 'Unknown', 'cnt' => 0),
+        $titles = array(
+            'is_new' => 'New migrations',
+            'is_success' => 'Success',
+            'is_404' => 'Unknown',
         );
 
-        foreach ($versions as $item) {
-            $type = $item['type'];
-            $info[$type]['cnt']++;
-        }
-
-        foreach ($info as $type => $aItem) {
-            Out::out('[%s]%s[/]: %d', $type, $aItem['title'], $aItem['cnt']);
+        foreach ($summ as $type => $cnt) {
+            Out::out('[%s]%s[/]: %d', $type, $titles[$type], $cnt);
         }
 
     }

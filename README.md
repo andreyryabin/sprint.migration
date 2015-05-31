@@ -78,4 +78,4 @@ class Version20140806034146 extends Version {
 
 Админка
 -------------------------
-![админка](https://bitbucket.org/repo/aejkky/images/2628633264-gV2VywBFGajlmv.jpg)
+![админка](https://bitbucket.org/repo/aejkky/images/1841502107-gkrDVvOs9MQ62p.jpg)

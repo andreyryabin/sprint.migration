@@ -23,45 +23,46 @@ class Manager
         return $this->findVersions('asc');
     }
 
-    public function getVersionsFor($action = 'up') {
-        $action = ($action == 'up') ? 'up' : 'down';
+    public function getVersionsSummary(){
+        $versions = $this->findVersions('asc');
 
-        $result = array();
-        if ($action == 'up'){
-            $versions = $this->findVersions('asc');
-            foreach ($versions as $item) {
-                if ($item['type'] == 'is_new') {
-                    $result[] = $item['version'];
-                }
-            }
-        } else {
-            $versions = $this->findVersions('desc');
-            foreach ($versions as $item) {
-                if ($item['type'] == 'is_success') {
-                    $result[] = $item['version'];
-                }
-            }
+        $summ = array(
+            'is_new' => 0,
+            'is_success' => 0,
+            'is_404' => 0,
+        );
+
+        foreach ($versions as $item) {
+            $type = $item['type'];
+            $summ[$type]++;
         }
 
+        return $summ;
+    }
 
+    public function getVersionsFor($action = 'up') {
+        $action = ($action == 'up') ? 'up' : 'down';
+        $desc = ($action == 'up') ? 'asc' : 'desc';
+        $type = ($action == 'up') ? 'is_new' : 'is_success';
+
+        $result = array();
+        $versions = $this->findVersions($desc);
+        foreach ($versions as $item) {
+            if ($item['type'] == $type) {
+                $result[] = $item['version'];
+            }
+        }
         return $result;
     }
 
-    public function getNextVersionForUp() {
-        $versions = $this->findVersions('asc');
-        foreach ($versions as $item) {
-            if ($item['type'] == 'is_new') {
-                return $item['version'];
-            }
-        }
-        return false;
-    }
+    public function getOnceVersionFor($action = 'up') {
+        $action = ($action == 'up') ? 'up' : 'down';
+        $desc = ($action == 'up') ? 'asc' : 'desc';
+        $type = ($action == 'up') ? 'is_new' : 'is_success';
 
-    public function getNextVersionForDown(){
-        $versions = $this->findVersions('desc');
-
+        $versions = $this->findVersions($desc);
         foreach ($versions as $item) {
-            if ($item['type'] == 'is_success') {
+            if ($item['type'] == $type) {
                 return $item['version'];
             }
         }
