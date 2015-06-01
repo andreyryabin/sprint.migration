@@ -21,14 +21,14 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 
 Доступные команды
 -------------------------
-* **create** <description> add new migration with description
-* **status** get migrations info
-* **list** get migrations list
-* **migrate** --up --down up or down all migrations
-* **up** <limit> up limit migrations
-* **down** <limit> down migrations
-* **execute** <version> --up --down up or down this migration
-* **redo** <version> down+up this migration
+* **create** <description> - создать файл с пустой миграцией
+* **status** - суммарная статистика по миграциям
+* **list** - список миграций
+* **migrate** --up --down - накатить, откатить все миграции
+* **up** <limit> - накатить несколько миграций, по умолчанию 1
+* **down** <limit> - откатить несколько миграций, по умолчанию 1
+* **execute** <version> --up --down - накатить или откатить миграцию
+* **redo** <version> откатить+накатить миграцию 
 
 Пример вызова команд
 -------------------------
