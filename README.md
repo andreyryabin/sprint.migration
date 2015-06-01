@@ -28,7 +28,7 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 * **up** <limit> - накатить несколько миграций, по умолчанию 1
 * **down** <limit> - откатить несколько миграций, по умолчанию 1
 * **execute** <version> --up --down - накатить или откатить миграцию
-* **redo** <version> откатить+накатить миграцию 
+* **redo** <version> - откатить+накатить миграцию 
 
 Пример вызова команд
 -------------------------
