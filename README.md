@@ -3,8 +3,7 @@
 * [http://marketplace.1c-bitrix.ru/solutions/sprint.migration/](http://marketplace.1c-bitrix.ru/solutions/sprint.migration/)
 * [https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration)
 
-Создаем скрипт для запуска миграций через консоль
-migrate.php
+Создаем скрипт migrate.php для запуска миграций через консоль
 
 его содержимое:
 
