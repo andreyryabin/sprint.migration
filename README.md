@@ -42,10 +42,11 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 **/local/php_interface/migrations**
 или
 **/bitrix/php_interface/migrations**
-или 
-**задается в настройках модуля**
-настройки хранятся в файле /local/php_interface/migrations.cfg.php
-или в /bitrix/php_interface/migrations.cfg.php
+
+или указать свою директорию в файле настроек
+**/local/php_interface/migrations.cfg.php**
+или
+**/bitrix/php_interface/migrations.cfg.php**
 
 2 параметра 
 * **migration_dir** - директория миграций относительно корня проекта
