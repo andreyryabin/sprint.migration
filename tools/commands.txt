@@ -1,0 +1,22 @@
+Usage:
+  migrate.php <command> [<args>]
+
+Commands:
+  create                            Add new migration
+  create <description>              Add new migration with description
+  status                            Get migrations info
+  list                              Get migrations list
+  migrate                           Up all migrations
+  migrate --up                      Up all migrations
+  migrate --down                    Down all migrations
+  up                                Up one migration
+  up <limit>                        Up limit migrations
+  down                              Down one migration
+  down <limit>                      Down limit migrations
+  execute <version>                 Up this migration
+  execute <version> --up            Up this migration
+  execute <version> --down          Down this migration
+  redo <version>                    Down + Up this migration
+  help                              Show this help
+
+Please send any bug reports as pull-requests to https://bitbucket.org/andrey_ryabin/sprint.migration

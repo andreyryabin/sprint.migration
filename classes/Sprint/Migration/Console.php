@@ -5,28 +5,25 @@ namespace Sprint\Migration;
 class Console
 {
 
-    protected $help = array();
     protected $manager = null;
 
     public function __construct() {
         $this->manager = new Manager();
-        $this->initHelp();
     }
 
     public function execFromArgs($args) {
+        $script = array_shift($args);
 
-        if (empty($args) || count($args) <= 1) {
-            Out::out('Available commands:');
+        if (empty($args) || count($args) <= 0) {
             $this->executeHelp();
             return false;
         }
 
-        $first = array_shift($args);
         $method = array_shift($args);
         $method = 'execute' . $this->camelizeText($method);
 
         if (!method_exists($this, $method)) {
-            Out::outError('Command %s not found', $method);
+            Out::out('command %s not found', $method);
             return false;
         }
 
@@ -36,18 +33,23 @@ class Console
     public function executeCreate($descr = '') {
         $versionName = $this->manager->createVersionFile($descr);
         if ($versionName) {
-            Out::outSuccess('%s created', $versionName);
+            Out::out('%s created', $versionName);
         } else {
-            Out::outError('Error');
+            Out::out('error');
         }
     }
 
     public function executeList() {
         $versions = $this->manager->getVersions();
 
+        $titles = array(
+            'is_new' => '(new)',
+            'is_success' => '',
+            'is_404' => '(unknown)',
+        );
+
         foreach ($versions as $item) {
-            $name = $item['version'];
-            Out::out('[%s]%s[/]', $item['type'], $name);
+            Out::out('%s %s', $item['version'], $titles[$item['type']]);
         }
     }
 
@@ -55,13 +57,13 @@ class Console
         $summ = $this->manager->getVersionsSummary();
 
         $titles = array(
-            'is_new' => 'New migrations',
-            'is_success' => 'Success',
-            'is_404' => 'Unknown',
+            'is_new' =>     'new migrations',
+            'is_success' => 'success',
+            'is_404' =>     'unknown',
         );
 
         foreach ($summ as $type => $cnt) {
-            Out::out('[%s]%s[/]: %d', $type, $titles[$type], $cnt);
+            Out::out('%s: %d', $titles[$type], $cnt);
         }
 
     }
@@ -69,14 +71,14 @@ class Console
     public function executeMigrate($up = '--up') {
         if ($up == '--up') {
             $success = $this->doExecuteAll('up');
-            Out::out('Migrations up: [green]%d[/]', $success);
+            Out::out('migrations up: %d', $success);
 
         } elseif ($up == '--down') {
             $success = $this->doExecuteAll('down');
-            Out::out('Migrations down: [red]%d[/]', $success);
+            Out::out('migrations down: %d', $success);
 
         } else {
-            Out::out('[red]Required params not found[/]');
+            $this->seeHelp();
         }
     }
 
@@ -84,9 +86,9 @@ class Console
         $limit = (int)$limit;
         if ($limit > 0) {
             $success = $this->doExecuteAll('up', $limit);
-            Out::out('Migrations up: [green]%d[/]', $success);
+            Out::out('migrations up: %d', $success);
         } else {
-            Out::out('[red]Required params not found[/]');
+            $this->seeHelp();
         }
     }
 
@@ -94,9 +96,9 @@ class Console
         $limit = (int)$limit;
         if ($limit > 0) {
             $success = $this->doExecuteAll('down', $limit);
-            Out::out('Migrations down: [green]%d[/]', $success);
+            Out::out('migrations down: %d', $success);
         } else {
-            Out::out('[red]Required params not found[/]');
+            $this->seeHelp();
         }
     }
 
@@ -104,16 +106,16 @@ class Console
         if ($version && $up == '--up') {
 
             $ok = $this->doExecuteOnce($version, 'up');
-            Out::out($ok ? '[green]%s success[/]' : '[red]%s error[/]', $version);
+            Out::out($ok ? '%s up success' : '%s up error', $version);
 
         } elseif ($version && $up == '--down') {
 
             $ok = $this->doExecuteOnce($version, 'down');
-            Out::out($ok ? '[green]%s success[/]' : '[red]%s error[/]', $version);
+            Out::out($ok ? '%s down success' : '%s down error', $version);
 
 
         } else {
-            Out::out('[red]Required params not found[/]');
+            $this->seeHelp();
         }
     }
 
@@ -122,23 +124,25 @@ class Console
             $ok1 = $this->doExecuteOnce($version, 'down');
             $ok2 = $this->doExecuteOnce($version, 'up');
 
-            $ok1 = $ok1 ? '[green]success[/]' : '[red]error[/]';
-            $ok2 = $ok2 ? '[green]success[/]' : '[red]error[/]';
+            $ok1 = $ok1 ? 'success' : 'error';
+            $ok2 = $ok2 ? 'success' : 'error';
 
-            Out::out('%s %s+%s', $version, $ok1, $ok2);
+            Out::out('%s down: %s, up: %s', $version, $ok1, $ok2);
 
         } else {
-            Out::out('[red]Required params not found[/]');
+            $this->seeHelp();
         }
     }
 
     public function executeHelp() {
-        foreach ($this->help as $cmd=>$text){
-            $method = 'execute' . $this->camelizeText($cmd);
-            if (method_exists($this, $method)){
-                Out::out('[green]%s[/] %s', $cmd, $text);
-            }
+        $cmd = Utils::getModuleDir() . '/tools/commands.txt';
+        if (is_file($cmd)){
+            Out::out(file_get_contents($cmd));
         }
+    }
+    
+    protected function seeHelp(){
+        Out::out('Required params not found, see help');
     }
 
 
@@ -188,18 +192,6 @@ class Console
         }
 
         return implode('', $tmp);
-    }
-
-    protected function initHelp() {
-        $this->help['create'] = '<description> add new migration with description';
-        $this->help['status'] = 'get migrations info';
-        $this->help['list'] = 'get migrations list';
-        $this->help['migrate'] = '[b]--up[/] --down up or down all migrations';
-        $this->help['up'] = '<limit> up limit migrations';
-        $this->help['down'] = '<limit> down migrations';
-
-        $this->help['execute'] = '<version> [b]--up[/] --down up or down this migration';
-        $this->help['redo'] = '<version> down+up this migration';
     }
 
 }

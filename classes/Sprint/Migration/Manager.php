@@ -135,13 +135,13 @@ class Manager
                     return true;
                 }
 
-                Out::outError('%s error', $name);
+                Out::out('%s error', $name);
 
             } catch (Restart $e){
                 $this->restarts[$name] = $version->getParams();
 
             } catch (\Exception $e) {
-                Out::outError('%s error: %s', $name, $e->getMessage());
+                Out::out('%s error: %s', $name, $e->getMessage());
             }
         }
         return false;
@@ -162,12 +162,12 @@ class Manager
                     return true;
                 }
 
-                Out::outError('%s error', $name);
+                Out::out('%s error', $name);
             } catch (Restart $e){
                 $this->restarts[$name] = $version->getParams();
 
             } catch (\Exception $e) {
-                Out::outError('%s error: %s', $name, $e->getMessage());
+                Out::out('%s error: %s', $name, $e->getMessage());
             }
         }
         return false;
