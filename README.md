@@ -19,9 +19,11 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 
 ```
 
-Выполнение
+Пример вызова команд
 -------------------------
-  migrate.php <command> [<args>]
+* php migrate.php migrate
+* php migrate.php execute Version20150119122646 --down
+* php migrate.php up 3
 
 Доступные команды
 -------------------------
@@ -41,13 +43,6 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 * execute <version> --down          Откатить миграцию
 * **redo** <version>                Откатить + накатить миграцию
 * **help**                          Показать список команд
-
-Пример вызова команд
--------------------------
-* php migrate.php migrate
-* php migrate.php execute Version20150119122646 --down
-* php migrate.php up 3
-
 
 Директория для миграций
 -------------------------
