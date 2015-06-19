@@ -64,6 +64,16 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 * **migration_dir** - директория миграций относительно корня проекта
 * **migration_template** - файл шаблона миграции относительно корня проекта
 
+пример файла конфига:
+```
+#!php
+<?php return array (
+  'migration_dir' => '/../scripts/migration/sprint/',
+);
+
+```
+
+
 Пример файла миграции:
 -------------------------
 /bitrix/php_interface/migrations/Version20140806034146.php
