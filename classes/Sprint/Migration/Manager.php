@@ -45,7 +45,7 @@ class Manager
                 unset($this->restarts[$version]);
             }
 
-            $aItem = $this->findVersionByName($version);
+            $aItem = $this->getVersionByName($version);
             if (!$aItem || $aItem['type'] == 'is_unknown') {
                 throw new MigrationException('migration not found');
             }
@@ -179,6 +179,35 @@ class Manager
     }
 
 
+    protected function getVersionByName($name) {
+        if (!$this->checkName($name)){
+            return false;
+        }
+
+        $record = Db::findByName($name)->Fetch();
+        $file = $this->getVersionFile($name);
+
+        $isRecord = !empty($record);
+        $isFile = file_exists($file);
+
+        if (!$isRecord && !$isFile){
+            return false;
+        }
+
+        if ($isRecord && $isFile) {
+            $type = 'is_success';
+        } elseif (!$isRecord && $isFile) {
+            $type = 'is_new';
+        } else {
+            $type = 'is_unknown';
+        }
+
+        return array(
+            'type' => $type,
+            'version' => $name,
+        );
+    }
+
 
     public function executeConsoleCommand($args) {
         $script = array_shift($args);
@@ -236,7 +265,7 @@ class Manager
         $titles = array(
             'is_new' =>     'new migrations',
             'is_success' => 'success',
-            'is_unknown' =>     'unknown',
+            'is_unknown' => 'unknown',
         );
 
         foreach ($summ as $type => $cnt) {
@@ -328,6 +357,7 @@ class Manager
     protected function executeOnce($version, $action = 'up') {
         $action = ($action == 'up') ? 'up' : 'down';
         $params = array();
+
         do {
             $restart = 0;
             $ok = $this->startMigration($version, $action, $params);
@@ -339,37 +369,6 @@ class Manager
         } while ($restart == 1);
 
         return $ok;
-    }
-
-
-
-    protected function findVersionByName($name) {
-        if (!$this->checkName($name)){
-            return false;
-        }
-
-        $record = Db::findByName($name)->Fetch();
-        $file = $this->getVersionFile($name);
-
-        $isRecord = !empty($record);
-        $isFile = file_exists($file);
-
-        if (!$isRecord && !$isFile){
-            return false;
-        }
-
-        if ($isRecord && $isFile) {
-            $type = 'is_success';
-        } elseif (!$isRecord && $isFile) {
-            $type = 'is_new';
-        } else {
-            $type = 'is_unknown';
-        }
-
-        return array(
-            'type' => $type,
-            'version' => $name,
-        );
     }
 
     protected function getFiles() {
