@@ -56,10 +56,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
                 });
             </script><?
         } else {
-            ?><script>migrationMigrationRefresh();</script><?
+            ?><script>
+                migrationMigrationRefresh();
+            </script><?
         }
     } else {
-        ?><script>migrationMigrationRefresh();</script><?
+        ?><script>
+            migrationMigrationRefresh();
+        </script><?
     }
 
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
