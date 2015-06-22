@@ -2,106 +2,112 @@
 
 namespace Sprint\Migration;
 
-use Sprint\Migration\Exceptions\Restart;
+use Sprint\Migration\Exceptions\Restart as RestartException;
+use Sprint\Migration\Exceptions\Migration as MigrationException;
 
 class Manager
 {
 
-    private $options = array();
     private $restarts = array();
 
     public function __construct() {
-
-        if ($file = $this->getConfigFile()){
-            $this->options = include $file;
-        }
-
          Db::createTablesIfNotExists();
     }
 
-    public function getVersions() {
-        return $this->findVersions('asc');
-    }
-
-    public function getVersionsSummary(){
-        $versions = $this->findVersions('asc');
+    public function getSummaryVersions(){
+        $versions = $this->getVersions('all');
 
         $summ = array(
             'is_new' => 0,
             'is_success' => 0,
-            'is_404' => 0,
+            'is_unknown' => 0,
         );
 
-        foreach ($versions as $item) {
-            $type = $item['type'];
+        foreach ($versions as $aItem) {
+            $type = $aItem['type'];
             $summ[$type]++;
         }
 
         return $summ;
     }
 
-    public function getVersionsFor($action = 'up') {
-        $action = ($action == 'up') ? 'up' : 'down';
-        $desc = ($action == 'up') ? 'asc' : 'desc';
-        $type = ($action == 'up') ? 'is_new' : 'is_success';
-
-        $result = array();
-        $versions = $this->findVersions($desc);
-        foreach ($versions as $item) {
-            if ($item['type'] == $type) {
-                $result[] = $item['version'];
-            }
-        }
-        return $result;
+    public function getDescription($version) {
+        $oVersion = $this->initVersionClassIfExists($version);
+        return ($oVersion) ? $oVersion->getDescription() : '';
     }
 
-    public function getOnceVersionFor($action = 'up') {
-        $action = ($action == 'up') ? 'up' : 'down';
-        $desc = ($action == 'up') ? 'asc' : 'desc';
-        $type = ($action == 'up') ? 'is_new' : 'is_success';
+    public function startMigration($version, $action = 'up', $params = array()) {
+        try {
 
-        $versions = $this->findVersions($desc);
-        foreach ($versions as $item) {
-            if ($item['type'] == $type) {
-                return $item['version'];
+            $action = ($action == 'up') ? 'up' : 'down';
+
+            if (isset($this->restarts[$version])){
+                unset($this->restarts[$version]);
             }
+
+            $aItem = $this->findVersionByName($version);
+            if (!$aItem || $aItem['type'] == 'is_unknown') {
+                throw new MigrationException('migration not found');
+            }
+
+            if ($action == 'up' && $aItem['type'] != 'is_new'){
+                throw new MigrationException('migration already up');
+            }
+
+            if ($action == 'down' && $aItem['type'] != 'is_success'){
+                throw new MigrationException('migration already down');
+            }
+
+            $oVersion = $this->initVersionClassIfExists($version);
+            if (!$oVersion) {
+                throw new MigrationException('failed to initialize migration');
+            }
+
+            $oVersion->setParams($params);
+
+            if ($action == 'up'){
+                $ok = $oVersion->up();
+            } else {
+                $ok = $oVersion->down();
+            }
+
+            if ($ok === false) {
+                throw new \Exception('migration returns false');
+            }
+
+            if ($action == 'up'){
+                $this->addRecord($version);
+            } else {
+                $this->removeRecord($version);
+            }
+
+            Out::outToConsoleOnly('%s (%s) success', $version, $action);
+
+            return true;
+
+        } catch (RestartException $e){
+            $this->restarts[$version] = isset($oVersion) ? $oVersion->getParams() : array();
+
+        } catch (MigrationException $e) {
+            Out::outError('%s (%s) error: %s', $version, $action, $e->getMessage());
+
+        } catch (\Exception $e) {
+            Out::outError('%s (%s) error: %s', $version, $action, $e->getMessage());
         }
+
         return false;
     }
 
-    public function getVersionDescription($versionName) {
-        $version = $this->initVersion($versionName);
-        return ($version) ? $version->getDescription() : '';
+
+    public function needRestart($version){
+        return (isset($this->restarts[$version])) ? 1 : 0;
     }
 
-    public function executeVersion($name, $action = 'up', $params = array()) {
-        $action = ($action && $action == 'up') ? 'up' : 'down';
-
-        $version = $this->findVersionByName($name);
-        if (!$version) {
-            return false;
-        }
-
-        if ($action == 'up' && $version['type'] == 'is_new') {
-            return $this->doVersionUp($name, $params);
-        }
-
-        if ($action == 'down' && $version['type'] == 'is_success') {
-            return $this->doVersionDown($name, $params);
-        }
-
-        return false;
+    public function getRestartParams($version){
+        return $this->restarts[$version];
     }
 
-    public function needRestart($name){
-        return (isset($this->restarts[$name])) ? 1 : 0;
-    }
-
-    public function getRestartParams($name){
-        return $this->restarts[$name];
-    }
-
-    public function createVersionFile($description = '') {
+    public function createMigrationFile($description = '') {
         $description = preg_replace("/\r\n|\r|\n/", '<br/>', $description);
         $description = strip_tags($description);
         $description = addslashes($description);
@@ -117,61 +123,224 @@ class Manager
         ));
         $file = $this->getVersionFile($version);
         file_put_contents($file, $str);
-        return is_file($file) ? $version : false;
+
+        if (is_file($file)){
+            Out::out('%s created', $version);
+            return $version;
+        } else {
+            Out::out('%s, error: can\'t create a file "%s"', $version, $file);
+            return false;
+        }
     }
 
-    protected function doVersionUp($name, $params = array()) {
-        if ($version = $this->initVersion($name)) {
-            try {
 
-                unset($this->restarts[$name]);
+    public function getVersions($for = 'all') {
+        $for = in_array($for, array('all', 'up', 'down')) ? $for : 'all';
 
-                $version->setParams($params);
+        $records = $this->getRecords();
+        $files = $this->getFiles();
 
-                $ok = $version->up();
+        $merge = array_merge($records, $files);
+        $merge = array_unique($merge);
 
-                if ($ok !== false) {
-                    $this->addRecord($name);
-                    return true;
-                }
+        if ($for == 'down') {
+            rsort($merge);
+        } else {
+            sort($merge);
+        }
 
-                Out::out('%s error', $name);
+        $result = array();
+        foreach ($merge as $val) {
 
-            } catch (Restart $e){
-                $this->restarts[$name] = $version->getParams();
+            $isRecord = in_array($val, $records);
+            $isFile = in_array($val, $files);
 
-            } catch (\Exception $e) {
-                Out::out('%s error: %s', $name, $e->getMessage());
+            if ($isRecord && $isFile) {
+                $type = 'is_success';
+            } elseif (!$isRecord && $isFile) {
+                $type = 'is_new';
+            } else {
+                $type = 'is_unknown';
+            }
+
+            if (($for == 'up' && $type == 'is_new') ||
+                ($for == 'down' && $type == 'is_success') ||
+                ($for == 'all')){
+
+                $result[] = array(
+                    'type' => $type,
+                    'version' => $val,
+                );
+            }
+
+        }
+
+        return $result;
+    }
+
+
+
+    public function executeConsoleCommand($args) {
+        $script = array_shift($args);
+
+        if (empty($args) || count($args) <= 0) {
+            $this->commandHelp();
+            return false;
+        }
+
+        $method = array_shift($args);
+
+        $method = str_replace(array('_', '-', ' '), '*', $method);
+        $method = explode('*', $method);
+        $tmp = array();
+        foreach ($method as $val) {
+            $tmp[] = ucfirst(strtolower($val));
+        }
+
+        $method = 'command' . implode('', $tmp);
+
+
+        if (!method_exists($this, $method)) {
+            Out::out('Command %s not found, see help', $method);
+            return false;
+        }
+
+        call_user_func_array(array($this, $method), $args);
+    }
+
+    protected function outCommandError(){
+        Out::out('Required params not found, see help');
+    }
+
+    public function commandCreate($descr = '') {
+        $this->createMigrationFile($descr);
+    }
+
+    public function commandList() {
+        $versions = $this->getVersions('all');
+
+        $titles = array(
+            'is_new' => '(new)',
+            'is_success' => '',
+            'is_unknown' => '(unknown)',
+        );
+
+        foreach ($versions as $aItem) {
+            Out::out('%s %s', $aItem['version'], $titles[$aItem['type']]);
+        }
+    }
+
+    public function commandStatus() {
+        $summ = $this->getSummaryVersions();
+
+        $titles = array(
+            'is_new' =>     'new migrations',
+            'is_success' => 'success',
+            'is_unknown' =>     'unknown',
+        );
+
+        foreach ($summ as $type => $cnt) {
+            Out::out('%s: %d', $titles[$type], $cnt);
+        }
+
+    }
+
+    public function commandMigrate($up = '--up') {
+        if ($up == '--up') {
+            $this->executeAll('up');
+
+        } elseif ($up == '--down') {
+            $this->executeAll('down');
+
+        } else {
+            $this->outCommandError();
+        }
+    }
+
+    public function commandUp($limit = 1) {
+        $limit = (int)$limit;
+        if ($limit > 0) {
+            $this->executeAll('up', $limit);
+        } else {
+            $this->outCommandError();
+        }
+    }
+
+    public function commandDown($limit = 1) {
+        $limit = (int)$limit;
+        if ($limit > 0) {
+            $this->executeAll('down', $limit);
+        } else {
+            $this->outCommandError();
+        }
+    }
+
+    public function commandExecute($version, $up = '--up') {
+        if ($version && $up == '--up') {
+            $this->executeOnce($version, 'up');
+
+        } elseif ($version && $up == '--down') {
+            $this->executeOnce($version, 'down');
+
+        } else {
+            $this->outCommandError();
+        }
+    }
+
+    public function commandRedo($version) {
+        if ($version) {
+            $this->executeOnce($version, 'down');
+            $this->executeOnce($version, 'up');
+        } else {
+            $this->outCommandError();
+        }
+    }
+
+    public function commandHelp() {
+        $cmd = Utils::getModuleDir() . '/tools/commands.txt';
+        if (is_file($cmd)){
+            Out::out(file_get_contents($cmd));
+        }
+    }
+
+    protected function executeAll($action = 'up', $limit = 0) {
+        $action = ($action == 'up') ? 'up' : 'down';
+        $limit = (int)$limit;
+
+        $success = 0;
+
+        $versions = $this->getVersions($action);
+        foreach ($versions as $aItem) {
+            if ($this->executeOnce($aItem['version'], $action)) {
+                $success++;
+            }
+
+            if ($limit > 0 && $limit == $success) {
+                break;
             }
         }
-        return false;
+
+        Out::out('migrations %s: %d', $action, $success);
+
+        return $success;
     }
 
-    protected function doVersionDown($name, $params = array()) {
-        if ($version = $this->initVersion($name)) {
-            try {
-
-                unset($this->restarts[$name]);
-
-                $version->setParams($params);
-
-                $ok = $version->down();
-
-                if ($ok !== false) {
-                    $this->removeRecord($name);
-                    return true;
-                }
-
-                Out::out('%s error', $name);
-            } catch (Restart $e){
-                $this->restarts[$name] = $version->getParams();
-
-            } catch (\Exception $e) {
-                Out::out('%s error: %s', $name, $e->getMessage());
+    protected function executeOnce($version, $action = 'up') {
+        $action = ($action == 'up') ? 'up' : 'down';
+        $params = array();
+        do {
+            $restart = 0;
+            $ok = $this->startMigration($version, $action, $params);
+            if ($this->needRestart($version)) {
+                $params = $this->getRestartParams($version);
+                $restart = 1;
             }
-        }
-        return false;
+
+        } while ($restart == 1);
+
+        return $ok;
     }
+
 
 
     protected function findVersionByName($name) {
@@ -194,7 +363,7 @@ class Manager
         } elseif (!$isRecord && $isFile) {
             $type = 'is_new';
         } else {
-            $type = 'is_404';
+            $type = 'is_unknown';
         }
 
         return array(
@@ -203,46 +372,8 @@ class Manager
         );
     }
 
-    protected function findVersions($sort = 'asc') {
-        $records = $this->getVersionRecords();
-        $files = $this->getVersionFiles();
-
-        $merge = array_merge($records, $files);
-        $merge = array_unique($merge);
-
-        if ($sort && $sort == 'asc') {
-            sort($merge);
-        } else {
-            rsort($merge);
-        }
-
-        $result = array();
-        foreach ($merge as $val) {
-
-            $isRecord = in_array($val, $records);
-            $isFile = in_array($val, $files);
-
-            if ($isRecord && $isFile) {
-                $type = 'is_success';
-            } elseif (!$isRecord && $isFile) {
-                $type = 'is_new';
-            } else {
-                $type = 'is_404';
-            }
-
-            $aItem = array(
-                'type' => $type,
-                'version' => $val,
-            );
-
-            $result[] = $aItem;
-        }
-
-        return $result;
-    }
-
-    protected function getVersionFiles() {
-        $directory = new \DirectoryIterator($this->getMigrationDir());
+    protected function getFiles() {
+        $directory = new \DirectoryIterator(Utils::getMigrationDir());
         $files = array();
         /* @var $item \SplFileInfo */
         foreach ($directory as $item) {
@@ -255,7 +386,7 @@ class Manager
         return $files;
     }
 
-    protected function getVersionRecords() {
+    protected function getRecords() {
         $dbResult = Db::findAll();
 
         $records = array();
@@ -283,7 +414,7 @@ class Manager
     }
 
     /* @return Version */
-    protected function initVersion($versionName) {
+    protected function initVersionClassIfExists($versionName) {
         $file = false;
         if ($this->checkName($versionName)) {
             $file = $this->getVersionFile($versionName);
@@ -305,7 +436,7 @@ class Manager
     }
 
     protected function getVersionFile($versionName) {
-        return $this->getMigrationDir() . '/'.$versionName . '.php';
+        return Utils::getMigrationDir() . '/'.$versionName . '.php';
     }
 
     protected function checkName($versionName) {
@@ -319,40 +450,12 @@ class Manager
 
         ob_start();
 
-        include($this->getVersionTemplateFile());
+        include(Utils::getVersionTemplateFile());
 
         $html = ob_get_clean();
 
         return $html;
     }
-
-    protected function getConfigFile(){
-        $file = Utils::getPhpInterfaceDir() . '/migrations.cfg.php';
-        return is_file($file) ? $file : false;
-    }
-
-
-    protected function getMigrationDir(){
-        if (!empty($this->options['migration_dir']) && is_dir(Utils::getDocRoot() . $this->options['migration_dir'])){
-            return Utils::getDocRoot() . $this->options['migration_dir'];
-        }
-
-        $dir = Utils::getPhpInterfaceDir() . '/migrations';
-        if (!is_dir($dir)){
-            mkdir($dir , BX_DIR_PERMISSIONS);
-        }
-        return $dir;
-    }
-
-    protected function getVersionTemplateFile(){
-        if (!empty($this->options['migration_template']) && is_file(Utils::getDocRoot() . $this->options['migration_template'])){
-            return Utils::getDocRoot() . $this->options['migration_template'];
-        } else {
-            return Utils::getModuleDir() . '/templates/version.php';
-        }
-    }
-
-
 
 
 }

@@ -7,21 +7,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     $version = isset($_POST['version']) ? $_POST['version'] : 0;
     $action = !empty($_POST['action']) ? $_POST['action'] : 0;
     $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
+    $skipVersions = !empty($_POST['skip_versions']) ? $_POST['skip_versions'] : array();
 
     if (!$version){
-        if ($nextAction == 'up'){
-            $action = 'up';
-            $version = $manager->getOnceVersionFor($action);
-        } elseif ($nextAction == 'down') {
-            $action = 'down';
-            $version = $manager->getOnceVersionFor($action);
+        if ($nextAction == 'up' || $nextAction == 'down'){
+
+            $version = 0;
+            $action = $nextAction;
+
+            $items = $manager->getVersions($action);
+
+            foreach ($items as $aItem){
+                if (!in_array($aItem['version'], $skipVersions)){
+                    $version = $aItem['version'];
+                    break;
+                }
+            }
+
         }
     }
 
     if ($version && $action){
-        $success = $manager->executeVersion($version, $action, $params);
-        if ($manager->needRestart($version)){
+        $success = $manager->startMigration($version, $action, $params);
 
+        if ($manager->needRestart($version)){
             $json = json_encode(array(
                 'params' => $manager->getRestartParams($version),
                 'action' => $action,
@@ -31,8 +40,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
 
             ?><script>migrationExecuteStep('migration_execute', <?=$json?>);</script><?
         } elseif ($nextAction){
+
+            if (!$success) {
+                $skipVersions[] = $version;
+            }
+
             $json = json_encode(array(
                 'next_action' => $nextAction,
+                'skip_versions' => $skipVersions
             ));
 
             ?><script>

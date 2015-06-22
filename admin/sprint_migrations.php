@@ -43,7 +43,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 
     .c-migration-block .c-migration-item-is_success,
     .c-migration-block .c-migration-item-is_new,
-    .c-migration-block .c-migration-item-is_404 {
+    .c-migration-block .c-migration-item-is_unknown {
         color: #000;
     }
 
@@ -55,7 +55,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         color: #a00;
     }
 
-    .c-migration-block .c-migration-item-is_404 {
+    .c-migration-block .c-migration-item-is_unknown {
         color: #00a;
     }
 </style>

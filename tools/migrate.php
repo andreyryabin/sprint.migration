@@ -16,8 +16,9 @@ $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 
 if (\CModule::IncludeModule('sprint.migration')){
-    $console = new Sprint\Migration\Console();
-    $console->execFromArgs($argv);
+    $manager = new Sprint\Migration\Manager();
+    $manager->executeConsoleCommand($argv);
+
 } else {
     echo 'need to install module sprint.migration';
 }

@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
         \COption::SetOptionString('sprint.migration', 'admin_versions_view', 'list');
     }
 
-    $versions = $manager->getVersions();
+    $versions = $manager->getVersions('all');
 
     ?>
     <?if (!empty($versions)): ?>

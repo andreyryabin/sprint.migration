@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration;
 
-use Sprint\Migration\Exceptions\Restart;
+use Sprint\Migration\Exceptions\Restart as RestartException;
 
 abstract class Version
 {
@@ -41,7 +41,7 @@ abstract class Version
     }
 
     public function restart(){
-        Throw new Restart();
+        Throw new RestartException();
     }
 
     /* Need For Sprint\Migration\Manager */
