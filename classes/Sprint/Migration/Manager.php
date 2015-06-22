@@ -10,6 +10,8 @@ class Manager
 
     private $restarts = array();
 
+    protected $force = 0;
+
     public function __construct() {
          Db::createTablesIfNotExists();
     }
@@ -45,17 +47,19 @@ class Manager
                 unset($this->restarts[$version]);
             }
 
-            $aItem = $this->getVersionByName($version);
-            if (!$aItem || $aItem['type'] == 'is_unknown') {
-                throw new MigrationException('migration not found');
-            }
+            if (!$this->force) {
+                $aItem = $this->getVersionByName($version);
+                if (!$aItem || $aItem['type'] == 'is_unknown') {
+                    throw new MigrationException('migration not found');
+                }
 
-            if ($action == 'up' && $aItem['type'] != 'is_new'){
-                throw new MigrationException('migration already up');
-            }
+                if ($action == 'up' && $aItem['type'] != 'is_new') {
+                    throw new MigrationException('migration already up');
+                }
 
-            if ($action == 'down' && $aItem['type'] != 'is_success'){
-                throw new MigrationException('migration already down');
+                if ($action == 'down' && $aItem['type'] != 'is_success') {
+                    throw new MigrationException('migration already down');
+                }
             }
 
             $oVersion = $this->initVersionClassIfExists($version);
@@ -71,8 +75,10 @@ class Manager
                 $ok = $oVersion->down();
             }
 
-            if ($ok === false) {
-                throw new \Exception('migration returns false');
+            if (!$this->force) {
+                if ($ok === false) {
+                    throw new \Exception('migration returns false');
+                }
             }
 
             if ($action == 'up'){
@@ -315,6 +321,12 @@ class Manager
             $this->outCommandError();
         }
     }
+
+    public function commandExecuteForce($version, $up = '--up') {
+        $this->force = 1;
+        $this->commandExecute($version, $up);
+    }
+
 
     public function commandRedo($version) {
         if ($version) {
