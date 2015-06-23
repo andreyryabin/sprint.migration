@@ -16,7 +16,7 @@ $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 
 if (\CModule::IncludeModule('sprint.migration')){
-    $manager = new Sprint\Migration\Manager();
+    $manager = new Sprint\Migration\Console();
     $manager->executeConsoleCommand($argv);
 
 } else {

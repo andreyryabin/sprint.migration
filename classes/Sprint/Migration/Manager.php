@@ -16,28 +16,6 @@ class Manager
          Db::createTablesIfNotExists();
     }
 
-    public function getSummaryVersions(){
-        $versions = $this->getVersions('all');
-
-        $summ = array(
-            'is_new' => 0,
-            'is_success' => 0,
-            'is_unknown' => 0,
-        );
-
-        foreach ($versions as $aItem) {
-            $type = $aItem['type'];
-            $summ[$type]++;
-        }
-
-        return $summ;
-    }
-
-    public function getDescription($version) {
-        $oVersion = $this->initVersionClassIfExists($version);
-        return ($oVersion) ? $oVersion->getDescription() : '';
-    }
-
     public function startMigration($version, $action = 'up', $params = array()) {
         try {
 
@@ -62,7 +40,7 @@ class Manager
                 }
             }
 
-            $oVersion = $this->initVersionClassIfExists($version);
+            $oVersion = $this->getVersionInstance($version);
             if (!$oVersion) {
                 throw new MigrationException('failed to initialize migration');
             }
@@ -75,10 +53,8 @@ class Manager
                 $ok = $oVersion->down();
             }
 
-            if (!$this->force) {
-                if ($ok === false) {
-                    throw new \Exception('migration returns false');
-                }
+            if ($ok === false) {
+                throw new \Exception('migration returns false');
             }
 
             if ($action == 'up'){
@@ -111,6 +87,11 @@ class Manager
 
     public function getRestartParams($version){
         return $this->restarts[$version];
+    }
+
+    public function getDescription($version) {
+        $oVersion = $this->getVersionInstance($version);
+        return ($oVersion) ? $oVersion->getDescription() : '';
     }
 
     public function createMigrationFile($description = '') {
@@ -184,7 +165,6 @@ class Manager
         return $result;
     }
 
-
     protected function getVersionByName($name) {
         if (!$this->checkName($name)){
             return false;
@@ -215,133 +195,25 @@ class Manager
     }
 
 
-    public function executeConsoleCommand($args) {
-        $script = array_shift($args);
-
-        if (empty($args) || count($args) <= 0) {
-            $this->commandHelp();
-            return false;
-        }
-
-        $method = array_shift($args);
-
-        $method = str_replace(array('_', '-', ' '), '*', $method);
-        $method = explode('*', $method);
-        $tmp = array();
-        foreach ($method as $val) {
-            $tmp[] = ucfirst(strtolower($val));
-        }
-
-        $method = 'command' . implode('', $tmp);
-
-
-        if (!method_exists($this, $method)) {
-            Out::out('Command %s not found, see help', $method);
-            return false;
-        }
-
-        call_user_func_array(array($this, $method), $args);
-    }
-
-    protected function outCommandError(){
-        Out::out('Required params not found, see help');
-    }
-
-    public function commandCreate($descr = '') {
-        $this->createMigrationFile($descr);
-    }
-
-    public function commandList() {
+    public function getSummaryVersions(){
         $versions = $this->getVersions('all');
 
-        $titles = array(
-            'is_new' => '(new)',
-            'is_success' => '',
-            'is_unknown' => '(unknown)',
+        $summ = array(
+            'is_new' => 0,
+            'is_success' => 0,
+            'is_unknown' => 0,
         );
 
         foreach ($versions as $aItem) {
-            Out::out('%s %s', $aItem['version'], $titles[$aItem['type']]);
-        }
-    }
-
-    public function commandStatus() {
-        $summ = $this->getSummaryVersions();
-
-        $titles = array(
-            'is_new' =>     'new migrations',
-            'is_success' => 'success',
-            'is_unknown' => 'unknown',
-        );
-
-        foreach ($summ as $type => $cnt) {
-            Out::out('%s: %d', $titles[$type], $cnt);
+            $type = $aItem['type'];
+            $summ[$type]++;
         }
 
+        return $summ;
     }
 
-    public function commandMigrate($up = '--up') {
-        if ($up == '--up') {
-            $this->executeAll('up');
-
-        } elseif ($up == '--down') {
-            $this->executeAll('down');
-
-        } else {
-            $this->outCommandError();
-        }
-    }
-
-    public function commandUp($limit = 1) {
-        $limit = (int)$limit;
-        if ($limit > 0) {
-            $this->executeAll('up', $limit);
-        } else {
-            $this->outCommandError();
-        }
-    }
-
-    public function commandDown($limit = 1) {
-        $limit = (int)$limit;
-        if ($limit > 0) {
-            $this->executeAll('down', $limit);
-        } else {
-            $this->outCommandError();
-        }
-    }
-
-    public function commandExecute($version, $up = '--up') {
-        if ($version && $up == '--up') {
-            $this->executeOnce($version, 'up');
-
-        } elseif ($version && $up == '--down') {
-            $this->executeOnce($version, 'down');
-
-        } else {
-            $this->outCommandError();
-        }
-    }
-
-    public function commandExecuteForce($version, $up = '--up') {
+    public function enableForce(){
         $this->force = 1;
-        $this->commandExecute($version, $up);
-    }
-
-
-    public function commandRedo($version) {
-        if ($version) {
-            $this->executeOnce($version, 'down');
-            $this->executeOnce($version, 'up');
-        } else {
-            $this->outCommandError();
-        }
-    }
-
-    public function commandHelp() {
-        $cmd = Utils::getModuleDir() . '/tools/commands.txt';
-        if (is_file($cmd)){
-            Out::out(file_get_contents($cmd));
-        }
     }
 
     protected function executeAll($action = 'up', $limit = 0) {
@@ -425,7 +297,7 @@ class Manager
     }
 
     /* @return Version */
-    protected function initVersionClassIfExists($versionName) {
+    protected function getVersionInstance($versionName) {
         $file = false;
         if ($this->checkName($versionName)) {
             $file = $this->getVersionFile($versionName);
