@@ -6,17 +6,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ne
         \COption::SetOptionString('sprint.migration', 'admin_versions_view', 'new');
     }
 
-    $items = $manager->getVersionsFor('up');
+    $versions = $manager->getVersions('up');
 
     ?>
-    <?if (!empty($items)): ?>
-        <?foreach ($items as $version): ?>
+    <?if (!empty($versions)): ?>
+
+        <?foreach ($versions as $aItem): ?>
             <div class="c-migration-block">
-                <a href="#" title="<?= GetMessage('SPRINT_MIGRATION_DESCR1') ?>" onclick="migrationMigrationDescr('<?= $version ?>');return false;" class="c-migration-item-is_new">
-                    <span><?= $version ?></span>
+                <a href="#" title="<?= GetMessage('SPRINT_MIGRATION_DESCR1') ?>" onclick="migrationMigrationDescr('<?= $aItem['version'] ?>');return false;" class="c-migration-item-is_new">
+                    <span><?= $aItem['version'] ?></span>
                 </a>
-                <input class="c-migration-btn" onclick="migrationExecuteStep('migration_execute', {version: '<?=$version?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
-                <div id="migration_item_<?= $version ?>_descr"></div>
+                <input onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version']?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
+                <div id="migration_item_<?= $aItem['version'] ?>_descr"></div>
             </div>
         <?endforeach ?>
     <?else: ?>

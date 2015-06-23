@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
         \COption::SetOptionString('sprint.migration', 'admin_versions_view', 'list');
     }
 
-    $versions = $manager->getVersions();
+    $versions = $manager->getVersions('all');
 
     ?>
     <?if (!empty($versions)): ?>
@@ -19,10 +19,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
                     <span><?= $aItem['version'] ?></span>
                 </a>
                 <?if ($aItem['type'] == 'is_new'): ?>
-                    <input class="c-migration-btn" onclick="migrationExecuteStep('migration_execute', {version: '<?=$aItem['version']?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
+                    <input onclick="migrationExecuteStep('migration_execute', {version: '<?=$aItem['version']?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <?endif ?>
                 <?if ($aItem['type'] == 'is_success'): ?>
-                    <input class="c-migration-btn" onclick="migrationExecuteStep('migration_execute', {version: '<?=$aItem['version']?>', action: 'down'});" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
+                    <input onclick="migrationExecuteStep('migration_execute', {version: '<?=$aItem['version']?>', action: 'down'});" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
                 <?endif ?>
                 <div id="migration_item_<?= $aItem['version'] ?>_descr"></div>
             </div>

@@ -4,7 +4,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_de
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
     $version = isset($_POST['version']) ? $_POST['version'] : 0;
-    $descr = $manager->getVersionDescription($version);
+    $descr = $manager->getDescription($version);
     $descr = !empty($descr) ? $descr : GetMessage('SPRINT_MIGRATION_NO_DESCRSPRINT_MIGRATIONS');
 
     ?>

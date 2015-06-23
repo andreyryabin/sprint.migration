@@ -43,7 +43,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 
     .c-migration-block .c-migration-item-is_success,
     .c-migration-block .c-migration-item-is_new,
-    .c-migration-block .c-migration-item-is_404 {
+    .c-migration-block .c-migration-item-is_unknown {
         color: #000;
     }
 
@@ -55,7 +55,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         color: #a00;
     }
 
-    .c-migration-block .c-migration-item-is_404 {
+    .c-migration-block .c-migration-item-is_unknown {
         color: #00a;
     }
 </style>
@@ -82,18 +82,18 @@ $tabControl1->BeginNextTab();
     <td class="adm-detail-content-cell-r" style="width:60%">
         <?= GetMessage('SPRINT_MIGRATION_DESCR2') ?>
         <textarea style="width: 90%" rows="3" id="migration_migration_descr" name="migration_migration_descr"></textarea>
-        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();" class="c-migration-btn">
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();">
     </td>
 </tr>
 <? $tabControl1->Buttons(); ?>
 
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="c-migration-btn adm-btn-green" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>" onclick="migrationMigrationsDownConfirm();" class="c-migration-btn" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>" onclick="migrationMigrationsDownConfirm();" />
 
 <div style="float: right" >
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="c-migration-btn adm-btn c-migration-filter c-migration-filter-list" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="c-migration-btn adm-btn c-migration-filter c-migration-filter-new" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_SUMMARY') ?>" onclick="migrationMigrationToggleView('summary');" class="c-migration-btn adm-btn c-migration-filter c-migration-filter-summary" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-filter c-migration-filter-list" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-filter c-migration-filter-new" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_SUMMARY') ?>" onclick="migrationMigrationToggleView('summary');" class="adm-btn c-migration-filter c-migration-filter-summary" />
 </div>
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
 <? $tabControl1->End(); ?>
@@ -113,8 +113,6 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationExecuteStep(step_code, postData, succesCallback) {
-        migrationLockButtons();
-
         postData = postData || {};
         postData['step_code'] = step_code;
         postData['send_sessid'] = $('input[name=send_sessid]').val();
@@ -130,24 +128,12 @@ $tabControl1->BeginNextTab();
                 } else {
                     $('#migration_progress').html(result).show();
                 }
-
-                migrationUnlockButtons();
-
             },
+
             error: function(result){
-                migrationUnlockButtons();
+
             }
         });
-    }
-
-    function migrationUnlockButtons() {
-        CloseWaitWindow();
-        $('.c-migration-btn').attr('disabled', false);
-    }
-
-    function migrationLockButtons() {
-        ShowWaitWindow();
-        $('.c-migration-btn').attr('disabled', true);
     }
 
     function migrationCreateMigration() {
@@ -193,7 +179,7 @@ $tabControl1->BeginNextTab();
     ?>
     
     var migrationView = '<?=$curView?>';
-    
+
     $(document).ready(function () {
         migrationMigrationToggleView(migrationView);
     });

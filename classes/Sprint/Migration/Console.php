@@ -11,55 +11,60 @@ class Console
         $this->manager = new Manager();
     }
 
-    public function execFromArgs($args) {
+
+    public function executeConsoleCommand($args) {
         $script = array_shift($args);
 
         if (empty($args) || count($args) <= 0) {
-            $this->executeHelp();
+            $this->commandHelp();
             return false;
         }
 
         $method = array_shift($args);
-        $method = 'execute' . $this->camelizeText($method);
+
+        $method = str_replace(array('_', '-', ' '), '*', $method);
+        $method = explode('*', $method);
+        $tmp = array();
+        foreach ($method as $val) {
+            $tmp[] = ucfirst(strtolower($val));
+        }
+
+        $method = 'command' . implode('', $tmp);
+
 
         if (!method_exists($this, $method)) {
-            Out::out('command %s not found', $method);
+            Out::out('Command %s not found, see help', $method);
             return false;
         }
 
         call_user_func_array(array($this, $method), $args);
     }
 
-    public function executeCreate($descr = '') {
-        $versionName = $this->manager->createVersionFile($descr);
-        if ($versionName) {
-            Out::out('%s created', $versionName);
-        } else {
-            Out::out('error');
-        }
+    public function commandCreate($descr = '') {
+        $this->manager->createMigrationFile($descr);
     }
 
-    public function executeList() {
-        $versions = $this->manager->getVersions();
+    public function commandList() {
+        $versions = $this->manager->getVersions('all');
 
         $titles = array(
             'is_new' => '(new)',
             'is_success' => '',
-            'is_404' => '(unknown)',
+            'is_unknown' => '(unknown)',
         );
 
-        foreach ($versions as $item) {
-            Out::out('%s %s', $item['version'], $titles[$item['type']]);
+        foreach ($versions as $aItem) {
+            Out::out('%s %s', $aItem['version'], $titles[$aItem['type']]);
         }
     }
 
-    public function executeStatus() {
-        $summ = $this->manager->getVersionsSummary();
+    public function commandStatus() {
+        $summ = $this->manager->getSummaryVersions();
 
         $titles = array(
             'is_new' =>     'new migrations',
             'is_success' => 'success',
-            'is_404' =>     'unknown',
+            'is_unknown' => 'unknown',
         );
 
         foreach ($summ as $type => $cnt) {
@@ -68,93 +73,78 @@ class Console
 
     }
 
-    public function executeMigrate($up = '--up') {
+    public function commandMigrate($up = '--up') {
         if ($up == '--up') {
-            $success = $this->doExecuteAll('up');
-            Out::out('migrations up: %d', $success);
+            $this->executeAll('up');
 
         } elseif ($up == '--down') {
-            $success = $this->doExecuteAll('down');
-            Out::out('migrations down: %d', $success);
+            $this->executeAll('down');
 
         } else {
-            $this->seeHelp();
+            $this->outParamsError();
         }
     }
 
-    public function executeUp($limit = 1) {
+    public function commandUp($limit = 1) {
         $limit = (int)$limit;
         if ($limit > 0) {
-            $success = $this->doExecuteAll('up', $limit);
-            Out::out('migrations up: %d', $success);
+            $this->executeAll('up', $limit);
         } else {
-            $this->seeHelp();
+            $this->outParamsError();
         }
     }
 
-    public function executeDown($limit = 1) {
+    public function commandDown($limit = 1) {
         $limit = (int)$limit;
         if ($limit > 0) {
-            $success = $this->doExecuteAll('down', $limit);
-            Out::out('migrations down: %d', $success);
+            $this->executeAll('down', $limit);
         } else {
-            $this->seeHelp();
+            $this->outParamsError();
         }
     }
 
-    public function executeExecute($version, $up = '--up') {
+    public function commandExecute($version, $up = '--up') {
         if ($version && $up == '--up') {
-
-            $ok = $this->doExecuteOnce($version, 'up');
-            Out::out($ok ? '%s up success' : '%s up error', $version);
+            $this->executeOnce($version, 'up');
 
         } elseif ($version && $up == '--down') {
-
-            $ok = $this->doExecuteOnce($version, 'down');
-            Out::out($ok ? '%s down success' : '%s down error', $version);
-
+            $this->executeOnce($version, 'down');
 
         } else {
-            $this->seeHelp();
+            $this->outParamsError();
         }
     }
 
-    public function executeRedo($version) {
+    public function commandRedo($version) {
         if ($version) {
-            $ok1 = $this->doExecuteOnce($version, 'down');
-            $ok2 = $this->doExecuteOnce($version, 'up');
-
-            $ok1 = $ok1 ? 'success' : 'error';
-            $ok2 = $ok2 ? 'success' : 'error';
-
-            Out::out('%s down: %s, up: %s', $version, $ok1, $ok2);
-
+            $this->executeOnce($version, 'down');
+            $this->executeOnce($version, 'up');
         } else {
-            $this->seeHelp();
+            $this->outParamsError();
         }
     }
 
-    public function executeHelp() {
+    public function commandExecuteForce($version, $up = '--up') {
+        $this->manager->enableForce();
+        $this->commandExecute($version, $up);
+    }
+
+    public function commandHelp() {
         $cmd = Utils::getModuleDir() . '/tools/commands.txt';
         if (is_file($cmd)){
             Out::out(file_get_contents($cmd));
         }
     }
-    
-    protected function seeHelp(){
-        Out::out('Required params not found, see help');
-    }
 
-
-    protected function doExecuteAll($action = 'up', $limit = 0) {
+    protected function executeAll($action = 'up', $limit = 0) {
         $action = ($action == 'up') ? 'up' : 'down';
         $limit = (int)$limit;
 
         $success = 0;
 
-        $items = $this->manager->getVersionsFor($action);
-        foreach ($items as $version) {
-            if ($this->doExecuteOnce($version, $action)) {
+        $versions = $this->manager->getVersions($action);
+        foreach ($versions as $aItem) {
+            if ($this->executeOnce($aItem['version'], $action)) {
                 $success++;
             }
 
@@ -163,15 +153,18 @@ class Console
             }
         }
 
+        Out::out('migrations %s: %d', $action, $success);
+
         return $success;
     }
 
-    protected function doExecuteOnce($version, $action = 'up') {
+    protected function executeOnce($version, $action = 'up') {
         $action = ($action == 'up') ? 'up' : 'down';
         $params = array();
+
         do {
             $restart = 0;
-            $ok = $this->manager->executeVersion($version, $action, $params);
+            $ok = $this->manager->startMigration($version, $action, $params);
             if ($this->manager->needRestart($version)) {
                 $params = $this->manager->getRestartParams($version);
                 $restart = 1;
@@ -182,16 +175,7 @@ class Console
         return $ok;
     }
 
-    protected function camelizeText($str, $prefix = '') {
-        $str = str_replace(array('_', '-', ' '), '*', $str);
-        $str = explode('*', $str);
-
-        $tmp = !empty($prefix) ? array($prefix) : array();
-        foreach ($str as $val) {
-            $tmp[] = ucfirst(strtolower($val));
-        }
-
-        return implode('', $tmp);
+    protected function outParamsError(){
+        Out::out('Required params not found, see help');
     }
-
 }
