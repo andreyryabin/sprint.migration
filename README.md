@@ -2,13 +2,7 @@
 --------------------------------------------------------------------------------------------------------
 * [http://marketplace.1c-bitrix.ru/solutions/sprint.migration/](http://marketplace.1c-bitrix.ru/solutions/sprint.migration/)
 * [https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration)
-
-
-Способы установки
--------------------------
-* маркетплейс
-* git submodule
-* composer - composer require andreyryabin/sprint.migration
+* [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
 
 
 Консоль
