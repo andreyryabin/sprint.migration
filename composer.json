@@ -1,0 +1,13 @@
+{
+  "name": "andreyryabin/sprint.migration",
+  "description": "migration module for 1C-Bitrix",
+  "homepage": "http://marketplace.1c-bitrix.ru/solutions/sprint.migration/",
+  "keywords": [
+    "bitrix",
+    "migration"
+  ],
+  "license": "MIT",
+  "require": {
+    "php": ">=5.3.0"
+  }
+}
