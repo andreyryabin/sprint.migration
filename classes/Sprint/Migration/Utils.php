@@ -11,6 +11,13 @@ class Utils
         return (defined('BX_UTF') && BX_UTF === true);
     }
 
+    public static function convertToUtf8IfNeed($msg){
+        if (!Utils::isUtf8() && function_exists('iconv')){
+            $msg = iconv('windows-1251', 'utf-8', $msg);
+        }
+        return $msg;
+    }
+
     public static function getDocRoot(){
         return rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
     }
@@ -34,10 +41,14 @@ class Utils
     public static function includeLangFile() {
         global $MESS;
 
-        if (self::isUtf8()){
-            include self::getModuleDir() . '/localization/ru_utf8.php';
-        } else {
-            include self::getModuleDir() . '/localization/ru_windows1251.php';
+        $loc = array();
+        include self::getModuleDir() . '/localization/ru_utf8.php';
+
+        $isWin = (!self::isUtf8() && function_exists('iconv')) ? 1 : 0;
+
+        foreach ($loc as $key => $val){
+            $val = $isWin ? iconv('utf-8', 'windows-1251//IGNORE', $val) : $val;
+            $MESS[$key] = $val;
         }
     }
 
@@ -50,14 +61,15 @@ class Utils
     }
     public static function getMigrationDir(){
         if (self::getUserConfigVal('migration_dir') && is_dir(Utils::getDocRoot() . self::getUserConfigVal('migration_dir'))){
-            return Utils::getDocRoot() . self::getUserConfigVal('migration_dir');
-        }
+            $dir = Utils::getDocRoot() . self::getUserConfigVal('migration_dir');
 
-        $dir = Utils::getPhpInterfaceDir() . '/migrations';
-        if (!is_dir($dir)){
-            mkdir($dir , BX_DIR_PERMISSIONS);
+        } else {
+            $dir = Utils::getPhpInterfaceDir() . '/migrations';
+            if (!is_dir($dir)){
+                mkdir($dir , BX_DIR_PERMISSIONS);
+            }
         }
-        return $dir;
+        return realpath($dir);
     }
 
     public static function getUserConfigVal($val, $default = ''){
@@ -69,6 +81,13 @@ class Utils
         }
 
         return isset(self::$userConfig[$val]) ? self::$userConfig[$val] : $default;
+    }
+
+
+    public static function getMigrationWebDir(){
+        $d1 = self::getMigrationDir();
+        $d2 = $_SERVER['DOCUMENT_ROOT'];
+        return (false !== strpos($d1, $d2)) ? str_replace($d2, '', $d1) : false;
     }
 
 }

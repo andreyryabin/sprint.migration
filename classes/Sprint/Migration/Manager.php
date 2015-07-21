@@ -53,8 +53,14 @@ class Manager
                 $ok = $oVersion->down();
             }
 
+            /** @global $APPLICATION \CMain */
+            global $APPLICATION;
+            if ($APPLICATION->GetException()){
+                throw new MigrationException($APPLICATION->GetException()->GetString());
+            }
+
             if ($ok === false) {
-                throw new \Exception('migration returns false');
+                throw new MigrationException('migration returns false');
             }
 
             if ($action == 'up'){
@@ -89,9 +95,13 @@ class Manager
         return $this->restarts[$version];
     }
 
-    public function getDescription($version) {
+    public function getDescription($version, $default='') {
         $oVersion = $this->getVersionInstance($version);
-        return ($oVersion) ? $oVersion->getDescription() : '';
+        if ($oVersion){
+            return (string) $oVersion->getDescription();
+        } else {
+            return $default;
+        }
     }
 
     public function createMigrationFile($description = '') {
@@ -108,7 +118,7 @@ class Manager
             'version' => $version,
             'description' => $description,
         ));
-        $file = $this->getVersionFile($version);
+        $file = $this->getFileName($version);
         file_put_contents($file, $str);
 
         if (is_file($file)){
@@ -171,7 +181,7 @@ class Manager
         }
 
         $record = Db::findByName($name)->Fetch();
-        $file = $this->getVersionFile($name);
+        $file = $this->getFileName($name);
 
         $isRecord = !empty($record);
         $isFile = file_exists($file);
@@ -216,45 +226,6 @@ class Manager
         $this->force = 1;
     }
 
-    protected function executeAll($action = 'up', $limit = 0) {
-        $action = ($action == 'up') ? 'up' : 'down';
-        $limit = (int)$limit;
-
-        $success = 0;
-
-        $versions = $this->getVersions($action);
-        foreach ($versions as $aItem) {
-            if ($this->executeOnce($aItem['version'], $action)) {
-                $success++;
-            }
-
-            if ($limit > 0 && $limit == $success) {
-                break;
-            }
-        }
-
-        Out::out('migrations %s: %d', $action, $success);
-
-        return $success;
-    }
-
-    protected function executeOnce($version, $action = 'up') {
-        $action = ($action == 'up') ? 'up' : 'down';
-        $params = array();
-
-        do {
-            $restart = 0;
-            $ok = $this->startMigration($version, $action, $params);
-            if ($this->needRestart($version)) {
-                $params = $this->getRestartParams($version);
-                $restart = 1;
-            }
-
-        } while ($restart == 1);
-
-        return $ok;
-    }
-
     protected function getFiles() {
         $directory = new \DirectoryIterator(Utils::getMigrationDir());
         $files = array();
@@ -296,18 +267,26 @@ class Manager
         return false;
     }
 
+    
+    public function canEdit($versionName){
+        if ($this->checkName($versionName)) {
+            $file = $this->getFileName($versionName);
+            if (file_exists($file)){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     /* @return Version */
     protected function getVersionInstance($versionName) {
-        $file = false;
-        if ($this->checkName($versionName)) {
-            $file = $this->getVersionFile($versionName);
-        }
-
-        if (!$file || !file_exists($file)) {
+        if (!$this->canEdit($versionName)){
             return false;
         }
 
-        include_once $file;
+        $file = $this->getFileName($versionName);
+        require_once($file);
 
         $class = 'Sprint\Migration\\' . $versionName;
         if (!class_exists($class)) {
@@ -318,7 +297,7 @@ class Manager
         return $obj;
     }
 
-    protected function getVersionFile($versionName) {
+    protected function getFileName($versionName) {
         return Utils::getMigrationDir() . '/'.$versionName . '.php';
     }
 

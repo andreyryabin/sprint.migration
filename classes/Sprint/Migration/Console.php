@@ -103,7 +103,7 @@ class Console
         }
     }
 
-    public function commandExecute($version, $up = '--up') {
+    public function commandExecute($version = '', $up = '--up') {
         if ($version && $up == '--up') {
             $this->executeOnce($version, 'up');
 
@@ -115,7 +115,27 @@ class Console
         }
     }
 
-    public function commandRedo($version) {
+    public function commandInfo($version = '') {
+        if ($version){
+
+            if ($this->manager->canEdit($version)){
+                $descr = $this->manager->getDescription($version);
+                if ($descr){
+                    Out::out($descr);
+                } else {
+                    Out::outError('%s error: empty description', $version);
+                }
+
+            } else {
+                Out::outError('%s error: file not found', $version);
+            }
+
+        } else {
+            $this->outParamsError();
+        }
+    }
+
+    public function commandRedo($version = '') {
         if ($version) {
             $this->executeOnce($version, 'down');
             $this->executeOnce($version, 'up');
@@ -124,13 +144,13 @@ class Console
         }
     }
 
-    public function commandExecuteForce($version, $up = '--up') {
+    public function commandExecuteForce($version = '', $up = '--up') {
         $this->manager->enableForce();
         $this->commandExecute($version, $up);
     }
 
     public function commandHelp() {
-        $cmd = Utils::getModuleDir() . '/tools/commands.txt';
+        $cmd = Utils::getModuleDir() . '/commands.txt';
         if (is_file($cmd)){
             Out::out(file_get_contents($cmd));
         }

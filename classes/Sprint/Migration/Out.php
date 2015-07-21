@@ -119,7 +119,7 @@ class Out
         }
 
         if (!Utils::isUtf8() && function_exists('iconv')){
-            $msg = iconv('windows-1251', 'utf-8', $msg);
+            $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
         }
 
         return $msg;

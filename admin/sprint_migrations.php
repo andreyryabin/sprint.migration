@@ -23,27 +23,18 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 
 ?>
 <style type="text/css">
-    #migration_migrations p {
-        margin: 0px;
-        padding: 0px 0px 10px 0px;
-    }
 
     .c-migration-block {
         padding: 0px 0px 8px;
     }
-
     .c-migration-descr {
         padding: 5px 0px;
-    }
-
-    .c-migration-block a {
-        text-decoration: none;
-        margin: 0px 5px 0px 0px;
     }
 
     .c-migration-block .c-migration-item-is_success,
     .c-migration-block .c-migration-item-is_new,
     .c-migration-block .c-migration-item-is_unknown {
+        text-decoration: none;
         color: #000;
     }
 
@@ -58,12 +49,13 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
     .c-migration-block .c-migration-item-is_unknown {
         color: #00a;
     }
+
 </style>
 
 <div id="migration_progress" style="margin:0px 0px 10px 0px;"></div>
 
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
-    array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_LIST1')),
+    array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB1_TITLE')),
 ));
 
 $tabControl1->Begin();
@@ -85,6 +77,7 @@ $tabControl1->BeginNextTab();
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();">
     </td>
 </tr>
+
 <? $tabControl1->Buttons(); ?>
 
 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
@@ -97,6 +90,25 @@ $tabControl1->BeginNextTab();
 </div>
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
 <? $tabControl1->End(); ?>
+
+
+<div class="adm-info-message-wrap" style="float: right">
+    <div class="adm-info-message">
+        <strong><?= GetMessage('SPRINT_MIGRATION_MIGRATION_DIR') ?></strong><br/>
+        <?$webdir = \Sprint\Migration\Utils::getMigrationWebDir()?>
+        <?if ($webdir):?>
+            <? $href = '/bitrix/admin/fileman_admin.php?' . http_build_query(array(
+                    'lang' => LANGUAGE_ID,
+                    'site' => SITE_ID,
+                    'path' => $webdir
+                ))?>
+            <a href="<?=$href?>" target="_blank"><?=$webdir?></a>
+        <?else:?>
+            <?=\Sprint\Migration\Utils::getMigrationDir()?>
+        <?endif?>
+    </div>
+</div>
+
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script language="JavaScript">

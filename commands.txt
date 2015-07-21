@@ -17,6 +17,7 @@ Commands:
   execute <version> --up            Up this migration
   execute <version> --down          Down this migration
   redo <version>                    Down + Up this migration
+  info <version>                    Get description this migration
   help                              Show this help
 
 Please send any bug reports as pull-requests to https://bitbucket.org/andrey_ryabin/sprint.migration

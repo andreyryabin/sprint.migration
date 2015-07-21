@@ -17,7 +17,7 @@ abstract class Version
 
 
     public function getDescription() {
-        return (string)$this->description;
+        return $this->description;
     }
 
     public function out($msg, $var1 = null, $var2 = null){

@@ -1,15 +1,13 @@
 Модуль миграций для CMS Битрикс ([http://www.1c-bitrix.ru/](http://www.1c-bitrix.ru/)), помогающий синхронизировать изменения между нескольким копиями бд. 
 --------------------------------------------------------------------------------------------------------
-* [http://marketplace.1c-bitrix.ru/solutions/sprint.migration/](http://marketplace.1c-bitrix.ru/solutions/sprint.migration/)
-* [https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration)
-* [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
+* Маркетплейс 1с-Битрикс: [http://marketplace.1c-bitrix.ru/solutions/sprint.migration/](http://marketplace.1c-bitrix.ru/solutions/sprint.migration/)
+* Репозиторий проекта: [https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration)
+* Composer пакет: [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
 
-Сomposer
--------------------------
+
 При установке модуля через composer (composer require andreyryabin/sprint.migration)
 самостоятельно сделайте симлинк директории vendor/andreyryabin/sprint.migration
 в директорию local/modules/sprint.migration или bitrix/modules/sprint.migration
-
 
 Консоль
 -------------------------
@@ -52,24 +50,16 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 * execute <version> --up            Накатить миграцию
 * execute <version> --down          Откатить миграцию
 * **redo** <version>                Откатить + накатить миграцию
+* **info** <version>                Получить описание миграции
 * **help**                          Показать список команд
 
 Директория для миграций
 -------------------------
-**/local/php_interface/migrations**
-или
-**/bitrix/php_interface/migrations**
+по умолчанию: **/local/php_interface/migrations** или **/bitrix/php_interface/migrations**
 
 или указать свою директорию в файле настроек
-**/local/php_interface/migrations.cfg.php**
-или
-**/bitrix/php_interface/migrations.cfg.php**
+**/local/php_interface/migrations.cfg.php** или **/bitrix/php_interface/migrations.cfg.php**
 
-2 параметра 
-* **migration_dir** - директория миграций относительно корня проекта
-* **migration_template** - файл шаблона миграции относительно корня проекта
-
-пример файла конфига:
 ```
 #!php
 <?php return array (
@@ -81,18 +71,22 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 
 Пример файла миграции:
 -------------------------
-/bitrix/php_interface/migrations/Version20140806034146.php
+/bitrix/php_interface/migrations/Version20150520000001.php
 
 ```
 #!php
 
 <?php
 namespace Sprint\Migration;
-class Version20140806034146 extends Version {
+
+class Version20150520000001 extends Version {
+
     protected $description = "";
+
     public function up(){
         //
     }
+
     public function down(){
         //
     }
@@ -107,9 +101,7 @@ class Version20140806034146 extends Version {
 -------------------------
 ![админка](https://bitbucket.org/repo/aejkky/images/1841502107-gkrDVvOs9MQ62p.jpg)
 
-
-Ссылки
+Полезные ссылки
 -------------------------
-* [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/)
-* [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/)
-* [https://www.youtube.com/watch?v=uYZ8-XIre2Q](https://www.youtube.com/watch?v=uYZ8-XIre2Q)
+* Механизм миграций, обзорная статья: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/)
+* Пошаговое выполнение миграции, примеры скриптов, видео: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/)

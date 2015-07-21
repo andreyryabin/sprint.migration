@@ -15,9 +15,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
         <?foreach ($versions as $aItem): ?>
 
             <div class="c-migration-block">
-                <a href="#" title="<?= GetMessage('SPRINT_MIGRATION_DESCR1') ?>" onclick="migrationMigrationDescr('<?= $aItem['version'] ?>');return false;" class="c-migration-item-<?= $aItem['type'] ?>">
-                    <span><?= $aItem['version'] ?></span>
-                </a>
+                <a href="#" onclick="migrationMigrationDescr('<?= $aItem['version'] ?>');return false;" class="c-migration-item-<?= $aItem['type'] ?>"><?= $aItem['version'] ?></a>
+                &nbsp;
                 <?if ($aItem['type'] == 'is_new'): ?>
                     <input onclick="migrationExecuteStep('migration_execute', {version: '<?=$aItem['version']?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <?endif ?>
