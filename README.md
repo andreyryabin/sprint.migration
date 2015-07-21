@@ -4,6 +4,12 @@
 * [https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration)
 * [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
 
+Сomposer
+-------------------------
+При установке модуля через composer (composer require andreyryabin/sprint.migration)
+самостоятельно сделайте симлинк директории vendor/andreyryabin/sprint.migration
+в директорию local/modules/sprint.migration или bitrix/modules/sprint.migration
+
 
 Консоль
 -------------------------
