@@ -117,14 +117,13 @@ class Console
 
     public function commandInfo($version = '') {
         if ($version){
+            $existsfile = $this->manager->getExistsVersionName($version);
 
-            if ($this->manager->canEdit($version)){
-                $descr = $this->manager->getDescription($version);
-                if ($descr){
-                    Out::out($descr);
-                } else {
-                    Out::outError('%s error: empty description', $version);
-                }
+            if ($existsfile){
+                $descr = $this->manager->getDescription($version, 'empty');
+
+                Out::out('Description: %s', $descr);
+                Out::out('Location: %s', $existsfile);
 
             } else {
                 Out::outError('%s error: file not found', $version);

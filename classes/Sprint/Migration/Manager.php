@@ -96,7 +96,8 @@ class Manager
     public function getDescription($version, $default='') {
         $oVersion = $this->getVersionInstance($version);
         if ($oVersion){
-            return (string) $oVersion->getDescription();
+            $descr = (string) $oVersion->getDescription();
+            return empty($descr) ? $default : $descr;
         } else {
             return $default;
         }
@@ -267,11 +268,11 @@ class Manager
     }
 
     
-    public function canEdit($versionName){
+    public function getExistsVersionName($versionName){
         if ($this->checkName($versionName)) {
             $file = $this->getFileName($versionName);
             if (file_exists($file)){
-                return true;
+                return $file;
             }
         }
         
@@ -280,11 +281,12 @@ class Manager
     
     /* @return Version */
     protected function getVersionInstance($versionName) {
-        if (!$this->canEdit($versionName)){
+        $file = $this->getExistsVersionName($versionName);
+
+        if (!$file){
             return false;
         }
 
-        $file = $this->getFileName($versionName);
         require_once($file);
 
         $class = 'Sprint\Migration\\' . $versionName;

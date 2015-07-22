@@ -92,6 +92,7 @@ class Env
             return self::getModuleDir() . '/templates/version.php';
         }
     }
+
     public static function getMigrationDir(){
         if (self::getFileOption('migration_dir') && is_dir(self::getDocRoot() . self::getFileOption('migration_dir'))){
             $dir = self::getDocRoot() . self::getFileOption('migration_dir');
@@ -107,7 +108,7 @@ class Env
 
     public static function getMigrationWebDir(){
         $d1 = self::getMigrationDir();
-        $d2 = $_SERVER['DOCUMENT_ROOT'];
+        $d2 = self::getDocRoot();
         return (false !== strpos($d1, $d2)) ? str_replace($d2, '', $d1) : false;
     }
 
