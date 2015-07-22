@@ -1,6 +1,3 @@
-Usage:
-  migrate.php <command> [<args>]
-
 Commands:
   create                            Add new migration
   create <description>              Add new migration with description

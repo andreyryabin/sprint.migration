@@ -7,13 +7,15 @@ class Console
 
     protected $manager = null;
 
+    protected $script = 'migrate.php';
+
     public function __construct() {
         $this->manager = new Manager();
     }
 
 
     public function executeConsoleCommand($args) {
-        $script = array_shift($args);
+        $this->script = array_shift($args);
 
         if (empty($args) || count($args) <= 0) {
             $this->commandHelp();
@@ -149,6 +151,9 @@ class Console
     }
 
     public function commandHelp() {
+        Out::out("Migrations:\n   %s\n", Env::getMigrationDir());
+        Out::out("Usage:\n   %s <command> [<args>]\n", $this->script);
+
         $cmd = Env::getModuleDir() . '/commands.txt';
         if (is_file($cmd)){
             Out::out(file_get_contents($cmd));
