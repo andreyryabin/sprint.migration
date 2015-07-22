@@ -5,7 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_su
 
     \Sprint\Migration\Env::setDbOption('admin_versions_view', 'summary');
 
-    $summary = $manager->getSummaryVersions();
+    $summary = $versionManager->getSummaryVersions();
     $titles = array(
         'is_new' => GetMessage('SPRINT_MIGRATION_IS_NEW'),
         'is_success' => GetMessage('SPRINT_MIGRATION_IS_SUCCESS'),

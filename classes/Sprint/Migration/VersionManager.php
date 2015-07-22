@@ -5,15 +5,17 @@ namespace Sprint\Migration;
 use Sprint\Migration\Exceptions\Restart as RestartException;
 use Sprint\Migration\Exceptions\Migration as MigrationException;
 
-class Manager
+class VersionManager
 {
 
     private $restarts = array();
 
     protected $force = 0;
 
+    protected $db = null;
+    
     public function __construct() {
-         Db::install();
+         $this->db = new Db();
     }
 
     public function startMigration($version, $action = 'up', $params = array()) {
@@ -179,7 +181,7 @@ class Manager
             return false;
         }
 
-        $record = Db::getRecordByName($name)->Fetch();
+        $record = $this->db->getRecordByName($name)->Fetch();
         $file = $this->getFileName($name);
 
         $isRecord = !empty($record);
@@ -241,7 +243,7 @@ class Manager
     }
 
     protected function getRecords() {
-        $dbResult = Db::getRecords();
+        $dbResult = $this->db->getRecords();
 
         $records = array();
         while ($aItem = $dbResult->Fetch()) {
@@ -255,14 +257,14 @@ class Manager
 
     protected function addRecord($versionName) {
         if ($this->checkName($versionName)) {
-            return Db::addRecord($versionName);
+            return $this->db->addRecord($versionName);
         }
         return false;
     }
 
     protected function removeRecord($versionName) {
         if ($this->checkName($versionName)) {
-            return Db::removeRecord($versionName);
+            return $this->db->removeRecord($versionName);
         }
         return false;
     }

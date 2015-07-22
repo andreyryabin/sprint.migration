@@ -49,7 +49,6 @@ Class sprint_migration extends CModule
         } else {
             DeleteDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sprint.migration/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
         }
-
         UnRegisterModule($this->MODULE_ID);
     }
 

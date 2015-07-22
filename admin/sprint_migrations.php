@@ -6,7 +6,7 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_ad
 global $APPLICATION;
 $APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATIONS'));
 
-$manager = new Sprint\Migration\Manager();
+$versionManager = new Sprint\Migration\VersionManager();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
@@ -197,5 +197,7 @@ $tabControl1->BeginNextTab();
     });
     
 </script>
+
+<?=\Sprint\Migration\Env::getDbOption('upgrade_version', 'unknown');?>
 
 <? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php"); ?>

@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
             $version = 0;
             $action = $nextAction;
 
-            $items = $manager->getVersions($action);
+            $items = $versionManager->getVersions($action);
 
             foreach ($items as $aItem){
                 if (!in_array($aItem['version'], $skipVersions)){
@@ -28,11 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     }
 
     if ($version && $action){
-        $success = $manager->startMigration($version, $action, $params);
+        $success = $versionManager->startMigration($version, $action, $params);
 
-        if ($manager->needRestart($version)){
+        if ($versionManager->needRestart($version)){
             $json = json_encode(array(
-                'params' => $manager->getRestartParams($version),
+                'params' => $versionManager->getRestartParams($version),
                 'action' => $action,
                 'version' => $version,
                 'next_action' => $nextAction

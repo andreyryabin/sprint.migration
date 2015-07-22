@@ -4,135 +4,33 @@ namespace Sprint\Migration;
 
 class Db
 {
+    protected $charset = '';
+    protected $collate = '';
+    protected $versionsTable = '';
+    protected $dbName = '';
+    protected $isMssql = false;
+    protected $isWin1251 = false;
 
-    protected static $versionsTable = 'sprint_migration_versions';
+    protected $bitrixDb = null;
 
-    public static function install() {
-        self::createDefaultTables();
-    }
+    public function __construct(){
+        $this->versionsTable = Env::getVersionsTable();
+        $this->isMssql = Env::isMssql();
+        $this->isWin1251 = Env::isWin1251();
+        $this->bitrixDb = Env::getDb();
+        $this->dbName = Env::getDbName();
 
-    /**
-     * @return bool|\CDBResult
-     */
-    public static function getRecords() {
-        if (Env::isMssql()) {
-            return self::query('SELECT * FROM %s', self::$versionsTable);
+        if ($this->isWin1251){
+            $this->charset = 'cp1251';
+            $this->collate = 'cp1251_general_ci';
         } else {
-            return self::query('SELECT * FROM `%s`', self::$versionsTable);
+            $this->charset = 'utf8';
+            $this->collate = 'utf8_general_ci';
         }
     }
 
-    /**
-     * @param $versionName
-     * @return bool|\CDBResult
-     */
-    public static function getRecordByName($versionName) {
-        $versionName = Env::getDb()->ForSql($versionName);
-
-        if (Env::isMssql()) {
-            return self::query('SELECT * FROM %s WHERE version = \'%s\'',
-                self::$versionsTable, $versionName
-            );
-
-        } else {
-            return self::query('SELECT * FROM `%s` WHERE `version` = "%s"',
-                self::$versionsTable,
-                $versionName
-            );
-        }
-    }
-
-    /**
-     * @param $versionName
-     * @return bool|\CDBResult
-     */
-    public static function addRecord($versionName) {
-        $versionName = Env::getDb()->ForSql($versionName);
-
-        if (Env::isMssql()) {
-            return self::query('if not exists(select version from %s where version=\'%s\')
-                    begin
-                        INSERT INTO %s (version) VALUES (\'%s\')
-                    end',
-                self::$versionsTable,
-                $versionName,
-                self::$versionsTable,
-                $versionName
-            );
-
-        } else {
-            return self::query('INSERT IGNORE INTO `%s` (`version`) VALUES ("%s")',
-                self::$versionsTable,
-                $versionName
-            );
-        }
-
-    }
-
-    /**
-     * @param $versionName
-     * @return bool|\CDBResult
-     */
-    public static function removeRecord($versionName) {
-        $versionName = Env::getDb()->ForSql($versionName);
-
-        if (Env::isMssql()) {
-            return self::query('DELETE FROM %s WHERE version = \'%s\'',
-                self::$versionsTable,
-                $versionName
-            );
-        } else {
-            return self::query('DELETE FROM `%s` WHERE `version` = "%s"',
-                self::$versionsTable,
-                $versionName
-            );
-        }
-
-    }
-
-    protected static function createDefaultTables() {
-        if (Env::isMssql()) {
-            self::query('if not exists (SELECT * FROM sysobjects WHERE name=\'%s\' AND xtype=\'U\')
-                begin
-                    CREATE TABLE %s
-                    (id int IDENTITY (1,1) NOT NULL,
-                    version varchar(255) NOT NULL,
-                    PRIMARY KEY (id),
-                    UNIQUE (version))
-                end',
-                self::$versionsTable,
-                self::$versionsTable
-            );
-
-        } else {
-
-            self::query('CREATE TABLE IF NOT EXISTS `%s`(
-              `id` MEDIUMINT NOT NULL AUTO_INCREMENT NOT NULL,
-              `version` varchar(255) COLLATE %s NOT NULL,
-              PRIMARY KEY (id), UNIQUE KEY(version)
-              )ENGINE=InnoDB DEFAULT CHARSET=%s COLLATE=%s AUTO_INCREMENT=1;',
-                self::$versionsTable,
-                self::getCollate(),
-                self::getCharset(),
-                self::getCollate()
-            );
-
-        }
-    }
-
-    protected static function xxx() {
-        //ALTER TABLE `sprint_migration_versions` ADD `description` TEXT CHARACTER SET cp1251 COLLATE cp1251_general_ci NOT NULL DEFAULT '';
-        //ALTER TABLE `sprint_migration_versions` ADD `description` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '';
-    }
-
-
-
-    protected static function getCharset() {
-        return Env::isWin1251() ? 'cp1251' : 'utf8';
-    }
-
-    protected static function getCollate() {
-        return Env::isWin1251() ? 'cp1251_general_ci' : 'utf8_general_ci';
+    public function forSql($val){
+        return $this->bitrixDb->ForSql($val);
     }
 
     /**
@@ -141,12 +39,94 @@ class Db
      * @param null $var2
      * @return bool|\CDBResult
      */
-    protected static function query($query, $var1 = null, $var2 = null) {
+    public function query($query, $var1 = null, $var2 = null) {
         if (func_num_args() > 1) {
             $params = func_get_args();
             $query = call_user_func_array('sprintf', $params);
         }
-        return Env::getDb()->Query($query);
+        return $this->bitrixDb->Query($query);
     }
 
+    /**
+     * @return bool|\CDBResult
+     */
+    public function getRecords() {
+        if ($this->isMssql) {
+            return $this->query('SELECT * FROM %s',
+                $this->versionsTable
+            );
+        } else {
+            return $this->query('SELECT * FROM `%s`',
+                $this->versionsTable
+            );
+        }
+    }
+
+    /**
+     * @param $versionName
+     * @return bool|\CDBResult
+     */
+    public function getRecordByName($versionName) {
+        $versionName = $this->forSql($versionName);
+
+        if ($this->isMssql) {
+            return $this->query('SELECT * FROM %s WHERE version = \'%s\'',
+                $this->versionsTable,
+                $versionName
+            );
+
+        } else {
+            return $this->query('SELECT * FROM `%s` WHERE `version` = "%s"',
+                $this->versionsTable,
+                $versionName
+            );
+        }
+    }
+
+    /**
+     * @param $versionName
+     * @return bool|\CDBResult
+     */
+    public function addRecord($versionName) {
+        $versionName = $this->forSql($versionName);
+
+        if ($this->isMssql) {
+            return $this->query('if not exists(select version from %s where version=\'%s\')
+                    begin
+                        INSERT INTO %s (version) VALUES (\'%s\')
+                    end',
+                $this->versionsTable,
+                $versionName,
+                $this->versionsTable,
+                $versionName
+            );
+
+        } else {
+            return $this->query('INSERT IGNORE INTO `%s` (`version`) VALUES ("%s")',
+                $this->versionsTable,
+                $versionName
+            );
+        }
+
+    }
+
+    /**
+     * @param $versionName
+     * @return bool|\CDBResult
+     */
+    public function removeRecord($versionName) {
+        $versionName = $this->forSql($versionName);
+
+        if ($this->isMssql) {
+            return $this->query('DELETE FROM %s WHERE version = \'%s\'',
+                $this->versionsTable,
+                $versionName
+            );
+        } else {
+            return $this->query('DELETE FROM `%s` WHERE `version` = "%s"',
+                $this->versionsTable,
+                $versionName
+            );
+        }
+    }
 }

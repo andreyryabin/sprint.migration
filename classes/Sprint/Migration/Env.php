@@ -18,14 +18,18 @@ class Env
         return $GLOBALS['DB'];
     }
 
-    /** @return \CMain */
-    public static function getApp() {
-        return $GLOBALS['APPLICATION'];
+    public static function getDbName() {
+        return $GLOBALS['DBName'];
     }
 
 
     public static function isMssql() {
         return ($GLOBALS['DBType'] == 'mssql');
+    }
+
+    /** @return \CMain */
+    public static function getApp() {
+        return $GLOBALS['APPLICATION'];
     }
 
     public static function getDbOption($name, $default=''){
@@ -71,6 +75,10 @@ class Env
         }        
     }
 
+    public static function getUpgradeDir(){
+        return self::getModuleDir().'/upgrades';
+    }
+
     public static function includeLangFile() {
         global $MESS;
 
@@ -91,6 +99,10 @@ class Env
         } else {
             return self::getModuleDir() . '/templates/version.php';
         }
+    }
+
+    public static function getVersionsTable(){
+        return self::getFileOption('migration_table', 'sprint_migration_versions');
     }
 
     public static function getMigrationDir(){

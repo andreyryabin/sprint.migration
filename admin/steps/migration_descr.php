@@ -4,9 +4,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_de
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
     $version = isset($_POST['version']) ? $_POST['version'] : 0;
-    $descr = $manager->getDescription($version, GetMessage('SPRINT_MIGRATION_EMPTY_DESCR'));
+    $descr = $versionManager->getDescription($version, GetMessage('SPRINT_MIGRATION_EMPTY_DESCR'));
 
-    $existsfile = $manager->getExistsVersionName($version);
+    $existsfile = $versionManager->getExistsVersionName($version);
 
     $webdir = \Sprint\Migration\Env::getMigrationWebDir();
 

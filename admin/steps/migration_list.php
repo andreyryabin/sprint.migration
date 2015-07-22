@@ -5,7 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
 
     \Sprint\Migration\Env::setDbOption('admin_versions_view', 'list');
 
-    $versions = $manager->getVersions('all');
+    $versions = $versionManager->getVersions('all');
 
     ?>
     <?if (!empty($versions)): ?>

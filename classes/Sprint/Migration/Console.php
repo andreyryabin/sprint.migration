@@ -5,14 +5,13 @@ namespace Sprint\Migration;
 class Console
 {
 
-    protected $manager = null;
+    protected $versionManager = null;
 
     protected $script = 'migrate.php';
 
     public function __construct() {
-        $this->manager = new Manager();
+        $this->versionManager = new VersionManager();
     }
-
 
     public function executeConsoleCommand($args) {
         $this->script = array_shift($args);
@@ -43,11 +42,11 @@ class Console
     }
 
     public function commandCreate($descr = '') {
-        $this->manager->createMigrationFile($descr);
+        $this->versionManager->createMigrationFile($descr);
     }
 
     public function commandList() {
-        $versions = $this->manager->getVersions('all');
+        $versions = $this->versionManager->getVersions('all');
 
         $titles = array(
             'is_new' => '(new)',
@@ -61,7 +60,7 @@ class Console
     }
 
     public function commandStatus() {
-        $summ = $this->manager->getSummaryVersions();
+        $summ = $this->versionManager->getSummaryVersions();
 
         $titles = array(
             'is_new' =>     'new migrations',
@@ -119,10 +118,10 @@ class Console
 
     public function commandInfo($version = '') {
         if ($version){
-            $existsfile = $this->manager->getExistsVersionName($version);
+            $existsfile = $this->versionManager->getExistsVersionName($version);
 
             if ($existsfile){
-                $descr = $this->manager->getDescription($version, 'empty');
+                $descr = $this->versionManager->getDescription($version, 'empty');
 
                 Out::out('Description: %s', $descr);
                 Out::out('Location: %s', $existsfile);
@@ -146,13 +145,13 @@ class Console
     }
 
     public function commandExecuteForce($version = '', $up = '--up') {
-        $this->manager->enableForce();
+        $this->versionManager->enableForce();
         $this->commandExecute($version, $up);
     }
 
     public function commandHelp() {
-        Out::out("Migrations:\n   %s\n", Env::getMigrationDir());
-        Out::out("Usage:\n   %s <command> [<args>]\n", $this->script);
+        Out::out('Migrations:'.PHP_EOL.'   %s'.PHP_EOL, Env::getMigrationDir());
+        Out::out('Usage:'.PHP_EOL.'   %s <command> [<args>]'.PHP_EOL, $this->script);
 
         $cmd = Env::getModuleDir() . '/commands.txt';
         if (is_file($cmd)){
@@ -166,7 +165,7 @@ class Console
 
         $success = 0;
 
-        $versions = $this->manager->getVersions($action);
+        $versions = $this->versionManager->getVersions($action);
         foreach ($versions as $aItem) {
             if ($this->executeOnce($aItem['version'], $action)) {
                 $success++;
@@ -188,9 +187,9 @@ class Console
 
         do {
             $restart = 0;
-            $ok = $this->manager->startMigration($version, $action, $params);
-            if ($this->manager->needRestart($version)) {
-                $params = $this->manager->getRestartParams($version);
+            $ok = $this->versionManager->startMigration($version, $action, $params);
+            if ($this->versionManager->needRestart($version)) {
+                $params = $this->versionManager->getRestartParams($version);
                 $restart = 1;
             }
 

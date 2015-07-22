@@ -44,12 +44,12 @@ abstract class Version
         Throw new RestartException();
     }
 
-    /* Need For Sprint\Migration\Manager */
+    /* Need For Sprint\Migration\VersionManager */
     public function getParams(){
         return $this->params;
     }
 
-    /* Need For Sprint\Migration\Manager */
+    /* Need For Sprint\Migration\VersionManager */
     public function setParams($params = array()){
         $this->params = $params;
     }
