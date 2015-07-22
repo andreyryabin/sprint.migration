@@ -150,7 +150,7 @@ class Console
     }
 
     public function commandHelp() {
-        $cmd = Utils::getModuleDir() . '/commands.txt';
+        $cmd = Env::getModuleDir() . '/commands.txt';
         if (is_file($cmd)){
             Out::out(file_get_contents($cmd));
         }

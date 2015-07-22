@@ -95,7 +95,7 @@ $tabControl1->BeginNextTab();
 <div class="adm-info-message-wrap" style="float: right">
     <div class="adm-info-message">
         <strong><?= GetMessage('SPRINT_MIGRATION_MIGRATION_DIR') ?></strong><br/>
-        <?$webdir = \Sprint\Migration\Utils::getMigrationWebDir()?>
+        <?$webdir = \Sprint\Migration\Env::getMigrationWebDir()?>
         <?if ($webdir):?>
             <? $href = '/bitrix/admin/fileman_admin.php?' . http_build_query(array(
                     'lang' => LANGUAGE_ID,
@@ -104,7 +104,7 @@ $tabControl1->BeginNextTab();
                 ))?>
             <a href="<?=$href?>" target="_blank"><?=$webdir?></a>
         <?else:?>
-            <?=\Sprint\Migration\Utils::getMigrationDir()?>
+            <?=\Sprint\Migration\Env::getMigrationDir()?>
         <?endif?>
     </div>
 </div>

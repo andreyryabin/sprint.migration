@@ -118,7 +118,7 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
 
-        if (!Utils::isUtf8() && function_exists('iconv')){
+        if (Env::isWin1251()){
             $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
         }
 

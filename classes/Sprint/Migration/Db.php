@@ -15,7 +15,7 @@ class Db
      * @return bool|\CDBResult
      */
     public static function getRecords() {
-        if (self::isMssql()) {
+        if (Env::isMssql()) {
             return self::query('SELECT * FROM %s', self::$versionsTable);
         } else {
             return self::query('SELECT * FROM `%s`', self::$versionsTable);
@@ -29,7 +29,7 @@ class Db
     public static function getRecordByName($versionName) {
         $versionName = self::getDb()->ForSql($versionName);
 
-        if (self::isMssql()) {
+        if (Env::isMssql()) {
             return self::query('SELECT * FROM %s WHERE version = \'%s\'',
                 self::$versionsTable, $versionName
             );
@@ -49,7 +49,7 @@ class Db
     public static function addRecord($versionName) {
         $versionName = self::getDb()->ForSql($versionName);
 
-        if (self::isMssql()) {
+        if (Env::isMssql()) {
             return self::query('if not exists(select version from %s where version=\'%s\')
                     begin
                         INSERT INTO %s (version) VALUES (\'%s\')
@@ -76,7 +76,7 @@ class Db
     public static function removeRecord($versionName) {
         $versionName = self::getDb()->ForSql($versionName);
 
-        if (self::isMssql()) {
+        if (Env::isMssql()) {
             return self::query('DELETE FROM %s WHERE version = \'%s\'',
                 self::$versionsTable,
                 $versionName
@@ -91,7 +91,7 @@ class Db
     }
 
     protected static function createDefaultTables() {
-        if (self::isMssql()) {
+        if (Env::isMssql()) {
             self::query('if not exists (SELECT * FROM sysobjects WHERE name=\'%s\' AND xtype=\'U\')
                 begin
                     CREATE TABLE %s
@@ -125,24 +125,14 @@ class Db
         //ALTER TABLE `sprint_migration_versions` ADD `description` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '';
     }
 
-    protected static function isMssql() {
-        return ($GLOBALS['DBType'] == 'mssql');
-    }
+
 
     protected static function getCharset() {
-        return Utils::isUtf8() ? 'utf8' : 'cp1251';
+        return Env::isWin1251() ? 'cp1251' : 'utf8';
     }
 
     protected static function getCollate() {
-        return Utils::isUtf8() ? 'utf8_general_ci' : 'cp1251_general_ci';
-    }
-
-
-    /**
-     * @return \CDatabase
-     */
-    protected static function getDb() {
-        return $GLOBALS['DB'];
+        return Env::isWin1251() ? 'cp1251_general_ci' : 'utf8_general_ci';
     }
 
     /**
@@ -156,7 +146,7 @@ class Db
             $params = func_get_args();
             $query = call_user_func_array('sprintf', $params);
         }
-        return self::getDb()->Query($query);
+        return Env::getDb()->Query($query);
     }
 
 }

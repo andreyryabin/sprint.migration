@@ -53,10 +53,8 @@ class Manager
                 $ok = $oVersion->down();
             }
 
-            /** @global $APPLICATION \CMain */
-            global $APPLICATION;
-            if ($APPLICATION->GetException()){
-                throw new MigrationException($APPLICATION->GetException()->GetString());
+            if (Env::getApp()->GetException()){
+                throw new MigrationException(Env::getApp()->GetException()->GetString());
             }
 
             if ($ok === false) {
@@ -235,7 +233,7 @@ class Manager
     }
 
     protected function getFiles() {
-        $directory = new \DirectoryIterator(Utils::getMigrationDir());
+        $directory = new \DirectoryIterator(Env::getMigrationDir());
         $files = array();
         /* @var $item \SplFileInfo */
         foreach ($directory as $item) {
@@ -306,7 +304,7 @@ class Manager
     }
 
     protected function getFileName($versionName) {
-        return Utils::getMigrationDir() . '/'.$versionName . '.php';
+        return Env::getMigrationDir() . '/'.$versionName . '.php';
     }
 
     protected function checkName($versionName) {
@@ -320,7 +318,7 @@ class Manager
 
         ob_start();
 
-        include(Utils::getVersionTemplateFile());
+        include(Env::getVersionTemplateFile());
 
         $html = ob_get_clean();
 

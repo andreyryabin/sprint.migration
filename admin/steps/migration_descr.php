@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_de
 
     $canEdit = $manager->canEdit($version);
 
-    $webdir = \Sprint\Migration\Utils::getMigrationWebDir();
+    $webdir = \Sprint\Migration\Env::getMigrationWebDir();
 
     ?>
     <div class="c-migration-descr">
