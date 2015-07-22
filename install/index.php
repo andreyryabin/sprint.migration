@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../classes/Sprint/Migration/Env.php';
 
 Class sprint_migration extends CModule
 {
@@ -24,7 +25,6 @@ Class sprint_migration extends CModule
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
 
-        require_once __DIR__ . '/../classes/Sprint/Migration/Env.php';
         \Sprint\Migration\Env::includeLangFile();
 
         $this->MODULE_NAME = GetMessage("SPRINT_MIGRATION_MODULE_NAME");
@@ -44,6 +44,9 @@ Class sprint_migration extends CModule
     }
 
     function DoUninstall() {
+        //launch upgrade when reinstalled module
+        \Sprint\Migration\Env::setDbOption('upgrade_version', 'unknown');
+
         if (is_dir($_SERVER["DOCUMENT_ROOT"] . "/local/modules/sprint.migration/install/admin")) {
             DeleteDirFiles($_SERVER["DOCUMENT_ROOT"] . "/local/modules/sprint.migration/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
         } else {

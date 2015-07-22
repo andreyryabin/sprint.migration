@@ -198,6 +198,4 @@ $tabControl1->BeginNextTab();
     
 </script>
 
-<?=\Sprint\Migration\Env::getDbOption('upgrade_version', 'unknown');?>
-
 <? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php"); ?>

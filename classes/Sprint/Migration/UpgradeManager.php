@@ -5,12 +5,14 @@ namespace Sprint\Migration;
 class UpgradeManager
 {
 
-    public function __construct(){
-        
+    protected $debug = false;
+
+    public function __construct($debug = false){
+        $this->debug = $debug;
     }
     
     public function upgradeIfNeed(){
-        $version = Env::getDbOption('upgrade_version', 'unknown');
+        $version = $this->getUpgradeVersion();
 
         $files = $this->getFiles();
 
@@ -24,6 +26,17 @@ class UpgradeManager
         }
 
     }
+
+    public function upgradeReload(){
+        Env::setDbOption('upgrade_version', 'unknown');
+        $this->upgradeIfNeed();
+    }
+
+
+    public function getUpgradeVersion(){
+        return Env::getDbOption('upgrade_version', 'unknown');
+    }
+
 
     protected function doUpgrade($name){
         $upgradeFile = Env::getUpgradeDir() . '/' . $name . '.php';
@@ -41,8 +54,18 @@ class UpgradeManager
         }
 
         /** @var Upgrade $obj */
-        $obj = new $class;
-        $obj->doUpgrade();
+        $obj = new $class();
+        $obj->setDebug($this->debug);
+
+        if (Env::isMssql()){
+            $obj->doUpgradeMssql();
+        } else {
+            $obj->doUpgradeMysql();
+        }
+
+        if ($this->debug){
+            Out::out('Upgrade to version: %s', $name);
+        }
 
         Env::setDbOption('upgrade_version', $name);
 

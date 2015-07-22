@@ -2,8 +2,7 @@
 $loc["SPRINT_MIGRATION_SETTINGS"] = "Настройка";
 $loc["SPRINT_MIGRATION_MIGRATION_DIR"] = "Директория для миграций";
 $loc["SPRINT_MIGRATION_SAVE"] = "Сохранить";
-$loc["SPRINT_MIGRATION_MORE_INFO"] = "Подробнее о модуле";
-$loc["SPRINT_MIGRATION_MODULE_NAME"] = "Спринт.Миграции";
+$loc["SPRINT_MIGRATION_MODULE_NAME"] = "Миграции для разработчиков";
 $loc["SPRINT_MIGRATION_MODULE_DESCRIPTION"] = "Модуль для миграций изменений бд";
 $loc["SPRINT_MIGRATION_PARTNER_NAME"] = "Андрей Рябин";
 $loc["SPRINT_MIGRATION_PARTNER_URI"] = "http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/";
@@ -35,4 +34,7 @@ $loc["SPRINT_MIGRATION_IS_SUCCESS"] = "Выполненные";
 $loc["SPRINT_MIGRATION_IS_UNKNOWN"] = "Неизвестные";
 $loc["SPRINT_MIGRATION_MIGRATION_DIR"] = "Директория для миграций";
 $loc["SPRINT_MIGRATION_VIEW"] = "просмотр файла";
+$loc["SPRINT_MIGRATION_UPGRADE_RELOAD"] = "Пересоздание служебных таблиц модуля";
+$loc["SPRINT_MIGRATION_UPGRADE_VERSION"] = "Версия бд";
+$loc["SPRINT_MIGRATION_TEXT2"] = "Подробнее о модуле";
 ?>
