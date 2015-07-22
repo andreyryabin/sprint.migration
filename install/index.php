@@ -41,14 +41,6 @@ Class sprint_migration extends CModule
         } else {
             CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sprint.migration/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
         }
-
-
-        $updaterFile = __DIR__ . '/updater/version' . $this->MODULE_VERSION . '.php';
-
-        if (is_file($updaterFile)){
-            include_once $updaterFile;
-        }
-
     }
 
     function DoUninstall() {

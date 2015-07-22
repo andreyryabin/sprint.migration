@@ -5,79 +5,158 @@ namespace Sprint\Migration;
 class Db
 {
 
+    protected static $versionsTable = 'sprint_migration_versions';
 
-    /* @return \CDatabase */
-    public static function getDb() {
-        return $GLOBALS['DB'];
+    public static function install() {
+        self::createDefaultTables();
     }
 
-    public static function isMssql() {
-        return ($GLOBALS['DBType'] == 'mssql');
-    }
-
-    /* @return \CDBResult */
-    public static function findAll(){
+    /**
+     * @return bool|\CDBResult
+     */
+    public static function getRecords() {
         if (self::isMssql()) {
-            return self::getDb()->Query('SELECT * FROM sprint_migration_versions');
+            return self::query('SELECT * FROM %s', self::$versionsTable);
         } else {
-            return self::getDb()->Query('SELECT * FROM `sprint_migration_versions`');
+            return self::query('SELECT * FROM `%s`', self::$versionsTable);
         }
     }
 
-    /* @return \CDBResult */
-    public static function findByName($versionName){
+    /**
+     * @param $versionName
+     * @return bool|\CDBResult
+     */
+    public static function getRecordByName($versionName) {
+        $versionName = self::getDb()->ForSql($versionName);
+
         if (self::isMssql()) {
-            return self::getDb()->Query(sprintf('SELECT * FROM sprint_migration_versions WHERE version = \'%s\'', $versionName));
+            return self::query('SELECT * FROM %s WHERE version = \'%s\'',
+                self::$versionsTable, $versionName
+            );
+
         } else {
-            return self::getDb()->Query(sprintf('SELECT * FROM `sprint_migration_versions` WHERE `version` = "%s"', $versionName));
+            return self::query('SELECT * FROM `%s` WHERE `version` = "%s"',
+                self::$versionsTable,
+                $versionName
+            );
         }
     }
 
-    /* @return \CDBResult */
-    public static function addRecord($versionName){
+    /**
+     * @param $versionName
+     * @return bool|\CDBResult
+     */
+    public static function addRecord($versionName) {
+        $versionName = self::getDb()->ForSql($versionName);
+
         if (self::isMssql()) {
-            return self::getDb()->Query(sprintf('if not exists(select version from sprint_migration_versions where version=\'%s\')
+            return self::query('if not exists(select version from %s where version=\'%s\')
                     begin
-                        INSERT INTO sprint_migration_versions (version) VALUES	(\'%s\')
-                    end', $versionName, $versionName));
+                        INSERT INTO %s (version) VALUES (\'%s\')
+                    end',
+                self::$versionsTable,
+                $versionName,
+                self::$versionsTable,
+                $versionName
+            );
 
         } else {
-            return self::getDb()->Query(sprintf('INSERT IGNORE INTO `sprint_migration_versions` SET `version` = "%s"', $versionName));
+            return self::query('INSERT IGNORE INTO `%s` (`version`) VALUES ("%s")',
+                self::$versionsTable,
+                $versionName
+            );
         }
 
     }
 
-    /* @return \CDBResult */
-    public static function removeRecord($versionName){
+    /**
+     * @param $versionName
+     * @return bool|\CDBResult
+     */
+    public static function removeRecord($versionName) {
+        $versionName = self::getDb()->ForSql($versionName);
+
         if (self::isMssql()) {
-            return self::getDb()->Query(sprintf('DELETE FROM sprint_migration_versions WHERE version = \'%s\'', $versionName));
+            return self::query('DELETE FROM %s WHERE version = \'%s\'',
+                self::$versionsTable,
+                $versionName
+            );
         } else {
-            return self::getDb()->Query(sprintf('DELETE FROM `sprint_migration_versions` WHERE `version` = "%s"', $versionName));
+            return self::query('DELETE FROM `%s` WHERE `version` = "%s"',
+                self::$versionsTable,
+                $versionName
+            );
         }
 
     }
 
-
-    public static function createTablesIfNotExists() {
+    protected static function createDefaultTables() {
         if (self::isMssql()) {
-            self::getDb()->Query('if not exists (SELECT * FROM sysobjects WHERE name=\'sprint_migration_versions\' AND xtype=\'U\')
+            self::query('if not exists (SELECT * FROM sysobjects WHERE name=\'%s\' AND xtype=\'U\')
                 begin
-                    CREATE TABLE sprint_migration_versions
+                    CREATE TABLE %s
                     (id int IDENTITY (1,1) NOT NULL,
                     version varchar(255) NOT NULL,
                     PRIMARY KEY (id),
                     UNIQUE (version))
-                end');
+                end',
+                self::$versionsTable,
+                self::$versionsTable
+            );
 
         } else {
-            self::getDb()->Query('CREATE TABLE IF NOT EXISTS `sprint_migration_versions`(
-			  `id` MEDIUMINT NOT NULL AUTO_INCREMENT NOT NULL,
-			  `version` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-			  PRIMARY KEY (id), UNIQUE KEY(version)
-			)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;');
+
+            self::query('CREATE TABLE IF NOT EXISTS `%s`(
+              `id` MEDIUMINT NOT NULL AUTO_INCREMENT NOT NULL,
+              `version` varchar(255) COLLATE %s NOT NULL,
+              PRIMARY KEY (id), UNIQUE KEY(version)
+              )ENGINE=InnoDB DEFAULT CHARSET=%s COLLATE=%s AUTO_INCREMENT=1;',
+                self::$versionsTable,
+                self::getCollate(),
+                self::getCharset(),
+                self::getCollate()
+            );
+
         }
     }
+
+    protected static function xxx() {
+        //ALTER TABLE `sprint_migration_versions` ADD `description` TEXT CHARACTER SET cp1251 COLLATE cp1251_general_ci NOT NULL DEFAULT '';
+        //ALTER TABLE `sprint_migration_versions` ADD `description` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '';
+    }
+
+    protected static function isMssql() {
+        return ($GLOBALS['DBType'] == 'mssql');
+    }
+
+    protected static function getCharset() {
+        return Utils::isUtf8() ? 'utf8' : 'cp1251';
+    }
+
+    protected static function getCollate() {
+        return Utils::isUtf8() ? 'utf8_general_ci' : 'cp1251_general_ci';
+    }
+
+
+    /**
+     * @return \CDatabase
+     */
+    protected static function getDb() {
+        return $GLOBALS['DB'];
+    }
+
+    /**
+     * @param $query
+     * @param null $var1
+     * @param null $var2
+     * @return bool|\CDBResult
+     */
+    protected static function query($query, $var1 = null, $var2 = null) {
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $query = call_user_func_array('sprintf', $params);
+        }
+        return self::getDb()->Query($query);
+    }
+
 }
-
-
-

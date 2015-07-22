@@ -13,7 +13,7 @@ class Manager
     protected $force = 0;
 
     public function __construct() {
-         Db::createTablesIfNotExists();
+         Db::install();
     }
 
     public function startMigration($version, $action = 'up', $params = array()) {
@@ -180,7 +180,7 @@ class Manager
             return false;
         }
 
-        $record = Db::findByName($name)->Fetch();
+        $record = Db::getRecordByName($name)->Fetch();
         $file = $this->getFileName($name);
 
         $isRecord = !empty($record);
@@ -226,6 +226,14 @@ class Manager
         $this->force = 1;
     }
 
+    public function getOption($name, $default=''){
+        return \COption::GetOptionString('sprint.migration', $name, $default);
+    }
+
+    public function setOption($name, $value){
+        \COption::SetOptionString('sprint.migration', $name, $value);
+    }
+
     protected function getFiles() {
         $directory = new \DirectoryIterator(Utils::getMigrationDir());
         $files = array();
@@ -241,7 +249,7 @@ class Manager
     }
 
     protected function getRecords() {
-        $dbResult = Db::findAll();
+        $dbResult = Db::getRecords();
 
         $records = array();
         while ($aItem = $dbResult->Fetch()) {

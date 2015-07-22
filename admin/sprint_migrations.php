@@ -185,9 +185,9 @@ $tabControl1->BeginNextTab();
     <?
     
     $views = array('list', 'new', 'summary');
-    $curView = \COption::GetOptionString('sprint.migration', 'admin_versions_view');
+    $curView = $manager->getOption('admin_versions_view');
     $curView = in_array($curView, $views) ? $curView : 'list';
-    
+
     ?>
     
     var migrationView = '<?=$curView?>';
