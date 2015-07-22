@@ -3,9 +3,7 @@
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_list" && check_bitrix_sessid('send_sessid')) {
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
-    if ($manager->getOption('admin_versions_view') != 'list'){
-        $manager->setOption('admin_versions_view', 'list');
-    }
+    \Sprint\Migration\Env::setDbOption('admin_versions_view', 'list');
 
     $versions = $manager->getVersions('all');
 

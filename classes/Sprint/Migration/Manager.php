@@ -224,13 +224,6 @@ class Manager
         $this->force = 1;
     }
 
-    public function getOption($name, $default=''){
-        return \COption::GetOptionString('sprint.migration', $name, $default);
-    }
-
-    public function setOption($name, $value){
-        \COption::SetOptionString('sprint.migration', $name, $value);
-    }
 
     protected function getFiles() {
         $directory = new \DirectoryIterator(Env::getMigrationDir());

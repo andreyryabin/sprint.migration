@@ -185,7 +185,7 @@ $tabControl1->BeginNextTab();
     <?
     
     $views = array('list', 'new', 'summary');
-    $curView = $manager->getOption('admin_versions_view');
+    $curView = \Sprint\Migration\Env::getDbOption('admin_versions_view');
     $curView = in_array($curView, $views) ? $curView : 'list';
 
     ?>

@@ -27,7 +27,7 @@ class Db
      * @return bool|\CDBResult
      */
     public static function getRecordByName($versionName) {
-        $versionName = self::getDb()->ForSql($versionName);
+        $versionName = Env::getDb()->ForSql($versionName);
 
         if (Env::isMssql()) {
             return self::query('SELECT * FROM %s WHERE version = \'%s\'',
@@ -47,7 +47,7 @@ class Db
      * @return bool|\CDBResult
      */
     public static function addRecord($versionName) {
-        $versionName = self::getDb()->ForSql($versionName);
+        $versionName = Env::getDb()->ForSql($versionName);
 
         if (Env::isMssql()) {
             return self::query('if not exists(select version from %s where version=\'%s\')
@@ -74,7 +74,7 @@ class Db
      * @return bool|\CDBResult
      */
     public static function removeRecord($versionName) {
-        $versionName = self::getDb()->ForSql($versionName);
+        $versionName = Env::getDb()->ForSql($versionName);
 
         if (Env::isMssql()) {
             return self::query('DELETE FROM %s WHERE version = \'%s\'',

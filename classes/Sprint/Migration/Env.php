@@ -5,7 +5,7 @@ namespace Sprint\Migration;
 class Env
 {
 
-    private static $userConfig = array();
+    private static $fileOptions = array();
 
     public static function isWin1251() {
         return (defined('BX_UTF') && BX_UTF === true) ? 0 : 1;
@@ -28,12 +28,34 @@ class Env
         return ($GLOBALS['DBType'] == 'mssql');
     }
 
+    public static function getDbOption($name, $default=''){
+        return \COption::GetOptionString('sprint.migration', $name, $default);
+    }
 
-    public static function getDocRoot(){
+    public static function setDbOption($name, $value){
+        if ($value != \COption::GetOptionString('sprint.migration', $name, '')) {
+            \COption::SetOptionString('sprint.migration', $name, $value);
+        }
+    }
+
+    public static function getFileOption($val, $default = ''){
+        if (empty(self::$fileOptions)){
+            $file = self::getPhpInterfaceDir() . '/migrations.cfg.php';
+            if (is_file($file)){
+                self::$fileOptions = include $file;
+            }
+        }
+
+        return isset(self::$fileOptions[$val]) ? self::$fileOptions[$val] : $default;
+    }
+    
+    
+    
+    protected static function getDocRoot(){
         return rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
     }
 
-    public static function getPhpInterfaceDir(){
+    protected static function getPhpInterfaceDir(){
         if (is_dir(self::getDocRoot() . '/local/php_interface')) {
             return self::getDocRoot() . '/local/php_interface';
         } else {
@@ -64,15 +86,15 @@ class Env
     }
 
     public static function getVersionTemplateFile(){
-        if (self::getUserConfigVal('migration_template') && is_file(self::getDocRoot() . self::getUserConfigVal('migration_template'))){
-            return self::getDocRoot() . self::getUserConfigVal('migration_template');
+        if (self::getFileOption('migration_template') && is_file(self::getDocRoot() . self::getFileOption('migration_template'))){
+            return self::getDocRoot() . self::getFileOption('migration_template');
         } else {
             return self::getModuleDir() . '/templates/version.php';
         }
     }
     public static function getMigrationDir(){
-        if (self::getUserConfigVal('migration_dir') && is_dir(self::getDocRoot() . self::getUserConfigVal('migration_dir'))){
-            $dir = self::getDocRoot() . self::getUserConfigVal('migration_dir');
+        if (self::getFileOption('migration_dir') && is_dir(self::getDocRoot() . self::getFileOption('migration_dir'))){
+            $dir = self::getDocRoot() . self::getFileOption('migration_dir');
 
         } else {
             $dir = self::getPhpInterfaceDir() . '/migrations';
@@ -82,18 +104,6 @@ class Env
         }
         return realpath($dir);
     }
-
-    public static function getUserConfigVal($val, $default = ''){
-        if (empty(self::$userConfig)){
-            $file = self::getPhpInterfaceDir() . '/migrations.cfg.php';
-            if (is_file($file)){
-                self::$userConfig = include $file;
-            }
-        }
-
-        return isset(self::$userConfig[$val]) ? self::$userConfig[$val] : $default;
-    }
-
 
     public static function getMigrationWebDir(){
         $d1 = self::getMigrationDir();
