@@ -10,26 +10,20 @@ class Upgrade0002 extends Upgrade {
     }
 
     public function doUpgradeMysql() {
-        $dbRes = $this->query('SELECT * FROM INFORMATION_SCHEMA.COLUMNS
-                WHERE TABLE_NAME = "%s"
-                AND TABLE_SCHEMA = "%s"
-                AND COLUMN_NAME = "description"',
-            $this->versionsTable,
-            $this->dbName
-        );
-
-        if ($dbRes->Fetch()) {
-            return true;
+        if (!$this->descrColumnExisist()){
+            $this->query('ALTER TABLE `#TABLE1#`
+                ADD `description` VARCHAR( 500 ) CHARACTER SET #CHARSET# COLLATE #COLLATE# NOT NULL DEFAULT "";'
+            );
         }
+    }
 
-        $this->query('ALTER TABLE `%s` ADD `description` varchar(255)
-                CHARACTER SET %s
-                COLLATE %s NOT NULL
-                DEFAULT ""',
-            $this->versionsTable,
-            $this->charset,
-            $this->collate
-        );
+    protected function descrColumnExisist(){
+        return $this->query('SELECT * FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_NAME = "#TABLE1#"
+                AND TABLE_SCHEMA = "#DBNAME#"
+                AND COLUMN_NAME = "description"'
+        )->Fetch();
+
 
     }
 

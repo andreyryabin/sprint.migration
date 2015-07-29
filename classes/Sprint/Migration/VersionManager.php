@@ -10,7 +10,7 @@ class VersionManager
 
     private $restarts = array();
 
-    protected $force = 0;
+    protected $checkPermissions = 1;
 
     protected $db = null;
     
@@ -18,31 +18,31 @@ class VersionManager
          $this->db = new Db();
     }
 
-    public function startMigration($version, $action = 'up', $params = array()) {
+    public function startMigration($versionName, $action = 'up', $params = array()) {
         try {
 
             $action = ($action == 'up') ? 'up' : 'down';
 
-            if (isset($this->restarts[$version])){
-                unset($this->restarts[$version]);
+            if (isset($this->restarts[$versionName])){
+                unset($this->restarts[$versionName]);
             }
 
-            if (!$this->force) {
-                $aItem = $this->getVersionByName($version);
-                if (!$aItem || $aItem['type'] == 'is_unknown') {
+            if ($this->checkPermissions) {
+                $versionType = $this->getVersionType($versionName);
+                if (!$versionType || $versionType == 'is_unknown') {
                     throw new MigrationException('migration not found');
                 }
 
-                if ($action == 'up' && $aItem['type'] != 'is_new') {
+                if ($action == 'up' && $versionType != 'is_new') {
                     throw new MigrationException('migration already up');
                 }
 
-                if ($action == 'down' && $aItem['type'] != 'is_success') {
+                if ($action == 'down' && $versionType != 'is_success') {
                     throw new MigrationException('migration already down');
                 }
             }
 
-            $oVersion = $this->getVersionInstance($version);
+            $oVersion = $this->getVersionInstance($versionName);
             if (!$oVersion) {
                 throw new MigrationException('failed to initialize migration');
             }
@@ -64,23 +64,28 @@ class VersionManager
             }
 
             if ($action == 'up'){
-                $this->addRecord($version);
+                $descr = $this->prepareDescription($oVersion->getDescription());
+
+                $ok = $this->db->addRecord($versionName, $descr);
             } else {
-                $this->removeRecord($version);
+                $ok = $this->db->removeRecord($versionName);
             }
 
-            Out::outToConsoleOnly('%s (%s) success', $version, $action);
+            if ($ok === false) {
+                throw new MigrationException('Unable to write data to the database');
+            }
 
+            Out::outToConsoleOnly('%s (%s) success', $versionName, $action);
             return true;
 
         } catch (RestartException $e){
-            $this->restarts[$version] = isset($oVersion) ? $oVersion->getParams() : array();
+            $this->restarts[$versionName] = isset($oVersion) ? $oVersion->getParams() : array();
 
         } catch (MigrationException $e) {
-            Out::outError('%s (%s) error: %s', $version, $action, $e->getMessage());
+            Out::outError('%s (%s) error: %s', $versionName, $action, $e->getMessage());
 
         } catch (\Exception $e) {
-            Out::outError('%s (%s) error: %s', $version, $action, $e->getMessage());
+            Out::outError('%s (%s) error: %s', $versionName, $action, $e->getMessage());
         }
 
         return false;
@@ -95,48 +100,75 @@ class VersionManager
         return $this->restarts[$version];
     }
 
-    public function getDescription($version, $default='') {
-        $oVersion = $this->getVersionInstance($version);
-        if ($oVersion){
-            $descr = (string) $oVersion->getDescription();
-            return empty($descr) ? $default : $descr;
+    public function getMigrationDescription($versionName) {
+        $instance = $this->getVersionInstance($versionName);
+
+        $descr = array(
+            'description' => '',
+            'location' => '',
+        );
+
+        if ($instance){
+            $descr['description'] = $this->prepareDescription($instance->getDescription());
+            $descr['location'] = $this->getVersionFile($versionName);
         } else {
-            return $default;
+            $record = $this->db->getRecordByName($versionName)->Fetch();
+            $descr['description'] = ($record && isset($record['description'])) ? $record['description'] : '';
         }
+
+        return $descr;
     }
 
-    public function createMigrationFile($description = '') {
-        $description = preg_replace("/\r\n|\r|\n/", '<br/>', $description);
-        $description = strip_tags($description);
-        $description = addslashes($description);
+    public function createVersionFile($description = '') {
+        $description = $this->prepareDescription($description);
 
         $originTz = date_default_timezone_get();
         date_default_timezone_set('Europe/Moscow');
-        $version = 'Version' . date('YmdHis');
+        $versionName = 'Version' . date('YmdHis');
         date_default_timezone_set($originTz);
 
         $str = $this->renderVersionFile(array(
-            'version' => $version,
+            'version' => $versionName,
             'description' => $description,
         ));
-        $file = $this->getFileName($version);
+        $file = $this->getVersionFile($versionName);
         file_put_contents($file, $str);
 
-        if (is_file($file)){
-            Out::out('%s created', $version);
-            return $version;
-        } else {
-            Out::out('%s, error: can\'t create a file "%s"', $version, $file);
+        if (!is_file($file)){
+            Out::outError('%s, error: can\'t create a file "%s"', $versionName, $file);
             return false;
         }
+
+        return array(
+            'version' => $versionName,
+            'location' => $file,
+            'description' => $description,
+        );
     }
 
 
     public function getVersions($for = 'all') {
         $for = in_array($for, array('all', 'up', 'down')) ? $for : 'all';
 
-        $records = $this->getRecords();
-        $files = $this->getFiles();
+        $records = array();
+        $files = array();
+
+        /* @var $dbres \CDBResult */
+        $dbres = $this->db->getRecords();
+        while ($aItem = $dbres->Fetch()) {
+            if ($this->checkVersionName($aItem['version'])) {
+                $records[] = $aItem['version'];
+            }
+        }
+
+        /* @var $item \SplFileInfo */
+        $directory = new \DirectoryIterator(Env::getMigrationDir());
+        foreach ($directory as $item) {
+            $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
+            if ($this->checkVersionName($fileName)) {
+                $files[] = $fileName;
+            }
+        }
 
         $merge = array_merge($records, $files);
         $merge = array_unique($merge);
@@ -176,37 +208,7 @@ class VersionManager
         return $result;
     }
 
-    protected function getVersionByName($name) {
-        if (!$this->checkName($name)){
-            return false;
-        }
-
-        $record = $this->db->getRecordByName($name)->Fetch();
-        $file = $this->getFileName($name);
-
-        $isRecord = !empty($record);
-        $isFile = file_exists($file);
-
-        if (!$isRecord && !$isFile){
-            return false;
-        }
-
-        if ($isRecord && $isFile) {
-            $type = 'is_success';
-        } elseif (!$isRecord && $isFile) {
-            $type = 'is_new';
-        } else {
-            $type = 'is_unknown';
-        }
-
-        return array(
-            'type' => $type,
-            'version' => $name,
-        );
-    }
-
-
-    public function getSummaryVersions(){
+    public function getStatus(){
         $versions = $this->getVersions('all');
 
         $summ = array(
@@ -223,69 +225,18 @@ class VersionManager
         return $summ;
     }
 
-    public function enableForce(){
-        $this->force = 1;
+    public function checkPermissions($check = 1){
+        $this->checkPermissions = $check;
     }
 
-
-    protected function getFiles() {
-        $directory = new \DirectoryIterator(Env::getMigrationDir());
-        $files = array();
-        /* @var $item \SplFileInfo */
-        foreach ($directory as $item) {
-            $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
-            if ($this->checkName($fileName)) {
-                $files[] = $fileName;
-            }
-        }
-
-        return $files;
-    }
-
-    protected function getRecords() {
-        $dbResult = $this->db->getRecords();
-
-        $records = array();
-        while ($aItem = $dbResult->Fetch()) {
-            if ($this->checkName($aItem['version'])) {
-                $records[] = $aItem['version'];
-            }
-
-        }
-        return $records;
-    }
-
-    protected function addRecord($versionName) {
-        if ($this->checkName($versionName)) {
-            return $this->db->addRecord($versionName);
-        }
-        return false;
-    }
-
-    protected function removeRecord($versionName) {
-        if ($this->checkName($versionName)) {
-            return $this->db->removeRecord($versionName);
-        }
-        return false;
-    }
-
-    
-    public function getExistsVersionName($versionName){
-        if ($this->checkName($versionName)) {
-            $file = $this->getFileName($versionName);
-            if (file_exists($file)){
-                return $file;
-            }
-        }
-        
-        return false;
-    }
-    
     /* @return Version */
     protected function getVersionInstance($versionName) {
-        $file = $this->getExistsVersionName($versionName);
+        if (!$this->checkVersionName($versionName)) {
+            return false;
+        }
 
-        if (!$file){
+        $file = $this->getVersionFile($versionName);
+        if (!file_exists($file)){
             return false;
         }
 
@@ -300,11 +251,37 @@ class VersionManager
         return $obj;
     }
 
-    protected function getFileName($versionName) {
+    protected function getVersionType($versionName) {
+        if (!$this->checkVersionName($versionName)){
+            return false;
+        }
+
+        $record = $this->db->getRecordByName($versionName)->Fetch();
+        $file = $this->getVersionFile($versionName);
+
+        $isRecord = !empty($record);
+        $isFile = file_exists($file);
+
+        if (!$isRecord && !$isFile){
+            return false;
+        }
+
+        if ($isRecord && $isFile) {
+            $type = 'is_success';
+        } elseif (!$isRecord && $isFile) {
+            $type = 'is_new';
+        } else {
+            $type = 'is_unknown';
+        }
+
+        return $type;
+    }
+
+    protected function getVersionFile($versionName) {
         return Env::getMigrationDir() . '/'.$versionName . '.php';
     }
 
-    protected function checkName($versionName) {
+    protected function checkVersionName($versionName) {
         return preg_match('/^Version\d+$/i', $versionName);
     }
 
@@ -322,5 +299,12 @@ class VersionManager
         return $html;
     }
 
+    protected function prepareDescription($descr = ''){
+        $descr = strval($descr);
+        $descr = nl2br( $descr);
+        $descr = strip_tags($descr);
+        $descr = addslashes($descr);
+        return $descr;
+    }
 
 }

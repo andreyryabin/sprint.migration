@@ -42,7 +42,12 @@ class Console
     }
 
     public function commandCreate($descr = '') {
-        $this->versionManager->createMigrationFile($descr);
+        $result = $this->versionManager->createVersionFile($descr);
+        if ($result){
+            Out::out('Version: %s', $result['version']);
+            Out::out('Description: %s', $result['description']);
+            Out::out('Location: %s', $result['location']);
+        }
     }
 
     public function commandList() {
@@ -60,7 +65,7 @@ class Console
     }
 
     public function commandStatus() {
-        $summ = $this->versionManager->getSummaryVersions();
+        $status = $this->versionManager->getStatus();
 
         $titles = array(
             'is_new' =>     'new migrations',
@@ -68,7 +73,7 @@ class Console
             'is_unknown' => 'unknown',
         );
 
-        foreach ($summ as $type => $cnt) {
+        foreach ($status as $type => $cnt) {
             Out::out('%s: %d', $titles[$type], $cnt);
         }
 
@@ -118,17 +123,11 @@ class Console
 
     public function commandInfo($version = '') {
         if ($version){
-            $existsfile = $this->versionManager->getExistsVersionName($version);
 
-            if ($existsfile){
-                $descr = $this->versionManager->getDescription($version, 'empty');
+            $descr = $this->versionManager->getMigrationDescription($version);
 
-                Out::out('Description: %s', $descr);
-                Out::out('Location: %s', $existsfile);
-
-            } else {
-                Out::outError('%s error: file not found', $version);
-            }
+            Out::out('Description: %s', $descr['description']);
+            Out::out('Location: %s', $descr['location']);
 
         } else {
             $this->outParamsError();
@@ -145,7 +144,7 @@ class Console
     }
 
     public function commandExecuteForce($version = '', $up = '--up') {
-        $this->versionManager->enableForce();
+        $this->versionManager->checkPermissions(0);
         $this->commandExecute($version, $up);
     }
 

@@ -101,8 +101,12 @@ class Env
         }
     }
 
-    public static function getVersionsTable(){
+    public static function getTableVersions(){
         return self::getFileOption('migration_table', 'sprint_migration_versions');
+    }
+
+    public static function getTableDescriptions(){
+        return self::getFileOption('description_table', 'sprint_migration_description');
     }
 
     public static function getMigrationDir(){

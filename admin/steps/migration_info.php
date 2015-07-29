@@ -1,20 +1,19 @@
 <?php
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_descr" && check_bitrix_sessid('send_sessid')) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_info" && check_bitrix_sessid('send_sessid')) {
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
     $version = isset($_POST['version']) ? $_POST['version'] : 0;
-    $descr = $versionManager->getDescription($version, GetMessage('SPRINT_MIGRATION_EMPTY_DESCR'));
 
-    $existsfile = $versionManager->getExistsVersionName($version);
+    $descr = $versionManager->getMigrationDescription($version);
 
     $webdir = \Sprint\Migration\Env::getMigrationWebDir();
 
     ?>
     <div class="c-migration-descr">
-        <?= $descr ?>
+        <?= empty($descr['description']) ? GetMessage('SPRINT_MIGRATION_EMPTY_DESCR') : $descr['description'] ?>
 
-        <?if ($webdir && $existsfile):?>
+        <?if ($webdir && $descr['location']):?>
             <br/>
             <? $href = '/bitrix/admin/fileman_file_view.php?' . http_build_query(array(
                     'lang' => LANGUAGE_ID,

@@ -79,7 +79,7 @@ class UpgradeManager
         /* @var $item \SplFileInfo */
         foreach ($directory as $item) {
             $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
-            if ($this->checkName($fileName)) {
+            if ($this->checkUpgradeName($fileName)) {
                 $files[] = $fileName;
             }
         }
@@ -89,7 +89,7 @@ class UpgradeManager
         return $files;
     }
 
-    protected function checkName($fileName){
+    protected function checkUpgradeName($fileName){
         return preg_match('/^Upgrade\d+$/i', $fileName);
     }
 

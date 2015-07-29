@@ -4,29 +4,33 @@ namespace Sprint\Migration;
 
 class Db
 {
-    protected $charset = '';
-    protected $collate = '';
-    protected $versionsTable = '';
-    protected $dbName = '';
     protected $isMssql = false;
-    protected $isWin1251 = false;
-
     protected $bitrixDb = null;
 
-    public function __construct(){
-        $this->versionsTable = Env::getVersionsTable();
-        $this->isMssql = Env::isMssql();
-        $this->isWin1251 = Env::isWin1251();
-        $this->bitrixDb = Env::getDb();
-        $this->dbName = Env::getDbName();
+    private $querySearch = array();
+    private $queryReplace = array();
 
-        if ($this->isWin1251){
-            $this->charset = 'cp1251';
-            $this->collate = 'cp1251_general_ci';
+    public function __construct(){
+        $this->isMssql = Env::isMssql();
+        $this->bitrixDb = Env::getDb();
+
+        $search = array(
+            '#TABLE1#' => Env::getTableVersions(),
+            '#TABLE2#' => Env::getTableDescriptions(),
+            '#DBNAME#' => Env::getDbName(),
+        );
+
+        if (Env::isWin1251()){
+            $search['#CHARSET#'] = 'cp1251';
+            $search['#COLLATE#'] = 'cp1251_general_ci';
         } else {
-            $this->charset = 'utf8';
-            $this->collate = 'utf8_general_ci';
+            $search['#CHARSET#'] = 'utf8';
+            $search['#COLLATE#'] = 'utf8_general_ci';
         }
+
+        $this->querySearch = array_keys($search);
+        $this->queryReplace = array_values($search);
+
     }
 
     public function forSql($val){
@@ -44,6 +48,9 @@ class Db
             $params = func_get_args();
             $query = call_user_func_array('sprintf', $params);
         }
+
+        $query = str_replace($this->querySearch, $this->queryReplace, $query);
+
         return $this->bitrixDb->Query($query);
     }
 
@@ -52,13 +59,9 @@ class Db
      */
     public function getRecords() {
         if ($this->isMssql) {
-            return $this->query('SELECT * FROM %s',
-                $this->versionsTable
-            );
+            return $this->query('SELECT * FROM #TABLE1#');
         } else {
-            return $this->query('SELECT * FROM `%s`',
-                $this->versionsTable
-            );
+            return $this->query('SELECT * FROM `#TABLE1#`');
         }
     }
 
@@ -70,14 +73,12 @@ class Db
         $versionName = $this->forSql($versionName);
 
         if ($this->isMssql) {
-            return $this->query('SELECT * FROM %s WHERE version = \'%s\'',
-                $this->versionsTable,
+            return $this->query('SELECT * FROM #TABLE1# WHERE version = \'%s\'',
                 $versionName
             );
 
         } else {
-            return $this->query('SELECT * FROM `%s` WHERE `version` = "%s"',
-                $this->versionsTable,
+            return $this->query('SELECT * FROM `#TABLE1#` WHERE `version` = "%s"',
                 $versionName
             );
         }
@@ -85,26 +86,27 @@ class Db
 
     /**
      * @param $versionName
+     * @param $description
      * @return bool|\CDBResult
      */
-    public function addRecord($versionName) {
+    public function addRecord($versionName, $description = '') {
         $versionName = $this->forSql($versionName);
+        $description = $this->forSql($description);
 
         if ($this->isMssql) {
-            return $this->query('if not exists(select version from %s where version=\'%s\')
+            return $this->query('if not exists(select version from #TABLE1# where version=\'%s\')
                     begin
-                        INSERT INTO %s (version) VALUES (\'%s\')
+                        INSERT INTO #TABLE1# (version, description) VALUES (\'%s\', \'%s\')
                     end',
-                $this->versionsTable,
                 $versionName,
-                $this->versionsTable,
-                $versionName
+                $versionName,
+                $description
             );
 
         } else {
-            return $this->query('INSERT IGNORE INTO `%s` (`version`) VALUES ("%s")',
-                $this->versionsTable,
-                $versionName
+            return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `description`) VALUES ("%s", "%s")',
+                $versionName,
+                $description
             );
         }
 
@@ -118,13 +120,11 @@ class Db
         $versionName = $this->forSql($versionName);
 
         if ($this->isMssql) {
-            return $this->query('DELETE FROM %s WHERE version = \'%s\'',
-                $this->versionsTable,
+            return $this->query('DELETE FROM #TABLE1# WHERE version = \'%s\'',
                 $versionName
             );
         } else {
-            return $this->query('DELETE FROM `%s` WHERE `version` = "%s"',
-                $this->versionsTable,
+            return $this->query('DELETE FROM `#TABLE1#` WHERE `version` = "%s"',
                 $versionName
             );
         }

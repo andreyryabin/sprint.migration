@@ -13,10 +13,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 include __DIR__ .'/steps/migration_execute.php';
-include __DIR__ .'/steps/migration_descr.php';
+include __DIR__ .'/steps/migration_info.php';
 include __DIR__ .'/steps/migration_list.php';
 include __DIR__ .'/steps/migration_new.php';
-include __DIR__ .'/steps/migration_summary.php';
+include __DIR__ .'/steps/migration_status.php';
 include __DIR__ .'/steps/migration_create.php';
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
@@ -86,7 +86,7 @@ $tabControl1->BeginNextTab();
 <div style="float: right" >
 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-filter c-migration-filter-list" />
 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-filter c-migration-filter-new" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_SUMMARY') ?>" onclick="migrationMigrationToggleView('summary');" class="adm-btn c-migration-filter c-migration-filter-summary" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?>" onclick="migrationMigrationToggleView('status');" class="adm-btn c-migration-filter c-migration-filter-status" />
 </div>
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
 <? $tabControl1->End(); ?>
@@ -149,7 +149,7 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationCreateMigration() {
-        migrationExecuteStep('migration_create', {description: $('#migration_migration_descr').val()}, function (data) {
+        migrationExecuteStep('migration_create', {description: $('#migration_migration_descr').val()}, function (result) {
             $('#migration_migration_descr').val('');
             migrationMigrationRefresh();
         });
@@ -173,9 +173,9 @@ $tabControl1->BeginNextTab();
         });
     }
 
-    function migrationMigrationDescr(version) {
-        migrationExecuteStep('migration_descr', {version: version}, function (data) {
-            $('#migration_item_' + version + '_descr').empty().html(data);
+    function migrationMigrationInfo(version) {
+        migrationExecuteStep('migration_info', {version: version}, function (data) {
+            $('#migration_info_' + version).empty().html(data);
         });
     }
 
@@ -184,7 +184,7 @@ $tabControl1->BeginNextTab();
 <script language="JavaScript">
     <?
     
-    $views = array('list', 'new', 'summary');
+    $views = array('list', 'new', 'status');
     $curView = \Sprint\Migration\Env::getDbOption('admin_versions_view');
     $curView = in_array($curView, $views) ? $curView : 'list';
 
