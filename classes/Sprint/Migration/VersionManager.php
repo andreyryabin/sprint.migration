@@ -27,8 +27,16 @@ class VersionManager
                 unset($this->restarts[$versionName]);
             }
 
+            $versionInstance = $this->getVersionInstance($versionName);
+            
+            if (!$versionInstance) {
+                throw new MigrationException('failed to initialize migration');
+            }
+            
             if ($this->checkPermissions) {
+                
                 $versionType = $this->getVersionType($versionName);
+                
                 if (!$versionType || $versionType == 'is_unknown') {
                     throw new MigrationException('migration not found');
                 }
@@ -42,17 +50,12 @@ class VersionManager
                 }
             }
 
-            $oVersion = $this->getVersionInstance($versionName);
-            if (!$oVersion) {
-                throw new MigrationException('failed to initialize migration');
-            }
-
-            $oVersion->setParams($params);
+            $versionInstance->setParams($params);
 
             if ($action == 'up'){
-                $ok = $oVersion->up();
+                $ok = $versionInstance->up();
             } else {
-                $ok = $oVersion->down();
+                $ok = $versionInstance->down();
             }
 
             if (Env::getApp()->GetException()){
@@ -64,22 +67,21 @@ class VersionManager
             }
 
             if ($action == 'up'){
-                $descr = $this->prepareDescription($oVersion->getDescription());
-
+                $descr = $this->prepareDescription($versionInstance->getDescription());
                 $ok = $this->db->addRecord($versionName, $descr);
             } else {
                 $ok = $this->db->removeRecord($versionName);
             }
 
             if ($ok === false) {
-                throw new MigrationException('Unable to write data to the database');
+                throw new MigrationException('unable to write migration to the database');
             }
 
             Out::outToConsoleOnly('%s (%s) success', $versionName, $action);
             return true;
 
         } catch (RestartException $e){
-            $this->restarts[$versionName] = isset($oVersion) ? $oVersion->getParams() : array();
+            $this->restarts[$versionName] = isset($versionInstance) ? $versionInstance->getParams() : array();
 
         } catch (MigrationException $e) {
             Out::outError('%s (%s) error: %s', $versionName, $action, $e->getMessage());
@@ -101,13 +103,8 @@ class VersionManager
     }
 
     public function getMigrationDescription($versionName) {
+        $descr = array('description' => '', 'location' => '');
         $instance = $this->getVersionInstance($versionName);
-
-        $descr = array(
-            'description' => '',
-            'location' => '',
-        );
-
         if ($instance){
             $descr['description'] = $this->prepareDescription($instance->getDescription());
             $descr['location'] = $this->getVersionFile($versionName);
