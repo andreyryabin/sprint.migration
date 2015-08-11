@@ -2,7 +2,9 @@
 
 namespace Sprint\Migration;
 
+use Sprint\Migration\Exceptions\Migration;
 use Sprint\Migration\Exceptions\Restart as RestartException;
+use Sprint\Migration\Exceptions\Migration as MigrationException;
 
 abstract class Version
 {
@@ -38,6 +40,12 @@ abstract class Version
     public function outError($msg, $var1 = null, $var2 = null){
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'outError'), $args);
+    }
+
+    public function exitIf($falseCondition, $msg ){
+        if (false == $falseCondition){
+            Throw new MigrationException($msg);
+        }
     }
 
     public function restart(){
