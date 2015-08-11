@@ -16,7 +16,6 @@ class Db
 
         $search = array(
             '#TABLE1#' => Env::getTableVersions(),
-            '#TABLE2#' => Env::getTableDescriptions(),
             '#DBNAME#' => Env::getDbName(),
         );
 
@@ -89,24 +88,32 @@ class Db
      * @param $description
      * @return bool|\CDBResult
      */
-    public function addRecord($versionName, $description = '') {
+    public function addRecord($versionName, $description = '', $fileName = '') {
         $versionName = $this->forSql($versionName);
-        $description = $this->forSql($description);
+        $description = ($description) ? $this->forSql($description) : '';
+
+        $fileCode = '';
+        if ($fileName){
+            $fileCode = file_get_contents($fileName);
+            $fileCode = $this->forSql($fileCode);
+        }
 
         if ($this->isMssql) {
             return $this->query('if not exists(select version from #TABLE1# where version=\'%s\')
                     begin
-                        INSERT INTO #TABLE1# (version, description) VALUES (\'%s\', \'%s\')
+                        INSERT INTO #TABLE1# (version, description, filecode) VALUES (\'%s\', \'%s\', \'%s\')
                     end',
                 $versionName,
                 $versionName,
-                $description
+                $description,
+                $fileCode
             );
 
         } else {
-            return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `description`) VALUES ("%s", "%s")',
+            return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `description`, `filecode`) VALUES ("%s", "%s", "%s")',
                 $versionName,
-                $description
+                $description,
+                $fileCode
             );
         }
 

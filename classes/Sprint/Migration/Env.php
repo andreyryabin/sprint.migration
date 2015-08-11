@@ -105,10 +105,6 @@ class Env
         return self::getFileOption('migration_table', 'sprint_migration_versions');
     }
 
-    public static function getTableDescriptions(){
-        return self::getFileOption('description_table', 'sprint_migration_description');
-    }
-
     public static function getMigrationDir(){
         if (self::getFileOption('migration_dir') && is_dir(self::getDocRoot() . self::getFileOption('migration_dir'))){
             $dir = self::getDocRoot() . self::getFileOption('migration_dir');

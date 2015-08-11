@@ -68,7 +68,7 @@ class VersionManager
 
             if ($action == 'up'){
                 $descr = $this->prepareDescription($versionInstance->getDescription());
-                $ok = $this->db->addRecord($versionName, $descr);
+                $ok = $this->db->addRecord($versionName, $descr, $this->getVersionFile($versionName));
             } else {
                 $ok = $this->db->removeRecord($versionName);
             }
