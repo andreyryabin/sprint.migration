@@ -31,25 +31,34 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         padding: 5px 0px;
     }
 
-    .c-migration-block .c-migration-item-is_success,
-    .c-migration-block .c-migration-item-is_new,
-    .c-migration-block .c-migration-item-is_unknown {
+    .c-migration-item-is_success,
+    .c-migration-item-is_new,
+    .c-migration-item-is_unknown {
         text-decoration: none;
-        color: #000;
     }
 
-    .c-migration-block .c-migration-item-is_success {
+    .c-migration-item-is_success {
         color: #080;
     }
 
-    .c-migration-block .c-migration-item-is_new {
+    .c-migration-item-is_new {
         color: #a00;
     }
 
-    .c-migration-block .c-migration-item-is_unknown {
+    .c-migration-item-is_unknown {
         color: #00a;
     }
-
+    .c-migration-adm-info {
+        float: right;
+    }
+    .c-migration-adm-info p{
+        margin: 5px 0px;padding: 0px;
+    }
+    .c-migration-adm-info span{
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+    }
 </style>
 
 <div id="migration_progress" style="margin:0px 0px 10px 0px;"></div>
@@ -92,8 +101,23 @@ $tabControl1->BeginNextTab();
 <? $tabControl1->End(); ?>
 
 
-<div class="adm-info-message-wrap" style="float: right">
-    <div class="adm-info-message">
+<div class="adm-info-message-wrap c-migration-adm-info">
+<div class="adm-info-message ">
+    <strong>Легенда</strong><br/>
+    <p>
+        <span style="background: #080;"></span>
+        - Выполненные миграции (файл + запись в бд)
+    </p>
+    <p>
+        <span style="background: #a00;"></span>
+        - Новые миграции (только файл)
+    </p>
+    <p>
+        <span style="background: #00a;"></span>
+        - Неизвестные миграции (только запись в бд)
+    </p>
+
+    <p><br/>
         <strong><?= GetMessage('SPRINT_MIGRATION_MIGRATION_DIR') ?></strong><br/>
         <?$webdir = \Sprint\Migration\Env::getMigrationWebDir()?>
         <?if ($webdir):?>
@@ -106,8 +130,11 @@ $tabControl1->BeginNextTab();
         <?else:?>
             <?=\Sprint\Migration\Env::getMigrationDir()?>
         <?endif?>
-    </div>
+    </p>
+
 </div>
+</div>
+
 
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>

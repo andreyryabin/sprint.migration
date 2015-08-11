@@ -67,8 +67,11 @@ class VersionManager
             }
 
             if ($action == 'up'){
-                $descr = $this->prepareDescription($versionInstance->getDescription());
-                $ok = $this->db->addRecord($versionName, $descr, $this->getVersionFile($versionName));
+
+                $descr = $this->getVersionDescription($versionInstance);
+                $filecode = $this->getVersionFileCode($versionName);
+
+                $ok = $this->db->addRecord($versionName, $descr, $filecode);
             } else {
                 $ok = $this->db->removeRecord($versionName);
             }
@@ -106,7 +109,7 @@ class VersionManager
         $descr = array('description' => '', 'location' => '');
         $instance = $this->getVersionInstance($versionName);
         if ($instance){
-            $descr['description'] = $this->prepareDescription($instance->getDescription());
+            $descr['description'] = $this->getVersionDescription($instance);
             $descr['location'] = $this->getVersionFile($versionName);
         } else {
             $record = $this->db->getRecordByName($versionName)->Fetch();
@@ -114,6 +117,15 @@ class VersionManager
         }
 
         return $descr;
+    }
+
+    public function getVersionDescription($version){
+        $instance = ($version instanceof Version);
+        if (!$instance){
+            $instance = $this->getVersionInstance($version);
+        }
+
+        return $this->prepareDescription($instance->getDescription());
     }
 
     public function createVersionFile($description = '') {
@@ -305,6 +317,11 @@ class VersionManager
         return $type;
     }
 
+    public function getVersionFileCode($versionName){
+        $verfile = $this->getVersionFile($versionName);
+        return is_file($verfile) ? file_get_contents($verfile) : '';
+    }
+
     protected function getVersionFile($versionName) {
         return Env::getMigrationDir() . '/'.$versionName . '.php';
     }
@@ -326,6 +343,7 @@ class VersionManager
 
         return $html;
     }
+
 
     protected function prepareDescription($descr = ''){
         $descr = strval($descr);
