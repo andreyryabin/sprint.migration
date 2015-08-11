@@ -145,7 +145,7 @@ class VersionManager
 
 
     public function getVersions($for = 'all') {
-        $for = in_array($for, array('all', 'up', 'down')) ? $for : 'all';
+        $for = in_array($for, array('all', 'up', 'down', 'unknown')) ? $for : 'all';
 
         $records = array();
         $files = array();
@@ -170,7 +170,7 @@ class VersionManager
         $merge = array_merge($records, $files);
         $merge = array_unique($merge);
 
-        if ($for == 'down') {
+        if ($for == 'down' || $for == 'unknown') {
             rsort($merge);
         } else {
             sort($merge);
@@ -192,6 +192,7 @@ class VersionManager
 
             if (($for == 'up' && $type == 'is_new') ||
                 ($for == 'down' && $type == 'is_success') ||
+                ($for == 'unknown' && $type == 'is_unknown') ||
                 ($for == 'all')){
 
                 $result[] = array(
@@ -237,13 +238,6 @@ class VersionManager
                 $ok = is_file($file) ? $versionName : false;
             }
         }
-
-        if ($ok){
-            Out::outToConsoleOnly('%s unknown version found', $versionName);
-        } else {
-            Out::outError('%s, error: unknown version not found!', $versionName);
-        }
-
         return $ok;
     }
 
@@ -255,13 +249,6 @@ class VersionManager
                 $ok = unlink($file);
             }
         }
-
-        if ($ok){
-            Out::outToConsoleOnly('%s unknown version removed', $versionName);
-        } else {
-            Out::outError('%s, error:  unknown version not removed!', $versionName);
-        }
-
         return $ok;
     }
 

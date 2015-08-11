@@ -121,17 +121,11 @@ class Console
         }
     }
 
-    public function commandDownUnknown($version = '') {
+    public function commandActualize($version = '') {
         if ($version) {
-
-            if ($this->versionManager->restoreUnknown($version)){
-                $this->executeOnce($version, 'down');
-                $this->versionManager->removeUnknown($version);
-            }
-
-
+            $this->executeActualizeOnce($version);
         } else {
-            $this->outParamsError();
+            $this->executeActualizeAll();
         }
     }
 
@@ -207,6 +201,39 @@ class Console
             }
 
         } while ($restart == 1);
+
+        return $ok;
+    }
+
+
+    protected function executeActualizeAll() {
+        $versions = $this->versionManager->getVersions('unknown');
+
+        $success = 0;
+
+        foreach ($versions as $aItem) {
+            $ok = $this->executeActualizeOnce($aItem['version']);
+            if ($ok){
+                $success++;
+            }
+        }
+
+        Out::out('migrations unknown down: %d', $success);
+
+        return $success;
+    }
+
+    protected function executeActualizeOnce($version){
+        $ok = false;
+        if ($this->versionManager->restoreUnknown($version)){
+            $ok = $this->executeOnce($version, 'down');
+            if (!$this->versionManager->removeUnknown($version)){
+                Out::outError('%s, error:  unknown version not removed!', $version);
+            }
+
+        } else {
+            Out::outError('%s, error: unknown version not found!', $version);
+        }
 
         return $ok;
     }
