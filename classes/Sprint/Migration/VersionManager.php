@@ -120,12 +120,11 @@ class VersionManager
     }
 
     public function getVersionDescription($version){
-        $instance = ($version instanceof Version);
-        if (!$instance){
-            $instance = $this->getVersionInstance($version);
+        if (!($version instanceof Version)){
+            $version = $this->getVersionInstance($version);
         }
 
-        return $this->prepareDescription($instance->getDescription());
+        return $this->prepareDescription($version->getDescription());
     }
 
     public function createVersionFile($description = '') {
