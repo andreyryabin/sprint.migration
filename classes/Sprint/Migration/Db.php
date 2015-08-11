@@ -86,30 +86,30 @@ class Db
     /**
      * @param $versionName
      * @param $description
+     * @param $fileName
      * @return bool|\CDBResult
      */
     public function addRecord($versionName, $description = '', $fileName = '') {
         $versionName = $this->forSql($versionName);
-        $description = ($description) ? $this->forSql($description) : '';
-
-        $fileCode = '';
-        if ($fileName){
-            $fileCode = file_get_contents($fileName);
-            $fileCode = $this->forSql($fileCode);
-        }
 
         if ($this->isMssql) {
             return $this->query('if not exists(select version from #TABLE1# where version=\'%s\')
                     begin
-                        INSERT INTO #TABLE1# (version, description, filecode) VALUES (\'%s\', \'%s\', \'%s\')
+                        INSERT INTO #TABLE1# (version) VALUES (\'%s\')
                     end',
                 $versionName,
-                $versionName,
-                $description,
-                $fileCode
+                $versionName
             );
 
         } else {
+
+            $description = ($description) ? $this->forSql($description) : '';
+            $fileCode = '';
+            if ($fileName){
+                $fileCode = file_get_contents($fileName);
+                $fileCode = $this->forSql($fileCode);
+            }
+
             return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `description`, `filecode`) VALUES ("%s", "%s", "%s")',
                 $versionName,
                 $description,

@@ -121,6 +121,20 @@ class Console
         }
     }
 
+    public function commandDownUnknown($version = '') {
+        if ($version) {
+
+            if ($this->versionManager->restoreUnknown($version)){
+                $this->executeOnce($version, 'down');
+                $this->versionManager->removeUnknown($version);
+            }
+
+
+        } else {
+            $this->outParamsError();
+        }
+    }
+
     public function commandInfo($version = '') {
         if ($version){
 

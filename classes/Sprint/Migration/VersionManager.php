@@ -226,7 +226,49 @@ class VersionManager
         $this->checkPermissions = $check;
     }
 
-    /* @return Version */
+    public function restoreUnknown($versionName){
+        $ok = false;
+
+        if ('is_unknown' == $this->getVersionType($versionName)){
+            $record = $this->db->getRecordByName($versionName)->Fetch();
+            if (!empty($record['filecode'])){
+                $file = $this->getVersionFile($versionName);
+                file_put_contents($file, $record['filecode']);
+                $ok = is_file($file) ? $versionName : false;
+            }
+        }
+
+        if ($ok){
+            Out::outToConsoleOnly('%s unknown version found', $versionName);
+        } else {
+            Out::outError('%s, error: unknown version not found!', $versionName);
+        }
+
+        return $ok;
+    }
+
+    public function removeUnknown($versionName){
+        $ok = false;
+        if ($this->checkVersionName($versionName)){
+            $file = $this->getVersionFile($versionName);
+            if (is_file($file)){
+                $ok = unlink($file);
+            }
+        }
+
+        if ($ok){
+            Out::outToConsoleOnly('%s unknown version removed', $versionName);
+        } else {
+            Out::outError('%s, error:  unknown version not removed!', $versionName);
+        }
+
+        return $ok;
+    }
+
+    /**
+     * @param $versionName
+     * @return Version
+     */
     protected function getVersionInstance($versionName) {
         if (!$this->checkVersionName($versionName)) {
             return false;
@@ -237,7 +279,9 @@ class VersionManager
             return false;
         }
 
+        ob_start();
         require_once($file);
+        ob_end_clean();
 
         $class = 'Sprint\Migration\\' . $versionName;
         if (!class_exists($class)) {
