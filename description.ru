@@ -1,2 +1,2 @@
-Модуль миграций для CMS Битрикс ([http://www.1c-bitrix.ru/](http://www.1c-bitrix.ru/)), помогающий синхронизировать изменения между нескольким копиями бд.
-Репозиторий проекта ([https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration))
+1) Интеграция с composer installers
+2) Добавлена команда в консоли info <version>
