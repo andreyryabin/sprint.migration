@@ -44,7 +44,7 @@ class Console
     public function commandCreate($descr = '') {
         $result = $this->versionManager->createVersionFile($descr);
         if ($result){
-            Out::out('Version: %s', $result['version']);
+            Out::out('Created: %s', $result['version']);
             Out::out('Description: %s', $result['description']);
             Out::out('Location: %s', $result['location']);
         }
