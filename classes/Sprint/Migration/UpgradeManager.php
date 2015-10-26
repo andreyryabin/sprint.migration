@@ -56,12 +56,7 @@ class UpgradeManager
         /** @var Upgrade $obj */
         $obj = new $class();
         $obj->setDebug($this->debug);
-
-        if (Env::isMssql()){
-            $obj->doUpgradeMssql();
-        } else {
-            $obj->doUpgradeMysql();
-        }
+        $obj->doUpgrade();
 
         if ($this->debug){
             Out::out('Upgrade to version: %s', $name);

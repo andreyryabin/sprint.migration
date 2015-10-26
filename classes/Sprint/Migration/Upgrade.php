@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration;
 
-abstract class Upgrade extends Db
+abstract class Upgrade
 {
 
     protected $debug = false;
@@ -11,6 +11,14 @@ abstract class Upgrade extends Db
         $this->debug = $debug;
     }
 
-    abstract public function doUpgradeMysql();
-    abstract public function doUpgradeMssql();
+    abstract public function doUpgrade();
+
+
+    protected function isMssql(){
+        return Env::isMssql();
+    }
+
+    protected function isWin1251(){
+        return Env::isWin1251();
+    }
 }

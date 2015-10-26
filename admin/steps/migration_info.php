@@ -5,7 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_in
 
     $version = isset($_POST['version']) ? $_POST['version'] : 0;
 
-    $descr = $versionManager->getMigrationDescription($version);
+    $descr = $versionManager->getVersionDescription($version);
 
     $webdir = \Sprint\Migration\Env::getMigrationWebDir();
 

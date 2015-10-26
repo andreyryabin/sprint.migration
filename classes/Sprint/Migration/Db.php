@@ -85,11 +85,9 @@ class Db
 
     /**
      * @param $versionName
-     * @param $description
-     * @param $filecode
      * @return bool|\CDBResult
      */
-    public function addRecord($versionName, $description = '', $filecode = '') {
+    public function addRecord($versionName) {
         $versionName = $this->forSql($versionName);
 
         if ($this->isMssql) {
@@ -102,14 +100,8 @@ class Db
             );
 
         } else {
-
-            $description = ($description) ? $this->forSql($description) : '';
-            $filecode = ($filecode) ? $this->forSql($filecode) : '';
-
-            return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `description`, `filecode`) VALUES ("%s", "%s", "%s")',
-                $versionName,
-                $description,
-                $filecode
+            return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`) VALUES ("%s")',
+                $versionName
             );
         }
 

@@ -1,4 +1,9 @@
-<?
+<?php
+
+define('CACHED_b_iblock_type', false);
+define('CACHED_b_iblock', false);
+define('CACHED_b_iblock_property_enum', false);
+
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
 \CModule::IncludeModule("sprint.migration");

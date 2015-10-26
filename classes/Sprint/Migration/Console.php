@@ -121,18 +121,10 @@ class Console
         }
     }
 
-    public function commandActualize($version = '') {
-        if ($version) {
-            $this->executeActualizeOnce($version);
-        } else {
-            $this->executeActualizeAll();
-        }
-    }
-
     public function commandInfo($version = '') {
         if ($version){
 
-            $descr = $this->versionManager->getMigrationDescription($version);
+            $descr = $this->versionManager->getVersionDescription($version);
 
             Out::out('Description: %s', $descr['description']);
             Out::out('Location: %s', $descr['location']);
@@ -158,7 +150,7 @@ class Console
 
     public function commandHelp() {
         Out::out('Migrations:'.PHP_EOL.'   %s'.PHP_EOL, Env::getMigrationDir());
-        Out::out('Usage:'.PHP_EOL.'   %s <command> [<args>]'.PHP_EOL, $this->script);
+        Out::out('Usage:'.PHP_EOL.'   php %s <command> [<args>]'.PHP_EOL, $this->script);
 
         $cmd = Env::getModuleDir() . '/commands.txt';
         if (is_file($cmd)){
@@ -201,39 +193,6 @@ class Console
             }
 
         } while ($restart == 1);
-
-        return $ok;
-    }
-
-
-    protected function executeActualizeAll() {
-        $versions = $this->versionManager->getVersions('unknown');
-
-        $success = 0;
-
-        foreach ($versions as $aItem) {
-            $ok = $this->executeActualizeOnce($aItem['version']);
-            if ($ok){
-                $success++;
-            }
-        }
-
-        Out::out('migrations unknown down: %d', $success);
-
-        return $success;
-    }
-
-    protected function executeActualizeOnce($version){
-        $ok = false;
-        if ($this->versionManager->restoreUnknown($version)){
-            $ok = $this->executeOnce($version, 'down');
-            if (!$this->versionManager->removeUnknown($version)){
-                Out::outError('%s, error:  unknown version not removed!', $version);
-            }
-
-        } else {
-            Out::outError('%s, error: unknown version not found!', $version);
-        }
 
         return $ok;
     }

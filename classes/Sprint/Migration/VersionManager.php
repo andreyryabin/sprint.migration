@@ -10,7 +10,7 @@ class VersionManager
 
     private $restarts = array();
 
-    protected $checkPermissions = 1;
+    protected $checkPerms = 1;
 
     protected $db = null;
     
@@ -33,7 +33,7 @@ class VersionManager
                 throw new MigrationException('failed to initialize migration');
             }
             
-            if ($this->checkPermissions) {
+            if ($this->checkPerms) {
                 
                 $versionType = $this->getVersionType($versionName);
                 
@@ -67,11 +67,7 @@ class VersionManager
             }
 
             if ($action == 'up'){
-
-                $descr = $this->getVersionDescription($versionInstance);
-                $filecode = $this->getVersionFileCode($versionName);
-
-                $ok = $this->db->addRecord($versionName, $descr, $filecode);
+                $ok = $this->db->addRecord($versionName);
             } else {
                 $ok = $this->db->removeRecord($versionName);
             }
@@ -105,26 +101,15 @@ class VersionManager
         return $this->restarts[$version];
     }
 
-    public function getMigrationDescription($versionName) {
+    public function getVersionDescription($versionName) {
         $descr = array('description' => '', 'location' => '');
         $instance = $this->getVersionInstance($versionName);
         if ($instance){
-            $descr['description'] = $this->getVersionDescription($instance);
+            $descr['description'] = $this->prepareDescription($instance->getDescription());
             $descr['location'] = $this->getVersionFile($versionName);
-        } else {
-            $record = $this->db->getRecordByName($versionName)->Fetch();
-            $descr['description'] = ($record && isset($record['description'])) ? $record['description'] : '';
         }
 
         return $descr;
-    }
-
-    public function getVersionDescription($version){
-        if (!($version instanceof Version)){
-            $version = $this->getVersionInstance($version);
-        }
-
-        return $this->prepareDescription($version->getDescription());
     }
 
     public function createVersionFile($description = '') {
@@ -235,32 +220,7 @@ class VersionManager
     }
 
     public function checkPermissions($check = 1){
-        $this->checkPermissions = $check;
-    }
-
-    public function restoreUnknown($versionName){
-        $ok = false;
-
-        if ('is_unknown' == $this->getVersionType($versionName)){
-            $record = $this->db->getRecordByName($versionName)->Fetch();
-            if (!empty($record['filecode'])){
-                $file = $this->getVersionFile($versionName);
-                file_put_contents($file, $record['filecode']);
-                $ok = is_file($file) ? $versionName : false;
-            }
-        }
-        return $ok;
-    }
-
-    public function removeUnknown($versionName){
-        $ok = false;
-        if ($this->checkVersionName($versionName)){
-            $file = $this->getVersionFile($versionName);
-            if (is_file($file)){
-                $ok = unlink($file);
-            }
-        }
-        return $ok;
+        $this->checkPerms = $check;
     }
 
     /**
@@ -314,11 +274,6 @@ class VersionManager
         }
 
         return $type;
-    }
-
-    public function getVersionFileCode($versionName){
-        $verfile = $this->getVersionFile($versionName);
-        return is_file($verfile) ? file_get_contents($verfile) : '';
     }
 
     protected function getVersionFile($versionName) {

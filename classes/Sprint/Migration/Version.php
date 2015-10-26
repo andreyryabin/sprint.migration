@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration;
 
-use Sprint\Migration\Exceptions\Migration;
 use Sprint\Migration\Exceptions\Restart as RestartException;
 use Sprint\Migration\Exceptions\Migration as MigrationException;
 

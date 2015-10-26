@@ -11,6 +11,10 @@ define("NO_KEEP_STATISTIC", "Y");
 define("NO_AGENT_STATISTIC","Y");
 define("NOT_CHECK_PERMISSIONS", true);
 
+define('CACHED_b_iblock_type', false);
+define('CACHED_b_iblock', false);
+define('CACHED_b_iblock_property_enum', false);
+
 $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");

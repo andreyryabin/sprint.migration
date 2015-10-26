@@ -15,8 +15,6 @@ Commands:
   execute <version> --down          Down this migration
   redo <version>                    Down + Up this migration
   info <version>                    Get description this migration
-  actualize                         Down and remove all unknown migrations
-  actualize <version>               Down and remove this unknown migration
   help                              Show this help
 
 Please send any bug reports as pull-requests to https://bitbucket.org/andrey_ryabin/sprint.migration
