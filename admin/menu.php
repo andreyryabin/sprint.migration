@@ -1,9 +1,6 @@
 <?
 global $APPLICATION;
 
-require_once __DIR__ . '/../classes/Sprint/Migration/Utils.php';
-\Sprint\Migration\Utils::includeLangFile();
-
 if ($APPLICATION->GetGroupRight("sprint.migration") != "D") {
     $aMenu = array(
         "parent_menu" => "global_menu_services",

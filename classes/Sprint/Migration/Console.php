@@ -5,15 +5,16 @@ namespace Sprint\Migration;
 class Console
 {
 
-    protected $manager = null;
+    protected $versionManager = null;
+
+    protected $script = 'migrate.php';
 
     public function __construct() {
-        $this->manager = new Manager();
+        $this->versionManager = new VersionManager();
     }
 
-
     public function executeConsoleCommand($args) {
-        $script = array_shift($args);
+        $this->script = array_shift($args);
 
         if (empty($args) || count($args) <= 0) {
             $this->commandHelp();
@@ -41,11 +42,16 @@ class Console
     }
 
     public function commandCreate($descr = '') {
-        $this->manager->createMigrationFile($descr);
+        $result = $this->versionManager->createVersionFile($descr);
+        if ($result){
+            Out::out('Version: %s', $result['version']);
+            Out::out('Description: %s', $result['description']);
+            Out::out('Location: %s', $result['location']);
+        }
     }
 
     public function commandList() {
-        $versions = $this->manager->getVersions('all');
+        $versions = $this->versionManager->getVersions('all');
 
         $titles = array(
             'is_new' => '(new)',
@@ -59,7 +65,7 @@ class Console
     }
 
     public function commandStatus() {
-        $summ = $this->manager->getSummaryVersions();
+        $status = $this->versionManager->getStatus();
 
         $titles = array(
             'is_new' =>     'new migrations',
@@ -67,7 +73,7 @@ class Console
             'is_unknown' => 'unknown',
         );
 
-        foreach ($summ as $type => $cnt) {
+        foreach ($status as $type => $cnt) {
             Out::out('%s: %d', $titles[$type], $cnt);
         }
 
@@ -115,20 +121,21 @@ class Console
         }
     }
 
+    public function commandActualize($version = '') {
+        if ($version) {
+            $this->executeActualizeOnce($version);
+        } else {
+            $this->executeActualizeAll();
+        }
+    }
+
     public function commandInfo($version = '') {
         if ($version){
 
-            if ($this->manager->canEdit($version)){
-                $descr = $this->manager->getDescription($version);
-                if ($descr){
-                    Out::out($descr);
-                } else {
-                    Out::outError('%s error: empty description', $version);
-                }
+            $descr = $this->versionManager->getMigrationDescription($version);
 
-            } else {
-                Out::outError('%s error: file not found', $version);
-            }
+            Out::out('Description: %s', $descr['description']);
+            Out::out('Location: %s', $descr['location']);
 
         } else {
             $this->outParamsError();
@@ -145,12 +152,15 @@ class Console
     }
 
     public function commandExecuteForce($version = '', $up = '--up') {
-        $this->manager->enableForce();
+        $this->versionManager->checkPermissions(0);
         $this->commandExecute($version, $up);
     }
 
     public function commandHelp() {
-        $cmd = Utils::getModuleDir() . '/commands.txt';
+        Out::out('Migrations:'.PHP_EOL.'   %s'.PHP_EOL, Env::getMigrationDir());
+        Out::out('Usage:'.PHP_EOL.'   %s <command> [<args>]'.PHP_EOL, $this->script);
+
+        $cmd = Env::getModuleDir() . '/commands.txt';
         if (is_file($cmd)){
             Out::out(file_get_contents($cmd));
         }
@@ -162,7 +172,7 @@ class Console
 
         $success = 0;
 
-        $versions = $this->manager->getVersions($action);
+        $versions = $this->versionManager->getVersions($action);
         foreach ($versions as $aItem) {
             if ($this->executeOnce($aItem['version'], $action)) {
                 $success++;
@@ -184,13 +194,46 @@ class Console
 
         do {
             $restart = 0;
-            $ok = $this->manager->startMigration($version, $action, $params);
-            if ($this->manager->needRestart($version)) {
-                $params = $this->manager->getRestartParams($version);
+            $ok = $this->versionManager->startMigration($version, $action, $params);
+            if ($this->versionManager->needRestart($version)) {
+                $params = $this->versionManager->getRestartParams($version);
                 $restart = 1;
             }
 
         } while ($restart == 1);
+
+        return $ok;
+    }
+
+
+    protected function executeActualizeAll() {
+        $versions = $this->versionManager->getVersions('unknown');
+
+        $success = 0;
+
+        foreach ($versions as $aItem) {
+            $ok = $this->executeActualizeOnce($aItem['version']);
+            if ($ok){
+                $success++;
+            }
+        }
+
+        Out::out('migrations unknown down: %d', $success);
+
+        return $success;
+    }
+
+    protected function executeActualizeOnce($version){
+        $ok = false;
+        if ($this->versionManager->restoreUnknown($version)){
+            $ok = $this->executeOnce($version, 'down');
+            if (!$this->versionManager->removeUnknown($version)){
+                Out::outError('%s, error:  unknown version not removed!', $version);
+            }
+
+        } else {
+            Out::outError('%s, error: unknown version not found!', $version);
+        }
 
         return $ok;
     }

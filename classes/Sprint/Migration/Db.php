@@ -4,80 +4,132 @@ namespace Sprint\Migration;
 
 class Db
 {
+    protected $isMssql = false;
+    protected $bitrixDb = null;
 
+    private $querySearch = array();
+    private $queryReplace = array();
 
-    /* @return \CDatabase */
-    public static function getDb() {
-        return $GLOBALS['DB'];
-    }
+    public function __construct(){
+        $this->isMssql = Env::isMssql();
+        $this->bitrixDb = Env::getDb();
 
-    public static function isMssql() {
-        return ($GLOBALS['DBType'] == 'mssql');
-    }
+        $search = array(
+            '#TABLE1#' => Env::getTableVersions(),
+            '#DBNAME#' => Env::getDbName(),
+        );
 
-    /* @return \CDBResult */
-    public static function findAll(){
-        if (self::isMssql()) {
-            return self::getDb()->Query('SELECT * FROM sprint_migration_versions');
+        if (Env::isWin1251()){
+            $search['#CHARSET#'] = 'cp1251';
+            $search['#COLLATE#'] = 'cp1251_general_ci';
         } else {
-            return self::getDb()->Query('SELECT * FROM `sprint_migration_versions`');
+            $search['#CHARSET#'] = 'utf8';
+            $search['#COLLATE#'] = 'utf8_general_ci';
+        }
+
+        $this->querySearch = array_keys($search);
+        $this->queryReplace = array_values($search);
+
+    }
+
+    public function forSql($val){
+        return $this->bitrixDb->ForSql($val);
+    }
+
+    /**
+     * @param $query
+     * @param null $var1
+     * @param null $var2
+     * @return bool|\CDBResult
+     */
+    public function query($query, $var1 = null, $var2 = null) {
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $query = call_user_func_array('sprintf', $params);
+        }
+
+        $query = str_replace($this->querySearch, $this->queryReplace, $query);
+
+        return $this->bitrixDb->Query($query);
+    }
+
+    /**
+     * @return bool|\CDBResult
+     */
+    public function getRecords() {
+        if ($this->isMssql) {
+            return $this->query('SELECT * FROM #TABLE1#');
+        } else {
+            return $this->query('SELECT * FROM `#TABLE1#`');
         }
     }
 
-    /* @return \CDBResult */
-    public static function findByName($versionName){
-        if (self::isMssql()) {
-            return self::getDb()->Query(sprintf('SELECT * FROM sprint_migration_versions WHERE version = \'%s\'', $versionName));
+    /**
+     * @param $versionName
+     * @return bool|\CDBResult
+     */
+    public function getRecordByName($versionName) {
+        $versionName = $this->forSql($versionName);
+
+        if ($this->isMssql) {
+            return $this->query('SELECT * FROM #TABLE1# WHERE version = \'%s\'',
+                $versionName
+            );
+
         } else {
-            return self::getDb()->Query(sprintf('SELECT * FROM `sprint_migration_versions` WHERE `version` = "%s"', $versionName));
+            return $this->query('SELECT * FROM `#TABLE1#` WHERE `version` = "%s"',
+                $versionName
+            );
         }
     }
 
-    /* @return \CDBResult */
-    public static function addRecord($versionName){
-        if (self::isMssql()) {
-            return self::getDb()->Query(sprintf('if not exists(select version from sprint_migration_versions where version=\'%s\')
+    /**
+     * @param $versionName
+     * @param $description
+     * @param $filecode
+     * @return bool|\CDBResult
+     */
+    public function addRecord($versionName, $description = '', $filecode = '') {
+        $versionName = $this->forSql($versionName);
+
+        if ($this->isMssql) {
+            return $this->query('if not exists(select version from #TABLE1# where version=\'%s\')
                     begin
-                        INSERT INTO sprint_migration_versions (version) VALUES	(\'%s\')
-                    end', $versionName, $versionName));
+                        INSERT INTO #TABLE1# (version) VALUES (\'%s\')
+                    end',
+                $versionName,
+                $versionName
+            );
 
         } else {
-            return self::getDb()->Query(sprintf('INSERT IGNORE INTO `sprint_migration_versions` SET `version` = "%s"', $versionName));
+
+            $description = ($description) ? $this->forSql($description) : '';
+            $filecode = ($filecode) ? $this->forSql($filecode) : '';
+
+            return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `description`, `filecode`) VALUES ("%s", "%s", "%s")',
+                $versionName,
+                $description,
+                $filecode
+            );
         }
 
     }
 
-    /* @return \CDBResult */
-    public static function removeRecord($versionName){
-        if (self::isMssql()) {
-            return self::getDb()->Query(sprintf('DELETE FROM sprint_migration_versions WHERE version = \'%s\'', $versionName));
+    /**
+     * @param $versionName
+     * @return bool|\CDBResult
+     */
+    public function removeRecord($versionName) {
+        $versionName = $this->forSql($versionName);
+
+        if ($this->isMssql) {
+            return $this->query('DELETE FROM #TABLE1# WHERE version = \'%s\'',
+                $versionName
+            );
         } else {
-            return self::getDb()->Query(sprintf('DELETE FROM `sprint_migration_versions` WHERE `version` = "%s"', $versionName));
-        }
-
-    }
-
-
-    public static function createTablesIfNotExists() {
-        if (self::isMssql()) {
-            self::getDb()->Query('if not exists (SELECT * FROM sysobjects WHERE name=\'sprint_migration_versions\' AND xtype=\'U\')
-                begin
-                    CREATE TABLE sprint_migration_versions
-                    (id int IDENTITY (1,1) NOT NULL,
-                    version varchar(255) NOT NULL,
-                    PRIMARY KEY (id),
-                    UNIQUE (version))
-                end');
-
-        } else {
-            self::getDb()->Query('CREATE TABLE IF NOT EXISTS `sprint_migration_versions`(
-			  `id` MEDIUMINT NOT NULL AUTO_INCREMENT NOT NULL,
-			  `version` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-			  PRIMARY KEY (id), UNIQUE KEY(version)
-			)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;');
+            return $this->query('DELETE FROM `#TABLE1#` WHERE `version` = "%s"',
+                $versionName
+            );
         }
     }
 }
-
-
-

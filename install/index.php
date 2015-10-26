@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../classes/Sprint/Migration/Env.php';
 
 Class sprint_migration extends CModule
 {
@@ -24,8 +25,7 @@ Class sprint_migration extends CModule
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
 
-        require_once __DIR__ . '/../classes/Sprint/Migration/Utils.php';
-        \Sprint\Migration\Utils::includeLangFile();
+        \Sprint\Migration\Env::includeLangFile();
 
         $this->MODULE_NAME = GetMessage("SPRINT_MIGRATION_MODULE_NAME");
         $this->MODULE_DESCRIPTION = GetMessage("SPRINT_MIGRATION_MODULE_DESCRIPTION");
@@ -41,23 +41,17 @@ Class sprint_migration extends CModule
         } else {
             CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sprint.migration/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
         }
-
-
-        $updaterFile = __DIR__ . '/updater/version' . $this->MODULE_VERSION . '.php';
-
-        if (is_file($updaterFile)){
-            include_once $updaterFile;
-        }
-
     }
 
     function DoUninstall() {
+        //launch upgrade when reinstalled module
+        \Sprint\Migration\Env::setDbOption('upgrade_version', 'unknown');
+
         if (is_dir($_SERVER["DOCUMENT_ROOT"] . "/local/modules/sprint.migration/install/admin")) {
             DeleteDirFiles($_SERVER["DOCUMENT_ROOT"] . "/local/modules/sprint.migration/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
         } else {
             DeleteDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sprint.migration/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
         }
-
         UnRegisterModule($this->MODULE_ID);
     }
 

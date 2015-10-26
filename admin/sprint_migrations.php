@@ -6,17 +6,17 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_ad
 global $APPLICATION;
 $APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATIONS'));
 
-$manager = new Sprint\Migration\Manager();
+$versionManager = new Sprint\Migration\VersionManager();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
 }
 
 include __DIR__ .'/steps/migration_execute.php';
-include __DIR__ .'/steps/migration_descr.php';
+include __DIR__ .'/steps/migration_info.php';
 include __DIR__ .'/steps/migration_list.php';
 include __DIR__ .'/steps/migration_new.php';
-include __DIR__ .'/steps/migration_summary.php';
+include __DIR__ .'/steps/migration_status.php';
 include __DIR__ .'/steps/migration_create.php';
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
@@ -31,25 +31,34 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         padding: 5px 0px;
     }
 
-    .c-migration-block .c-migration-item-is_success,
-    .c-migration-block .c-migration-item-is_new,
-    .c-migration-block .c-migration-item-is_unknown {
+    .c-migration-item-is_success,
+    .c-migration-item-is_new,
+    .c-migration-item-is_unknown {
         text-decoration: none;
-        color: #000;
     }
 
-    .c-migration-block .c-migration-item-is_success {
+    .c-migration-item-is_success {
         color: #080;
     }
 
-    .c-migration-block .c-migration-item-is_new {
+    .c-migration-item-is_new {
         color: #a00;
     }
 
-    .c-migration-block .c-migration-item-is_unknown {
+    .c-migration-item-is_unknown {
         color: #00a;
     }
-
+    .c-migration-adm-info {
+        float: right;
+    }
+    .c-migration-adm-info p{
+        margin: 5px 0px;padding: 0px;
+    }
+    .c-migration-adm-info span{
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+    }
 </style>
 
 <div id="migration_progress" style="margin:0px 0px 10px 0px;"></div>
@@ -86,16 +95,31 @@ $tabControl1->BeginNextTab();
 <div style="float: right" >
 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-filter c-migration-filter-list" />
 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-filter c-migration-filter-new" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_SUMMARY') ?>" onclick="migrationMigrationToggleView('summary');" class="adm-btn c-migration-filter c-migration-filter-summary" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?>" onclick="migrationMigrationToggleView('status');" class="adm-btn c-migration-filter c-migration-filter-status" />
 </div>
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
 <? $tabControl1->End(); ?>
 
 
-<div class="adm-info-message-wrap" style="float: right">
-    <div class="adm-info-message">
+<div class="adm-info-message-wrap c-migration-adm-info">
+<div class="adm-info-message ">
+    <strong>Легенда</strong><br/>
+    <p>
+        <span style="background: #080;"></span>
+        - Выполненные миграции (файл + запись в бд)
+    </p>
+    <p>
+        <span style="background: #a00;"></span>
+        - Новые миграции (только файл)
+    </p>
+    <p>
+        <span style="background: #00a;"></span>
+        - Неизвестные миграции (только запись в бд)
+    </p>
+
+    <p><br/>
         <strong><?= GetMessage('SPRINT_MIGRATION_MIGRATION_DIR') ?></strong><br/>
-        <?$webdir = \Sprint\Migration\Utils::getMigrationWebDir()?>
+        <?$webdir = \Sprint\Migration\Env::getMigrationWebDir()?>
         <?if ($webdir):?>
             <? $href = '/bitrix/admin/fileman_admin.php?' . http_build_query(array(
                     'lang' => LANGUAGE_ID,
@@ -104,10 +128,13 @@ $tabControl1->BeginNextTab();
                 ))?>
             <a href="<?=$href?>" target="_blank"><?=$webdir?></a>
         <?else:?>
-            <?=\Sprint\Migration\Utils::getMigrationDir()?>
+            <?=\Sprint\Migration\Env::getMigrationDir()?>
         <?endif?>
-    </div>
+    </p>
+
 </div>
+</div>
+
 
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
@@ -149,7 +176,7 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationCreateMigration() {
-        migrationExecuteStep('migration_create', {description: $('#migration_migration_descr').val()}, function (data) {
+        migrationExecuteStep('migration_create', {description: $('#migration_migration_descr').val()}, function (result) {
             $('#migration_migration_descr').val('');
             migrationMigrationRefresh();
         });
@@ -173,9 +200,9 @@ $tabControl1->BeginNextTab();
         });
     }
 
-    function migrationMigrationDescr(version) {
-        migrationExecuteStep('migration_descr', {version: version}, function (data) {
-            $('#migration_item_' + version + '_descr').empty().html(data);
+    function migrationMigrationInfo(version) {
+        migrationExecuteStep('migration_info', {version: version}, function (data) {
+            $('#migration_info_' + version).empty().html(data);
         });
     }
 
@@ -184,10 +211,10 @@ $tabControl1->BeginNextTab();
 <script language="JavaScript">
     <?
     
-    $views = array('list', 'new', 'summary');
-    $curView = \COption::GetOptionString('sprint.migration', 'admin_versions_view');
+    $views = array('list', 'new', 'status');
+    $curView = \Sprint\Migration\Env::getDbOption('admin_versions_view');
     $curView = in_array($curView, $views) ? $curView : 'list';
-    
+
     ?>
     
     var migrationView = '<?=$curView?>';

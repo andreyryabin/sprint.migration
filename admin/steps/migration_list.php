@@ -3,11 +3,9 @@
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_list" && check_bitrix_sessid('send_sessid')) {
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
-    if (\COption::GetOptionString('sprint.migration', 'admin_versions_view') != 'list'){
-        \COption::SetOptionString('sprint.migration', 'admin_versions_view', 'list');
-    }
+    \Sprint\Migration\Env::setDbOption('admin_versions_view', 'list');
 
-    $versions = $manager->getVersions('all');
+    $versions = $versionManager->getVersions('all');
 
     ?>
     <?if (!empty($versions)): ?>
@@ -15,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
         <?foreach ($versions as $aItem): ?>
 
             <div class="c-migration-block">
-                <a href="#" onclick="migrationMigrationDescr('<?= $aItem['version'] ?>');return false;" class="c-migration-item-<?= $aItem['type'] ?>"><?= $aItem['version'] ?></a>
+                <a href="#" onclick="migrationMigrationInfo('<?= $aItem['version'] ?>');return false;" class="c-migration-item-<?= $aItem['type'] ?>"><?= $aItem['version'] ?></a>
                 &nbsp;
                 <?if ($aItem['type'] == 'is_new'): ?>
                     <input onclick="migrationExecuteStep('migration_execute', {version: '<?=$aItem['version']?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
@@ -23,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
                 <?if ($aItem['type'] == 'is_success'): ?>
                     <input onclick="migrationExecuteStep('migration_execute', {version: '<?=$aItem['version']?>', action: 'down'});" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
                 <?endif ?>
-                <div id="migration_item_<?= $aItem['version'] ?>_descr"></div>
+                <div id="migration_info_<?= $aItem['version'] ?>"></div>
             </div>
 
         <?endforeach ?>

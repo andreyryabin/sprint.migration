@@ -22,4 +22,8 @@ spl_autoload_register(function ($className) {
 });
 
 \CModule::IncludeModule('iblock');
-\Sprint\Migration\Utils::includeLangFile();
+\Sprint\Migration\Env::includeLangFile();
+
+
+$upgradeManager = new \Sprint\Migration\UpgradeManager();
+$upgradeManager->upgradeIfNeed();
