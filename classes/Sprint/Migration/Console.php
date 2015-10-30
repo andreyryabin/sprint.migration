@@ -43,9 +43,13 @@ class Console
 
     public function commandCreate($descr = '') {
         $result = $this->versionManager->createVersionFile($descr);
-        if ($result){
+        if (!empty($result['version'])){
             Out::out('Created: %s', $result['version']);
+        }
+        if (!empty($result['description'])){
             Out::out('Description: %s', $result['description']);
+        }
+        if (!empty($result['location'])){
             Out::out('Location: %s', $result['location']);
         }
     }
@@ -64,18 +68,46 @@ class Console
         }
     }
 
-    public function commandStatus() {
-        $status = $this->versionManager->getStatus();
+    public function commandStatus($version = '') {
+        if ($version){
+            $titles = array(
+                'is_new' =>     'New',
+                'is_success' => 'Success',
+                'is_unknown' => 'Unknown',
+            );
 
-        $titles = array(
-            'is_new' =>     'new migrations',
-            'is_success' => 'success',
-            'is_unknown' => 'unknown',
-        );
+            $descr = $this->versionManager->getVersionDescription($version);
 
-        foreach ($status as $type => $cnt) {
-            Out::out('%s: %d', $titles[$type], $cnt);
+            $type = $this->versionManager->getVersionType($version);
+            if ($type){
+                if (!empty($titles[$type])){
+                    Out::out('Type: %s', $titles[$type]);
+                }
+                if (!empty($descr['description'])){
+                    Out::out('Description: %s', $descr['description']);
+                }
+                if (!empty($descr['location'])){
+                    Out::out('Location: %s', $descr['location']);
+                }
+            } else {
+                Out::out('%s not found!');
+            }
+
+        } else {
+            $status = $this->versionManager->getStatus();
+
+            $titles = array(
+                'is_new' =>     'New migrations',
+                'is_success' => 'Success',
+                'is_unknown' => 'Unknown',
+            );
+
+            foreach ($status as $type => $cnt) {
+                Out::out('%s: %d', $titles[$type], $cnt);
+            }
         }
+
+
 
     }
 
@@ -115,19 +147,6 @@ class Console
 
         } elseif ($version && $up == '--down') {
             $this->executeOnce($version, 'down');
-
-        } else {
-            $this->outParamsError();
-        }
-    }
-
-    public function commandInfo($version = '') {
-        if ($version){
-
-            $descr = $this->versionManager->getVersionDescription($version);
-
-            Out::out('Description: %s', $descr['description']);
-            Out::out('Location: %s', $descr['location']);
 
         } else {
             $this->outParamsError();

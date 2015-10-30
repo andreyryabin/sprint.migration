@@ -250,7 +250,7 @@ class VersionManager
         return $obj;
     }
 
-    protected function getVersionType($versionName) {
+    public function getVersionType($versionName) {
         if (!$this->checkVersionName($versionName)){
             return false;
         }

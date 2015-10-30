@@ -1,20 +1,20 @@
 Commands:
-  create                            Add new migration
-  create <description>              Add new migration with description
-  status                            Get migrations info
-  list                              Get migrations list
-  migrate                           Up all migrations
-  migrate --up                      Up all migrations
-  migrate --down                    Down all migrations
-  up                                Up one migration
-  up <limit>                        Up limit migrations
-  down                              Down one migration
-  down <limit>                      Down limit migrations
-  execute <version>                 Up this migration
-  execute <version> --up            Up this migration
-  execute <version> --down          Down this migration
-  redo <version>                    Down + Up this migration
-  info <version>                    Get description this migration
-  help                              Show this help
+  create                            Добавить новую миграцию
+  create <description>              Добавить новую миграцию с описанием
+  status                            Показать суммарную информацию по миграциям
+  status <version>                  Показать информацию по выбранной миграции
+  list                              Показать список миграций
+  migrate                           Установить все новые миграции
+  migrate --up                      Установить все новые миграции
+  migrate --down                    Откатить все установленные миграции
+  up                                Установить одну новую миграцию (начиная с первых)
+  up <limit>                        Установить несколько новых миграций (начиная с первых)
+  down                              Откатить одну установленную миграцию (начиная с последних)
+  down <limit>                      Откатить несколько установленных миграций (начиная с последних)
+  execute <version>                 Установить выбранную миграцию
+  execute <version> --up            Установить выбранную миграцию
+  execute <version> --down          Откатить выбранную миграцию
+  redo <version>                    Откатить и установить выбранную миграцию
+  help                              Показать справку
 
 Please send any bug reports as pull-requests to https://bitbucket.org/andrey_ryabin/sprint.migration

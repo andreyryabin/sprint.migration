@@ -37,4 +37,7 @@ $loc["SPRINT_MIGRATION_VIEW"] = "просмотр файла";
 $loc["SPRINT_MIGRATION_UPGRADE_RELOAD"] = "Пересоздание служебных таблиц модуля";
 $loc["SPRINT_MIGRATION_UPGRADE_VERSION"] = "Версия бд";
 $loc["SPRINT_MIGRATION_TEXT2"] = "Подробнее о модуле";
+$loc["SPRINT_MIGRATION_LEGEND_NEW"] = "Новые миграции (только файл)";
+$loc["SPRINT_MIGRATION_LEGEND_SUCCESS"] = "Установленные миграции (файл + запись об установке)";
+$loc["SPRINT_MIGRATION_LEGEND_UNKNOWN"] = "Неизвестные миграции (только запись об установке)";
 ?>

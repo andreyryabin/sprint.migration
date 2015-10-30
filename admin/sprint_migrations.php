@@ -110,16 +110,16 @@ $tabControl1->BeginNextTab();
 <div class="adm-info-message ">
     <strong>Легенда</strong><br/>
     <p>
-        <span style="background: #080;"></span>
-        - Выполненные миграции (файл + запись в бд)
+        <span style="background: #a00;"></span>
+        - <?= GetMessage('SPRINT_MIGRATION_LEGEND_NEW') ?>
     </p>
     <p>
-        <span style="background: #a00;"></span>
-        - Новые миграции (только файл)
+        <span style="background: #080;"></span>
+        - <?= GetMessage('SPRINT_MIGRATION_LEGEND_SUCCESS') ?>
     </p>
     <p>
         <span style="background: #00a;"></span>
-        - Неизвестные миграции (только запись в бд)
+        - <?= GetMessage('SPRINT_MIGRATION_LEGEND_UNKNOWN') ?>
     </p>
 
     <p><br/>
