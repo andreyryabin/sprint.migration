@@ -71,7 +71,7 @@ class Console
     public function commandStatus($version = '') {
         if ($version){
             $titles = array(
-                'is_new' =>     'New',
+                'is_new' =>     'New migration',
                 'is_success' => 'Success',
                 'is_unknown' => 'Unknown',
             );
