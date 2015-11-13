@@ -9,8 +9,12 @@ Commands:
   migrate --down                    Откатить все установленные миграции
   up                                Установить одну новую миграцию (начиная с первых)
   up <limit>                        Установить несколько новых миграций (начиная с первых)
+  up <version>                      Установить выбранную миграцию
+  up --all                          Установить все новые миграции
   down                              Откатить одну установленную миграцию (начиная с последних)
   down <limit>                      Откатить несколько установленных миграций (начиная с последних)
+  down <version>                    Откатить выбранную миграцию
+  down --all                        Откатить все установленные миграции
   execute <version>                 Установить выбранную миграцию
   execute <version> --up            Установить выбранную миграцию
   execute <version> --down          Откатить выбранную миграцию
@@ -19,5 +23,20 @@ Commands:
   force <version> --down            Откатить выбранную миграцию (выполнить метод down даже если миграция не установлена)
   redo <version>                    Откатить и установить выбранную миграцию
   help                              Показать справку
+
+Legend for "list" command:
+  Version0000 (new)                 Новая миграция (только файл)
+  Version0000 (installed)           Установленная миграция (файл + запись об установке)
+  Version0000 (unknown)             Неизвестная миграция (только запись об установке)
+
+Legend for "migrate" command:
+  Version0000 (up) success          Установка миграции прошла успешно
+  Version0000 (down) success        Откат миграции прошел успешно
+  Version0000 (down) error: (text)  Откат миграции не произошел из-за ошибки (текст ошибки)
+
+Legend for "status" command:
+  Status (new)      : N             Новых миграций - N
+  Status (installed): N             Установленных - N
+  Status (unknown)  : N             Неизвестных - N
 
 Please send any bug reports as pull-requests to https://bitbucket.org/andrey_ryabin/sprint.migration

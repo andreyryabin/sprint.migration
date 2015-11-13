@@ -45,7 +45,7 @@ class VersionManager
                     throw new MigrationException('migration already up');
                 }
 
-                if ($action == 'down' && $versionType != 'is_success') {
+                if ($action == 'down' && $versionType != 'is_installed') {
                     throw new MigrationException('migration already down');
                 }
             }
@@ -120,11 +120,25 @@ class VersionManager
         $versionName = 'Version' . date('YmdHis');
         date_default_timezone_set($originTz);
 
+
+        list($extendUse, $extendClass) = explode(' as ', Env::getMigrationExtendClass());
+        $extendUse = trim($extendUse);
+        $extendClass = trim($extendClass);
+
+        if (!empty($extendClass)){
+            $extendUse = 'use ' . $extendUse . ' as ' .  $extendClass . ';' . PHP_EOL;
+        } else {
+            $extendClass = $extendUse;
+            $extendUse = '';
+        }
+
         $str = $this->renderFile(Env::getMigrationTemplate(), array(
             'version' => $versionName,
             'description' => $description,
-            'extendClass' => Env::getMigrationExtendClass()
+            'extendUse' => $extendUse,
+            'extendClass' => $extendClass,
         ));
+
         $file = $this->getVersionFile($versionName);
         file_put_contents($file, $str);
 
@@ -180,7 +194,7 @@ class VersionManager
             $isFile = in_array($val, $files);
 
             if ($isRecord && $isFile) {
-                $type = 'is_success';
+                $type = 'is_installed';
             } elseif (!$isRecord && $isFile) {
                 $type = 'is_new';
             } else {
@@ -188,7 +202,7 @@ class VersionManager
             }
 
             if (($for == 'up' && $type == 'is_new') ||
-                ($for == 'down' && $type == 'is_success') ||
+                ($for == 'down' && $type == 'is_installed') ||
                 ($for == 'unknown' && $type == 'is_unknown') ||
                 ($for == 'all')){
 
@@ -208,7 +222,7 @@ class VersionManager
 
         $summ = array(
             'is_new' => 0,
-            'is_success' => 0,
+            'is_installed' => 0,
             'is_unknown' => 0,
         );
 
@@ -267,7 +281,7 @@ class VersionManager
         }
 
         if ($isRecord && $isFile) {
-            $type = 'is_success';
+            $type = 'is_installed';
         } elseif (!$isRecord && $isFile) {
             $type = 'is_new';
         } else {
@@ -281,7 +295,7 @@ class VersionManager
         return Env::getMigrationDir() . '/'.$versionName . '.php';
     }
 
-    protected function checkVersionName($versionName) {
+    public function checkVersionName($versionName) {
         return preg_match('/^Version\d+$/i', $versionName);
     }
 

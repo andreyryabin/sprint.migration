@@ -1,8 +1,8 @@
 <?php
 
-define('CACHED_b_iblock_type', false);
-define('CACHED_b_iblock', false);
-define('CACHED_b_iblock_property_enum', false);
+defined('CACHED_b_iblock_type') || define('CACHED_b_iblock_type', false);
+defined('CACHED_b_iblock') || define('CACHED_b_iblock', false);
+defined('CACHED_b_iblock_property_enum') || define('CACHED_b_iblock_property_enum', false);
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
@@ -36,13 +36,13 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         padding: 5px 0px;
     }
 
-    .c-migration-item-is_success,
+    .c-migration-item-is_installed,
     .c-migration-item-is_new,
     .c-migration-item-is_unknown {
         text-decoration: none;
     }
 
-    .c-migration-item-is_success {
+    .c-migration-item-is_installed {
         color: #080;
     }
 
@@ -115,7 +115,7 @@ $tabControl1->BeginNextTab();
     </p>
     <p>
         <span style="background: #080;"></span>
-        - <?= GetMessage('SPRINT_MIGRATION_LEGEND_SUCCESS') ?>
+        - <?= GetMessage('SPRINT_MIGRATION_LEGEND_INSTALLED') ?>
     </p>
     <p>
         <span style="background: #00a;"></span>

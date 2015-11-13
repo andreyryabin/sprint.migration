@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
     $status = $versionManager->getStatus();
     $titles = array(
         'is_new' => GetMessage('SPRINT_MIGRATION_IS_NEW'),
-        'is_success' => GetMessage('SPRINT_MIGRATION_IS_SUCCESS'),
+        'is_installed' => GetMessage('SPRINT_MIGRATION_IS_INSTALLED'),
         'is_unknown' => GetMessage('SPRINT_MIGRATION_IS_UNKNOWN'),
     );
     ?>

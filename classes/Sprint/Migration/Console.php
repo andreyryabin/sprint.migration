@@ -34,7 +34,7 @@ class Console
 
 
         if (!method_exists($this, $method)) {
-            Out::out('Command %s not found, see help', $method);
+            Out::out('Command not found, see help');
             return false;
         }
 
@@ -44,13 +44,13 @@ class Console
     public function commandCreate($descr = '') {
         $result = $this->versionManager->createVersionFile($descr);
         if (!empty($result['version'])){
-            Out::out('Created: %s', $result['version']);
+            Out::out('Version:     %s', $result['version']);
         }
         if (!empty($result['description'])){
             Out::out('Description: %s', $result['description']);
         }
         if (!empty($result['location'])){
-            Out::out('Location: %s', $result['location']);
+            Out::out('Location:    %s', $result['location']);
         }
     }
 
@@ -59,7 +59,7 @@ class Console
 
         $titles = array(
             'is_new' => '(new)',
-            'is_success' => '',
+            'is_installed' => '',
             'is_unknown' => '(unknown)',
         );
 
@@ -69,25 +69,25 @@ class Console
     }
 
     public function commandStatus($version = '') {
-        if ($version){
-            $titles = array(
-                'is_new' =>     'New migration',
-                'is_success' => 'Success',
-                'is_unknown' => 'Unknown',
-            );
+        $titles = array(
+            'is_new' =>     '(new)',
+            'is_installed' => '(installed)',
+            'is_unknown' => '(unknown)',
+        );
 
+        if ($version){
             $descr = $this->versionManager->getVersionDescription($version);
 
             $type = $this->versionManager->getVersionType($version);
             if ($type){
                 if (!empty($titles[$type])){
-                    Out::out('Type: %s', $titles[$type]);
+                    Out::out('Status:      %s', $titles[$type]);
                 }
                 if (!empty($descr['description'])){
                     Out::out('Description: %s', $descr['description']);
                 }
                 if (!empty($descr['location'])){
-                    Out::out('Location: %s', $descr['location']);
+                    Out::out('Location:    %s', $descr['location']);
                 }
             } else {
                 Out::out('%s not found!');
@@ -96,19 +96,11 @@ class Console
         } else {
             $status = $this->versionManager->getStatus();
 
-            $titles = array(
-                'is_new' =>     'New migrations',
-                'is_success' => 'Success',
-                'is_unknown' => 'Unknown',
-            );
+            Out::out('Status (new)      : %d', $status['is_new']);
+            Out::out('Status (installed): %d',$status['is_installed']);
+            Out::out('Status (unknown)  : %d', $status['is_unknown']);
 
-            foreach ($status as $type => $cnt) {
-                Out::out('%s: %d', $titles[$type], $cnt);
-            }
         }
-
-
-
     }
 
     public function commandMigrate($up = '--up') {
@@ -123,19 +115,25 @@ class Console
         }
     }
 
-    public function commandUp($limit = 1) {
-        $limit = (int)$limit;
-        if ($limit > 0) {
-            $this->executeAll('up', $limit);
+    public function commandUp($var = 1) {
+        if ($this->versionManager->checkVersionName($var)){
+            $this->executeOnce($var, 'up');
+        } elseif ($var == '--all') {
+            $this->executeAll('up');
+        } elseif (is_numeric($var) && intval($var) > 0){
+            $this->executeAll('up', intval($var));
         } else {
             $this->outParamsError();
         }
     }
 
-    public function commandDown($limit = 1) {
-        $limit = (int)$limit;
-        if ($limit > 0) {
-            $this->executeAll('down', $limit);
+    public function commandDown($var = 1) {
+        if ($this->versionManager->checkVersionName($var)){
+            $this->executeOnce($var, 'down');
+        } elseif ($var == '--all') {
+            $this->executeAll('down');
+        } elseif (is_numeric($var) && intval($var) > 0){
+            $this->executeAll('down', intval($var));
         } else {
             $this->outParamsError();
         }
@@ -201,7 +199,7 @@ class Console
             }
         }
 
-        Out::out('migrations %s: %d', $action, $success);
+        Out::out('migrations (%s): %d', $action, $success);
 
         return $success;
     }

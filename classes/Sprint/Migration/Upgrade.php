@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration;
 
-abstract class Upgrade
+class Upgrade
 {
 
     protected $debug = false;
@@ -11,8 +11,9 @@ abstract class Upgrade
         $this->debug = $debug;
     }
 
-    abstract public function doUpgrade();
-
+    public function doUpgrade() {
+        //
+    }
 
     protected function isMssql(){
         return Env::isMssql();

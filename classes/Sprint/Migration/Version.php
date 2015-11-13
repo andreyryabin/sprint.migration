@@ -5,17 +5,20 @@ namespace Sprint\Migration;
 use Sprint\Migration\Exceptions\Restart as RestartException;
 use Sprint\Migration\Exceptions\Migration as MigrationException;
 
-abstract class Version
+class Version
 {
 
     protected $description = "";
 
     protected $params = array();
 
-    abstract public function up();
+    public function up() {
+        //
+    }
 
-    abstract public function down();
-
+    public function down() {
+        //
+    }
 
     public function getDescription() {
         return $this->description;

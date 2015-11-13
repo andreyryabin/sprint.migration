@@ -8,7 +8,7 @@ class Out
     protected static $colors = array(
         '/' => array("\x1b[0m", '</span>'),
         'is_unknown' => array("\x1b[0;34m", '<span style="color:#00a">'),
-        'is_success' => array("\x1b[0;32m", '<span style="color:#080">'),
+        'is_installed' => array("\x1b[0;32m", '<span style="color:#080">'),
         'is_new' => array("\x1b[0;31m", '<span style="color:#a00">'),
         'blue' => array("\x1b[0;34m", '<span style="color:#00a">'),
         'green' => array("\x1b[0;32m", '<span style="color:#080">'),

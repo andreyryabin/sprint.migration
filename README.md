@@ -58,28 +58,6 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 по умолчанию: **/local/php_interface/migrations** или **/bitrix/php_interface/migrations**
 
 
-Конфиг модуля
--------------------------
-Расположение
-**/local/php_interface/migrations.cfg.php** или **/bitrix/php_interface/migrations.cfg.php**
-
-```
-#!php
-<?php return array (
-  'migration_dir' => '',
-  'migration_template' => '',
-  'migration_table' => '',
-  'migration_extend_class' => '',
-);
-```
-
-**migration_dir** - директория для миграций (относительно DOC_ROOT), по умолчанию local/php_interface/migrations или bitrix/php_interface/migrations
-**migration_table** - таблица в бд с миграциями, по умолчанию sprint_migration_versions
-**migration_extend_class** - класс от которого наследуются миграция, по умолчанию Version (ваш класс должен наследоваться от Version)
-
-Ни один из параметров не является обязательным
-
-
 Пример файла миграции:
 -------------------------
 /bitrix/php_interface/migrations/Version20150520000001.php
@@ -106,6 +84,105 @@ class Version20150520000001 extends Version {
 
 в нем необходимо реализовать 2 метода up и down - которые запускаются при накате и откате миграции,
 например создание инфоблоков или какое либо другое изменение, которое должны получить все копии проекта.
+
+
+
+Конфиг модуля
+-------------------------
+Расположение
+**/local/php_interface/migrations.cfg.php** или **/bitrix/php_interface/migrations.cfg.php**
+
+```
+#!php
+<?php return array (
+  'migration_dir' => '',
+  'migration_template' => '',
+  'migration_table' => '',
+  'migration_extend_class' => '',
+);
+```
+
+**migration_dir** - директория для миграций (относительно DOC_ROOT), по умолчанию local/php_interface/migrations или bitrix/php_interface/migrations
+**migration_table** - таблица в бд с миграциями, по умолчанию sprint_migration_versions
+**migration_extend_class** - класс от которого наследуются миграция, по умолчанию Version (ваш класс должен наследоваться от Version)
+**migration_template** - путь до шаблона файла миграции (если есть желание полностью его переписать), по умолчанию  ДиректорияМодуля/templates/version.php
+
+Ни один из параметров не является обязательным
+
+Пример вашего класса от которого наследуются классы миграций
+
+1) укажите ваш класс в конфиге
+```
+#!php
+<?php return array (
+    'migration_extend_class' => '\Acme\MyVersion as MyVersion',
+);
+```
+или
+
+```
+#!php
+<?php return array (
+    'migration_extend_class' => '\Acme\MyVersion',
+);
+```
+
+2) создайте этот класс
+#!php
+namespace Acme;
+use \Sprint\Migration\Version;
+
+class MyVersion extends Version
+{
+    // ваш код
+}
+```
+
+3) создайте миграцю migrate.php create, получится примерно так
+#!php
+<?php
+
+namespace Sprint\Migration;
+use \Acme\MyVersion as MyVersion;
+
+class Version20151113185212 extends MyVersion {
+
+    protected $description = "";
+
+    public function up(){
+        //
+    }
+
+    public function down(){
+        //
+    }
+
+}
+```
+
+
+Информация разработчиков
+--------------------------------
+Использовать какие-либо внутренние классы модуля не рекомендуется,
+так как совместимость от версии к версии модуля гарантируется для
+
+1) методов класса Version (который наследуют ваши миграции)
+2) методов в хелперах (подключаются в классе миграции)
+3) консольных команд описанных в commands.txt
+4) конфига migrations.cfg.php
+
+Миграция не выполняется если в методах up() или down()
+вызывается return false или произошло исключение, в остальных случаях миграция выполняется успешно
+
+Миграции при установке всех сразу выполняются от более старых к новым (в имени класса и файла зашита дата)
+при откате наоборот - от более новых к старым
+
+При установке\откате всех миграций сразу, в случае если одну из миграций не удается выполнить, она пропускается и
+выполняются следующие миграции после нее, это сделано намеренно чтобы не стопорилась установка\откат миграций,
+поэтому код миграций должен быть независимым друг от друга, например если в одной миграции создается инфоблок,
+то в другой, перед тем как добавить какое-либо свойство, необходимо проверить существование этого инфоблока
+такие методы есть в Sprint\Migration\Helpers\IblockHelper, например addIblockIfNotExists, addPropertyIfNotExists
+
 
 
 Админка
