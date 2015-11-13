@@ -1,4 +1,4 @@
-Модуль миграций для CMS Битрикс ([http://www.1c-bitrix.ru/](http://www.1c-bitrix.ru/)), помогающий синхронизировать изменения между нескольким копиями бд. 
+Модуль миграций для CMS Битрикс ([http://www.1c-bitrix.ru/](http://www.1c-bitrix.ru/)), помогающий синхронизировать изменения между нескольким копиями бд.
 --------------------------------------------------------------------------------------------------------
 * Маркетплейс 1с-Битрикс: [http://marketplace.1c-bitrix.ru/solutions/sprint.migration/](http://marketplace.1c-bitrix.ru/solutions/sprint.migration/)
 * Репозиторий проекта: [https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration)
@@ -57,16 +57,27 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 -------------------------
 по умолчанию: **/local/php_interface/migrations** или **/bitrix/php_interface/migrations**
 
-или указать свою директорию в файле настроек
+
+Конфиг модуля
+-------------------------
+Расположение
 **/local/php_interface/migrations.cfg.php** или **/bitrix/php_interface/migrations.cfg.php**
 
 ```
 #!php
 <?php return array (
-  'migration_dir' => '/../scripts/migration/sprint/',
+  'migration_dir' => '',
+  'migration_template' => '',
+  'migration_table' => '',
+  'migration_extend_class' => '',
 );
-
 ```
+
+**migration_dir** - директория для миграций (относительно DOC_ROOT), по умолчанию local/php_interface/migrations или bitrix/php_interface/migrations
+**migration_table** - таблица в бд с миграциями, по умолчанию sprint_migration_versions
+**migration_extend_class** - класс от которого наследуются миграция, по умолчанию Version (ваш класс должен наследоваться от Version)
+
+Ни один из параметров не является обязательным
 
 
 Пример файла миграции:

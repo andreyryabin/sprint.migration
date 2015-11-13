@@ -162,7 +162,7 @@ class Console
         }
     }
 
-    public function commandExecuteForce($version = '', $up = '--up') {
+    public function commandForce($version = '', $up = '--up') {
         $this->versionManager->checkPermissions(0);
         $this->commandExecute($version, $up);
     }
@@ -172,8 +172,15 @@ class Console
         Out::out('Usage:'.PHP_EOL.'   php %s <command> [<args>]'.PHP_EOL, $this->script);
 
         $cmd = Env::getModuleDir() . '/commands.txt';
+
         if (is_file($cmd)){
-            Out::out(file_get_contents($cmd));
+
+            $msg = file_get_contents($cmd);
+            if (Env::isWin1251()){
+                $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
+            }
+
+            Out::out($msg);
         }
     }
 

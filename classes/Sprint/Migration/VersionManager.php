@@ -120,9 +120,10 @@ class VersionManager
         $versionName = 'Version' . date('YmdHis');
         date_default_timezone_set($originTz);
 
-        $str = $this->renderVersionFile(array(
+        $str = $this->renderFile(Env::getMigrationTemplate(), array(
             'version' => $versionName,
             'description' => $description,
+            'extendClass' => Env::getMigrationExtendClass()
         ));
         $file = $this->getVersionFile($versionName);
         file_put_contents($file, $str);
@@ -284,14 +285,16 @@ class VersionManager
         return preg_match('/^Version\d+$/i', $versionName);
     }
 
-    protected function renderVersionFile($vars = array()) {
+    protected function renderFile($file, $vars = array()) {
         if (is_array($vars)) {
             extract($vars, EXTR_SKIP);
         }
 
         ob_start();
 
-        include(Env::getVersionTemplateFile());
+        if (is_file($file)){
+            include $file;
+        }
 
         $html = ob_get_clean();
 

@@ -5,7 +5,7 @@ use \Sprint\Migration\Helpers\IblockHelper;
 use \Sprint\Migration\Helpers\EventHelper;
 use \Sprint\Migration\Helpers\UserTypeEntityHelper;
 
-class <?=$version?> extends Version {
+class <?=$version?> extends <?=$extendClass?> {
 
     protected $description = "<?=$description?>";
 

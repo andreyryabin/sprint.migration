@@ -50,7 +50,7 @@ class Env
             }
         }
 
-        return isset(self::$fileOptions[$val]) ? self::$fileOptions[$val] : $default;
+        return !empty(self::$fileOptions[$val]) ? self::$fileOptions[$val] : $default;
     }
     
     
@@ -93,7 +93,7 @@ class Env
         }
     }
 
-    public static function getVersionTemplateFile(){
+    public static function getMigrationTemplate(){
         if (self::getFileOption('migration_template') && is_file(self::getDocRoot() . self::getFileOption('migration_template'))){
             return self::getDocRoot() . self::getFileOption('migration_template');
         } else {
@@ -101,8 +101,12 @@ class Env
         }
     }
 
-    public static function getTableVersions(){
+    public static function getMigrationTable(){
         return self::getFileOption('migration_table', 'sprint_migration_versions');
+    }
+
+    public static function getMigrationExtendClass(){
+        return self::getFileOption('migration_extend_class', 'Version');
     }
 
     public static function getMigrationDir(){

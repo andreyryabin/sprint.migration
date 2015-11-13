@@ -43,4 +43,3 @@ $loc["SPRINT_MIGRATION_LEGEND_UNKNOWN"] = "Неизвестные миграци
 $loc["SPRINT_MIGRATION_LEGEND_NEW_1"] = "Новая миграция (только файл)";
 $loc["SPRINT_MIGRATION_LEGEND_SUCCESS_1"] = "Установленная миграция (файл + запись об установке)";
 $loc["SPRINT_MIGRATION_LEGEND_UNKNOWN_1"] = "Неизвестная миграция (только запись об установке)";
-?>

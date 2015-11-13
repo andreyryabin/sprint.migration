@@ -15,7 +15,7 @@ class Db
         $this->bitrixDb = Env::getDb();
 
         $search = array(
-            '#TABLE1#' => Env::getTableVersions(),
+            '#TABLE1#' => Env::getMigrationTable(),
             '#DBNAME#' => Env::getDbName(),
         );
 
