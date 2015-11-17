@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../classes/Sprint/Migration/Env.php';
+\Sprint\Migration\Env::includeLangFile();
 
 Class sprint_migration extends CModule
 {
@@ -24,8 +25,6 @@ Class sprint_migration extends CModule
 
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
-
-        \Sprint\Migration\Env::includeLangFile();
 
         $this->MODULE_NAME = GetMessage("SPRINT_MIGRATION_MODULE_NAME");
         $this->MODULE_DESCRIPTION = GetMessage("SPRINT_MIGRATION_MODULE_DESCRIPTION");

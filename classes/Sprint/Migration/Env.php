@@ -6,6 +6,8 @@ class Env
 {
 
     private static $fileOptions = array();
+    private static $langIncluded = false;
+
 
     public static function isWin1251() {
         return (defined('BX_UTF') && BX_UTF === true) ? 0 : 1;
@@ -82,6 +84,10 @@ class Env
     public static function includeLangFile() {
         global $MESS;
 
+        if (self::$langIncluded){
+            return false;
+        }
+
         $loc = array();
         include self::getModuleDir() . '/localization/ru_utf8.php';
 
@@ -91,6 +97,8 @@ class Env
             }
             $MESS[$key] = $msg;
         }
+
+        self::$langIncluded = true;
     }
 
     public static function getMigrationTemplate(){
