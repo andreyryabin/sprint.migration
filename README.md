@@ -4,10 +4,27 @@
 * Репозиторий проекта: [https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration)
 * Composer пакет: [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
 
+Установка через composer
+-------------------------
+Пример вашего composer.json с установкой модуля в www/local/modules/
+```
+#!json
+{
+  "minimum-stability": "dev",
+  "extra": {
+    "installer-paths": {
+      "www/local/modules/{$name}/": ["type:bitrix-module"]
+    }
+  },
+  "require": {
+    "andreyryabin/sprint.migration": "dev-master"
+  },
+}
 
-При установке модуля через composer (composer require andreyryabin/sprint.migration)
-самостоятельно сделайте симлинк директории vendor/andreyryabin/sprint.migration
-в директорию local/modules/sprint.migration или bitrix/modules/sprint.migration
+```
+
+
+
 
 Консоль
 -------------------------
