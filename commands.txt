@@ -26,7 +26,7 @@ Commands:
 
 Legend for "list" command:
   Version0000 (new)                 Новая миграция (только файл)
-  Version0000 (installed)           Установленная миграция (файл + запись об установке)
+  Version0000                       Установленная миграция (файл + запись об установке)
   Version0000 (unknown)             Неизвестная миграция (только запись об установке)
 
 Legend for "migrate" command:
