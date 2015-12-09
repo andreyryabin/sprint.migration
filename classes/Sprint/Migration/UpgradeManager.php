@@ -45,6 +45,7 @@ class UpgradeManager
             return false;
         }
 
+        /** @noinspection PhpIncludeInspection */
         require_once($upgradeFile);
 
         $class = 'Sprint\Migration\\' . $name;

@@ -1,6 +1,7 @@
 <?php
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_list" && check_bitrix_sessid('send_sessid')) {
+    /** @noinspection PhpIncludeInspection */
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
     \Sprint\Migration\Module::setDbOption('admin_versions_view', 'list');
@@ -33,6 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_li
         <?= GetMessage('SPRINT_MIGRATION_LIST_EMPTY') ?>
     <?endif ?>
     <?
+    /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
     die();
 }

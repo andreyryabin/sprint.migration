@@ -16,6 +16,7 @@ spl_autoload_register(function ($className) {
 
         $fileName = ($includePath !== null ? $includePath . DIRECTORY_SEPARATOR : '') . $fileName;
         if (is_readable($fileName)) {
+            /** @noinspection PhpIncludeInspection */
             require $fileName;
         }
     }
@@ -23,9 +24,7 @@ spl_autoload_register(function ($className) {
 
 \CModule::IncludeModule('iblock');
 
-
-require_once __DIR__ .'/locale/ru.php';
-
+include(__DIR__ .'/locale/ru.php');
 
 $upgradeManager = new \Sprint\Migration\UpgradeManager();
 $upgradeManager->upgradeIfNeed();

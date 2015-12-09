@@ -3,21 +3,21 @@
 namespace Sprint\Migration\Helpers;
 /**
  * USER_TYPE_ID
- * video Видео
- * string Строка
- * integer Целое число
- * double Число
+ * video пїЅпїЅпїЅпїЅпїЅ
+ * string пїЅпїЅпїЅпїЅпїЅпїЅ
+ * integer пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+ * double пїЅпїЅпїЅпїЅпїЅ
  * datetime
- * Дата со временем
- * date Дата
- * boolean Да/Нет
- * file Файл
- * enumeration Список
- * iblock_section Привязка к разделам инф. блоков
- * iblock_element Привязка к элементам инф. блоков
- * vote Опрос
- * string_formatted Шаблон
- * SHOW_FILTER    N не показывать    I точное совпадение    E поиск по маске    S поиск по подстроке
+ * пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+ * date пїЅпїЅпїЅпїЅ
+ * boolean пїЅпїЅ/пїЅпїЅпїЅ
+ * file пїЅпїЅпїЅпїЅ
+ * enumeration пїЅпїЅпїЅпїЅпїЅпїЅ
+ * iblock_section пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅ
+ * iblock_element пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅ
+ * vote пїЅпїЅпїЅпїЅпїЅ
+ * string_formatted пїЅпїЅпїЅпїЅпїЅпїЅ
+ * SHOW_FILTER    N пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ    I пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ    E пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ    S пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
 
 class UserTypeEntityHelper
@@ -35,6 +35,7 @@ class UserTypeEntityHelper
 
 
     public function getUserTypeEntity($entityId, $fieldName) {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbRes = \CUserTypeEntity::GetList(array(), array('ENTITY_ID' => $entityId, 'FIELD_NAME' => $fieldName));
         $aItem = $dbRes->Fetch();
         return (!empty($aItem)) ? $aItem : false;

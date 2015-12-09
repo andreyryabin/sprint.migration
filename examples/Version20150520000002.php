@@ -40,6 +40,7 @@ class Version20150520000002 extends Version {
         $helper = new IblockHelper();
         $iblockId1 = $helper->getIblockId('content_news');
 
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbRes = \CIBlockElement::GetList(array(), array('IBLOCK_ID' => $iblockId1), false, array('nTopCount' => 10));
 
         $bFound = 0;

@@ -20,6 +20,7 @@ if (empty($_SERVER["DOCUMENT_ROOT"])){
 }
 
 $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
+/** @noinspection PhpIncludeInspection */
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 
 if (\CModule::IncludeModule('sprint.migration')){
@@ -30,5 +31,5 @@ if (\CModule::IncludeModule('sprint.migration')){
 }
 
 
-
+/** @noinspection PhpIncludeInspection */
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_after.php");

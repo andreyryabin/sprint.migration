@@ -48,6 +48,7 @@ class Module
         if (empty(self::$fileOptions)){
             $file = self::getPhpInterfaceDir() . '/migrations.cfg.php';
             if (is_file($file)){
+                /** @noinspection PhpIncludeInspection */
                 self::$fileOptions = include $file;
             }
         }
@@ -70,7 +71,7 @@ class Module
     }
 
     public static function getModuleDir(){
-        if (is_dir(self::getDocRoot() . '/local/modules/sprint.migration')) {
+        if (is_file(self::getDocRoot() . '/local/modules/sprint.migration/include.php')) {
             return self::getDocRoot() . '/local/modules/sprint.migration';
         } else {
             return self::getDocRoot() . '/bitrix/modules/sprint.migration';

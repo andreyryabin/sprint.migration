@@ -132,10 +132,12 @@ class IblockHelper
     }
 
     public function getIblock($code) {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return \CIBlock::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N', 'CODE' => $code))->Fetch();
     }
 
     public function getIblocks() {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbResult = \CIBlock::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N'));
         $list = array();
         while ($aItem = $dbResult->Fetch()) {

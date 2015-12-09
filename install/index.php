@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ .'/../locale/ru.php';
-
 Class sprint_migration extends CModule
 {
     var $MODULE_ID = "sprint.migration";
@@ -18,12 +16,12 @@ Class sprint_migration extends CModule
     function sprint_migration() {
         $arModuleVersion = array();
 
-        $path = str_replace("\\", "/", __FILE__);
-        $path = substr($path, 0, strlen($path) - strlen("/index.php"));
-        include($path . "/version.php");
+        include(__DIR__ . "/version.php");
 
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
+
+        include(__DIR__ .'/../locale/ru.php');
 
         $this->MODULE_NAME = GetMessage("SPRINT_MIGRATION_MODULE_NAME");
         $this->MODULE_DESCRIPTION = GetMessage("SPRINT_MIGRATION_MODULE_DESCRIPTION");
@@ -33,23 +31,13 @@ Class sprint_migration extends CModule
 
     function DoInstall() {
         RegisterModule($this->MODULE_ID);
-
-        if (is_dir($_SERVER["DOCUMENT_ROOT"] . "/local/modules/sprint.migration/install/admin")) {
-            CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/local/modules/sprint.migration/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
-        } else {
-            CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sprint.migration/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
-        }
+        CopyDirFiles(__DIR__ . "/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
     }
 
     function DoUninstall() {
         //launch upgrade when reinstalled module
         \Sprint\Migration\Module::setDbOption('upgrade_version', 'unknown');
-
-        if (is_dir($_SERVER["DOCUMENT_ROOT"] . "/local/modules/sprint.migration/install/admin")) {
-            DeleteDirFiles($_SERVER["DOCUMENT_ROOT"] . "/local/modules/sprint.migration/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
-        } else {
-            DeleteDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sprint.migration/install/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
-        }
+        DeleteDirFiles(__DIR__ . "/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
         UnRegisterModule($this->MODULE_ID);
     }
 

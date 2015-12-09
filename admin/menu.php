@@ -1,7 +1,7 @@
 <?
 global $APPLICATION;
 
-require_once __DIR__ .'/../locale/ru.php';
+include(__DIR__ .'/../locale/ru.php');
 
 if ($APPLICATION->GetGroupRight("sprint.migration") != "D") {
     $aMenu = array(

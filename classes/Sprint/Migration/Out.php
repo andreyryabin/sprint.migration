@@ -47,6 +47,7 @@ class Out
         $total = (int) $total;
 
         if (self::canOutAsAdminMessage()) {
+            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             \CAdminMessage::ShowMessage(array(
                 "MESSAGE" => $msg,
                 "DETAILS" => "#PROGRESS_BAR#",
@@ -74,6 +75,7 @@ class Out
         }
         if (self::canOutAsAdminMessage()) {
             $msg = self::prepareToHtml($msg);
+            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             \CAdminMessage::ShowMessage(array("MESSAGE" => $msg, 'HTML' => true, 'TYPE' => 'OK'));
         } elseif (self::canOutAsHtml()) {
             self::outToHtml('[green]' . $msg . '[/]');
@@ -90,6 +92,7 @@ class Out
         }
         if (self::canOutAsAdminMessage()) {
             $msg = self::prepareToHtml($msg);
+            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             \CAdminMessage::ShowMessage(array("MESSAGE" => $msg, 'HTML' => true, 'TYPE' => 'ERROR'));
         } elseif (self::canOutAsHtml()) {
             self::outToHtml('[red]' . $msg . '[/]');

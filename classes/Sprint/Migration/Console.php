@@ -39,6 +39,7 @@ class Console
         }
 
         call_user_func_array(array($this, $method), $args);
+        return true;
     }
 
     public function commandCreate($descr = '') {

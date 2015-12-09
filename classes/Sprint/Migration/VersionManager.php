@@ -253,6 +253,8 @@ class VersionManager
         }
 
         ob_start();
+
+        /** @noinspection PhpIncludeInspection */
         require_once($file);
         ob_end_clean();
 
@@ -307,6 +309,7 @@ class VersionManager
         ob_start();
 
         if (is_file($file)){
+            /** @noinspection PhpIncludeInspection */
             include $file;
         }
 

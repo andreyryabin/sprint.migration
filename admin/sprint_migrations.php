@@ -4,6 +4,7 @@ defined('CACHED_b_iblock_type') || define('CACHED_b_iblock_type', false);
 defined('CACHED_b_iblock') || define('CACHED_b_iblock', false);
 defined('CACHED_b_iblock_property_enum') || define('CACHED_b_iblock_property_enum', false);
 
+/** @noinspection PhpIncludeInspection */
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
 \CModule::IncludeModule("sprint.migration");
@@ -24,16 +25,17 @@ include __DIR__ .'/steps/migration_new.php';
 include __DIR__ .'/steps/migration_status.php';
 include __DIR__ .'/steps/migration_create.php';
 
+/** @noinspection PhpIncludeInspection */
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 
 ?>
 <style type="text/css">
 
     .c-migration-block {
-        padding: 0px 0px 8px;
+        padding: 0 0 8px;
     }
     .c-migration-descr {
-        padding: 5px 0px;
+        padding: 5px 0;
     }
 
     .c-migration-item-is_installed,
@@ -57,7 +59,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         float: right;
     }
     .c-migration-adm-info p{
-        margin: 5px 0px;padding: 0px;
+        margin: 5px 0;padding: 0;
     }
     .c-migration-adm-info span{
         display: inline-block;
@@ -66,7 +68,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
     }
 </style>
 
-<div id="migration_progress" style="margin:0px 0px 10px 0px;"></div>
+<div id="migration_progress" style="margin:0 0 10px 0;"></div>
 
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
     array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB1_TITLE')),
@@ -230,4 +232,6 @@ $tabControl1->BeginNextTab();
     
 </script>
 
-<? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php"); ?>
+<? /** @noinspection PhpIncludeInspection */
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");
+?>
