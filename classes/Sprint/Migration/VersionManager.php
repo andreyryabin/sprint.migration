@@ -58,8 +58,8 @@ class VersionManager
                 $ok = $versionInstance->down();
             }
 
-            if (Env::getApp()->GetException()){
-                throw new MigrationException(Env::getApp()->GetException()->GetString());
+            if (Module::getApp()->GetException()){
+                throw new MigrationException(Module::getApp()->GetException()->GetString());
             }
 
             if ($ok === false) {
@@ -121,7 +121,7 @@ class VersionManager
         date_default_timezone_set($originTz);
 
 
-        list($extendUse, $extendClass) = explode(' as ', Env::getMigrationExtendClass());
+        list($extendUse, $extendClass) = explode(' as ', Module::getMigrationExtendClass());
         $extendUse = trim($extendUse);
         $extendClass = trim($extendClass);
 
@@ -132,7 +132,7 @@ class VersionManager
             $extendUse = '';
         }
 
-        $str = $this->renderFile(Env::getMigrationTemplate(), array(
+        $str = $this->renderFile(Module::getMigrationTemplate(), array(
             'version' => $versionName,
             'description' => $description,
             'extendUse' => $extendUse,
@@ -170,7 +170,7 @@ class VersionManager
         }
 
         /* @var $item \SplFileInfo */
-        $directory = new \DirectoryIterator(Env::getMigrationDir());
+        $directory = new \DirectoryIterator(Module::getMigrationDir());
         foreach ($directory as $item) {
             $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
             if ($this->checkVersionName($fileName)) {
@@ -292,7 +292,7 @@ class VersionManager
     }
 
     protected function getVersionFile($versionName) {
-        return Env::getMigrationDir() . '/'.$versionName . '.php';
+        return Module::getMigrationDir() . '/'.$versionName . '.php';
     }
 
     public function checkVersionName($versionName) {

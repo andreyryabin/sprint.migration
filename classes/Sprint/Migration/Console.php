@@ -166,15 +166,15 @@ class Console
     }
 
     public function commandHelp() {
-        Out::out('Migrations:'.PHP_EOL.'   %s'.PHP_EOL, Env::getMigrationDir());
+        Out::out('Migrations:'.PHP_EOL.'   %s'.PHP_EOL, Module::getMigrationDir());
         Out::out('Usage:'.PHP_EOL.'   php %s <command> [<args>]'.PHP_EOL, $this->script);
 
-        $cmd = Env::getModuleDir() . '/commands.txt';
+        $cmd = Module::getModuleDir() . '/commands.txt';
 
         if (is_file($cmd)){
 
             $msg = file_get_contents($cmd);
-            if (Env::isWin1251()){
+            if (Module::isWin1251()){
                 $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
             }
 

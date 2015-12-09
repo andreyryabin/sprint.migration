@@ -118,7 +118,7 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
 
-        if (Env::isWin1251()){
+        if (Module::isWin1251()){
             $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
         }
 

@@ -16,10 +16,10 @@ class Upgrade
     }
 
     protected function isMssql(){
-        return Env::isMssql();
+        return Module::isMssql();
     }
 
     protected function isWin1251(){
-        return Env::isWin1251();
+        return Module::isWin1251();
     }
 }

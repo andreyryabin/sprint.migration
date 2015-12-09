@@ -22,7 +22,9 @@ spl_autoload_register(function ($className) {
 });
 
 \CModule::IncludeModule('iblock');
-\Sprint\Migration\Env::includeLangFile();
+
+
+require_once __DIR__ .'/locale/ru.php';
 
 
 $upgradeManager = new \Sprint\Migration\UpgradeManager();

@@ -15,14 +15,16 @@ defined('CACHED_b_iblock_type') || define('CACHED_b_iblock_type', false);
 defined('CACHED_b_iblock') || define('CACHED_b_iblock', false);
 defined('CACHED_b_iblock_property_enum') || define('CACHED_b_iblock_property_enum', false);
 
-$DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
+if (empty($_SERVER["DOCUMENT_ROOT"])){
+    $_SERVER["DOCUMENT_ROOT"] = realpath(__DIR__ . '/../../../../');
+}
 
+$DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 
 if (\CModule::IncludeModule('sprint.migration')){
     $console = new Sprint\Migration\Console();
     $console->executeConsoleCommand($argv);
-
 } else {
     echo 'need to install module sprint.migration';
 }

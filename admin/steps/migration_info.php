@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_in
 
     $descr = $versionManager->getVersionDescription($version);
 
-    $webdir = \Sprint\Migration\Env::getMigrationWebDir();
+    $webdir = \Sprint\Migration\Module::getMigrationWebDir();
 
     ?>
     <div class="c-migration-descr">

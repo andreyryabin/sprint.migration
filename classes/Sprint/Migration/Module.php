@@ -2,12 +2,12 @@
 
 namespace Sprint\Migration;
 
-class Env
+class Module
 {
 
     private static $fileOptions = array();
-    private static $langIncluded = false;
 
+    private static $localeLoaded = false;
 
     public static function isWin1251() {
         return (defined('BX_UTF') && BX_UTF === true) ? 0 : 1;
@@ -81,26 +81,6 @@ class Env
         return self::getModuleDir().'/upgrades';
     }
 
-    public static function includeLangFile() {
-        global $MESS;
-
-        if (self::$langIncluded){
-            return false;
-        }
-
-        $loc = array();
-        include self::getModuleDir() . '/localization/ru_utf8.php';
-
-        foreach ($loc as $key => $msg){
-            if (self::isWin1251()){
-                $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
-            }
-            $MESS[$key] = $msg;
-        }
-
-        self::$langIncluded = true;
-    }
-
     public static function getMigrationTemplate(){
         if (self::getFileOption('migration_template') && is_file(self::getDocRoot() . self::getFileOption('migration_template'))){
             return self::getDocRoot() . self::getFileOption('migration_template');
@@ -136,6 +116,19 @@ class Env
         return (false !== strpos($d1, $d2)) ? str_replace($d2, '', $d1) : false;
     }
 
+    public static function loadLocale($loc) {
+        global $MESS;
+
+        if (!self::$localeLoaded){
+            foreach ($loc as $key => $msg){
+                if (self::isWin1251()){
+                    $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
+                }
+                $MESS[$key] = $msg;
+            }
+        }
+
+    }
 }
 
 

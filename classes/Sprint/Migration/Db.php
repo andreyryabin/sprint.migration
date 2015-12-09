@@ -11,15 +11,15 @@ class Db
     private $queryReplace = array();
 
     public function __construct(){
-        $this->isMssql = Env::isMssql();
-        $this->bitrixDb = Env::getDb();
+        $this->isMssql = Module::isMssql();
+        $this->bitrixDb = Module::getDb();
 
         $search = array(
-            '#TABLE1#' => Env::getMigrationTable(),
-            '#DBNAME#' => Env::getDbName(),
+            '#TABLE1#' => Module::getMigrationTable(),
+            '#DBNAME#' => Module::getDbName(),
         );
 
-        if (Env::isWin1251()){
+        if (Module::isWin1251()){
             $search['#CHARSET#'] = 'cp1251';
             $search['#COLLATE#'] = 'cp1251_general_ci';
         } else {

@@ -28,18 +28,18 @@ class UpgradeManager
     }
 
     public function upgradeReload(){
-        Env::setDbOption('upgrade_version', 'unknown');
+        Module::setDbOption('upgrade_version', 'unknown');
         $this->upgradeIfNeed();
     }
 
 
     public function getUpgradeVersion(){
-        return Env::getDbOption('upgrade_version', 'unknown');
+        return Module::getDbOption('upgrade_version', 'unknown');
     }
 
 
     protected function doUpgrade($name){
-        $upgradeFile = Env::getUpgradeDir() . '/' . $name . '.php';
+        $upgradeFile = Module::getUpgradeDir() . '/' . $name . '.php';
 
         if (!is_file($upgradeFile)){
             return false;
@@ -62,13 +62,13 @@ class UpgradeManager
             Out::out('Upgrade to version: %s', $name);
         }
 
-        Env::setDbOption('upgrade_version', $name);
+        Module::setDbOption('upgrade_version', $name);
 
         return true;
     }
 
     protected function getFiles(){
-        $directory = new \DirectoryIterator(Env::getUpgradeDir());
+        $directory = new \DirectoryIterator(Module::getUpgradeDir());
 
         $files = array();
         /* @var $item \SplFileInfo */
