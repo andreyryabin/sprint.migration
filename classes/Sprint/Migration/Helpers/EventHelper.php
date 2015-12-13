@@ -79,18 +79,17 @@ class EventHelper extends Helper
      * @param $eventName
      * @param $fields
      * @return bool|int
-     * @throws HelperException
      * @deprecated use addEventTypeIfNotExists
      */
     public function addEventType($eventName, $fields) {
         return $this->addEventTypeIfNotExists($eventName, $fields);
     }
 
+
     /**
      * @param $eventName
      * @param $fields
      * @return bool|int
-     * @throws HelperException
      * @deprecated use addEventMessageIfNotExists
      */
     public function addEventMessage($eventName, $fields) {

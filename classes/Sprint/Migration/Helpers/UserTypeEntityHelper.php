@@ -73,7 +73,7 @@ class UserTypeEntityHelper extends Helper
             return true;
         }
 
-        $this->throwException(__METHOD__, 'User type not deleted');
+        $this->throwException(__METHOD__, 'UserType not deleted');
     }
 
     public function deleteUserTypeEntity($entityId, $fieldName) {
