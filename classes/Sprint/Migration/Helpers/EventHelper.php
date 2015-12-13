@@ -30,7 +30,11 @@ class EventHelper extends Helper
         $event = new \CEventType;
         $id = $event->Add($fields);
 
-        return ($id) ? $id : false;
+        if ($id){
+            return $id;
+        }
+
+        $this->throwException(__METHOD__, 'Event type %s not added', $eventName);
     }
 
 
@@ -64,53 +68,33 @@ class EventHelper extends Helper
         $event = new \CEventMessage;
         $id = $event->Add($fields);
 
-        if ($event->LAST_ERROR) {
-            $this->addError($event->LAST_ERROR);
+        if ($id) {
+            return $id;
         }
 
-        return $id;
+        $this->throwException(__METHOD__, 'Event message %s not added, error: %s',$eventName, $event->LAST_ERROR);
     }
 
-    /* @deprecated use addEventTypeIfNotExists */
+    /**
+     * @param $eventName
+     * @param $fields
+     * @return bool|int
+     * @throws HelperException
+     * @deprecated use addEventTypeIfNotExists
+     */
     public function addEventType($eventName, $fields) {
-        $default = array(
-            "LID" => 'ru',
-            "EVENT_NAME" => 'event_name',
-            "NAME" => 'NAME',
-            "DESCRIPTION" => 'description',
-            'SORT' => '',
-        );
-
-        $fields = array_merge($default, $fields);
-        $fields['EVENT_NAME'] = $eventName;
-
-        $event = new \CEventType;
-        $id = $event->Add($fields);
-        return $id;
+        return $this->addEventTypeIfNotExists($eventName, $fields);
     }
 
-
-    /* @deprecated use addEventMessageIfNotExists */
+    /**
+     * @param $eventName
+     * @param $fields
+     * @return bool|int
+     * @throws HelperException
+     * @deprecated use addEventMessageIfNotExists
+     */
     public function addEventMessage($eventName, $fields) {
-        $default = array(
-            'ACTIVE' => 'Y',
-            'LID' => 's1',
-            'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
-            'EMAIL_TO' => '#EMAIL_TO#',
-            'BCC' => '',
-            'SUBJECT' => 'subject',
-            'BODY_TYPE' => 'text',
-            'MESSAGE' => 'message',
-        );
-
-        $fields = array_merge($default, $fields);
-        $fields['EVENT_NAME'] = $eventName;
-
-        $event = new \CEventMessage;
-        $id = $event->Add($fields);
-
-        echo $event->LAST_ERROR;
-        return $id;
+        return $this->addEventMessageIfNotExists($eventName, $fields);
     }
 
     public function updateEventMessageByFilter($filter, $fields) {
@@ -122,17 +106,17 @@ class EventHelper extends Helper
         $dbRes = \CEventMessage::GetList($by, $order, $filter);
 
         while ($aItem = $dbRes->getNext()) {
-
             $event = new \CEventMessage;
             if (!$event->Update($aItem["ID"], $fields)) {
-                $this->addError($event->LAST_ERROR);
+                $this->throwException(__METHOD__, $event->LAST_ERROR);
             }
         }
 
+        return true;
     }
 
     public function updateEventMessage($eventName, $fields) {
-        $this->updateEventMessageByFilter(array('TYPE_ID' => $eventName), $fields);
+        return $this->updateEventMessageByFilter(array('TYPE_ID' => $eventName), $fields);
     }
 
 }

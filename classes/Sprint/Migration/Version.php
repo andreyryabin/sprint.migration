@@ -44,8 +44,8 @@ class Version
         call_user_func_array(array('Sprint\Migration\Out', 'outError'), $args);
     }
 
-    public function exitIf($falseCondition, $msg ){
-        if (false == $falseCondition){
+    public function exitIf($trueCond, $msg ){
+        if ($trueCond){
             Throw new MigrationException($msg);
         }
     }
