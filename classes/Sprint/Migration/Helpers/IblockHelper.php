@@ -1,16 +1,10 @@
 <?php
 
 namespace Sprint\Migration\Helpers;
+use Sprint\Migration\Helper;
 
-/**
- * Class IblockHelper
- * @package Sprint\Migration\Helpers
- * @help http://dev.1c-bitrix.ru/api_help/iblock/classes/ciblockproperty/getlist.php
- */
-class IblockHelper
+class IblockHelper extends Helper
 {
-
-    public $lastError = '';
 
     public function addIblockTypeIfNotExists($fields) {
         $id = $fields['ID'];
@@ -24,12 +18,37 @@ class IblockHelper
         $code = $fields['CODE'];
         $iblockId = $this->getIblockId($code);
         if ($iblockId <= 0) {
-            $iblockId = $this->addIblock($fields);
+
+            $default = array(
+                'ACTIVE' => 'Y',
+                'NAME' => '',
+                'CODE' => '',
+                'LIST_PAGE_URL' => '',
+                'DETAIL_PAGE_URL' => '',
+                'SECTION_PAGE_URL' => '',
+                'IBLOCK_TYPE_ID' => 'main',
+                'SITE_ID' => array('s1'),
+                'SORT' => 500,
+                'GROUP_ID' => array('2' => 'R'),
+                'VERSION' => 2,
+                'BIZPROC' => 'N',
+                'WORKFLOW' => 'N',
+                'INDEX_ELEMENT' => 'N',
+                'INDEX_SECTION' => 'N'
+            );
+
+            $fields = array_merge($default, $fields);
+
+            $ib = new \CIBlock;
+            $iblockId = $ib->Add($fields);
+
+            $this->addError($ib->LAST_ERROR);
+
         }
         return $iblockId;
     }
 
-    public function deleteIblockIfExists($iblockCode){
+    public function deleteIblockIfExists($iblockCode) {
         $iblockId = $this->getIblockId($iblockCode);
         return ($iblockId) ? \CIBlock::Delete($iblockId) : false;
     }
@@ -44,7 +63,6 @@ class IblockHelper
     }
 
     public function deleteProperty($iblockId, $propertyCode) {
-        $this->lastError = '';
 
         $propId = $this->getPropertyId($iblockId, $propertyCode);
         if (!$propId) {
@@ -54,14 +72,12 @@ class IblockHelper
         $ib = new \CIBlockProperty;
         $ok = $ib->Delete($propId);
 
-        $this->lastError = $ib->LAST_ERROR;
+        $this->addError($ib->LAST_ERROR);
 
         return $ok;
     }
 
     public function updateProperty($iblockId, $propertyCode, $fields) {
-        $this->lastError = '';
-
         $propId = $this->getPropertyId($iblockId, $propertyCode);
         if (!$propId) {
             return false;
@@ -70,13 +86,12 @@ class IblockHelper
         $ib = new \CIBlockProperty();
         $ok = $ib->Update($propId, $fields);
 
-        $this->lastError = $ib->LAST_ERROR;
+        $this->addError($ib->LAST_ERROR);
 
         return $ok;
     }
 
     public function addSection($iblockId, $fields) {
-        $this->lastError = '';
 
         $default = Array(
             "ACTIVE" => "Y",
@@ -95,14 +110,12 @@ class IblockHelper
         $ib = new \CIBlockSection;
         $id = $ib->Add($fields);
 
-        $this->lastError = $ib->LAST_ERROR;
+        $this->addError($ib->LAST_ERROR);
 
         return $id;
     }
 
     public function addElement($iblockId, $fields, $props = array()) {
-        $this->lastError = '';
-
         $default = array(
             "NAME" => "element",
             "IBLOCK_SECTION_ID" => false,
@@ -121,7 +134,7 @@ class IblockHelper
         $ib = new \CIBlockElement;
         $id = $ib->Add($fields);
 
-        $this->lastError = $ib->LAST_ERROR;
+        $this->addError($ib->LAST_ERROR);
 
         return $id;
     }
@@ -165,8 +178,6 @@ class IblockHelper
     }
 
     protected function addProperty($iblockId, $fields) {
-        $this->lastError = '';
-
         $default = array(
             'IBLOCK_ID' => $iblockId,
             'NAME' => '',
@@ -192,14 +203,12 @@ class IblockHelper
         $ib = new \CIBlockProperty;
         $id = $ib->Add($fields);
 
-        $this->lastError = $ib->LAST_ERROR;
+        $this->addError($ib->LAST_ERROR);
 
         return $id;
     }
 
     protected function addIblockType($fields) {
-
-        $this->lastError = '';
 
         $default = Array(
             'ID' => '',
@@ -225,51 +234,21 @@ class IblockHelper
         $ib = new \CIBlockType;
         $res = $ib->Add($fields);
 
-        $this->lastError = $ib->LAST_ERROR;
+        $this->addError($ib->LAST_ERROR);
 
         return ($res) ? $fields['ID'] : 0;
     }
 
-    protected function addIblock($fields) {
-        $this->lastError = '';
-
-        $default = array(
-            'ACTIVE' => 'Y',
-            'NAME' => '',
-            'CODE' => '',
-            'LIST_PAGE_URL' => '',
-            'DETAIL_PAGE_URL' => '',
-            'SECTION_PAGE_URL' => '',
-            'IBLOCK_TYPE_ID' => 'main',
-            'SITE_ID' => array('s1'),
-            'SORT' => 500,
-            'GROUP_ID' => array('2' => 'R'),
-            'VERSION' => 2,
-            'BIZPROC' => 'N',
-            'WORKFLOW' => 'N',
-            'INDEX_ELEMENT' => 'N',
-            'INDEX_SECTION' => 'N'
-        );
-
-        $fields = array_merge($default, $fields);
-
-        $ib = new \CIBlock;
-        $id = $ib->Add($fields);
-
-        $this->lastError = $ib->LAST_ERROR;
-        return $id;
-    }
-
-    public function mergeIblockFields($iblockId, $fields){
+    public function mergeIblockFields($iblockId, $fields) {
         $default = \CIBlock::GetFields($iblockId);
         $fields = $this->arraySoftMerge($default, $fields);
         \CIBlock::SetFields($iblockId, $fields);
     }
 
-        protected function arraySoftMerge($default, $fields){
-        foreach ($default as $key => $val){
+    protected function arraySoftMerge($default, $fields) {
+        foreach ($default as $key => $val) {
             if (isset($fields[$key])) {
-                if (is_array($val) && is_array($fields[$key])){
+                if (is_array($val) && is_array($fields[$key])) {
                     $default[$key] = $this->arraySoftMerge($val, $fields[$key]);
                 } else {
                     $default[$key] = $fields[$key];
@@ -278,14 +257,12 @@ class IblockHelper
             unset($fields[$key]);
         }
 
-        foreach ($fields as $key=>$val){
+        foreach ($fields as $key => $val) {
             $default[$key] = $val;
         }
 
         return $default;
     }
 
-    public function getLastError($stripTags=true){
-        return ($stripTags) ? strip_tags($this->lastError) : $this->lastError;
-    }
+
 }

@@ -10,8 +10,11 @@
 ?><?php echo "<?php\n"?>
 
 namespace Sprint\Migration;
-use \Sprint\Migration\Helpers\IblockHelper;
+use \Sprint\Migration\Helpers\AgentHelper;
 use \Sprint\Migration\Helpers\EventHelper;
+use \Sprint\Migration\Helpers\IblockHelper;
+use \Sprint\Migration\Helpers\LangHelper;
+use \Sprint\Migration\Helpers\SiteHelper;
 use \Sprint\Migration\Helpers\UserTypeEntityHelper;
 <?php echo $extendUse?>
 

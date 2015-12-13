@@ -2,8 +2,8 @@
 
 namespace Sprint\Migration;
 
-use Sprint\Migration\Exceptions\Restart as RestartException;
-use Sprint\Migration\Exceptions\Migration as MigrationException;
+use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Exceptions\MigrationException;
 
 class Version
 {
@@ -13,11 +13,11 @@ class Version
     protected $params = array();
 
     public function up() {
-        //
+        return true;
     }
 
     public function down() {
-        //
+        return true;
     }
 
     public function getDescription() {

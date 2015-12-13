@@ -2,8 +2,8 @@
 
 namespace Sprint\Migration;
 
-use Sprint\Migration\Exceptions\Restart as RestartException;
-use Sprint\Migration\Exceptions\Migration as MigrationException;
+use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Exceptions\MigrationException;
 
 class VersionManager
 {
@@ -12,10 +12,10 @@ class VersionManager
 
     protected $checkPerms = 1;
 
-    protected $db = null;
+    protected $versionTable = null;
     
     public function __construct() {
-         $this->db = new Db();
+         $this->versionTable = new VersionTable();
     }
 
     public function startMigration($versionName, $action = 'up', $params = array()) {
@@ -67,9 +67,9 @@ class VersionManager
             }
 
             if ($action == 'up'){
-                $ok = $this->db->addRecord($versionName);
+                $ok = $this->versionTable->addRecord($versionName);
             } else {
-                $ok = $this->db->removeRecord($versionName);
+                $ok = $this->versionTable->removeRecord($versionName);
             }
 
             if ($ok === false) {
@@ -162,7 +162,7 @@ class VersionManager
         $files = array();
 
         /* @var $dbres \CDBResult */
-        $dbres = $this->db->getRecords();
+        $dbres = $this->versionTable->getRecords();
         while ($aItem = $dbres->Fetch()) {
             if ($this->checkVersionName($aItem['version'])) {
                 $records[] = $aItem['version'];
@@ -272,7 +272,7 @@ class VersionManager
             return false;
         }
 
-        $record = $this->db->getRecordByName($versionName)->Fetch();
+        $record = $this->versionTable->getRecordByName($versionName)->Fetch();
         $file = $this->getVersionFile($versionName);
 
         $isRecord = !empty($record);
