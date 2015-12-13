@@ -1,34 +1,38 @@
 <?php
 
 namespace Sprint\Migration;
+use Sprint\Migration\Exceptions\HelperException;
 
-class Helper
-{
+class Helper {
 
-    private $errors = array();
+    /**
+     * @deprecated
+     * @var string
+     */
     public $lastError = '';
 
-    public function addError($msg, $var1 = null, $var2 = null) {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
+    /**
+     * @deprecated
+     * @return string
+     */
+    public function getLastError(){
+        return $this->lastError;
+    }
+
+    public function throwException($method, $msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        $method = array_shift($args);
+        $msg = call_user_func_array('sprintf', $args);
+
+        $path = explode('\\', $method);
+        $short = array_pop($path);
+
+        $msg = $short . ': ' . strip_tags($msg);
 
         $this->lastError = $msg;
-        $this->errors[] = $msg;
+
+        Throw new HelperException($msg);
     }
 
-    public function getLastError($stripTags=true){
-        $lastError = end(array_values($this->errors));
-        return ($stripTags) ? strip_tags($lastError) : $lastError;
-    }
-
-    public function getErrors($stripTags=true){
-        $err = array_values($this->errors);
-        if ($stripTags){
-            array_walk($err,'strip_tags');
-        }
-        return $err;
-    }
 
 }

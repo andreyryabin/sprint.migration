@@ -29,11 +29,6 @@ class Module
         return ($GLOBALS['DBType'] == 'mssql');
     }
 
-    /** @return \CMain */
-    public static function getApp() {
-        return $GLOBALS['APPLICATION'];
-    }
-
     public static function getDbOption($name, $default=''){
         return \COption::GetOptionString('sprint.migration', $name, $default);
     }

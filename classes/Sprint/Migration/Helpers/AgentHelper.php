@@ -3,10 +3,14 @@
 namespace Sprint\Migration\Helpers;
 use Sprint\Migration\Helper;
 
-class AgentHelper
+class AgentHelper extends Helper
 {
 
     public function replaceAgent($moduleName, $name, $interval, $nextExec){
+
+        /* @global $APPLICATION \CMain */
+        global $APPLICATION;
+
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
 
         $aAgent = \CAgent::GetList(array("ID" => "DESC"), array(
@@ -22,6 +26,15 @@ class AgentHelper
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $agentId = \CAgent::AddAgent($name, $moduleName, 'N', $interval, '', 'Y', $nextExec);
 
-        return ($agentId) ? $agentId : false;
+        if ($agentId){
+            return $agentId;
+        }
+
+        if ($APPLICATION->GetException()) {
+            $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
+        } else {
+            $this->throwException(__METHOD__, 'Agent %s not added', $name);
+        }
+
     }
 }

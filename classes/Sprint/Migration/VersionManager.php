@@ -19,6 +19,9 @@ class VersionManager
     }
 
     public function startMigration($versionName, $action = 'up', $params = array()) {
+        /* @global $APPLICATION \CMain */
+        global $APPLICATION;
+
         try {
 
             $action = ($action == 'up') ? 'up' : 'down';
@@ -58,8 +61,8 @@ class VersionManager
                 $ok = $versionInstance->down();
             }
 
-            if (Module::getApp()->GetException()){
-                throw new MigrationException(Module::getApp()->GetException()->GetString());
+            if ($APPLICATION->GetException()){
+                throw new MigrationException($APPLICATION->GetException()->GetString());
             }
 
             if ($ok === false) {

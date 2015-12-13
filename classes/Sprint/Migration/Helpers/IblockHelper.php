@@ -8,44 +8,77 @@ class IblockHelper extends Helper
 
     public function addIblockTypeIfNotExists($fields) {
         $id = $fields['ID'];
-        if (!$this->getIblockTypeId($id)) {
-            $id = $this->addIblockType($fields);
+
+        if ($this->getIblockTypeId($id)) {
+            return $id;
         }
-        return $id;
+
+        $default = Array(
+            'ID' => '',
+            'SECTIONS' => 'Y',
+            'IN_RSS' => 'N',
+            'SORT' => 100,
+            'LANG' => Array(
+                'ru' => Array(
+                    'NAME' => 'Catalog',
+                    'SECTION_NAME' => 'Sections',
+                    'ELEMENT_NAME' => 'Elements'
+                ),
+                'en' => Array(
+                    'NAME' => 'Catalog',
+                    'SECTION_NAME' => 'Sections',
+                    'ELEMENT_NAME' => 'Elements'
+                ),
+            )
+        );
+
+        $fields = array_merge($default, $fields);
+
+        $ib = new \CIBlockType;
+        if ($ib->Add($fields)) {
+            return $id;
+        }
+
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
     public function addIblockIfNotExists($fields) {
         $code = $fields['CODE'];
         $iblockId = $this->getIblockId($code);
-        if ($iblockId <= 0) {
 
-            $default = array(
-                'ACTIVE' => 'Y',
-                'NAME' => '',
-                'CODE' => '',
-                'LIST_PAGE_URL' => '',
-                'DETAIL_PAGE_URL' => '',
-                'SECTION_PAGE_URL' => '',
-                'IBLOCK_TYPE_ID' => 'main',
-                'SITE_ID' => array('s1'),
-                'SORT' => 500,
-                'GROUP_ID' => array('2' => 'R'),
-                'VERSION' => 2,
-                'BIZPROC' => 'N',
-                'WORKFLOW' => 'N',
-                'INDEX_ELEMENT' => 'N',
-                'INDEX_SECTION' => 'N'
-            );
-
-            $fields = array_merge($default, $fields);
-
-            $ib = new \CIBlock;
-            $iblockId = $ib->Add($fields);
-
-            $this->addError($ib->LAST_ERROR);
-
+        if ($iblockId) {
+            return $iblockId;
         }
-        return $iblockId;
+
+        $default = array(
+            'ACTIVE' => 'Y',
+            'NAME' => '',
+            'CODE' => '',
+            'LIST_PAGE_URL' => '',
+            'DETAIL_PAGE_URL' => '',
+            'SECTION_PAGE_URL' => '',
+            'IBLOCK_TYPE_ID' => 'main',
+            'SITE_ID' => array('s1'),
+            'SORT' => 500,
+            'GROUP_ID' => array('2' => 'R'),
+            'VERSION' => 2,
+            'BIZPROC' => 'N',
+            'WORKFLOW' => 'N',
+            'INDEX_ELEMENT' => 'N',
+            'INDEX_SECTION' => 'N'
+        );
+
+        $fields = array_merge($default, $fields);
+
+        $ib = new \CIBlock;
+        $iblockId = $ib->Add($fields);
+
+        if ($iblockId) {
+            return $iblockId;
+        }
+
+
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
     public function deleteIblockIfExists($iblockCode) {
@@ -56,39 +89,74 @@ class IblockHelper extends Helper
     public function addPropertyIfNotExists($iblockId, $fields) {
         $code = $fields['CODE'];
         $propId = $this->getPropertyId($iblockId, $code);
-        if ($propId <= 0) {
-            $propId = $this->addProperty($iblockId, $fields);
+
+        if ($propId) {
+            return $propId;
         }
-        return $propId;
+
+        $default = array(
+            'IBLOCK_ID' => $iblockId,
+            'NAME' => '',
+            'ACTIVE' => 'Y',
+            'SORT' => '500',
+            'CODE' => '',
+            'PROPERTY_TYPE' => 'S',
+            'ROW_COUNT' => '1',
+            'COL_COUNT' => '30',
+            'LIST_TYPE' => 'L',
+            'MULTIPLE' => 'N',
+            'USER_TYPE' => '',
+            'IS_REQUIRED' => 'N',
+            'FILTRABLE' => 'Y',
+            'LINK_IBLOCK_ID' => 0
+        );
+
+        $fields = array_merge($default, $fields);
+        if (isset($fields['VALUES'])) {
+            $fields['PROPERTY_TYPE'] = 'L';
+        }
+
+        $ib = new \CIBlockProperty;
+        $propId = $ib->Add($fields);
+
+        if ($propId) {
+            return $propId;
+        }
+
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+
     }
 
-    public function deleteProperty($iblockId, $propertyCode) {
 
+    public function deletePropertyIfExists($iblockId, $propertyCode) {
         $propId = $this->getPropertyId($iblockId, $propertyCode);
         if (!$propId) {
             return false;
         }
 
         $ib = new \CIBlockProperty;
-        $ok = $ib->Delete($propId);
+        if ($ib->Delete($propId)) {
+            return true;
+        }
 
-        $this->addError($ib->LAST_ERROR);
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
 
-        return $ok;
     }
 
-    public function updateProperty($iblockId, $propertyCode, $fields) {
+
+    public function updatePropertyIfExists($iblockId, $propertyCode, $fields) {
         $propId = $this->getPropertyId($iblockId, $propertyCode);
         if (!$propId) {
             return false;
         }
 
         $ib = new \CIBlockProperty();
-        $ok = $ib->Update($propId, $fields);
+        if ($ib->Update($propId, $fields)) {
+            return true;
+        }
 
-        $this->addError($ib->LAST_ERROR);
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
 
-        return $ok;
     }
 
     public function addSection($iblockId, $fields) {
@@ -110,9 +178,12 @@ class IblockHelper extends Helper
         $ib = new \CIBlockSection;
         $id = $ib->Add($fields);
 
-        $this->addError($ib->LAST_ERROR);
+        if ($id) {
+            return $id;
+        }
 
-        return $id;
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+
     }
 
     public function addElement($iblockId, $fields, $props = array()) {
@@ -134,9 +205,11 @@ class IblockHelper extends Helper
         $ib = new \CIBlockElement;
         $id = $ib->Add($fields);
 
-        $this->addError($ib->LAST_ERROR);
+        if ($id) {
+            return $id;
+        }
 
-        return $id;
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
     public function getIblockId($code) {
@@ -177,72 +250,18 @@ class IblockHelper extends Helper
         return \CIBlockProperty::GetList(array('SORT' => 'ASC'), array('IBLOCK_ID' => $iblockId, 'CODE' => $code, 'CHECK_PERMISSIONS' => 'N'))->Fetch();
     }
 
-    protected function addProperty($iblockId, $fields) {
-        $default = array(
-            'IBLOCK_ID' => $iblockId,
-            'NAME' => '',
-            'ACTIVE' => 'Y',
-            'SORT' => '500',
-            'CODE' => '',
-            'PROPERTY_TYPE' => 'S',
-            'ROW_COUNT' => '1',
-            'COL_COUNT' => '30',
-            'LIST_TYPE' => 'L',
-            'MULTIPLE' => 'N',
-            'USER_TYPE' => '',
-            'IS_REQUIRED' => 'N',
-            'FILTRABLE' => 'Y',
-            'LINK_IBLOCK_ID' => 0
-        );
-
-        $fields = array_merge($default, $fields);
-        if (isset($fields['VALUES'])) {
-            $fields['PROPERTY_TYPE'] = 'L';
-        }
-
-        $ib = new \CIBlockProperty;
-        $id = $ib->Add($fields);
-
-        $this->addError($ib->LAST_ERROR);
-
-        return $id;
-    }
-
-    protected function addIblockType($fields) {
-
-        $default = Array(
-            'ID' => '',
-            'SECTIONS' => 'Y',
-            'IN_RSS' => 'N',
-            'SORT' => 100,
-            'LANG' => Array(
-                'ru' => Array(
-                    'NAME' => 'Catalog',
-                    'SECTION_NAME' => 'Sections',
-                    'ELEMENT_NAME' => 'Elements'
-                ),
-                'en' => Array(
-                    'NAME' => 'Catalog',
-                    'SECTION_NAME' => 'Sections',
-                    'ELEMENT_NAME' => 'Elements'
-                ),
-            )
-        );
-
-        $fields = array_merge($default, $fields);
-
-        $ib = new \CIBlockType;
-        $res = $ib->Add($fields);
-
-        $this->addError($ib->LAST_ERROR);
-
-        return ($res) ? $fields['ID'] : 0;
-    }
-
     public function mergeIblockFields($iblockId, $fields) {
         $default = \CIBlock::GetFields($iblockId);
         $fields = $this->arraySoftMerge($default, $fields);
         \CIBlock::SetFields($iblockId, $fields);
+    }
+
+    public function deleteProperty($iblockId, $propertyCode) {
+        return $this->deletePropertyIfExists($iblockId, $propertyCode);
+    }
+
+    public function updateProperty($iblockId, $propertyCode, $fields) {
+        return $this->updatePropertyIfExists($iblockId, $propertyCode, $fields);
     }
 
     protected function arraySoftMerge($default, $fields) {

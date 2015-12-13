@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Helpers;
 use Sprint\Migration\Helper;
-
 class LangHelper extends Helper
 {
 
@@ -17,10 +16,10 @@ class LangHelper extends Helper
             $lids[] = $aItem['LID'];
         }
 
-        if (empty($lids)){
-            $this->addError('languages not found');
+        if (!empty($lids)){
+            return $lids;
         }
 
-        return $lids;
+        $this->throwException(__METHOD__, 'languages not found');
     }
 }

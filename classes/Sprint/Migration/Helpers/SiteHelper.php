@@ -6,6 +6,10 @@ use Sprint\Migration\Helper;
 class SiteHelper extends Helper
 {
 
+    /**
+     * @return array
+     * @throws HelperException
+     */
     public function getDefaultSiteIds(){
         $by = 'def';
         $order = 'desc';
@@ -17,10 +21,10 @@ class SiteHelper extends Helper
             $lids[] = $aItem['LID'];
         }
 
-        if (empty($lids)){
-            $this->addError('sites not found');
+        if (!empty($lids)){
+            return $lids;
         }
 
-        return $lids;
+        $this->throwException(__METHOD__, 'sites not found');
     }
 }
