@@ -48,7 +48,7 @@ class UserGroupHelper extends Helper
 
     }
 
-    public function updateGroupIfNotExists($code, $fields = array()){
+    public function updateGroupIfExists($code, $fields = array()){
         $by = 'c_sort';
         $order = 'asc';
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */

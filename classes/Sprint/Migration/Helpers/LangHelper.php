@@ -20,6 +20,6 @@ class LangHelper extends Helper
             return $lids;
         }
 
-        $this->throwException(__METHOD__, 'languages not found');
+        $this->throwException(__METHOD__, 'Languages not found');
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace Sprint\Migration\Helpers;
+
 use Sprint\Migration\Helper;
 
 class IblockHelper extends Helper
@@ -76,15 +77,9 @@ class IblockHelper extends Helper
         if ($iblockId) {
             return $iblockId;
         }
-
-
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
-    public function deleteIblockIfExists($iblockCode) {
-        $iblockId = $this->getIblockId($iblockCode);
-        return ($iblockId) ? \CIBlock::Delete($iblockId) : false;
-    }
 
     public function addPropertyIfNotExists($iblockId, $fields) {
         $code = $fields['CODE'];
@@ -128,39 +123,7 @@ class IblockHelper extends Helper
     }
 
 
-    public function deletePropertyIfExists($iblockId, $propertyCode) {
-        $propId = $this->getPropertyId($iblockId, $propertyCode);
-        if (!$propId) {
-            return false;
-        }
-
-        $ib = new \CIBlockProperty;
-        if ($ib->Delete($propId)) {
-            return true;
-        }
-
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
-
-    }
-
-
-    public function updatePropertyIfExists($iblockId, $propertyCode, $fields) {
-        $propId = $this->getPropertyId($iblockId, $propertyCode);
-        if (!$propId) {
-            return false;
-        }
-
-        $ib = new \CIBlockProperty();
-        if ($ib->Update($propId, $fields)) {
-            return true;
-        }
-
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
-
-    }
-
     public function addSection($iblockId, $fields) {
-
         $default = Array(
             "ACTIVE" => "Y",
             "IBLOCK_SECTION_ID" => false,
@@ -185,6 +148,15 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
 
     }
+
+
+    public function addElementIfNotExists($iblockId, $fields, $props = array()) {
+        if (!empty($fields['CODE']) && !$this->getElementByCode($iblockId, $fields['CODE'])) {
+            return $this->addElement($iblockId, $fields, $props);
+        }
+        return false;
+    }
+
 
     public function addElement($iblockId, $fields, $props = array()) {
         $default = array(
@@ -212,17 +184,43 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
-    public function addElementIfNotExists($iblockId, $fields, $props = array()) {
-        if (!empty($fields['CODE']) && !$this->getElementByCode($iblockId, $fields['CODE'])){
-            return $this->addElement($iblockId, $fields, $props);
+    public function deleteIblockIfExists($iblockCode) {
+        $iblockId = $this->getIblockId($iblockCode);
+        if (!$iblockId) {
+            return false;
         }
-        return false;
+
+        if (\CIBlock::Delete($iblockId)) {
+            return true;
+        }
+
+        $this->throwException(__METHOD__, 'Could not delete iblock %s', $iblockCode);
     }
 
-    public function deleteElementIfExists($iblockId, $code){
+    /* @deprecated */
+    public function deleteProperty($iblockId, $propertyCode) {
+        return $this->deletePropertyIfExists($iblockId, $propertyCode);
+    }
+
+    public function deletePropertyIfExists($iblockId, $propertyCode) {
+        $propId = $this->getPropertyId($iblockId, $propertyCode);
+        if (!$propId) {
+            return false;
+        }
+
+        $ib = new \CIBlockProperty;
+        if ($ib->Delete($propId)) {
+            return true;
+        }
+
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+
+    }
+
+    public function deleteElementIfExists($iblockId, $code) {
         $aItem = $this->getElementByCode($iblockId, $code);
 
-        if (!$aItem){
+        if (!$aItem) {
             return false;
         }
 
@@ -234,6 +232,28 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /* @deprecated */
+    public function updateProperty($iblockId, $propertyCode, $fields) {
+        return $this->updatePropertyIfExists($iblockId, $propertyCode, $fields);
+    }
+
+
+    public function updatePropertyIfExists($iblockId, $propertyCode, $fields) {
+        $propId = $this->getPropertyId($iblockId, $propertyCode);
+        if (!$propId) {
+            return false;
+        }
+
+        $ib = new \CIBlockProperty();
+        if ($ib->Update($propId, $fields)) {
+            return true;
+        }
+
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+
+    }
+
+
     public function getIblockId($code) {
         $aIblock = $this->getIblock($code);
         return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
@@ -241,7 +261,7 @@ class IblockHelper extends Helper
 
     public function getIblock($code) {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        return \CIBlock::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N', 'CODE' => $code))->Fetch();
+        return \CIBlock::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N', '=CODE' => $code))->Fetch();
     }
 
     public function getIblocks() {
@@ -263,40 +283,20 @@ class IblockHelper extends Helper
         return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
     }
 
+
     public function getPropertyId($iblockId, $code) {
         $aIblock = $this->getProperty($iblockId, $code);
         return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
     }
 
     public function getProperty($iblockId, $code) {
-        return \CIBlockProperty::GetList(array('SORT' => 'ASC'), array('IBLOCK_ID' => $iblockId, 'CODE' => $code, 'CHECK_PERMISSIONS' => 'N'))->Fetch();
+        return \CIBlockProperty::GetList(array('SORT' => 'ASC'), array('IBLOCK_ID' => $iblockId, '=CODE' => $code, 'CHECK_PERMISSIONS' => 'N'))->Fetch();
     }
 
     public function mergeIblockFields($iblockId, $fields) {
         $default = \CIBlock::GetFields($iblockId);
         $fields = $this->arraySoftMerge($default, $fields);
         \CIBlock::SetFields($iblockId, $fields);
-    }
-
-    public function deleteProperty($iblockId, $propertyCode) {
-        return $this->deletePropertyIfExists($iblockId, $propertyCode);
-    }
-
-    public function updateProperty($iblockId, $propertyCode, $fields) {
-        return $this->updatePropertyIfExists($iblockId, $propertyCode, $fields);
-    }
-
-    protected function getElementByCode($iblockId, $code){
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        return \CIBlockElement::GetList(array('SORT' => 'ASC'), array(
-            'IBLOCK_ID' => $iblockId,
-            '=CODE' => $code
-        ), false, array('nTopCount' => 1), array(
-            'ID',
-            'IBLOCK_ID',
-            'NAME',
-            'CODE',
-        ))->Fetch();
     }
 
     protected function arraySoftMerge($default, $fields) {
@@ -318,5 +318,17 @@ class IblockHelper extends Helper
         return $default;
     }
 
+    protected function getElementByCode($iblockId, $code) {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        return \CIBlockElement::GetList(array('SORT' => 'ASC'), array(
+            'IBLOCK_ID' => $iblockId,
+            '=CODE' => $code
+        ), false, array('nTopCount' => 1), array(
+            'ID',
+            'IBLOCK_ID',
+            'NAME',
+            'CODE',
+        ))->Fetch();
+    }
 
 }

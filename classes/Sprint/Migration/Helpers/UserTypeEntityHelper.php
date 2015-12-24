@@ -68,14 +68,15 @@ class UserTypeEntityHelper extends Helper
             return false;
         }
 
-        $oEntity = new \CUserTypeEntity();
-        if ($oEntity->Delete($aItem['ID'])) {
+        $entity = new \CUserTypeEntity();
+        if ($entity->Delete($aItem['ID'])) {
             return true;
         }
 
         $this->throwException(__METHOD__, 'UserType not deleted');
     }
 
+    /* @deprecated */
     public function deleteUserTypeEntity($entityId, $fieldName) {
         return $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
     }
