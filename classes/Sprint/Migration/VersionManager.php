@@ -28,6 +28,8 @@ class VersionManager
 
             if (isset($this->restarts[$versionName])){
                 unset($this->restarts[$versionName]);
+            } else {
+                Out::outToConsoleOnly('%s (%s) start', $versionName, $action);
             }
 
             $versionInstance = $this->getVersionInstance($versionName);
