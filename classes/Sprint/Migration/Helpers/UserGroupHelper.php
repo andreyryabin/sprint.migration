@@ -23,6 +23,8 @@ class UserGroupHelper extends Helper
     }
 
     public function addGroupIfNotExists($code, $fields = array()){
+        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
+
         $by = 'c_sort';
         $order = 'asc';
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
@@ -32,10 +34,6 @@ class UserGroupHelper extends Helper
         }
 
         $fields['STRING_ID'] = $code;
-
-        if (empty($fields['NAME'])){
-            $this->throwException(__METHOD__, 'Set name for group %s', $code);
-        }
 
         $group = new \CGroup;
         $id = $group->Add($fields);

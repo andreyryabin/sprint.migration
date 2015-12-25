@@ -6,7 +6,15 @@ use Sprint\Migration\Helper;
 class EventHelper extends Helper
 {
 
+    /**
+     * @param $eventName
+     * @param $fields array(), key LID = language id
+     * @return bool|int
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addEventTypeIfNotExists($eventName, $fields) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('LID'));
+
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $aItem = \CEventType::GetList(array(
             'TYPE_ID' => $eventName,
@@ -38,7 +46,15 @@ class EventHelper extends Helper
     }
 
 
+    /**
+     * @param $eventName
+     * @param $fields array(), key LID = site id
+     * @return int
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addEventMessageIfNotExists($eventName, $fields) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('SUBJECT', 'LID'));
+
         $by = 'id';
         $order = 'asc';
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */

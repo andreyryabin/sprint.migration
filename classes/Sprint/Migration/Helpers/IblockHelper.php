@@ -8,6 +8,8 @@ class IblockHelper extends Helper
 {
 
     public function addIblockTypeIfNotExists($fields) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
+
         $id = $fields['ID'];
 
         if ($this->getIblockTypeId($id)) {
@@ -44,8 +46,9 @@ class IblockHelper extends Helper
     }
 
     public function addIblockIfNotExists($fields) {
-        $code = $fields['CODE'];
-        $iblockId = $this->getIblockId($code);
+        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
+
+        $iblockId = $this->getIblockId($fields['CODE']);
 
         if ($iblockId) {
             return $iblockId;
@@ -82,8 +85,9 @@ class IblockHelper extends Helper
 
 
     public function addPropertyIfNotExists($iblockId, $fields) {
-        $code = $fields['CODE'];
-        $propId = $this->getPropertyId($iblockId, $code);
+        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
+
+        $propId = $this->getPropertyId($iblockId, $fields['CODE']);
 
         if ($propId) {
             return $propId;
@@ -123,7 +127,7 @@ class IblockHelper extends Helper
     }
 
 
-    public function addSection($iblockId, $fields) {
+    public function addSection($iblockId, $fields = array()) {
         $default = Array(
             "ACTIVE" => "Y",
             "IBLOCK_SECTION_ID" => false,
@@ -151,6 +155,8 @@ class IblockHelper extends Helper
 
 
     public function addElementIfNotExists($iblockId, $fields, $props = array()) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
+
         $aItem = $this->getElementByCode($iblockId, $fields['CODE']);
         if ($aItem){
             return $aItem['ID'];
@@ -160,7 +166,7 @@ class IblockHelper extends Helper
     }
 
 
-    public function addElement($iblockId, $fields, $props = array()) {
+    public function addElement($iblockId, $fields = array(), $props = array()) {
         $default = array(
             "NAME" => "element",
             "IBLOCK_SECTION_ID" => false,

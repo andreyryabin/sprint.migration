@@ -1,22 +1,38 @@
 <?php
 
 namespace Sprint\Migration\Helpers;
+
 use Sprint\Migration\Helper;
+
 class LangHelper extends Helper
 {
 
-    public function getDefaultLangIds(){
+    public function getDefaultLangIdIfExists(){
         $by = 'def';
         $order = 'desc';
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = \CLanguage::GetList($by, $order, array('ACTIVE' => 'Y'));
 
-        $lids = array();
-        while ($aItem = $dbRes->Fetch()){
-            $lids[] = $aItem['LID'];
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        $aItem = \CLanguage::GetList($by, $order, array('ACTIVE' => 'Y'))->Fetch();
+
+        if ($aItem) {
+            return $aItem['LID'];
         }
 
-        if (!empty($lids)){
+        $this->throwException(__METHOD__, 'Default language not found');
+    }
+
+    public function getLangsIfExists() {
+        $by = 'def';
+        $order = 'desc';
+
+        $lids = array();
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        $dbRes = \CLanguage::GetList($by, $order, array('ACTIVE' => 'Y'));
+        while ($aItem = $dbRes->Fetch()) {
+            $lids[] = $aItem;
+        }
+
+        if (!empty($lids)) {
             return $lids;
         }
 

@@ -24,15 +24,25 @@ class Helper {
         $method = array_shift($args);
         $msg = call_user_func_array('sprintf', $args);
 
-        $path = explode('\\', $method);
-        $short = array_pop($path);
-
-        $msg = $short . ': ' . strip_tags($msg);
+        $msg = $this->getMethod($method) . ': ' . strip_tags($msg);
 
         $this->lastError = $msg;
 
         Throw new HelperException($msg);
     }
 
+    protected function checkRequiredKeys($method, $fields, $reqKeys = array()){
+        foreach ($reqKeys as $name){
+            if (!isset($fields[$name])){
+                $msg = sprintf('%s: requred key "%s" not found', $this->getMethod($method), $name);
+                Throw new HelperException($msg);
+            }
+        }
+    }
 
+    private function getMethod($method){
+        $path = explode('\\', $method);
+        $short = array_pop($path);
+        return $short;
+    }
 }
