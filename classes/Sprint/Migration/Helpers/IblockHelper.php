@@ -151,10 +151,12 @@ class IblockHelper extends Helper
 
 
     public function addElementIfNotExists($iblockId, $fields, $props = array()) {
-        if (!empty($fields['CODE']) && !$this->getElementByCode($iblockId, $fields['CODE'])) {
-            return $this->addElement($iblockId, $fields, $props);
+        $aItem = $this->getElementByCode($iblockId, $fields['CODE']);
+        if ($aItem){
+            return $aItem['ID'];
         }
-        return false;
+
+        return $this->addElement($iblockId, $fields, $props);
     }
 
 
