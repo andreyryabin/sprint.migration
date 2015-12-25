@@ -19,7 +19,7 @@ class Helper {
         return $this->lastError;
     }
 
-    public function throwException($method, $msg, $var1 = null, $var2 = null) {
+    protected function throwException($method, $msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         $method = array_shift($args);
         $msg = call_user_func_array('sprintf', $args);
