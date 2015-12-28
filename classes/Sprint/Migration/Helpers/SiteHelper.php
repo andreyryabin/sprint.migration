@@ -21,22 +21,18 @@ class SiteHelper extends Helper
         $this->throwException(__METHOD__, 'Default site not found');
     }
 
-    public function getSitesIfExists() {
+    public function getSites($filter = array()) {
         $by = 'def';
         $order = 'desc';
 
         $sids = array();
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = \CSite::GetList($by, $order, array('ACTIVE' => 'Y'));
+        $dbRes = \CSite::GetList($by, $order, $filter);
         while ($aItem = $dbRes->Fetch()) {
             $sids[] = $aItem;
         }
 
-        if (!empty($sids)) {
-            return $sids;
-        }
-
-        $this->throwException(__METHOD__, 'Sites not found');
+        return $sids;
     }
 
 }
