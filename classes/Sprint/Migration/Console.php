@@ -91,7 +91,7 @@ class Console
                     Out::out('Location:    %s', $descr['location']);
                 }
             } else {
-                Out::out('%s not found!');
+                Out::out('%s not found!', $version);
             }
 
         } else {
