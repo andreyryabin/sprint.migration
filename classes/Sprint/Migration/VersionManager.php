@@ -26,12 +26,6 @@ class VersionManager
 
             $action = ($action == 'up') ? 'up' : 'down';
 
-            if (isset($this->restarts[$versionName])){
-                unset($this->restarts[$versionName]);
-            } else {
-                Out::outToConsoleOnly('%s (%s) start', $versionName, $action);
-            }
-
             $versionInstance = $this->getVersionInstance($versionName);
             
             if (!$versionInstance) {
@@ -53,6 +47,12 @@ class VersionManager
                 if ($action == 'down' && $versionType != 'is_installed') {
                     throw new MigrationException('migration already down');
                 }
+            }
+
+            if (isset($this->restarts[$versionName])){
+                unset($this->restarts[$versionName]);
+            } else {
+                Out::outToConsoleOnly('%s (%s) start', $versionName, $action);
             }
 
             $versionInstance->setParams($params);
