@@ -298,7 +298,8 @@ class IblockHelper extends Helper
     }
 
     public function getProperty($iblockId, $code) {
-        return \CIBlockProperty::GetList(array('SORT' => 'ASC'), array('IBLOCK_ID' => $iblockId, '=CODE' => $code, 'CHECK_PERMISSIONS' => 'N'))->Fetch();
+        /* do not use =CODE in filter */
+        return \CIBlockProperty::GetList(array('SORT' => 'ASC'), array('IBLOCK_ID' => $iblockId, 'CODE' => $code, 'CHECK_PERMISSIONS' => 'N'))->Fetch();
     }
 
     public function mergeIblockFields($iblockId, $fields) {
