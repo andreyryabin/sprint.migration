@@ -39,7 +39,6 @@
 #!/usr/bin/env php
 <?php
 
-$_SERVER["DOCUMENT_ROOT"] = __DIR__ . '/../htdocs/';
 require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.php");
 
 ```
