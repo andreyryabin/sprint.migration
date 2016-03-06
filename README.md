@@ -6,14 +6,13 @@
 
 Установка через composer
 -------------------------
-Пример вашего composer.json с установкой модуля в www/local/modules/
+Пример вашего composer.json с установкой модуля в local/modules/
 ```
 #!json
 {
-  "minimum-stability": "dev",
   "extra": {
     "installer-paths": {
-      "www/local/modules/{$name}/": ["type:bitrix-module"]
+      "local/modules/{$name}/": ["type:bitrix-module"]
     }
   },
   "require": {
