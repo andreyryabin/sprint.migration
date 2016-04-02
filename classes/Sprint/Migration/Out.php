@@ -47,15 +47,27 @@ class Out
         $total = (int) $total;
 
         if (self::canOutAsAdminMessage()) {
-            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-            \CAdminMessage::ShowMessage(array(
-                "MESSAGE" => $msg,
-                "DETAILS" => "#PROGRESS_BAR#",
-                "HTML" => true,
-                "TYPE" => "PROGRESS",
-                "PROGRESS_TOTAL" => $total,
-                "PROGRESS_VALUE" => $val,
-            ));
+
+            if (self::canOutProgressBar()){
+                /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+                \CAdminMessage::ShowMessage(array(
+                    "MESSAGE" => $msg,
+                    "DETAILS" => "#PROGRESS_BAR#",
+                    "HTML" => true,
+                    "TYPE" => "PROGRESS",
+                    "PROGRESS_TOTAL" => $total,
+                    "PROGRESS_VALUE" => $val,
+                ));
+            } else {
+                /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+                \CAdminMessage::ShowMessage(array(
+                    "MESSAGE" =>  $msg . ' ' . round($val / $total * 100) . '%',
+                    'HTML' => true,
+                    'TYPE' => 'OK'
+                ));
+            }
+
+
         } elseif (self::canOutAsHtml()) {
             $msg = self::prepareToHtml($msg);
             echo "$msg $val/$total <br/>";
@@ -76,7 +88,11 @@ class Out
         if (self::canOutAsAdminMessage()) {
             $msg = self::prepareToHtml($msg);
             /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-            \CAdminMessage::ShowMessage(array("MESSAGE" => $msg, 'HTML' => true, 'TYPE' => 'OK'));
+            \CAdminMessage::ShowMessage(array(
+                "MESSAGE" => $msg,
+                'HTML' => true,
+                'TYPE' => 'OK'
+            ));
         } elseif (self::canOutAsHtml()) {
             self::outToHtml('[green]' . $msg . '[/]');
 
@@ -93,7 +109,11 @@ class Out
         if (self::canOutAsAdminMessage()) {
             $msg = self::prepareToHtml($msg);
             /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-            \CAdminMessage::ShowMessage(array("MESSAGE" => $msg, 'HTML' => true, 'TYPE' => 'ERROR'));
+            \CAdminMessage::ShowMessage(array(
+                "MESSAGE" => $msg,
+                'HTML' => true,
+                'TYPE' => 'ERROR'
+            ));
         } elseif (self::canOutAsHtml()) {
             self::outToHtml('[red]' . $msg . '[/]');
         } else {
@@ -135,11 +155,15 @@ class Out
         return $msg;
     }
     
-    protected function canOutAsAdminMessage(){
+    protected static function canOutAsAdminMessage(){
         return (!empty($_SERVER['HTTP_HOST']) && class_exists('\CAdminMessage')) ? 1 : 0;
     }
 
-    protected function canOutAsHtml(){
+    protected static function canOutProgressBar(){
+        return method_exists('\CAdminMessage', '_getProgressHtml') ? 1 :0;
+    }
+
+    protected static function canOutAsHtml(){
         return (!empty($_SERVER['HTTP_HOST'])) ? 1 : 0;
     }    
 }

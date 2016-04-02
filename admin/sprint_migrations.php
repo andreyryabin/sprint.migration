@@ -44,15 +44,39 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         text-decoration: none;
     }
 
-    .c-migration-item-is_installed {
+    .c-migration-item-is_installed,
+    .c-migration-item-is_installed:link,
+    .c-migration-item-is_installed:hover,
+    .c-migration-item-is_installed:visited,
+    a.c-migration-item-is_installed,
+    a.c-migration-item-is_installed:link,
+    a.c-migration-item-is_installed:hover,
+    a.c-migration-item-is_installed:visited
+    {
         color: #080;
     }
 
-    .c-migration-item-is_new {
+    .c-migration-item-is_new,
+    .c-migration-item-is_new:link,
+    .c-migration-item-is_new:hover,
+    .c-migration-item-is_new:visited,
+    a.c-migration-item-is_new,
+    a.c-migration-item-is_new:link,
+    a.c-migration-item-is_new:hover,
+    a.c-migration-item-is_new:visited
+    {
         color: #a00;
     }
 
-    .c-migration-item-is_unknown {
+    .c-migration-item-is_unknown,
+    .c-migration-item-is_unknown:link,
+    .c-migration-item-is_unknown:hover,
+    .c-migration-item-is_unknown:visited,
+    a.c-migration-item-is_unknown,
+    a.c-migration-item-is_unknown:link,
+    a.c-migration-item-is_unknown:hover,
+    a.c-migration-item-is_unknown:visited
+    {
         color: #00a;
     }
     .c-migration-adm-info {
