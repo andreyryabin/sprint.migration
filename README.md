@@ -2,6 +2,7 @@
 --------------------------------------------------------------------------------------------------------
 * Маркетплейс 1с-Битрикс: [http://marketplace.1c-bitrix.ru/solutions/sprint.migration/](http://marketplace.1c-bitrix.ru/solutions/sprint.migration/)
 * Репозиторий проекта: [https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration)
+* Репозиторий проекта: [https://github.com/andreyryabin/sprint.migration](https://github.com/andreyryabin/sprint.migration)
 * Composer пакет: [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
 
 Установка через composer
