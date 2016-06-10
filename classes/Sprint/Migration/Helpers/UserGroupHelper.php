@@ -61,8 +61,8 @@ class UserGroupHelper extends Helper
             return false;
         }
 
-        if (empty($fields['NAME'])){
-            $this->throwException(__METHOD__, 'Set name for group %s', $code);
+        if (empty($fields)){
+            $this->throwException(__METHOD__, 'Set fields for group %s', $code);
         }
 
         $group = new \CGroup;
