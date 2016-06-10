@@ -1,2 +1,1 @@
-1) Исправления в хелпере UserTypeEntityHelper (Issue #11)
-
+1) Доработки в хелпере UserGroupHelper (Issue #12, Issue #13)

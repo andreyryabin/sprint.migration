@@ -41,10 +41,10 @@ class UserTypeEntityHelper extends Helper
         $fields['ENTITY_ID'] = $entityId;
 
         $obUserField = new \CUserTypeEntity;
-        $id = $obUserField->Add($fields);
+        $userFieldId = $obUserField->Add($fields);
 
-        if ($id) {
-            return $id;
+        if ($userFieldId) {
+            return $userFieldId;
         }
 
         if ($APPLICATION->GetException()) {

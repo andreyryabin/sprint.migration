@@ -22,24 +22,33 @@ class UserGroupHelper extends Helper
         return $res;
     }
 
+
+    public function getGroupId($code){
+        return \CGroup::GetIDByCode($code);
+    }
+
+    public function getGroup($code){
+        $groupId = $this->getGroupId($code);
+        return ($groupId) ? \CGroup::GetByID($groupId)->Fetch() : false;
+    }
+
+    
+        
     public function addGroupIfNotExists($code, $fields = array()){
         $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
 
-        $by = 'c_sort';
-        $order = 'asc';
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $aItem = \CGroup::GetList($by, $order, array('STRING_ID' => $code))->Fetch();
-        if ($aItem){
-            return $aItem['ID'];
+        $groupId = $this->getGroupId($code);
+        if ($groupId){
+            return intval($groupId);
         }
 
         $fields['STRING_ID'] = $code;
 
         $group = new \CGroup;
-        $id = $group->Add($fields);
+        $groupId = $group->Add($fields);
 
-        if ($id){
-            return $id;
+        if ($groupId){
+            return intval($groupId);
         }
 
         $this->throwException(__METHOD__, $group->LAST_ERROR);
@@ -47,20 +56,10 @@ class UserGroupHelper extends Helper
     }
 
     public function updateGroupIfExists($code, $fields = array()){
-        $by = 'c_sort';
-        $order = 'asc';
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $aItem = \CGroup::GetList($by, $order, array('STRING_ID' => $code))->Fetch();
-        if (!$aItem){
+        $groupId = $this->getGroupId($code);
+        if (!$groupId){
             return false;
         }
-
-        $default = array(
-            'STRING_ID' => $code,
-            'NAME' => $aItem['NAME']
-        );
-
-        $fields = array_merge($default, $fields);
 
         if (empty($fields['NAME'])){
             $this->throwException(__METHOD__, 'Set name for group %s', $code);
@@ -68,8 +67,8 @@ class UserGroupHelper extends Helper
 
         $group = new \CGroup;
 
-        if ($group->Update($aItem['ID'], $fields)){
-            return $aItem['ID'];
+        if ($group->Update($groupId, $fields)){
+            return intval($groupId);
         }
 
         $this->throwException(__METHOD__, $group->LAST_ERROR);

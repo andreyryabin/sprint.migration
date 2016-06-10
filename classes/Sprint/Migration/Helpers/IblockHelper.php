@@ -157,7 +157,7 @@ class IblockHelper extends Helper
     public function addElementIfNotExists($iblockId, $fields, $props = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
-        $aItem = $this->getElementByCode($iblockId, $fields['CODE']);
+        $aItem = $this->getElement($iblockId, $fields['CODE']);
         if ($aItem){
             return $aItem['ID'];
         }
@@ -226,7 +226,7 @@ class IblockHelper extends Helper
     }
 
     public function deleteElementIfExists($iblockId, $code) {
-        $aItem = $this->getElementByCode($iblockId, $code);
+        $aItem = $this->getElement($iblockId, $code);
 
         if (!$aItem) {
             return false;
@@ -327,7 +327,8 @@ class IblockHelper extends Helper
         return $default;
     }
 
-    protected function getElementByCode($iblockId, $code) {
+
+    protected function getElement($iblockId, $code) {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return \CIBlockElement::GetList(array('SORT' => 'ASC'), array(
             'IBLOCK_ID' => $iblockId,
@@ -337,7 +338,7 @@ class IblockHelper extends Helper
             'IBLOCK_ID',
             'NAME',
             'CODE',
-        ))->Fetch();
+        ))->Fetch(); 
     }
 
 }
