@@ -42,65 +42,105 @@ class Console
         return true;
     }
 
-    public function commandCreate($descr = '') {
-        $result = $this->versionManager->createVersionFile($descr);
+    public function commandCreate($descr = '', $prefix = '') {
+        $result = $this->versionManager->createVersionFile($descr, $prefix);
+
+        $type = $this->versionManager->getVersionType($result['version']);
+
+        Out::initTable();
         if (!empty($result['version'])){
-            Out::out('Version:     %s', $result['version']);
+            Out::addTableRow(array('Version', $result['version']));
         }
+
+        $titles = array(
+            'is_new' => 'new',
+            'is_installed' => 'installed',
+            'is_unknown' => 'unknown',
+        );
+
+        if ($type){
+            if (!empty($titles[$type])){
+                Out::addTableRow(array('Status', $titles[$type]));
+            }
+        }
+
         if (!empty($result['description'])){
-            Out::out('Description: %s', $result['description']);
+            Out::addTableRow(array('Description', $result['description']));
         }
         if (!empty($result['location'])){
-            Out::out('Location:    %s', $result['location']);
+            Out::addTableRow(array('Location', $result['location']));
         }
+
+        Out::outTable();
     }
 
     public function commandList() {
         $versions = $this->versionManager->getVersions('all');
 
         $titles = array(
-            'is_new' => '(new)',
-            'is_installed' => '',
-            'is_unknown' => '(unknown)',
+            'is_new' => 'new',
+            'is_installed' => 'installed',
+            'is_unknown' => 'unknown',
         );
 
-        foreach ($versions as $aItem) {
-            Out::out('%s %s', $aItem['version'], $titles[$aItem['type']]);
+        Out::initTable(array('Version', 'Status', 'Location'));
+        foreach ($versions as $aItem){
+            $type = $aItem['type'];
+            $file = ($type != 'is_unknown') ? $this->versionManager->getVersionFile($aItem['version']) : '';
+
+            Out::addTableRow(array($aItem['version'], $titles[$type], $file));
+        }
+
+        Out::outTable();
+    }
+
+    protected function outVersionStatus($version){
+        $descr = $this->versionManager->getVersionDescription($version);
+        $type = $this->versionManager->getVersionType($version);
+
+        $titles = array(
+            'is_new' => 'new',
+            'is_installed' => 'installed',
+            'is_unknown' => 'unknown',
+        );
+
+        if ($type){
+            Out::initTable();
+            Out::addTableRow(array('Version', $version));
+
+            if (!empty($titles[$type])){
+                Out::addTableRow(array('Status', $titles[$type]));
+            }
+            if (!empty($descr['description'])){
+                Out::addTableRow(array('Description', $descr['description']));
+            }
+            if (!empty($descr['location'])){
+                Out::addTableRow(array('Location', $descr['location']));
+            }
+            Out::outTable();
+
+        } else {
+            Out::out('%s not found!', $version);
         }
     }
 
+    protected function outSummaryStatus(){
+        $status = $this->versionManager->getStatus();
+
+        Out::initTable(array('Status', 'Count'));
+
+        Out::addTableRow(array('new', $status['is_new']));
+        Out::addTableRow(array('installed', $status['is_installed']));
+        Out::addTableRow(array('unknown',$status['is_unknown']));
+
+        Out::outTable();
+    }
+
     public function commandStatus($version = '') {
-        $titles = array(
-            'is_new' =>     '(new)',
-            'is_installed' => '(installed)',
-            'is_unknown' => '(unknown)',
-        );
-
         if ($version){
-            $descr = $this->versionManager->getVersionDescription($version);
-
-            $type = $this->versionManager->getVersionType($version);
-            if ($type){
-                if (!empty($titles[$type])){
-                    Out::out('Status:      %s', $titles[$type]);
-                }
-                if (!empty($descr['description'])){
-                    Out::out('Description: %s', $descr['description']);
-                }
-                if (!empty($descr['location'])){
-                    Out::out('Location:    %s', $descr['location']);
-                }
-            } else {
-                Out::out('%s not found!', $version);
-            }
-
+            $this->outVersionStatus($version);
         } else {
-            $status = $this->versionManager->getStatus();
-
-            Out::out('Status (new)      : %d', $status['is_new']);
-            Out::out('Status (installed): %d',$status['is_installed']);
-            Out::out('Status (unknown)  : %d', $status['is_unknown']);
-
+            $this->outSummaryStatus();
         }
     }
 
@@ -173,7 +213,6 @@ class Console
         $cmd = Module::getModuleDir() . '/commands.txt';
 
         if (is_file($cmd)){
-
             $msg = file_get_contents($cmd);
             if (Module::isWin1251()){
                 $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
@@ -201,7 +240,6 @@ class Console
         }
 
         Out::out('migrations (%s): %d', $action, $success);
-
         return $success;
     }
 

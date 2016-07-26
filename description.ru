@@ -1,1 +1,1 @@
-1) Доработки в хелпере UserGroupHelper (Issue #12, Issue #13)
+1) Доработки в по задачам (Issue #14, Issue #15)

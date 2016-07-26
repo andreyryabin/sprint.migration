@@ -34,4 +34,12 @@ class LangHelper extends Helper
 
         return $lids;
     }
+
+    public function getLangsIfExists(){
+        $items = $this->getLangs(array('ACTIVE' => 'Y'));
+        if (!empty($items)){
+            return $items;
+        }
+        $this->throwException(__METHOD__, 'Active langs not found');
+    }
 }

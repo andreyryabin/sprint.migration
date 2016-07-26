@@ -48,7 +48,11 @@ class IblockHelper extends Helper
     public function addIblockIfNotExists($fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
-        $iblockId = $this->getIblockId($fields['CODE']);
+        if (!empty($fields['IBLOCK_TYPE_ID'])){
+            $iblockId = $this->getIblockId($fields['CODE'], $fields['IBLOCK_TYPE_ID']);
+        } else {
+            $iblockId = $this->getIblockId($fields['CODE']);
+        }
 
         if ($iblockId) {
             return $iblockId;
@@ -192,8 +196,8 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
-    public function deleteIblockIfExists($iblockCode) {
-        $iblockId = $this->getIblockId($iblockCode);
+    public function deleteIblockIfExists($iblockCode, $iblockTypeId = '') {
+        $iblockId = $this->getIblockId($iblockCode, $iblockTypeId);
         if (!$iblockId) {
             return false;
         }
@@ -262,14 +266,18 @@ class IblockHelper extends Helper
     }
 
 
-    public function getIblockId($code) {
-        $aIblock = $this->getIblock($code);
+    public function getIblockId($code, $iblockTypeId = '') {
+        $aIblock = $this->getIblock($code, $iblockTypeId);
         return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
     }
 
-    public function getIblock($code) {
+    public function getIblock($code, $iblockTypeId = '') {
+        $filter = array('CHECK_PERMISSIONS' => 'N', '=CODE' => $code);
+        if (!empty($iblockTypeId)){
+            $filter['=TYPE'] = $iblockTypeId;
+        }
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        return \CIBlock::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N', '=CODE' => $code))->Fetch();
+        return \CIBlock::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
     }
 
     public function getIblocks() {
@@ -282,12 +290,12 @@ class IblockHelper extends Helper
         return $list;
     }
 
-    public function getIblockType($id) {
-        return \CIBlockType::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N', '=ID' => $id))->Fetch();
+    public function getIblockType($iblockTypeId) {
+        return \CIBlockType::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N', '=ID' => $iblockTypeId))->Fetch();
     }
 
-    public function getIblockTypeId($id) {
-        $aIblock = $this->getIblockType($id);
+    public function getIblockTypeId($iblockTypeId) {
+        $aIblock = $this->getIblockType($iblockTypeId);
         return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
     }
 

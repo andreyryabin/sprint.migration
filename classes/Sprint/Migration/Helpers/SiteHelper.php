@@ -35,4 +35,12 @@ class SiteHelper extends Helper
         return $sids;
     }
 
+    public function getSitesIfExists(){
+        $items = $this->getSites(array('ACTIVE' => 'Y'));
+        if (!empty($items)){
+            return $items;
+        }
+        $this->throwException(__METHOD__, 'Active sites not found');
+    }
+
 }

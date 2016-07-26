@@ -117,14 +117,16 @@ class VersionManager
         return $descr;
     }
 
-    public function createVersionFile($description = '') {
+    public function createVersionFile($description = '', $prefix = '') {
         $description = $this->prepareDescription($description);
+        $prefix = $this->preparePrefix($prefix);
 
         $originTz = date_default_timezone_get();
         date_default_timezone_set('Europe/Moscow');
-        $versionName = 'Version' . date('YmdHis');
+        $ts = date('YmdHis');
         date_default_timezone_set($originTz);
 
+        $versionName = $prefix . $ts;
 
         list($extendUse, $extendClass) = explode(' as ', Module::getMigrationExtendClass());
         $extendUse = trim($extendUse);
@@ -164,39 +166,42 @@ class VersionManager
         $for = in_array($for, array('all', 'up', 'down', 'unknown')) ? $for : 'all';
 
         $records = array();
-        $files = array();
 
         /* @var $dbres \CDBResult */
         $dbres = $this->versionTable->getRecords();
         while ($aItem = $dbres->Fetch()) {
-            if ($this->checkVersionName($aItem['version'])) {
-                $records[] = $aItem['version'];
+            $ts = $this->getVersionTimestamp($aItem['version']);
+            if ($ts){
+                $records[ $aItem['version'] ] = $ts;
             }
         }
+
+        $files = array();
 
         /* @var $item \SplFileInfo */
         $directory = new \DirectoryIterator(Module::getMigrationDir());
         foreach ($directory as $item) {
             $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
-            if ($this->checkVersionName($fileName)) {
-                $files[] = $fileName;
+            $ts = $this->getVersionTimestamp($fileName);
+            if ($ts){
+                $files[ $fileName ] = $ts;
             }
         }
 
         $merge = array_merge($records, $files);
-        $merge = array_unique($merge);
 
         if ($for == 'down' || $for == 'unknown') {
-            rsort($merge);
+            arsort($merge);
         } else {
-            sort($merge);
+            asort($merge);
         }
 
         $result = array();
-        foreach ($merge as $val) {
 
-            $isRecord = in_array($val, $records);
-            $isFile = in_array($val, $files);
+        foreach ($merge as $version => $ts) {
+
+            $isRecord = array_key_exists($version, $records);
+            $isFile = array_key_exists($version, $files);
 
             if ($isRecord && $isFile) {
                 $type = 'is_installed';
@@ -213,7 +218,7 @@ class VersionManager
 
                 $result[] = array(
                     'type' => $type,
-                    'version' => $val,
+                    'version' => $version,
                 );
             }
 
@@ -298,12 +303,21 @@ class VersionManager
         return $type;
     }
 
-    protected function getVersionFile($versionName) {
+    public function getVersionFile($versionName) {
         return Module::getMigrationDir() . '/'.$versionName . '.php';
     }
 
-    public function checkVersionName($versionName) {
-        return preg_match('/^Version\d+$/i', $versionName);
+    public function checkVersionName($versionName){
+        return $this->getVersionTimestamp($versionName) ? true : false;
+    }
+
+    public function getVersionTimestamp($versionName) {
+        $matches = array();
+        if (preg_match('/[0-9]{14}$/', $versionName, $matches)){
+            return $matches[0];
+        } else {
+            return false;
+        }
     }
 
     protected function renderFile($file, $vars = array()) {
@@ -323,6 +337,26 @@ class VersionManager
         return $html;
     }
 
+
+    protected function preparePrefix($prefix = ''){
+        $prefix = trim($prefix);
+        $default = 'Version';
+
+        if (empty($prefix)){
+            return $default;
+        }
+
+        $prefix = preg_replace("/[^a-z0-9_]/i", '', $prefix);
+        if (empty($prefix)){
+            return $default;
+        }
+
+        if (preg_match('/^\d/', $prefix)){
+            return $default;
+        }
+
+        return $prefix;
+    }
 
     protected function prepareDescription($descr = ''){
         $descr = strval($descr);

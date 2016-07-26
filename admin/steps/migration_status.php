@@ -13,11 +13,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
         'is_unknown' => GetMessage('SPRINT_MIGRATION_IS_UNKNOWN'),
     );
     ?>
+    <table style="border-collapse: collapse;width: 100%">
     <?foreach ($status as $type => $cnt): ?>
-        <div class="c-migration-block">
-            <span class="c-migration-item-<?= $type ?>"><?=$titles[$type]?></span>: <span><?= $cnt ?></span>
-        </div>
+        <tr>
+            <td style="width:50%;text-align: right;padding: 5px 5px;">
+                <span class="c-migration-item-<?= $type ?>"><?=$titles[$type]?>:</span>
+            </td>
+            <td style="width:50%;text-align: left;padding: 5px 5px;">
+                <?= $cnt ?>
+            </td>
+        </tr>
     <?endforeach ?>
+    </table>
     <?
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
