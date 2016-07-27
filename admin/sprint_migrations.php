@@ -19,9 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 include __DIR__ .'/steps/migration_execute.php';
-include __DIR__ .'/steps/migration_info.php';
 include __DIR__ .'/steps/migration_list.php';
-include __DIR__ .'/steps/migration_new.php';
 include __DIR__ .'/steps/migration_status.php';
 include __DIR__ .'/steps/migration_create.php';
 
@@ -30,14 +28,6 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 
 ?>
 <style type="text/css">
-
-    .c-migration-block {
-        padding: 0 0 8px;
-    }
-    .c-migration-descr {
-        padding: 5px 0;
-    }
-
     .c-migration-item-is_installed,
     .c-migration-item-is_new,
     .c-migration-item-is_unknown {
@@ -79,45 +69,82 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
     {
         color: #00a;
     }
-    .c-migration-adm-info {
-        float: right;
-    }
-    .c-migration-adm-info p{
-        margin: 5px 0;padding: 0;
-    }
+
     .c-migration-adm-info span{
         display: inline-block;
-        width: 10px;
-        height: 10px;
+        width: 12px;
+        height: 12px;
     }
 </style>
 
-<div id="migration_progress" style="margin:0 0 10px 0;"></div>
+<div id="migration_progress"></div>
 
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
-    array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB1_TITLE')),
+    array("DIV" => "tab1", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB1_TITLE')),
 ));
 
 $tabControl1->Begin();
 $tabControl1->BeginNextTab();
 ?>
 <tr>
-    <td class="adm-detail-content-cell-l" style="text-align:left;vertical-align:top;width:40%;">
-        &nbsp;
-    </td>
-    <td class="adm-detail-content-cell-r" style="vertical-align:top;width:60%">
+    <td style="vertical-align: top" width="50%">
         <div id="migration_migrations"></div>
     </td>
-</tr>
-<tr>
-    <td class="adm-detail-content-cell-l" style="width:40%;">&nbsp;</td>
-    <td class="adm-detail-content-cell-r" style="width:60%">
-        <?= GetMessage('SPRINT_MIGRATION_DESCR2') ?>
-        <textarea style="width: 90%" rows="3" id="migration_migration_descr" name="migration_migration_descr"></textarea>
-        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();">
+    <td style="vertical-align: bottom" width="50%">
+
+        <div class="c-migration-adm-info">
+            <p>
+                <strong><?= GetMessage('SPRINT_MIGRATION_HELP_LEGEND') ?></strong>
+            </p>
+            <p>
+                <span style="background: #a00;"></span>
+                - <?= GetMessage('SPRINT_MIGRATION_LEGEND_NEW') ?>
+            </p>
+            <p>
+                <span style="background: #080;"></span>
+                - <?= GetMessage('SPRINT_MIGRATION_LEGEND_INSTALLED') ?>
+            </p>
+            <p>
+                <span style="background: #00a;"></span>
+                - <?= GetMessage('SPRINT_MIGRATION_LEGEND_UNKNOWN') ?>
+            </p>
+            <p>
+                <strong><?= GetMessage('SPRINT_MIGRATION_MIGRATION_DIR') ?></strong>
+            </p>
+            <p>
+                <?$webdir = \Sprint\Migration\Module::getMigrationWebDir()?>
+                <?if ($webdir):?>
+                    <? $href = '/bitrix/admin/fileman_admin.php?' . http_build_query(array(
+                            'lang' => LANGUAGE_ID,
+                            'site' => SITE_ID,
+                            'path' => $webdir
+                        ))?>
+                    <a href="<?=$href?>" target="_blank"><?=$webdir?></a>
+                <?else:?>
+                    <?=\Sprint\Migration\Module::getMigrationDir()?>
+                <?endif?>
+            </p>
+            <p><strong><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></strong></p>
+            <a href="https://bitbucket.org/andrey_ryabin/sprint.migration" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
+        </div>
+        <div>
+            <p>
+                <strong><?= GetMessage('SPRINT_MIGRATION_HELP_CREATE') ?></strong>
+            </p>
+        <p>
+            <?= GetMessage('SPRINT_MIGRATION_PREFIX') ?><br/>
+            <input type="text" id="migration_migration_prefix" name="migration_migration_prefix" value="Version">
+        </p>
+        <p>
+            <?= GetMessage('SPRINT_MIGRATION_DESCR2') ?> <br/>
+            <textarea rows="3" cols="50" id="migration_migration_descr" name="migration_migration_descr"></textarea>
+        </p>
+        <p>
+            <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();">
+        </p>
+        </div>
     </td>
 </tr>
-
 <? $tabControl1->Buttons(); ?>
 
 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
@@ -131,45 +158,8 @@ $tabControl1->BeginNextTab();
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
 <? $tabControl1->End(); ?>
 
-
-<div class="adm-info-message-wrap c-migration-adm-info">
-<div class="adm-info-message ">
-    <strong>Легенда</strong><br/>
-    <p>
-        <span style="background: #a00;"></span>
-        - <?= GetMessage('SPRINT_MIGRATION_LEGEND_NEW') ?>
-    </p>
-    <p>
-        <span style="background: #080;"></span>
-        - <?= GetMessage('SPRINT_MIGRATION_LEGEND_INSTALLED') ?>
-    </p>
-    <p>
-        <span style="background: #00a;"></span>
-        - <?= GetMessage('SPRINT_MIGRATION_LEGEND_UNKNOWN') ?>
-    </p>
-
-    <p><br/>
-        <strong><?= GetMessage('SPRINT_MIGRATION_MIGRATION_DIR') ?></strong><br/>
-        <?$webdir = \Sprint\Migration\Module::getMigrationWebDir()?>
-        <?if ($webdir):?>
-            <? $href = '/bitrix/admin/fileman_admin.php?' . http_build_query(array(
-                    'lang' => LANGUAGE_ID,
-                    'site' => SITE_ID,
-                    'path' => $webdir
-                ))?>
-            <a href="<?=$href?>" target="_blank"><?=$webdir?></a>
-        <?else:?>
-            <?=\Sprint\Migration\Module::getMigrationDir()?>
-        <?endif?>
-    </p>
-
-</div>
-</div>
-
-
-
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
     function migrationMigrationsUpConfirm() {
         if (confirm('<?=GetMessage('SPRINT_MIGRATION_UP_CONFIRM')?>')) {
             migrationExecuteStep('migration_execute', {next_action: 'up'});
@@ -207,7 +197,10 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationCreateMigration() {
-        migrationExecuteStep('migration_create', {description: $('#migration_migration_descr').val()}, function (result) {
+        migrationExecuteStep('migration_create', {
+            description: $('#migration_migration_descr').val(),
+            prefix: $('#migration_migration_prefix').val()
+        }, function (result) {
             $('#migration_migration_descr').val('');
             migrationMigrationRefresh();
         });
@@ -223,23 +216,20 @@ $tabControl1->BeginNextTab();
     }
     
     function migrationMigrationRefresh(callbackAfterRefresh) {
+        $('#tabControl2_layout input[type=button]').attr('disabled', 'disabled');
         migrationExecuteStep('migration_' + migrationView, {}, function (data) {
             $('#migration_migrations').empty().html(data);
             if (callbackAfterRefresh) {
                 callbackAfterRefresh()
+            } else {
+                $('input[type=button]').removeAttr('disabled');
             }
-        });
-    }
-
-    function migrationMigrationInfo(version) {
-        migrationExecuteStep('migration_info', {version: version}, function (data) {
-            $('#migration_info_' + version).empty().html(data);
         });
     }
 
 </script>
 
-<script language="JavaScript">
+<script type="text/javascript">
     <?
     
     $views = array('list', 'new', 'status');

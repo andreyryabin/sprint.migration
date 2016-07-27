@@ -1,6 +1,7 @@
-Commands:
+Все команды консоли:
   create                            Добавить новую миграцию
   create <description>              Добавить новую миграцию с описанием
+  create <description> <name>       Добавить новую миграцию с описанием и названием
   status                            Показать суммарную информацию по миграциям
   status <version>                  Показать информацию по выбранной миграции
   list                              Показать список миграций
@@ -24,19 +25,15 @@ Commands:
   redo <version>                    Откатить и установить выбранную миграцию
   help                              Показать справку
 
-Legend for "list" command:
-  Version0000 (new)                 Новая миграция (только файл)
-  Version0000                       Установленная миграция (файл + запись об установке)
-  Version0000 (unknown)             Неизвестная миграция (только запись об установке)
+Состояния миграций:
+  new                               Новая миграция (только файл)
+  installed                         Установленная миграция (файл + запись об установке)
+  unknown                           Неизвестная миграция (только запись об установке)
 
-Legend for "migrate" command:
+Сообщения выполняющихся миграций:
   Version0000 (up) success          Установка миграции прошла успешно
   Version0000 (down) success        Откат миграции прошел успешно
   Version0000 (down) error: (text)  Откат миграции не произошел из-за ошибки (текст ошибки)
 
-Legend for "status" command:
-  Status (new)      : N             Новых миграций - N
-  Status (installed): N             Установленных - N
-  Status (unknown)  : N             Неизвестных - N
 
 Please send any bug reports as pull-requests to https://bitbucket.org/andrey_ryabin/sprint.migration
