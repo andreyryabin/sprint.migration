@@ -207,8 +207,8 @@ class Console
     }
 
     public function commandHelp() {
-        Out::out('Migrations:'.PHP_EOL.'   %s'.PHP_EOL, Module::getMigrationDir());
-        Out::out('Usage:'.PHP_EOL.'   php %s <command> [<args>]'.PHP_EOL, $this->script);
+        Out::out('Директория с миграциями:'.PHP_EOL.'   %s'.PHP_EOL, Module::getMigrationDir());
+        Out::out('Запуск:'.PHP_EOL.'   php %s <command> [<args>]'.PHP_EOL, $this->script);
 
         $cmd = Module::getModuleDir() . '/commands.txt';
 
