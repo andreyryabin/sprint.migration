@@ -26,12 +26,25 @@ class VersionManager
 
             $action = ($action == 'up') ? 'up' : 'down';
 
-            $versionInstance = $this->getVersionInstance($versionName);
-            
-            if (!$versionInstance) {
-                throw new MigrationException('failed to initialize migration');
+            if (!$this->checkVersionName($versionName)) {
+                throw new MigrationException('invalid version name');
             }
-            
+
+            $file = $this->getVersionFile($versionName);
+            if (!file_exists($file)){
+                throw new MigrationException('version file not found');
+            }
+
+            ob_start();
+            /** @noinspection PhpIncludeInspection */
+            require_once($file);
+            ob_end_clean();
+
+            $versionClass = 'Sprint\Migration\\' . $versionName;
+            if (!class_exists($versionClass)) {
+                throw new MigrationException('version class not found');
+            }
+
             if ($this->checkPerms) {
                 
                 $versionType = $this->getVersionType($versionName);
@@ -55,6 +68,8 @@ class VersionManager
                 Out::outToConsoleOnly('%s (%s) start', $versionName, $action);
             }
 
+            /** @var $versionInstance Version */
+            $versionInstance = new $versionClass;
             $versionInstance->setParams($params);
 
             if ($action == 'up'){
@@ -107,14 +122,42 @@ class VersionManager
     }
 
     public function getVersionDescription($versionName) {
-        $descr = array('description' => '', 'location' => '');
-        $instance = $this->getVersionInstance($versionName);
-        if ($instance){
-            $descr['description'] = $this->prepareDescription($instance->getDescription());
-            $descr['location'] = $this->getVersionFile($versionName);
+        $result = array('description' => '', 'location' => '');
+
+        if (!$this->checkVersionName($versionName)) {
+            return $result;
         }
 
-        return $descr;
+        $file = $this->getVersionFile($versionName);
+        if (!file_exists($file)){
+            return $result;
+        }
+
+        ob_start();
+        /** @noinspection PhpIncludeInspection */
+        require_once($file);
+        ob_end_clean();
+
+        $class = 'Sprint\Migration\\' . $versionName;
+        if (!class_exists($class)) {
+            return $result;
+        }
+
+        $descr = '';
+        if (!method_exists($class, '__construct')){
+            /** @var $versionInstance Version */
+            $versionInstance = new $class;
+            $descr = $versionInstance->getDescription();
+        } elseif (class_exists('\ReflectionClass')){
+            $reflect = new \ReflectionClass($class);
+            $props = $reflect->getDefaultProperties();
+            $descr = $props['description'];
+        }
+
+        $result['description'] = $this->prepareDescription($descr);
+        $result['location'] = $this->getVersionFile($versionName);
+
+        return $result;
     }
 
     public function createVersionFile($description = '', $prefix = '') {
@@ -246,35 +289,6 @@ class VersionManager
 
     public function checkPermissions($check = 1){
         $this->checkPerms = $check;
-    }
-
-    /**
-     * @param $versionName
-     * @return Version
-     */
-    protected function getVersionInstance($versionName) {
-        if (!$this->checkVersionName($versionName)) {
-            return false;
-        }
-
-        $file = $this->getVersionFile($versionName);
-        if (!file_exists($file)){
-            return false;
-        }
-
-        ob_start();
-
-        /** @noinspection PhpIncludeInspection */
-        require_once($file);
-        ob_end_clean();
-
-        $class = 'Sprint\Migration\\' . $versionName;
-        if (!class_exists($class)) {
-            return false;
-        }
-
-        $obj = new $class;
-        return $obj;
     }
 
     public function getVersionType($versionName) {

@@ -44,7 +44,6 @@ class Console
 
     public function commandCreate($descr = '', $prefix = '') {
         $result = $this->versionManager->createVersionFile($descr, $prefix);
-
         $type = $this->versionManager->getVersionType($result['version']);
 
         Out::initTable();
@@ -83,12 +82,21 @@ class Console
             'is_unknown' => 'unknown',
         );
 
-        Out::initTable(array('Version', 'Status', 'Location'));
+        Out::initTable(array(
+            'Version',
+            'Status',
+            'Description',
+            //'Location'
+        ));
         foreach ($versions as $aItem){
             $type = $aItem['type'];
-            $file = ($type != 'is_unknown') ? $this->versionManager->getVersionFile($aItem['version']) : '';
-
-            Out::addTableRow(array($aItem['version'], $titles[$type], $file));
+            $descr = $this->versionManager->getVersionDescription($aItem['version']);
+            Out::addTableRow(array(
+                $aItem['version'],
+                $titles[$type],
+                $descr['description'],
+                //$descr['location']
+            ));
         }
 
         Out::outTable();

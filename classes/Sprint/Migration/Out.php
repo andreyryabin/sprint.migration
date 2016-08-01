@@ -245,7 +245,7 @@ class Out
     }
     
     protected static function canOutAsAdminMessage(){
-        return (!empty($_SERVER['HTTP_HOST']) && class_exists('\CAdminMessage')) ? 1 : 0;
+        return (self::canOutAsHtml() && class_exists('\CAdminMessage')) ? 1 : 0;
     }
 
     protected static function canOutProgressBar(){
@@ -253,6 +253,6 @@ class Out
     }
 
     protected static function canOutAsHtml(){
-        return (!empty($_SERVER['HTTP_HOST'])) ? 1 : 0;
-    }    
+        return ( php_sapi_name() == 'cli' ) ? 0 : 1;
+    }
 }

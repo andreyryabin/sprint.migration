@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     ?>
     <? if (!empty($versions)): ?>
         <table style="border-collapse: collapse;width: 100%">
-        <? foreach ($versions as $aItem): ?>
+        <? foreach ($versions as $aItem): $descr = $versionManager->getVersionDescription($aItem['version'])?>
             <tr>
                 <td style="width:50%;text-align: right;padding: 5px 5px;">
                 <? if ($aItem['type'] != 'is_unknown' && $webdir): ?>
@@ -32,8 +32,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                 <? else: ?>
                     <span class="c-migration-item-<?= $aItem['type'] ?>"><?= $aItem['version'] ?></span>
                 <? endif ?>
+
+                    <?=$descr['description']?>
+
                 </td>
-                <td style="width:50%;text-align: left;padding: 5px 5px;">
+                <td style="width:50%;text-align: left;padding: 5px 5px; vertical-align: top">
                 <? if ($aItem['type'] == 'is_new'): ?>
                     <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <? endif ?>
