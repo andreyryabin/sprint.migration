@@ -256,15 +256,18 @@ class VersionManager
 
     public function getStatus() {
         $versions = $this->getVersions('all');
-        $summ = array();
+
+        $summ = array(
+            'is_new' => 0,
+            'is_installed' => 0,
+            'is_unknown' => 0,
+        );
+
         foreach ($versions as $aItem) {
             $type = $aItem['type'];
-            if (!isset($summ[$type])) {
-                $summ[$type] = 0;
-            }
-
             $summ[$type]++;
         }
+
         return $summ;
     }
 

@@ -75,7 +75,7 @@ class Console
             $status = $this->versionManager->getStatus();
             Out::initTable(array('Status', 'Count'));
             foreach ($status as $k => $v){
-                Out::addTableRow(array($k, $v));
+                Out::addTableRow(array($this->getTypeTitle($k), $v));
             }
             Out::outTable();
         }
