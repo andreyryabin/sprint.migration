@@ -194,7 +194,7 @@ class Out
         }
     }
 
-    function strLen($str){
+    public static function strLen($str){
         if (Module::isWin1251()){
             return strlen($str);
         } else {
@@ -202,11 +202,19 @@ class Out
         }
 
     }
-    function strPad($input, $pad_length, $pad_string) {
+    public static function strPad($input, $pad_length, $pad_string) {
         if (Module::isWin1251()){
             return str_pad($input, $pad_length, $pad_string, STR_PAD_RIGHT);
         } else {
             return str_pad($input, strlen($input)-mb_strlen($input,'UTF-8')+$pad_length, $pad_string, STR_PAD_RIGHT);
+        }
+    }
+
+    public static function subStr($str, $start, $len = null){
+        if (Module::isWin1251()){
+            return substr($str, $start, $len);
+        } else {
+            return mb_substr($str, $start, $len,'UTF-8');
         }
     }
     

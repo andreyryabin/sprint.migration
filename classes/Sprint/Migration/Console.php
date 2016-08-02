@@ -43,45 +43,12 @@ class Console
     }
 
     public function commandCreate($descr = '', $prefix = '') {
-        $result = $this->versionManager->createVersionFile($descr, $prefix);
-        $type = $this->versionManager->getVersionType($result['version']);
-
-        Out::initTable();
-        if (!empty($result['version'])){
-            Out::addTableRow(array('Version', $result['version']));
-        }
-
-        $titles = array(
-            'is_new' => 'new',
-            'is_installed' => 'installed',
-            'is_unknown' => 'unknown',
-        );
-
-        if ($type){
-            if (!empty($titles[$type])){
-                Out::addTableRow(array('Status', $titles[$type]));
-            }
-        }
-
-        if (!empty($result['description'])){
-            Out::addTableRow(array('Description', $result['description']));
-        }
-        if (!empty($result['location'])){
-            Out::addTableRow(array('Location', $result['location']));
-        }
-
-        Out::outTable();
+        $meta = $this->versionManager->createVersionFile($descr, $prefix);
+        $this->outVersionMeta($meta);
     }
 
     public function commandList() {
         $versions = $this->versionManager->getVersions('all');
-
-        $titles = array(
-            'is_new' => 'new',
-            'is_installed' => 'installed',
-            'is_unknown' => 'unknown',
-        );
-
         Out::initTable(array(
             'Version',
             'Status',
@@ -89,66 +56,28 @@ class Console
             //'Location'
         ));
         foreach ($versions as $aItem){
-            $type = $aItem['type'];
-            $descr = $this->versionManager->getVersionDescription($aItem['version']);
             Out::addTableRow(array(
                 $aItem['version'],
-                $titles[$type],
-                $descr['description'],
-                //$descr['location']
+                $this->getTypeTitle($aItem['type']),
+                Out::subStr($aItem['description'],0, 100),
+                //$aItem['location']
             ));
         }
 
         Out::outTable();
     }
 
-    protected function outVersionStatus($version){
-        $descr = $this->versionManager->getVersionDescription($version);
-        $type = $this->versionManager->getVersionType($version);
-
-        $titles = array(
-            'is_new' => 'new',
-            'is_installed' => 'installed',
-            'is_unknown' => 'unknown',
-        );
-
-        if ($type){
-            Out::initTable();
-            Out::addTableRow(array('Version', $version));
-
-            if (!empty($titles[$type])){
-                Out::addTableRow(array('Status', $titles[$type]));
-            }
-            if (!empty($descr['description'])){
-                Out::addTableRow(array('Description', $descr['description']));
-            }
-            if (!empty($descr['location'])){
-                Out::addTableRow(array('Location', $descr['location']));
-            }
-            Out::outTable();
-
-        } else {
-            Out::out('%s not found!', $version);
-        }
-    }
-
-    protected function outSummaryStatus(){
-        $status = $this->versionManager->getStatus();
-
-        Out::initTable(array('Status', 'Count'));
-
-        Out::addTableRow(array('new', $status['is_new']));
-        Out::addTableRow(array('installed', $status['is_installed']));
-        Out::addTableRow(array('unknown',$status['is_unknown']));
-
-        Out::outTable();
-    }
-
     public function commandStatus($version = '') {
         if ($version){
-            $this->outVersionStatus($version);
+            $meta = $this->versionManager->getVersionMeta($version);
+            $this->outVersionMeta($meta);
         } else {
-            $this->outSummaryStatus();
+            $status = $this->versionManager->getStatus();
+            Out::initTable(array('Status', 'Count'));
+            foreach ($status as $k => $v){
+                Out::addTableRow(array($k, $v));
+            }
+            Out::outTable();
         }
     }
 
@@ -270,5 +199,30 @@ class Console
 
     protected function outParamsError(){
         Out::out('Required params not found, see help');
+    }
+
+    protected function outVersionMeta($meta = false){
+        if ($meta) {
+            Out::initTable();
+            foreach (array('version', 'type', 'description', 'location') as $val){
+                if (!empty($meta[$val])){
+                    $meta[$val] = ($val == 'type') ? $this->getTypeTitle($meta[$val]) : $meta[$val];
+                    Out::addTableRow(array(ucfirst($val), $meta[$val]));
+                }
+            }
+            Out::outTable();
+        } else {
+            Out::out('Version not found!');
+        }
+    }
+
+    protected function getTypeTitle($type){
+        $titles = array(
+            'is_new' => 'New',
+            'is_installed' => 'Installed',
+            'is_unknown' => 'Unknown',
+        );
+
+        return isset($titles[$type]) ? $titles[$type] : $type;
     }
 }

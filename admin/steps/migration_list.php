@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     ?>
     <? if (!empty($versions)): ?>
         <table style="border-collapse: collapse;width: 100%">
-        <? foreach ($versions as $aItem): $descr = $versionManager->getVersionDescription($aItem['version'])?>
+        <? foreach ($versions as $aItem):?>
             <tr>
                 <td style="width:50%;text-align: right;padding: 5px 5px;">
                 <? if ($aItem['type'] != 'is_unknown' && $webdir): ?>
@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                     <span class="c-migration-item-<?= $aItem['type'] ?>"><?= $aItem['version'] ?></span>
                 <? endif ?>
 
-                    <?=$descr['description']?>
+                    <?=$aItem['description']?>
 
                 </td>
                 <td style="width:50%;text-align: left;padding: 5px 5px; vertical-align: top">

@@ -9,6 +9,8 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_ad
 
 \CModule::IncludeModule("sprint.migration");
 
+/** @global $APPLICATION \CMain */
+
 global $APPLICATION;
 $APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATIONS'));
 
