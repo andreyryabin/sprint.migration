@@ -120,7 +120,6 @@ class Out
         }
     }
 
-
     protected static $tableRows = array();
     protected static $tableMaxCol = array();
     protected static $tableHeaderExists = 0;
@@ -133,6 +132,7 @@ class Out
     protected static function calcMaxColumn($row){
         foreach ($row as $colNum => $col){
             $len = self::strLen($col);
+
             if (!isset(self::$tableMaxCol[$colNum])){
                 self::$tableMaxCol[$colNum] = 0;
             }
@@ -149,7 +149,7 @@ class Out
 
         if (!empty($headerRow)){
             self::calcMaxColumn($headerRow);
-            array_unshift(self::$tableRows, $headerRow);
+            self::$tableRows[] = $headerRow;
             self::$tableHeaderExists = 1;
         }
     }
@@ -161,7 +161,6 @@ class Out
             $border = ($colNum < $colCnt - 1 ) ? '+' : '';
             $res .=  ' ' . self::strPad('', self::$tableMaxCol[$colNum], '-') . ' ' .$border;
         }
-
         Out::out('+' . $res . '+');
     }
 
@@ -170,7 +169,8 @@ class Out
         $res = '';
         foreach ($row as $colNum => $col){
             $border = ($colNum < $colCnt - 1 ) ? '|' : '';
-            $res .=  ' ' . self::strPad($col, self::$tableMaxCol[$colNum], ' ') . ' ' . $border;
+            $cont = self::strPad($col, self::$tableMaxCol[$colNum], ' ');
+            $res .=  ' ' . $cont . ' ' . $border;
         }
         Out::out('|' . $res . '|');
     }
@@ -206,7 +206,8 @@ class Out
         if (Module::isWin1251()){
             return str_pad($input, $pad_length, $pad_string, STR_PAD_RIGHT);
         } else {
-            return str_pad($input, strlen($input)-mb_strlen($input,'UTF-8')+$pad_length, $pad_string, STR_PAD_RIGHT);
+            $diff = strlen($input) - mb_strlen($input, 'UTF-8');
+            return str_pad($input, $pad_length + $diff, $pad_string, STR_PAD_RIGHT);
         }
     }
 
@@ -233,7 +234,7 @@ class Out
         }
     }
 
-    protected static function prepareToConsole($msg){
+    public static function prepareToConsole($msg){
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
@@ -245,10 +246,16 @@ class Out
         return $msg;
     }
 
-    protected static function prepareToHtml($msg){
+    public static function prepareToHtml($msg){
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
+
+        $taskUrl = Module::getFileOption('tracker_task_url');
+        if ($taskUrl && false !== strpos($taskUrl, '$1')){
+            $msg = preg_replace('/#(\d+)/', '<a target="_blank" href="'.$taskUrl.'">#$1</a>', $msg);
+        }
+
         return $msg;
     }
     

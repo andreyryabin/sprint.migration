@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                 <? else: ?>
                     <span class="c-migration-item-<?= $aItem['type'] ?>"><?= $aItem['version'] ?></span>
                 <? endif ?>
-                    <?if (!empty($aItem['description'])):?><?=$aItem['description']?><?endif?>
+                    <?if (!empty($aItem['description'])):?><?=\Sprint\Migration\Out::prepareToHtml($aItem['description'])?><?endif?>
                 </td>
                 <td style="text-align: left;width: 50%;padding: 5px;vertical-align: top">
                 <? if ($aItem['type'] == 'is_new'): ?>

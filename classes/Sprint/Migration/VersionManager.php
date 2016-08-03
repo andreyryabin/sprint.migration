@@ -106,8 +106,8 @@ class VersionManager
     }
 
     public function createVersionFile($description = '', $prefix = '') {
-        $description = $this->prepareDescription($description);
-        $prefix = $this->preparePrefix($prefix);
+        $description = $this->purifyDescription($description);
+        $prefix = $this->purifyPrefix($prefix);
 
         $originTz = date_default_timezone_get();
         date_default_timezone_set('Europe/Moscow');
@@ -239,7 +239,7 @@ class VersionManager
         }
 
         $meta['class'] = $class;
-        $meta['description'] = $this->prepareDescription($descr);
+        $meta['description'] = $this->purifyDescription($descr);
 
         return $meta;
 
@@ -322,7 +322,7 @@ class VersionManager
     }
 
 
-    protected function preparePrefix($prefix = '') {
+    protected function purifyPrefix($prefix = '') {
         $prefix = trim($prefix);
         $default = 'Version';
 
@@ -342,9 +342,9 @@ class VersionManager
         return $prefix;
     }
 
-    protected function prepareDescription($descr = '') {
+    protected function purifyDescription($descr = '') {
         $descr = strval($descr);
-        $descr = str_replace(array("\n\r", "\r\n", "\n","\r"), '<br />', $descr );
+        $descr = str_replace(array("\n\r", "\r\n", "\n","\r"), ' ', $descr );
         $descr = strip_tags($descr);
         $descr = addslashes($descr);
         return $descr;

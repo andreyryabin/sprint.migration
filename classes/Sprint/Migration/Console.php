@@ -59,8 +59,8 @@ class Console
             Out::addTableRow(array(
                 $aItem['version'],
                 $this->getTypeTitle($aItem['type']),
-                Out::subStr($aItem['description'],0, 100),
-                //$aItem['location']
+                $aItem['description'],
+                //$aItem['location'],
             ));
         }
 
