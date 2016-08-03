@@ -19,9 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     ?>
     <? if (!empty($versions)): ?>
         <table style="border-collapse: collapse;width: 100%">
-        <? foreach ($versions as $aItem): ?>
+        <? foreach ($versions as $aItem):?>
             <tr>
-                <td style="width:50%;text-align: right;padding: 5px 5px;">
+                <td style="text-align: left;width: 50%;padding: 5px;">
                 <? if ($aItem['type'] != 'is_unknown' && $webdir): ?>
                     <? $href = '/bitrix/admin/fileman_file_view.php?' . http_build_query(array(
                             'lang' => LANGUAGE_ID,
@@ -32,8 +32,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                 <? else: ?>
                     <span class="c-migration-item-<?= $aItem['type'] ?>"><?= $aItem['version'] ?></span>
                 <? endif ?>
+                    <?if (!empty($aItem['description'])):?><?=\Sprint\Migration\Out::prepareToHtml($aItem['description'])?><?endif?>
                 </td>
-                <td style="width:50%;text-align: left;padding: 5px 5px;">
+                <td style="text-align: left;width: 50%;padding: 5px;vertical-align: top">
                 <? if ($aItem['type'] == 'is_new'): ?>
                     <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <? endif ?>
@@ -45,17 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
         <? endforeach ?>
         </table>
     <? else: ?>
-
-        <table style="border-collapse: collapse;width: 100%">
-            <tr>
-                <td style="width:50%;text-align: right;padding: 5px 5px;">
-                    <?= GetMessage('SPRINT_MIGRATION_LIST_EMPTY') ?>
-                </td>
-                <td style="width:50%;text-align: left;padding: 5px 5px;">
-
-                </td>
-            </tr>
-        </table>
+        <p style="text-align: center"><?= GetMessage('SPRINT_MIGRATION_LIST_EMPTY') ?></p>
     <? endif ?>
     <?
     /** @noinspection PhpIncludeInspection */
