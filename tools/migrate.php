@@ -11,10 +11,6 @@ defined('NO_KEEP_STATISTIC') || define('NO_KEEP_STATISTIC', "Y");
 defined('NO_AGENT_STATISTIC') || define('NO_AGENT_STATISTIC', "Y");
 defined('NOT_CHECK_PERMISSIONS') || define('NOT_CHECK_PERMISSIONS', true);
 
-defined('CACHED_b_iblock_type') || define('CACHED_b_iblock_type', false);
-defined('CACHED_b_iblock') || define('CACHED_b_iblock', false);
-defined('CACHED_b_iblock_property_enum') || define('CACHED_b_iblock_property_enum', false);
-
 if (empty($_SERVER["DOCUMENT_ROOT"])){
     $_SERVER["DOCUMENT_ROOT"] = realpath(__DIR__ . '/../../../../');
 }

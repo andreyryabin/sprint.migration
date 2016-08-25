@@ -1,9 +1,5 @@
 <?php
 
-defined('CACHED_b_iblock_type') || define('CACHED_b_iblock_type', false);
-defined('CACHED_b_iblock') || define('CACHED_b_iblock', false);
-defined('CACHED_b_iblock_property_enum') || define('CACHED_b_iblock_property_enum', false);
-
 /** @noinspection PhpIncludeInspection */
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 

@@ -144,19 +144,13 @@ class Console
     }
 
     public function commandHelp() {
+        Out::out(GetMessage('SPRINT_MIGRATION_MODULE_NAME'));
+        Out::out('Версия bitrix: %s', defined('SM_VERSION') ? SM_VERSION : '');
+        Out::out('Версия модуля: %s', Module::getVersion());
+        Out::out('');
         Out::out('Директория с миграциями:'.PHP_EOL.'   %s'.PHP_EOL, Module::getMigrationDir());
         Out::out('Запуск:'.PHP_EOL.'   php %s <command> [<args>]'.PHP_EOL, $this->script);
-
-        $cmd = Module::getModuleDir() . '/commands.txt';
-
-        if (is_file($cmd)){
-            $msg = file_get_contents($cmd);
-            if (Module::isWin1251()){
-                $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
-            }
-
-            Out::out($msg);
-        }
+        Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
     }
 
     protected function executeAll($action = 'up', $limit = 0) {
