@@ -14,13 +14,13 @@ class IblockElementHelper extends Helper
             return $elementId;
         }
 
+        $fields['IBLOCK_ID'] = $filter['IBLOCK_ID'];
         return $this->addElement($fields, $props);
 
     }
 
     public function updateElementIfExists($filter,$fields){
         $this->checkRequiredKeys(__METHOD__, $filter, array('IBLOCK_ID'));
-
         $elementId = $this->getElementId($filter);
 
         if (!$elementId) {
@@ -38,6 +38,7 @@ class IblockElementHelper extends Helper
     }
 
     public function deleteElementIfExists($filter) {
+        $this->checkRequiredKeys(__METHOD__, $filter, array('IBLOCK_ID'));
         $elementId = $this->getElementId($filter);
 
         if (!$elementId) {

@@ -7,74 +7,6 @@ use Sprint\Migration\Helper;
 class IblockHelper extends Helper
 {
 
-    public function getIblockTypes() {
-        $dbResult = \CIBlockType::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N'));
-        $list = array();
-        while ($aItem = $dbResult->Fetch()) {
-            $list[] = $aItem;
-        }
-        return $list;
-    }
-    public function getIblockType($iblockTypeId) {
-        return \CIBlockType::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N', '=ID' => $iblockTypeId))->Fetch();
-    }
-    public function getIblockTypeId($iblockTypeId) {
-        $aIblock = $this->getIblockType($iblockTypeId);
-        return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
-    }
-    public function addIblockTypeIfNotExists($fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
-
-        $id = $fields['ID'];
-
-        if ($this->getIblockTypeId($id)) {
-            return $id;
-        }
-
-        $default = Array(
-            'ID' => '',
-            'SECTIONS' => 'Y',
-            'IN_RSS' => 'N',
-            'SORT' => 100,
-            'LANG' => Array(
-                'ru' => Array(
-                    'NAME' => 'Catalog',
-                    'SECTION_NAME' => 'Sections',
-                    'ELEMENT_NAME' => 'Elements'
-                ),
-                'en' => Array(
-                    'NAME' => 'Catalog',
-                    'SECTION_NAME' => 'Sections',
-                    'ELEMENT_NAME' => 'Elements'
-                ),
-            )
-        );
-
-        $fields = array_replace_recursive($default, $fields);
-
-        $ib = new \CIBlockType;
-        if ($ib->Add($fields)) {
-            return $id;
-        }
-
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
-    }
-    public function deleteIblockTypeIfExists($iblockTypeId){
-        $iblockTypeId = $this->getIblockTypeId($iblockTypeId);
-
-        if (!$iblockTypeId) {
-            return false;
-        }
-
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        if (\CIBlockType::Delete($iblockTypeId)) {
-            return true;
-        }
-
-        $this->throwException(__METHOD__, 'Could not delete iblock type %s', $iblockTypeId);
-    }
-
-
     public function getIblocks() {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbResult = \CIBlock::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N'));
@@ -153,6 +85,73 @@ class IblockHelper extends Helper
         $default = \CIBlock::GetFields($iblockId);
         $fields = array_replace_recursive($default, $fields);
         \CIBlock::SetFields($iblockId, $fields);
+    }
+
+    public function getIblockTypes() {
+        $dbResult = \CIBlockType::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N'));
+        $list = array();
+        while ($aItem = $dbResult->Fetch()) {
+            $list[] = $aItem;
+        }
+        return $list;
+    }
+    public function getIblockType($iblockTypeId) {
+        return \CIBlockType::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N', '=ID' => $iblockTypeId))->Fetch();
+    }
+    public function getIblockTypeId($iblockTypeId) {
+        $aIblock = $this->getIblockType($iblockTypeId);
+        return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
+    }
+    public function addIblockTypeIfNotExists($fields) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
+
+        $id = $fields['ID'];
+
+        if ($this->getIblockTypeId($id)) {
+            return $id;
+        }
+
+        $default = Array(
+            'ID' => '',
+            'SECTIONS' => 'Y',
+            'IN_RSS' => 'N',
+            'SORT' => 100,
+            'LANG' => Array(
+                'ru' => Array(
+                    'NAME' => 'Catalog',
+                    'SECTION_NAME' => 'Sections',
+                    'ELEMENT_NAME' => 'Elements'
+                ),
+                'en' => Array(
+                    'NAME' => 'Catalog',
+                    'SECTION_NAME' => 'Sections',
+                    'ELEMENT_NAME' => 'Elements'
+                ),
+            )
+        );
+
+        $fields = array_replace_recursive($default, $fields);
+
+        $ib = new \CIBlockType;
+        if ($ib->Add($fields)) {
+            return $id;
+        }
+
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+    }
+    public function deleteIblockTypeIfExists($iblockTypeId){
+        $iblockTypeId = $this->getIblockTypeId($iblockTypeId);
+
+        if (!$iblockTypeId) {
+            return false;
+        }
+
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        if (\CIBlockType::Delete($iblockTypeId)) {
+            return true;
+        }
+
+        $this->throwException(__METHOD__, 'Could not delete iblock type %s', $iblockTypeId);
     }
 
 
@@ -235,12 +234,6 @@ class IblockHelper extends Helper
     }
 
 
-    /** @deprecated */
-    public function addSection($iblockId, $fields = array()) {
-        $fields["IBLOCK_ID"] = $iblockId;
-        $helper = new IblockSectionHelper();
-        return $helper->addSection($fields);
-    }
 
     /** @deprecated */
     public function addElementIfNotExists($iblockId, $fields, $props = array()) {
@@ -253,21 +246,12 @@ class IblockHelper extends Helper
             '=CODE' => $fields['CODE']
         ), $fields, $props);
     }
-
     /** @deprecated */
     public function addElement($iblockId, $fields = array(), $props = array()) {
-        $fields = array_replace_recursive($default, $fields);
         $fields["IBLOCK_ID"] = $iblockId;
-
         $helper = new IblockElementHelper();
         return $helper->addElement($fields, $props);
     }
-
-    /* @deprecated */
-    public function deleteProperty($iblockId, $propertyCode) {
-        return $this->deletePropertyIfExists($iblockId, $propertyCode);
-    }
-
     /** @deprecated */
     public function deleteElementIfExists($iblockId, $code) {
         $helper = new IblockElementHelper();
@@ -276,11 +260,19 @@ class IblockHelper extends Helper
             '=CODE' => $code
         ));
     }
-
+    /** @deprecated */
+    public function addSection($iblockId, $fields = array()) {
+        $fields["IBLOCK_ID"] = $iblockId;
+        $helper = new IblockSectionHelper();
+        return $helper->addSection($fields);
+    }
     /* @deprecated */
     public function updateProperty($iblockId, $propertyCode, $fields) {
         return $this->updatePropertyIfExists($iblockId, $propertyCode, $fields);
     }
-
+    /* @deprecated */
+    public function deleteProperty($iblockId, $propertyCode) {
+        return $this->deletePropertyIfExists($iblockId, $propertyCode);
+    }
 
 }

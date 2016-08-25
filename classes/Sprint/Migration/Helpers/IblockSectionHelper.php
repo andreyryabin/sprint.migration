@@ -9,28 +9,25 @@ class IblockSectionHelper extends Helper
 
     public function addSectionIfNotExists($filter,$fields){
         $this->checkRequiredKeys(__METHOD__, $filter, array('IBLOCK_ID'));
-
         $sectionId = $this->getSectionId($filter);
         if ($sectionId) {
             return $sectionId;
         }
 
+        $fields['IBLOCK_ID'] = $filter['IBLOCK_ID'];
         return $this->addSection($fields);
 
     }
 
     public function updateSectionIfExists($filter,$fields){
         $this->checkRequiredKeys(__METHOD__, $filter, array('IBLOCK_ID'));
-
         $sectionId = $this->getSectionId($filter);
-
         if (!$sectionId) {
             return false;
         }
 
         $ib = new \CIBlockSection;
         $id = $ib->Update($sectionId, $fields);
-
         if ($id){
             return $id;
         }
@@ -39,8 +36,8 @@ class IblockSectionHelper extends Helper
     }
 
     public function deleteSectionIfExists($filter) {
+        $this->checkRequiredKeys(__METHOD__, $filter, array('IBLOCK_ID'));
         $sectionId = $this->getSectionId($filter);
-
         if (!$sectionId) {
             return false;
         }
@@ -71,13 +68,11 @@ class IblockSectionHelper extends Helper
 
         $ib = new \CIBlockSection;
         $id = $ib->Add($fields);
-
         if ($id) {
             return $id;
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
-
     }
 
     public function getSectionId($filter) {
