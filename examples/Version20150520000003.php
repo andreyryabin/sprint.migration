@@ -1,9 +1,6 @@
 <?php
 
 namespace Sprint\Migration;
-use \Sprint\Migration\Helpers\IblockHelper;
-use \Sprint\Migration\Helpers\EventHelper;
-use \Sprint\Migration\Helpers\UserTypeEntityHelper;
 
 class Version20150520000003 extends Version {
 

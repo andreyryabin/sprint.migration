@@ -1,11 +1,6 @@
 <?php
 
 namespace Sprint\Migration;
-use Sprint\Migration\Helpers\IblockElementAdminFormHelper;
-use Sprint\Migration\Helpers\IblockElementAdminListHelper;
-use \Sprint\Migration\Helpers\IblockHelper;
-use \Sprint\Migration\Helpers\EventHelper;
-use \Sprint\Migration\Helpers\UserTypeEntityHelper;
 
 class Version20150520000004 extends Version {
 
@@ -13,30 +8,36 @@ class Version20150520000004 extends Version {
 
     public function up(){
 
-        $adminListHelper = new IblockElementAdminListHelper(3);
+        $helper = new HelperManager();
 
-        $adminListHelper->addColumn('ID');
-        $adminListHelper->addColumn('NAME');
-        $adminListHelper->setListSort('id', 'desc');
-        $adminListHelper->setPageSize(50);
+        $helper->adminIblock()->buildElementForm(3, array(
+            'Tab1' => array(
+                'NAME' => '*',
+                'SORT' => 'Сортировка',
+            ),
+            'Tab2' => array(
+                'CODE' => 'Код',
+                'PROPERTY_MENU_TOP' => '*',
+                'PROPERTY_3' => 'PROPERTY_3',
+            )
+        ));
 
-        $adminListHelper->execute();
-
-
-        $adminFormHelper = new IblockElementAdminFormHelper(3);
-
-        $adminFormHelper->addTab('Tab1');
-
-        $adminFormHelper->addField('NAME');
-        $adminFormHelper->addField('CODE');
-        $adminFormHelper->addField('PREVIEW_PICTURE', 'Картинка');
-        $adminFormHelper->addField('PROPERTY_XXX');
-
-        $adminFormHelper->execute();
+        $helper->adminIblock()->buildElementList(3, array(
+            'NAME',
+            'SORT',
+            'ID',
+            'PROPERTY_MENU_TOP',
+            'PROPERTY_3',
+        ), array(
+            'order' => 'desc',
+            'by' => 'id',
+            'page_size' => 10
+        ));
 
     }
 
     public function down(){
+        //
     }
 
 }
