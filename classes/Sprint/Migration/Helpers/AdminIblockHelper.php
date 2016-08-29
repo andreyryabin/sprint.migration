@@ -96,8 +96,8 @@ class AdminIblockHelper extends Helper
             }
         }
 
-        global $MESS;
-        foreach ($MESS as $code => $value) {
+        $iblockMess = \IncludeModuleLangFile('/bitrix/modules/iblock/iblock.php', 'ru', true);
+        foreach ($iblockMess as $code => $value) {
             if (false !== strpos($code, 'IBLOCK_FIELD_')) {
                 $fcode = str_replace('IBLOCK_FIELD_', '', $code);
                 $this->titles[$fcode] = $value;

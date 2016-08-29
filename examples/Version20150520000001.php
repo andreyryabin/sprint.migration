@@ -12,7 +12,7 @@ class Version20150520000001 extends Version {
     public function up(){
         $helper = new HelperManager();
 
-        $helper->iblock()->addIblockTypeIfNotExists(array(
+        $helper->Iblock()->addIblockTypeIfNotExists(array(
             'ID' => 'content',
             'LANG'=>Array(
                 'en'=>Array(
@@ -28,7 +28,7 @@ class Version20150520000001 extends Version {
             )
         ));
 
-        $iblockId1 = $helper->iblock()->addIblockIfNotExists(array(
+        $iblockId1 = $helper->Iblock()->addIblockIfNotExists(array(
             'NAME' => 'Новости',
             'CODE' => 'content_news',
             'IBLOCK_TYPE_ID' => 'content',
@@ -36,7 +36,7 @@ class Version20150520000001 extends Version {
             'DETAIL_PAGE_URL' => '#SITE_DIR#/news/#ELEMENT_ID#'
         ));
 
-        $helper->iblock()->addPropertyIfNotExists($iblockId1, array(
+        $helper->Iblock()->addPropertyIfNotExists($iblockId1, array(
             'NAME' => 'Ссылка',
             'CODE' => 'LINK',
         ));

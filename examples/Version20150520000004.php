@@ -10,24 +10,28 @@ class Version20150520000004 extends Version {
 
         $helper = new HelperManager();
 
-        $helper->adminIblock()->buildElementForm(3, array(
+        $iblockId = $helper->Iblock()->getIblockId('content_news', 'content');
+
+        $helper->AdminIblock()->buildElementForm($iblockId, array(
             'Tab1' => array(
+                'ID' => '*',
+                'ACTIVE' => '*',
+                'DATE_ACTIVE_FROM' => '*',
                 'NAME' => '*',
                 'SORT' => 'Сортировка',
             ),
             'Tab2' => array(
                 'CODE' => 'Код',
-                'PROPERTY_MENU_TOP' => '*',
-                'PROPERTY_3' => 'PROPERTY_3',
+                'PREVIEW_TEXT' => '*',
+                'PROPERTY_LINK' => '*',
             )
         ));
 
-        $helper->adminIblock()->buildElementList(3, array(
+        $helper->AdminIblock()->buildElementList($iblockId, array(
             'NAME',
             'SORT',
             'ID',
-            'PROPERTY_MENU_TOP',
-            'PROPERTY_3',
+            'PROPERTY_LINK',
         ), array(
             'order' => 'desc',
             'by' => 'id',

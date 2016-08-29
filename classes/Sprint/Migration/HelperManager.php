@@ -16,16 +16,14 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
 use Sprint\Migration\Helpers\UserGroupHelper;
 
 /**
- * @method IblockHelper             iblock()
- * @method AdminIblockHelper        adminIblock()
- *
- * @method AgentHelper              agent()
- * @method EventHelper              event()
- * @method LangHelper               lang()
- * @method SiteHelper               site()
- *
- * @method UserTypeEntityHelper     userTypeEntity()
- * @method UserGroupHelper          userGroup()
+ * @method IblockHelper             Iblock()
+ * @method AdminIblockHelper        AdminIblock()
+ * @method AgentHelper              Agent()
+ * @method EventHelper              Event()
+ * @method LangHelper               Lang()
+ * @method SiteHelper               Site()
+ * @method UserTypeEntityHelper     UserTypeEntity()
+ * @method UserGroupHelper          UserGroup()
  */
 
 class HelperManager
@@ -42,7 +40,7 @@ class HelperManager
             return $this->cache[$name];
         }
 
-        $helperClass = '\\Sprint\\Migration\\Helpers\\' . ucfirst($name) . 'Helper';
+        $helperClass = '\\Sprint\\Migration\\Helpers\\' . $name . 'Helper';
         if (!class_exists($helperClass)){
             Throw new HelperException("Helper $name not found");
         }
