@@ -270,9 +270,10 @@ class IblockHelper extends Helper
 
     }
 
-
     /** @compatibility */
-    public function addElement($iblockId, $fields = array(), $props = array()) {
+    public function addElement($iblockId, $fields = array(), $props = array()){
+        $fields['IBLOCK_ID'] = $iblockId;
+
         $default = array(
             "NAME" => "element",
             "IBLOCK_SECTION_ID" => false,
@@ -282,7 +283,6 @@ class IblockHelper extends Helper
         );
 
         $fields = array_replace_recursive($default, $fields);
-        $fields["IBLOCK_ID"] = $iblockId;
 
         if (!empty($props)) {
             $fields['PROPERTY_VALUES'] = $props;
@@ -299,24 +299,28 @@ class IblockHelper extends Helper
     }
 
     /** @compatibility */
-    public function addElementIfNotExists($iblockId, $fields, $props = array()) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
+    public function addElementIfNotExists($filter, $fields, $props = array()){
 
-        $aItem = $this->getElementByFilter(array(
-            'IBLOCK_ID' => $iblockId,
-            '=CODE' => $fields['CODE']
-        ));
+        /** compatibility */
+        if (is_numeric($filter)){
+            $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
+            $filter = array(
+                'IBLOCK_ID' => $filter,
+                '=CODE' => $fields['CODE']
+            );
+        }
 
+        $aItem = $this->getElement($filter);
         if ($aItem){
             return $aItem['ID'];
         }
 
-        return $this->addElement($iblockId, $fields, $props);
-    }
-    public function updateElementIfExists($iblockId, $filter,$fields){
-        $filter['IBLOCK_ID'] = $iblockId;
+        $fields['IBLOCK_ID'] = $filter['IBLOCK_ID'];
+        return $this->addElement($fields['IBLOCK_ID'],$fields, $props);
 
-        $elementId = $this->getElementByFilter($filter);
+    }
+    public function updateElementIfExists($filter,$fields){
+        $elementId = $this->getElement($filter);
         if (!$elementId) {
             return false;
         }
@@ -330,21 +334,18 @@ class IblockHelper extends Helper
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
-
     /** @compatibility */
-    public function deleteElementIfExists($iblockId, $filterOrCode) {
-        /* compatibility */
-        if (!is_array($filterOrCode)){
+    public function deleteElementIfExists($filter, $code= false){
+
+        /** compatibility */
+        if (is_numeric($filter) && $code){
             $filter = array(
-                '=CODE' => $filterOrCode
+                'IBLOCK_ID' => $filter,
+                '=CODE' => $code
             );
-        } else {
-            $filter = $filterOrCode;
         }
 
-        $filter['IBLOCK_ID'] = $iblockId;
-
-        $aItem = $this->getElementByFilter($filter);
+        $aItem = $this->getElement($filter);
 
         if (!$aItem) {
             return false;
@@ -357,7 +358,7 @@ class IblockHelper extends Helper
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
-    public function getElementByFilter($filter) {
+    public function getElement($filter) {
         $this->checkRequiredKeys(__METHOD__, $filter, array('IBLOCK_ID'));
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
@@ -372,10 +373,11 @@ class IblockHelper extends Helper
             'CODE',
         ))->Fetch();
     }
-
     /** @compatibility */
-    public function addSection($iblockId, $fields = array()) {
-        $default = Array(
+    public function addSection($iblockId, $fields = array()){
+        $fields['IBLOCK_ID'] = $iblockId;
+
+        $default = array(
             "ACTIVE" => "Y",
             "IBLOCK_SECTION_ID" => false,
             "NAME" => 'section',
@@ -387,7 +389,6 @@ class IblockHelper extends Helper
         );
 
         $fields = array_replace_recursive($default, $fields);
-        $fields["IBLOCK_ID"] = $iblockId;
 
         $ib = new \CIBlockSection;
         $id = $ib->Add($fields);
@@ -397,24 +398,19 @@ class IblockHelper extends Helper
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
-
     }
-    public function addSectionIfNotExists($iblockId, $filter,$fields){
-        $filter['IBLOCK_ID'] = $iblockId;
-        $fields['IBLOCK_ID'] = $iblockId;
-
-        $aItem = $this->getSectionByFilter($iblockId, $filter);
+    public function addSectionIfNotExists($filter,$fields){
+        $aItem = $this->getSection($filter);
         if ($aItem) {
             return $aItem['ID'];
         }
 
-        return $this->addSection($iblockId, $fields);
+        $fields['IBLOCK_ID'] = $filter['IBLOCK_ID'];
+        return $this->addSection($fields);
 
     }
-    public function updateSectionIfExists($iblockId, $filter,$fields){
-        $filter['IBLOCK_ID'] = $iblockId;
-
-        $aItem = $this->getSectionByFilter($iblockId, $filter);
+    public function updateSectionIfExists($filter,$fields){
+        $aItem = $this->getSection($filter);
         if (!$aItem) {
             return false;
         }
@@ -427,10 +423,8 @@ class IblockHelper extends Helper
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
-    public function deleteSectionIfExists($iblockId, $filter) {
-        $filter['IBLOCK_ID'] = $iblockId;
-
-        $aItem = $this->getSectionByFilter($iblockId, $filter);
+    public function deleteSectionIfExists($filter) {
+        $aItem = $this->getSection($filter);
         if (!$aItem) {
             return false;
         }
@@ -442,8 +436,8 @@ class IblockHelper extends Helper
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
-    public function getSectionByFilter($iblockId, $filter) {
-        $filter['IBLOCK_ID'] = $iblockId;
+    public function getSection($filter) {
+        $this->checkRequiredKeys(__METHOD__, $filter, array('IBLOCK_ID'));
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return \CIBlockSection::GetList(array(
