@@ -96,7 +96,11 @@ class AdminIblockHelper extends Helper
             }
         }
 
-        $iblockMess = \IncludeModuleLangFile('/bitrix/modules/iblock/iblock.php', 'ru', true);
+        $iblockMess = \IncludeModuleLangFile('/bitrix/modules/iblock/admin/iblock_element_edit.php', 'ru', true);
+
+        $iblockMess['IBLOCK_FIELD_ACTIVE_FROM'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_FROM'];
+        $iblockMess['IBLOCK_FIELD_ACTIVE_TO'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_TO'];
+
         foreach ($iblockMess as $code => $value) {
             if (false !== strpos($code, 'IBLOCK_FIELD_')) {
                 $fcode = str_replace('IBLOCK_FIELD_', '', $code);
@@ -106,11 +110,16 @@ class AdminIblockHelper extends Helper
     }
 
     protected function prepareTitle($fieldCode, $fieldTitle = '') {
-        if (empty($fieldTitle) || $fieldTitle == '*') {
-            if (isset($this->titles[$fieldCode])) {
-                return $this->titles[$fieldCode];
-            }
+        $fieldTitle = ($fieldTitle == '*') ? '' : $fieldTitle;
+
+        if (!empty($fieldTitle)) {
+            return $fieldTitle;
         }
+
+        if (isset($this->titles[$fieldCode])) {
+            return $this->titles[$fieldCode];
+        }
+
         return $fieldCode;
     }
 

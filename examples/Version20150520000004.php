@@ -14,9 +14,9 @@ class Version20150520000004 extends Version {
 
         $helper->AdminIblock()->buildElementForm($iblockId, array(
             'Tab1' => array(
-                'ID' => '*',
                 'ACTIVE' => '*',
-                'DATE_ACTIVE_FROM' => '*',
+                'ACTIVE_FROM' => '*',
+                'ACTIVE_TO' => '*',
                 'NAME' => '*',
                 'SORT' => 'Сортировка',
             ),
