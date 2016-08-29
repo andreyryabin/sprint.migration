@@ -319,21 +319,29 @@ class IblockHelper extends Helper
         return $this->addElement($fields['IBLOCK_ID'],$fields, $props);
 
     }
-    public function updateElementIfExists($filter,$fields){
-        $elementId = $this->getElement($filter);
-        if (!$elementId) {
+    public function updateElementIfExists($filter,$fields = array(), $props = array()){
+        $aItem = $this->getElement($filter);
+        if (!$aItem) {
             return false;
         }
 
-        $ib = new \CIBlockElement;
-        $id = $ib->Update($elementId, $fields);
+        if (!empty($fields)){
+            $ib = new \CIBlockElement;
+            if ($ib->Update($aItem['ID'], $fields)) {
+                return true;
+            }
 
-        if ($id){
-            return $id;
+            $this->throwException(__METHOD__, $ib->LAST_ERROR);
         }
 
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+        if (!empty($props)){
+            \CIBlockElement::SetPropertyValuesEx($aItem['ID'], $filter['IBLOCK_ID'], $props);
+            return true;
+        }
+
+        return false;
     }
+
     /** @compatibility */
     public function deleteElementIfExists($filter, $code= false){
 
