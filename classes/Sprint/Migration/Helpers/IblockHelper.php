@@ -8,12 +8,10 @@ class IblockHelper extends Helper
 {
 
 
-    public function getIblockTypes() {
-        $dbResult = \CIBlockType::GetList(array(
-            'SORT' => 'ASC'
-        ), array(
-            'CHECK_PERMISSIONS' => 'N'
-        ));
+    public function getIblockTypes($filter = array()) {
+        $filter['CHECK_PERMISSIONS'] = 'N';
+        $dbResult = \CIBlockType::GetList(array('SORT' => 'ASC'), $filter);
+
         $list = array();
         while ($aItem = $dbResult->Fetch()) {
             $list[] = $aItem;
@@ -21,29 +19,34 @@ class IblockHelper extends Helper
         return $list;
     }
 
-    /** @compatibility */
-    public function getIblockType($iblockTypeId) {
-        return \CIBlockType::GetList(array(
-            'SORT' => 'ASC'
-        ), array(
-            'CHECK_PERMISSIONS' => 'N',
-            '=ID' => $iblockTypeId
-        ))->Fetch();
+    public function getIblockType($filter) {
+        /** @compatibility */
+        if (!is_array($filter)){
+            $filter = array(
+                '=ID' => $filter
+            );
+        }
+
+        $filter['CHECK_PERMISSIONS'] = 'N';
+
+        return \CIBlockType::GetList(array('SORT' => 'ASC'), array($filter))->Fetch();
     }
 
-    /** @compatibility */
-    public function getIblockTypeId($iblockTypeId) {
-        $aIblock = $this->getIblockType($iblockTypeId);
+    
+    public function getIblockTypeId($filter) {
+        /** @compatibility */
+        $aIblock = $this->getIblockType($filter);
         return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
     }
 
-    /** @compatibility */
+    
     public function addIblockTypeIfNotExists($fields) {
+        /** @compatibility */
         $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
 
         $id = $fields['ID'];
 
-        if ($this->getIblockTypeId($id)) {
+        if ($this->getIblockType($id)) {
             return $id;
         }
 
@@ -75,40 +78,51 @@ class IblockHelper extends Helper
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
-    public function deleteIblockTypeIfExists($iblockTypeId) {
-        $iblockTypeId = $this->getIblockTypeId($iblockTypeId);
 
-        if (!$iblockTypeId) {
+    public function deleteIblockTypeIfExists($filter) {
+        $aIblockType = $this->getIblockType($filter);
+        if (!$aIblockType) {
             return false;
         }
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        if (\CIBlockType::Delete($iblockTypeId)) {
+        if (\CIBlockType::Delete($aIblockType['ID'])) {
             return true;
         }
 
-        $this->throwException(__METHOD__, 'Could not delete iblock type %s', $iblockTypeId);
+        $this->throwException(__METHOD__, 'Could not delete iblock type %s', $aIblockType['ID']);
     }
 
 
-    /** @compatibility */
-    public function getIblock($code, $iblockTypeId = '') {
-        $filter = array('CHECK_PERMISSIONS' => 'N', '=CODE' => $code);
-        if (!empty($iblockTypeId)) {
+
+    public function getIblock($filter, $iblockTypeId = false) {
+        /** @compatibility */
+        if (!is_array($filter)){
+            $filter = array(
+                '=CODE' => $filter
+            );
+        }
+
+        if ($iblockTypeId){
             $filter['=TYPE'] = $iblockTypeId;
         }
+
+        $filter['CHECK_PERMISSIONS'] = 'N';
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return \CIBlock::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
     }
 
-    /** @compatibility */
-    public function getIblockId($code, $iblockTypeId = '') {
-        $aIblock = $this->getIblock($code, $iblockTypeId);
+    
+    public function getIblockId($filter, $iblockTypeId = false) {
+        /** @compatibility */
+        $aIblock = $this->getIblock($filter, $iblockTypeId);
         return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
     }
 
-    /** @compatibility */
+    
     public function getIblocks() {
+        /** @compatibility */
+        
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbResult = \CIBlock::GetList(array('SORT' => 'ASC'), array('CHECK_PERMISSIONS' => 'N'));
         $list = array();
@@ -118,18 +132,17 @@ class IblockHelper extends Helper
         return $list;
     }
 
-    /** @compatibility */
+    
     public function addIblockIfNotExists($fields) {
+        /** @compatibility */
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
-        if (!empty($fields['IBLOCK_TYPE_ID'])) {
-            $iblockId = $this->getIblockId($fields['CODE'], $fields['IBLOCK_TYPE_ID']);
-        } else {
-            $iblockId = $this->getIblockId($fields['CODE']);
-        }
+        $iblockCode = $fields['CODE'];
+        $iblockTypeId = !empty($fields['IBLOCK_TYPE_ID']) ? $fields['IBLOCK_TYPE_ID'] : false;
 
-        if ($iblockId) {
-            return $iblockId;
+        $aIblock = $this->getIblock($iblockCode, $iblockTypeId);
+        if ($aIblock) {
+            return $aIblock['ID'];
         }
 
         $default = array(
@@ -161,48 +174,56 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
-    /** @compatibility */
-    public function deleteIblockIfExists($iblockCode, $iblockTypeId = '') {
-        $iblockId = $this->getIblockId($iblockCode, $iblockTypeId);
-        if (!$iblockId) {
+    
+    public function deleteIblockIfExists($filter, $iblockTypeId = false) {
+        /** @compatibility */
+
+        $aIblock = $this->getIblock($filter, $iblockTypeId);
+        if (!$aIblock) {
             return false;
         }
 
-        if (\CIBlock::Delete($iblockId)) {
+        if (\CIBlock::Delete($aIblock['ID'])) {
             return true;
         }
 
-        $this->throwException(__METHOD__, 'Could not delete iblock %s', $iblockCode);
+        $this->throwException(__METHOD__, 'Could not delete iblock %s', $aIblock['ID']);
     }
 
-    /** @compatibility */
-    public function mergeIblockFields($iblockId, $fields) {
-        $default = \CIBlock::GetFields($iblockId);
-        $fields = array_replace_recursive($default, $fields);
-        \CIBlock::SetFields($iblockId, $fields);
+    public function updateIblockFields($iblockId, $fields = array()) {
+        self::mergeIblockFields($iblockId, $fields);
     }
 
-    /** @compatibility */
-    public function getProperty($iblockId, $code) {
-        /* do not use =CODE in filter */
-        return \CIBlockProperty::GetList(array('SORT' => 'ASC'), array('IBLOCK_ID' => $iblockId, 'CODE' => $code, 'CHECK_PERMISSIONS' => 'N'))->Fetch();
+    public function getProperty($iblockId, $filter) {
+        /** @compatibility */
+        if (!is_array($filter)){
+            $filter = array(
+                'CODE' => $filter,
+            );
+        }
+
+        $filter['IBLOCK_ID'] = $iblockId;
+        $filter['CHECK_PERMISSIONS'] = 'N';
+        return \CIBlockProperty::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
     }
 
 
-    /** @compatibility */
-    public function getPropertyId($iblockId, $code) {
-        $aIblock = $this->getProperty($iblockId, $code);
+    
+    public function getPropertyId($iblockId, $filter) {
+        /** @compatibility */
+        $aIblock = $this->getProperty($iblockId, $filter);
         return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
     }
 
-    /** @compatibility */
+    
     public function addPropertyIfNotExists($iblockId, $fields) {
+        /** @compatibility */
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
-        $propId = $this->getPropertyId($iblockId, $fields['CODE']);
+        $aProperty = $this->getProperty($iblockId, $fields['CODE']);
 
-        if ($propId) {
-            return $propId;
+        if ($aProperty) {
+            return $aProperty['ID'];
         }
 
         $default = array(
@@ -222,31 +243,37 @@ class IblockHelper extends Helper
             'LINK_IBLOCK_ID' => 0
         );
 
-        $fields = array_replace_recursive($default, $fields);
-        if (isset($fields['VALUES'])) {
+        if (!empty($fields['VALUES'])) {
             $fields['PROPERTY_TYPE'] = 'L';
         }
 
-        $ib = new \CIBlockProperty;
-        $propId = $ib->Add($fields);
+        if (!empty($fields['LINK_IBLOCK_ID'])){
+            $fields['PROPERTY_TYPE'] = 'E';
+        }
 
-        if ($propId) {
-            return $propId;
+        $fields = array_replace_recursive($default, $fields);
+
+        $ib = new \CIBlockProperty;
+        $propertyId = $ib->Add($fields);
+
+        if ($propertyId) {
+            return $propertyId;
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
 
     }
 
-    /** @compatibility */
-    public function deletePropertyIfExists($iblockId, $propertyCode) {
-        $propId = $this->getPropertyId($iblockId, $propertyCode);
-        if (!$propId) {
+    
+    public function deletePropertyIfExists($iblockId, $filter) {
+        /** @compatibility */
+        $aProperty = $this->getProperty($iblockId, $filter);
+        if (!$aProperty) {
             return false;
         }
 
         $ib = new \CIBlockProperty;
-        if ($ib->Delete($propId)) {
+        if ($ib->Delete($aProperty['ID'])) {
             return true;
         }
 
@@ -254,15 +281,18 @@ class IblockHelper extends Helper
 
     }
 
-    /** @compatibility */
-    public function updatePropertyIfExists($iblockId, $propertyCode, $fields) {
-        $propId = $this->getPropertyId($iblockId, $propertyCode);
-        if (!$propId) {
+    
+    public function updatePropertyIfExists($iblockId, $filter, $fields) {
+        /** @compatibility */
+        $aProperty = $this->getProperty($iblockId, $filter);
+        if (!$aProperty) {
             return false;
         }
+
+        $fields['IBLOCK_ID'] = $iblockId;
 
         $ib = new \CIBlockProperty();
-        if ($ib->Update($propId, $fields)) {
+        if ($ib->Update($aProperty['ID'], $fields)) {
             return true;
         }
 
@@ -270,8 +300,9 @@ class IblockHelper extends Helper
 
     }
 
-    /** @compatibility */
+    
     public function addElement($iblockId, $fields = array(), $props = array()){
+        /** @compatibility */
         $fields['IBLOCK_ID'] = $iblockId;
 
         $default = array(
@@ -298,10 +329,9 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
-    /** @compatibility */
+    
     public function addElementIfNotExists($filter, $fields, $props = array()){
-
-        /** compatibility */
+        /** @compatibility */
         if (is_numeric($filter)){
             $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
             $filter = array(
@@ -342,10 +372,9 @@ class IblockHelper extends Helper
         return false;
     }
 
-    /** @compatibility */
+    
     public function deleteElementIfExists($filter, $code= false){
-
-        /** compatibility */
+        /** @compatibility */
         if (is_numeric($filter) && $code){
             $filter = array(
                 'IBLOCK_ID' => $filter,
@@ -381,8 +410,9 @@ class IblockHelper extends Helper
             'CODE',
         ))->Fetch();
     }
-    /** @compatibility */
+    
     public function addSection($iblockId, $fields = array()){
+        /** @compatibility */
         $fields['IBLOCK_ID'] = $iblockId;
 
         $default = array(
@@ -470,4 +500,10 @@ class IblockHelper extends Helper
         return $this->updatePropertyIfExists($iblockId, $propertyCode, $fields);
     }
 
+    /** @deprecated  */
+    public function mergeIblockFields($iblockId, $fields) {
+        $default = \CIBlock::GetFields($iblockId);
+        $fields = array_replace_recursive($default, $fields);
+        \CIBlock::SetFields($iblockId, $fields);
+    }
 }

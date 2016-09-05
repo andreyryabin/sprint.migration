@@ -66,7 +66,7 @@ class AdminIblockHelper extends Helper
         $opts = implode(',', $opts);
 
         $category = 'list';
-        $name = "tbl_iblock_element_" . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
+        $name = "tbl_iblock_list_" . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
         $value = array(
             'columns' => $opts,
             'order' => $params['order'],
