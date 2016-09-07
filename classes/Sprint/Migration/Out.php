@@ -255,6 +255,7 @@ class Out
         if ($taskUrl && false !== strpos($taskUrl, '$1')){
             $msg = preg_replace('/#(\d+)/', '<a target="_blank" href="'.$taskUrl.'">#$1</a>', $msg);
         }
+        $msg = stripslashes($msg);
 
         return $msg;
     }
