@@ -43,7 +43,7 @@ class Version20150520000002 extends Version {
         $bFound = 0;
 
         while ($aItem = $dbRes->Fetch()){
-            \CIBlockElement::Delete($aItem['ID']);
+            $helper->Iblock()->deleteElement($aItem['ID']);
             $this->out('deleted %d', $aItem['ID']);
             $bFound++;
         }

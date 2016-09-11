@@ -1,6 +1,7 @@
 <?php
 
 namespace Sprint\Migration\Helpers;
+
 use Sprint\Migration\Helper;
 
 class AdminIblockHelper extends Helper
@@ -12,6 +13,22 @@ class AdminIblockHelper extends Helper
 
     public function buildElementForm($iblockId, $tabs = array()) {
         $this->initializeVars($iblockId);
+
+        /** @example *//*
+        $tabs = array(
+            'Tab1' => array(
+                'ACTIVE' => '*',
+                'ACTIVE_FROM' => '*',
+                'ACTIVE_TO' => '*',
+                'NAME' => '*',
+                'CODE' => 'code123',
+                'SORT' => 'sort',
+            ),
+            'Tab2' => array(
+                'PREVIEW_TEXT' => '*',
+                'PROPERTY_LINK' => '*',
+            )
+        );  */
 
         $tabIndex = 0;
 
@@ -52,6 +69,14 @@ class AdminIblockHelper extends Helper
     public function buildElementList($iblockId, $columns = array(), $params = array()) {
         $this->initializeVars($iblockId);
 
+        /** @example *//*
+        $columns = array(
+            'NAME',
+            'SORT',
+            'ID',
+            'PROPERTY_LINK',
+        );  */
+
         $params = array_merge(array(
             'page_size' => 20,
             'order' => 'desc',
@@ -66,7 +91,7 @@ class AdminIblockHelper extends Helper
         $opts = implode(',', $opts);
 
         $category = 'list';
-        $name = "tbl_iblock_list_" . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
+        $name = "tbl_iblock_element_" . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
         $value = array(
             'columns' => $opts,
             'order' => $params['order'],

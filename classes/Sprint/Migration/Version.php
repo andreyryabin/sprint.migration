@@ -24,10 +24,6 @@ class Version
         return $this->description;
     }
 
-    public function helper(){
-        return new HelperManager();
-    }
-
     public function out($msg, $var1 = null, $var2 = null){
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'out'), $args);

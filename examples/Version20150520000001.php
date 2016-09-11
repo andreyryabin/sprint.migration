@@ -47,7 +47,7 @@ class Version20150520000001 extends Version {
 
     public function down(){
         $helper = new HelperManager();
-        $ok = $helper->iblock()->deleteIblockIfExists('content_news');
+        $ok = $helper->Iblock()->deleteIblockIfExists('content_news');
 
         if ($ok){
             $this->outSuccess('Инфоблок удален');
