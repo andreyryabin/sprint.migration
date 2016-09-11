@@ -69,11 +69,10 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
     }
 </style>
 
-<div id="migration_progress"></div>
-
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
     array("DIV" => "tab1", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB1_TITLE')),
     array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB2'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB2_TITLE')),
+    array("DIV" => "tab3", "TAB" => GetMessage('SPRINT_MIGRATION_TAB3'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB3_TITLE')),
 ));
 
 $tabControl1->Begin();
@@ -124,6 +123,12 @@ $tabControl1->BeginNextTab();
         </div>
     </td>
 </tr>
+<?$tabControl1->BeginNextTab();?>
+<tr>
+    <td style="vertical-align: top">
+        <div id="migration_progress" style="overflow: scroll;max-height: 320px;"></div>
+    </td>
+</tr>
 <? $tabControl1->Buttons(); ?>
 
 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
@@ -157,6 +162,9 @@ $tabControl1->BeginNextTab();
         postData['step_code'] = step_code;
         postData['send_sessid'] = $('input[name=send_sessid]').val();
 
+        var outProgress = $('#migration_progress');
+        $('#tabControl2_layout').find('input[type=button]').attr('disabled', 'disabled');
+
         jQuery.ajax({
             type: "POST",
             url: '<?=pathinfo(__FILE__, PATHINFO_BASENAME)?>?lang=ru',
@@ -165,11 +173,19 @@ $tabControl1->BeginNextTab();
             success: function (result) {
                 if (succesCallback) {
                     succesCallback(result)
+
                 } else {
-                    $('#migration_progress').html(result).show();
+                    var lastOutElem = outProgress.children('div').last();
+                    if (lastOutElem.hasClass('migration-bar') && $(result).first().hasClass('migration-bar')){
+                        lastOutElem.replaceWith(result);
+                    } else {
+                        outProgress.append(result);
+                        outProgress.scrollTop(outProgress.prop("scrollHeight"));
+                    }
+
+
                 }
             },
-
             error: function(result){
 
             }
@@ -194,15 +210,14 @@ $tabControl1->BeginNextTab();
 
         migrationMigrationRefresh();
     }
-    
+
     function migrationMigrationRefresh(callbackAfterRefresh) {
-        $('#tabControl2_layout input[type=button]').attr('disabled', 'disabled');
         migrationExecuteStep('migration_' + migrationView, {}, function (data) {
             $('#migration_migrations').empty().html(data);
             if (callbackAfterRefresh) {
                 callbackAfterRefresh()
             } else {
-                $('input[type=button]').removeAttr('disabled');
+                $('#tabControl2_layout').find('input[type=button]').removeAttr('disabled');
             }
         });
     }
@@ -222,6 +237,12 @@ $tabControl1->BeginNextTab();
 
     $(document).ready(function () {
         migrationMigrationToggleView(migrationView);
+
+        $('#tab_cont_tab3').on('click', function(){
+            var outProgress = $('#migration_progress');
+            outProgress.scrollTop(outProgress.prop("scrollHeight"));
+        });
+
     });
     
 </script>

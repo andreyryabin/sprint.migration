@@ -41,38 +41,48 @@ class Out
         }
     }
 
+    public static function outToHtmlOnly($msg, $var1 = null, $var2 = null) {
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $msg = call_user_func_array('sprintf', $params);
+        }
+        if (self::canOutAsHtml()) {
+            self::outToHtml($msg );
+        }
+    }
+
     public static function outProgress($msg, $val, $total){
         $val = (int) $val;
         $total = (int) $total;
 
-        if (self::canOutAsAdminMessage()) {
+        self::$needEol = true;
 
+        if (self::canOutAsAdminMessage()) {
             if (self::canOutProgressBar()){
-                /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-                \CAdminMessage::ShowMessage(array(
+                $mess = array(
                     "MESSAGE" => $msg,
                     "DETAILS" => "#PROGRESS_BAR#",
                     "HTML" => true,
                     "TYPE" => "PROGRESS",
                     "PROGRESS_TOTAL" => $total,
                     "PROGRESS_VALUE" => $val,
-                ));
+                );
             } else {
-                /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-                \CAdminMessage::ShowMessage(array(
+                $mess = array(
                     "MESSAGE" =>  $msg . ' ' . round($val / $total * 100) . '%',
                     'HTML' => true,
                     'TYPE' => 'OK'
-                ));
+                );
             }
 
+            $m = new \CAdminMessage($mess);
+            echo '<div class="migration-bar">' . $m->Show() . '</div>';
 
         } elseif (self::canOutAsHtml()) {
             $msg = self::prepareToHtml($msg);
-            echo "$msg $val/$total <br/>";
+            echo '<div class="migration-bar">' . "$msg $val/$total" . '</div>';
 
         } else {
-            self::$needEol = true;
             $msg = self::prepareToConsole($msg);
             fwrite(STDOUT, "\r$msg $val/$total");
         }
@@ -124,13 +134,16 @@ class Out
     protected static $tableMaxCol = array();
     protected static $tableHeaderExists = 0;
 
-    public static function addTableRow($row){
-        self::calcMaxColumn($row);
-        self::$tableRows[] = $row;
+    protected function cleanColors($msg){
+        foreach (self::$colors as $key => $val) {
+            $msg = str_replace('[' . $key . ']', '', $msg);
+        }
+        return $msg;
     }
 
-    protected static function calcMaxColumn($row){
+    public static function addTableRow($row){
         foreach ($row as $colNum => $col){
+            $col = self::cleanColors($col);
             $len = self::strLen($col);
 
             if (!isset(self::$tableMaxCol[$colNum])){
@@ -139,7 +152,10 @@ class Out
             if ($len >= self::$tableMaxCol[$colNum]){
                 self::$tableMaxCol[$colNum] = $len;
             }
+            $row[$colNum] = $col;
         }
+
+        self::$tableRows[] = $row;
     }
 
     public static function initTable($headerRow = array()){
@@ -148,8 +164,7 @@ class Out
         self::$tableHeaderExists = 0;
 
         if (!empty($headerRow)){
-            self::calcMaxColumn($headerRow);
-            self::$tableRows[] = $headerRow;
+            self::addTableRow($headerRow);
             self::$tableHeaderExists = 1;
         }
     }
@@ -221,7 +236,7 @@ class Out
     
     protected static function outToHtml($msg){
         $msg = self::prepareToHtml($msg);
-        echo "$msg <br/>";
+        echo '<div class="migration-out">' . "$msg" . '</div>';
     }
 
     protected static function outToConsole($msg){
@@ -247,13 +262,13 @@ class Out
     }
 
     public static function prepareToHtml($msg){
-        foreach (self::$colors as $key => $val) {
-            $msg = str_replace('[' . $key . ']', $val[1], $msg);
-        }
-
         $taskUrl = Module::getFileOption('tracker_task_url');
         if ($taskUrl && false !== strpos($taskUrl, '$1')){
             $msg = preg_replace('/#(\d+)/', '<a target="_blank" href="'.$taskUrl.'">#$1</a>', $msg);
+        }
+
+        foreach (self::$colors as $key => $val) {
+            $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
 
         return $msg;

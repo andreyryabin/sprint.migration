@@ -177,16 +177,18 @@ class Console
     protected function executeOnce($version, $action = 'up') {
         $action = ($action == 'up') ? 'up' : 'down';
         $params = array();
+        $restart = 0;
 
         do {
-            $restart = 0;
-            $ok = $this->versionManager->startMigration($version, $action, $params);
+            $exec = 0;
+            $ok = $this->versionManager->startMigration($version, $action, $params, $restart);
             if ($this->versionManager->needRestart($version)) {
                 $params = $this->versionManager->getRestartParams($version);
                 $restart = 1;
+                $exec = 1;
             }
 
-        } while ($restart == 1);
+        } while ($exec == 1);
 
         return $ok;
     }
