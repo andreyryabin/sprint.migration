@@ -11,7 +11,7 @@ class AdminIblockHelper extends Helper
     private $props = array();
     private $iblock = array();
 
-    public function buildElementForm($iblockId, $tabs = array()) {
+    public function buildElementForm($iblockId, $tabs = array(), $params = array()) {
         $this->initializeVars($iblockId);
 
         /** @example *//*
@@ -55,15 +55,18 @@ class AdminIblockHelper extends Helper
 
         $opts = implode(';', $opts) . ';--';
 
+        $params = array_merge(array(
+            'name_prefix' => 'form_element_',
+            'category' => 'form',
+        ), $params);
 
-        $category = 'form';
-        $name = 'form_element_' . $iblockId;
+        $name = $params['name_prefix'] . $iblockId;
         $value = array(
             'tabs' => $opts
         );
 
-        \CUserOptions::DeleteOptionsByName($category, $name);
-        \CUserOptions::SetOption($category, $name, $value, true);
+        \CUserOptions::DeleteOptionsByName($params['category'], $name);
+        \CUserOptions::SetOption($params['category'], $name, $value, true);
     }
 
     public function buildElementList($iblockId, $columns = array(), $params = array()) {
@@ -77,21 +80,21 @@ class AdminIblockHelper extends Helper
             'PROPERTY_LINK',
         );  */
 
+        $opts = array();
+        foreach ($columns as $columnCode) {
+            $opts[] = $this->prepareCode($columnCode);
+        }
+        $opts = implode(',', $opts);
+
         $params = array_merge(array(
+            'name_prefix' => 'tbl_iblock_element_',
+            'category' => 'list',
             'page_size' => 20,
             'order' => 'desc',
             'by' => 'id',
         ), $params);
 
-        $opts = array();
-        foreach ($columns as $columnCode) {
-            $opts[] = $this->prepareCode($columnCode);
-        }
-
-        $opts = implode(',', $opts);
-
-        $category = 'list';
-        $name = "tbl_iblock_element_" . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
+        $name = $params['name_prefix'] . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
         $value = array(
             'columns' => $opts,
             'order' => $params['order'],
@@ -99,8 +102,8 @@ class AdminIblockHelper extends Helper
             'page_size' => $params['page_size']
         );
 
-        \CUserOptions::DeleteOptionsByName($category, $name);
-        \CUserOptions::SetOption($category, $name, $value, true);
+        \CUserOptions::DeleteOptionsByName($params['category'], $name);
+        \CUserOptions::SetOption($params['category'], $name, $value, true);
     }
 
     protected function initializeVars($iblockId) {
