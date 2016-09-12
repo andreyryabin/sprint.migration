@@ -340,6 +340,26 @@ class IblockHelper extends Helper
         return ($aItem && isset($aItem['ID'])) ? $aItem['ID'] : 0;
     }
 
+    public function getElements($iblockId, $filter = array()) {
+        $filter['IBLOCK_ID'] = $iblockId;
+
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        $dbResult = \CIBlockElement::GetList(array(
+            'ID' => 'ASC'
+        ), $filter, false, false, array(
+            'ID',
+            'IBLOCK_ID',
+            'NAME',
+            'CODE',
+        ));
+
+        $list = array();
+        while ($aItem = $dbResult->Fetch()) {
+            $list[] = $aItem;
+        }
+        return $list;
+    }
+
     public function addElementIfNotExists($iblockId, $fields, $props = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
@@ -438,10 +458,8 @@ class IblockHelper extends Helper
         $filter['IBLOCK_ID'] = $iblockId;
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return \CIBlockSection::GetList(array(
-            'SORT' => 'ASC'
+            'ID' => 'ASC'
         ), $filter, false, array(
-            'nTopCount' => 1
-        ), array(
             'ID',
             'IBLOCK_ID',
             'NAME',
@@ -452,6 +470,26 @@ class IblockHelper extends Helper
     public function getSectionId($iblockId, $code) {
         $aItem = $this->getSection($iblockId, $code);
         return ($aItem && isset($aItem['ID'])) ? $aItem['ID'] : 0;
+    }
+
+    public function getSections($iblockId, $filter = array()){
+        $filter['IBLOCK_ID'] = $iblockId;
+
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        $dbResult = \CIBlockSection::GetList(array(
+            'SORT' => 'ASC'
+        ), $filter, false, array(
+            'ID',
+            'IBLOCK_ID',
+            'NAME',
+            'CODE',
+        ));
+
+        $list = array();
+        while ($aItem = $dbResult->Fetch()) {
+            $list[] = $aItem;
+        }
+        return $list;
     }
 
     public function addSectionIfNotExists($iblockId, $fields) {

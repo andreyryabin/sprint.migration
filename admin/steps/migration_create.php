@@ -7,8 +7,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
     $prefix = isset($_POST['prefix']) ? $_POST['prefix'] : 'Version';
 
     $meta = $versionManager->createVersionFile($description, $prefix);
-    if ($meta) {
+    if ($meta && $meta['class']) {
         Sprint\Migration\Out::outSuccess('Миграция %s создана', $meta['version']);
+    } else {
+        Sprint\Migration\Out::outError('Ошибка создания миграции');
     }
 
     /** @noinspection PhpIncludeInspection */

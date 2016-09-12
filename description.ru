@@ -5,3 +5,6 @@
 5) Не хватает функции deleteIblockTypeIfExists Issue #16 (автор Аноним)
 6) Добавить методы работы с секциями Issue #10
 7) Добавлен вывод сообщений от миграций в админку (вкладка логирование)
+8) Классы помощники сгруппированы в менеджер, пример:
+    $helper = new HelperManager();
+    $iblockId = $helper->Iblock()->getIblockId('code');
