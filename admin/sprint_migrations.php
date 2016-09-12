@@ -126,7 +126,7 @@ $tabControl1->BeginNextTab();
 <?$tabControl1->BeginNextTab();?>
 <tr>
     <td style="vertical-align: top">
-        <div id="migration_progress" style="overflow: scroll;max-height: 320px;"></div>
+        <div id="migration_progress" style="overflow-x:auto;overflow-y: scroll;max-height: 320px;"></div>
     </td>
 </tr>
 <? $tabControl1->Buttons(); ?>
