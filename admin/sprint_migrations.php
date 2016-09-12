@@ -157,13 +157,24 @@ $tabControl1->BeginNextTab();
         }
     }
 
+    function migrationOutProgress(result) {
+        var outProgress = $('#migration_progress');
+        var lastOutElem = outProgress.children('div').last();
+        if (lastOutElem.hasClass('migration-bar') && $(result).first().hasClass('migration-bar')){
+            lastOutElem.replaceWith(result);
+        } else {
+            outProgress.append(result);
+            outProgress.scrollTop(outProgress.prop("scrollHeight"));
+        }
+    }
+
     function migrationExecuteStep(step_code, postData, succesCallback) {
         postData = postData || {};
         postData['step_code'] = step_code;
         postData['send_sessid'] = $('input[name=send_sessid]').val();
 
-        var outProgress = $('#migration_progress');
-        $('#tabControl2_layout').find('input[type=button]').attr('disabled', 'disabled');
+
+        migrationEnableButtons(0);
 
         jQuery.ajax({
             type: "POST",
@@ -173,17 +184,8 @@ $tabControl1->BeginNextTab();
             success: function (result) {
                 if (succesCallback) {
                     succesCallback(result)
-
                 } else {
-                    var lastOutElem = outProgress.children('div').last();
-                    if (lastOutElem.hasClass('migration-bar') && $(result).first().hasClass('migration-bar')){
-                        lastOutElem.replaceWith(result);
-                    } else {
-                        outProgress.append(result);
-                        outProgress.scrollTop(outProgress.prop("scrollHeight"));
-                    }
-
-
+                    migrationOutProgress(result);
                 }
             },
             error: function(result){
@@ -192,12 +194,22 @@ $tabControl1->BeginNextTab();
         });
     }
 
+    function migrationEnableButtons(enable) {
+        var buttons = $('#tabControl2_layout').find('input[type=button]');
+        if (enable == 1){
+            buttons.removeAttr('disabled');
+        } else {
+            buttons.attr('disabled', 'disabled');
+        }
+    }
+
     function migrationCreateMigration() {
         migrationExecuteStep('migration_create', {
             description: $('#migration_migration_descr').val(),
             prefix: $('#migration_migration_prefix').val()
         }, function (result) {
             $('#migration_migration_descr').val('');
+            migrationOutProgress(result);
             migrationMigrationRefresh();
         });
     }
@@ -208,7 +220,10 @@ $tabControl1->BeginNextTab();
         $('.c-migration-filter').removeClass('adm-btn-active');
         $('.c-migration-filter-' + view).addClass('adm-btn-active');
 
-        migrationMigrationRefresh();
+        migrationMigrationRefresh(function(){
+            migrationEnableButtons(1);
+            $('#tab_cont_tab1').click();
+        });
     }
 
     function migrationMigrationRefresh(callbackAfterRefresh) {
@@ -217,7 +232,7 @@ $tabControl1->BeginNextTab();
             if (callbackAfterRefresh) {
                 callbackAfterRefresh()
             } else {
-                $('#tabControl2_layout').find('input[type=button]').removeAttr('disabled');
+                migrationEnableButtons(1);
             }
         });
     }

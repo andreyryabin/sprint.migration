@@ -14,7 +14,7 @@ class Out
         'green' => array("\x1b[0;32m", '<span style="color:#080">'),
         'red' => array("\x1b[0;31m", '<span style="color:#a00">'),
         'yellow' => array("\x1b[1;33m", '<span style="color:#aa0">'),
-        'b' => array("\x1b[1m", '<span style="font-weight:bold;color:#000">')
+        'b' => array("\x1b[1m", '<span style="font-weight:bold;color:#000">'),
     );
 
     private static $needEol = false;

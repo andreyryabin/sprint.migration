@@ -17,39 +17,42 @@ class AdminIblockHelper extends Helper
         /** @example *//*
         $tabs = array(
             'Tab1' => array(
-                'ACTIVE' => '*',
-                'ACTIVE_FROM' => '*',
-                'ACTIVE_TO' => '*',
-                'NAME' => '*',
-                'CODE' => 'code123',
-                'SORT' => 'sort',
+                'ACTIVE|Активность',
+                'ACTIVE_FROM',
+                'ACTIVE_TO',
+                'NAME|Название',
+                'CODE|Символьный код',
+                'SORT',
             ),
             'Tab2' => array(
-                'PREVIEW_TEXT' => '*',
-                'PROPERTY_LINK' => '*',
+                'PREVIEW_TEXT',
+                'PROPERTY_LINK',
             )
         );  */
 
         $tabIndex = 0;
 
-        $tt = array();
+        $tabVals = array();
 
         foreach ($tabs as $tabTitle => $fields) {
 
             $tabCode = ($tabIndex == 0) ? 'edit' . ($tabIndex + 1) : '--edit' . ($tabIndex + 1);
-            $tt[$tabIndex][] = $tabCode . '--#--' . $tabTitle . '--';
+            $tabVals[$tabIndex][] = $tabCode . '--#--' . $tabTitle . '--';
 
-            foreach ($fields as $fieldCode => $fieldTitle) {
-                $fieldCode = $this->prepareCode($fieldCode);
-                $fieldTitle = $this->prepareTitle($fieldCode, $fieldTitle);
-                $tt[$tabIndex][] = '--' . $fieldCode . '--#--' . $fieldTitle . '--';
+            foreach ($fields as $val) {
+                list($fcode, $ftitle) = explode('|', $val);
+
+                $fcode = $this->prepareCode($fcode);
+                $ftitle = $this->prepareTitle($fcode, $ftitle);
+
+                $tabVals[$tabIndex][] = '--' . $fcode . '--#--' . $ftitle . '--';
             }
 
             $tabIndex++;
         }
 
         $opts = array();
-        foreach ($tt as $fields) {
+        foreach ($tabVals as $fields) {
             $opts[] = implode(',', $fields);
         }
 
@@ -59,7 +62,7 @@ class AdminIblockHelper extends Helper
             'name_prefix' => 'form_element_',
             'category' => 'form',
         ), $params);
-
+        
         $name = $params['name_prefix'] . $iblockId;
         $value = array(
             'tabs' => $opts
@@ -93,7 +96,7 @@ class AdminIblockHelper extends Helper
             'order' => 'desc',
             'by' => 'id',
         ), $params);
-
+        
         $name = $params['name_prefix'] . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
         $value = array(
             'columns' => $opts,
@@ -124,7 +127,7 @@ class AdminIblockHelper extends Helper
             }
         }
 
-        $iblockMess = \IncludeModuleLangFile('/bitrix/modules/iblock/admin/iblock_element_edit.php', 'ru', true);
+        $iblockMess = \IncludeModuleLangFile('/bitrix/modules/iblock/iblock.php', 'ru', true);
 
         $iblockMess['IBLOCK_FIELD_ACTIVE_FROM'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_FROM'];
         $iblockMess['IBLOCK_FIELD_ACTIVE_TO'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_TO'];
@@ -138,8 +141,6 @@ class AdminIblockHelper extends Helper
     }
 
     protected function prepareTitle($fieldCode, $fieldTitle = '') {
-        $fieldTitle = ($fieldTitle == '*') ? '' : $fieldTitle;
-
         if (!empty($fieldTitle)) {
             return $fieldTitle;
         }

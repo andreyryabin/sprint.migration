@@ -25,6 +25,8 @@ class <?php echo $version?> extends <?php echo $extendClass?> {
     }
 
     public function down(){
+        $helper = new HelperManager();
+
         //your code ...
 
     }
