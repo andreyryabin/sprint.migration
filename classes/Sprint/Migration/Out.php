@@ -266,6 +266,7 @@ class Out
         if ($taskUrl && false !== strpos($taskUrl, '$1')){
             $msg = preg_replace('/#(\d+)/', '<a target="_blank" href="'.$taskUrl.'">#$1</a>', $msg);
         }
+        $msg = stripslashes($msg);
 
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
