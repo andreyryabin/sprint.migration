@@ -190,6 +190,9 @@ class VersionManager
             $isFile = array_key_exists($version, $files);
 
             $meta = $this->prepVersionMeta($version, $isFile, $isRecord);
+            if (!$meta){
+                continue;
+            }
 
             if (($for == 'up' && $meta['type'] == 'is_new') ||
                 ($for == 'down' && $meta['type'] == 'is_installed') ||
@@ -203,11 +206,13 @@ class VersionManager
     }
 
     protected function prepVersionMeta($versionName, $isFile, $isRecord) {
+        if (!$isRecord && !$isFile){
+            return false;
+        }
+
         $file = $this->getVersionFile($versionName);
 
         $meta = array(
-            'version' => $versionName,
-            'location' => $file,
             'is_file' => $isFile,
             'is_record' => $isRecord,
         );
@@ -220,9 +225,13 @@ class VersionManager
             $meta['type'] = 'is_unknown';
         }
 
+        $meta['version'] = $versionName;
+
         if (!$isFile) {
             return $meta;
         }
+
+        $meta['location'] = $file;
 
         ob_start();
         /** @noinspection PhpIncludeInspection */
