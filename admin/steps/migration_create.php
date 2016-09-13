@@ -8,9 +8,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
 
     $meta = $versionManager->createVersionFile($description, $prefix);
     if ($meta && $meta['class']) {
-        Sprint\Migration\Out::outSuccess('Миграция %s создана', $meta['version']);
+        Sprint\Migration\Out::outSuccess(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS', array(
+            '#VERSION#' => $meta['version']
+        )));
     } else {
-        Sprint\Migration\Out::outError('Ошибка создания миграции');
+        Sprint\Migration\Out::outError(GetMessage('SPRINT_MIGRATION_CREATED_ERROR'));
     }
 
     /** @noinspection PhpIncludeInspection */
