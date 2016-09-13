@@ -32,7 +32,7 @@ class EventHelper extends Helper
             "DESCRIPTION" => 'description',
         );
 
-        $fields = array_merge($default, $fields);
+        $fields = array_replace_recursive($default, $fields);
         $fields['EVENT_NAME'] = $eventName;
 
         $event = new \CEventType;
@@ -78,7 +78,7 @@ class EventHelper extends Helper
             'MESSAGE' => 'message',
         );
 
-        $fields = array_merge($default, $fields);
+        $fields = array_replace_recursive($default, $fields);
         $fields['EVENT_NAME'] = $eventName;
 
         $event = new \CEventMessage;

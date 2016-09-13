@@ -32,6 +32,8 @@ require_once __DIR__ . '/../classes/Sprint/Migration/Module.php';
     "SPRINT_MIGRATION_TAB1_TITLE" => "Список миграций",
     "SPRINT_MIGRATION_TAB2" => "Создать",
     "SPRINT_MIGRATION_TAB2_TITLE" => "Создать миграцию",
+    "SPRINT_MIGRATION_TAB3" => "Логирование",
+    "SPRINT_MIGRATION_TAB3_TITLE" => "Логирование",
     "SPRINT_MIGRATION_IS_NEW" => "Новые миграции",
     "SPRINT_MIGRATION_IS_INSTALLED" => "Установленные",
     "SPRINT_MIGRATION_IS_UNKNOWN" => "Неизвестные",

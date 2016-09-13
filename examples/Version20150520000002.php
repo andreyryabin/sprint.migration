@@ -1,9 +1,6 @@
 <?php
 
 namespace Sprint\Migration;
-use \Sprint\Migration\Helpers\IblockHelper;
-use \Sprint\Migration\Helpers\EventHelper;
-use \Sprint\Migration\Helpers\UserTypeEntityHelper;
 
 class Version20150520000002 extends Version {
 
@@ -13,8 +10,8 @@ class Version20150520000002 extends Version {
     public function up(){
         //Добавляем 100 элементов
 
-        $helper = new IblockHelper();
-        $iblockId1 = $helper->getIblockId('content_news');
+        $helper = new HelperManager();
+        $iblockId1 = $helper->Iblock()->getIblockId('content_news');
 
         if (!isset($this->params['add'])){
             $this->params['add'] = 0;
@@ -25,7 +22,7 @@ class Version20150520000002 extends Version {
         if ($this->params['add'] <= $cnt){
             $this->outProgress('Прогресс добавления', $this->params['add'], $cnt);
 
-            $helper->addElement($iblockId1, array('NAME' => 'name'.microtime()));
+            $helper->Iblock()->addElement($iblockId1, array('NAME' => 'name'.microtime()));
 
             $this->params['add']++;
 
@@ -37,8 +34,8 @@ class Version20150520000002 extends Version {
     public function down(){
         //Удаляем все элементы по 10 штук за раз
 
-        $helper = new IblockHelper();
-        $iblockId1 = $helper->getIblockId('content_news');
+        $helper = new HelperManager();
+        $iblockId1 = $helper->Iblock()->getIblockId('content_news');
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbRes = \CIBlockElement::GetList(array(), array('IBLOCK_ID' => $iblockId1), false, array('nTopCount' => 10));
@@ -46,7 +43,7 @@ class Version20150520000002 extends Version {
         $bFound = 0;
 
         while ($aItem = $dbRes->Fetch()){
-            \CIBlockElement::Delete($aItem['ID']);
+            $helper->Iblock()->deleteElement($aItem['ID']);
             $this->out('deleted %d', $aItem['ID']);
             $bFound++;
         }

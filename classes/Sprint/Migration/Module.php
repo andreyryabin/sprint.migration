@@ -112,6 +112,13 @@ class Module
         return (false !== strpos($d1, $d2)) ? str_replace($d2, '', $d1) : false;
     }
 
+    public static function getVersion(){
+        $arModuleVersion = array();
+        /** @noinspection PhpIncludeInspection */
+        include self::getModuleDir() . '/install/version.php';
+        return isset($arModuleVersion['VERSION']) ? $arModuleVersion['VERSION'] : '';
+    }
+
     public static function loadLocale($loc) {
         global $MESS;
 

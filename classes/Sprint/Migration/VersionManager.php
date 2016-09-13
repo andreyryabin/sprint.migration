@@ -18,9 +18,13 @@ class VersionManager
         $this->versionTable = new VersionTable();
     }
 
-    public function startMigration($versionName, $action = 'up', $params = array()) {
+    public function startMigration($versionName, $action = 'up', $params = array(), $restart = 0) {
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
+
+        if (isset($this->restarts[$versionName])){
+            unset($this->restarts[$versionName]);
+        }
 
         try {
 
@@ -46,10 +50,13 @@ class VersionManager
                 }
             }
 
-            if (isset($this->restarts[$versionName])) {
-                unset($this->restarts[$versionName]);
-            } else {
+            if (!$restart){
                 Out::outToConsoleOnly('%s (%s) start', $versionName, $action);
+                if ($action == 'up'){
+                    Out::outToHtmlOnly('[green]%s (%s) start[/]', $versionName, $action);
+                } else {
+                    Out::outToHtmlOnly('[red]%s (%s) start[/]', $versionName, $action);
+                }
             }
 
             /** @var $versionInstance Version */
@@ -80,7 +87,7 @@ class VersionManager
                 throw new MigrationException('unable to write migration to the database');
             }
 
-            Out::outToConsoleOnly('%s (%s) success', $versionName, $action);
+            Out::out('%s (%s) success', $versionName, $action);
             return true;
 
         } catch (RestartException $e) {
@@ -106,7 +113,7 @@ class VersionManager
     }
 
     public function createVersionFile($description = '', $prefix = '') {
-        $description = $this->purifyDescription($description);
+        $description = $this->purifyDescriptionForFile($description);
         $prefix = $this->purifyPrefix($prefix);
 
         $originTz = date_default_timezone_get();
@@ -183,6 +190,9 @@ class VersionManager
             $isFile = array_key_exists($version, $files);
 
             $meta = $this->prepVersionMeta($version, $isFile, $isRecord);
+            if (!$meta){
+                continue;
+            }
 
             if (($for == 'up' && $meta['type'] == 'is_new') ||
                 ($for == 'down' && $meta['type'] == 'is_installed') ||
@@ -196,11 +206,13 @@ class VersionManager
     }
 
     protected function prepVersionMeta($versionName, $isFile, $isRecord) {
+        if (!$isRecord && !$isFile){
+            return false;
+        }
+
         $file = $this->getVersionFile($versionName);
 
         $meta = array(
-            'version' => $versionName,
-            'location' => $file,
             'is_file' => $isFile,
             'is_record' => $isRecord,
         );
@@ -213,9 +225,13 @@ class VersionManager
             $meta['type'] = 'is_unknown';
         }
 
+        $meta['version'] = $versionName;
+
         if (!$isFile) {
             return $meta;
         }
+
+        $meta['location'] = $file;
 
         ob_start();
         /** @noinspection PhpIncludeInspection */
@@ -239,7 +255,7 @@ class VersionManager
         }
 
         $meta['class'] = $class;
-        $meta['description'] = $this->purifyDescription($descr);
+        $meta['description'] = $this->purifyDescriptionForMeta($descr);
 
         return $meta;
 
@@ -342,11 +358,19 @@ class VersionManager
         return $prefix;
     }
 
-    protected function purifyDescription($descr = '') {
+    protected function purifyDescriptionForFile($descr = '') {
         $descr = strval($descr);
         $descr = str_replace(array("\n\r", "\r\n", "\n","\r"), ' ', $descr );
         $descr = strip_tags($descr);
         $descr = addslashes($descr);
+        return $descr;
+    }
+
+    protected function purifyDescriptionForMeta($descr = '') {
+        $descr = strval($descr);
+        $descr = str_replace(array("\n\r", "\r\n", "\n","\r"), ' ', $descr );
+        $descr = strip_tags($descr);
+        $descr = stripslashes($descr);
         return $descr;
     }
 

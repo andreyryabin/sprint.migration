@@ -1,9 +1,5 @@
 <?php
 
-defined('CACHED_b_iblock_type') || define('CACHED_b_iblock_type', false);
-defined('CACHED_b_iblock') || define('CACHED_b_iblock', false);
-defined('CACHED_b_iblock_property_enum') || define('CACHED_b_iblock_property_enum', false);
-
 /** @noinspection PhpIncludeInspection */
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
@@ -73,11 +69,10 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
     }
 </style>
 
-<div id="migration_progress"></div>
-
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
     array("DIV" => "tab1", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB1_TITLE')),
     array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB2'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB2_TITLE')),
+    array("DIV" => "tab3", "TAB" => GetMessage('SPRINT_MIGRATION_TAB3'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB3_TITLE')),
 ));
 
 $tabControl1->Begin();
@@ -128,6 +123,12 @@ $tabControl1->BeginNextTab();
         </div>
     </td>
 </tr>
+<?$tabControl1->BeginNextTab();?>
+<tr>
+    <td style="vertical-align: top">
+        <div id="migration_progress" style="overflow-x:auto;overflow-y: scroll;max-height: 320px;"></div>
+    </td>
+</tr>
 <? $tabControl1->Buttons(); ?>
 
 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
@@ -156,10 +157,24 @@ $tabControl1->BeginNextTab();
         }
     }
 
+    function migrationOutProgress(result) {
+        var outProgress = $('#migration_progress');
+        var lastOutElem = outProgress.children('div').last();
+        if (lastOutElem.hasClass('migration-bar') && $(result).first().hasClass('migration-bar')){
+            lastOutElem.replaceWith(result);
+        } else {
+            outProgress.append(result);
+            outProgress.scrollTop(outProgress.prop("scrollHeight"));
+        }
+    }
+
     function migrationExecuteStep(step_code, postData, succesCallback) {
         postData = postData || {};
         postData['step_code'] = step_code;
         postData['send_sessid'] = $('input[name=send_sessid]').val();
+
+
+        migrationEnableButtons(0);
 
         jQuery.ajax({
             type: "POST",
@@ -170,14 +185,22 @@ $tabControl1->BeginNextTab();
                 if (succesCallback) {
                     succesCallback(result)
                 } else {
-                    $('#migration_progress').html(result).show();
+                    migrationOutProgress(result);
                 }
             },
-
             error: function(result){
 
             }
         });
+    }
+
+    function migrationEnableButtons(enable) {
+        var buttons = $('#tabControl2_layout').find('input[type=button]');
+        if (enable == 1){
+            buttons.removeAttr('disabled');
+        } else {
+            buttons.attr('disabled', 'disabled');
+        }
     }
 
     function migrationCreateMigration() {
@@ -186,6 +209,7 @@ $tabControl1->BeginNextTab();
             prefix: $('#migration_migration_prefix').val()
         }, function (result) {
             $('#migration_migration_descr').val('');
+            migrationOutProgress(result);
             migrationMigrationRefresh();
         });
     }
@@ -196,17 +220,19 @@ $tabControl1->BeginNextTab();
         $('.c-migration-filter').removeClass('adm-btn-active');
         $('.c-migration-filter-' + view).addClass('adm-btn-active');
 
-        migrationMigrationRefresh();
+        migrationMigrationRefresh(function(){
+            migrationEnableButtons(1);
+            $('#tab_cont_tab1').click();
+        });
     }
-    
+
     function migrationMigrationRefresh(callbackAfterRefresh) {
-        $('#tabControl2_layout input[type=button]').attr('disabled', 'disabled');
         migrationExecuteStep('migration_' + migrationView, {}, function (data) {
             $('#migration_migrations').empty().html(data);
             if (callbackAfterRefresh) {
                 callbackAfterRefresh()
             } else {
-                $('input[type=button]').removeAttr('disabled');
+                migrationEnableButtons(1);
             }
         });
     }
@@ -226,6 +252,12 @@ $tabControl1->BeginNextTab();
 
     $(document).ready(function () {
         migrationMigrationToggleView(migrationView);
+
+        $('#tab_cont_tab3').on('click', function(){
+            var outProgress = $('#migration_progress');
+            outProgress.scrollTop(outProgress.prop("scrollHeight"));
+        });
+
     });
     
 </script>

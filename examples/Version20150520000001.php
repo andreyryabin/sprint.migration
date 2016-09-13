@@ -10,9 +10,9 @@ class Version20150520000001 extends Version {
     protected $description = "Добавляем инфоблок новости";
 
     public function up(){
-        $helper = new IblockHelper();
+        $helper = new HelperManager();
 
-        $helper->addIblockTypeIfNotExists(array(
+        $helper->Iblock()->addIblockTypeIfNotExists(array(
             'ID' => 'content',
             'LANG'=>Array(
                 'en'=>Array(
@@ -28,7 +28,7 @@ class Version20150520000001 extends Version {
             )
         ));
 
-        $iblockId1 = $helper->addIblockIfNotExists(array(
+        $iblockId1 = $helper->Iblock()->addIblockIfNotExists(array(
             'NAME' => 'Новости',
             'CODE' => 'content_news',
             'IBLOCK_TYPE_ID' => 'content',
@@ -36,7 +36,7 @@ class Version20150520000001 extends Version {
             'DETAIL_PAGE_URL' => '#SITE_DIR#/news/#ELEMENT_ID#'
         ));
 
-        $helper->addPropertyIfNotExists($iblockId1, array(
+        $helper->Iblock()->addPropertyIfNotExists($iblockId1, array(
             'NAME' => 'Ссылка',
             'CODE' => 'LINK',
         ));
@@ -46,8 +46,8 @@ class Version20150520000001 extends Version {
     }
 
     public function down(){
-        $helper = new IblockHelper();
-        $ok = $helper->deleteIblockIfExists('content_news');
+        $helper = new HelperManager();
+        $ok = $helper->Iblock()->deleteIblockIfExists('content_news');
 
         if ($ok){
             $this->outSuccess('Инфоблок удален');

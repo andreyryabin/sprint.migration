@@ -1,7 +1,6 @@
 <?php
 
 namespace Sprint\Migration\Helpers;
-
 use Sprint\Migration\Helper;
 
 class LangHelper extends Helper

@@ -5,6 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
     $params = !empty($_POST['params']) ? $_POST['params'] : array();
+    $restart = !empty($_POST['restart']) ? 1 : 0;
     $version = isset($_POST['version']) ? $_POST['version'] : 0;
     $action = !empty($_POST['action']) ? $_POST['action'] : 0;
     $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
@@ -29,14 +30,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     }
 
     if ($version && $action){
-        $success = $versionManager->startMigration($version, $action, $params);
+        $success = $versionManager->startMigration($version, $action, $params, $restart);
 
         if ($versionManager->needRestart($version)){
             $json = json_encode(array(
                 'params' => $versionManager->getRestartParams($version),
                 'action' => $action,
                 'version' => $version,
-                'next_action' => $nextAction
+                'next_action' => $nextAction,
+                'restart' => 1
             ));
 
             ?><script>migrationExecuteStep('migration_execute', <?=$json?>);</script><?

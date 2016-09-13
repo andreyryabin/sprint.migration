@@ -36,7 +36,7 @@ class UserTypeEntityHelper extends Helper
             "HELP_MESSAGE" => '',
         );
 
-        $fields = array_merge($default, $fields);
+        $fields = array_replace_recursive($default, $fields);
         $fields['FIELD_NAME'] = $fieldName;
         $fields['ENTITY_ID'] = $entityId;
 
