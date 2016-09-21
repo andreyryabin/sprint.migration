@@ -262,6 +262,7 @@ class IblockHelper extends Helper
 
         if (!empty($fields['LINK_IBLOCK_ID'])) {
             $fields['PROPERTY_TYPE'] = 'E';
+            $fields['USER_TYPE'] = 'EList';
         }
 
         $fields = array_replace_recursive($default, $fields);
