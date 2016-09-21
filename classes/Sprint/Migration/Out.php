@@ -255,7 +255,9 @@ class Out
         }
 
         if (Module::isWin1251()){
-            $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
+            if (md5($msg) != md5(iconv('utf-8', 'utf-8//IGNORE', $msg))){
+                $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
+            }
         }
 
         return $msg;
