@@ -11,7 +11,7 @@ class Version20150520000004 extends Version {
         $helper = new HelperManager();
 
         $iblockId = $helper->Iblock()->getIblockId('content_news', 'content');
-        $this->exitIf(!$iblockId, 'Инфоблок content_news не найден');
+        $this->exitIfEmpty($iblockId, 'Инфоблок content_news не найден');
 
         $helper->AdminIblock()->buildElementForm($iblockId, array(
             'Tab1' => array(

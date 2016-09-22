@@ -26,44 +26,44 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 
 ?>
 <style type="text/css">
-    .c-migration-item-is_installed,
-    .c-migration-item-is_new,
-    .c-migration-item-is_unknown {
+    .c-migration-item-installed,
+    .c-migration-item-new,
+    .c-migration-item-unknown {
         text-decoration: none;
     }
 
-    .c-migration-item-is_installed,
-    .c-migration-item-is_installed:link,
-    .c-migration-item-is_installed:hover,
-    .c-migration-item-is_installed:visited,
-    a.c-migration-item-is_installed,
-    a.c-migration-item-is_installed:link,
-    a.c-migration-item-is_installed:hover,
-    a.c-migration-item-is_installed:visited
+    .c-migration-item-installed,
+    .c-migration-item-installed:link,
+    .c-migration-item-installed:hover,
+    .c-migration-item-installed:visited,
+    a.c-migration-item-installed,
+    a.c-migration-item-installed:link,
+    a.c-migration-item-installed:hover,
+    a.c-migration-item-installed:visited
     {
         color: #080;
     }
 
-    .c-migration-item-is_new,
-    .c-migration-item-is_new:link,
-    .c-migration-item-is_new:hover,
-    .c-migration-item-is_new:visited,
-    a.c-migration-item-is_new,
-    a.c-migration-item-is_new:link,
-    a.c-migration-item-is_new:hover,
-    a.c-migration-item-is_new:visited
+    .c-migration-item-new,
+    .c-migration-item-new:link,
+    .c-migration-item-new:hover,
+    .c-migration-item-new:visited,
+    a.c-migration-item-new,
+    a.c-migration-item-new:link,
+    a.c-migration-item-new:hover,
+    a.c-migration-item-new:visited
     {
         color: #a00;
     }
 
-    .c-migration-item-is_unknown,
-    .c-migration-item-is_unknown:link,
-    .c-migration-item-is_unknown:hover,
-    .c-migration-item-is_unknown:visited,
-    a.c-migration-item-is_unknown,
-    a.c-migration-item-is_unknown:link,
-    a.c-migration-item-is_unknown:hover,
-    a.c-migration-item-is_unknown:visited
+    .c-migration-item-unknown,
+    .c-migration-item-unknown:link,
+    .c-migration-item-unknown:hover,
+    .c-migration-item-unknown:visited,
+    a.c-migration-item-unknown,
+    a.c-migration-item-unknown:link,
+    a.c-migration-item-unknown:hover,
+    a.c-migration-item-unknown:visited
     {
         color: #00a;
     }

@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
             $action = $nextAction;
 
             $items = $versionManager->getVersions(array(
-                'for' => $action,
+                'status' => ($action == 'up') ? 'new' : 'installed',
                 'search' => $search,
             ));
 

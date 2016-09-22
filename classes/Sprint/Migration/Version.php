@@ -44,12 +44,6 @@ class Version
         call_user_func_array(array('Sprint\Migration\Out', 'outError'), $args);
     }
 
-    public function exitIf($trueCond, $msg ){
-        if ($trueCond){
-            Throw new MigrationException($msg);
-        }
-    }
-
     public function restart(){
         Throw new RestartException();
     }
@@ -62,6 +56,18 @@ class Version
     /* Need For Sprint\Migration\VersionManager */
     public function setParams($params = array()){
         $this->params = $params;
+    }
+
+    public function exitIf($cond, $msg ){
+        if ($cond){
+            Throw new MigrationException($msg);
+        }
+    }
+
+    public function exitIfEmpty($cond, $msg ){
+        if (empty($cond)){
+            Throw new MigrationException($msg);
+        }
     }
 }
 

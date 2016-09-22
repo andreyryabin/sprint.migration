@@ -13,13 +13,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     if ($_POST["step_code"] == "migration_new"){
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'new');
         $versions = $versionManager->getVersions(array(
-            'for' => 'up',
+            'status' => 'new',
             'search' => $search,
         ));
     } else {
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'list');
         $versions = $versionManager->getVersions(array(
-            'for' => 'all',
+            'status' => '',
             'search' => $search,
         ));
     }
@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
         <? foreach ($versions as $aItem):?>
             <tr>
                 <td style="text-align: left;width: 50%;padding: 5px;">
-                <? if ($aItem['status'] != 'is_unknown' && $webdir): ?>
+                <? if ($aItem['status'] != 'unknown' && $webdir): ?>
                     <? $href = '/bitrix/admin/fileman_file_view.php?' . http_build_query(array(
                             'lang' => LANGUAGE_ID,
                             'site' => SITE_ID,
@@ -43,10 +43,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                     <?if (!empty($aItem['description'])):?><?=\Sprint\Migration\Out::prepareToHtml($aItem['description'])?><?endif?>
                 </td>
                 <td style="text-align: left;width: 50%;padding: 5px;vertical-align: top">
-                <? if ($aItem['status'] == 'is_new'): ?>
+                <? if ($aItem['status'] == 'new'): ?>
                     <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <? endif ?>
-                <? if ($aItem['status'] == 'is_installed'): ?>
+                <? if ($aItem['status'] == 'installed'): ?>
                     <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'down'});" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
                 <? endif ?>
                 </td>

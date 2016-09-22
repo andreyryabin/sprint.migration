@@ -9,14 +9,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
     $search = !empty($_POST['search']) ? $_POST['search'] : '';
 
     $versions = $versionManager->getVersions(array(
-        'for' => 'all',
+        'status' => '',
         'search' => $search,
     ));
 
     $status = array(
-        'is_new' => 0,
-        'is_installed' => 0,
-        'is_unknown' => 0,
+        'new' => 0,
+        'installed' => 0,
+        'unknown' => 0,
     );
 
     foreach ($versions as $aItem) {
