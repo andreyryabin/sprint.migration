@@ -48,7 +48,9 @@ class Console
     }
 
     public function commandList() {
-        $versions = $this->versionManager->getVersions('all');
+        $versions = $this->versionManager->getVersions(array(
+            'for' => 'all'
+        ));
         Out::initTable(array(
             'Version',
             'Status',
@@ -58,7 +60,7 @@ class Console
         foreach ($versions as $aItem){
             Out::addTableRow(array(
                 $aItem['version'],
-                $this->getTypeTitle($aItem['type']),
+                $this->getStatusTitle($aItem['status']),
                 $aItem['description'],
                 //$aItem['location'],
             ));
@@ -72,10 +74,26 @@ class Console
             $meta = $this->versionManager->getVersionMeta($version);
             $this->outVersionMeta($meta);
         } else {
-            $status = $this->versionManager->getStatus();
+
+            $versions = $this->versionManager->getVersions(array(
+                'for' => 'all',
+                'desc' => '',
+            ));
+
+            $status = array(
+                'is_new' => 0,
+                'is_installed' => 0,
+                'is_unknown' => 0,
+            );
+
+            foreach ($versions as $aItem) {
+                $key = $aItem['status'];
+                $status[$key]++;
+            }
+
             Out::initTable(array('Status', 'Count'));
             foreach ($status as $k => $v){
-                Out::addTableRow(array($this->getTypeTitle($k), $v));
+                Out::addTableRow(array($this->getStatusTitle($k), $v));
             }
             Out::outTable();
         }
@@ -159,7 +177,9 @@ class Console
 
         $success = 0;
 
-        $versions = $this->versionManager->getVersions($action);
+        $versions = $this->versionManager->getVersions(array(
+            'for' => $action
+        ));
         foreach ($versions as $aItem) {
             if ($this->executeOnce($aItem['version'], $action)) {
                 $success++;
@@ -200,10 +220,13 @@ class Console
     protected function outVersionMeta($meta = false){
         if ($meta) {
             Out::initTable();
-            foreach (array('version', 'type', 'description', 'location') as $val){
+            foreach (array('version', 'status', 'description', 'location') as $val){
                 if (!empty($meta[$val])){
-                    $meta[$val] = ($val == 'type') ? $this->getTypeTitle($meta[$val]) : $meta[$val];
-                    Out::addTableRow(array(ucfirst($val), $meta[$val]));
+                    if ($val == 'status'){
+                        Out::addTableRow(array(ucfirst($val), $this->getStatusTitle($meta[$val])));
+                    } else {
+                        Out::addTableRow(array(ucfirst($val), $meta[$val]));
+                    }
                 }
             }
             Out::outTable();
@@ -212,13 +235,13 @@ class Console
         }
     }
 
-    protected function getTypeTitle($type){
+    protected function getStatusTitle($code){
         $titles = array(
             'is_new' => 'New',
             'is_installed' => 'Installed',
             'is_unknown' => 'Unknown',
         );
 
-        return isset($titles[$type]) ? $titles[$type] : $type;
+        return isset($titles[$code]) ? $titles[$code] : $code;
     }
 }

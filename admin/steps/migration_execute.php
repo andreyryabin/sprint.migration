@@ -10,6 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     $action = !empty($_POST['action']) ? $_POST['action'] : 0;
     $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
     $skipVersions = !empty($_POST['skip_versions']) ? $_POST['skip_versions'] : array();
+    $search = !empty($_POST['search']) ? $_POST['search'] : '';
 
     if (!$version){
         if ($nextAction == 'up' || $nextAction == 'down'){
@@ -17,7 +18,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
             $version = 0;
             $action = $nextAction;
 
-            $items = $versionManager->getVersions($action);
+            $items = $versionManager->getVersions(array(
+                'for' => $action,
+                'search' => $search,
+            ));
 
             foreach ($items as $aItem){
                 if (!in_array($aItem['version'], $skipVersions)){
@@ -38,7 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
                 'action' => $action,
                 'version' => $version,
                 'next_action' => $nextAction,
-                'restart' => 1
+                'restart' => 1,
+                'search' => $search,
             ));
 
             ?><script>migrationExecuteStep('migration_execute', <?=$json?>);</script><?
@@ -50,7 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
 
             $json = json_encode(array(
                 'next_action' => $nextAction,
-                'skip_versions' => $skipVersions
+                'skip_versions' => $skipVersions,
+                'search' => $search,
             ));
 
             ?><script>

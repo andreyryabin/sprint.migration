@@ -135,9 +135,12 @@ $tabControl1->BeginNextTab();
 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>" onclick="migrationMigrationsDownConfirm();" />
 
 <div style="float: right" >
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-filter c-migration-filter-list" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-filter c-migration-filter-new" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?>" onclick="migrationMigrationToggleView('status');" class="adm-btn c-migration-filter c-migration-filter-status" />
+<input type="text" value="" class="c-migration-search" />
+&nbsp;
+    
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-stat c-migration-stat-list" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-stat c-migration-stat-new" />
+<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?>" onclick="migrationMigrationToggleView('status');" class="adm-btn c-migration-stat c-migration-stat-status" />
 </div>
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
 <? $tabControl1->End(); ?>
@@ -147,13 +150,19 @@ $tabControl1->BeginNextTab();
 <script type="text/javascript">
     function migrationMigrationsUpConfirm() {
         if (confirm('<?=GetMessage('SPRINT_MIGRATION_UP_CONFIRM')?>')) {
-            migrationExecuteStep('migration_execute', {next_action: 'up'});
+            migrationExecuteStep('migration_execute', {
+                'next_action': 'up',
+                'search': $('.c-migration-search').val()
+            });
         }
     }
 
     function migrationMigrationsDownConfirm() {
         if (confirm('<?=GetMessage('SPRINT_MIGRATION_DOWN_CONFIRM')?>')) {
-            migrationExecuteStep('migration_execute', {next_action  : 'down'});
+            migrationExecuteStep('migration_execute', {
+                'next_action'  : 'down',
+                'search': $('.c-migration-search').val()
+            });
         }
     }
 
@@ -217,8 +226,8 @@ $tabControl1->BeginNextTab();
     function migrationMigrationToggleView(view){
         migrationView = view;
 
-        $('.c-migration-filter').removeClass('adm-btn-active');
-        $('.c-migration-filter-' + view).addClass('adm-btn-active');
+        $('.c-migration-stat').removeClass('adm-btn-active');
+        $('.c-migration-stat-' + view).addClass('adm-btn-active');
 
         migrationMigrationRefresh(function(){
             migrationEnableButtons(1);
@@ -227,7 +236,9 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationMigrationRefresh(callbackAfterRefresh) {
-        migrationExecuteStep('migration_' + migrationView, {}, function (data) {
+        migrationExecuteStep('migration_' + migrationView, {
+            'search': $('.c-migration-search').val()
+        }, function (data) {
             $('#migration_migrations').empty().html(data);
             if (callbackAfterRefresh) {
                 callbackAfterRefresh()
