@@ -197,6 +197,7 @@ class VersionManager
 
                     $textindex = Module::convertToUtf8IfNeed($meta['version'] . $meta['description']);
                     $searchword = Module::convertToUtf8IfNeed($filter['search']);
+                    $searchword = trim($searchword);
 
                     if (false !== mb_stripos($textindex, $searchword, null, 'utf-8')){
                         $result[] = $meta;
