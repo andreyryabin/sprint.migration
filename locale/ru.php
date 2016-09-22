@@ -40,6 +40,9 @@ require_once __DIR__ . '/../classes/Sprint/Migration/Module.php';
     "SPRINT_MIGRATION_DESC_IS_NEW" => "(только файл)",
     "SPRINT_MIGRATION_DESC_IS_INSTALLED" => "(файл + запись об установке)",
     "SPRINT_MIGRATION_DESC_IS_UNKNOWN" => "(только запись об установке)",
+    "SPRINT_MIGRATION_CON_IS_NEW" => "New",
+    "SPRINT_MIGRATION_CON_IS_INSTALLED" => "Installed",
+    "SPRINT_MIGRATION_CON_IS_UNKNOWN" => "Unknown",
     "SPRINT_MIGRATION_CREATED_SUCCESS" => "Миграция #VERSION# создана",
     "SPRINT_MIGRATION_CREATED_ERROR" => "Ошибка создания миграции",
 

@@ -18,7 +18,7 @@ class VersionManager
         $this->versionTable = new VersionTable();
     }
 
-    public function startMigration($versionName, $action = 'up', $params = array(), $restart = 0) {
+    public function startMigration($versionName, $method = 'up', $params = array(), $restart = 0) {
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
 
@@ -28,7 +28,7 @@ class VersionManager
 
         try {
 
-            $action = ($action == 'up') ? 'up' : 'down';
+            $method = ($method == 'up') ? 'up' : 'down';
 
             $meta = $this->getVersionMeta($versionName);
 
@@ -41,21 +41,21 @@ class VersionManager
                     throw new MigrationException('migration not found');
                 }
 
-                if ($action == 'up' && $meta['status'] != 'is_new') {
+                if ($method == 'up' && $meta['status'] != 'is_new') {
                     throw new MigrationException('migration already up');
                 }
 
-                if ($action == 'down' && $meta['status'] != 'is_installed') {
+                if ($method == 'down' && $meta['status'] != 'is_installed') {
                     throw new MigrationException('migration already down');
                 }
             }
 
             if (!$restart){
-                Out::outToConsoleOnly('%s (%s) start', $versionName, $action);
-                if ($action == 'up'){
-                    Out::outToHtmlOnly('[green]%s (%s) start[/]', $versionName, $action);
+                Out::outToConsoleOnly('%s (%s) start', $versionName, $method);
+                if ($method == 'up'){
+                    Out::outToHtmlOnly('[green]%s (%s) start[/]', $versionName, $method);
                 } else {
-                    Out::outToHtmlOnly('[red]%s (%s) start[/]', $versionName, $action);
+                    Out::outToHtmlOnly('[red]%s (%s) start[/]', $versionName, $method);
                 }
             }
 
@@ -63,7 +63,7 @@ class VersionManager
             $versionInstance = new $meta['class'];
             $versionInstance->setParams($params);
 
-            if ($action == 'up') {
+            if ($method == 'up') {
                 $ok = $versionInstance->up();
             } else {
                 $ok = $versionInstance->down();
@@ -77,7 +77,7 @@ class VersionManager
                 throw new MigrationException('migration returns false');
             }
 
-            if ($action == 'up') {
+            if ($method == 'up') {
                 $ok = $this->versionTable->addRecord($versionName);
             } else {
                 $ok = $this->versionTable->removeRecord($versionName);
@@ -87,17 +87,17 @@ class VersionManager
                 throw new MigrationException('unable to write migration to the database');
             }
 
-            Out::out('%s (%s) success', $versionName, $action);
+            Out::out('%s (%s) success', $versionName, $method);
             return true;
 
         } catch (RestartException $e) {
             $this->restarts[$versionName] = isset($versionInstance) ? $versionInstance->getParams() : array();
 
         } catch (MigrationException $e) {
-            Out::outError('%s (%s) error: %s', $versionName, $action, $e->getMessage());
+            Out::outError('%s (%s) error: %s', $versionName, $method, $e->getMessage());
 
         } catch (\Exception $e) {
-            Out::outError('%s (%s) error: %s', $versionName, $action, $e->getMessage());
+            Out::outError('%s (%s) error: %s', $versionName, $method, $e->getMessage());
         }
 
         return false;
