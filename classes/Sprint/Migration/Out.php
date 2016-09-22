@@ -139,10 +139,7 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
 
-        if (Module::isWin1251()){
-            $msg = Module::convertToUtf8IfNeed($msg);
-        }
-
+        $msg = self::convertToUtf8IfNeed($msg);
         return $msg;
     }
 
@@ -157,6 +154,7 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
 
+        $msg = self::convertToWin1251IfNeed($msg);
         return $msg;
     }
 
@@ -210,6 +208,24 @@ class Out
                 self::outTableSep();
             }
         }
+    }
+
+    public static function convertToUtf8IfNeed($msg) {
+        if (Module::isWin1251() && !self::detectUtf8($msg)){
+            $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
+        }
+        return $msg;
+    }
+
+    public static function convertToWin1251IfNeed($msg) {
+        if (Module::isWin1251() && self::detectUtf8($msg)){
+            $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
+        }
+        return $msg;
+    }
+
+    protected static function detectUtf8($msg){
+        return (md5($msg) == md5(iconv('utf-8', 'utf-8', $msg))) ? 1 : 0;
     }
 
     protected static function outTableSep(){

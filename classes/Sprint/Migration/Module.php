@@ -132,12 +132,6 @@ class Module
 
     }
 
-    public static function convertToUtf8IfNeed($msg) {
-        if (md5($msg) != md5(iconv('utf-8', 'utf-8//IGNORE', $msg))) {
-            $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
-        }
-        return $msg;
-    }
 }
 
 
