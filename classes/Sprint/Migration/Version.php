@@ -64,8 +64,8 @@ class Version
         }
     }
 
-    public function exitIfEmpty($cond, $msg ){
-        if (empty($cond)){
+    public function exitIfEmpty($var, $msg ){
+        if (empty($var)){
             Throw new MigrationException($msg);
         }
     }
