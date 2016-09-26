@@ -50,11 +50,6 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 Все команды: https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/commands.txt?fileviewer=file-view-default
 
 
-Директория для миграций
--------------------------
-по умолчанию: **/local/php_interface/migrations** или **/bitrix/php_interface/migrations**
-
-
 Пример файла миграции:
 -------------------------
 /bitrix/php_interface/migrations/Version20150520000001.php
@@ -83,15 +78,15 @@ class Version20150520000001 extends Version {
 
 Состояния миграций
 -------------------------
-  New                               Новая миграция (только файл)
-  Installed                         Установленная миграция (файл + запись об установке)
-  Unknown                           Неизвестная миграция (только запись об установке)
+* New                               Новая миграция (только файл)
+* Installed                         Установленная миграция (файл + запись об установке)
+* Unknown                           Неизвестная миграция (только запись об установке)
 
 Сообщения выполняющихся миграций
 -------------------------
-  Version0000 (up) success          Установка миграции прошла успешно
-  Version0000 (down) success        Откат миграции прошел успешно
-  Version0000 (down) error: (text)  Откат миграции не произошел из-за ошибки (текст ошибки)
+* Version0000 (up) success          Установка миграции прошла успешно
+* Version0000 (down) success        Откат миграции прошел успешно
+* Version0000 (down) error: (text)  Откат миграции не произошел из-за ошибки (текст ошибки)
 
 Конфиг модуля
 -------------------------
@@ -108,7 +103,7 @@ class Version20150520000001 extends Version {
 );
 ```
 
-**migration_dir** - директория для миграций (относительно DOC_ROOT), по умолчанию local/php_interface/migrations или bitrix/php_interface/migrations
+**migration_dir** - директория для миграций (относительно DOC_ROOT), по умолчанию: **/local/php_interface/migrations** или **/bitrix/php_interface/migrations**
 
 **migration_table** - таблица в бд с миграциями, по умолчанию sprint_migration_versions
 
