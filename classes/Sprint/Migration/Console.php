@@ -15,10 +15,6 @@ class Console
         $this->versionManager = new VersionManager();
     }
 
-    public function commandAdd() {
-        $this->commandCreate();
-    }
-
     public function commandCreate() {
         $descr = $this->getArg(0, '');
         $name = $this->getArg(1, '');
@@ -28,10 +24,6 @@ class Console
 
         $meta = $this->versionManager->createVersionFile($descr, $name);
         $this->outVersionMeta($meta);
-    }
-
-    public function commandLs() {
-        $this->commandList();
     }
 
     public function commandList() {
@@ -61,9 +53,6 @@ class Console
         Out::outTable();
     }
 
-    public function commandSt() {
-        $this->commandStatus();
-    }
     public function commandStatus() {
         $version = $this->getArg(0, '');
 
@@ -196,10 +185,13 @@ class Console
         Out::out('Версия bitrix: %s', defined('SM_VERSION') ? SM_VERSION : '');
         Out::out('Версия модуля: %s', Module::getVersion());
         Out::out('');
-        Out::out('Директория с миграциями:'.PHP_EOL.'   %s'.PHP_EOL, Module::getMigrationDir());
-        Out::out('Запуск:'.PHP_EOL.'   php %s <command> [<args>]'.PHP_EOL, $this->script);
+        Out::out('Директория с миграциями:'.PHP_EOL.'  %s'.PHP_EOL, Module::getMigrationDir());
+        Out::out('Запуск:'.PHP_EOL.'  php %s <command> [<args>]'.PHP_EOL, $this->script);
         Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
+        Out::out(PHP_EOL . 'Пожелания и ошибки присылайте сюда');
+        Out::out('  https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new' . PHP_EOL);
     }
+
 
     protected function executeAll($filter, $limit = 0, $force = false) {
         $limit = (int)$limit;
@@ -228,13 +220,14 @@ class Console
         $params = array();
         $restart = 0;
 
-        if ($force){
-            $this->versionManager->checkPermissions(0);
-        }
-
         do {
             $exec = 0;
-            $ok = $this->versionManager->startMigration($version, $action, $params, $restart);
+
+            if (!$restart){
+                Out::out('%s (%s) start', $version, $action);
+            }
+
+            $ok = $this->versionManager->startMigration($version, $action, $params, $force);
             if ($this->versionManager->needRestart($version)) {
                 $params = $this->versionManager->getRestartParams($version);
                 $restart = 1;

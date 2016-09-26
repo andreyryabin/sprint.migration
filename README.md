@@ -34,8 +34,6 @@
 
 
 ```
-#!php
-
 #!/usr/bin/env php
 <?php
 
@@ -43,13 +41,15 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 
 ```
 
-Пример вызова команд
+Примеры команд
 -------------------------
-* php migrate.php migrate
-* php migrate.php execute Version20150119122646 --down
-* php migrate.php up 3
+* php migrate.php create (создать новую миграцию)
+* php migrate.php list --search=text (список миграций отфильтрованных по названию и описанию)
+* php migrate.php migrate (накатить все)
+* php migrate.php execute <version> (накатить выбранную миграцию)
 
-Доступные команды
+
+Все команды
 -------------------------
 https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/commands.txt?fileviewer=file-view-default
 
@@ -64,8 +64,6 @@ https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/commands.txt?fil
 /bitrix/php_interface/migrations/Version20150520000001.php
 
 ```
-#!php
-
 <?php
 namespace Sprint\Migration;
 
@@ -94,7 +92,6 @@ class Version20150520000001 extends Version {
 **/local/php_interface/migrations.cfg.php** или **/bitrix/php_interface/migrations.cfg.php**
 
 ```
-#!php
 <?php return array (
   'migration_dir' => '',
   'migration_template' => '',
@@ -116,10 +113,10 @@ class Version20150520000001 extends Version {
 Ни один из параметров не является обязательным
 
 Пример вашего класса от которого наследуются классы миграций
+-------------------------
 
 * укажите ваш класс в конфиге
 ```
-#!php
 <?php return array (
     'migration_extend_class' => '\Acme\MyVersion as MyVersion',
 );
@@ -127,7 +124,6 @@ class Version20150520000001 extends Version {
 или
 
 ```
-#!php
 <?php return array (
     'migration_extend_class' => '\Acme\MyVersion',
 );
@@ -135,7 +131,6 @@ class Version20150520000001 extends Version {
 
 * создайте этот класс
 ```
-#!php
 namespace Acme;
 use \Sprint\Migration\Version;
 
@@ -147,8 +142,7 @@ class MyVersion extends Version
 
 * создайте миграцю migrate.php create, получится примерно так
 ```
-#!php
-<?php
+?php
 
 namespace Sprint\Migration;
 use \Acme\MyVersion as MyVersion;
@@ -167,7 +161,17 @@ class Version20151113185212 extends MyVersion {
 
 }
 ```
+Состояния миграций
+-------------------------
+  New                               Новая миграция (только файл)
+  Installed                         Установленная миграция (файл + запись об установке)
+  Unknown                           Неизвестная миграция (только запись об установке)
 
+Сообщения выполняющихся миграций
+-------------------------
+  Version0000 (up) success          Установка миграции прошла успешно
+  Version0000 (down) success        Откат миграции прошел успешно
+  Version0000 (down) error: (text)  Откат миграции не произошел из-за ошибки (текст ошибки)
 
 Информация для разработчиков
 --------------------------------
@@ -202,3 +206,5 @@ class Version20151113185212 extends MyVersion {
 * Механизм миграций, обзорная статья: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/)
 * Пошаговое выполнение миграции, примеры скриптов, видео: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/)
 * Видео с работой модуля (интерфейс уже немного поменялся) [https://www.youtube.com/watch?v=uYZ8-XIre2Q](https://www.youtube.com/watch?v=uYZ8-XIre2Q)
+* Пожелания и ошибки присылайте сюда: [https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new](https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new)
+  

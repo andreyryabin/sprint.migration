@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     $action = !empty($_POST['action']) ? $_POST['action'] : 0;
     $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
     $skipVersions = !empty($_POST['skip_versions']) ? $_POST['skip_versions'] : array();
-    $search = !empty($_POST['search']) ? $_POST['search'] : '';
+    $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Out::convertToUtf8IfNeed($search);
 
     if (!$version){
@@ -35,8 +35,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     }
 
     if ($version && $action){
-        $success = $versionManager->startMigration($version, $action, $params, $restart);
 
+        if (!$restart){
+            Sprint\Migration\Out::out('[%s]%s (%s) start[/]', $action, $version, $action);
+        }
+
+        $success = $versionManager->startMigration($version, $action, $params);
         if ($versionManager->needRestart($version)){
             $json = json_encode(array(
                 'params' => $versionManager->getRestartParams($version),

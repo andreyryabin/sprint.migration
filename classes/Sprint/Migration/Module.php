@@ -119,14 +119,12 @@ class Module
     }
 
     public static function loadLocale($loc) {
+        require_once __DIR__ . '/Out.php';
         global $MESS;
 
         if (!self::$localeLoaded) {
             foreach ($loc as $key => $msg) {
-                if (self::isWin1251()) {
-                    $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
-                }
-                $MESS[$key] = $msg;
+                $MESS[$key] = Out::convertToWin1251IfNeed($msg);
             }
         }
 

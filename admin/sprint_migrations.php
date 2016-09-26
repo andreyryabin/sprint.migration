@@ -131,17 +131,31 @@ $tabControl1->BeginNextTab();
 </tr>
 <? $tabControl1->Buttons(); ?>
 
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>" onclick="migrationMigrationsDownConfirm();" />
+<div style="text-align: center">
+    <div style="float: left;">
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>" onclick="migrationMigrationsDownConfirm();" />
 
-<div style="float: right" >
-<input type="text" value="" class="c-migration-search" />
-&nbsp;
-    
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-stat c-migration-stat-list" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-stat c-migration-stat-new" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?>" onclick="migrationMigrationToggleView('status');" class="adm-btn c-migration-stat c-migration-stat-status" />
+    </div>
+
+    <input style="" type="text" value="" class="adm-input" name="migration_search"/>
+    <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" class="c-migration-search" />
+
+    <div style="float: right;">
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-stat c-migration-stat-list" />
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-stat c-migration-stat-new" />
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?>" onclick="migrationMigrationToggleView('status');" class="adm-btn c-migration-stat c-migration-stat-status" />
+    </div>
 </div>
+
+
+
+
+
+
+
+
+
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
 <? $tabControl1->End(); ?>
 
@@ -151,8 +165,7 @@ $tabControl1->BeginNextTab();
     function migrationMigrationsUpConfirm() {
         if (confirm('<?=GetMessage('SPRINT_MIGRATION_UP_CONFIRM')?>')) {
             migrationExecuteStep('migration_execute', {
-                'next_action': 'up',
-                'search': $('.c-migration-search').val()
+                'next_action': 'up'
             });
         }
     }
@@ -160,8 +173,7 @@ $tabControl1->BeginNextTab();
     function migrationMigrationsDownConfirm() {
         if (confirm('<?=GetMessage('SPRINT_MIGRATION_DOWN_CONFIRM')?>')) {
             migrationExecuteStep('migration_execute', {
-                'next_action'  : 'down',
-                'search': $('.c-migration-search').val()
+                'next_action'  : 'down'
             });
         }
     }
@@ -181,7 +193,7 @@ $tabControl1->BeginNextTab();
         postData = postData || {};
         postData['step_code'] = step_code;
         postData['send_sessid'] = $('input[name=send_sessid]').val();
-
+        postData['search'] = $('input[name=migration_search]').val();
 
         migrationEnableButtons(0);
 
@@ -232,13 +244,12 @@ $tabControl1->BeginNextTab();
         migrationMigrationRefresh(function(){
             migrationEnableButtons(1);
             $('#tab_cont_tab1').click();
+            $("html, body").scrollTop(0);
         });
     }
 
     function migrationMigrationRefresh(callbackAfterRefresh) {
-        migrationExecuteStep('migration_' + migrationView, {
-            'search': $('.c-migration-search').val()
-        }, function (data) {
+        migrationExecuteStep('migration_' + migrationView, {}, function (data) {
             $('#migration_migrations').empty().html(data);
             if (callbackAfterRefresh) {
                 callbackAfterRefresh()
@@ -267,6 +278,25 @@ $tabControl1->BeginNextTab();
         $('#tab_cont_tab3').on('click', function(){
             var outProgress = $('#migration_progress');
             outProgress.scrollTop(outProgress.prop("scrollHeight"));
+        });
+
+
+        $('input[name=migration_search]').bind('keypress', function(e){
+            if(e.keyCode==13){
+                migrationMigrationRefresh(function(){
+                    migrationEnableButtons(1);
+                    $('#tab_cont_tab1').click();
+                    $("html, body").scrollTop(0);
+                });
+            }
+        });
+
+        $('.c-migration-search').on('click', function(){
+            migrationMigrationRefresh(function(){
+                migrationEnableButtons(1);
+                $('#tab_cont_tab1').click();
+                $("html, body").scrollTop(0);
+            });
         });
 
     });

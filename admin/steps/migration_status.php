@@ -6,7 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
     \Sprint\Migration\Module::setDbOption('admin_versions_view', 'status');
 
 
-    $search = !empty($_POST['search']) ? $_POST['search'] : '';
+    $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Out::convertToUtf8IfNeed($search);
 
     $versions = $versionManager->getVersions(array(

@@ -15,7 +15,9 @@ class Out
         'new' => array("\x1b[0;31m", '<span style="color:#a00">'),
         'blue' => array("\x1b[0;34m", '<span style="color:#00a">'),
         'green' => array("\x1b[0;32m", '<span style="color:#080">'),
+        'up' => array("\x1b[0;32m", '<span style="color:#080">'),
         'red' => array("\x1b[0;31m", '<span style="color:#a00">'),
+        'down' => array("\x1b[0;31m", '<span style="color:#a00">'),
         'yellow' => array("\x1b[1;33m", '<span style="color:#aa0">'),
         'b' => array("\x1b[1m", '<span style="font-weight:bold;color:#000">'),
     );
@@ -31,26 +33,6 @@ class Out
             self::outToHtml($msg);
         } else {
             self::outToConsole($msg );
-        }
-    }
-
-    public static function outToConsoleOnly($msg, $var1 = null, $var2 = null) {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-        if (!self::canOutAsHtml()) {
-            self::outToConsole($msg );
-        }
-    }
-
-    public static function outToHtmlOnly($msg, $var1 = null, $var2 = null) {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-        if (self::canOutAsHtml()) {
-            self::outToHtml($msg );
         }
     }
 

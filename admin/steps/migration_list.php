@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     /** @noinspection PhpIncludeInspection */
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
-    $search = !empty($_POST['search']) ? $_POST['search'] : '';
+    $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Out::convertToUtf8IfNeed($search);
 
     $webdir = \Sprint\Migration\Module::getMigrationWebDir();

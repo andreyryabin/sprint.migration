@@ -45,5 +45,6 @@ require_once __DIR__ . '/../classes/Sprint/Migration/Module.php';
     "SPRINT_MIGRATION_META_UNKNOWN" => "Unknown",
     "SPRINT_MIGRATION_CREATED_SUCCESS" => "Миграция #VERSION# создана",
     "SPRINT_MIGRATION_CREATED_ERROR" => "Ошибка создания миграции",
+    "SPRINT_MIGRATION_SEARCH" => "Поиск",
 
 ));
