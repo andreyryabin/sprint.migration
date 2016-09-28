@@ -36,6 +36,15 @@ class Version20150520000001 extends Version {
             'DETAIL_PAGE_URL' => '#SITE_DIR#/news/#ELEMENT_ID#'
         ));
 
+        $helper->Iblock()->updateIblockFields($iblockId1, array(
+            'CODE' => array(
+                'DEFAULT_VALUE' => array(
+                    'TRANSLITERATION' => 'Y',
+                    'UNIQUE' => 'Y',
+                )
+            )
+        ));
+
         $helper->Iblock()->addPropertyIfNotExists($iblockId1, array(
             'NAME' => 'Ссылка',
             'CODE' => 'LINK',

@@ -10,15 +10,13 @@ class VersionManager
 
     private $restarts = array();
 
-    protected $checkPerms = 1;
-
     protected $versionTable = null;
 
     public function __construct() {
         $this->versionTable = new VersionTable();
     }
 
-    public function startMigration($versionName, $action = 'up', $params = array(), $restart = 0) {
+    public function startMigration($versionName, $action = 'up', $params = array(), $force = false) {
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
 
@@ -36,26 +34,13 @@ class VersionManager
                 throw new MigrationException('failed to initialize migration');
             }
 
-            if ($this->checkPerms) {
-                if ($meta['type'] == 'is_unknown') {
-                    throw new MigrationException('migration not found');
-                }
-
-                if ($action == 'up' && $meta['type'] != 'is_new') {
+            if (!$force) {
+                if ($action == 'up' && $meta['status'] != 'new') {
                     throw new MigrationException('migration already up');
                 }
 
-                if ($action == 'down' && $meta['type'] != 'is_installed') {
+                if ($action == 'down' && $meta['status'] != 'installed') {
                     throw new MigrationException('migration already down');
-                }
-            }
-
-            if (!$restart){
-                Out::outToConsoleOnly('%s (%s) start', $versionName, $action);
-                if ($action == 'up'){
-                    Out::outToHtmlOnly('[green]%s (%s) start[/]', $versionName, $action);
-                } else {
-                    Out::outToHtmlOnly('[red]%s (%s) start[/]', $versionName, $action);
                 }
             }
 
@@ -153,8 +138,8 @@ class VersionManager
     }
 
 
-    public function getVersions($for = 'all') {
-        $for = in_array($for, array('all', 'up', 'down', 'unknown')) ? $for : 'all';
+    public function getVersions($filter = array()) {
+        $filter = array_merge(array('status' => '', 'search' => ''), $filter);
 
         $records = array();
         /* @var $dbres \CDBResult */
@@ -178,7 +163,7 @@ class VersionManager
         }
 
         $merge = array_merge($records, $files);
-        if ($for == 'down' || $for == 'unknown') {
+        if ($filter['status'] == 'installed' || $filter['status'] == 'unknown') {
             arsort($merge);
         } else {
             asort($merge);
@@ -190,47 +175,54 @@ class VersionManager
             $isFile = array_key_exists($version, $files);
 
             $meta = $this->prepVersionMeta($version, $isFile, $isRecord);
-            if (!$meta){
-                continue;
-            }
 
-            if (($for == 'up' && $meta['type'] == 'is_new') ||
-                ($for == 'down' && $meta['type'] == 'is_installed') ||
-                ($for == 'unknown' && $meta['type'] == 'is_unknown') ||
-                ($for == 'all')
-            ) {
-                $result[] = $meta;
+            if (empty($filter['status']) || $filter['status'] == $meta['status']){
+
+                if (!empty($filter['search'])){
+                    $textindex = $meta['version'] . $meta['description'];
+                    $searchword = $filter['search'];
+
+                    $textindex = Out::convertToUtf8IfNeed($textindex);
+                    $searchword = Out::convertToUtf8IfNeed($searchword);
+
+                    $searchword = trim($searchword);
+
+                    if (false !== mb_stripos($textindex, $searchword, null, 'utf-8')){
+                        $result[] = $meta;
+                    }
+
+                } else {
+                    $result[] = $meta;
+                }
+
+
             }
         }
         return $result;
     }
 
     protected function prepVersionMeta($versionName, $isFile, $isRecord) {
-        if (!$isRecord && !$isFile){
-            return false;
-        }
-
-        $file = $this->getVersionFile($versionName);
-
         $meta = array(
             'is_file' => $isFile,
             'is_record' => $isRecord,
+            'version' => $versionName,
         );
 
         if ($isRecord && $isFile) {
-            $meta['type'] = 'is_installed';
+            $meta['status'] = 'installed';
         } elseif (!$isRecord && $isFile) {
-            $meta['type'] = 'is_new';
+            $meta['status'] = 'new';
+        } elseif ($isRecord && !$isFile) {
+            $meta['status'] = 'unknown';
         } else {
-            $meta['type'] = 'is_unknown';
+            return false;
         }
-
-        $meta['version'] = $versionName;
 
         if (!$isFile) {
             return $meta;
         }
 
+        $file = $this->getVersionFile($versionName);
         $meta['location'] = $file;
 
         ob_start();
@@ -269,28 +261,6 @@ class VersionManager
         }
         return false;
     }
-
-    public function getStatus() {
-        $versions = $this->getVersions('all');
-
-        $summ = array(
-            'is_new' => 0,
-            'is_installed' => 0,
-            'is_unknown' => 0,
-        );
-
-        foreach ($versions as $aItem) {
-            $type = $aItem['type'];
-            $summ[$type]++;
-        }
-
-        return $summ;
-    }
-
-    public function checkPermissions($check = 1) {
-        $this->checkPerms = $check;
-    }
-
 
     protected function getVersionFile($versionName) {
         return Module::getMigrationDir() . '/' . $versionName . '.php';

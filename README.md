@@ -9,7 +9,6 @@
 -------------------------
 Пример вашего composer.json с установкой модуля в local/modules/
 ```
-#!json
 {
   "extra": {
     "installer-paths": {
@@ -34,8 +33,6 @@
 
 
 ```
-#!php
-
 #!/usr/bin/env php
 <?php
 
@@ -43,20 +40,14 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 
 ```
 
-Пример вызова команд
+Примеры команд
 -------------------------
-* php migrate.php migrate
-* php migrate.php execute Version20150119122646 --down
-* php migrate.php up 3
+* php migrate.php create (создать новую миграцию)
+* php migrate.php list --search=text (список миграций отфильтрованных по названию и описанию)
+* php migrate.php migrate (накатить все)
+* php migrate.php execute <version> (накатить выбранную миграцию)
 
-Доступные команды
--------------------------
-https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/commands.txt?fileviewer=file-view-default
-
-
-Директория для миграций
--------------------------
-по умолчанию: **/local/php_interface/migrations** или **/bitrix/php_interface/migrations**
+Все команды: https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/commands.txt?fileviewer=file-view-default
 
 
 Пример файла миграции:
@@ -64,8 +55,6 @@ https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/commands.txt?fil
 /bitrix/php_interface/migrations/Version20150520000001.php
 
 ```
-#!php
-
 <?php
 namespace Sprint\Migration;
 
@@ -87,6 +76,17 @@ class Version20150520000001 extends Version {
 например создание инфоблоков или какое либо другое изменение, которое должны получить все копии проекта.
 
 
+Состояния миграций
+-------------------------
+* New                               Новая миграция (только файл)
+* Installed                         Установленная миграция (файл + запись об установке)
+* Unknown                           Неизвестная миграция (только запись об установке)
+
+Сообщения выполняющихся миграций
+-------------------------
+* Version0000 (up) success          Установка миграции прошла успешно
+* Version0000 (down) success        Откат миграции прошел успешно
+* Version0000 (down) error: (text)  Откат миграции не произошел из-за ошибки (текст ошибки)
 
 Конфиг модуля
 -------------------------
@@ -94,7 +94,6 @@ class Version20150520000001 extends Version {
 **/local/php_interface/migrations.cfg.php** или **/bitrix/php_interface/migrations.cfg.php**
 
 ```
-#!php
 <?php return array (
   'migration_dir' => '',
   'migration_template' => '',
@@ -104,7 +103,7 @@ class Version20150520000001 extends Version {
 );
 ```
 
-**migration_dir** - директория для миграций (относительно DOC_ROOT), по умолчанию local/php_interface/migrations или bitrix/php_interface/migrations
+**migration_dir** - директория для миграций (относительно DOC_ROOT), по умолчанию: **/local/php_interface/migrations** или **/bitrix/php_interface/migrations**
 
 **migration_table** - таблица в бд с миграциями, по умолчанию sprint_migration_versions
 
@@ -116,10 +115,10 @@ class Version20150520000001 extends Version {
 Ни один из параметров не является обязательным
 
 Пример вашего класса от которого наследуются классы миграций
+-------------------------
 
 * укажите ваш класс в конфиге
 ```
-#!php
 <?php return array (
     'migration_extend_class' => '\Acme\MyVersion as MyVersion',
 );
@@ -127,7 +126,6 @@ class Version20150520000001 extends Version {
 или
 
 ```
-#!php
 <?php return array (
     'migration_extend_class' => '\Acme\MyVersion',
 );
@@ -135,7 +133,7 @@ class Version20150520000001 extends Version {
 
 * создайте этот класс
 ```
-#!php
+<?php
 namespace Acme;
 use \Sprint\Migration\Version;
 
@@ -145,9 +143,8 @@ class MyVersion extends Version
 }
 ```
 
-* создайте миграцю migrate.php create, получится примерно так
+* создайте миграцю migrate.php create, результат:
 ```
-#!php
 <?php
 
 namespace Sprint\Migration;
@@ -182,8 +179,7 @@ class Version20151113185212 extends MyVersion {
 Миграция не выполняется если в методах up() или down()
 вызывается return false или произошло исключение, в остальных случаях миграция выполняется успешно
 
-Миграции при установке всех сразу выполняются от более старых к новым (в имени класса и файла зашита дата)
-при откате наоборот - от более новых к старым
+Миграции при установке всех сразу выполняются от более старых к новым, при откате наоборот - от более новых к старым
 
 При установке\откате всех миграций сразу, в случае если одну из миграций не удается выполнить, она пропускается и выполняются следующие миграции после нее, это сделано намеренно чтобы не стопорилась установка\откат миграций. 
 
@@ -192,13 +188,15 @@ class Version20151113185212 extends MyVersion {
 Такие методы есть в Sprint\Migration\Helpers\IblockHelper, например addIblockIfNotExists, addPropertyIfNotExists
 
 
-
-Админка
+Скриншоты
 -------------------------
-![админка](https://bitbucket.org/repo/aejkky/images/1841502107-gkrDVvOs9MQ62p.jpg)
+![админка](https://bitbucket.org/repo/aejkky/images/872161228-admin-092016.png)
+
 
 Полезные ссылки
 -------------------------
 * Механизм миграций, обзорная статья: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/)
 * Пошаговое выполнение миграции, примеры скриптов, видео: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/)
 * Видео с работой модуля (интерфейс уже немного поменялся) [https://www.youtube.com/watch?v=uYZ8-XIre2Q](https://www.youtube.com/watch?v=uYZ8-XIre2Q)
+* Пожелания и ошибки присылайте сюда: [https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new](https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new)
+  

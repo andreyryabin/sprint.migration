@@ -12,6 +12,7 @@ class Version20150520000002 extends Version {
 
         $helper = new HelperManager();
         $iblockId1 = $helper->Iblock()->getIblockId('content_news');
+        $this->exitIfEmpty($iblockId1, 'Инфоблок content_news не найден');
 
         if (!isset($this->params['add'])){
             $this->params['add'] = 0;
@@ -36,6 +37,7 @@ class Version20150520000002 extends Version {
 
         $helper = new HelperManager();
         $iblockId1 = $helper->Iblock()->getIblockId('content_news');
+        $this->exitIfEmpty($iblockId1, 'Инфоблок content_news не найден');
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbRes = \CIBlockElement::GetList(array(), array('IBLOCK_ID' => $iblockId1), false, array('nTopCount' => 10));

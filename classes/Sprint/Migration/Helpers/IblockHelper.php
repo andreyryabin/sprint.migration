@@ -189,6 +189,10 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, 'Could not delete iblock %s', $iblockId);
     }
 
+    public function getIblockFields($iblockId) {
+        return \CIBlock::GetFields($iblockId);
+    }
+
     public function updateIblockFields($iblockId, $fields = array()) {
         $default = \CIBlock::GetFields($iblockId);
         $fields = array_replace_recursive($default, $fields);
@@ -262,9 +266,17 @@ class IblockHelper extends Helper
 
         if (!empty($fields['LINK_IBLOCK_ID'])) {
             $fields['PROPERTY_TYPE'] = 'E';
+            $fields['USER_TYPE'] = 'EList';
         }
 
         $fields = array_replace_recursive($default, $fields);
+
+        if (false !== strpos($fields['PROPERTY_TYPE'], ':')){
+            list($ptype, $utype) = explode(':', $fields['PROPERTY_TYPE']);
+            $fields['PROPERTY_TYPE'] = $ptype;
+            $fields['USER_TYPE'] = $utype;
+        }
+
         $fields['IBLOCK_ID'] = $iblockId;
 
         $ib = new \CIBlockProperty;
@@ -307,6 +319,26 @@ class IblockHelper extends Helper
     }
 
     public function updatePropertyById($propertyId, $fields) {
+        if (!empty($fields['VALUES']) && !isset($fields['PROPERTY_TYPE'])) {
+            $fields['PROPERTY_TYPE'] = 'L';
+        }
+
+        if (!empty($fields['LINK_IBLOCK_ID'])) {
+            if (!isset($fields['PROPERTY_TYPE'])){
+                $fields['PROPERTY_TYPE'] = 'E';
+            }
+
+            if (!isset($fields['USER_TYPE']) && $fields['PROPERTY_TYPE'] == 'E'){
+                $fields['USER_TYPE'] = 'EList';
+            }
+        }
+
+        if (false !== strpos($fields['PROPERTY_TYPE'], ':')){
+            list($ptype, $utype) = explode(':', $fields['PROPERTY_TYPE']);
+            $fields['PROPERTY_TYPE'] = $ptype;
+            $fields['USER_TYPE'] = $utype;
+        }
+
         $ib = new \CIBlockProperty();
         if ($ib->Update($propertyId, $fields)) {
             return true;

@@ -10,9 +10,14 @@ class Out
         'is_unknown' => array("\x1b[0;34m", '<span style="color:#00a">'),
         'is_installed' => array("\x1b[0;32m", '<span style="color:#080">'),
         'is_new' => array("\x1b[0;31m", '<span style="color:#a00">'),
+        'unknown' => array("\x1b[0;34m", '<span style="color:#00a">'),
+        'installed' => array("\x1b[0;32m", '<span style="color:#080">'),
+        'new' => array("\x1b[0;31m", '<span style="color:#a00">'),
         'blue' => array("\x1b[0;34m", '<span style="color:#00a">'),
         'green' => array("\x1b[0;32m", '<span style="color:#080">'),
+        'up' => array("\x1b[0;32m", '<span style="color:#080">'),
         'red' => array("\x1b[0;31m", '<span style="color:#a00">'),
+        'down' => array("\x1b[0;31m", '<span style="color:#a00">'),
         'yellow' => array("\x1b[1;33m", '<span style="color:#aa0">'),
         'b' => array("\x1b[1m", '<span style="font-weight:bold;color:#000">'),
     );
@@ -28,26 +33,6 @@ class Out
             self::outToHtml($msg);
         } else {
             self::outToConsole($msg );
-        }
-    }
-
-    public static function outToConsoleOnly($msg, $var1 = null, $var2 = null) {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-        if (!self::canOutAsHtml()) {
-            self::outToConsole($msg );
-        }
-    }
-
-    public static function outToHtmlOnly($msg, $var1 = null, $var2 = null) {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-        if (self::canOutAsHtml()) {
-            self::outToHtml($msg );
         }
     }
 
@@ -130,15 +115,44 @@ class Out
         }
     }
 
+
+    public static function prepareToConsole($msg){
+        foreach (self::$colors as $key => $val) {
+            $msg = str_replace('[' . $key . ']', $val[0], $msg);
+        }
+
+        $msg = self::convertToUtf8IfNeed($msg);
+        return $msg;
+    }
+
+
+    public static function prepareToHtml($msg){
+        $taskUrl = Module::getFileOption('tracker_task_url');
+        if ($taskUrl && false !== strpos($taskUrl, '$1')){
+            $msg = preg_replace('/#(\d+)/', '<a target="_blank" href="'.$taskUrl.'">#$1</a>', $msg);
+        }
+
+        foreach (self::$colors as $key => $val) {
+            $msg = str_replace('[' . $key . ']', $val[1], $msg);
+        }
+
+        $msg = self::convertToWin1251IfNeed($msg);
+        return $msg;
+    }
+
     protected static $tableRows = array();
     protected static $tableMaxCol = array();
     protected static $tableHeaderExists = 0;
 
-    protected function cleanColors($msg){
-        foreach (self::$colors as $key => $val) {
-            $msg = str_replace('[' . $key . ']', '', $msg);
+    public static function initTable($headerRow = array()){
+        self::$tableRows = array();
+        self::$tableMaxCol = array();
+        self::$tableHeaderExists = 0;
+
+        if (!empty($headerRow)){
+            self::addTableRow($headerRow);
+            self::$tableHeaderExists = 1;
         }
-        return $msg;
     }
 
     public static function addTableRow($row){
@@ -158,15 +172,42 @@ class Out
         self::$tableRows[] = $row;
     }
 
-    public static function initTable($headerRow = array()){
-        self::$tableRows = array();
-        self::$tableMaxCol = array();
-        self::$tableHeaderExists = 0;
 
-        if (!empty($headerRow)){
-            self::addTableRow($headerRow);
-            self::$tableHeaderExists = 1;
+    public static function outTable(){
+        $rowscnt = count(self::$tableRows);
+        foreach (self::$tableRows as $rowNum => $row){
+            if ($rowNum == 0){
+                self::outTableSep();
+            }
+
+            self::outTableContent($row);
+
+            if ($rowNum == 0 && self::$tableHeaderExists){
+                self::outTableSep();
+            }
+
+            if ($rowNum == $rowscnt - 1 ){
+                self::outTableSep();
+            }
         }
+    }
+
+    public static function convertToUtf8IfNeed($msg) {
+        if (Module::isWin1251() && !self::detectUtf8($msg)){
+            $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
+        }
+        return $msg;
+    }
+
+    public static function convertToWin1251IfNeed($msg) {
+        if (Module::isWin1251() && self::detectUtf8($msg)){
+            $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
+        }
+        return $msg;
+    }
+
+    protected static function detectUtf8($msg){
+        return (md5($msg) == md5(iconv('utf-8', 'utf-8', $msg))) ? 1 : 0;
     }
 
     protected static function outTableSep(){
@@ -190,26 +231,7 @@ class Out
         Out::out('|' . $res . '|');
     }
 
-    public static function outTable(){
-        $rowscnt = count(self::$tableRows);
-        foreach (self::$tableRows as $rowNum => $row){
-            if ($rowNum == 0){
-                self::outTableSep();
-            }
-
-            self::outTableContent($row);
-
-            if ($rowNum == 0 && self::$tableHeaderExists){
-                self::outTableSep();
-            }
-
-            if ($rowNum == $rowscnt - 1 ){
-                self::outTableSep();
-            }
-        }
-    }
-
-    public static function strLen($str){
+    protected static function strLen($str){
         if (Module::isWin1251()){
             return strlen($str);
         } else {
@@ -217,7 +239,7 @@ class Out
         }
 
     }
-    public static function strPad($input, $pad_length, $pad_string) {
+    protected static function strPad($input, $pad_length, $pad_string) {
         if (Module::isWin1251()){
             return str_pad($input, $pad_length, $pad_string, STR_PAD_RIGHT);
         } else {
@@ -226,14 +248,13 @@ class Out
         }
     }
 
-    public static function subStr($str, $start, $len = null){
-        if (Module::isWin1251()){
-            return substr($str, $start, $len);
-        } else {
-            return mb_substr($str, $start, $len,'UTF-8');
+    protected function cleanColors($msg){
+        foreach (self::$colors as $key => $val) {
+            $msg = str_replace('[' . $key . ']', '', $msg);
         }
+        return $msg;
     }
-    
+
     protected static function outToHtml($msg){
         $msg = self::prepareToHtml($msg);
         echo '<div class="migration-out">' . "$msg" . '</div>';
@@ -249,31 +270,6 @@ class Out
         }
     }
 
-    public static function prepareToConsole($msg){
-        foreach (self::$colors as $key => $val) {
-            $msg = str_replace('[' . $key . ']', $val[0], $msg);
-        }
-
-        if (Module::isWin1251()){
-            $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
-        }
-
-        return $msg;
-    }
-
-    public static function prepareToHtml($msg){
-        $taskUrl = Module::getFileOption('tracker_task_url');
-        if ($taskUrl && false !== strpos($taskUrl, '$1')){
-            $msg = preg_replace('/#(\d+)/', '<a target="_blank" href="'.$taskUrl.'">#$1</a>', $msg);
-        }
-
-        foreach (self::$colors as $key => $val) {
-            $msg = str_replace('[' . $key . ']', $val[1], $msg);
-        }
-
-        return $msg;
-    }
-    
     protected static function canOutAsAdminMessage(){
         return (self::canOutAsHtml() && class_exists('\CAdminMessage')) ? 1 : 0;
     }
