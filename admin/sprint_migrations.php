@@ -26,44 +26,44 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 
 ?>
 <style type="text/css">
-    .c-migration-item-is_installed,
-    .c-migration-item-is_new,
-    .c-migration-item-is_unknown {
+    .c-migration-item-installed,
+    .c-migration-item-new,
+    .c-migration-item-unknown {
         text-decoration: none;
     }
 
-    .c-migration-item-is_installed,
-    .c-migration-item-is_installed:link,
-    .c-migration-item-is_installed:hover,
-    .c-migration-item-is_installed:visited,
-    a.c-migration-item-is_installed,
-    a.c-migration-item-is_installed:link,
-    a.c-migration-item-is_installed:hover,
-    a.c-migration-item-is_installed:visited
+    .c-migration-item-installed,
+    .c-migration-item-installed:link,
+    .c-migration-item-installed:hover,
+    .c-migration-item-installed:visited,
+    a.c-migration-item-installed,
+    a.c-migration-item-installed:link,
+    a.c-migration-item-installed:hover,
+    a.c-migration-item-installed:visited
     {
         color: #080;
     }
 
-    .c-migration-item-is_new,
-    .c-migration-item-is_new:link,
-    .c-migration-item-is_new:hover,
-    .c-migration-item-is_new:visited,
-    a.c-migration-item-is_new,
-    a.c-migration-item-is_new:link,
-    a.c-migration-item-is_new:hover,
-    a.c-migration-item-is_new:visited
+    .c-migration-item-new,
+    .c-migration-item-new:link,
+    .c-migration-item-new:hover,
+    .c-migration-item-new:visited,
+    a.c-migration-item-new,
+    a.c-migration-item-new:link,
+    a.c-migration-item-new:hover,
+    a.c-migration-item-new:visited
     {
         color: #a00;
     }
 
-    .c-migration-item-is_unknown,
-    .c-migration-item-is_unknown:link,
-    .c-migration-item-is_unknown:hover,
-    .c-migration-item-is_unknown:visited,
-    a.c-migration-item-is_unknown,
-    a.c-migration-item-is_unknown:link,
-    a.c-migration-item-is_unknown:hover,
-    a.c-migration-item-is_unknown:visited
+    .c-migration-item-unknown,
+    .c-migration-item-unknown:link,
+    .c-migration-item-unknown:hover,
+    .c-migration-item-unknown:visited,
+    a.c-migration-item-unknown,
+    a.c-migration-item-unknown:link,
+    a.c-migration-item-unknown:hover,
+    a.c-migration-item-unknown:visited
     {
         color: #00a;
     }
@@ -131,14 +131,31 @@ $tabControl1->BeginNextTab();
 </tr>
 <? $tabControl1->Buttons(); ?>
 
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>" onclick="migrationMigrationsDownConfirm();" />
+<div style="text-align: center">
+    <div style="float: left;">
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>" onclick="migrationMigrationsDownConfirm();" />
 
-<div style="float: right" >
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-filter c-migration-filter-list" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-filter c-migration-filter-new" />
-<input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?>" onclick="migrationMigrationToggleView('status');" class="adm-btn c-migration-filter c-migration-filter-status" />
+    </div>
+
+    <input style="" type="text" value="" class="adm-input" name="migration_search"/>
+    <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" class="c-migration-search" />
+
+    <div style="float: right;">
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-stat c-migration-stat-list" />
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-stat c-migration-stat-new" />
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?>" onclick="migrationMigrationToggleView('status');" class="adm-btn c-migration-stat c-migration-stat-status" />
+    </div>
 </div>
+
+
+
+
+
+
+
+
+
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
 <? $tabControl1->End(); ?>
 
@@ -147,13 +164,17 @@ $tabControl1->BeginNextTab();
 <script type="text/javascript">
     function migrationMigrationsUpConfirm() {
         if (confirm('<?=GetMessage('SPRINT_MIGRATION_UP_CONFIRM')?>')) {
-            migrationExecuteStep('migration_execute', {next_action: 'up'});
+            migrationExecuteStep('migration_execute', {
+                'next_action': 'up'
+            });
         }
     }
 
     function migrationMigrationsDownConfirm() {
         if (confirm('<?=GetMessage('SPRINT_MIGRATION_DOWN_CONFIRM')?>')) {
-            migrationExecuteStep('migration_execute', {next_action  : 'down'});
+            migrationExecuteStep('migration_execute', {
+                'next_action'  : 'down'
+            });
         }
     }
 
@@ -172,7 +193,7 @@ $tabControl1->BeginNextTab();
         postData = postData || {};
         postData['step_code'] = step_code;
         postData['send_sessid'] = $('input[name=send_sessid]').val();
-
+        postData['search'] = $('input[name=migration_search]').val();
 
         migrationEnableButtons(0);
 
@@ -217,12 +238,13 @@ $tabControl1->BeginNextTab();
     function migrationMigrationToggleView(view){
         migrationView = view;
 
-        $('.c-migration-filter').removeClass('adm-btn-active');
-        $('.c-migration-filter-' + view).addClass('adm-btn-active');
+        $('.c-migration-stat').removeClass('adm-btn-active');
+        $('.c-migration-stat-' + view).addClass('adm-btn-active');
 
         migrationMigrationRefresh(function(){
             migrationEnableButtons(1);
             $('#tab_cont_tab1').click();
+            $("html, body").scrollTop(0);
         });
     }
 
@@ -256,6 +278,25 @@ $tabControl1->BeginNextTab();
         $('#tab_cont_tab3').on('click', function(){
             var outProgress = $('#migration_progress');
             outProgress.scrollTop(outProgress.prop("scrollHeight"));
+        });
+
+
+        $('input[name=migration_search]').bind('keypress', function(e){
+            if(e.keyCode==13){
+                migrationMigrationRefresh(function(){
+                    migrationEnableButtons(1);
+                    $('#tab_cont_tab1').click();
+                    $("html, body").scrollTop(0);
+                });
+            }
+        });
+
+        $('.c-migration-search').on('click', function(){
+            migrationMigrationRefresh(function(){
+                migrationEnableButtons(1);
+                $('#tab_cont_tab1').click();
+                $("html, body").scrollTop(0);
+            });
         });
 
     });

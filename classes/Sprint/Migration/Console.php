@@ -9,46 +9,32 @@ class Console
 
     protected $script = 'migrate.php';
 
+    protected $arguments = array();
+
     public function __construct() {
         $this->versionManager = new VersionManager();
     }
 
-    public function executeConsoleCommand($args) {
-        $this->script = array_shift($args);
+    public function commandCreate() {
+        $descr = $this->getArg(0, '');
+        $name = $this->getArg(1, '');
 
-        if (empty($args) || count($args) <= 0) {
-            $this->commandHelp();
-            return false;
-        }
+        $descr = $this->getArg('--desc', $descr);
+        $name = $this->getArg('--name', $name);
 
-        $method = array_shift($args);
-
-        $method = str_replace(array('_', '-', ' '), '*', $method);
-        $method = explode('*', $method);
-        $tmp = array();
-        foreach ($method as $val) {
-            $tmp[] = ucfirst(strtolower($val));
-        }
-
-        $method = 'command' . implode('', $tmp);
-
-
-        if (!method_exists($this, $method)) {
-            Out::out('Command not found, see help');
-            return false;
-        }
-
-        call_user_func_array(array($this, $method), $args);
-        return true;
-    }
-
-    public function commandCreate($descr = '', $prefix = '') {
-        $meta = $this->versionManager->createVersionFile($descr, $prefix);
+        $meta = $this->versionManager->createVersionFile($descr, $name);
         $this->outVersionMeta($meta);
     }
 
     public function commandList() {
-        $versions = $this->versionManager->getVersions('all');
+        $search = $this->getArg('--search');
+        $status = ($this->getArg('--new')) ? 'new' : '';
+
+        $versions = $this->versionManager->getVersions(array(
+            'status' => $status,
+            'search' => $search
+        ));
+
         Out::initTable(array(
             'Version',
             'Status',
@@ -58,7 +44,7 @@ class Console
         foreach ($versions as $aItem){
             Out::addTableRow(array(
                 $aItem['version'],
-                $this->getTypeTitle($aItem['type']),
+                GetMessage('SPRINT_MIGRATION_META_' . strtoupper($aItem['status'])),
                 $aItem['description'],
                 //$aItem['location'],
             ));
@@ -67,80 +53,131 @@ class Console
         Out::outTable();
     }
 
-    public function commandStatus($version = '') {
+    public function commandStatus() {
+        $version = $this->getArg(0, '');
+
         if ($version){
             $meta = $this->versionManager->getVersionMeta($version);
             $this->outVersionMeta($meta);
+
         } else {
-            $status = $this->versionManager->getStatus();
+            $search = $this->getArg('--search');
+            $versions = $this->versionManager->getVersions(array(
+                'status' => '',
+                'search' => $search
+            ));
+
+            $status = array(
+                'new' => 0,
+                'installed' => 0,
+                'unknown' => 0,
+            );
+
+            foreach ($versions as $aItem) {
+                $key = $aItem['status'];
+                $status[$key]++;
+            }
+
             Out::initTable(array('Status', 'Count'));
             foreach ($status as $k => $v){
-                Out::addTableRow(array($this->getTypeTitle($k), $v));
+                Out::addTableRow(array(GetMessage('SPRINT_MIGRATION_META_' . strtoupper($k)), $v));
             }
             Out::outTable();
         }
     }
 
-    public function commandMigrate($up = '--up') {
-        if ($up == '--up') {
-            $this->executeAll('up');
+    public function commandMigrate() {
+        $force = $this->getArg('--force');
 
-        } elseif ($up == '--down') {
-            $this->executeAll('down');
+        $search = $this->getArg('--search');
+        $status = ($this->getArg('--down')) ? 'installed' : 'new';
 
-        } else {
-            $this->outParamsError();
-        }
+        $this->executeAll(array(
+            'status' => $status,
+            'search' => $search
+        ), 0, $force);
     }
 
-    public function commandUp($var = 1) {
+    public function commandUp() {
+        $force = $this->getArg('--force');
+        $var = $this->getArg(0, 1);
+
+        $search = $this->getArg('--search');
+        $status = 'new';
+
         if ($this->versionManager->checkVersionName($var)){
-            $this->executeOnce($var, 'up');
-        } elseif ($var == '--all') {
-            $this->executeAll('up');
-        } elseif (is_numeric($var) && intval($var) > 0){
-            $this->executeAll('up', intval($var));
+            $this->executeOnce($var, 'up',$force);
+
+        } elseif ($this->getArg('--all')){
+            $this->executeAll(array(
+                'status' => $status,
+                'search' => $search
+            ), 0, $force);
+
         } else {
-            $this->outParamsError();
+            $this->executeAll(array(
+                'status' => $status,
+                'search' => $search
+            ), intval($var), $force);
         }
+
     }
 
-    public function commandDown($var = 1) {
+    public function commandDown() {
+        $force = $this->getArg('--force');
+        $var = $this->getArg(0, 1);
+
+        $search = $this->getArg('--search');
+        $status = 'installed';
+
         if ($this->versionManager->checkVersionName($var)){
-            $this->executeOnce($var, 'down');
-        } elseif ($var == '--all') {
-            $this->executeAll('down');
-        } elseif (is_numeric($var) && intval($var) > 0){
-            $this->executeAll('down', intval($var));
-        } else {
-            $this->outParamsError();
-        }
-    }
+            $this->executeOnce($var, 'down',$force);
 
-    public function commandExecute($version = '', $up = '--up') {
-        if ($version && $up == '--up') {
-            $this->executeOnce($version, 'up');
-
-        } elseif ($version && $up == '--down') {
-            $this->executeOnce($version, 'down');
+        } elseif ($this->getArg('--all')){
+            $this->executeAll(array(
+                'status' => $status,
+                'search' => $search
+            ), 0, $force);
 
         } else {
-            $this->outParamsError();
+            $this->executeAll(array(
+                'status' => $status,
+                'search' => $search
+            ), intval($var), $force);
         }
+
     }
 
-    public function commandRedo($version = '') {
+    public function commandRedo() {
+        $version = $this->getArg(0, '');
+        $force = $this->getArg('--force');
         if ($version) {
-            $this->executeOnce($version, 'down');
-            $this->executeOnce($version, 'up');
+            $this->executeOnce($version, 'down', $force);
+            $this->executeOnce($version, 'up', $force);
         } else {
-            $this->outParamsError();
+            Out::out('Version not found!');
         }
     }
 
-    public function commandForce($version = '', $up = '--up') {
-        $this->versionManager->checkPermissions(0);
-        $this->commandExecute($version, $up);
+    /** @deprecated use commandUp or commandDown */
+    public function commandExecute() {
+        $version = $this->getArg(0, '');
+        $force = $this->getArg('--force');
+        if ($version){
+            if ($this->getArg('--down')){
+                $this->executeOnce($version, 'down', $force);
+            } else {
+                $this->executeOnce($version, 'up', $force);
+            }
+        } else {
+            Out::out('Version not found!');
+        }
+    }
+
+    /** @deprecated use use commandUp --force or commandDown --force */
+    public function commandForce() {
+        $this->addArg('--force');
+        $this->commandExecute();
     }
 
     public function commandHelp() {
@@ -148,20 +185,25 @@ class Console
         Out::out('Версия bitrix: %s', defined('SM_VERSION') ? SM_VERSION : '');
         Out::out('Версия модуля: %s', Module::getVersion());
         Out::out('');
-        Out::out('Директория с миграциями:'.PHP_EOL.'   %s'.PHP_EOL, Module::getMigrationDir());
-        Out::out('Запуск:'.PHP_EOL.'   php %s <command> [<args>]'.PHP_EOL, $this->script);
+        Out::out('Директория с миграциями:'.PHP_EOL.'  %s'.PHP_EOL, Module::getMigrationDir());
+        Out::out('Запуск:'.PHP_EOL.'  php %s <command> [<args>]'.PHP_EOL, $this->script);
         Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
+        Out::out(PHP_EOL . 'Пожелания и ошибки присылайте сюда');
+        Out::out('  https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new' . PHP_EOL);
     }
 
-    protected function executeAll($action = 'up', $limit = 0) {
-        $action = ($action == 'up') ? 'up' : 'down';
+
+    protected function executeAll($filter, $limit = 0, $force = false) {
         $limit = (int)$limit;
 
         $success = 0;
 
-        $versions = $this->versionManager->getVersions($action);
+        $versions = $this->versionManager->getVersions($filter);
+
+        $action = ($filter['status'] == 'new') ? 'up' : 'down';
+
         foreach ($versions as $aItem) {
-            if ($this->executeOnce($aItem['version'], $action)) {
+            if ($this->executeOnce($aItem['version'], $action, $force)) {
                 $success++;
             }
 
@@ -174,14 +216,18 @@ class Console
         return $success;
     }
 
-    protected function executeOnce($version, $action = 'up') {
-        $action = ($action == 'up') ? 'up' : 'down';
+    protected function executeOnce($version, $action = 'up', $force = false) {
         $params = array();
         $restart = 0;
 
         do {
             $exec = 0;
-            $ok = $this->versionManager->startMigration($version, $action, $params, $restart);
+
+            if (!$restart){
+                Out::out('%s (%s) start', $version, $action);
+            }
+
+            $ok = $this->versionManager->startMigration($version, $action, $params, $force);
             if ($this->versionManager->needRestart($version)) {
                 $params = $this->versionManager->getRestartParams($version);
                 $restart = 1;
@@ -193,17 +239,16 @@ class Console
         return $ok;
     }
 
-    protected function outParamsError(){
-        Out::out('Required params not found, see help');
-    }
-
     protected function outVersionMeta($meta = false){
         if ($meta) {
             Out::initTable();
-            foreach (array('version', 'type', 'description', 'location') as $val){
+            foreach (array('version', 'status', 'description', 'location') as $val){
                 if (!empty($meta[$val])){
-                    $meta[$val] = ($val == 'type') ? $this->getTypeTitle($meta[$val]) : $meta[$val];
-                    Out::addTableRow(array(ucfirst($val), $meta[$val]));
+                    if ($val == 'status'){
+                        Out::addTableRow(array(ucfirst($val), GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$val]))));
+                    } else {
+                        Out::addTableRow(array(ucfirst($val), $meta[$val]));
+                    }
                 }
             }
             Out::outTable();
@@ -212,13 +257,56 @@ class Console
         }
     }
 
-    protected function getTypeTitle($type){
-        $titles = array(
-            'is_new' => 'New',
-            'is_installed' => 'Installed',
-            'is_unknown' => 'Unknown',
-        );
+    //
+    public function executeConsoleCommand($args) {
+        $this->script = array_shift($args);
 
-        return isset($titles[$type]) ? $titles[$type] : $type;
+        if (empty($args) || count($args) <= 0) {
+            $this->commandHelp();
+            return false;
+        }
+
+        $command = array_shift($args);
+
+        $command = str_replace(array('_', '-', ' '), '*', $command);
+        $command = explode('*', $command);
+        $tmp = array();
+        foreach ($command as $val) {
+            $tmp[] = ucfirst(strtolower($val));
+        }
+
+        $command = 'command' . implode('', $tmp);
+
+        if (!method_exists($this, $command)) {
+            Out::out('Command not found, see help');
+            return false;
+        }
+
+        $this->initializeArgs($args);
+
+        call_user_func(array($this, $command));
+        return true;
+    }
+
+    protected function initializeArgs($args){
+        $this->arguments = array();
+        foreach ($args as $val){
+            $this->addArg($val);
+        }
+    }
+
+    protected function addArg($arg){
+        list($name, $val) = explode('=', $arg);
+        $isparam = (0 === strpos($name, '--')) ? 1 : 0;
+        if ($isparam){
+            $val = is_null($val) ? 1 : $val;
+            $this->arguments[$name] = $val;
+        } else {
+            $this->arguments[] = $name;
+        }
+    }
+
+    protected function getArg($name, $default = ''){
+        return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
     }
 }
