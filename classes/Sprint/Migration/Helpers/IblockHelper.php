@@ -250,23 +250,22 @@ class IblockHelper extends Helper
             'SORT' => '500',
             'CODE' => '',
             'PROPERTY_TYPE' => 'S',
+            'USER_TYPE' => '',
             'ROW_COUNT' => '1',
             'COL_COUNT' => '30',
             'LIST_TYPE' => 'L',
             'MULTIPLE' => 'N',
-            'USER_TYPE' => '',
             'IS_REQUIRED' => 'N',
             'FILTRABLE' => 'Y',
             'LINK_IBLOCK_ID' => 0
         );
 
         if (!empty($fields['VALUES'])) {
-            $fields['PROPERTY_TYPE'] = 'L';
+            $default['PROPERTY_TYPE'] = 'L';
         }
 
         if (!empty($fields['LINK_IBLOCK_ID'])) {
-            $fields['PROPERTY_TYPE'] = 'E';
-            $fields['USER_TYPE'] = 'EList';
+            $default['PROPERTY_TYPE'] = 'E';
         }
 
         $fields = array_replace_recursive($default, $fields);
@@ -323,14 +322,8 @@ class IblockHelper extends Helper
             $fields['PROPERTY_TYPE'] = 'L';
         }
 
-        if (!empty($fields['LINK_IBLOCK_ID'])) {
-            if (!isset($fields['PROPERTY_TYPE'])){
-                $fields['PROPERTY_TYPE'] = 'E';
-            }
-
-            if (!isset($fields['USER_TYPE']) && $fields['PROPERTY_TYPE'] == 'E'){
-                $fields['USER_TYPE'] = 'EList';
-            }
+        if (!empty($fields['LINK_IBLOCK_ID']) && !isset($fields['PROPERTY_TYPE'])) {
+            $fields['PROPERTY_TYPE'] = 'E';
         }
 
         if (false !== strpos($fields['PROPERTY_TYPE'], ':')){
