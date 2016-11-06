@@ -71,6 +71,16 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 </style>
 
 
+<div style="height: 40px;">
+<?php $info = $versionManager->getConfigInfo(); ?>
+<select name="migration_config">
+    <?foreach ($info as $val):?>
+        <option <?if ($val['current'] == 1):?>selected="selected"<?endif;?> value="<?=$val['name']?>"><?=$val['title']?></option>
+    <?endforeach?>
+</select>
+
+</div>
+
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
     array("DIV" => "tab1", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB1_TITLE')),
     array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB2'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB2_TITLE')),
@@ -88,22 +98,6 @@ $tabControl1->BeginNextTab();
 <?$tabControl1->BeginNextTab();?>
 <tr>
     <td style="width:50%;padding: 5px 5px;vertical-align: top;text-align: left">
-        <p>
-            <?= GetMessage('SPRINT_MIGRATION_MIGRATION_DIR') ?>
-        </p>
-        <p>
-            <?$webdir = $versionManager->getConfigVal('migration_webdir')?>
-            <?if ($webdir):?>
-                <? $href = '/bitrix/admin/fileman_admin.php?' . http_build_query(array(
-                        'lang' => LANGUAGE_ID,
-                        'site' => SITE_ID,
-                        'path' => $webdir
-                    ))?>
-                <a href="<?=$href?>" target="_blank"><?=$webdir?></a>
-            <?else:?>
-                <?=$versionManager->getConfigVal('migration_dir')?>
-            <?endif?>
-        </p>
         <p><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></p>
         <p>
             <a href="https://bitbucket.org/andrey_ryabin/sprint.migration" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
@@ -143,29 +137,12 @@ $tabControl1->BeginNextTab();
     <input style="" type="text" value="" class="adm-input" name="migration_search"/>
     <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" class="c-migration-search" />
 
-    <?php
-    $info = $versionManager->getConfigInfo();
-    ?>
-    <select name="migration_config">
-        <?foreach ($info['files'] as $val):?>
-            <option value="<?=$val['name']?>"><?=$val['filename']?></option>
-        <?endforeach?>
-    </select>
-
     <div style="float: right;">
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-stat c-migration-stat-list" />
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-stat c-migration-stat-new" />
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?>" onclick="migrationMigrationToggleView('status');" class="adm-btn c-migration-stat c-migration-stat-status" />
     </div>
 </div>
-
-
-
-
-
-
-
-
 
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
 <? $tabControl1->End(); ?>

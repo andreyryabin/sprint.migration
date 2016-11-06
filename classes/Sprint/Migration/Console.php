@@ -15,14 +15,14 @@ class Console
         //
     }
 
-    protected function getVM(){
-        if (!$this->versionManager){
-            $config = $this->getArg('--config');
-            $this->versionManager = new VersionManager($config);
+    protected function getVM() {
+        if (!$this->versionManager) {
+            $configName = $this->getArg('--config');
+            $this->versionManager = new VersionManager($configName);
         }
         return $this->versionManager;
     }
-    
+
     public function commandCreate() {
         $descr = $this->getArg(0, '');
         $name = $this->getArg(1, '');
@@ -49,7 +49,7 @@ class Console
             'Description',
             //'Location'
         ));
-        foreach ($versions as $aItem){
+        foreach ($versions as $aItem) {
             Out::addTableRow(array(
                 $aItem['version'],
                 GetMessage('SPRINT_MIGRATION_META_' . strtoupper($aItem['status'])),
@@ -64,7 +64,7 @@ class Console
     public function commandStatus() {
         $version = $this->getArg(0, '');
 
-        if ($version){
+        if ($version) {
             $meta = $this->getVM()->getVersionMeta($version);
             $this->outVersionMeta($meta);
 
@@ -87,7 +87,7 @@ class Console
             }
 
             Out::initTable(array('Status', 'Count'));
-            foreach ($status as $k => $v){
+            foreach ($status as $k => $v) {
                 Out::addTableRow(array(GetMessage('SPRINT_MIGRATION_META_' . strtoupper($k)), $v));
             }
             Out::outTable();
@@ -113,10 +113,10 @@ class Console
         $search = $this->getArg('--search');
         $status = 'new';
 
-        if ($this->getVM()->checkVersionName($var)){
-            $this->executeOnce($var, 'up',$force);
+        if ($this->getVM()->checkVersionName($var)) {
+            $this->executeOnce($var, 'up', $force);
 
-        } elseif ($this->getArg('--all')){
+        } elseif ($this->getArg('--all')) {
             $this->executeAll(array(
                 'status' => $status,
                 'search' => $search
@@ -138,10 +138,10 @@ class Console
         $search = $this->getArg('--search');
         $status = 'installed';
 
-        if ($this->getVM()->checkVersionName($var)){
-            $this->executeOnce($var, 'down',$force);
+        if ($this->getVM()->checkVersionName($var)) {
+            $this->executeOnce($var, 'down', $force);
 
-        } elseif ($this->getArg('--all')){
+        } elseif ($this->getArg('--all')) {
             $this->executeAll(array(
                 'status' => $status,
                 'search' => $search
@@ -171,8 +171,8 @@ class Console
     public function commandExecute() {
         $version = $this->getArg(0, '');
         $force = $this->getArg('--force');
-        if ($version){
-            if ($this->getArg('--down')){
+        if ($version) {
+            if ($this->getArg('--down')) {
                 $this->executeOnce($version, 'down', $force);
             } else {
                 $this->executeOnce($version, 'up', $force);
@@ -193,31 +193,31 @@ class Console
         Out::out('Версия bitrix: %s', defined('SM_VERSION') ? SM_VERSION : '');
         Out::out('Версия модуля: %s', Module::getVersion());
         Out::out('');
-        Out::out('Директория с миграциями:'.PHP_EOL.'  %s'.PHP_EOL, $this->getVM()->getConfigVal('migration_dir'));
-        Out::out('Запуск:'.PHP_EOL.'  php %s <command> [<args>]'.PHP_EOL, $this->script);
+        Out::out('Директория с миграциями:' . PHP_EOL . '  %s' . PHP_EOL, $this->getVM()->getConfigVal('migration_dir'));
+        Out::out('Запуск:' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL, $this->script);
         Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
         Out::out(PHP_EOL . 'Пожелания и ошибки присылайте сюда');
         Out::out('  https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new' . PHP_EOL);
     }
 
-    public function commandConfig(){
+    public function commandConfig() {
         $info = $this->getVM()->getConfigInfo();
 
+        foreach ($info as $index => $file) {
 
-        Out::out('Current config: %s',  $info['name']);
-        Out::initTable(array('name', 'val'));
-        foreach ($info['values'] as $key => $val){
-            Out::addTableRow(array($key, $val));
+            $iscur = ($file['current'] == 1) ? '(current)' : '';
+
+            Out::out('Config: [%s] %s %s', $file['name'], $file['title'], $iscur);
+            Out::initTable(array('param', 'value'));
+            foreach ($file['values'] as $key => $val) {
+                Out::addTableRow(array($key, $val));
+            }
+            Out::outTable();
         }
-        Out::outTable();
 
 
-        Out::out('Config files: ');
-        Out::initTable();
-        foreach ($info['files'] as $val){
-            Out::addTableRow(array($val['name'], $val['filename']));
-        }
-        Out::outTable();
+
+
     }
 
 
@@ -251,7 +251,7 @@ class Console
         do {
             $exec = 0;
 
-            if (!$restart){
+            if (!$restart) {
                 Out::out('%s (%s) start', $version, $action);
             }
 
@@ -267,12 +267,12 @@ class Console
         return $ok;
     }
 
-    protected function outVersionMeta($meta = false){
+    protected function outVersionMeta($meta = false) {
         if ($meta) {
             Out::initTable();
-            foreach (array('version', 'status', 'description', 'location') as $val){
-                if (!empty($meta[$val])){
-                    if ($val == 'status'){
+            foreach (array('version', 'status', 'description', 'location') as $val) {
+                if (!empty($meta[$val])) {
+                    if ($val == 'status') {
                         Out::addTableRow(array(ucfirst($val), GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$val]))));
                     } else {
                         Out::addTableRow(array(ucfirst($val), $meta[$val]));
@@ -316,16 +316,16 @@ class Console
         return true;
     }
 
-    protected function initializeArgs($args){
-        foreach ($args as $val){
+    protected function initializeArgs($args) {
+        foreach ($args as $val) {
             $this->addArg($val);
         }
     }
 
-    protected function addArg($arg){
+    protected function addArg($arg) {
         list($name, $val) = explode('=', $arg);
         $isparam = (0 === strpos($name, '--')) ? 1 : 0;
-        if ($isparam){
+        if ($isparam) {
             $val = is_null($val) ? 1 : $val;
             $this->arguments[$name] = $val;
         } else {
@@ -333,7 +333,7 @@ class Console
         }
     }
 
-    protected function getArg($name, $default = ''){
+    protected function getArg($name, $default = '') {
         return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
     }
 }
