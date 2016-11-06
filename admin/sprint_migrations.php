@@ -10,11 +10,12 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_ad
 global $APPLICATION;
 $APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATION_TITLE'));
 
-$versionManager = new Sprint\Migration\VersionManager();
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
 }
+
+$configName = !empty($_POST['config']) ? $_POST['config'] : false;
+$versionManager = new Sprint\Migration\VersionManager($configName);
 
 include __DIR__ .'/steps/migration_execute.php';
 include __DIR__ .'/steps/migration_list.php';
@@ -69,6 +70,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
     }
 </style>
 
+
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
     array("DIV" => "tab1", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB1_TITLE')),
     array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB2'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB2_TITLE')),
@@ -90,7 +92,7 @@ $tabControl1->BeginNextTab();
             <?= GetMessage('SPRINT_MIGRATION_MIGRATION_DIR') ?>
         </p>
         <p>
-            <?$webdir = \Sprint\Migration\Module::getMigrationWebDir()?>
+            <?$webdir = $versionManager->getConfigVal('migration_webdir')?>
             <?if ($webdir):?>
                 <? $href = '/bitrix/admin/fileman_admin.php?' . http_build_query(array(
                         'lang' => LANGUAGE_ID,
@@ -99,7 +101,7 @@ $tabControl1->BeginNextTab();
                     ))?>
                 <a href="<?=$href?>" target="_blank"><?=$webdir?></a>
             <?else:?>
-                <?=\Sprint\Migration\Module::getMigrationDir()?>
+                <?=$versionManager->getConfigVal('migration_dir')?>
             <?endif?>
         </p>
         <p><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></p>
@@ -140,6 +142,15 @@ $tabControl1->BeginNextTab();
 
     <input style="" type="text" value="" class="adm-input" name="migration_search"/>
     <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" class="c-migration-search" />
+
+    <?php
+    $info = $versionManager->getConfigInfo();
+    ?>
+    <select name="migration_config">
+        <?foreach ($info['files'] as $val):?>
+            <option value="<?=$val['name']?>"><?=$val['filename']?></option>
+        <?endforeach?>
+    </select>
 
     <div style="float: right;">
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-stat c-migration-stat-list" />
@@ -194,6 +205,7 @@ $tabControl1->BeginNextTab();
         postData['step_code'] = step_code;
         postData['send_sessid'] = $('input[name=send_sessid]').val();
         postData['search'] = $('input[name=migration_search]').val();
+        postData['config'] = $('select[name=migration_config]').val();
 
         migrationEnableButtons(0);
 
@@ -289,6 +301,15 @@ $tabControl1->BeginNextTab();
                     $("html, body").scrollTop(0);
                 });
             }
+        });
+
+
+        $('select[name=migration_config]').on('change', function(){
+            migrationMigrationRefresh(function(){
+                migrationEnableButtons(1);
+                $('#tab_cont_tab1').click();
+                $("html, body").scrollTop(0);
+            });
         });
 
         $('.c-migration-search').on('click', function(){

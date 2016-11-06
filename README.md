@@ -91,7 +91,7 @@ class Version20150520000001 extends Version {
 Конфиг модуля
 -------------------------
 Расположение
-**/local/php_interface/migrations.cfg.php** или **/bitrix/php_interface/migrations.cfg.php**
+**/local/php_interface/migrations.{NAME}.php** или **/bitrix/php_interface/migrations.{NAME}.php**
 
 ```
 <?php return array (
@@ -174,7 +174,7 @@ class Version20151113185212 extends MyVersion {
 * методов класса Version (который наследуют ваши миграции)
 * методов в хелперах (подключаются в классе миграции)
 * консольных команд описанных в commands.txt
-* конфига migrations.cfg.php
+* конфига migrations.{NAME}.php
 
 Миграция не выполняется если в методах up() или down()
 вызывается return false или произошло исключение, в остальных случаях миграция выполняется успешно

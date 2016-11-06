@@ -8,12 +8,24 @@ use Sprint\Migration\Exceptions\MigrationException;
 class VersionManager
 {
 
+    protected $isMssql = false;
+    
+    /** @var \CDatabase*/
+    protected $bitrixDb = null;
+
     private $restarts = array();
 
-    protected $versionTable = null;
+    private $configValues = array();
+    private $configName = '';
 
-    public function __construct() {
-        $this->versionTable = new VersionTable();
+    public function __construct($configName = false) {
+        $this->isMssql = ($GLOBALS['DBType'] == 'mssql');
+        $this->bitrixDb = $GLOBALS['DB'];
+
+        $configName = empty($configName) ? 'cfg' : $configName;
+        $this->includeConfig($configName);
+
+        $this->installIfNeed();
     }
 
     public function startMigration($versionName, $action = 'up', $params = array(), $force = false) {
@@ -63,9 +75,9 @@ class VersionManager
             }
 
             if ($action == 'up') {
-                $ok = $this->versionTable->addRecord($versionName);
+                $ok = $this->addRecord($versionName);
             } else {
-                $ok = $this->versionTable->removeRecord($versionName);
+                $ok = $this->removeRecord($versionName);
             }
 
             if ($ok === false) {
@@ -99,7 +111,7 @@ class VersionManager
 
     public function createVersionFile($description = '', $prefix = '') {
         $description = $this->purifyDescriptionForFile($description);
-        $prefix = $this->purifyPrefix($prefix);
+        $prefix = $this->preparePrefix($prefix);
 
         $originTz = date_default_timezone_get();
         date_default_timezone_set('Europe/Moscow');
@@ -108,7 +120,7 @@ class VersionManager
 
         $versionName = $prefix . $ts;
 
-        list($extendUse, $extendClass) = explode(' as ', Module::getMigrationExtendClass());
+        list($extendUse, $extendClass) = explode(' as ', $this->getConfigVal('migration_extend_class'));
         $extendUse = trim($extendUse);
         $extendClass = trim($extendClass);
 
@@ -119,7 +131,7 @@ class VersionManager
             $extendUse = '';
         }
 
-        $str = $this->renderFile(Module::getMigrationTemplate(), array(
+        $str = $this->renderFile($this->getConfigVal('migration_template'), array(
             'version' => $versionName,
             'description' => $description,
             'extendUse' => $extendUse,
@@ -143,7 +155,7 @@ class VersionManager
 
         $records = array();
         /* @var $dbres \CDBResult */
-        $dbres = $this->versionTable->getRecords();
+        $dbres = $this->getRecords();
         while ($aItem = $dbres->Fetch()) {
             $ts = $this->getVersionTimestamp($aItem['version']);
             if ($ts) {
@@ -153,13 +165,16 @@ class VersionManager
 
         $files = array();
         /* @var $item \SplFileInfo */
-        $directory = new \DirectoryIterator(Module::getMigrationDir());
+        $directory = new \DirectoryIterator($this->getConfigVal('migration_dir'));
         foreach ($directory as $item) {
-            $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
-            $ts = $this->getVersionTimestamp($fileName);
-            if ($ts) {
-                $files[$fileName] = $ts;
+            if ($item->isFile()){
+                $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
+                $ts = $this->getVersionTimestamp($fileName);
+                if ($ts) {
+                    $files[$fileName] = $ts;
+                }
             }
+
         }
 
         $merge = array_merge($records, $files);
@@ -182,8 +197,8 @@ class VersionManager
                     $textindex = $meta['version'] . $meta['description'];
                     $searchword = $filter['search'];
 
-                    $textindex = Out::convertToUtf8IfNeed($textindex);
-                    $searchword = Out::convertToUtf8IfNeed($searchword);
+                    $textindex = Locale::convertToUtf8IfNeed($textindex);
+                    $searchword = Locale::convertToUtf8IfNeed($searchword);
 
                     $searchword = trim($searchword);
 
@@ -263,7 +278,7 @@ class VersionManager
     }
 
     protected function getVersionFile($versionName) {
-        return Module::getMigrationDir() . '/' . $versionName . '.php';
+        return $this->getConfigVal('migration_dir') . '/' . $versionName . '.php';
     }
 
     protected function isFileExists($versionName) {
@@ -272,7 +287,7 @@ class VersionManager
     }
 
     protected function isRecordExists($versionName) {
-        $record = $this->versionTable->getRecordByName($versionName)->Fetch();
+        $record = $this->getRecordByName($versionName)->Fetch();
         return (empty($record)) ? 0 : 1;
     }
 
@@ -307,8 +322,7 @@ class VersionManager
         return $html;
     }
 
-
-    protected function purifyPrefix($prefix = '') {
+    protected function preparePrefix($prefix = '') {
         $prefix = trim($prefix);
         $default = 'Version';
 
@@ -343,5 +357,255 @@ class VersionManager
         $descr = stripslashes($descr);
         return $descr;
     }
+
+    
+    
+    //db section
+    
+    /**
+     * @param $query
+     * @param null $var1
+     * @param null $var2
+     * @return bool|\CDBResult
+     */
+    protected function query($query, $var1 = null, $var2 = null) {
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            foreach ($params as $index => $val){
+                if ($index > 0){
+                    $val = $this->bitrixDb->ForSql($val);
+                }
+                $params[$index] = $val;
+            }
+            $query = call_user_func_array('sprintf', $params);
+        }
+
+        $search = array(
+            '#TABLE1#' => $this->getConfigVal('migration_table'),
+            '#DBNAME#' => $GLOBALS['DBName'],
+        );
+
+        if (Locale::isWin1251()){
+            $search['#CHARSET#'] = 'cp1251';
+            $search['#COLLATE#'] = 'cp1251_general_ci';
+        } else {
+            $search['#CHARSET#'] = 'utf8';
+            $search['#COLLATE#'] = 'utf8_general_ci';
+        }
+
+        $querySearch = array_keys($search);
+        $queryReplace = array_values($search);
+        
+        $query = str_replace($querySearch, $queryReplace, $query);
+
+        return $this->bitrixDb->Query($query);
+    }
+
+    /**
+     * @return bool|\CDBResult
+     */
+    public function getRecords() {
+        if ($this->isMssql) {
+            return $this->query('SELECT * FROM #TABLE1#');
+        } else {
+            return $this->query('SELECT * FROM `#TABLE1#`');
+        }
+    }
+
+    /**
+     * @param $versionName
+     * @return bool|\CDBResult
+     */
+    public function getRecordByName($versionName) {
+        if ($this->isMssql) {
+            return $this->query('SELECT * FROM #TABLE1# WHERE version = \'%s\'',
+                $versionName
+            );
+
+        } else {
+            return $this->query('SELECT * FROM `#TABLE1#` WHERE `version` = "%s"',
+                $versionName
+            );
+        }
+    }
+
+    /**
+     * @param $versionName
+     * @return bool|\CDBResult
+     */
+    public function addRecord($versionName) {
+        if ($this->isMssql) {
+            return $this->query('if not exists(select version from #TABLE1# where version=\'%s\')
+                    begin
+                        INSERT INTO #TABLE1# (version) VALUES (\'%s\')
+                    end',
+                $versionName,
+                $versionName
+            );
+
+        } else {
+            return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`) VALUES ("%s")',
+                $versionName
+            );
+        }
+
+    }
+
+    /**
+     * @param $versionName
+     * @return bool|\CDBResult
+     */
+    public function removeRecord($versionName) {
+        if ($this->isMssql) {
+            return $this->query('DELETE FROM #TABLE1# WHERE version = \'%s\'',
+                $versionName
+            );
+        } else {
+            return $this->query('DELETE FROM `#TABLE1#` WHERE `version` = "%s"',
+                $versionName
+            );
+        }
+    }
+
+    protected function installIfNeed(){
+        $opt = 'table' . $this->getConfigVal('migration_table');
+        if (!Module::getDbOption($opt)){
+            $this->install();
+            Module::setDbOption($opt, 1);
+        }
+    }
+
+    protected function install(){
+        if ($this->isMssql){
+            $this->query('if not exists (SELECT * FROM sysobjects WHERE name=\'#TABLE1#\' AND xtype=\'U\')
+                begin
+                    CREATE TABLE #TABLE1#
+                    (id int IDENTITY (1,1) NOT NULL,
+                    version varchar(255) NOT NULL,
+                    PRIMARY KEY (id),
+                    UNIQUE (version))
+                end'
+            );
+        } else {
+            $this->query('CREATE TABLE IF NOT EXISTS `#TABLE1#`(
+              `id` MEDIUMINT NOT NULL AUTO_INCREMENT NOT NULL,
+              `version` varchar(255) COLLATE #COLLATE# NOT NULL,
+              PRIMARY KEY (id), UNIQUE KEY(version)
+              )ENGINE=InnoDB DEFAULT CHARSET=#CHARSET# COLLATE=#COLLATE# AUTO_INCREMENT=1;'
+            );
+        }
+    }
+    
+    //config section
+
+    public function getConfigInfo(){
+        $files = array();
+        /* @var $item \SplFileInfo */
+        $directory = new \DirectoryIterator(Module::getPhpInterfaceDir());
+        foreach ($directory as $item) {
+            if (!$item->isFile()) {
+                continue;
+            }
+
+            if (!preg_match('/^migrations\.([a-z0-9_-]*)\.php$/i', $item->getFilename(), $matches)) {
+                continue;
+            }
+
+            if (!$this->loadConfig($matches[1])) {
+                continue;
+            }
+
+            $files[] = array(
+                'path' => Module::getPhpInterfaceDir() . '/migrations.'.$matches[1].'.php',
+                'filename' => 'migrations.'.$matches[1].'.php',
+                'name' => $matches[1],
+            );
+        }
+
+        return array(
+            'name' => $this->configName,
+            'values' => $this->configValues,
+            'files' => $files
+        );
+    }
+
+    protected function loadConfig($configName){
+        $file = Module::getPhpInterfaceDir() . '/migrations.'.$configName.'.php';
+
+        if (is_file($file)){
+            /** @noinspection PhpIncludeInspection */
+            $values = include $file;
+
+            $availablekeys = array(
+                'migration_template',
+                'migration_table',
+                'migration_extend_class',
+                'migration_dir',
+                'tracker_task_url',
+            );
+            foreach ($availablekeys as $key){
+                if (!empty($values[$key])){
+                    return $values;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    protected function includeConfig($configName){
+        $configName = trim($configName);
+        $configName = preg_replace("/[^a-z0-9_-]/i", '', $configName);
+
+        $values = $this->loadConfig($configName);
+        if ($values === false) {
+            $this->configName = 'default';
+            $values = array();
+        } else {
+            $this->configName = $configName;
+        }
+
+        if (!$values['migration_extend_class']){
+            $values['migration_extend_class'] = 'Version';
+        }
+
+        if (!$values['migration_table']){
+            $values['migration_table'] = 'sprint_migration_versions';
+        }
+
+        if ($values['migration_template'] && is_file(Module::getDocRoot() . $values['migration_template'])){
+            $values['migration_template'] = Module::getDocRoot() . $values['migration_template'];
+        } else {
+            $values['migration_template'] = Module::getModuleDir() . '/templates/version.php';
+        }
+
+        if ($values['migration_dir'] && is_dir(Module::getDocRoot() . $values['migration_dir'] )){
+            $values['migration_dir'] = realpath(Module::getDocRoot() . $values['migration_dir']);
+        } else {
+            $values['migration_dir'] = realpath(Module::getPhpInterfaceDir() . '/migrations');
+            if (!is_dir($values['migration_dir'])) {
+                mkdir($values['migration_dir'], BX_DIR_PERMISSIONS);
+            }
+        }
+
+        $d1 = $values['migration_dir'];
+        $d2 = Module::getDocRoot();
+        $values['migration_webdir'] = (false !== strpos($d1, $d2)) ? str_replace($d2, '', $d1) : '';
+
+
+        if (!$values['tracker_task_url']){
+            $values['tracker_task_url'] = '';
+        }
+
+
+        $this->configValues = $values;
+
+    }
+
+    public function getConfigVal($val, $default = '') {
+        return !empty($this->configValues[$val]) ? $this->configValues[$val] : $default;
+    }
+
+
 
 }

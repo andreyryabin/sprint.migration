@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
     $skipVersions = !empty($_POST['skip_versions']) ? $_POST['skip_versions'] : array();
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
-    $search = Sprint\Migration\Out::convertToUtf8IfNeed($search);
+    $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
     if (!$version){
         if ($nextAction == 'up' || $nextAction == 'down'){

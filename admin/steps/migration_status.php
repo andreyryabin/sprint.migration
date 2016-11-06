@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
 
 
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
-    $search = Sprint\Migration\Out::convertToUtf8IfNeed($search);
+    $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
     $versions = $versionManager->getVersions(array(
         'status' => '',

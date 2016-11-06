@@ -12,9 +12,17 @@ class Console
     protected $arguments = array();
 
     public function __construct() {
-        $this->versionManager = new VersionManager();
+        //
     }
 
+    protected function getVM(){
+        if (!$this->versionManager){
+            $config = $this->getArg('--config');
+            $this->versionManager = new VersionManager($config);
+        }
+        return $this->versionManager;
+    }
+    
     public function commandCreate() {
         $descr = $this->getArg(0, '');
         $name = $this->getArg(1, '');
@@ -22,7 +30,7 @@ class Console
         $descr = $this->getArg('--desc', $descr);
         $name = $this->getArg('--name', $name);
 
-        $meta = $this->versionManager->createVersionFile($descr, $name);
+        $meta = $this->getVM()->createVersionFile($descr, $name);
         $this->outVersionMeta($meta);
     }
 
@@ -30,7 +38,7 @@ class Console
         $search = $this->getArg('--search');
         $status = ($this->getArg('--new')) ? 'new' : '';
 
-        $versions = $this->versionManager->getVersions(array(
+        $versions = $this->getVM()->getVersions(array(
             'status' => $status,
             'search' => $search
         ));
@@ -57,12 +65,12 @@ class Console
         $version = $this->getArg(0, '');
 
         if ($version){
-            $meta = $this->versionManager->getVersionMeta($version);
+            $meta = $this->getVM()->getVersionMeta($version);
             $this->outVersionMeta($meta);
 
         } else {
             $search = $this->getArg('--search');
-            $versions = $this->versionManager->getVersions(array(
+            $versions = $this->getVM()->getVersions(array(
                 'status' => '',
                 'search' => $search
             ));
@@ -105,7 +113,7 @@ class Console
         $search = $this->getArg('--search');
         $status = 'new';
 
-        if ($this->versionManager->checkVersionName($var)){
+        if ($this->getVM()->checkVersionName($var)){
             $this->executeOnce($var, 'up',$force);
 
         } elseif ($this->getArg('--all')){
@@ -130,7 +138,7 @@ class Console
         $search = $this->getArg('--search');
         $status = 'installed';
 
-        if ($this->versionManager->checkVersionName($var)){
+        if ($this->getVM()->checkVersionName($var)){
             $this->executeOnce($var, 'down',$force);
 
         } elseif ($this->getArg('--all')){
@@ -185,11 +193,31 @@ class Console
         Out::out('Версия bitrix: %s', defined('SM_VERSION') ? SM_VERSION : '');
         Out::out('Версия модуля: %s', Module::getVersion());
         Out::out('');
-        Out::out('Директория с миграциями:'.PHP_EOL.'  %s'.PHP_EOL, Module::getMigrationDir());
+        Out::out('Директория с миграциями:'.PHP_EOL.'  %s'.PHP_EOL, $this->getVM()->getConfigVal('migration_dir'));
         Out::out('Запуск:'.PHP_EOL.'  php %s <command> [<args>]'.PHP_EOL, $this->script);
         Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
         Out::out(PHP_EOL . 'Пожелания и ошибки присылайте сюда');
         Out::out('  https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new' . PHP_EOL);
+    }
+
+    public function commandConfig(){
+        $info = $this->getVM()->getConfigInfo();
+
+
+        Out::out('Current config: %s',  $info['name']);
+        Out::initTable(array('name', 'val'));
+        foreach ($info['values'] as $key => $val){
+            Out::addTableRow(array($key, $val));
+        }
+        Out::outTable();
+
+
+        Out::out('Config files: ');
+        Out::initTable();
+        foreach ($info['files'] as $val){
+            Out::addTableRow(array($val['name'], $val['filename']));
+        }
+        Out::outTable();
     }
 
 
@@ -198,7 +226,7 @@ class Console
 
         $success = 0;
 
-        $versions = $this->versionManager->getVersions($filter);
+        $versions = $this->getVM()->getVersions($filter);
 
         $action = ($filter['status'] == 'new') ? 'up' : 'down';
 
@@ -227,9 +255,9 @@ class Console
                 Out::out('%s (%s) start', $version, $action);
             }
 
-            $ok = $this->versionManager->startMigration($version, $action, $params, $force);
-            if ($this->versionManager->needRestart($version)) {
-                $params = $this->versionManager->getRestartParams($version);
+            $ok = $this->getVM()->startMigration($version, $action, $params, $force);
+            if ($this->getVM()->needRestart($version)) {
+                $params = $this->getVM()->getRestartParams($version);
                 $restart = 1;
                 $exec = 1;
             }
@@ -289,7 +317,6 @@ class Console
     }
 
     protected function initializeArgs($args){
-        $this->arguments = array();
         foreach ($args as $val){
             $this->addArg($val);
         }

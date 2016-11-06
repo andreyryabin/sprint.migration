@@ -1,6 +1,7 @@
 <?
 global $APPLICATION;
 
+include(__DIR__ .'/../loader.php');
 include(__DIR__ .'/../locale/ru.php');
 
 if ($APPLICATION->GetGroupRight("sprint.migration") != "D") {

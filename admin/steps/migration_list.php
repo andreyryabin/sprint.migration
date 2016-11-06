@@ -8,9 +8,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
-    $search = Sprint\Migration\Out::convertToUtf8IfNeed($search);
+    $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
-    $webdir = \Sprint\Migration\Module::getMigrationWebDir();
+    $webdir = $versionManager->getConfigVal('migration_webdir');
     if ($_POST["step_code"] == "migration_new"){
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'new');
         $versions = $versionManager->getVersions(array(
@@ -41,7 +41,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                 <? else: ?>
                     <span class="c-migration-item-<?= $aItem['status'] ?>"><?= $aItem['version'] ?></span>
                 <? endif ?>
-                    <?if (!empty($aItem['description'])):?><?=\Sprint\Migration\Out::prepareToHtml($aItem['description'])?><?endif?>
+                    <?if (!empty($aItem['description'])):?><?php
+                        $taskUrl = $versionManager->getConfigVal('tracker_task_url');
+                        if ($taskUrl && false !== strpos($taskUrl, '$1')){
+                            $aItem['description'] = preg_replace('/#(\d+)/', '<a target="_blank" href="'.$taskUrl.'">#$1</a>', $aItem['description']);
+                        }
+                        ?>
+                        <? \Sprint\Migration\Out::out($aItem['description'])?>
+                    <?endif?>
                 </td>
                 <td style="text-align: left;width: 50%;padding: 5px;vertical-align: top">
                 <? if ($aItem['status'] == 'new'): ?>
