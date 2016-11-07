@@ -18,7 +18,7 @@ class VersionManager
     private $restarts = array();
 
 
-    public function __construct($configName = false) {
+    public function __construct($configName = '') {
         $this->versionConfig = new VersionConfig(
             $configName
         );
@@ -26,7 +26,6 @@ class VersionManager
         $this->versionTable = new VersionTable(
             $this->getConfigVal('migration_table')
         );
-
     }
 
     public function startMigration($versionName, $action = 'up', $params = array(), $force = false) {
@@ -361,6 +360,10 @@ class VersionManager
 
 
     //config
+    public function getConfigName() {
+        return $this->versionConfig->getConfigName();
+    }
+
     public function getConfigVal($val, $default = '') {
         return $this->versionConfig->getConfigVal($val, $default);
     }

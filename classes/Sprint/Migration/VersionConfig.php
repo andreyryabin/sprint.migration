@@ -4,48 +4,26 @@ namespace Sprint\Migration;
 
 class VersionConfig
 {
-    private $configValues = array();
-    private $configName = '';
+    private $configCurrent = array();
 
-    private $loaded = 0;
+    private $configList = array();
+
+
+    private $availablekeys = array(
+        'title',
+        'migration_template',
+        'migration_table',
+        'migration_extend_class',
+        'migration_dir',
+        'tracker_task_url',
+    );
 
     public function __construct($configName) {
-        $this->loaded = 0;
-        if (!empty($configName) && preg_match("/^[a-z0-9_-]*$/i", $configName)) {
-            $configFile = Module::getPhpInterfaceDir() . '/migrations.' . $configName . '.php';
-            if (is_file($configFile)) {
-                /** @noinspection PhpIncludeInspection */
-                $values = include $configFile;
-                $this->configName = $configName;
-                $this->configValues = $this->prepareConfig($values);
-                $this->loaded = 1;
-            }
-        }
+        $configName = empty($configName) ? 'cfg' : $configName;
 
-        if (!$this->loaded) {
-            $configName = 'cfg';
-            $configFile = Module::getPhpInterfaceDir() . '/migrations.' . $configName . '.php';
-            if (is_file($configFile)) {
-                /** @noinspection PhpIncludeInspection */
-                $values = include $configFile;
-                $this->configName = $configName;
-                $this->configValues = $this->prepareConfig($values);
-                $this->loaded = 1;
-            }
-        }
+        $this->configList = array();
+        $this->configList['cfg'] = $this->prepareConfig('cfg', array());
 
-        if (!$this->loaded) {
-            $values = array();
-            $this->configName = false;
-            $this->configValues = $this->prepareConfig($values);
-            $this->loaded = 1;
-        }
-    }
-
-    public function getConfigInfo() {
-        $files = array();
-
-        /* @var $item \SplFileInfo */
         $directory = new \DirectoryIterator(Module::getPhpInterfaceDir());
         foreach ($directory as $item) {
             if (!$item->isFile()) {
@@ -56,74 +34,57 @@ class VersionConfig
                 continue;
             }
 
-            $configName = $matches[1];
-
             /** @noinspection PhpIncludeInspection */
             $values = include $item->getPathname();
             if (!$this->validConfig($values)) {
                 continue;
             }
 
-            if ($configName == $this->configName) {
-                continue;
-            }
-
-            $values = $this->prepareConfig($values);
-
-            $files[] = array(
-                'name' => $configName,
-                'values' => $values,
-                'current' => 0
-            );
-
+            $cname = $matches[1];
+            $this->configList[$cname] = $this->prepareConfig($cname, $values);
         }
 
-        $files[] = array(
-            'name' => $this->configName,
-            'values' => $this->configValues,
-            'current' => 1
-        );
-
-        foreach ($files as $key => $file) {
-            if (!empty($file['name'])) {
-                if (empty($file['values']['title'])) {
-                    $file['title'] = sprintf('%s (%s)', GetMessage('SPRINT_MIGRATION_CONFIG_TITLE'), 'migrations.' . $file['name'] . '.php');
-                } else {
-                    $file['title'] = sprintf('%s (%s)', $file['values']['title'], 'migrations.' . $file['name'] . '.php');
-                }
-            } else {
-                $file['title'] = sprintf('%s (%s)', GetMessage('SPRINT_MIGRATION_CONFIG_TITLE'), GetMessage('SPRINT_MIGRATION_CONFIG_NOFILE'));
-            }
-
-            if (isset($file['values']['title'])){
-                unset($file['values']['title']);
-            }
-
-            $files[$key] = $file;
+        if (isset($this->configList[$configName])){
+            $this->configCurrent = $this->configList[$configName];
+        } else {
+            $this->configCurrent = $this->configList['cfg'];
         }
+    }
 
-        return $files;
+    public function getConfigName(){
+        return $this->configCurrent['name'];
+    }
+
+    public function getConfigInfo() {
+        return $this->configList;
     }
 
     protected function validConfig($values) {
-        $availablekeys = array(
-            'migration_template',
-            'migration_table',
-            'migration_extend_class',
-            'migration_dir',
-            'tracker_task_url',
-        );
-
-        foreach ($availablekeys as $key) {
+        foreach ($this->availablekeys as $key) {
             if (!empty($values[$key])) {
                 return true;
             }
         }
-
         return false;
     }
 
-    protected function prepareConfig($values = array()) {
+    protected function prepareConfig($configName, $configValues = array()){
+        $configValues = $this->prepareConfigValues($configValues);
+        if (!empty($configValues['title'])) {
+            $title = $configValues['title'];
+            unset($configValues['title']);
+        } else {
+            $title = GetMessage('SPRINT_MIGRATION_CONFIG_TITLE');
+        }
+        $title = sprintf('%s (%s)', $title,'migrations.' . $configName . '.php');
+        return array(
+            'name' => $configName,
+            'title' => $title,
+            'values' => $configValues
+        );
+    }
+
+    protected function prepareConfigValues($values = array()) {
         if (!$values['migration_extend_class']) {
             $values['migration_extend_class'] = 'Version';
         }
@@ -151,24 +112,31 @@ class VersionConfig
             $values['migration_dir'] = realpath($values['migration_dir']);
         }
 
-        if (!$values['migration_webdir']) {
-            if (false === strpos($values['migration_dir'], Module::getDocRoot())) {
-                $values['migration_webdir'] = substr($values['migration_dir'], Module::getDocRoot());
-            } else {
-                $values['migration_webdir'] = '';
-            }
-        }
-
         if (!$values['tracker_task_url']) {
             $values['tracker_task_url'] = '';
         }
 
+        ksort($values);
         return $values;
     }
 
     public function getConfigVal($val, $default = '') {
-        return !empty($this->configValues[$val]) ? $this->configValues[$val] : $default;
+        if ($val == 'migration_webdir'){
+            return $this->getWebdir($default);
+        } else {
+            return !empty($this->configCurrent['values'][$val]) ? $this->configCurrent['values'][$val] : $default;
+        }
     }
+
+    protected function getWebdir($default = ''){
+        $dir = $this->configCurrent['values']['migration_dir'];
+        if (0 === strpos($dir, Module::getDocRoot())) {
+            return substr($dir, strlen(Module::getDocRoot()));
+        } else {
+            return $default;
+        }
+    }
+
 }
 
 

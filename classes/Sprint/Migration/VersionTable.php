@@ -20,9 +20,9 @@ class VersionTable
         $this->bitrixDb = $GLOBALS['DB'];
         $this->dbName = $GLOBALS['DBName'];
 
-        $opt = 'table' . $this->tableName;
+        $opt = 'ver' . md5($this->tableName);
         if (!Module::getDbOption($opt)) {
-            $this->install();
+            $this->createTables();
             Module::setDbOption($opt, 1);
         }
     }
@@ -99,7 +99,7 @@ class VersionTable
         }
     }
 
-    protected function install() {
+    protected function createTables() {
         if ($this->isMssql) {
             $this->query('if not exists (SELECT * FROM sysobjects WHERE name=\'#TABLE1#\' AND xtype=\'U\')
                 begin

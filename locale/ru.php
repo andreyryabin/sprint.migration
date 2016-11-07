@@ -30,6 +30,8 @@
     "SPRINT_MIGRATION_TAB2_TITLE" => "Создать миграцию",
     "SPRINT_MIGRATION_TAB3" => "Логирование",
     "SPRINT_MIGRATION_TAB3_TITLE" => "Логирование",
+    "SPRINT_MIGRATION_TAB4" => "Конфиги",
+    "SPRINT_MIGRATION_TAB4_TITLE" => "Конфиги",
     "SPRINT_MIGRATION_NEW" => "Новые миграции",
     "SPRINT_MIGRATION_INSTALLED" => "Установленные",
     "SPRINT_MIGRATION_UNKNOWN" => "Неизвестные",
@@ -44,4 +46,6 @@
     "SPRINT_MIGRATION_SEARCH" => "Поиск",
     "SPRINT_MIGRATION_CONFIG_TITLE" => "Миграции",
     "SPRINT_MIGRATION_CONFIG_NOFILE" => "нет конфига",
+    "SPRINT_MIGRATION_CONFIG_SET" => "переключить",
+    "SPRINT_MIGRATION_CONFIG_CURRENT" => "текущий",
 ));
