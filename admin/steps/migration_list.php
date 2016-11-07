@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
         <table style="border-collapse: collapse;">
         <? foreach ($versions as $aItem):?>
             <tr>
-                <td style="width: 110px;padding: 5px;vertical-align: middle;text-align: right">
+                <td style="width: 110px;vertical-align: middle;text-align: right">
                 <? if ($aItem['status'] == 'new'): ?>
                     <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <? endif ?>
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                 <? endif ?>
                 </td>
 
-                <td style="padding: 5px;vertical-align: middle;">
+                <td style="vertical-align: middle;text-align: left">
                     <? if ($aItem['status'] != 'unknown' && $webdir): ?>
                         <? $href = '/bitrix/admin/fileman_file_view.php?' . http_build_query(array(
                                 'lang' => LANGUAGE_ID,

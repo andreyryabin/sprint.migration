@@ -1,4 +1,12 @@
 
+.c-migration-block {
+    margin-top: 20px;
+    background-color: #f5f9f9;
+    border: 1px solid;
+    border-color: #c4ced2 #dce7ed #dce7ed;
+    padding: 19px
+}
+
 table.c-migration-config {
     border-collapse: collapse;
     /*background: #f5f9f9;*/
@@ -7,11 +15,16 @@ table.c-migration-config {
 
 table.c-migration-config thead td{
     /*text-align: center;*/
-    /*border-bottom: 1px solid #c4ced2;*/
+
 }
 table.c-migration-config td{
     /*border-bottom: 1px solid #c4ced2;*/
+
     padding: 5px;
+}
+
+#migration_migrations td{
+    padding:5px;
 }
 
 .c-migration-item-installed,

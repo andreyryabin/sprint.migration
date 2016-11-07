@@ -41,99 +41,31 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
     array("DIV" => "tab1", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB1_TITLE')),
-    array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB2'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB2_TITLE')),
     array("DIV" => "tab3", "TAB" => GetMessage('SPRINT_MIGRATION_TAB3'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB3_TITLE')),
-    array("DIV" => "tab4", "TAB" => GetMessage('SPRINT_MIGRATION_TAB4'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB4_TITLE')),
 ));
 
 $tabControl1->Begin();
 $tabControl1->BeginNextTab();
 ?>
 <tr>
-    <td style="vertical-align: top">
+    <td style="vertical-align: top;">
         <div id="migration_migrations"></div>
     </td>
 </tr>
 <?$tabControl1->BeginNextTab();?>
 <tr>
-
     <td style="vertical-align: top;">
-        <div class="c-migration-adm-create">
-            <p>
-                <?= GetMessage('SPRINT_MIGRATION_FORM_PREFIX') ?><br/>
-                <input type="text" id="migration_migration_prefix" value="Version" />
-            </p>
-            <p>
-                <?= GetMessage('SPRINT_MIGRATION_FORM_DESCR') ?> <br/>
-                <textarea rows="3" cols="50" id="migration_migration_descr"></textarea>
-            </p>
-            <p>
-                <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();" />
-            </p>
-        </div>
-    </td>
-</tr>
-<?$tabControl1->BeginNextTab();?>
-<tr>
-    <td style="vertical-align: top">
         <div id="migration_progress" style="overflow-x:auto;overflow-y: scroll;max-height: 320px;"></div>
     </td>
 </tr>
-
-<?$tabControl1->BeginNextTab();?>
-
-<tr>
-    <td style="vertical-align: top"><?php
-            $configInfo = $versionManager->getConfigInfo();
-            $configName = $versionManager->getConfigName();
-        ?>
-        <?php foreach ($configInfo as $file) :?>
-            <table class="c-migration-config">
-                <thead>
-                <tr>
-                    <td colspan="2">
-                        <?if ($file['name'] == $configName):?>
-                            <strong><?=$file['title']?> *</strong>
-                        <?else:?>
-                            <form method="get" action="">
-                                <strong><?=$file['title']?></strong> &nbsp;
-                                <input name="config" type="hidden" value="<?=$file['name']?>">
-                                <input name="lang" type="hidden" value="<?=LANGUAGE_ID?>">
-                                <input type="submit" value="<?=GetMessage('SPRINT_MIGRATION_CONFIG_SET')?>">
-                            </form>
-                        <?endif?>
-                    </td>
-                </tr>
-                </thead>
-                <tbody>
-                <? foreach ($file['values'] as $key => $val) :?>
-                    <tr>
-                        <td><?=$key?></td>
-                        <td><?=$val?></td>
-                    </tr>
-                <?endforeach;?>
-                </tbody>
-            </table>
-        <?endforeach;?>
-
-        <p><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></p>
-        <p>
-            <a href="https://bitbucket.org/andrey_ryabin/sprint.migration" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
-        </p>
-    </td>
-</tr>
-
 <? $tabControl1->Buttons(); ?>
-
 <div style="text-align: center">
     <div style="float: left">
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>" onclick="migrationMigrationsDownConfirm();" />
     </div>
-
     <input style="" type="text" value="" class="adm-input" name="migration_search"/>
     <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" class="c-migration-search" />
-
     <div style="float: right">
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-stat c-migration-stat-list" />
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-stat c-migration-stat-new" />
@@ -141,6 +73,58 @@ $tabControl1->BeginNextTab();
     </div>
 </div>
 <? $tabControl1->End(); ?>
+<div class="c-migration-block">
+    <p>
+        <?= GetMessage('SPRINT_MIGRATION_FORM_PREFIX') ?><br/>
+        <input type="text" id="migration_migration_prefix" value="Version" />
+    </p>
+    <p>
+        <?= GetMessage('SPRINT_MIGRATION_FORM_DESCR') ?> <br/>
+        <textarea rows="3" cols="50" id="migration_migration_descr"></textarea>
+    </p>
+    <p>
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();" />
+    </p>
+</div>
+<div class="c-migration-block"><?php
+    $configInfo = $versionManager->getConfigInfo();
+    $configName = $versionManager->getConfigName();
+    ?><?php foreach ($configInfo as $file) :?>
+    <table class="c-migration-config">
+        <thead>
+        <tr>
+            <td colspan="2">
+                <?if ($file['name'] == $configName):?>
+                    <strong><?=$file['title']?> *</strong>
+                <?else:?>
+                    <form method="get" action="">
+                        <strong><?=$file['title']?></strong> &nbsp;
+                        <input name="config" type="hidden" value="<?=$file['name']?>">
+                        <input name="lang" type="hidden" value="<?=LANGUAGE_ID?>">
+                        <input type="submit" value="<?=GetMessage('SPRINT_MIGRATION_CONFIG_SET')?>">
+                    </form>
+                <?endif?>
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+        <? foreach ($file['values'] as $key => $val) :?>
+            <tr>
+                <td><?=$key?></td>
+                <td><?=$val?></td>
+            </tr>
+        <?endforeach;?>
+        </tbody>
+    </table>
+    <?endforeach;?>
+</div>
+
+<div class="c-migration-block">
+    <p><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></p>
+    <p>
+        <a href="https://bitbucket.org/andrey_ryabin/sprint.migration" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
+    </p>
+</div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript">
