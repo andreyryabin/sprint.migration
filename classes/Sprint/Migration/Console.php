@@ -202,24 +202,16 @@ class Console
 
     public function commandConfig() {
         $info = $this->getVM()->getConfigInfo();
-
         foreach ($info as $index => $file) {
-
             $iscur = ($file['current'] == 1) ? '(current)' : '';
-
-            Out::out('Config: [%s] %s %s', $file['name'], $file['title'], $iscur);
-            Out::initTable(array('param', 'value'));
+            Out::out('Config: %s %s', $file['title'], $iscur);
+            Out::initTable(array());
             foreach ($file['values'] as $key => $val) {
                 Out::addTableRow(array($key, $val));
             }
             Out::outTable();
         }
-
-
-
-
     }
-
 
     protected function executeAll($filter, $limit = 0, $force = false) {
         $limit = (int)$limit;

@@ -42,6 +42,7 @@
     "SPRINT_MIGRATION_CREATED_SUCCESS" => "Миграция #VERSION# создана",
     "SPRINT_MIGRATION_CREATED_ERROR" => "Ошибка создания миграции",
     "SPRINT_MIGRATION_SEARCH" => "Поиск",
-    "SPRINT_MIGRATION_DEFAULT_CONFIG" => "Общие миграции",
+    "SPRINT_MIGRATION_CONFIG_TITLE" => "Миграции",
+    "SPRINT_MIGRATION_CONFIG_NOFILE" => "нет конфига",
 
 ));

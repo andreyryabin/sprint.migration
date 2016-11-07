@@ -70,15 +70,13 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
     }
 </style>
 
-
-<div style="height: 40px;">
 <?php $info = $versionManager->getConfigInfo(); ?>
+<div style="height: 40px;">
 <select name="migration_config">
     <?foreach ($info as $val):?>
-        <option <?if ($val['current'] == 1):?>selected="selected"<?endif;?> value="<?=$val['name']?>"><?=$val['title']?></option>
+        <option <?if ($val['current'] == 1):?>selected="selected"<?endif;?> value="<?=strval($val['name'])?>"><?=$val['title']?></option>
     <?endforeach?>
 </select>
-
 </div>
 
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
