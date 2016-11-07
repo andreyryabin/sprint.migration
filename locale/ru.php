@@ -44,5 +44,4 @@
     "SPRINT_MIGRATION_SEARCH" => "Поиск",
     "SPRINT_MIGRATION_CONFIG_TITLE" => "Миграции",
     "SPRINT_MIGRATION_CONFIG_NOFILE" => "нет конфига",
-
 ));

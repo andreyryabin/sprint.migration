@@ -8,7 +8,7 @@ class VersionConfig
     private $configName = '';
 
     private $loaded = 0;
-    
+
     public function __construct($configName) {
         $this->loaded = 0;
         if (!empty($configName) && preg_match("/^[a-z0-9_-]*$/i", $configName)) {
