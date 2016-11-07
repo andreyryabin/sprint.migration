@@ -207,7 +207,7 @@ class Console
 
             $iscur = ($file['current'] == 1) ? '(current)' : '';
 
-            Out::out('Config: [%s] %s %s', $file['name'], $file['title'], $iscur);
+            Out::out('Config: %s %s', $file['title'], $iscur);
             Out::initTable(array('param', 'value'));
             foreach ($file['values'] as $key => $val) {
                 Out::addTableRow(array($key, $val));

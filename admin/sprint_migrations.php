@@ -75,7 +75,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 <?php $info = $versionManager->getConfigInfo(); ?>
 <select name="migration_config">
     <?foreach ($info as $val):?>
-        <option <?if ($val['current'] == 1):?>selected="selected"<?endif;?> value="<?=$val['name']?>"><?=$val['title']?></option>
+        <option <?if ($val['current'] == 1):?>selected="selected"<?endif;?> value="<?=strval($val['name'])?>"><?=$val['title']?></option>
     <?endforeach?>
 </select>
 
