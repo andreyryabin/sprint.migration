@@ -91,5 +91,4 @@ class HlblockHelper extends Helper
         return $this->deleteHlblock($aItem['ID']);
     }
 
-
 }
