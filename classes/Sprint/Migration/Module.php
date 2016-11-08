@@ -15,6 +15,10 @@ class Module
         }
     }
 
+    public static function removeDbOptions(){
+        \COption::RemoveOption('sprint.migration');
+    }
+
     public static function getDocRoot() {
         return rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
     }

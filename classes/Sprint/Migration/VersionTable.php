@@ -20,7 +20,7 @@ class VersionTable
         $this->bitrixDb = $GLOBALS['DB'];
         $this->dbName = $GLOBALS['DBName'];
 
-        $opt = 'ver' . md5($this->tableName);
+        $opt = 'table_' . md5($this->tableName);
         if (!Module::getDbOption($opt)) {
             $this->createTables();
             Module::setDbOption($opt, 1);

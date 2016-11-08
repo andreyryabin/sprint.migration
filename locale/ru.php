@@ -23,8 +23,7 @@
     "SPRINT_MIGRATION_TOGGLE_LIST" => "Все",
     "SPRINT_MIGRATION_TOGGLE_NEW" => "Новые",
     "SPRINT_MIGRATION_TOGGLE_STATUS" => "Суммарно",
-    "SPRINT_MIGRATION_HELP_DOC" => "Документация",
-    "SPRINT_MIGRATION_HELP_CONFIG" => "Список конфигов",
+    "SPRINT_MIGRATION_HELP_DOC" => "Документация к модулю",
     "SPRINT_MIGRATION_TAB1" => "Миграции",
     "SPRINT_MIGRATION_TAB1_TITLE" => "Список миграций",
     "SPRINT_MIGRATION_TAB2" => "Создать",
@@ -51,5 +50,6 @@
     "SPRINT_MIGRATION_CONFIG_SWITCHED" => "Конфиг переключен",
     "SPRINT_MIGRATION_CONFIG_CURRENT" => "текущий",
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
+    "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля"
 
 ));
