@@ -15,12 +15,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
 
     if ($_POST["step_code"] == "migration_new"){
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'new');
+        \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
         $versions = $versionManager->getVersions(array(
             'status' => 'new',
             'search' => $search,
         ));
     } else {
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'list');
+        \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
         $versions = $versionManager->getVersions(array(
             'status' => '',
             'search' => $search,
@@ -29,10 +31,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
 
     ?>
     <? if (!empty($versions)):?>
-        <table style="border-collapse: collapse;">
+        <table class="c-migration-list">
         <? foreach ($versions as $aItem):?>
             <tr>
-                <td style="width: 110px;vertical-align: middle;text-align: right">
+                <td class="c-migration-list-l">
                 <? if ($aItem['status'] == 'new'): ?>
                     <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <? endif ?>
@@ -40,8 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                     <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'down'});" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
                 <? endif ?>
                 </td>
-
-                <td style="vertical-align: middle;text-align: left">
+                <td class="c-migration-list-r">
                     <? if ($aItem['status'] != 'unknown' && $webdir): ?>
                         <? $href = '/bitrix/admin/fileman_file_view.php?' . http_build_query(array(
                                 'lang' => LANGUAGE_ID,
@@ -60,12 +61,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                         <?= \Sprint\Migration\Out::prepareToHtml($aItem['description'])?>
                     <?endif?>
                 </td>
-
             </tr>
         <? endforeach ?>
         </table>
     <? else: ?>
-        <p style="text-align: center"><?= GetMessage('SPRINT_MIGRATION_LIST_EMPTY') ?></p>
+        <?= GetMessage('SPRINT_MIGRATION_LIST_EMPTY') ?>
     <? endif ?>
     <?
     /** @noinspection PhpIncludeInspection */

@@ -7,6 +7,15 @@
     padding: 19px
 }
 
+.c-migration-filter{
+    /*margin: 10px 0;*/
+    /*background: #ccc;*/
+    /*padding: 10px;*/
+
+    float: right;
+}
+
+
 table.c-migration-config {
     border-collapse: collapse;
     /*background: #f5f9f9;*/
@@ -23,8 +32,36 @@ table.c-migration-config td{
     padding: 5px;
 }
 
-#migration_migrations td{
-    padding:5px;
+table.c-migration-list {
+    border-collapse: collapse;
+}
+
+table.c-migration-list td.c-migration-list-l{
+    width: 110px;
+    vertical-align: middle;
+    text-align: left;
+    padding: 5px 5px 5px 0;
+}
+table.c-migration-list td.c-migration-list-r{
+    vertical-align: middle;
+    text-align: left;
+    padding: 5px 0 5px 5px;
+}
+
+
+table.c-migration-status {
+    border-collapse: collapse;
+}
+
+table.c-migration-status td.c-migration-status-l{
+    vertical-align: middle;
+    text-align: left;
+    padding: 5px 5px 5px 0;
+}
+table.c-migration-status td.c-migration-status-r{
+    vertical-align: middle;
+    text-align: left;
+    padding: 5px 0 5px 5px;
 }
 
 .c-migration-item-installed,
