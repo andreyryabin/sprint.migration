@@ -179,7 +179,7 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationEnableButtons(enable) {
-        var buttons = $('#tabControl2_layout').find('input[type=button],input[type=submit],select');
+        var buttons = $('#tabControl2_layout').find('input,select');
         if (enable == 1){
             buttons.removeAttr('disabled');
         } else {
