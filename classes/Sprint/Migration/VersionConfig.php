@@ -16,6 +16,7 @@ class VersionConfig
         'migration_extend_class',
         'migration_dir',
         'tracker_task_url',
+        'version_prefix',
     );
 
     public function __construct($configName) {

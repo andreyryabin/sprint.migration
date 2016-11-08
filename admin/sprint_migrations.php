@@ -14,14 +14,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
 }
 
-if (!empty($_GET['config'])){
-    $versionManager = new Sprint\Migration\VersionManager($_GET['config']);
-    Sprint\Migration\Module::setDbOption('admin_config_name',$versionManager->getConfigName());
-} else {
-    $versionManager = new Sprint\Migration\VersionManager(
-        Sprint\Migration\Module::getDbOption('admin_config_name', '')
-    );
-}
+
+$configName = !empty($_GET['config']) ? $_GET['config'] : '';
+$versionManager = new Sprint\Migration\VersionManager($configName);
 
 include __DIR__ .'/steps/migration_execute.php';
 include __DIR__ .'/steps/migration_list.php';
@@ -104,7 +99,7 @@ $tabControl1->BeginNextTab();
                         <strong><?=$file['title']?></strong> &nbsp;
                         <input name="config" type="hidden" value="<?=$file['name']?>">
                         <input name="lang" type="hidden" value="<?=LANGUAGE_ID?>">
-                        <input type="submit" value="<?=GetMessage('SPRINT_MIGRATION_CONFIG_SET')?>">
+                        <input type="submit" value="<?=GetMessage('SPRINT_MIGRATION_CONFIG_SWITCH')?>">
                     </form>
                 <?endif?>
             </td>

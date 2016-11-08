@@ -47,7 +47,8 @@
     "SPRINT_MIGRATION_SEARCH" => "Поиск",
     "SPRINT_MIGRATION_CONFIG_TITLE" => "Миграции",
     "SPRINT_MIGRATION_CONFIG_NOFILE" => "нет конфига",
-    "SPRINT_MIGRATION_CONFIG_SET" => "переключить",
+    "SPRINT_MIGRATION_CONFIG_SWITCH" => "переключить",
+    "SPRINT_MIGRATION_CONFIG_SWITCHED" => "Конфиг переключен",
     "SPRINT_MIGRATION_CONFIG_CURRENT" => "текущий",
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
 

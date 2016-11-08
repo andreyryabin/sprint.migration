@@ -5,22 +5,14 @@ namespace Sprint\Migration;
 class Console
 {
 
-    private $vmInstance = null;
+    private $versionManager = null;
 
     private $script = 'migrate.php';
 
     private $arguments = array();
 
     public function __construct() {
-        //
-    }
-
-    protected function versionManager() {
-        if (!$this->vmInstance) {
-            $configName = $this->getArg('--config', '');
-            $this->vmInstance = new VersionManager($configName);
-        }
-        return $this->vmInstance;
+        $this->versionManager = new VersionManager();
     }
 
     public function commandCreate() {
@@ -29,20 +21,20 @@ class Console
         /** @compability */
         $prefix = $this->getArg(1, '');
         /** @compability */
-        $prefix = $this->getArg('--name', $prefix);
+        $prefix = $this->getArg('--name=', $prefix);
 
-        $descr = $this->getArg('--desc', $descr);
-        $prefix = $this->getArg('--prefix', $prefix);
+        $descr = $this->getArg('--desc=', $descr);
+        $prefix = $this->getArg('--prefix=', $prefix);
 
-        $meta = $this->versionManager()->createVersionFile($descr, $prefix);
+        $meta = $this->versionManager->createVersionFile($descr, $prefix);
         $this->outVersionMeta($meta);
     }
 
     public function commandList() {
-        $search = $this->getArg('--search');
+        $search = $this->getArg('--search=');
         $status = ($this->getArg('--new')) ? 'new' : '';
 
-        $versions = $this->versionManager()->getVersions(array(
+        $versions = $this->versionManager->getVersions(array(
             'status' => $status,
             'search' => $search
         ));
@@ -69,12 +61,12 @@ class Console
         $version = $this->getArg(0, '');
 
         if ($version) {
-            $meta = $this->versionManager()->getVersionMeta($version);
+            $meta = $this->versionManager->getVersionMeta($version);
             $this->outVersionMeta($meta);
 
         } else {
-            $search = $this->getArg('--search');
-            $versions = $this->versionManager()->getVersions(array(
+            $search = $this->getArg('--search=');
+            $versions = $this->versionManager->getVersions(array(
                 'status' => '',
                 'search' => $search
             ));
@@ -101,7 +93,7 @@ class Console
     public function commandMigrate() {
         $force = $this->getArg('--force');
 
-        $search = $this->getArg('--search');
+        $search = $this->getArg('--search=');
         $status = ($this->getArg('--down')) ? 'installed' : 'new';
 
         $this->executeAll(array(
@@ -114,10 +106,10 @@ class Console
         $force = $this->getArg('--force');
         $var = $this->getArg(0, 1);
 
-        $search = $this->getArg('--search');
+        $search = $this->getArg('--search=');
         $status = 'new';
 
-        if ($this->versionManager()->checkVersionName($var)) {
+        if ($this->versionManager->checkVersionName($var)) {
             $this->executeOnce($var, 'up', $force);
 
         } elseif ($this->getArg('--all')) {
@@ -139,10 +131,10 @@ class Console
         $force = $this->getArg('--force');
         $var = $this->getArg(0, 1);
 
-        $search = $this->getArg('--search');
+        $search = $this->getArg('--search=');
         $status = 'installed';
 
-        if ($this->versionManager()->checkVersionName($var)) {
+        if ($this->versionManager->checkVersionName($var)) {
             $this->executeOnce($var, 'down', $force);
 
         } elseif ($this->getArg('--all')) {
@@ -196,7 +188,7 @@ class Console
         Out::out('Версия bitrix: %s', defined('SM_VERSION') ? SM_VERSION : '');
         Out::out('Версия модуля: %s', Module::getVersion());
         Out::out('');
-        Out::out('Директория с миграциями:' . PHP_EOL . '  %s' . PHP_EOL, $this->versionManager()->getConfigVal('migration_dir'));
+        Out::out('Директория с миграциями:' . PHP_EOL . '  %s' . PHP_EOL, $this->versionManager->getConfigVal('migration_dir'));
         Out::out('Запуск:' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL, $this->script);
         Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
         Out::out(PHP_EOL . 'Пожелания и ошибки присылайте сюда');
@@ -204,8 +196,14 @@ class Console
     }
 
     public function commandConfig() {
-        $configInfo = $this->versionManager()->getConfigInfo();
-        $configName = $this->versionManager()->getConfigName();
+        $switched = false;
+        if ($this->getArg('--to=')){
+            $this->versionManager = new VersionManager($this->getArg('--to='));
+            $switched = true;
+        }
+
+        $configInfo = $this->versionManager->getConfigInfo();
+        $configName = $this->versionManager->getConfigName();
 
         foreach ($configInfo as $file) {
             $current = ($file['name'] == $configName) ? '*' : '';
@@ -217,6 +215,10 @@ class Console
             Out::outTable();
             Out::out('');
         }
+
+        if ($switched){
+            Out::out(GetMessage('SPRINT_MIGRATION_CONFIG_SWITCHED'));
+        }
     }
 
     protected function executeAll($filter, $limit = 0, $force = false) {
@@ -224,7 +226,7 @@ class Console
 
         $success = 0;
 
-        $versions = $this->versionManager()->getVersions($filter);
+        $versions = $this->versionManager->getVersions($filter);
 
         $action = ($filter['status'] == 'new') ? 'up' : 'down';
 
@@ -253,9 +255,9 @@ class Console
                 Out::out('%s (%s) start', $version, $action);
             }
 
-            $ok = $this->versionManager()->startMigration($version, $action, $params, $force);
-            if ($this->versionManager()->needRestart($version)) {
-                $params = $this->versionManager()->getRestartParams($version);
+            $ok = $this->versionManager->startMigration($version, $action, $params, $force);
+            if ($this->versionManager->needRestart($version)) {
+                $params = $this->versionManager->getRestartParams($version);
                 $restart = 1;
                 $exec = 1;
             }
@@ -324,8 +326,11 @@ class Console
         list($name, $val) = explode('=', $arg);
         $isparam = (0 === strpos($name, '--')) ? 1 : 0;
         if ($isparam) {
-            $val = is_null($val) ? 1 : $val;
-            $this->arguments[$name] = $val;
+            if (!is_null($val)){
+                $this->arguments[$name . '='] = $val;
+            } else {
+                $this->arguments[$name] = 1;
+            }
         } else {
             $this->arguments[] = $name;
         }
