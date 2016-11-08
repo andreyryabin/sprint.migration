@@ -5,6 +5,7 @@ namespace Sprint\Migration;
 use Sprint\Migration\Exceptions\HelperException;
 
 use Sprint\Migration\Helpers\IblockHelper;
+use Sprint\Migration\Helpers\HlblockHelper;
 use Sprint\Migration\Helpers\AdminIblockHelper;
 
 use Sprint\Migration\Helpers\AgentHelper;
