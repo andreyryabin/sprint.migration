@@ -79,7 +79,7 @@ $tabControl1->BeginNextTab();
 <div class="c-migration-block">
     <p>
         <?= GetMessage('SPRINT_MIGRATION_FORM_PREFIX') ?><br/>
-        <input type="text" style="width: 250px;" id="migration_migration_prefix" value="Version" />
+        <input type="text" style="width: 250px;" id="migration_migration_prefix" value="<?=$versionManager->getConfigVal('version_prefix')?>" />
     </p>
     <p>
         <?= GetMessage('SPRINT_MIGRATION_FORM_DESCR') ?> <br/>
@@ -184,7 +184,7 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationEnableButtons(enable) {
-        var buttons = $('#tabControl2_layout').find('input[type=button],input[type=submit]');
+        var buttons = $('#tabControl2_layout').find('input[type=button],input[type=submit],select');
         if (enable == 1){
             buttons.removeAttr('disabled');
         } else {

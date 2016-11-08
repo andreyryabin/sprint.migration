@@ -324,8 +324,12 @@ class VersionManager
 
     protected function preparePrefix($prefix = '') {
         $prefix = trim($prefix);
-        $default = 'Version';
+        if (empty($prefix)){
+            $prefix = $this->getConfigVal('version_prefix');
+            $prefix = trim($prefix);
+        }
 
+        $default = 'Version';
         if (empty($prefix)) {
             return $default;
         }

@@ -112,6 +112,10 @@ class VersionConfig
             $values['migration_dir'] = realpath($values['migration_dir']);
         }
 
+        if (!$values['version_prefix']) {
+            $values['version_prefix'] = 'Version';
+        }
+
         if (!$values['tracker_task_url']) {
             $values['tracker_task_url'] = '';
         }

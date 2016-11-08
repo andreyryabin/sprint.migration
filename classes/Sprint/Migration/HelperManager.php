@@ -17,6 +17,7 @@ use Sprint\Migration\Helpers\UserGroupHelper;
 
 /**
  * @method IblockHelper             Iblock()
+ * @method HlblockHelper            Hlblock()
  * @method AdminIblockHelper        AdminIblock()
  * @method AgentHelper              Agent()
  * @method EventHelper              Event()

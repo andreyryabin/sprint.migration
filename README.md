@@ -99,12 +99,13 @@ class Version20150520000001 extends Version {
 
 ```
 <?php return array (
-  'title' => '',
   'migration_dir' => '',
   'migration_template' => '',
   'migration_table' => '',
   'migration_extend_class' => '',
-  'tracker_task_url' => ''
+  'title' => '',
+  'version_prefix' => ''
+  'tracker_task_url' => '',
 );
 ```
 
@@ -118,6 +119,8 @@ class Version20150520000001 extends Version {
 
 **tracker_task_url** - шаблон для замены строк вида #номер_задачи на ссылки, в шаблоне должна быть конструкция $1, 
 например http://www.redmine.org/issues/$1/, работает только в админке
+
+**version_prefix** - Префикс в имени класса миграции, по умолчанию Version (полное имя класса состоит из префикса + даты)
 
 Ни один из параметров не является обязательным.
 

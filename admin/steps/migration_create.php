@@ -4,7 +4,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
     $description = isset($_POST['description']) ? $_POST['description'] : 0;
-    $prefix = isset($_POST['prefix']) ? $_POST['prefix'] : 'Version';
+    $prefix = isset($_POST['prefix']) ? $_POST['prefix'] : '';
 
     $meta = $versionManager->createVersionFile($description, $prefix);
     if ($meta && $meta['class']) {

@@ -24,13 +24,17 @@ class Console
     }
 
     public function commandCreate() {
+        /** @compability */
         $descr = $this->getArg(0, '');
-        $name = $this->getArg(1, '');
+        /** @compability */
+        $prefix = $this->getArg(1, '');
+        /** @compability */
+        $prefix = $this->getArg('--name', $prefix);
 
         $descr = $this->getArg('--desc', $descr);
-        $name = $this->getArg('--name', $name);
+        $prefix = $this->getArg('--prefix', $prefix);
 
-        $meta = $this->versionManager()->createVersionFile($descr, $name);
+        $meta = $this->versionManager()->createVersionFile($descr, $prefix);
         $this->outVersionMeta($meta);
     }
 
@@ -182,7 +186,7 @@ class Console
     }
 
     public function commandForce() {
-        Out::out('@deprecated use use commandUp --force or commandDown --force');
+        /** @compability */
         $this->addArg('--force');
         $this->commandExecute();
     }
