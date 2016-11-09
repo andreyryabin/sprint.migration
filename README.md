@@ -107,7 +107,7 @@ class Version20150520000001 extends Version {
   'migration_table' => '',
   'migration_extend_class' => '',
   'title' => '',
-  'version_prefix' => ''
+  'version_prefix' => '',
   'tracker_task_url' => '',
 );
 ```
@@ -133,7 +133,12 @@ class Version20150520000001 extends Version {
 Текущий конфиг помечается звездочкой * как в админке, в блоке конфигов, так и в консоли (команда config).
 
 Переключить конфиг в админке можно нажав кнопку "переключить" напротив нужного конфига
-В консоли - используя команду config --to={NAME}
+В консоли - используя параметр --config={NAME} к любой команде
+
+Примеры:
+* php migrate.php config --config=release001 (переключить конфиг на release001 и посмотреть список конфигов)
+* php migrate.php migrate --config=release001 (переключить конфиг на release001 и накатить все миграции)
+
 
 Пример вашего класса от которого наследуются классы миграций
 -------------------------
