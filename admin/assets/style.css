@@ -1,0 +1,107 @@
+
+.c-migration-block {
+    margin-top: 20px;
+    background-color: #f5f9f9;
+    border: 1px solid;
+    border-color: #c4ced2 #dce7ed #dce7ed;
+    padding: 19px
+}
+
+.c-migration-filter{
+    /*margin: 10px 0;*/
+    /*background: #ccc;*/
+    /*padding: 10px;*/
+
+    float: right;
+}
+
+
+table.c-migration-config {
+    border-collapse: collapse;
+    /*background: #f5f9f9;*/
+    margin-bottom: 20px !important;
+}
+
+table.c-migration-config thead td{
+    /*text-align: center;*/
+
+}
+table.c-migration-config td{
+    /*border-bottom: 1px solid #c4ced2;*/
+
+    padding: 5px;
+}
+
+table.c-migration-list {
+    border-collapse: collapse;
+}
+
+table.c-migration-list td.c-migration-list-l{
+    width: 110px;
+    vertical-align: middle;
+    text-align: left;
+    padding: 5px 5px 5px 0;
+}
+table.c-migration-list td.c-migration-list-r{
+    vertical-align: middle;
+    text-align: left;
+    padding: 5px 0 5px 5px;
+}
+
+
+table.c-migration-status {
+    border-collapse: collapse;
+}
+
+table.c-migration-status td.c-migration-status-l{
+    vertical-align: middle;
+    text-align: left;
+    padding: 5px 5px 5px 0;
+}
+table.c-migration-status td.c-migration-status-r{
+    vertical-align: middle;
+    text-align: left;
+    padding: 5px 0 5px 5px;
+}
+
+.c-migration-item-installed,
+.c-migration-item-new,
+.c-migration-item-unknown {
+    text-decoration: none;
+}
+
+.c-migration-item-installed,
+.c-migration-item-installed:link,
+.c-migration-item-installed:hover,
+.c-migration-item-installed:visited,
+a.c-migration-item-installed,
+a.c-migration-item-installed:link,
+a.c-migration-item-installed:hover,
+a.c-migration-item-installed:visited
+{
+    color: #080;
+}
+
+.c-migration-item-new,
+.c-migration-item-new:link,
+.c-migration-item-new:hover,
+.c-migration-item-new:visited,
+a.c-migration-item-new,
+a.c-migration-item-new:link,
+a.c-migration-item-new:hover,
+a.c-migration-item-new:visited
+{
+    color: #a00;
+}
+
+.c-migration-item-unknown,
+.c-migration-item-unknown:link,
+.c-migration-item-unknown:hover,
+.c-migration-item-unknown:visited,
+a.c-migration-item-unknown,
+a.c-migration-item-unknown:link,
+a.c-migration-item-unknown:hover,
+a.c-migration-item-unknown:visited
+{
+    color: #00a;
+}

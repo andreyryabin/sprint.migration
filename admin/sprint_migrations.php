@@ -10,11 +10,13 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_ad
 global $APPLICATION;
 $APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATION_TITLE'));
 
-$versionManager = new Sprint\Migration\VersionManager();
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
 }
+
+
+$configName = !empty($_GET['config']) ? $_GET['config'] : '';
+$versionManager = new Sprint\Migration\VersionManager($configName);
 
 include __DIR__ .'/steps/migration_execute.php';
 include __DIR__ .'/steps/migration_list.php';
@@ -25,53 +27,15 @@ include __DIR__ .'/steps/migration_create.php';
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 
 ?>
+
+<input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
+
 <style type="text/css">
-    .c-migration-item-installed,
-    .c-migration-item-new,
-    .c-migration-item-unknown {
-        text-decoration: none;
-    }
-
-    .c-migration-item-installed,
-    .c-migration-item-installed:link,
-    .c-migration-item-installed:hover,
-    .c-migration-item-installed:visited,
-    a.c-migration-item-installed,
-    a.c-migration-item-installed:link,
-    a.c-migration-item-installed:hover,
-    a.c-migration-item-installed:visited
-    {
-        color: #080;
-    }
-
-    .c-migration-item-new,
-    .c-migration-item-new:link,
-    .c-migration-item-new:hover,
-    .c-migration-item-new:visited,
-    a.c-migration-item-new,
-    a.c-migration-item-new:link,
-    a.c-migration-item-new:hover,
-    a.c-migration-item-new:visited
-    {
-        color: #a00;
-    }
-
-    .c-migration-item-unknown,
-    .c-migration-item-unknown:link,
-    .c-migration-item-unknown:hover,
-    .c-migration-item-unknown:visited,
-    a.c-migration-item-unknown,
-    a.c-migration-item-unknown:link,
-    a.c-migration-item-unknown:hover,
-    a.c-migration-item-unknown:visited
-    {
-        color: #00a;
-    }
+<? include __DIR__ . '/assets/style.css' ?>
 </style>
 
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
     array("DIV" => "tab1", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB1_TITLE')),
-    array("DIV" => "tab2", "TAB" => GetMessage('SPRINT_MIGRATION_TAB2'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB2_TITLE')),
     array("DIV" => "tab3", "TAB" => GetMessage('SPRINT_MIGRATION_TAB3'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB3_TITLE')),
 ));
 
@@ -79,86 +43,86 @@ $tabControl1->Begin();
 $tabControl1->BeginNextTab();
 ?>
 <tr>
-    <td style="vertical-align: top">
+    <td style="vertical-align: top;">
         <div id="migration_migrations"></div>
     </td>
 </tr>
 <?$tabControl1->BeginNextTab();?>
 <tr>
-    <td style="width:50%;padding: 5px 5px;vertical-align: top;text-align: left">
-        <p>
-            <?= GetMessage('SPRINT_MIGRATION_MIGRATION_DIR') ?>
-        </p>
-        <p>
-            <?$webdir = \Sprint\Migration\Module::getMigrationWebDir()?>
-            <?if ($webdir):?>
-                <? $href = '/bitrix/admin/fileman_admin.php?' . http_build_query(array(
-                        'lang' => LANGUAGE_ID,
-                        'site' => SITE_ID,
-                        'path' => $webdir
-                    ))?>
-                <a href="<?=$href?>" target="_blank"><?=$webdir?></a>
-            <?else:?>
-                <?=\Sprint\Migration\Module::getMigrationDir()?>
-            <?endif?>
-        </p>
-        <p><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></p>
-        <p>
-            <a href="https://bitbucket.org/andrey_ryabin/sprint.migration" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
-        </p>
-    </td>
-    <td style="width:50%;padding: 5px 5px;vertical-align: top;text-align: left">
-        <div class="c-migration-adm-create">
-            <p>
-                <?= GetMessage('SPRINT_MIGRATION_FORM_PREFIX') ?><br/>
-                <input type="text" id="migration_migration_prefix" value="Version" />
-            </p>
-            <p>
-                <?= GetMessage('SPRINT_MIGRATION_FORM_DESCR') ?> <br/>
-                <textarea rows="3" cols="50" id="migration_migration_descr"></textarea>
-            </p>
-            <p>
-                <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();" />
-            </p>
-        </div>
-    </td>
-</tr>
-<?$tabControl1->BeginNextTab();?>
-<tr>
-    <td style="vertical-align: top">
+    <td style="vertical-align: top;">
         <div id="migration_progress" style="overflow-x:auto;overflow-y: scroll;max-height: 320px;"></div>
     </td>
 </tr>
 <? $tabControl1->Buttons(); ?>
+    <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
+    <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>" onclick="migrationMigrationsDownConfirm();" />
 
-<div style="text-align: center">
-    <div style="float: left;">
-        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>" onclick="migrationMigrationsUpConfirm();" class="adm-btn-green" />
-        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>" onclick="migrationMigrationsDownConfirm();" />
+    <div class="c-migration-filter">
+        <? $search = \Sprint\Migration\Module::getDbOption('admin_versions_search', '');?>
+        <input placeholder="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" style="" type="text" value="<?=$search?>" class="adm-input" name="migration_search"/>
 
+        <? $view = \Sprint\Migration\Module::getDbOption('admin_versions_view', 'list');?>
+        <select class="c-migration-stat">
+            <option <?if ($view == 'list'):?>selected="selected"<?endif?> value="list"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?></option>
+            <option <?if ($view == 'new'):?>selected="selected"<?endif?> value="new"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?></option>
+            <option <?if ($view == 'status'):?>selected="selected"<?endif?> value="status"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?></option>
+        </select>
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" class="c-migration-search" />
     </div>
 
-    <input style="" type="text" value="" class="adm-input" name="migration_search"/>
-    <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" class="c-migration-search" />
-
-    <div style="float: right;">
-        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?>" onclick="migrationMigrationToggleView('list');" class="adm-btn c-migration-stat c-migration-stat-list" />
-        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?>" onclick="migrationMigrationToggleView('new');" class="adm-btn c-migration-stat c-migration-stat-new" />
-        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?>" onclick="migrationMigrationToggleView('status');" class="adm-btn c-migration-stat c-migration-stat-status" />
-    </div>
+<? $tabControl1->End(); ?>
+<div class="c-migration-block">
+    <p>
+        <?= GetMessage('SPRINT_MIGRATION_FORM_PREFIX') ?><br/>
+        <input type="text" style="width: 250px;" id="migration_migration_prefix" value="<?=$versionManager->getConfigVal('version_prefix')?>" />
+    </p>
+    <p>
+        <?= GetMessage('SPRINT_MIGRATION_FORM_DESCR') ?> <br/>
+        <textarea rows="3" style="width: 350px;" id="migration_migration_descr"></textarea>
+    </p>
+    <p>
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();" />
+    </p>
+</div>
+<div class="c-migration-block"><?php
+    $configInfo = $versionManager->getConfigInfo();
+    $configName = $versionManager->getConfigName();
+    ?><?php foreach ($configInfo as $file) :?>
+    <table class="c-migration-config">
+        <thead>
+        <tr>
+            <td colspan="2">
+                <?if ($file['name'] == $configName):?>
+                    <strong><?=$file['title']?> *</strong>
+                <?else:?>
+                    <form method="get" action="">
+                        <strong><?=$file['title']?></strong> &nbsp;
+                        <input name="config" type="hidden" value="<?=$file['name']?>">
+                        <input name="lang" type="hidden" value="<?=LANGUAGE_ID?>">
+                        <input type="submit" value="<?=GetMessage('SPRINT_MIGRATION_CONFIG_SWITCH')?>">
+                    </form>
+                <?endif?>
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+        <? foreach ($file['values'] as $key => $val) :?>
+            <tr>
+                <td><?=$key?></td>
+                <td><?=$val?></td>
+            </tr>
+        <?endforeach;?>
+        </tbody>
+    </table>
+    <?endforeach;?>
 </div>
 
-
-
-
-
-
-
-
-
-<input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
-<? $tabControl1->End(); ?>
-
+<div class="c-migration-block">
+    <p><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></p>
+    <p>
+        <a href="https://bitbucket.org/andrey_ryabin/sprint.migration" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
+    </p>
+</div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript">
@@ -199,7 +163,6 @@ $tabControl1->BeginNextTab();
 
         jQuery.ajax({
             type: "POST",
-            url: '<?=pathinfo(__FILE__, PATHINFO_BASENAME)?>?lang=ru',
             dataType: "html",
             data: postData,
             success: function (result) {
@@ -216,7 +179,7 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationEnableButtons(enable) {
-        var buttons = $('#tabControl2_layout').find('input[type=button]');
+        var buttons = $('#tabControl2_layout').find('input,select');
         if (enable == 1){
             buttons.removeAttr('disabled');
         } else {
@@ -235,21 +198,9 @@ $tabControl1->BeginNextTab();
         });
     }
 
-    function migrationMigrationToggleView(view){
-        migrationView = view;
-
-        $('.c-migration-stat').removeClass('adm-btn-active');
-        $('.c-migration-stat-' + view).addClass('adm-btn-active');
-
-        migrationMigrationRefresh(function(){
-            migrationEnableButtons(1);
-            $('#tab_cont_tab1').click();
-            $("html, body").scrollTop(0);
-        });
-    }
-
     function migrationMigrationRefresh(callbackAfterRefresh) {
-        migrationExecuteStep('migration_' + migrationView, {}, function (data) {
+        var view = $('.c-migration-stat').val();
+        migrationExecuteStep('migration_' + view, {}, function (data) {
             $('#migration_migrations').empty().html(data);
             if (callbackAfterRefresh) {
                 callbackAfterRefresh()
@@ -262,31 +213,30 @@ $tabControl1->BeginNextTab();
 </script>
 
 <script type="text/javascript">
-    <?
-    
-    $views = array('list', 'new', 'status');
-    $curView = \Sprint\Migration\Module::getDbOption('admin_versions_view');
-    $curView = in_array($curView, $views) ? $curView : 'list';
-
-    ?>
-    
-    var migrationView = '<?=$curView?>';
-
     $(document).ready(function () {
-        migrationMigrationToggleView(migrationView);
+        migrationMigrationRefresh(function(){
+            migrationEnableButtons(1);
+        });
 
         $('#tab_cont_tab3').on('click', function(){
             var outProgress = $('#migration_progress');
             outProgress.scrollTop(outProgress.prop("scrollHeight"));
         });
 
+        $('.c-migration-stat').on('change',function(){
+            migrationMigrationRefresh(function(){
+                migrationEnableButtons(1);
+                $('#tab_cont_tab1').click();
+//                $("html, body").scrollTop(0);
+            });
+        });
 
-        $('input[name=migration_search]').bind('keypress', function(e){
+        $('input[name=migration_search]').on('keypress', function(e){
             if(e.keyCode==13){
                 migrationMigrationRefresh(function(){
                     migrationEnableButtons(1);
                     $('#tab_cont_tab1').click();
-                    $("html, body").scrollTop(0);
+//                    $("html, body").scrollTop(0);
                 });
             }
         });
@@ -295,7 +245,7 @@ $tabControl1->BeginNextTab();
             migrationMigrationRefresh(function(){
                 migrationEnableButtons(1);
                 $('#tab_cont_tab1').click();
-                $("html, body").scrollTop(0);
+//                $("html, body").scrollTop(0);
             });
         });
 

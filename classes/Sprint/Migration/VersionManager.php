@@ -8,19 +8,35 @@ use Sprint\Migration\Exceptions\MigrationException;
 class VersionManager
 {
 
+
+    /** @var VersionConfig*/
+    private $versionConfig = null;
+
+    /** @var VersionTable*/
+    private $versionTable = null;
+
     private $restarts = array();
 
-    protected $versionTable = null;
 
-    public function __construct() {
-        $this->versionTable = new VersionTable();
+    public function __construct($configName = '') {
+        $configName = empty($configName) ? Module::getDbOption('config_name', '') : $configName;
+
+        $this->versionConfig = new VersionConfig(
+            $configName
+        );
+
+        $this->versionTable = new VersionTable(
+            $this->getConfigVal('migration_table')
+        );
+
+        Module::setDbOption('config_name',$this->versionConfig->getConfigName());
     }
 
     public function startMigration($versionName, $action = 'up', $params = array(), $force = false) {
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
 
-        if (isset($this->restarts[$versionName])){
+        if (isset($this->restarts[$versionName])) {
             unset($this->restarts[$versionName]);
         }
 
@@ -63,9 +79,9 @@ class VersionManager
             }
 
             if ($action == 'up') {
-                $ok = $this->versionTable->addRecord($versionName);
+                $ok = $this->addRecord($versionName);
             } else {
-                $ok = $this->versionTable->removeRecord($versionName);
+                $ok = $this->removeRecord($versionName);
             }
 
             if ($ok === false) {
@@ -99,7 +115,7 @@ class VersionManager
 
     public function createVersionFile($description = '', $prefix = '') {
         $description = $this->purifyDescriptionForFile($description);
-        $prefix = $this->purifyPrefix($prefix);
+        $prefix = $this->preparePrefix($prefix);
 
         $originTz = date_default_timezone_get();
         date_default_timezone_set('Europe/Moscow');
@@ -108,7 +124,7 @@ class VersionManager
 
         $versionName = $prefix . $ts;
 
-        list($extendUse, $extendClass) = explode(' as ', Module::getMigrationExtendClass());
+        list($extendUse, $extendClass) = explode(' as ', $this->getConfigVal('migration_extend_class'));
         $extendUse = trim($extendUse);
         $extendClass = trim($extendClass);
 
@@ -119,7 +135,7 @@ class VersionManager
             $extendUse = '';
         }
 
-        $str = $this->renderFile(Module::getMigrationTemplate(), array(
+        $str = $this->renderFile($this->getConfigVal('migration_template'), array(
             'version' => $versionName,
             'description' => $description,
             'extendUse' => $extendUse,
@@ -143,7 +159,7 @@ class VersionManager
 
         $records = array();
         /* @var $dbres \CDBResult */
-        $dbres = $this->versionTable->getRecords();
+        $dbres = $this->getRecords();
         while ($aItem = $dbres->Fetch()) {
             $ts = $this->getVersionTimestamp($aItem['version']);
             if ($ts) {
@@ -153,13 +169,16 @@ class VersionManager
 
         $files = array();
         /* @var $item \SplFileInfo */
-        $directory = new \DirectoryIterator(Module::getMigrationDir());
+        $directory = new \DirectoryIterator($this->getConfigVal('migration_dir'));
         foreach ($directory as $item) {
-            $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
-            $ts = $this->getVersionTimestamp($fileName);
-            if ($ts) {
-                $files[$fileName] = $ts;
+            if ($item->isFile()) {
+                $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
+                $ts = $this->getVersionTimestamp($fileName);
+                if ($ts) {
+                    $files[$fileName] = $ts;
+                }
             }
+
         }
 
         $merge = array_merge($records, $files);
@@ -176,18 +195,18 @@ class VersionManager
 
             $meta = $this->prepVersionMeta($version, $isFile, $isRecord);
 
-            if (empty($filter['status']) || $filter['status'] == $meta['status']){
+            if (empty($filter['status']) || $filter['status'] == $meta['status']) {
 
-                if (!empty($filter['search'])){
+                if (!empty($filter['search'])) {
                     $textindex = $meta['version'] . $meta['description'];
                     $searchword = $filter['search'];
 
-                    $textindex = Out::convertToUtf8IfNeed($textindex);
-                    $searchword = Out::convertToUtf8IfNeed($searchword);
+                    $textindex = Locale::convertToUtf8IfNeed($textindex);
+                    $searchword = Locale::convertToUtf8IfNeed($searchword);
 
                     $searchword = trim($searchword);
 
-                    if (false !== mb_stripos($textindex, $searchword, null, 'utf-8')){
+                    if (false !== mb_stripos($textindex, $searchword, null, 'utf-8')) {
                         $result[] = $meta;
                     }
 
@@ -263,7 +282,7 @@ class VersionManager
     }
 
     protected function getVersionFile($versionName) {
-        return Module::getMigrationDir() . '/' . $versionName . '.php';
+        return $this->getConfigVal('migration_dir') . '/' . $versionName . '.php';
     }
 
     protected function isFileExists($versionName) {
@@ -272,7 +291,7 @@ class VersionManager
     }
 
     protected function isRecordExists($versionName) {
-        $record = $this->versionTable->getRecordByName($versionName)->Fetch();
+        $record = $this->getRecordByName($versionName)->Fetch();
         return (empty($record)) ? 0 : 1;
     }
 
@@ -307,11 +326,14 @@ class VersionManager
         return $html;
     }
 
-
-    protected function purifyPrefix($prefix = '') {
+    protected function preparePrefix($prefix = '') {
         $prefix = trim($prefix);
-        $default = 'Version';
+        if (empty($prefix)){
+            $prefix = $this->getConfigVal('version_prefix');
+            $prefix = trim($prefix);
+        }
 
+        $default = 'Version';
         if (empty($prefix)) {
             return $default;
         }
@@ -330,7 +352,7 @@ class VersionManager
 
     protected function purifyDescriptionForFile($descr = '') {
         $descr = strval($descr);
-        $descr = str_replace(array("\n\r", "\r\n", "\n","\r"), ' ', $descr );
+        $descr = str_replace(array("\n\r", "\r\n", "\n", "\r"), ' ', $descr);
         $descr = strip_tags($descr);
         $descr = addslashes($descr);
         return $descr;
@@ -338,10 +360,40 @@ class VersionManager
 
     protected function purifyDescriptionForMeta($descr = '') {
         $descr = strval($descr);
-        $descr = str_replace(array("\n\r", "\r\n", "\n","\r"), ' ', $descr );
+        $descr = str_replace(array("\n\r", "\r\n", "\n", "\r"), ' ', $descr);
         $descr = strip_tags($descr);
         $descr = stripslashes($descr);
         return $descr;
     }
 
+
+    //config
+    public function getConfigName() {
+        return $this->versionConfig->getConfigName();
+    }
+
+    public function getConfigVal($val, $default = '') {
+        return $this->versionConfig->getConfigVal($val, $default);
+    }
+
+    public function getConfigInfo() {
+        return $this->versionConfig->getConfigInfo();
+    }
+
+    //table
+    protected function getRecords(){
+        return $this->versionTable->getRecords();
+    }
+
+    protected function getRecordByName($versionName){
+        return $this->versionTable->getRecordByName($versionName);
+    }
+
+    protected function addRecord($versionName){
+        return $this->versionTable->addRecord($versionName);
+    }
+
+    protected function removeRecord($versionName){
+        return $this->versionTable->removeRecord($versionName);
+    }
 }

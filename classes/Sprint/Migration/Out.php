@@ -121,22 +121,17 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
 
-        $msg = self::convertToUtf8IfNeed($msg);
+        $msg = Locale::convertToUtf8IfNeed($msg);
         return $msg;
     }
 
 
     public static function prepareToHtml($msg){
-        $taskUrl = Module::getFileOption('tracker_task_url');
-        if ($taskUrl && false !== strpos($taskUrl, '$1')){
-            $msg = preg_replace('/#(\d+)/', '<a target="_blank" href="'.$taskUrl.'">#$1</a>', $msg);
-        }
-
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
 
-        $msg = self::convertToWin1251IfNeed($msg);
+        $msg = Locale::convertToWin1251IfNeed($msg);
         return $msg;
     }
 
@@ -192,24 +187,6 @@ class Out
         }
     }
 
-    public static function convertToUtf8IfNeed($msg) {
-        if (Module::isWin1251() && !self::detectUtf8($msg)){
-            $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
-        }
-        return $msg;
-    }
-
-    public static function convertToWin1251IfNeed($msg) {
-        if (Module::isWin1251() && self::detectUtf8($msg)){
-            $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
-        }
-        return $msg;
-    }
-
-    protected static function detectUtf8($msg){
-        return (md5($msg) == md5(iconv('utf-8', 'utf-8', $msg))) ? 1 : 0;
-    }
-
     protected static function outTableSep(){
         $res = '';
         $colCnt = count(self::$tableMaxCol);
@@ -232,7 +209,7 @@ class Out
     }
 
     protected static function strLen($str){
-        if (Module::isWin1251()){
+        if (Locale::isWin1251()){
             return strlen($str);
         } else {
             return mb_strlen($str, 'UTF-8');
@@ -240,7 +217,7 @@ class Out
 
     }
     protected static function strPad($input, $pad_length, $pad_string) {
-        if (Module::isWin1251()){
+        if (Locale::isWin1251()){
             return str_pad($input, $pad_length, $pad_string, STR_PAD_RIGHT);
         } else {
             $diff = strlen($input) - mb_strlen($input, 'UTF-8');

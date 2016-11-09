@@ -21,6 +21,7 @@ Class sprint_migration extends CModule
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
 
+        include(__DIR__ .'/../loader.php');
         include(__DIR__ .'/../locale/ru.php');
 
         $this->MODULE_NAME = GetMessage("SPRINT_MIGRATION_MODULE_NAME");
@@ -36,7 +37,6 @@ Class sprint_migration extends CModule
 
     function DoUninstall() {
         //launch upgrade when reinstalled module
-        \Sprint\Migration\Module::setDbOption('upgrade_version', 'unknown');
         DeleteDirFiles(__DIR__ . "/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
         UnRegisterModule($this->MODULE_ID);
     }

@@ -4,6 +4,9 @@
 * Репозиторий проекта (bitbucket): [https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration)
 * Репозиторий проекта (github): [https://github.com/andreyryabin/sprint.migration](https://github.com/andreyryabin/sprint.migration)
 * Composer пакет: [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
+* Rss обновлений модуля: [https://bitbucket.org/andrey_ryabin/sprint.migration/rss](https://bitbucket.org/andrey_ryabin/sprint.migration/rss)
+
+
 
 Установка через composer
 -------------------------
@@ -88,10 +91,14 @@ class Version20150520000001 extends Version {
 * Version0000 (down) success        Откат миграции прошел успешно
 * Version0000 (down) error: (text)  Откат миграции не произошел из-за ошибки (текст ошибки)
 
-Конфиг модуля
+Конфиги модуля
 -------------------------
-Расположение
+Основной (по умолчанию)
 **/local/php_interface/migrations.cfg.php** или **/bitrix/php_interface/migrations.cfg.php**
+
+Дополнительные
+**/local/php_interface/migrations.{NAME}.php** или **/bitrix/php_interface/migrations.{NAME}.php**
+
 
 ```
 <?php return array (
@@ -99,20 +106,39 @@ class Version20150520000001 extends Version {
   'migration_template' => '',
   'migration_table' => '',
   'migration_extend_class' => '',
-  'tracker_task_url' => ''
+  'title' => '',
+  'version_prefix' => '',
+  'tracker_task_url' => '',
 );
 ```
+
+**title** - название конфига
 
 **migration_dir** - директория для миграций (относительно DOC_ROOT), по умолчанию: **/local/php_interface/migrations** или **/bitrix/php_interface/migrations**
 
 **migration_table** - таблица в бд с миграциями, по умолчанию sprint_migration_versions
 
-**migration_extend_class** - класс от которого наследуются миграция, по умолчанию Version (ваш класс должен наследоваться от Version)
+**migration_extend_class** - класс от которого наследуются миграции, по умолчанию Version (ваш класс должен наследоваться от Version)
 
 **tracker_task_url** - шаблон для замены строк вида #номер_задачи на ссылки, в шаблоне должна быть конструкция $1, 
-пример http://www.redmine.org/issues/$1/, работает только в админке
+например http://www.redmine.org/issues/$1/, работает только в админке
 
-Ни один из параметров не является обязательным
+**version_prefix** - Префикс в имени класса миграции, по умолчанию Version (полное имя класса состоит из префикса + даты)
+
+Ни один из параметров не является обязательным.
+
+При указании в конфиге несуществующей директорий для миграций (migration_dir) или таблицы в бд (migration_table) 
+модуль создаст их.
+
+Текущий конфиг помечается звездочкой * как в админке, в блоке конфигов, так и в консоли (команда config).
+
+Переключить конфиг в админке можно нажав кнопку "переключить" напротив нужного конфига
+В консоли - используя параметр --config={NAME} к любой команде
+
+Примеры:
+* php migrate.php config --config=release001 (переключить конфиг на release001 и посмотреть список конфигов)
+* php migrate.php migrate --config=release001 (переключить конфиг на release001 и накатить все миграции)
+
 
 Пример вашего класса от которого наследуются классы миграций
 -------------------------
@@ -174,7 +200,7 @@ class Version20151113185212 extends MyVersion {
 * методов класса Version (который наследуют ваши миграции)
 * методов в хелперах (подключаются в классе миграции)
 * консольных команд описанных в commands.txt
-* конфига migrations.cfg.php
+* конфигах migrations.{NAME}.php
 
 Миграция не выполняется если в методах up() или down()
 вызывается return false или произошло исключение, в остальных случаях миграция выполняется успешно
@@ -188,9 +214,11 @@ class Version20151113185212 extends MyVersion {
 Такие методы есть в Sprint\Migration\Helpers\IblockHelper, например addIblockIfNotExists, addPropertyIfNotExists
 
 
+
+
 Скриншоты
 -------------------------
-![админка](https://bitbucket.org/repo/aejkky/images/872161228-admin-092016.png)
+![админка](https://bitbucket.org/repo/aejkky/images/4102016731-admin-interface.png)
 
 
 Полезные ссылки

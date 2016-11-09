@@ -8,17 +8,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
-    $search = Sprint\Migration\Out::convertToUtf8IfNeed($search);
+    $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
-    $webdir = \Sprint\Migration\Module::getMigrationWebDir();
+    $taskUrl = $versionManager->getConfigVal('tracker_task_url');
+    $webdir = $versionManager->getConfigVal('migration_webdir');
+
     if ($_POST["step_code"] == "migration_new"){
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'new');
+        \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
         $versions = $versionManager->getVersions(array(
             'status' => 'new',
             'search' => $search,
         ));
     } else {
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'list');
+        \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
         $versions = $versionManager->getVersions(array(
             'status' => '',
             'search' => $search,
@@ -26,24 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     }
 
     ?>
-    <? if (!empty($versions)): ?>
-        <table style="border-collapse: collapse;width: 100%">
+    <? if (!empty($versions)):?>
+        <table class="c-migration-list">
         <? foreach ($versions as $aItem):?>
             <tr>
-                <td style="text-align: left;width: 50%;padding: 5px;">
-                <? if ($aItem['status'] != 'unknown' && $webdir): ?>
-                    <? $href = '/bitrix/admin/fileman_file_view.php?' . http_build_query(array(
-                            'lang' => LANGUAGE_ID,
-                            'site' => SITE_ID,
-                            'path' => $webdir . '/' . $aItem['version'] . '.php'
-                        )) ?>
-                    <a class="c-migration-item-<?= $aItem['status'] ?>" href="<?= $href ?>" target="_blank" title=""><?= $aItem['version'] ?></a>
-                <? else: ?>
-                    <span class="c-migration-item-<?= $aItem['status'] ?>"><?= $aItem['version'] ?></span>
-                <? endif ?>
-                    <?if (!empty($aItem['description'])):?><?=\Sprint\Migration\Out::prepareToHtml($aItem['description'])?><?endif?>
-                </td>
-                <td style="text-align: left;width: 50%;padding: 5px;vertical-align: top">
+                <td class="c-migration-list-l">
                 <? if ($aItem['status'] == 'new'): ?>
                     <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <? endif ?>
@@ -51,11 +42,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                     <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'down'});" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
                 <? endif ?>
                 </td>
+                <td class="c-migration-list-r">
+                    <? if ($aItem['status'] != 'unknown' && $webdir): ?>
+                        <? $href = '/bitrix/admin/fileman_file_view.php?' . http_build_query(array(
+                                'lang' => LANGUAGE_ID,
+                                'site' => SITE_ID,
+                                'path' => $webdir . '/' . $aItem['version'] . '.php'
+                            )) ?>
+                        <a class="c-migration-item-<?= $aItem['status'] ?>" href="<?= $href ?>" target="_blank" title=""><?= $aItem['version'] ?></a>
+                    <? else: ?>
+                        <span class="c-migration-item-<?= $aItem['status'] ?>"><?= $aItem['version'] ?></span>
+                    <? endif ?>
+                    <?if (!empty($aItem['description'])):?><?php
+                        if ($taskUrl && false !== strpos($taskUrl, '$1')){
+                            $aItem['description'] = preg_replace('/#(\d+)/', '<a target="_blank" href="'.$taskUrl.'">#$1</a>', $aItem['description']);
+                        }
+                        ?>
+                        <?= \Sprint\Migration\Out::prepareToHtml($aItem['description'])?>
+                    <?endif?>
+                </td>
             </tr>
         <? endforeach ?>
         </table>
     <? else: ?>
-        <p style="text-align: center"><?= GetMessage('SPRINT_MIGRATION_LIST_EMPTY') ?></p>
+        <?= GetMessage('SPRINT_MIGRATION_LIST_EMPTY') ?>
     <? endif ?>
     <?
     /** @noinspection PhpIncludeInspection */
