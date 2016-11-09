@@ -218,7 +218,7 @@ class Version20151113185212 extends MyVersion {
 
 Скриншоты
 -------------------------
-![админка](https://bitbucket.org/repo/aejkky/images/872161228-admin-092016.png)
+![админка](https://bitbucket.org/repo/aejkky/images/4102016731-admin-interface.png)
 
 
 Полезные ссылки
