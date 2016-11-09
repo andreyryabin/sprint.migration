@@ -4,6 +4,9 @@
 * Репозиторий проекта (bitbucket): [https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration)
 * Репозиторий проекта (github): [https://github.com/andreyryabin/sprint.migration](https://github.com/andreyryabin/sprint.migration)
 * Composer пакет: [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
+* Rss обновлений модуля: [https://bitbucket.org/andrey_ryabin/sprint.migration/rss](https://bitbucket.org/andrey_ryabin/sprint.migration/rss)
+
+
 
 Установка через composer
 -------------------------
