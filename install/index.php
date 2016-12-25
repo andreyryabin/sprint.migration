@@ -41,4 +41,13 @@ Class sprint_migration extends CModule
         UnRegisterModule($this->MODULE_ID);
     }
 
+    function GetModuleRightList(){
+        $arr = array(
+            "reference_id" => array("D","W"),
+            "reference" => array(
+                "[D] ".GetMessage("SPRINT_MIGRATION_RIGHT_D"),
+                "[W] ".GetMessage("SPRINT_MIGRATION_RIGHT_W"))
+        );
+        return $arr;
+    }
 }

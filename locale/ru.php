@@ -60,5 +60,7 @@
     "SPRINT_MIGRATION_MARK_ERROR" => "Миграция не изменена",
     "SPRINT_MIGRATION_CREATE" => "Создать миграцию",
     "SPRINT_MIGRATION_VERSION_NOT_FOUND" => "Миграция не найдена",
+    "SPRINT_MIGRATION_RIGHT_D" => "Доступ запрещен",
+    "SPRINT_MIGRATION_RIGHT_W" => "Доступ разрешен",
 
 ));
