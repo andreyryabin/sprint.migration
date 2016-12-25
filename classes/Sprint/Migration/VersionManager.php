@@ -9,10 +9,10 @@ class VersionManager
 {
 
 
-    /** @var VersionConfig*/
+    /** @var VersionConfig */
     private $versionConfig = null;
 
-    /** @var VersionTable*/
+    /** @var VersionTable */
     private $versionTable = null;
 
     private $restarts = array();
@@ -29,7 +29,7 @@ class VersionManager
             $this->getConfigVal('migration_table')
         );
 
-        Module::setDbOption('config_name',$this->versionConfig->getConfigName());
+        Module::setDbOption('config_name', $this->versionConfig->getConfigName());
     }
 
     public function startMigration($versionName, $action = 'up', $params = array(), $force = false) {
@@ -153,6 +153,21 @@ class VersionManager
         return $this->getVersionMeta($versionName);
     }
 
+    public function markMigration($versionName, $status) {
+        if ($this->checkVersionName($versionName)) {
+            $recordExists = $this->isRecordExists($versionName);
+            if ($status == 'new' && $recordExists) {
+                $this->removeRecord($versionName);
+                return true;
+            }
+
+            if ($status == 'installed' && !$recordExists) {
+                $this->addRecord($versionName);
+                return true;
+            }
+        }
+        return false;
+    }
 
     public function getVersions($filter = array()) {
         $filter = array_merge(array('status' => '', 'search' => ''), $filter);
@@ -328,7 +343,7 @@ class VersionManager
 
     protected function preparePrefix($prefix = '') {
         $prefix = trim($prefix);
-        if (empty($prefix)){
+        if (empty($prefix)) {
             $prefix = $this->getConfigVal('version_prefix');
             $prefix = trim($prefix);
         }
@@ -381,19 +396,19 @@ class VersionManager
     }
 
     //table
-    protected function getRecords(){
+    protected function getRecords() {
         return $this->versionTable->getRecords();
     }
 
-    protected function getRecordByName($versionName){
+    protected function getRecordByName($versionName) {
         return $this->versionTable->getRecordByName($versionName);
     }
 
-    protected function addRecord($versionName){
+    protected function addRecord($versionName) {
         return $this->versionTable->addRecord($versionName);
     }
 
-    protected function removeRecord($versionName){
+    protected function removeRecord($versionName) {
         return $this->versionTable->removeRecord($versionName);
     }
 }

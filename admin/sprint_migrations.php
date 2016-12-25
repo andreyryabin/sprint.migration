@@ -10,6 +10,11 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_ad
 global $APPLICATION;
 $APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATION_TITLE'));
 
+
+if ($APPLICATION->GetGroupRight("sprint.migration") == "D") {
+    $APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
 }
@@ -21,6 +26,7 @@ $versionManager = new Sprint\Migration\VersionManager($configName);
 include __DIR__ .'/steps/migration_execute.php';
 include __DIR__ .'/steps/migration_list.php';
 include __DIR__ .'/steps/migration_status.php';
+include __DIR__ .'/steps/migration_mark.php';
 include __DIR__ .'/steps/migration_create.php';
 
 /** @noinspection PhpIncludeInspection */
@@ -33,6 +39,8 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 <style type="text/css">
 <? include __DIR__ . '/assets/style.css' ?>
 </style>
+
+<div id="migration-container">
 
 <? $tabControl1 = new CAdminTabControl("tabControl2", array(
     array("DIV" => "tab1", "TAB" => GetMessage('SPRINT_MIGRATION_TAB1'), "TITLE" => GetMessage('SPRINT_MIGRATION_TAB1_TITLE')),
@@ -65,6 +73,7 @@ $tabControl1->BeginNextTab();
         <select class="c-migration-stat">
             <option <?if ($view == 'list'):?>selected="selected"<?endif?> value="list"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?></option>
             <option <?if ($view == 'new'):?>selected="selected"<?endif?> value="new"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?></option>
+            <option <?if ($view == 'installed'):?>selected="selected"<?endif?> value="installed"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_INSTALLED') ?></option>
             <option <?if ($view == 'status'):?>selected="selected"<?endif?> value="status"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?></option>
         </select>
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" class="c-migration-search" />
@@ -72,6 +81,8 @@ $tabControl1->BeginNextTab();
 
 <? $tabControl1->End(); ?>
 <div class="c-migration-block">
+    <div class="c-migration-block_title"><?= GetMessage('SPRINT_MIGRATION_CREATE') ?></div>
+
     <p>
         <?= GetMessage('SPRINT_MIGRATION_FORM_PREFIX') ?><br/>
         <input type="text" style="width: 250px;" id="migration_migration_prefix" value="<?=$versionManager->getConfigVal('version_prefix')?>" />
@@ -83,8 +94,23 @@ $tabControl1->BeginNextTab();
     <p>
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();" />
     </p>
+
+    <div id="migration_migration_create_result"></div>
 </div>
-<div class="c-migration-block"><?php
+
+<div class="c-migration-block">
+    <div class="c-migration-block_title"><?= GetMessage('SPRINT_MIGRATION_MARK') ?></div>
+    <p>
+        <input type="text" style="width: 250px;" id="migration_migration_mark" value="" />
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_MARK_AS_INSTALLED') ?>" onclick="migrationMarkMigration('installed');" />
+        <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_MARK_AS_NEW') ?>" onclick="migrationMarkMigration('new');" />
+    </p>
+    <span id="migration_migration_mark_result"></span>
+</div>
+
+<div class="c-migration-block">
+    <div class="c-migration-block_title"><?= GetMessage('SPRINT_MIGRATION_CONFIG_LIST') ?></div>
+    <?php
     $configInfo = $versionManager->getConfigInfo();
     $configName = $versionManager->getConfigName();
     ?><?php foreach ($configInfo as $file) :?>
@@ -118,12 +144,12 @@ $tabControl1->BeginNextTab();
 </div>
 
 <div class="c-migration-block">
-    <p><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></p>
+    <div class="c-migration-block_title"><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></div>
     <p>
         <a href="https://bitbucket.org/andrey_ryabin/sprint.migration" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
     </p>
 </div>
-
+</div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript">
     function migrationMigrationsUpConfirm() {
@@ -179,7 +205,7 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationEnableButtons(enable) {
-        var buttons = $('#tabControl2_layout').find('input,select');
+        var buttons = $('#migration-container').find('input,select');
         if (enable == 1){
             buttons.removeAttr('disabled');
         } else {
@@ -188,12 +214,24 @@ $tabControl1->BeginNextTab();
     }
 
     function migrationCreateMigration() {
+        $('#migration_migration_create_result').html('');
         migrationExecuteStep('migration_create', {
             description: $('#migration_migration_descr').val(),
             prefix: $('#migration_migration_prefix').val()
         }, function (result) {
             $('#migration_migration_descr').val('');
-            migrationOutProgress(result);
+            $('#migration_migration_create_result').html(result);
+            migrationMigrationRefresh();
+        });
+    }
+
+    function migrationMarkMigration(status) {
+        $('#migration_migration_mark_result').html('');
+        migrationExecuteStep('migration_mark', {
+            version: $('#migration_migration_mark').val(),
+            status: status
+        }, function (result) {
+            $('#migration_migration_mark_result').html(result);
             migrationMigrationRefresh();
         });
     }
@@ -227,7 +265,6 @@ $tabControl1->BeginNextTab();
             migrationMigrationRefresh(function(){
                 migrationEnableButtons(1);
                 $('#tab_cont_tab1').click();
-//                $("html, body").scrollTop(0);
             });
         });
 
@@ -236,7 +273,6 @@ $tabControl1->BeginNextTab();
                 migrationMigrationRefresh(function(){
                     migrationEnableButtons(1);
                     $('#tab_cont_tab1').click();
-//                    $("html, body").scrollTop(0);
                 });
             }
         });
@@ -245,7 +281,6 @@ $tabControl1->BeginNextTab();
             migrationMigrationRefresh(function(){
                 migrationEnableButtons(1);
                 $('#tab_cont_tab1').click();
-//                $("html, body").scrollTop(0);
             });
         });
 

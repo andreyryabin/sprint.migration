@@ -1,6 +1,11 @@
 <?php
+if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
-$listView = (($_POST["step_code"] == "migration_new") || ($_POST["step_code"] == "migration_list"));
+$listView = (
+        ($_POST["step_code"] == "migration_new") ||
+        ($_POST["step_code"] == "migration_list") ||
+        ($_POST["step_code"] == "migration_installed")
+);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('send_sessid')) {
 
@@ -13,13 +18,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     $taskUrl = $versionManager->getConfigVal('tracker_task_url');
     $webdir = $versionManager->getConfigVal('migration_webdir');
 
-    if ($_POST["step_code"] == "migration_new"){
+    if ($_POST["step_code"] == "migration_new") {
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'new');
         \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
         $versions = $versionManager->getVersions(array(
             'status' => 'new',
             'search' => $search,
         ));
+    }elseif ($_POST["step_code"] == "migration_installed"){
+        \Sprint\Migration\Module::setDbOption('admin_versions_view', 'installed');
+        \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
+        $versions = $versionManager->getVersions(array(
+            'status' => 'installed',
+            'search' => $search,
+        ));
+
     } else {
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'list');
         \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);

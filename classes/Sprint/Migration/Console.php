@@ -36,9 +36,29 @@ class Console
         $this->outVersionMeta($meta);
     }
 
+    public function commandMark() {
+        $versionName = $this->getArg(0, '');
+        $status = $this->getArg('--as=', '');
+
+        if ($this->getVersionManager()->markMigration($versionName, $status)){
+            Out::outError(GetMessage('SPRINT_MIGRATION_MARK_SUCCESS'));
+            $meta = $this->getVersionManager()->getVersionMeta($versionName);
+            $this->outVersionMeta($meta);
+        } else {
+            Out::outError(GetMessage('SPRINT_MIGRATION_MARK_ERROR'));
+        }
+    }
+
     public function commandList() {
         $search = $this->getArg('--search=');
-        $status = ($this->getArg('--new')) ? 'new' : '';
+
+        if ($this->getArg('--new')){
+            $status = 'new';
+        } elseif ($this->getArg('--installed')){
+            $status = 'installed';
+        } else {
+            $status = '';
+        }
 
         $versions = $this->getVersionManager()->getVersions(array(
             'status' => $status,
@@ -276,7 +296,7 @@ class Console
             }
             Out::outTable();
         } else {
-            Out::out('Version not found!');
+            Out::out(GetMessage('SPRINT_MIGRATION_VERSION_NOT_FOUND'));
         }
     }
 

@@ -7,6 +7,13 @@
     padding: 19px
 }
 
+.c-migration-block_title {
+    color: #000;
+    font-size: 20px;
+    padding: 3px 53px 12px 0;
+    position: relative;
+    min-height: 25px;
+}
 .c-migration-filter{
     /*margin: 10px 0;*/
     /*background: #ccc;*/

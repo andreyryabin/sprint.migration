@@ -49,6 +49,7 @@ require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.
 * php migrate.php list --search=text (список миграций отфильтрованных по названию и описанию)
 * php migrate.php migrate (накатить все)
 * php migrate.php execute <version> (накатить выбранную миграцию)
+* php migrate.php mark <version> --as=installed (отметить миграцию как установленную не запуская ее)
 
 Все команды: https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/commands.txt?fileviewer=file-view-default
 
