@@ -1,7 +1,6 @@
 <?php
-
-if (!empty($_SERVER["HTTP_HOST"])){
-    die('console only');
+if (php_sapi_name() != 'cli') {
+    die('Can not run in this mode. Bye!');
 }
 
 set_time_limit(0);
