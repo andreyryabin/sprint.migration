@@ -39,12 +39,7 @@
 #!/usr/bin/env php
 <?php
 
-if (php_sapi_name() != 'cli') {
-    die('Can not run in this mode. Bye!');
-}
-
 require_once realpath(__DIR__) . '/local/modules/sprint.migration/tools/migrate.php';
-
 
 ```
 
