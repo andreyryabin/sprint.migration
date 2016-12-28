@@ -39,7 +39,12 @@
 #!/usr/bin/env php
 <?php
 
-require($_SERVER["DOCUMENT_ROOT"]."local/modules/sprint.migration/tools/migrate.php");
+if (php_sapi_name() != 'cli') {
+    die('Can not run in this mode. Bye!');
+}
+
+require_once realpath(__DIR__) . '/local/modules/sprint.migration/tools/migrate.php';
+
 
 ```
 
@@ -228,4 +233,3 @@ class Version20151113185212 extends MyVersion {
 * Пошаговое выполнение миграции, примеры скриптов, видео: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/)
 * Видео с работой модуля (интерфейс уже немного поменялся) [https://www.youtube.com/watch?v=uYZ8-XIre2Q](https://www.youtube.com/watch?v=uYZ8-XIre2Q)
 * Пожелания и ошибки присылайте сюда: [https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new](https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new)
-  
