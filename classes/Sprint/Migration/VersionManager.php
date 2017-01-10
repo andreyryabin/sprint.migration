@@ -44,7 +44,7 @@ class VersionManager
 
             $action = ($action == 'up') ? 'up' : 'down';
 
-            $meta = $this->getVersionMeta($versionName);
+            $meta = $this->getVersionByName($versionName);
 
             if (!$meta || empty($meta['class'])) {
                 throw new MigrationException('failed to initialize migration');
@@ -150,21 +150,74 @@ class VersionManager
             return false;
         }
 
-        return $this->getVersionMeta($versionName);
+        return $this->getVersionByName($versionName);
     }
 
-    public function markMigration($versionName, $status) {
-        if ($this->checkVersionName($versionName)) {
-            $recordExists = $this->isRecordExists($versionName);
-            if ($status == 'new' && $recordExists) {
-                $this->removeRecord($versionName);
-                return true;
-            }
+    public function markMigration($search, $status) {
+        // $search - VersionName | new | installed | unknown
+        // $status - new | installed
 
-            if ($status == 'installed' && !$recordExists) {
-                $this->addRecord($versionName);
-                return true;
+        $search = trim($search);
+        $status = trim($status);
+
+        $result = array();
+        if (in_array($status, array('new', 'installed'))){
+            if ($this->checkVersionName($search)) {
+                $meta = $this->getVersionByName($search);
+                $meta = !empty($meta) ? $meta : array('version' => $search);
+                $result[] = $this->markMigrationByMeta($meta, $status);
+
+            } elseif (in_array($search, array('new', 'installed', 'unknown'))) {
+                $metas = $this->getVersions(array('status' => $search));
+                foreach ($metas as $meta) {
+                    $result[] = $this->markMigrationByMeta($meta, $status);
+                }
             }
+        }
+
+        if (empty($result)){
+            $result[] = array(
+                'message' => GetMessage('SPRINT_MIGRATION_MARK_ERROR4'),
+                'success' => false,
+            );
+        }
+
+        return $result;
+    }
+
+    protected function markMigrationByMeta($meta, $status) {
+        $msg = 'SPRINT_MIGRATION_MARK_ERROR3';
+        $success = false;
+
+        if ($status == 'new') {
+            if ($meta['is_record']) {
+                $this->removeRecord($meta['version']);
+                $msg = 'SPRINT_MIGRATION_MARK_SUCCESS1';
+                $success = true;
+            } else {
+                $msg = 'SPRINT_MIGRATION_MARK_ERROR1';
+            }
+        } elseif ($status == 'installed') {
+            if (!$meta['is_record']) {
+                $this->addRecord($meta['version']);
+                $msg = 'SPRINT_MIGRATION_MARK_SUCCESS2';
+                $success = true;
+            } else {
+                $msg = 'SPRINT_MIGRATION_MARK_ERROR2';
+            }
+        }
+
+        return array(
+            'message' => GetMessage($msg,array('#VERSION#' => $meta['version'])),
+            'success' => $success,
+        );
+    }
+
+    public function getVersionByName($versionName) {
+        if ($this->checkVersionName($versionName)) {
+            $isRecord = $this->isRecordExists($versionName);
+            $isFile = $this->isFileExists($versionName);
+            return $this->prepVersionMeta($versionName, $isFile, $isRecord);
         }
         return false;
     }
@@ -287,14 +340,6 @@ class VersionManager
 
     }
 
-    public function getVersionMeta($versionName) {
-        if ($this->checkVersionName($versionName)) {
-            $isRecord = $this->isRecordExists($versionName);
-            $isFile = $this->isFileExists($versionName);
-            return $this->prepVersionMeta($versionName, $isFile, $isRecord);
-        }
-        return false;
-    }
 
     protected function getVersionFile($versionName) {
         return $this->getConfigVal('migration_dir') . '/' . $versionName . '.php';

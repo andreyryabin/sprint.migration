@@ -32,20 +32,22 @@ class Console
         $descr = $this->getArg('--desc=', $descr);
         $prefix = $this->getArg('--prefix=', $prefix);
 
-        $meta = $this->getVersionManager()->createVersionFile($descr, $prefix);
-        $this->outVersionMeta($meta);
+        $this->outVersionMeta(
+            $this->getVersionManager()->createVersionFile($descr, $prefix)
+        );
     }
 
     public function commandMark() {
-        $versionName = $this->getArg(0, '');
+        $search = $this->getArg(0,'');
         $status = $this->getArg('--as=', '');
 
-        if ($this->getVersionManager()->markMigration($versionName, $status)){
-            Out::outError(GetMessage('SPRINT_MIGRATION_MARK_SUCCESS'));
-            $meta = $this->getVersionManager()->getVersionMeta($versionName);
-            $this->outVersionMeta($meta);
+        if ($search && $status){
+            $markresult = $this->getVersionManager()->markMigration($search, $status);
+            foreach ($markresult as $val){
+                Out::out($val['message']);
+            }
         } else {
-            Out::outError(GetMessage('SPRINT_MIGRATION_MARK_ERROR'));
+            Out::out('Command error, see help');
         }
     }
 
@@ -87,8 +89,9 @@ class Console
         $version = $this->getArg(0, '');
 
         if ($version) {
-            $meta = $this->getVersionManager()->getVersionMeta($version);
-            $this->outVersionMeta($meta);
+            $this->outVersionMeta(
+                $this->getVersionManager()->getVersionByName($version)
+            );
 
         } else {
             $search = $this->getArg('--search=');

@@ -8,12 +8,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ma
     $version = isset($_POST['version']) ? $_POST['version'] : 0;
     $status = !empty($_POST['status']) ? $_POST['status'] : 0;
 
-    if ($versionManager->markMigration($version, $status)){
-        Sprint\Migration\Out::outSuccess(GetMessage('SPRINT_MIGRATION_MARK_SUCCESS'));
-    } else {
-        Sprint\Migration\Out::outError(GetMessage('SPRINT_MIGRATION_MARK_ERROR'));
+    $markresult = $versionManager->markMigration($version, $status);
+    foreach ($markresult as $val){
+        if ($val['success']){
+            Sprint\Migration\Out::outSuccess($val['message']);
+        } else {
+            Sprint\Migration\Out::outError($val['message']);
+        }
     }
-
 
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
