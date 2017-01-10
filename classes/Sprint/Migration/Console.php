@@ -217,6 +217,16 @@ class Console
         Out::out('Версия bitrix: %s', defined('SM_VERSION') ? SM_VERSION : '');
         Out::out('Версия модуля: %s', Module::getVersion());
         Out::out('');
+
+        $configItem = $this->getVersionManager()->getConfigCurrent();
+        Out::out($configItem['title']);
+        Out::initTable(array());
+        foreach ($configItem['values'] as $key => $val) {
+            Out::addTableRow(array($key, $val));
+        }
+        Out::outTable();
+
+        Out::out('');
         Out::out('Запуск:' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL, $this->script);
         Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
         Out::out(PHP_EOL . 'Пожелания и ошибки присылайте сюда');
@@ -224,14 +234,14 @@ class Console
     }
 
     public function commandConfig() {
-        $configInfo = $this->getVersionManager()->getConfigInfo();
+        $configList = $this->getVersionManager()->getConfigList();
         $configName = $this->getVersionManager()->getConfigName();
 
-        foreach ($configInfo as $file) {
-            $current = ($file['name'] == $configName) ? '*' : '';
-            Out::out('%s %s', $file['title'], $current);
+        foreach ($configList as $configItem) {
+            $current = ($configItem['name'] == $configName) ? '*' : '';
+            Out::out('%s %s', $configItem['title'], $current);
             Out::initTable(array());
-            foreach ($file['values'] as $key => $val) {
+            foreach ($configItem['values'] as $key => $val) {
                 Out::addTableRow(array($key, $val));
             }
             Out::outTable();

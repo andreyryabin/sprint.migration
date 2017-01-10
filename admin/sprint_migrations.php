@@ -111,19 +111,19 @@ $tabControl1->BeginNextTab();
 <div class="c-migration-block">
     <div class="c-migration-block_title"><?= GetMessage('SPRINT_MIGRATION_CONFIG_LIST') ?></div>
     <?php
-    $configInfo = $versionManager->getConfigInfo();
+    $configList = $versionManager->getConfigList();
     $configName = $versionManager->getConfigName();
-    ?><?php foreach ($configInfo as $file) :?>
+    ?><?php foreach ($configList as $configItem) :?>
     <table class="c-migration-config">
         <thead>
         <tr>
             <td colspan="2">
-                <?if ($file['name'] == $configName):?>
-                    <strong><?=$file['title']?> *</strong>
+                <?if ($configItem['name'] == $configName):?>
+                    <strong><?=$configItem['title']?> *</strong>
                 <?else:?>
                     <form method="get" action="">
-                        <strong><?=$file['title']?></strong> &nbsp;
-                        <input name="config" type="hidden" value="<?=$file['name']?>">
+                        <strong><?=$configItem['title']?></strong> &nbsp;
+                        <input name="config" type="hidden" value="<?=$configItem['name']?>">
                         <input name="lang" type="hidden" value="<?=LANGUAGE_ID?>">
                         <input type="submit" value="<?=GetMessage('SPRINT_MIGRATION_CONFIG_SWITCH')?>">
                     </form>
@@ -132,7 +132,7 @@ $tabControl1->BeginNextTab();
         </tr>
         </thead>
         <tbody>
-        <? foreach ($file['values'] as $key => $val) :?>
+        <? foreach ($configItem['values'] as $key => $val) :?>
             <tr>
                 <td><?=$key?></td>
                 <td><?=$val?></td>

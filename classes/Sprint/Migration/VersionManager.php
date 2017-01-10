@@ -436,8 +436,12 @@ class VersionManager
         return $this->versionConfig->getConfigVal($val, $default);
     }
 
-    public function getConfigInfo() {
-        return $this->versionConfig->getConfigInfo();
+    public function getConfigList() {
+        return $this->versionConfig->getConfigList();
+    }
+
+    public function getConfigCurrent() {
+        return $this->versionConfig->getConfigCurrent();
     }
 
     //table

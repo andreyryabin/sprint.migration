@@ -56,8 +56,12 @@ class VersionConfig
         return $this->configCurrent['name'];
     }
 
-    public function getConfigInfo() {
+    public function getConfigList() {
         return $this->configList;
+    }
+
+    public function getConfigCurrent() {
+        return $this->configCurrent;
     }
 
     protected function validConfig($values) {
