@@ -15,17 +15,19 @@ class Version20150520000004 extends Version {
 
         $helper->AdminIblock()->buildElementForm($iblockId, array(
             'Tab1' => array(
-                'ACTIVE|Активность',
+                'ACTIVE' => 'Активность',
                 'ACTIVE_FROM',
                 'ACTIVE_TO',
-                'NAME|Название',
-                'CODE|Символьный код',
+                'NAME' => 'Название',
+                'CODE' => 'Символьный код',
                 'SORT',
             ),
             'Tab2' => array(
                 'PREVIEW_TEXT',
                 'PROPERTY_LINK',
             )
+        ), array(
+            'add_seo_tab' => 1
         ));
 
         $helper->AdminIblock()->buildElementList($iblockId, array(

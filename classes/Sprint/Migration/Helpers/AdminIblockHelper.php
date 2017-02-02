@@ -26,15 +26,14 @@ class AdminIblockHelper extends Helper
             $this->throwException(__METHOD__, 'Iblock form options not found');
         }
 
-        $extracted = array();
+        $extractedTabs = array();
 
-        $tabs = explode(';', $option['tabs']);
-        foreach ($tabs as $tabStrings) {
+        $optionTabs = explode(';', $option['tabs']);
+        foreach ($optionTabs as $tabStrings) {
+            $extractedFields = array();
+            $tabTitle = '';
 
             $columnString = explode(',', $tabStrings);
-            $extractedFields = array();
-
-            $tabTitle = '';
 
             foreach ($columnString as $fieldIndex => $fieldString) {
                 if (!strpos($fieldString, '#')) {
@@ -57,13 +56,13 @@ class AdminIblockHelper extends Helper
             }
 
             if ($tabTitle) {
-                $extracted[$tabTitle] = $extractedFields;
+                $extractedTabs[$tabTitle] = $extractedFields;
             }
 
         }
 
-        if (!empty($extracted)) {
-            return $extracted;
+        if (!empty($extractedTabs)) {
+            return $extractedTabs;
         }
 
         $this->throwException(__METHOD__, 'Iblock form options not found');
@@ -104,10 +103,13 @@ class AdminIblockHelper extends Helper
             )
         );  */
 
+        if (!empty($params['add_seo_tab'])) {
+            $tabs['SEO'] = $this->getSeoTab();
+        }
+
+
         $tabIndex = 0;
-
         $tabVals = array();
-
         foreach ($tabs as $tabTitle => $fields) {
 
             $tabCode = ($tabIndex == 0) ? 'edit' . ($tabIndex + 1) : '--edit' . ($tabIndex + 1);
@@ -213,8 +215,8 @@ class AdminIblockHelper extends Helper
 
         $iblockMess = \IncludeModuleLangFile('/bitrix/modules/iblock/iblock.php', 'ru', true);
 
-        $iblockMess['IBLOCK_FIELD_ACTIVE_FROM'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_FROM'];
-        $iblockMess['IBLOCK_FIELD_ACTIVE_TO'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_TO'];
+        $this->titles['ACTIVE_FROM'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_FROM'];
+        $this->titles['ACTIVE_TO'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_TO'];
 
         foreach ($iblockMess as $code => $value) {
             if (false !== strpos($code, 'IBLOCK_FIELD_')) {
@@ -222,9 +224,27 @@ class AdminIblockHelper extends Helper
                 $this->titles[$fcode] = $value;
             }
         }
+    }
 
+    protected function getSeoTab() {
+        $seoMess = \IncludeModuleLangFile('/bitrix/modules/iblock/admin/iblock_element_edit.php', 'ru', true);
 
-        //$seoMess =  \IncludeModuleLangFile('/bitrix/modules/iblock/iblock.php', 'ru', true);
+        return array(
+            'IPROPERTY_TEMPLATES_ELEMENT_META_TITLE' => $seoMess['IBEL_E_SEO_META_TITLE'],
+            'IPROPERTY_TEMPLATES_ELEMENT_META_KEYWORDS' => $seoMess['IBEL_E_SEO_META_KEYWORDS'],
+            'IPROPERTY_TEMPLATES_ELEMENT_META_DESCRIPTION' => $seoMess['IBEL_E_SEO_META_DESCRIPTION'],
+            'IPROPERTY_TEMPLATES_ELEMENT_PAGE_TITLE' => $seoMess['IBEL_E_SEO_ELEMENT_TITLE'],
+            'IPROPERTY_TEMPLATES_ELEMENTS_PREVIEW_PICTURE' => $seoMess['IBEL_E_SEO_FOR_ELEMENTS_PREVIEW_PICTURE'],
+            'IPROPERTY_TEMPLATES_ELEMENT_PREVIEW_PICTURE_FILE_ALT' => $seoMess['IBEL_E_SEO_FILE_ALT'],
+            'IPROPERTY_TEMPLATES_ELEMENT_PREVIEW_PICTURE_FILE_TITLE' => $seoMess['IBEL_E_SEO_FILE_TITLE'],
+            'IPROPERTY_TEMPLATES_ELEMENT_PREVIEW_PICTURE_FILE_NAME' => $seoMess['IBEL_E_SEO_FILE_NAME'],
+            'IPROPERTY_TEMPLATES_ELEMENTS_DETAIL_PICTURE' => $seoMess['IBEL_E_SEO_FOR_ELEMENTS_DETAIL_PICTURE'],
+            'IPROPERTY_TEMPLATES_ELEMENT_DETAIL_PICTURE_FILE_ALT' => $seoMess['IBEL_E_SEO_FILE_ALT'],
+            'IPROPERTY_TEMPLATES_ELEMENT_DETAIL_PICTURE_FILE_TITLE' => $seoMess['IBEL_E_SEO_FILE_TITLE'],
+            'IPROPERTY_TEMPLATES_ELEMENT_DETAIL_PICTURE_FILE_NAME' => $seoMess['IBEL_E_SEO_FILE_NAME'],
+            'SEO_ADDITIONAL' => $seoMess['IBLOCK_EL_TAB_MO'],
+            'TAGS' => '',
+        );
     }
 
     protected function prepareTitle($fieldCode, $fieldTitle = '') {
