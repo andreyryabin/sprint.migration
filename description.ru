@@ -1,1 +1,1 @@
-1) Команда для удаления неизвестных миграций Issue #25 (автор Marat Bakirov)
+1) Расширить функционал хелпера AdminIblock Issue #26 (автор Dmitriy Tretyakov)
