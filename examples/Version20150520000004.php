@@ -25,9 +25,8 @@ class Version20150520000004 extends Version {
             'Tab2' => array(
                 'PREVIEW_TEXT',
                 'PROPERTY_LINK',
-            )
-        ), array(
-            'add_seo_tab' => 1
+            ),
+            'SEO' => array()
         ));
 
         $helper->AdminIblock()->buildElementList($iblockId, array(
@@ -40,6 +39,16 @@ class Version20150520000004 extends Version {
             'by' => 'id',
             'page_size' => 10
         ));
+
+
+        //пример с обновлениями нескольких полей
+        $tabs = $helper->AdminIblock()->extractElementForm($iblockId);
+
+        unset($tabs['Tab2']['PREVIEW_TEXT']);
+
+        $tabs['Tab1']['SECTIONS'] = 'Разделы';
+
+        $helper->AdminIblock()->buildElementForm($iblockId, $tabs);
 
     }
 

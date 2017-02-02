@@ -103,14 +103,13 @@ class AdminIblockHelper extends Helper
             )
         );  */
 
-        if (!empty($params['add_seo_tab'])) {
-            $tabs['SEO'] = $this->getSeoTab();
-        }
-
-
         $tabIndex = 0;
         $tabVals = array();
         foreach ($tabs as $tabTitle => $fields) {
+
+            if ($tabTitle == 'SEO' && empty($fields)){
+                $fields = $this->getSeoTab();
+            }
 
             $tabCode = ($tabIndex == 0) ? 'edit' . ($tabIndex + 1) : '--edit' . ($tabIndex + 1);
             $tabVals[$tabIndex][] = $tabCode . '--#--' . $tabTitle . '--';
