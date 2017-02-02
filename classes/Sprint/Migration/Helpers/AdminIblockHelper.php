@@ -11,10 +11,84 @@ class AdminIblockHelper extends Helper
     private $props = array();
     private $iblock = array();
 
+    public function extractElementForm($iblockId, $params = array()) {
+        $this->initializeVars($iblockId);
+
+        $params = array_merge(array(
+            'name_prefix' => 'form_element_',
+            'category' => 'form',
+        ), $params);
+
+        $name = $params['name_prefix'] . $iblockId;
+        $option = \CUserOptions::GetOption($params['category'], $name, false, false);
+
+        if (!$option || empty($option['tabs'])) {
+            $this->throwException(__METHOD__, 'Iblock form options not found');
+        }
+
+        $extracted = array();
+
+        $tabs = explode(';', $option['tabs']);
+        foreach ($tabs as $tabStrings) {
+
+            $columnString = explode(',', $tabStrings);
+            $extractedFields = array();
+
+            $tabTitle = '';
+
+            foreach ($columnString as $fieldIndex => $fieldString) {
+                if (!strpos($fieldString, '#')) {
+                    continue;
+                }
+
+                list($fieldCode, $fieldTitle) = explode('#', $fieldString);
+
+                $fieldCode = str_replace('--', '', strval($fieldCode));
+                $fieldTitle = str_replace('--', '', strval($fieldTitle));
+
+                $fieldCode = trim($fieldCode, '*');
+                $fieldTitle = trim($fieldTitle, '*');
+
+                if ($fieldIndex == 0) {
+                    $tabTitle = $fieldTitle;
+                } else {
+                    $extractedFields[$fieldCode] = $fieldTitle;
+                }
+            }
+
+            if ($tabTitle) {
+                $extracted[$tabTitle] = $extractedFields;
+            }
+
+        }
+
+        if (!empty($extracted)) {
+            return $extracted;
+        }
+
+        $this->throwException(__METHOD__, 'Iblock form options not found');
+    }
+
     public function buildElementForm($iblockId, $tabs = array(), $params = array()) {
         $this->initializeVars($iblockId);
 
         /** @example *//*
+        $tabs = array(
+            'Tab1' => array(
+                'ACTIVE' => 'Активность',
+                'ACTIVE_FROM' => '',
+                'ACTIVE_TO' => '',
+                'NAME' => 'Название',
+                'CODE' => Символьный код',
+                'SORT' => '',
+            ),
+            'Tab2' => array(
+                'PREVIEW_TEXT' => '',
+                'PROPERTY_LINK' => '',
+            )
+        );  */
+
+        /** @compability *//*
         $tabs = array(
             'Tab1' => array(
                 'ACTIVE|Активность',
@@ -39,8 +113,15 @@ class AdminIblockHelper extends Helper
             $tabCode = ($tabIndex == 0) ? 'edit' . ($tabIndex + 1) : '--edit' . ($tabIndex + 1);
             $tabVals[$tabIndex][] = $tabCode . '--#--' . $tabTitle . '--';
 
-            foreach ($fields as $val) {
-                list($fcode, $ftitle) = explode('|', $val);
+            foreach ($fields as $fieldKey => $fieldValue) {
+
+                if (is_numeric($fieldKey)) {
+                    /** @compability */
+                    list($fcode, $ftitle) = explode('|', $fieldValue);
+                } else {
+                    $fcode = $fieldKey;
+                    $ftitle = $fieldValue;
+                }
 
                 $fcode = $this->prepareCode($fcode);
                 $ftitle = $this->prepareTitle($fcode, $ftitle);
@@ -62,7 +143,7 @@ class AdminIblockHelper extends Helper
             'name_prefix' => 'form_element_',
             'category' => 'form',
         ), $params);
-        
+
         $name = $params['name_prefix'] . $iblockId;
         $value = array(
             'tabs' => $opts
@@ -96,7 +177,7 @@ class AdminIblockHelper extends Helper
             'order' => 'desc',
             'by' => 'id',
         ), $params);
-        
+
         $name = $params['name_prefix'] . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
         $value = array(
             'columns' => $opts,
@@ -110,7 +191,10 @@ class AdminIblockHelper extends Helper
     }
 
     protected function initializeVars($iblockId) {
-        $this->iblock = \CIBlock::GetList(array('SORT' => 'ASC'), array('ID' => $iblockId))->Fetch();
+        $this->iblock = \CIBlock::GetList(array('SORT' => 'ASC'), array(
+            'ID' => $iblockId,
+            'CHECK_PERMISSIONS' => 'N',
+        ))->Fetch();
         if (!$this->iblock) {
             $this->throwException(__METHOD__, 'Iblock %d not found', $iblockId);
         }
@@ -138,6 +222,9 @@ class AdminIblockHelper extends Helper
                 $this->titles[$fcode] = $value;
             }
         }
+
+
+        //$seoMess =  \IncludeModuleLangFile('/bitrix/modules/iblock/iblock.php', 'ru', true);
     }
 
     protected function prepareTitle($fieldCode, $fieldTitle = '') {

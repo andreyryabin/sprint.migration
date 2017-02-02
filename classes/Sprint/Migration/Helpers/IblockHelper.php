@@ -365,18 +365,20 @@ class IblockHelper extends Helper
         return ($aItem && isset($aItem['ID'])) ? $aItem['ID'] : 0;
     }
 
-    public function getElements($iblockId, $filter = array()) {
+    public function getElements($iblockId, $filter = array(), $select = array()) {
         $filter['IBLOCK_ID'] = $iblockId;
 
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbResult = \CIBlockElement::GetList(array(
-            'ID' => 'ASC'
-        ), $filter, false, false, array(
+        $select = array_merge(array(
             'ID',
             'IBLOCK_ID',
             'NAME',
             'CODE',
-        ));
+        ), $select);
+
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        $dbResult = \CIBlockElement::GetList(array(
+            'ID' => 'ASC'
+        ), $filter, false, false, $select);
 
         $list = array();
         while ($aItem = $dbResult->Fetch()) {
