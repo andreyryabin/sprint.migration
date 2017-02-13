@@ -1,11 +1,22 @@
 <?php
 
 namespace Sprint\Migration\Helpers;
+
 use Sprint\Migration\Helper;
 
 class UserTypeEntityHelper extends Helper
 {
+    public function addUserTypeEntitiesIfNotExists($entityId, array $fields) {
+        foreach ($fields as $field) {
+            $this->addUserTypeEntityIfNotExists($entityId, $field["FIELD_NAME"], $field);
+        }
+    }
 
+    public function deleteUserTypeEntitiesIfExists($entityId, array $fields) {
+        foreach ($fields as $fieldName) {
+            $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
+        }
+    }
 
     public function addUserTypeEntityIfNotExists($entityId, $fieldName, $fields) {
         /* @global $APPLICATION \CMain */
