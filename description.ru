@@ -1,1 +1,1 @@
-1) Расширить функционал хелпера AdminIblock Issue #26 (автор Dmitriy Tretyakov)
+1) Добавлена возможность добавлять и удалять по несколько user fields (автор Andrew Kopylov)
