@@ -22,7 +22,7 @@ if (\CModule::IncludeModule('sprint.migration')){
     $console = new Sprint\Migration\Console();
     $console->executeConsoleCommand($argv);
 } else {
-    echo 'need to install module sprint.migration';
+    echo 'need to install module sprint.migration' . PHP_EOL;
 }
 
 

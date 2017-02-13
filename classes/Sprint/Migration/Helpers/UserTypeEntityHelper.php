@@ -7,6 +7,18 @@ class UserTypeEntityHelper extends Helper
 {
 
 
+    public function addUserTypeEntitiesIfNotExists($entityId, array $fields) {
+        foreach ($fields as $field) {
+            $this->addUserTypeEntityIfNotExists($entityId, $field["FIELD_NAME"], $field)
+        }
+    }
+
+    public function deleteUserTypeEntitiesIfExists($entityId, $fields) {
+        foreach ($fields as $fieldName) {
+            $this->deleteUserTypeEntitiyIfExists($entityId, $fieldName)
+        }
+    }
+
     public function addUserTypeEntityIfNotExists($entityId, $fieldName, $fields) {
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
