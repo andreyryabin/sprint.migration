@@ -20,8 +20,28 @@ class Version
         return true;
     }
 
+    public function getVersionName(){
+        $path = explode('\\', get_class($this));
+        return array_pop($path);
+    }
+
     public function getDescription() {
         return $this->description;
+    }
+
+    public function saveData($name, $data){
+        $storage = new StorageManager();
+        $storage->saveData($this->getVersionName(), $name, $data);
+    }
+
+    public function getSavedData($name){
+        $storage = new StorageManager();
+        return $storage->getSavedData($this->getVersionName(), $name);
+    }
+
+    public function deleteSavedData($name = false){
+        $storage = new StorageManager();
+        $storage->deleteSavedData($this->getVersionName(), $name);
     }
 
     public function out($msg, $var1 = null, $var2 = null){

@@ -351,7 +351,7 @@ class VersionManager
     }
 
     protected function isRecordExists($versionName) {
-        $record = $this->getRecordByName($versionName)->Fetch();
+        $record = $this->getRecord($versionName)->Fetch();
         return (empty($record)) ? 0 : 1;
     }
 
@@ -449,8 +449,8 @@ class VersionManager
         return $this->versionTable->getRecords();
     }
 
-    protected function getRecordByName($versionName) {
-        return $this->versionTable->getRecordByName($versionName);
+    protected function getRecord($versionName) {
+        return $this->versionTable->getRecord($versionName);
     }
 
     protected function addRecord($versionName) {
