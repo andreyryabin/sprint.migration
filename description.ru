@@ -1,1 +1,3 @@
-1) ƒобавлена возможность добавл€ть и удал€ть по несколько user fields (автор Andrew Kopylov)
+1) ƒобавлена возможность добавл€ть и удал€ть по несколько user fields (автор Andrew Kopylov) <br/>
+2) —охранение данных по миграции issue #28 (автор anton-citrus-soft NA) <br/>
+3) ’елпер дл€ сайтов issue #27 (автор Dmitriy Tretyakov ) <br/>

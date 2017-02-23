@@ -5,39 +5,59 @@ namespace Sprint\Migration;
 
 class Version20170213000007 extends Version {
 
-    protected $description = "Пример работы миграции с сохранением промежуточных данных в бд";
+    protected $description = "Пример работы с шаблонами сайта";
 
     public function up(){
-        //сохраняем данные этой миграции
-        $this->saveData('var1', '1234567');
-        $this->saveData('var2', array(
-            'bbb' => 'axcx',
-            'bbbb' => 'axcx',
+        $helper = new HelperManager();
+
+        //получить список шаблонов
+        $helper->Site()->getSiteTemplates('s1');
+
+
+        //задать шаблоны
+        $helper->Site()->setSiteTemplates('s1', array(
+
+            //Для папки или файла
+            array(
+                'TEMPLATE' => 'main',
+                'IN_DIR' => '/auth.php',
+            ),
+
+            //Период времени
+            array(
+                'TEMPLATE' => 'main',
+                'IN_PERIOD' => array('02.03.2017', '02.05.2017'),
+            ),
+
+            //Для групп пользователей
+            array(
+                'TEMPLATE' => 'main',
+                'IN_GROUP' => array(1,2,3),
+            ),
+
+            //Параметр в URL
+            array(
+                'TEMPLATE' => 'main',
+                'GET_PARAM' => array('print' => 'Y'),
+            ),
+
+            //Выражение PHP
+            array(
+                'TEMPLATE' => 'main',
+                'CONDITION' => 'empty(1)',
+            ),
+
+            //Без условия
+            array(
+                'TEMPLATE' => 'main',
+                'CONDITION' => '',
+            ),
         ));
-
-        //получаем данные этой миграции
-        $var1 = $this->getSavedData('var1');
-        $var2 = $this->getSavedData('var2');
-
-        //удаляем выбранные данные этой миграции
-        $this->deleteSavedData('var1');
-
-        //удаляем все данные этой миграции
-        $this->deleteSavedData();
-
-        //получаем сохраненные данные какой-либо другой миграции
-        $storage = new StorageManager();
-        $var1 = $storage->getSavedData('Version20170213000007', 'var1');
 
     }
 
     public function down(){
-
-
-
-
-
-        $this->deleteSavedData();
+        //
     }
 
 }
