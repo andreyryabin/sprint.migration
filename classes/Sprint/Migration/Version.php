@@ -12,6 +12,8 @@ class Version
 
     protected $params = array();
 
+    protected $storageName = 'default';
+
     public function up() {
         return true;
     }
@@ -30,17 +32,17 @@ class Version
     }
 
     public function saveData($name, $data){
-        $storage = new StorageManager();
+        $storage = new StorageManager($this->storageName);
         $storage->saveData($this->getVersionName(), $name, $data);
     }
 
     public function getSavedData($name){
-        $storage = new StorageManager();
+        $storage = new StorageManager($this->storageName);
         return $storage->getSavedData($this->getVersionName(), $name);
     }
 
     public function deleteSavedData($name = false){
-        $storage = new StorageManager();
+        $storage = new StorageManager($this->storageName);
         $storage->deleteSavedData($this->getVersionName(), $name);
     }
 
