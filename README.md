@@ -5,8 +5,11 @@
 * Репозиторий проекта (github): [https://github.com/andreyryabin/sprint.migration](https://github.com/andreyryabin/sprint.migration)
 * Composer пакет: [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
 * Rss обновлений модуля: [https://bitbucket.org/andrey_ryabin/sprint.migration/rss](https://bitbucket.org/andrey_ryabin/sprint.migration/rss)
-
-
+* Трекер задач: [https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new](https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new)
+* Механизм миграций, обзорная статья: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/)
+* Пошаговое выполнение миграции: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/)
+* Архивирование старых миграций: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/20941/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/20941/)
+* Видео с работой модуля (интерфейс немного поменялся) [https://www.youtube.com/watch?v=uYZ8-XIre2Q](https://www.youtube.com/watch?v=uYZ8-XIre2Q)
 
 Установка через composer
 -------------------------
@@ -80,6 +83,7 @@ class Version20150520000001 extends Version {
 в нем необходимо реализовать 2 метода up и down - которые запускаются при установке и откате миграции,
 например создание инфоблоков или какое либо другое изменение, которое должны получить все копии проекта.
 
+Все примеры: https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/examples/?at=master
 
 Состояния миграций
 -------------------------
@@ -221,14 +225,3 @@ class Version20151113185212 extends MyVersion {
 Скриншоты
 -------------------------
 ![админка](https://bitbucket.org/repo/aejkky/images/4102016731-admin-interface.png)
-
-
-Полезные ссылки
--------------------------
-* Механизм миграций, обзорная статья: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/)
-* Пошаговое выполнение миграции, примеры скриптов, видео: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/)
-* Архивирование старых миграций: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/20941/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/20941/)
-
-
-* Видео с работой модуля (интерфейс уже немного поменялся) [https://www.youtube.com/watch?v=uYZ8-XIre2Q](https://www.youtube.com/watch?v=uYZ8-XIre2Q)
-* Пожелания и ошибки присылайте сюда: [https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new](https://bitbucket.org/andrey_ryabin/sprint.migration/issues/new)

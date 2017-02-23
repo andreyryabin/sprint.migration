@@ -32,6 +32,8 @@ include __DIR__ .'/steps/migration_create.php';
 /** @noinspection PhpIncludeInspection */
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 
+\CUtil::InitJSCore(Array("jquery"));
+
 ?>
 
 <input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid" />
@@ -150,7 +152,6 @@ $tabControl1->BeginNextTab();
     </p>
 </div>
 </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript">
     function migrationMigrationsUpConfirm() {
         if (confirm('<?=GetMessage('SPRINT_MIGRATION_UP_CONFIRM')?>')) {
