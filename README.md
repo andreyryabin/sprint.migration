@@ -1,4 +1,4 @@
-Модуль миграций для 1С-Битрикс [http://www.1c-bitrix.ru/](http://www.1c-bitrix.ru/)
+Модуль миграций для 1С-Битрикс
 --------------------------------------------------------------------------------------------------------
 * Маркетплейс 1с-Битрикс: [http://marketplace.1c-bitrix.ru/solutions/sprint.migration/](http://marketplace.1c-bitrix.ru/solutions/sprint.migration/)
 * Репозиторий проекта (bitbucket): [https://bitbucket.org/andrey_ryabin/sprint.migration](https://bitbucket.org/andrey_ryabin/sprint.migration)
