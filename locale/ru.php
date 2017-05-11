@@ -51,6 +51,14 @@
     "SPRINT_MIGRATION_CONFIG_SWITCHED" => "Конфиг переключен",
     "SPRINT_MIGRATION_CONFIG_CURRENT" => "текущий",
     "SPRINT_MIGRATION_CONFIG_LIST" => "Список конфигураций",
+
+    "SPRINT_MIGRATION_CONFIG_migration_dir" => "Директория для миграций",
+    "SPRINT_MIGRATION_CONFIG_migration_extend_class" => "Класс от которого наследуются миграции",
+    "SPRINT_MIGRATION_CONFIG_migration_table" => "Таблица в бд с миграциями",
+    "SPRINT_MIGRATION_CONFIG_migration_template" => "Шаблон файла миграции",
+    "SPRINT_MIGRATION_CONFIG_tracker_task_url" => "Шаблон ссылки на задачу в трекере",
+    "SPRINT_MIGRATION_CONFIG_version_prefix" => "Префикс в имени класса миграции",
+
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
     "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля",
     "SPRINT_MIGRATION_MARK" => "Отметить миграцию",

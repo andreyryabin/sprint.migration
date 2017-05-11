@@ -10,6 +10,7 @@
 * Механизм миграций, обзорная статья: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/11245/)
 * Пошаговое выполнение миграции: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/13788/)
 * Архивирование старых миграций: [http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/20941/](http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/20941/)
+* Статьи по миграциям [https://dev.1c-bitrix.ru/search/?tags=sprint.migration](https://dev.1c-bitrix.ru/search/?tags=sprint.migration)
 * Видео с работой модуля (интерфейс немного поменялся) [https://www.youtube.com/watch?v=uYZ8-XIre2Q](https://www.youtube.com/watch?v=uYZ8-XIre2Q)
 
 Установка через composer
@@ -127,7 +128,7 @@ class Version20150520000001 extends Version {
 
 **migration_extend_class** - класс от которого наследуются миграции, по умолчанию Version (ваш класс должен наследоваться от Version)
 
-**tracker_task_url** - шаблон для замены строк вида #номер_задачи на ссылки, в шаблоне должна быть конструкция $1, 
+**tracker_task_url** - Шаблон ссылки на задачу в трекере, в описании миграции можно указать номер задачи, например #12345, а в шаблоне должна быть конструкция $1, 
 например http://www.redmine.org/issues/$1/, работает только в админке
 
 **version_prefix** - Префикс в имени класса миграции, по умолчанию Version (полное имя класса состоит из префикса + даты)

@@ -14,8 +14,8 @@ class Console
     }
 
     /** @return VersionManager */
-    protected function getVersionManager(){
-        if (!$this->versionManager){
+    protected function getVersionManager() {
+        if (!$this->versionManager) {
             $this->versionManager = new VersionManager($this->getArg('--config='));
         }
         return $this->versionManager;
@@ -31,19 +31,42 @@ class Console
 
         $descr = $this->getArg('--desc=', $descr);
         $prefix = $this->getArg('--prefix=', $prefix);
+        $from = $this->getArg('--from=', '');
+
+        $builder = $this->getVersionManager()->createVersionBuilder($from);
+
+        $builder->bind(array(
+            'description' => $descr,
+            'prefix' => $prefix,
+        ));
+
+        $fields = $builder->getFields();
+
+        $postvars = array();
+        foreach ($fields as $code => $field) {
+            if (empty($field['bind'])){
+                fwrite(STDOUT, $code . ':');
+                $val = fgets(STDIN);
+                $postvars[$code] = trim($val);
+            }
+        }
+
+        $builder->bind($postvars);
+
+        $versionName = $builder->build();
 
         $this->outVersionMeta(
-            $this->getVersionManager()->createVersionFile($descr, $prefix)
+            $this->getVersionManager()->getVersionByName($versionName)
         );
     }
 
     public function commandMark() {
-        $search = $this->getArg(0,'');
+        $search = $this->getArg(0, '');
         $status = $this->getArg('--as=', '');
 
-        if ($search && $status){
+        if ($search && $status) {
             $markresult = $this->getVersionManager()->markMigration($search, $status);
-            foreach ($markresult as $val){
+            foreach ($markresult as $val) {
                 Out::out($val['message']);
             }
         } else {
@@ -54,9 +77,9 @@ class Console
     public function commandList() {
         $search = $this->getArg('--search=');
 
-        if ($this->getArg('--new')){
+        if ($this->getArg('--new')) {
             $status = 'new';
-        } elseif ($this->getArg('--installed')){
+        } elseif ($this->getArg('--installed')) {
             $status = 'installed';
         } else {
             $status = '';
@@ -67,18 +90,42 @@ class Console
             'search' => $search
         ));
 
+        if ($status) {
+            $summary = array();
+            $summary[$status] = 0;
+        } else {
+            $summary = array(
+                'new' => 0,
+                'installed' => 0,
+                'unknown' => 0
+            );
+        }
+
         Out::initTable(array(
             'Version',
             'Status',
             'Description',
             //'Location'
         ));
+
         foreach ($versions as $aItem) {
             Out::addTableRow(array(
                 $aItem['version'],
                 GetMessage('SPRINT_MIGRATION_META_' . strtoupper($aItem['status'])),
                 $aItem['description'],
                 //$aItem['location'],
+            ));
+
+            $stval = $aItem['status'];
+            $summary[$stval]++;
+        }
+        Out::outTable();
+
+        Out::initTable(array(), false);
+        foreach ($summary as $k => $v) {
+            Out::addTableRow(array(
+                GetMessage('SPRINT_MIGRATION_META_' . strtoupper($k)) . ':',
+                $v
             ));
         }
 
@@ -87,36 +134,9 @@ class Console
 
     public function commandStatus() {
         $version = $this->getArg(0, '');
-
-        if ($version) {
-            $this->outVersionMeta(
-                $this->getVersionManager()->getVersionByName($version)
-            );
-
-        } else {
-            $search = $this->getArg('--search=');
-            $versions = $this->getVersionManager()->getVersions(array(
-                'status' => '',
-                'search' => $search
-            ));
-
-            $status = array(
-                'new' => 0,
-                'installed' => 0,
-                'unknown' => 0,
-            );
-
-            foreach ($versions as $aItem) {
-                $key = $aItem['status'];
-                $status[$key]++;
-            }
-
-            Out::initTable(array('Status', 'Count'));
-            foreach ($status as $k => $v) {
-                Out::addTableRow(array(GetMessage('SPRINT_MIGRATION_META_' . strtoupper($k)), $v));
-            }
-            Out::outTable();
-        }
+        $this->outVersionMeta(
+            $this->getVersionManager()->getVersionByName($version)
+        );
     }
 
     public function commandMigrate() {
@@ -240,7 +260,7 @@ class Console
         foreach ($configList as $configItem) {
             $current = ($configItem['name'] == $configName) ? '*' : '';
             Out::out('%s %s', $configItem['title'], $current);
-            Out::initTable(array());
+            Out::initTable();
             foreach ($configItem['values'] as $key => $val) {
                 Out::addTableRow(array($key, $val));
             }
@@ -297,13 +317,16 @@ class Console
 
     protected function outVersionMeta($meta = false) {
         if ($meta) {
-            Out::initTable();
+            Out::initTable(array(), false);
             foreach (array('version', 'status', 'description', 'location') as $val) {
                 if (!empty($meta[$val])) {
                     if ($val == 'status') {
-                        Out::addTableRow(array(ucfirst($val), GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$val]))));
+                        Out::addTableRow(array(
+                            ucfirst($val) . ':',
+                            GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$val]))
+                        ));
                     } else {
-                        Out::addTableRow(array(ucfirst($val), $meta[$val]));
+                        Out::addTableRow(array(ucfirst($val) . ':', $meta[$val]));
                     }
                 }
             }
@@ -354,7 +377,7 @@ class Console
         list($name, $val) = explode('=', $arg);
         $isparam = (0 === strpos($name, '--')) ? 1 : 0;
         if ($isparam) {
-            if (!is_null($val)){
+            if (!is_null($val)) {
                 $this->arguments[$name . '='] = $val;
             } else {
                 $this->arguments[$name] = 1;
@@ -366,5 +389,17 @@ class Console
 
     protected function getArg($name, $default = '') {
         return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
+    }
+
+    public function commandLs() {
+        $this->commandList();
+    }
+
+    public function commandSt() {
+        $this->commandStatus();
+    }
+
+    public function commandAdd() {
+        $this->commandCreate();
     }
 }

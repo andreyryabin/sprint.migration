@@ -19,7 +19,7 @@ class StorageManager extends AbstractTable
               `id` INT NOT NULL AUTO_INCREMENT NOT NULL,
               `category` varchar(255) COLLATE #COLLATE# NOT NULL,
               `name` varchar(255) COLLATE #COLLATE# NOT NULL,
-              `data` text COLLATE #COLLATE# NOT NULL, 
+              `data` longtext COLLATE #COLLATE# NOT NULL, 
               PRIMARY KEY (id), UNIQUE KEY `fullname` (`category`,`name`)
               )ENGINE=InnoDB DEFAULT CHARSET=#CHARSET# COLLATE=#COLLATE# AUTO_INCREMENT=1;'
         );

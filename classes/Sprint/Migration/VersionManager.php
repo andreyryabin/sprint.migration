@@ -113,44 +113,23 @@ class VersionManager
         return $this->restarts[$version];
     }
 
-    public function createVersionFile($description = '', $prefix = '') {
-        $description = $this->purifyDescriptionForFile($description);
-        $prefix = $this->preparePrefix($prefix);
+    /**
+     * @var $name string
+     * @return VersionBuilder
+     */
+    public function createVersionBuilder($name = ''){
+        $default = '\Sprint\Migration\VersionBuilder';
 
-        $originTz = date_default_timezone_get();
-        date_default_timezone_set('Europe/Moscow');
-        $ts = date('YmdHis');
-        date_default_timezone_set($originTz);
-
-        $versionName = $prefix . $ts;
-
-        list($extendUse, $extendClass) = explode(' as ', $this->getConfigVal('migration_extend_class'));
-        $extendUse = trim($extendUse);
-        $extendClass = trim($extendClass);
-
-        if (!empty($extendClass)) {
-            $extendUse = 'use ' . $extendUse . ' as ' . $extendClass . ';' . PHP_EOL;
-        } else {
-            $extendClass = $extendUse;
-            $extendUse = '';
+        $class = '\Sprint\Migration\Builders\\' . ucfirst($name);
+        if (!class_exists($class)){
+            $class = $default;
         }
 
-        $str = $this->renderFile($this->getConfigVal('migration_template'), array(
-            'version' => $versionName,
-            'description' => $description,
-            'extendUse' => $extendUse,
-            'extendClass' => $extendClass,
-        ));
+        $builder = new $class(
+            $this->versionConfig
+        );
 
-        $file = $this->getVersionFile($versionName);
-        file_put_contents($file, $str);
-
-        if (!is_file($file)) {
-            Out::outError('%s, error: can\'t create a file "%s"', $versionName, $file);
-            return false;
-        }
-
-        return $this->getVersionByName($versionName);
+        return $builder;
     }
 
     public function markMigration($search, $status) {
@@ -367,55 +346,6 @@ class VersionManager
         } else {
             return false;
         }
-    }
-
-    protected function renderFile($file, $vars = array()) {
-        if (is_array($vars)) {
-            extract($vars, EXTR_SKIP);
-        }
-
-        ob_start();
-
-        if (is_file($file)) {
-            /** @noinspection PhpIncludeInspection */
-            include $file;
-        }
-
-        $html = ob_get_clean();
-
-        return $html;
-    }
-
-    protected function preparePrefix($prefix = '') {
-        $prefix = trim($prefix);
-        if (empty($prefix)) {
-            $prefix = $this->getConfigVal('version_prefix');
-            $prefix = trim($prefix);
-        }
-
-        $default = 'Version';
-        if (empty($prefix)) {
-            return $default;
-        }
-
-        $prefix = preg_replace("/[^a-z0-9_]/i", '', $prefix);
-        if (empty($prefix)) {
-            return $default;
-        }
-
-        if (preg_match('/^\d/', $prefix)) {
-            return $default;
-        }
-
-        return $prefix;
-    }
-
-    protected function purifyDescriptionForFile($descr = '') {
-        $descr = strval($descr);
-        $descr = str_replace(array("\n\r", "\r\n", "\n", "\r"), ' ', $descr);
-        $descr = strip_tags($descr);
-        $descr = addslashes($descr);
-        return $descr;
     }
 
     protected function purifyDescriptionForMeta($descr = '') {

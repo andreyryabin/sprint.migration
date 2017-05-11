@@ -8,7 +8,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
     $description = isset($_POST['description']) ? $_POST['description'] : 0;
     $prefix = isset($_POST['prefix']) ? $_POST['prefix'] : '';
 
-    $meta = $versionManager->createVersionFile($description, $prefix);
+    $builder = $versionManager->createVersionBuilder();
+
+    $builder->bind($_POST);
+
+    $versionName = $builder->build();
+
+    $meta = $this->getVersionByName($versionName);
+
     if ($meta && $meta['class']) {
         Sprint\Migration\Out::outSuccess(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS', array(
             '#VERSION#' => $meta['version']

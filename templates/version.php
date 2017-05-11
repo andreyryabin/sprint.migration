@@ -5,6 +5,8 @@
  * @var $description
  * @var $extendUse
  * @var $extendClass
+ * @var $upcode
+ * @var $downcode
  */
 
 ?><?php echo "<?php\n"?>
@@ -20,14 +22,14 @@ class <?php echo $version?> extends <?php echo $extendClass?> {
     public function up(){
         $helper = new HelperManager();
 
-        //your code ...
+        <?php echo $upcode?>
 
     }
 
     public function down(){
         $helper = new HelperManager();
 
-        //your code ...
+        <?php echo $downcode?>
 
     }
 

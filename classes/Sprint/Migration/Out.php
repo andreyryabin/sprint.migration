@@ -23,7 +23,7 @@ class Out
     );
 
     private static $needEol = false;
-    
+
     public static function out($msg, $var1 = null, $var2 = null) {
         if (func_num_args() > 1) {
             $params = func_get_args();
@@ -32,18 +32,18 @@ class Out
         if (self::canOutAsHtml()) {
             self::outToHtml($msg);
         } else {
-            self::outToConsole($msg );
+            self::outToConsole($msg);
         }
     }
 
-    public static function outProgress($msg, $val, $total){
-        $val = (int) $val;
-        $total = (int) $total;
+    public static function outProgress($msg, $val, $total) {
+        $val = (int)$val;
+        $total = (int)$total;
 
         self::$needEol = true;
 
         if (self::canOutAsAdminMessage()) {
-            if (self::canOutProgressBar()){
+            if (self::canOutProgressBar()) {
                 $mess = array(
                     "MESSAGE" => $msg,
                     "DETAILS" => "#PROGRESS_BAR#",
@@ -54,7 +54,7 @@ class Out
                 );
             } else {
                 $mess = array(
-                    "MESSAGE" =>  $msg . ' ' . round($val / $total * 100) . '%',
+                    "MESSAGE" => $msg . ' ' . round($val / $total * 100) . '%',
                     'HTML' => true,
                     'TYPE' => 'OK'
                 );
@@ -74,7 +74,7 @@ class Out
 
     }
 
-    public static function outSuccess($msg, $var1 = null, $var2 = null){
+    public static function outSuccess($msg, $var1 = null, $var2 = null) {
         if (func_num_args() > 1) {
             $params = func_get_args();
             $msg = call_user_func_array('sprintf', $params);
@@ -91,11 +91,11 @@ class Out
             self::outToHtml('[green]' . $msg . '[/]');
 
         } else {
-            self::outToConsole($msg );
+            self::outToConsole($msg);
         }
     }
 
-    public static function outError($msg, $var1 = null, $var2 = null){
+    public static function outError($msg, $var1 = null, $var2 = null) {
         if (func_num_args() > 1) {
             $params = func_get_args();
             $msg = call_user_func_array('sprintf', $params);
@@ -116,7 +116,7 @@ class Out
     }
 
 
-    public static function prepareToConsole($msg){
+    public static function prepareToConsole($msg) {
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
@@ -126,7 +126,7 @@ class Out
     }
 
 
-    public static function prepareToHtml($msg){
+    public static function prepareToHtml($msg) {
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
@@ -138,27 +138,40 @@ class Out
     protected static $tableRows = array();
     protected static $tableMaxCol = array();
     protected static $tableHeaderExists = 0;
+    protected static $tablePls = '+';
+    protected static $tableVer = '|';
+    protected static $tableHor = '-';
 
-    public static function initTable($headerRow = array()){
+    public static function initTable($headerRow = array(), $border = true) {
         self::$tableRows = array();
         self::$tableMaxCol = array();
         self::$tableHeaderExists = 0;
 
-        if (!empty($headerRow)){
+        if ($border) {
+            self::$tablePls = '+';
+            self::$tableVer = '|';
+            self::$tableHor = '-';
+        } else {
+            self::$tablePls = ' ';
+            self::$tableVer = ' ';
+            self::$tableHor = ' ';
+        }
+
+        if (!empty($headerRow)) {
             self::addTableRow($headerRow);
             self::$tableHeaderExists = 1;
         }
     }
 
-    public static function addTableRow($row){
-        foreach ($row as $colNum => $col){
-            $col = self::cleanColors($col);
+    public static function addTableRow($row) {
+        foreach ($row as $colNum => $col) {
+            $col = ' ' . self::cleanColors($col) . ' ';
             $len = self::strLen($col);
 
-            if (!isset(self::$tableMaxCol[$colNum])){
+            if (!isset(self::$tableMaxCol[$colNum])) {
                 self::$tableMaxCol[$colNum] = 0;
             }
-            if ($len >= self::$tableMaxCol[$colNum]){
+            if ($len >= self::$tableMaxCol[$colNum]) {
                 self::$tableMaxCol[$colNum] = $len;
             }
             $row[$colNum] = $col;
@@ -168,56 +181,57 @@ class Out
     }
 
 
-    public static function outTable(){
+    public static function outTable() {
         $rowscnt = count(self::$tableRows);
-        foreach (self::$tableRows as $rowNum => $row){
-            if ($rowNum == 0){
+        foreach (self::$tableRows as $rowNum => $row) {
+            if ($rowNum == 0) {
                 self::outTableSep();
             }
 
             self::outTableContent($row);
 
-            if ($rowNum == 0 && self::$tableHeaderExists){
+            if ($rowNum == 0 && self::$tableHeaderExists) {
                 self::outTableSep();
             }
 
-            if ($rowNum == $rowscnt - 1 ){
+            if ($rowNum == $rowscnt - 1) {
                 self::outTableSep();
             }
         }
     }
 
-    protected static function outTableSep(){
+    protected static function outTableSep() {
         $res = '';
         $colCnt = count(self::$tableMaxCol);
-        foreach (self::$tableMaxCol as $colNum => $colLen){
-            $border = ($colNum < $colCnt - 1 ) ? '+' : '';
-            $res .=  ' ' . self::strPad('', self::$tableMaxCol[$colNum], '-') . ' ' .$border;
+        foreach (self::$tableMaxCol as $colNum => $colLen) {
+            $border = ($colNum < $colCnt - 1) ? self::$tablePls : '';
+            $res .= '' . self::strPad('', self::$tableMaxCol[$colNum], self::$tableHor) . '' . $border;
         }
-        Out::out('+' . $res . '+');
+        Out::out(self::$tablePls . $res . self::$tablePls);
     }
 
-    protected static function outTableContent($row){
+    protected static function outTableContent($row) {
         $colCnt = count(self::$tableMaxCol);
         $res = '';
-        foreach ($row as $colNum => $col){
-            $border = ($colNum < $colCnt - 1 ) ? '|' : '';
+        foreach ($row as $colNum => $col) {
+            $border = ($colNum < $colCnt - 1) ? self::$tableVer : '';
             $cont = self::strPad($col, self::$tableMaxCol[$colNum], ' ');
-            $res .=  ' ' . $cont . ' ' . $border;
+            $res .= '' . $cont . '' . $border;
         }
-        Out::out('|' . $res . '|');
+        Out::out(self::$tableVer . $res . self::$tableVer);
     }
 
-    protected static function strLen($str){
-        if (Locale::isWin1251()){
+    protected static function strLen($str) {
+        if (Locale::isWin1251()) {
             return strlen($str);
         } else {
             return mb_strlen($str, 'UTF-8');
         }
 
     }
+
     protected static function strPad($input, $pad_length, $pad_string) {
-        if (Locale::isWin1251()){
+        if (Locale::isWin1251()) {
             return str_pad($input, $pad_length, $pad_string, STR_PAD_RIGHT);
         } else {
             $diff = strlen($input) - mb_strlen($input, 'UTF-8');
@@ -225,21 +239,21 @@ class Out
         }
     }
 
-    protected function cleanColors($msg){
+    protected function cleanColors($msg) {
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', '', $msg);
         }
         return $msg;
     }
 
-    protected static function outToHtml($msg){
+    protected static function outToHtml($msg) {
         $msg = self::prepareToHtml($msg);
         echo '<div class="migration-out">' . "$msg" . '</div>';
     }
 
-    protected static function outToConsole($msg){
+    protected static function outToConsole($msg) {
         $msg = self::prepareToConsole($msg);
-        if (self::$needEol){
+        if (self::$needEol) {
             self::$needEol = false;
             fwrite(STDOUT, PHP_EOL . $msg . PHP_EOL);
         } else {
@@ -247,15 +261,16 @@ class Out
         }
     }
 
-    protected static function canOutAsAdminMessage(){
+    protected static function canOutAsAdminMessage() {
         return (self::canOutAsHtml() && class_exists('\CAdminMessage')) ? 1 : 0;
     }
 
-    protected static function canOutProgressBar(){
-        return method_exists('\CAdminMessage', '_getProgressHtml') ? 1 :0;
+    protected static function canOutProgressBar() {
+        return method_exists('\CAdminMessage', '_getProgressHtml') ? 1 : 0;
     }
 
-    protected static function canOutAsHtml(){
-        return ( php_sapi_name() == 'cli' ) ? 0 : 1;
+    protected static function canOutAsHtml() {
+        return (php_sapi_name() == 'cli') ? 0 : 1;
     }
+
 }

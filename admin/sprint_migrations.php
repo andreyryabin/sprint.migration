@@ -84,7 +84,7 @@ $tabControl1->BeginNextTab();
 <? $tabControl1->End(); ?>
 <div class="c-migration-block">
     <div class="c-migration-block_title"><?= GetMessage('SPRINT_MIGRATION_CREATE') ?></div>
-
+    <div id="migration_migration_create_result"></div>
     <p>
         <?= GetMessage('SPRINT_MIGRATION_FORM_PREFIX') ?><br/>
         <input type="text" style="width: 250px;" id="migration_migration_prefix" value="<?=$versionManager->getConfigVal('version_prefix')?>" />
@@ -97,17 +97,18 @@ $tabControl1->BeginNextTab();
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>" onclick="migrationCreateMigration();" />
     </p>
 
-    <div id="migration_migration_create_result"></div>
+
 </div>
 
 <div class="c-migration-block">
     <div class="c-migration-block_title"><?= GetMessage('SPRINT_MIGRATION_MARK') ?></div>
+    <span id="migration_migration_mark_result"></span>
     <p>
         <input type="text" style="width: 250px;" id="migration_migration_mark" value="" />
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_MARK_AS_INSTALLED') ?>" onclick="migrationMarkMigration('installed');" />
         <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_MARK_AS_NEW') ?>" onclick="migrationMarkMigration('new');" />
     </p>
-    <span id="migration_migration_mark_result"></span>
+
 </div>
 
 <div class="c-migration-block">
@@ -119,7 +120,7 @@ $tabControl1->BeginNextTab();
     <table class="c-migration-config">
         <thead>
         <tr>
-            <td colspan="2">
+            <td colspan="3">
                 <?if ($configItem['name'] == $configName):?>
                     <strong><?=$configItem['title']?> *</strong>
                 <?else:?>
@@ -136,6 +137,7 @@ $tabControl1->BeginNextTab();
         <tbody>
         <? foreach ($configItem['values'] as $key => $val) :?>
             <tr>
+                <td><?=GetMessage('SPRINT_MIGRATION_CONFIG_' . $key)?></td>
                 <td><?=$key?></td>
                 <td><?=$val?></td>
             </tr>
