@@ -117,11 +117,11 @@ class VersionManager
      * @var $name string
      * @return VersionBuilder
      */
-    public function createVersionBuilder($name = ''){
+    public function createVersionBuilder($name = '') {
         $default = '\Sprint\Migration\VersionBuilder';
 
         $class = '\Sprint\Migration\Builders\\' . ucfirst($name);
-        if (!class_exists($class)){
+        if (!class_exists($class)) {
             $class = $default;
         }
 
@@ -132,6 +132,19 @@ class VersionManager
         return $builder;
     }
 
+    public function getVersionBuilders() {
+        return array(
+            array(
+                'name' => '',
+                'title' => 'Обычная'
+            ),
+            array(
+                'name' => 'IblockExport',
+                'title' => 'Экспорт инфоблоков'
+            ),
+        );
+    }
+
     public function markMigration($search, $status) {
         // $search - VersionName | new | installed | unknown
         // $status - new | installed
@@ -140,7 +153,7 @@ class VersionManager
         $status = trim($status);
 
         $result = array();
-        if (in_array($status, array('new', 'installed'))){
+        if (in_array($status, array('new', 'installed'))) {
             if ($this->checkVersionName($search)) {
                 $meta = $this->getVersionByName($search);
                 $meta = !empty($meta) ? $meta : array('version' => $search);
@@ -154,7 +167,7 @@ class VersionManager
             }
         }
 
-        if (empty($result)){
+        if (empty($result)) {
             $result[] = array(
                 'message' => GetMessage('SPRINT_MIGRATION_MARK_ERROR4'),
                 'success' => false,
@@ -187,7 +200,7 @@ class VersionManager
         }
 
         return array(
-            'message' => GetMessage($msg,array('#VERSION#' => $meta['version'])),
+            'message' => GetMessage($msg, array('#VERSION#' => $meta['version'])),
             'success' => $success,
         );
     }

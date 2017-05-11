@@ -18,8 +18,17 @@ class VersionBuilder
     public function __construct(VersionConfig $versionConfig) {
         $this->versionConfig = $versionConfig;
 
-        $this->addField('description');
-        $this->addField('prefix');
+        $this->addField('prefix', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
+            'value' => $this->getConfigVal('version_prefix'),
+            'width' => 250,
+        ));
+
+        $this->addField('description', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
+            'width' => 350,
+            'rows' => 3,
+        ));
 
         $this->initialize();
     }
@@ -33,11 +42,11 @@ class VersionBuilder
     }
 
     protected function addField($code, $param = array()) {
-        $param = array_merge($param, array(
+        $param = array_merge(array(
             'title' => '',
             'value' => '',
             'bind' => 0
-        ));
+        ),$param);
 
         $this->fields[$code] = $param;
     }

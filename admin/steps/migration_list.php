@@ -44,10 +44,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
 
     ?>
     <? if (!empty($versions)):?>
-        <table class="c-migration-list">
+        <table class="sp-list">
         <? foreach ($versions as $aItem):?>
             <tr>
-                <td class="c-migration-list-l">
+                <td class="sp-list-l">
                 <? if ($aItem['status'] == 'new'): ?>
                     <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                 <? endif ?>
@@ -55,16 +55,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                     <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'down'});" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
                 <? endif ?>
                 </td>
-                <td class="c-migration-list-r">
+                <td class="sp-list-r">
                     <? if ($aItem['status'] != 'unknown' && $webdir): ?>
                         <? $href = '/bitrix/admin/fileman_file_view.php?' . http_build_query(array(
                                 'lang' => LANGUAGE_ID,
                                 'site' => SITE_ID,
                                 'path' => $webdir . '/' . $aItem['version'] . '.php'
                             )) ?>
-                        <a class="c-migration-item-<?= $aItem['status'] ?>" href="<?= $href ?>" target="_blank" title=""><?= $aItem['version'] ?></a>
+                        <a class="sp-item-<?= $aItem['status'] ?>" href="<?= $href ?>" target="_blank" title=""><?= $aItem['version'] ?></a>
                     <? else: ?>
-                        <span class="c-migration-item-<?= $aItem['status'] ?>"><?= $aItem['version'] ?></span>
+                        <span class="sp-item-<?= $aItem['status'] ?>"><?= $aItem['version'] ?></span>
                     <? endif ?>
                     <?if (!empty($aItem['description'])):?><?php
                         if ($taskUrl && false !== strpos($taskUrl, '$1')){

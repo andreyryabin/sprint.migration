@@ -29,16 +29,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
 
 
     ?>
-    <table class="c-migration-status">
+    <table class="sp-status">
     <?foreach ($status as $code => $cnt): $ucode = strtoupper($code);?>
         <tr>
-            <td class="c-migration-status-l">
-                <span class="c-migration-item-<?= $code ?>">
+            <td class="sp-status-l">
+                <span class="sp-item-<?= $code ?>">
                     <?= GetMessage('SPRINT_MIGRATION_' . $ucode) ?>
                 </span>
                 <?= GetMessage('SPRINT_MIGRATION_DESC_' . $ucode) ?>
             </td>
-            <td  class="c-migration-status-r">
+            <td  class="sp-status-r">
                 <?= $cnt ?>
             </td>
         </tr>
