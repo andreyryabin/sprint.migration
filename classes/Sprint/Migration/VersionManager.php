@@ -118,15 +118,15 @@ class VersionManager
      * @return VersionBuilder
      */
     public function createVersionBuilder($name = '') {
-        $default = '\Sprint\Migration\VersionBuilder';
-
         $class = '\Sprint\Migration\Builders\\' . ucfirst($name);
         if (!class_exists($class)) {
-            $class = $default;
+            $class = '\Sprint\Migration\VersionBuilder';
+            $name = '';
         }
 
         $builder = new $class(
-            $this->versionConfig
+            $this->versionConfig,
+            $name
         );
 
         return $builder;

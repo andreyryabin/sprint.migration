@@ -1,17 +1,17 @@
 function migrationMigrationsUpConfirm() {
-    //if (confirm('confirm action')) {
+    if (confirm('Confirm action')) {
         migrationExecuteStep('migration_execute', {
             'next_action': 'up'
         });
-    //}
+    }
 }
 
 function migrationMigrationsDownConfirm() {
-    // if (confirm('confirm action')) {
+    if (confirm('Confirm action')) {
         migrationExecuteStep('migration_execute', {
             'next_action': 'down'
         });
-    // }
+    }
 }
 
 function migrationOutProgress(result) {
@@ -30,6 +30,9 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
     postData['step_code'] = step_code;
     postData['send_sessid'] = $('input[name=send_sessid]').val();
     postData['search'] = $('input[name=migration_search]').val();
+
+    console.log(postData);
+
 
     migrationEnableButtons(0);
 
@@ -57,18 +60,6 @@ function migrationEnableButtons(enable) {
     } else {
         buttons.attr('disabled', 'disabled');
     }
-}
-
-function migrationCreateMigration() {
-    $('#migration_migration_create_result').html('');
-    migrationExecuteStep('migration_create', {
-        description: $('#migration_migration_descr').val(),
-        prefix: $('#migration_migration_prefix').val()
-    }, function (result) {
-        $('#migration_migration_descr').val('');
-        $('#migration_migration_create_result').html(result);
-        migrationMigrationRefresh();
-    });
 }
 
 function migrationMarkMigration(status) {
@@ -125,6 +116,26 @@ jQuery(document).ready(function ($) {
             migrationEnableButtons(1);
             $('#tab_cont_tab1').click();
         });
+    });
+
+
+    $('.sp-builder-form').on('submit', function (e) {
+        e.preventDefault();
+
+        var postdata = {};
+        var arr = $(this).serializeArray();
+
+        $.each(arr, function(index, item){
+            postdata[item.name] = item.value;
+        });
+
+        var $res = $(this).find('.sp-builder-form-result');
+
+        migrationExecuteStep('migration_create', postdata, function (result) {
+            $res.html(result);
+            migrationMigrationRefresh();
+        });
+
     });
 
 });

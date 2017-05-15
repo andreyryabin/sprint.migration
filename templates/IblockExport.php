@@ -20,7 +20,9 @@ class <?php echo $version?> extends <?php echo $extendClass?> {
     public function up(){
         $helper = new HelperManager();
 
-        //your code ...
+        $iblockId = $helper->Iblock()->addIblockIfNotExists(<?php echo var_export($iblock, 1)?>);
+
+        $helper->Iblock()->updateIblockFields($iblockId, <?php echo var_export($iblockFields, 1)?>);
 
     }
 

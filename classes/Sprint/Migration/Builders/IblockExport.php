@@ -3,34 +3,42 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\VersionBuilder;
+use Sprint\Migration\HelperManager;
 
 class IblockExport extends VersionBuilder
 {
 
     public function initialize() {
-        $this->addField('iblock_id', array(
-            'title' => 'change iblock',
-            'options' => array(
-                33 => 'x33',
-                44 => 'x44',
-            )
-        ));
 
-        $this->addField('param1', array());
-        $this->addField('param2', array());
+
+        $this->setField('iblock_id', array(
+            'title' => 'Iblock Id'
+        ));
     }
 
 
     public function execute(){
+        $helper = new HelperManager();
 
-        $val = $this->getFieldValue('iblock_id');
+        $iblock = $helper->Iblock()->getIblock(array(
+            'ID' => $this->getFieldValue('iblock_id')
+        ));
 
-        if ($val != 55){
+        $this->exitIfEmpty($iblock, 'Iblock not found');
 
-            return false;
+        $iblockFields = $helper->Iblock()->getIblockFields($iblock['ID']);
 
-        }
 
+
+        unset($iblock['ID']);
+        unset($iblock['TIMESTAMP_X']);
+
+        $this->setTemplateVar('iblock', $iblock);
+        $this->setTemplateVar('iblockFields', $iblockFields);
+
+        //$this->exitIf(1,1);
+
+        $this->setTemplateName('IblockExport');
 
 
     }

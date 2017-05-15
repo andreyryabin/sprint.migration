@@ -5,10 +5,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
     /** @noinspection PhpIncludeInspection */
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
-    $description = isset($_POST['description']) ? $_POST['description'] : 0;
-    $prefix = isset($_POST['prefix']) ? $_POST['prefix'] : '';
+    $name = !empty($_POST['builder_name']) ? trim($_POST['builder_name']) : '';
 
-    $builder = $versionManager->createVersionBuilder();
+    $builder = $versionManager->createVersionBuilder($name);
 
     $builder->bind($_POST);
 
@@ -20,8 +19,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
         Sprint\Migration\Out::outSuccess(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS', array(
             '#VERSION#' => $meta['version']
         )));
-    } else {
-        Sprint\Migration\Out::outError(GetMessage('SPRINT_MIGRATION_CREATED_ERROR'));
     }
 
     /** @noinspection PhpIncludeInspection */

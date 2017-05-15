@@ -55,9 +55,10 @@ class Console
 
         $versionName = $builder->build();
 
-        $this->outVersionMeta(
-            $this->getVersionManager()->getVersionByName($versionName)
-        );
+        $meta = $this->getVersionManager()->getVersionByName($versionName);
+        if ($meta){
+            $this->outVersionMeta($meta);
+        }
     }
 
     public function commandMark() {
@@ -134,9 +135,14 @@ class Console
 
     public function commandStatus() {
         $version = $this->getArg(0, '');
-        $this->outVersionMeta(
-            $this->getVersionManager()->getVersionByName($version)
-        );
+        $meta = $this->getVersionManager()->getVersionByName($version);
+
+        if ($meta){
+            $this->outVersionMeta($meta);
+        } else {
+            Out::out(GetMessage('SPRINT_MIGRATION_VERSION_NOT_FOUND'));
+        }
+
     }
 
     public function commandMigrate() {
@@ -315,25 +321,21 @@ class Console
         return $ok;
     }
 
-    protected function outVersionMeta($meta = false) {
-        if ($meta) {
-            Out::initTable(array(), false);
-            foreach (array('version', 'status', 'description', 'location') as $val) {
-                if (!empty($meta[$val])) {
-                    if ($val == 'status') {
-                        Out::addTableRow(array(
-                            ucfirst($val) . ':',
-                            GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$val]))
-                        ));
-                    } else {
-                        Out::addTableRow(array(ucfirst($val) . ':', $meta[$val]));
-                    }
+    protected function outVersionMeta($meta) {
+        Out::initTable(array(), false);
+        foreach (array('version', 'status', 'description', 'location') as $val) {
+            if (!empty($meta[$val])) {
+                if ($val == 'status') {
+                    Out::addTableRow(array(
+                        ucfirst($val) . ':',
+                        GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$val]))
+                    ));
+                } else {
+                    Out::addTableRow(array(ucfirst($val) . ':', $meta[$val]));
                 }
             }
-            Out::outTable();
-        } else {
-            Out::out(GetMessage('SPRINT_MIGRATION_VERSION_NOT_FOUND'));
         }
+        Out::outTable();
     }
 
     //

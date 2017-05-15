@@ -12,25 +12,32 @@ class VersionBuilder
 
     private $fields = array();
 
-    protected $templateName = '';
-    protected $templateVars = array();
+    private $templateName = '';
+    private $templateVars = array();
 
-    public function __construct(VersionConfig $versionConfig) {
+    private $name;
+
+    public function __construct(VersionConfig $versionConfig, $name) {
         $this->versionConfig = $versionConfig;
+        $this->name = $name;
 
-        $this->addField('prefix', array(
+        $this->setField('prefix', array(
             'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
             'value' => $this->getConfigVal('version_prefix'),
             'width' => 250,
         ));
 
-        $this->addField('description', array(
+        $this->setField('description', array(
             'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
             'width' => 350,
             'rows' => 3,
         ));
 
         $this->initialize();
+    }
+
+    public function getName(){
+        return $this->name;
     }
 
     protected function initialize() {
@@ -41,12 +48,16 @@ class VersionBuilder
         return true;
     }
 
-    protected function addField($code, $param = array()) {
+    protected function setField($code, $param = array()) {
         $param = array_merge(array(
             'title' => '',
             'value' => '',
             'bind' => 0
         ),$param);
+
+        if (empty($param['title'])){
+            $param['title'] = $code;
+        }
 
         $this->fields[$code] = $param;
     }
@@ -87,6 +98,14 @@ class VersionBuilder
         return $html;
     }
 
+    protected function setTemplateName($name){
+        $this->templateName = $name;
+    }
+
+    protected function setTemplateVar($code, $value) {
+        $this->templateVars[$code] = $value;
+    }
+
     public function build() {
         try {
             if (false === $this->execute()) {
@@ -94,7 +113,7 @@ class VersionBuilder
             }
 
         } catch (\Exception $e) {
-            Out::outError('build error: %s', $e->getMessage());
+            Out::outError('%s: %s', GetMessage('SPRINT_MIGRATION_CREATED_ERROR'), $e->getMessage());
             return false;
         }
 
@@ -119,29 +138,26 @@ class VersionBuilder
             $extendUse = '';
         }
 
-        if (empty($this->templateName)) {
-            $tplName = $this->getConfigVal('migration_template');
-        } else {
-            $tplName = Module::getDocRoot() . $this->templateName;
-        }
-
         $tplVars = array_merge(array(
             'version' => $versionName,
             'description' => $description,
             'extendUse' => $extendUse,
             'extendClass' => $extendClass,
-            'upcode' => '//your code ...',
-            'downcode' => '//your code ...',
         ), $this->templateVars);
 
+        if (!empty($this->templateName)) {
+            $tplName = Module::getModuleDir() . '/templates/'. $this->templateName . '.php';
+        } else {
+            $tplName = $this->getConfigVal('migration_template');
+        }
 
-        $file = $this->getVersionFile($versionName);
-        $str = $this->renderFile($tplName, $tplVars);
+        $fileName = $this->getVersionFile($versionName);
+        $fileContent = $this->renderFile($tplName, $tplVars);
 
-        file_put_contents($file, $str);
+        file_put_contents($fileName, $fileContent);
 
-        if (!is_file($file)) {
-            Out::outError('%s, error: can\'t create a file "%s"', $versionName, $file);
+        if (!is_file($fileName)) {
+            Out::outError('%s, error: can\'t create a file "%s"', $versionName, $fileName);
             return false;
         }
 
