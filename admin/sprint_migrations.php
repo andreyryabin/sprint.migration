@@ -83,94 +83,34 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
             <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" class="sp-search"/>
         </div>
         <? $tabControl1->End(); ?>
-        <br/>
-        <?
-        $builders = $versionManager->getVersionBuilders();
-        $createTabs = array();
-        foreach ($builders as $index => $builderItem) {
-            $createTabs[] = array(
-                "DIV" => "tab" . (5 + $index),
-                "TAB" => $builderItem['title'],
-                "TITLE" => $builderItem['title']
-            );
-        }
 
-        $createTabs[] = array(
-            "DIV" => "tab" . (4),
-            "TAB" => GetMessage('SPRINT_MIGRATION_MARK'),
-            "TITLE" => GetMessage('SPRINT_MIGRATION_MARK')
-        );
-
-        ?>
-        <? $tabControl1 = new CAdminTabControl("tabControl3", $createTabs); ?>
-        <? $tabControl1->Begin(); ?>
-        <? foreach ($builders as $index => $builderItem) : ?>
-            <? $tabControl1->BeginNextTab(); ?>
-            <tr>
-                <td style="vertical-align: top;">
-                    <? $builder = $versionManager->createVersionBuilder($builderItem['name']) ?>
-                    <? include __DIR__ . '/includes/builder_form.php' ?>
-                </td>
-            </tr>
+        <? $builders = $versionManager->getVersionBuilders() ?>
+        <? foreach ($builders as $builderName => $builderClass): ?>
+            <div class="sp-block">
+                <? $builder = $versionManager->createVersionBuilder($builderName) ?>
+                <div class="sp-block_title"><?= $builder->getTitle() ?></div>
+                <div class="sp-block_body"><? include __DIR__ . '/includes/builder_form.php' ?></div>
+            </div>
         <? endforeach; ?>
-        <? $tabControl1->BeginNextTab(); ?>
-        <tr>
-            <td style="vertical-align: top;">
-                <div id="migration_migration_mark_result"></div>
-                <p>
-                    <input placeholder="<?= GetMessage('SPRINT_MIGRATION_MARK_VERSION') ?>" type="text"
-                           style="width: 250px;" id="migration_migration_mark" value=""/>
-                </p>
-                <p>
-                    <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_MARK_AS_INSTALLED') ?>"
-                           onclick="migrationMarkMigration('installed');"/>
-                </p>
-                <p>
-                    <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_MARK_AS_NEW') ?>"
-                           onclick="migrationMarkMigration('new');"/>
-                </p>
-            </td>
-        </tr>
-        <? $tabControl1->End(); ?>
+
+        <div class="sp-block">
+            <div class="sp-block_title"><?= GetMessage('SPRINT_MIGRATION_MARK') ?></div>
+            <div class="sp-block_body"><? include __DIR__ . '/includes/mark_form.php' ?></div>
+        </div>
+
         <div class="sp-block">
             <div class="sp-block_title"><?= GetMessage('SPRINT_MIGRATION_CONFIG_LIST') ?></div>
-            <?php
-            $configList = $versionManager->getConfigList();
-            $configName = $versionManager->getConfigName();
-            ?><?php foreach ($configList as $configItem) : ?>
-                <table class="sp-config">
-                    <thead>
-                    <tr>
-                        <td colspan="3">
-                            <? if ($configItem['name'] == $configName): ?>
-                                <strong><?= $configItem['title'] ?> *</strong>
-                            <? else: ?>
-                                <form method="get" action="">
-                                    <strong><?= $configItem['title'] ?></strong> &nbsp;
-                                    <input name="config" type="hidden" value="<?= $configItem['name'] ?>">
-                                    <input name="lang" type="hidden" value="<?= LANGUAGE_ID ?>">
-                                    <input type="submit" value="<?= GetMessage('SPRINT_MIGRATION_CONFIG_SWITCH') ?>">
-                                </form>
-                            <? endif ?>
-                        </td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <? foreach ($configItem['values'] as $key => $val) : ?>
-                        <tr>
-                            <td><?= GetMessage('SPRINT_MIGRATION_CONFIG_' . $key) ?></td>
-                            <td><?= $key ?></td>
-                            <td><?= $val ?></td>
-                        </tr>
-                    <? endforeach; ?>
-                    </tbody>
-                </table>
-            <? endforeach; ?>
-            <div class="sp-block_title"><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></div>
+            <div class="sp-block_body"><? include __DIR__ . '/includes/config_list.php' ?></div>
+        </div>
+
+        <div class="sp-block">
             <p>
+                <?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?>:
                 <a href="https://bitbucket.org/andrey_ryabin/sprint.migration" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
             </p>
         </div>
+
+
     </div>
     <style type="text/css">
         <? include __DIR__ . '/assets/style.css' ?>

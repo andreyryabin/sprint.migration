@@ -115,14 +115,16 @@ class VersionManager
 
     /**
      * @var $name string
-     * @return VersionBuilder
+     * @return AbstractBuilder
      */
     public function createVersionBuilder($name = '') {
-        $class = '\Sprint\Migration\Builders\\' . ucfirst($name);
-        if (!class_exists($class)) {
-            $class = '\Sprint\Migration\VersionBuilder';
-            $name = '';
+        $builders = $this->getConfigVal('version_builders', array());
+
+        if (empty($name) || !class_exists($builders[$name])){
+            $name = 'Version';
         }
+
+        $class = $builders[$name];
 
         $builder = new $class(
             $this->versionConfig,
@@ -133,16 +135,7 @@ class VersionManager
     }
 
     public function getVersionBuilders() {
-        return array(
-            array(
-                'name' => '',
-                'title' => 'Обычная'
-            ),
-            array(
-                'name' => 'IblockExport',
-                'title' => 'Экспорт инфоблоков'
-            ),
-        );
+        return $this->getConfigVal('version_builders', array());
     }
 
     public function markMigration($search, $status) {

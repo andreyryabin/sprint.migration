@@ -7,18 +7,25 @@
     padding: 19px
 }
 
+.sp-block_body{
+    display: none;
+}
+
+.sp-block_title {
+    color: #000;
+    font-size: 20px;
+    padding: 0;
+    position: relative;
+    min-height: 25px;
+    cursor: pointer;
+}
+
 .sp-clear:after {
     content: '';
     display: block;
     clear: both;
 }
-.sp-block_title {
-    color: #000;
-    font-size: 20px;
-    padding: 3px 53px 12px 0;
-    position: relative;
-    min-height: 25px;
-}
+
 .sp-filter{
     /*margin: 10px 0;*/
     /*background: #ccc;*/

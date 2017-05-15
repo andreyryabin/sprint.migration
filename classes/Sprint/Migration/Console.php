@@ -57,6 +57,7 @@ class Console
 
         $meta = $this->getVersionManager()->getVersionByName($versionName);
         if ($meta){
+            Out::out(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS2'));
             $this->outVersionMeta($meta);
         }
     }
@@ -244,15 +245,6 @@ class Console
         Out::out('Версия модуля: %s', Module::getVersion());
         Out::out('');
 
-        $configItem = $this->getVersionManager()->getConfigCurrent();
-        Out::out($configItem['title']);
-        Out::initTable(array());
-        foreach ($configItem['values'] as $key => $val) {
-            Out::addTableRow(array($key, $val));
-        }
-        Out::outTable();
-
-        Out::out('');
         Out::out('Запуск:' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL, $this->script);
         Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
         Out::out(PHP_EOL . 'Пожелания и ошибки присылайте сюда');
@@ -266,9 +258,12 @@ class Console
         foreach ($configList as $configItem) {
             $current = ($configItem['name'] == $configName) ? '*' : '';
             Out::out('%s %s', $configItem['title'], $current);
-            Out::initTable();
+            Out::initTable(array(),false);
             foreach ($configItem['values'] as $key => $val) {
-                Out::addTableRow(array($key, $val));
+                $val = is_array($val) ? implode(',', $val) : $val;
+                if (!empty($val)){
+                    Out::addTableRow(array($key, $val));
+                }
             }
             Out::outTable();
             Out::out('');

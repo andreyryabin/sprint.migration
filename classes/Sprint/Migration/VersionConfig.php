@@ -11,12 +11,12 @@ class VersionConfig
 
     private $availablekeys = array(
         'title',
-        'migration_template',
         'migration_table',
         'migration_extend_class',
         'migration_dir',
         'tracker_task_url',
         'version_prefix',
+        'builders'
     );
 
     public function __construct($configName) {
@@ -98,12 +98,6 @@ class VersionConfig
             $values['migration_table'] = 'sprint_migration_versions';
         }
 
-        if ($values['migration_template'] && is_file(Module::getDocRoot() . $values['migration_template'])) {
-            $values['migration_template'] = Module::getDocRoot() . $values['migration_template'];
-        } else {
-            $values['migration_template'] = Module::getModuleDir() . '/templates/version.php';
-        }
-
         if ($values['migration_dir']) {
             $values['migration_dir'] = Module::getDocRoot() . $values['migration_dir'];
         } else {
@@ -125,6 +119,12 @@ class VersionConfig
             $values['tracker_task_url'] = '';
         }
 
+        if (!empty($values['version_builders']) && is_array($values['version_builders'])){
+            $values['version_builders'] = array_merge($this->getVersionBuilders(), $values['version_builders']);
+        } else {
+            $values['version_builders'] = $this->getVersionBuilders();
+        }
+
         ksort($values);
         return $values;
     }
@@ -135,6 +135,13 @@ class VersionConfig
         } else {
             return !empty($this->configCurrent['values'][$val]) ? $this->configCurrent['values'][$val] : $default;
         }
+    }
+
+    protected function getVersionBuilders(){
+        return array(
+            'Version' => '\Sprint\Migration\Builders\Version',
+            'IblockExport' => '\Sprint\Migration\Builders\IblockExport',
+        );
     }
 
     protected function getWebdir($default = ''){

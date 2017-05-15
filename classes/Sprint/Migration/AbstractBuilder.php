@@ -4,7 +4,7 @@ namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\BuilderException;
 
-class VersionBuilder
+abstract class AbstractBuilder
 {
 
     /** @var VersionConfig */
@@ -12,10 +12,15 @@ class VersionBuilder
 
     private $fields = array();
 
-    private $templateName = '';
+    private $templateFile = '';
     private $templateVars = array();
 
     private $name;
+
+    private $title = '';
+
+    abstract protected function initialize();
+    abstract protected function execute();
 
     public function __construct(VersionConfig $versionConfig, $name) {
         $this->versionConfig = $versionConfig;
@@ -36,18 +41,6 @@ class VersionBuilder
         $this->initialize();
     }
 
-    public function getName(){
-        return $this->name;
-    }
-
-    protected function initialize() {
-        return true;
-    }
-
-    protected function execute() {
-        return true;
-    }
-
     protected function setField($code, $param = array()) {
         $param = array_merge(array(
             'title' => '',
@@ -63,12 +56,7 @@ class VersionBuilder
     }
 
     protected function getFieldValue($code, $default = '') {
-        $val = isset($this->fields[$code]) ? $this->fields[$code]['value'] : $default;
-        return $val;
-    }
-
-    public function getFields() {
-        return $this->fields;
+        return isset($this->fields[$code]) ? $this->fields[$code]['value'] : $default;
     }
 
     public function bind($postvars = array()) {
@@ -98,8 +86,8 @@ class VersionBuilder
         return $html;
     }
 
-    protected function setTemplateName($name){
-        $this->templateName = $name;
+    protected function setTemplateFile($path){
+        $this->templateFile = $path;
     }
 
     protected function setTemplateVar($code, $value) {
@@ -145,14 +133,12 @@ class VersionBuilder
             'extendClass' => $extendClass,
         ), $this->templateVars);
 
-        if (!empty($this->templateName)) {
-            $tplName = Module::getModuleDir() . '/templates/'. $this->templateName . '.php';
-        } else {
-            $tplName = $this->getConfigVal('migration_template');
+        if (!is_file($this->templateFile)){
+            $this->templateFile = Module::getModuleDir() . '/templates/version.php';
         }
 
         $fileName = $this->getVersionFile($versionName);
-        $fileContent = $this->renderFile($tplName, $tplVars);
+        $fileContent = $this->renderFile($this->templateFile, $tplVars);
 
         file_put_contents($fileName, $fileContent);
 
@@ -222,5 +208,21 @@ class VersionBuilder
         if (empty($var)) {
             Throw new BuilderException($msg);
         }
+    }
+
+    protected function setTitle($title = ''){
+        $this->title = $title;
+    }
+
+    public function getName(){
+        return $this->name;
+    }
+
+    public function getTitle(){
+        return $this->title;
+    }
+
+    public function getFields() {
+        return $this->fields;
     }
 }

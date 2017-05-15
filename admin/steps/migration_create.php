@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
     $meta = $versionManager->getVersionByName($versionName);
 
     if ($meta && $meta['class']) {
-        Sprint\Migration\Out::outSuccess(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS', array(
+        Sprint\Migration\Out::outSuccess(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS1', array(
             '#VERSION#' => $meta['version']
         )));
     }

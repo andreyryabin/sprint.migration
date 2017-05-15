@@ -141,13 +141,15 @@ class Out
     protected static $tablePls = '+';
     protected static $tableVer = '|';
     protected static $tableHor = '-';
+    protected static $tableBorder = true;
 
     public static function initTable($headerRow = array(), $border = true) {
         self::$tableRows = array();
         self::$tableMaxCol = array();
         self::$tableHeaderExists = 0;
+        self::$tableBorder = $border;
 
-        if ($border) {
+        if (self::$tableBorder) {
             self::$tablePls = '+';
             self::$tableVer = '|';
             self::$tableHor = '-';
@@ -184,17 +186,17 @@ class Out
     public static function outTable() {
         $rowscnt = count(self::$tableRows);
         foreach (self::$tableRows as $rowNum => $row) {
-            if ($rowNum == 0) {
+            if (self::$tableBorder && $rowNum == 0) {
                 self::outTableSep();
             }
 
             self::outTableContent($row);
 
-            if ($rowNum == 0 && self::$tableHeaderExists) {
+            if (self::$tableBorder && $rowNum == 0 && self::$tableHeaderExists) {
                 self::outTableSep();
             }
 
-            if ($rowNum == $rowscnt - 1) {
+            if (self::$tableBorder && $rowNum == $rowscnt - 1) {
                 self::outTableSep();
             }
         }

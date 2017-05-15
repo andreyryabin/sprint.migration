@@ -138,4 +138,21 @@ jQuery(document).ready(function ($) {
 
     });
 
+    $('.sp-block_body').first().show();
+
+    $('.sp-block_title').on('click',function(){
+        var $body = $(this).siblings('.sp-block_body');
+        $body.show();
+        $('.sp-block_body').not($body).hide();
+
+        // if ($body.is(':visible')){
+        //     $body.hide();
+        // } else {
+        //     $body.show();
+        //     $('.sp-block_body').not($body).hide();
+        // }
+
+        $('.sp-block').find('.adm-info-message-wrap').remove();
+    });
+
 });

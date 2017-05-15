@@ -1,5 +1,5 @@
 <?php
-/** @var $builder \Sprint\Migration\VersionBuilder */
+/** @var $builder \Sprint\Migration\AbstractBuilder */
 ?>
 <form method="post" class="sp-builder-form">
     <div class="sp-builder-form-result"></div>
@@ -20,6 +20,9 @@
                 <input name="<?= $fieldCode ?>"
                        type="text"
                        value="<?= $fieldItem['value'] ?>"
+                    <? if (!empty($fieldItem['placeholder'])): ?>
+                        placeholder="<?=$fieldItem['placeholder']?>"
+                    <? endif; ?>
                     <? if (!empty($fieldItem['width'])): ?>
                         style="width: <?= $fieldItem['width'] ?>px;"
                     <? endif; ?>
