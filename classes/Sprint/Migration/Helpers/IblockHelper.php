@@ -14,7 +14,13 @@ class IblockHelper extends Helper
         );
 
         $filter['CHECK_PERMISSIONS'] = 'N';
-        return \CIBlockType::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
+        $aItem = \CIBlockType::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
+
+        if ($aItem){
+            $aItem['LANG'] = $this->getIblockTypeLangs($aItem['ID']);
+        }
+
+        return $aItem;
     }
 
     public function getIblockTypeId($typeId) {
@@ -28,6 +34,7 @@ class IblockHelper extends Helper
 
         $list = array();
         while ($aItem = $dbResult->Fetch()) {
+            $aItem['LANG'] = $this->getIblockTypeLangs($aItem['ID']);
             $list[] = $aItem;
         }
         return $list;
@@ -611,5 +618,21 @@ class IblockHelper extends Helper
     /** @deprecated */
     public function mergeIblockFields($iblockId, $fields) {
         self::updateIblockFields($iblockId, $fields);
+    }
+
+    public function getIblockTypeLangs($typeId){
+        $result = array();
+        $dbRes = \CLanguage::GetList($lby="sort", $lorder="asc");
+        while($aItem = $dbRes->GetNext()){
+            $values = \CIBlockType::GetByIDLang($typeId, $aItem['LID'], false);
+            if (!empty($values)){
+                $result[$aItem['LID']] = array(
+                    'NAME' => $values['NAME'],
+                    'SECTION_NAME' => $values['SECTION_NAME'],
+                    'ELEMENT_NAME' => $values['ELEMENT_NAME']
+                );
+            }
+        }
+        return $result;
     }
 }

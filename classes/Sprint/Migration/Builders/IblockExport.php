@@ -29,20 +29,32 @@ class IblockExport extends AbstractBuilder
         $iblock = $helper->Iblock()->getIblock(array('ID' => $iblockId));
         $this->exitIfEmpty($iblock, 'Iblock not found');
 
-        $iblockFields = $helper->Iblock()->getIblockFields($iblock['ID']);
+        $iblockType = $helper->Iblock()->getIblockType($iblock['IBLOCK_TYPE_ID']);
+
+        $iblockProperties = $helper->Iblock()->getProperties($iblock['ID']);
+        foreach ($iblockProperties as $index => $iblockProperty){
+            unset($iblockProperty['ID']);
+            unset($iblockProperty['TIMESTAMP_X']);
+            $iblockProperties[$index] = $iblockProperty;
+        }
 
 
+        $allFields = $helper->Iblock()->getIblockFields($iblock['ID']);
+        $iblockFields = array();
+        foreach ($allFields as $fieldId => $iblockField){
+            if ($iblockField["VISIBLE"] == "N" || preg_match("/^(SECTION_|LOG_)/", $fieldId)){
+                continue;
+            }
+
+            $iblockFields[$fieldId] = $iblockField;
+        }
 
         unset($iblock['ID']);
         unset($iblock['TIMESTAMP_X']);
 
         $this->setTemplateVar('iblock', $iblock);
+        $this->setTemplateVar('iblockType', $iblockType);
         $this->setTemplateVar('iblockFields', $iblockFields);
-
-        //$this->exitIf(1,1);
-
-
-
-
+        $this->setTemplateVar('iblockProperties', $iblockProperties);
     }
 }

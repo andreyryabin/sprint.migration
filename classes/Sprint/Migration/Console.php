@@ -132,6 +132,7 @@ class Console
         }
 
         Out::outTable();
+
     }
 
     public function commandStatus() {
@@ -266,7 +267,6 @@ class Console
                 }
             }
             Out::outTable();
-            Out::out('');
         }
     }
 

@@ -196,10 +196,15 @@ class Out
                 self::outTableSep();
             }
 
-            if (self::$tableBorder && $rowNum == $rowscnt - 1) {
-                self::outTableSep();
+            if ($rowNum == $rowscnt - 1) {
+                if (self::$tableBorder) {
+                    self::outTableSep();
+                } else {
+                    self::out('');
+                }
             }
         }
+
     }
 
     protected static function outTableSep() {

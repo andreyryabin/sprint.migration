@@ -20,10 +20,15 @@ class <?php echo $version?> extends <?php echo $extendClass?> {
     public function up(){
         $helper = new HelperManager();
 
+        $helper->Iblock()->addIblockTypeIfNotExists(<?php echo var_export($iblockType, 1)?>);
+
         $iblockId = $helper->Iblock()->addIblockIfNotExists(<?php echo var_export($iblock, 1)?>);
 
         $helper->Iblock()->updateIblockFields($iblockId, <?php echo var_export($iblockFields, 1)?>);
 
+        <?php foreach ($iblockProperties as $iblockProperty):?>
+        $helper->Iblock()->addPropertyIfNotExists($iblockId, <?php echo var_export($iblockProperty, 1)?>);
+        <?endforeach;?>
     }
 
     public function down(){
