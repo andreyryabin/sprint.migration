@@ -172,7 +172,7 @@ class Version20150520000001 extends Version {
 Пример создания миграции которая наследуется от вашего класса
 -------------------------
 
-* укажите ваш класс в конфиге
+Укажите ваш класс в конфиге
 ```
 <?php return array (
     'migration_extend_class' => '\Acme\MyVersion as MyVersion',
@@ -186,7 +186,7 @@ class Version20150520000001 extends Version {
 );
 ```
 
-* создайте этот класс
+Создайте этот класс
 ```
 <?php
 namespace Acme;
@@ -198,7 +198,7 @@ class MyVersion extends Version
 }
 ```
 
-* создайте миграцю migrate.php create, результат:
+Создайте миграцю migrate.php create, результат:
 ```
 <?php
 
