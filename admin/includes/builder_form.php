@@ -2,6 +2,7 @@
 /** @var $builder \Sprint\Migration\AbstractBuilder */
 ?>
 <form method="post" class="sp-builder-form">
+    <?=$builder->getDescription()?>
     <div class="sp-builder-form-result"></div>
     <input type="hidden" name="builder_name" value="<?=$builder->getName()?>"/>
     <? $fields = $builder->getFields() ?>

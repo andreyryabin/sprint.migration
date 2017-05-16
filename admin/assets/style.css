@@ -1,10 +1,14 @@
 
 .sp-block {
-    margin-top: 20px;
     background-color: #f5f9f9;
     border: 1px solid;
     border-color: #c4ced2 #dce7ed #dce7ed;
     padding: 19px
+}
+.sp-block:after {
+    content: '';
+    display: block;
+    clear: both;
 }
 
 .sp-block_body{

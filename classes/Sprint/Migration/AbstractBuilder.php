@@ -7,6 +7,8 @@ use Sprint\Migration\Exceptions\BuilderException;
 abstract class AbstractBuilder
 {
 
+    private $name;
+
     /** @var VersionConfig */
     private $versionConfig = null;
 
@@ -15,9 +17,8 @@ abstract class AbstractBuilder
     private $templateFile = '';
     private $templateVars = array();
 
-    private $name;
-
     private $title = '';
+    private $description = '';
 
     abstract protected function initialize();
     abstract protected function execute();
@@ -214,12 +215,20 @@ abstract class AbstractBuilder
         $this->title = $title;
     }
 
+    protected function setDescription($description = ''){
+        $this->description = $description;
+    }
+
     public function getName(){
         return $this->name;
     }
 
     public function getTitle(){
         return $this->title;
+    }
+
+    public function getDescription(){
+        return $this->description;
     }
 
     public function getFields() {

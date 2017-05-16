@@ -110,8 +110,13 @@ class Version20150520000001 extends Version {
 
 ```
 <?php return array (
+  'title' => '',
   'migration_dir' => '',
   'migration_table' => '',
+  'migration_extend_class' => '',
+  'version_prefix' => '',
+  'tracker_task_url' => '',
+  'version_builders' => array(),
 );
 ```
 
@@ -126,7 +131,9 @@ class Version20150520000001 extends Version {
 **tracker_task_url** - Шаблон ссылки на задачу в трекере, в описании миграции можно указать номер задачи, например #12345, а в шаблоне должна быть конструкция $1, 
 например http://www.redmine.org/issues/$1/, работает только в админке
 
-**version_prefix** - Заголовок в имени класса миграции, по умолчанию Version (полное имя класса состоит из заголовка и даты)
+**version_prefix** - Заголовок класса миграции, по умолчанию Version (полное имя класса состоит из заголовка и даты)
+
+**version_builders** - Конструкторы миграций
 
 Ни один из параметров не является обязательным.
 
@@ -143,7 +150,26 @@ class Version20150520000001 extends Version {
 * php migrate.php migrate --config=release001 (переключить конфиг на release001 и накатить все миграции)
 
 
-Пример вашего класса от которого наследуются классы миграций
+Пример создания миграции по собственному алгоритму
+-------------------------
+Создайте класс-конструктор и объявите его в конфиге
+```
+<?php return array (
+  'version_builders' => array(
+    'MyVersion' => '\MyNamespace\MyVersion',
+  ),
+);
+```
+
+Ваш класс должен наследоваться от Sprint\Migration\AbstractBuilder
+
+Реализуйте алгоритм создания миграции по аналогии 
+
+с конструктором /modules/sprint.migration/classes/Sprint/Migration/Builders/IblockExport.php
+
+и шаблоном для него /modules/sprint.migration/templates/IblockExport.php
+
+Пример создания миграции которая наследуется от вашего класса
 -------------------------
 
 * укажите ваш класс в конфиге

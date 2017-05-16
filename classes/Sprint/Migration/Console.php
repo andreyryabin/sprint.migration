@@ -45,7 +45,7 @@ class Console
         $postvars = array();
         foreach ($fields as $code => $field) {
             if (empty($field['bind'])){
-                fwrite(STDOUT, $code . ':');
+                fwrite(STDOUT, $field['title'] . ':');
                 $val = fgets(STDIN);
                 $postvars[$code] = trim($val);
             }

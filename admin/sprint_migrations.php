@@ -84,6 +84,8 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         </div>
         <? $tabControl1->End(); ?>
 
+        <div style="margin-top: 10px">&nbsp;</div>
+
         <? $builders = $versionManager->getVersionBuilders() ?>
         <? foreach ($builders as $builderName => $builderClass): ?>
             <div class="sp-block">
@@ -103,13 +105,21 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
             <div class="sp-block_body"><? include __DIR__ . '/includes/config_list.php' ?></div>
         </div>
 
+        <div style="margin-top: 10px">&nbsp;</div>
+
         <div class="sp-block">
-            <p>
-                <?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?>:
-                <a href="https://bitbucket.org/andrey_ryabin/sprint.migration" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
-            </p>
+            <?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?>:
+            <a href="https://bitbucket.org/andrey_ryabin/sprint.migration" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration</a>
         </div>
 
+        <div class="sp-block">
+            <img style="float: left;margin-right: 10px;" width="50" height="50"
+                 src="https://bitbucket.org/repo/adr668/images/1541013359-sprint-editor-icon.jpg">
+            <?= GetMessage('SPRINT_MIGRATION_ADVERT_sprint_editor') ?>
+            <a href="http://marketplace.1c-bitrix.ru/solutions/sprint.editor/" target="_blank">
+                http://marketplace.1c-bitrix.ru/solutions/sprint.editor/
+            </a>
+        </div>
 
     </div>
     <style type="text/css">

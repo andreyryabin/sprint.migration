@@ -10,7 +10,8 @@ class Version extends AbstractBuilder
 {
 
     protected function initialize() {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Version'));
+        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Version1'));
+        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_Version2'));
 
         $template = $this->getConfigVal('migration_template');
         if ($template && is_file(Module::getDocRoot() . $template)){
@@ -19,17 +20,6 @@ class Version extends AbstractBuilder
             $this->setTemplateFile(Module::getModuleDir() . '/templates/version.php');
         }
 
-        $this->setField('prefix', array(
-            'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
-            'value' => $this->getConfigVal('version_prefix'),
-            'width' => 250,
-        ));
-
-        $this->setField('description', array(
-            'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
-            'width' => 350,
-            'rows' => 3,
-        ));
     }
 
     protected function execute() {

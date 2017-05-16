@@ -10,7 +10,9 @@ class IblockExport extends AbstractBuilder
 {
 
     public function initialize() {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport'));
+        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport1'));
+        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport2'));
+
         $this->setTemplateFile(Module::getModuleDir() . '/templates/IblockExport.php');
 
         $this->setField('iblock_id', array(
@@ -37,7 +39,6 @@ class IblockExport extends AbstractBuilder
             unset($iblockProperty['TIMESTAMP_X']);
             $iblockProperties[$index] = $iblockProperty;
         }
-
 
         $allFields = $helper->Iblock()->getIblockFields($iblock['ID']);
         $iblockFields = array();

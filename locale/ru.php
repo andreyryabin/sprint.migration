@@ -57,11 +57,13 @@
     "SPRINT_MIGRATION_CONFIG_migration_extend_class" => "Класс от которого наследуются миграции",
     "SPRINT_MIGRATION_CONFIG_migration_table" => "Таблица в бд с миграциями",
     "SPRINT_MIGRATION_CONFIG_tracker_task_url" => "Шаблон ссылки на задачу в трекере",
-    "SPRINT_MIGRATION_CONFIG_version_prefix" => "Заголовок в имени класса миграции",
+    "SPRINT_MIGRATION_CONFIG_version_prefix" => "Заголовок класса миграции",
     "SPRINT_MIGRATION_CONFIG_version_builders" => "Конструкторы миграций",
 
-    "SPRINT_MIGRATION_BUILDER_Version" => "Простая миграция",
-    "SPRINT_MIGRATION_BUILDER_IblockExport" => "Экспорт инфоблоков",
+    "SPRINT_MIGRATION_BUILDER_Version1" => "Создать простую миграцию",
+    "SPRINT_MIGRATION_BUILDER_Version2" => "",
+    "SPRINT_MIGRATION_BUILDER_IblockExport1" => "Создать миграцию для инфоблока",
+    "SPRINT_MIGRATION_BUILDER_IblockExport2" => "",
     "SPRINT_MIGRATION_BUILDER_IblockExport_IblockId" => "Инфоблок для экспорта",
 
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
@@ -80,5 +82,7 @@
     "SPRINT_MIGRATION_VERSION_NOT_FOUND" => "Миграция не найдена",
     "SPRINT_MIGRATION_RIGHT_D" => "Доступ запрещен",
     "SPRINT_MIGRATION_RIGHT_W" => "Доступ разрешен",
+
+    "SPRINT_MIGRATION_ADVERT_sprint_editor" => "Если вам понравился этот модуль - посмотрите еще <br/> Редактор для контент-менеджеров<br/>"
 
 ));
