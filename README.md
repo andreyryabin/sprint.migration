@@ -179,13 +179,6 @@ class Version20150520000001 extends Version {
     //'migration_extend_class' => '\Acme\MyVersion as MyVersion',
 );
 ```
-или
-
-```
-<?php return array (
-
-);
-```
 
 Создайте этот класс
 ```
