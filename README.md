@@ -175,14 +175,15 @@ class Version20150520000001 extends Version {
 Укажите ваш класс в конфиге
 ```
 <?php return array (
-    'migration_extend_class' => '\Acme\MyVersion as MyVersion',
+	'migration_extend_class' => '\Acme\MyVersion',
+    //'migration_extend_class' => '\Acme\MyVersion as MyVersion',
 );
 ```
 или
 
 ```
 <?php return array (
-    'migration_extend_class' => '\Acme\MyVersion',
+
 );
 ```
 
