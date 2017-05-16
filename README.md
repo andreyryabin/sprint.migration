@@ -60,7 +60,7 @@ require_once realpath(__DIR__) . '/local/modules/sprint.migration/tools/migrate.
 Все команды: https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/commands.txt?fileviewer=file-view-default
 
 
-Пример файла миграции:
+Пример файла миграции
 -------------------------
 /bitrix/php_interface/migrations/Version20150520000001.php
 
