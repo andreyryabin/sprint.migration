@@ -58,35 +58,9 @@ class Console
 
         $meta = $versionManager->getVersionByName($versionName);
 
-        if (!$meta || empty($meta['class'])) {
-            Throw new \Exception(GetMessage('SPRINT_MIGRATION_CREATED_ERROR'));
+        if (!empty($meta['class'])) {
+            $this->outVersionMeta($meta);
         }
-
-        $table = new ConsoleTable(-1, array(
-            'horizontal' => '=',
-            'vertical' => '',
-            'intersection' => ''
-        ), 1, 'UTF-8');
-
-        $table->setBorderVisibility(array('bottom' => false));
-
-        Out::out(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS2'));
-
-        foreach (array('version', 'status', 'description', 'location') as $param) {
-            if (empty($meta[$param])) {
-                continue;
-            }
-
-            if ($param == 'status') {
-                $val = GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$param]));
-            } else {
-                $val = $meta[$param];
-            }
-
-            $table->addRow(array(ucfirst($param) . ':', $val));
-        }
-
-        Out::out($table->getTable());
     }
 
     public function commandMark() {
@@ -307,6 +281,33 @@ class Console
             Out::out($table->getTable());
         }
     }
+
+    protected function outVersionMeta($meta = array()){
+        $table = new ConsoleTable(-1, array(
+            'horizontal' => '=',
+            'vertical' => '',
+            'intersection' => ''
+        ), 1, 'UTF-8');
+
+        $table->setBorderVisibility(array('bottom' => false));
+
+        foreach (array('version', 'status', 'description', 'location') as $param) {
+            if (empty($meta[$param])) {
+                continue;
+            }
+
+            if ($param == 'status') {
+                $val = GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$param]));
+            } else {
+                $val = $meta[$param];
+            }
+
+            $table->addRow(array(ucfirst($param) . ':', $val));
+        }
+
+        Out::out($table->getTable());
+    }
+
 
     protected function executeAll($filter, $limit = 0, $force = false) {
         $versionManager = $this->getVersionManager();

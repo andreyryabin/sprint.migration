@@ -29,6 +29,11 @@ class <?php echo $version?> extends <?php echo $extendClass?> {
         <?php foreach ($iblockProperties as $iblockProperty):?>
         $helper->Iblock()->addPropertyIfNotExists($iblockId, <?php echo var_export($iblockProperty, 1)?>);
         <?endforeach;?>
+
+        <?if (!empty($iblockAdminTabs)):?>
+        $helper->AdminIblock()->buildElementForm($iblockId, <?php echo var_export($iblockAdminTabs, 1)?>);
+        <?endif;?>
+
     }
 
     public function down(){

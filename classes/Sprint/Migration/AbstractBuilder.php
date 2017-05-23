@@ -148,6 +148,10 @@ abstract class AbstractBuilder
             return false;
         }
 
+        Out::outSuccess(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS', array(
+            '#VERSION#' => $versionName
+        )));
+
         return $versionName;
     }
 

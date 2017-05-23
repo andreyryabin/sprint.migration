@@ -115,8 +115,6 @@ class VersionConfig
             $values['version_prefix'] = 'Version';
         }
 
-
-
         if (!empty($values['stop_on_errors']) && $values['stop_on_errors'] == 'yes'){
             $values['stop_on_errors'] = 'yes';
         } else {
@@ -149,6 +147,7 @@ class VersionConfig
         return array(
             'Version' => '\Sprint\Migration\Builders\Version',
             'IblockExport' => '\Sprint\Migration\Builders\IblockExport',
+            //'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
         );
     }
 
