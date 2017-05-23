@@ -59,6 +59,7 @@
     "SPRINT_MIGRATION_CONFIG_tracker_task_url" => "Шаблон ссылки на задачу в трекере",
     "SPRINT_MIGRATION_CONFIG_version_prefix" => "Заголовок класса миграции",
     "SPRINT_MIGRATION_CONFIG_version_builders" => "Конструкторы миграций",
+    "SPRINT_MIGRATION_CONFIG_stop_on_errors" => "Останавливать выполнение миграций при ошибках",
 
     "SPRINT_MIGRATION_BUILDER_Version1" => "Создать простую миграцию",
     "SPRINT_MIGRATION_BUILDER_Version2" => "",

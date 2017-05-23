@@ -24,13 +24,12 @@ $configName = $versionManager->getConfigName();
         <tbody>
         <? foreach ($configItem['values'] as $key => $val) :
             $val = is_array($val) ? implode('<br/>', $val) : $val;
-            if (!empty($val)): ?>
-                <tr>
-                    <td><?= GetMessage('SPRINT_MIGRATION_CONFIG_' . $key) ?></td>
-                    <td><?= $key ?></td>
-                    <td><?= $val ?></td>
-                </tr>
-            <? endif; endforeach; ?>
+            ?><tr>
+                <td><?= GetMessage('SPRINT_MIGRATION_CONFIG_' . $key) ?></td>
+                <td><?= $key ?></td>
+                <td><?= $val ?></td>
+            </tr>
+            <?endforeach; ?>
         </tbody>
     </table>
 <? endforeach; ?>

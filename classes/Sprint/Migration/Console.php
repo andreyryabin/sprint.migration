@@ -22,6 +22,7 @@ class Console
     }
 
     public function commandCreate() {
+        $versionManager = $this->getVersionManager();
         /** @compability */
         $descr = $this->getArg(0, '');
         /** @compability */
@@ -33,7 +34,7 @@ class Console
         $prefix = $this->getArg('--prefix=', $prefix);
         $from = $this->getArg('--from=', '');
 
-        $builder = $this->getVersionManager()->createVersionBuilder($from);
+        $builder = $versionManager->createVersionBuilder($from);
 
         $builder->bind(array(
             'description' => $descr,
@@ -55,7 +56,7 @@ class Console
 
         $versionName = $builder->build();
 
-        $meta = $this->getVersionManager()->getVersionByName($versionName);
+        $meta = $versionManager->getVersionByName($versionName);
         if ($meta){
             Out::out(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS2'));
             $this->outVersionMeta($meta);
@@ -63,20 +64,23 @@ class Console
     }
 
     public function commandMark() {
+        $versionManager = $this->getVersionManager();
+
         $search = $this->getArg(0, '');
         $status = $this->getArg('--as=', '');
 
         if ($search && $status) {
-            $markresult = $this->getVersionManager()->markMigration($search, $status);
+            $markresult = $versionManager->markMigration($search, $status);
             foreach ($markresult as $val) {
                 Out::out($val['message']);
             }
         } else {
-            Out::out('Command error, see help');
+            Throw new \Exception('Command not found, see help');
         }
     }
 
     public function commandList() {
+        $versionManager = $this->getVersionManager();
         $search = $this->getArg('--search=');
 
         if ($this->getArg('--new')) {
@@ -87,7 +91,7 @@ class Console
             $status = '';
         }
 
-        $versions = $this->getVersionManager()->getVersions(array(
+        $versions = $versionManager->getVersions(array(
             'status' => $status,
             'search' => $search
         ));
@@ -136,13 +140,14 @@ class Console
     }
 
     public function commandStatus() {
+        $versionManager = $this->getVersionManager();
         $version = $this->getArg(0, '');
-        $meta = $this->getVersionManager()->getVersionByName($version);
+        $meta = $versionManager->getVersionByName($version);
 
         if ($meta){
             $this->outVersionMeta($meta);
         } else {
-            Out::out(GetMessage('SPRINT_MIGRATION_VERSION_NOT_FOUND'));
+            Throw new \Exception('Version not found!');
         }
 
     }
@@ -160,13 +165,14 @@ class Console
     }
 
     public function commandUp() {
+        $versionManager = $this->getVersionManager();
         $force = $this->getArg('--force');
         $var = $this->getArg(0, 1);
 
         $search = $this->getArg('--search=');
         $status = 'new';
 
-        if ($this->getVersionManager()->checkVersionName($var)) {
+        if ($versionManager->checkVersionName($var)) {
             $this->executeOnce($var, 'up', $force);
 
         } elseif ($this->getArg('--all')) {
@@ -185,13 +191,14 @@ class Console
     }
 
     public function commandDown() {
+        $versionManager = $this->getVersionManager();
         $force = $this->getArg('--force');
         $var = $this->getArg(0, 1);
 
         $search = $this->getArg('--search=');
         $status = 'installed';
 
-        if ($this->getVersionManager()->checkVersionName($var)) {
+        if ($versionManager->checkVersionName($var)) {
             $this->executeOnce($var, 'down', $force);
 
         } elseif ($this->getArg('--all')) {
@@ -216,7 +223,7 @@ class Console
             $this->executeOnce($version, 'down', $force);
             $this->executeOnce($version, 'up', $force);
         } else {
-            Out::out('Version not found!');
+            Throw new \Exception('Version not found!');
         }
     }
 
@@ -230,7 +237,7 @@ class Console
                 $this->executeOnce($version, 'up', $force);
             }
         } else {
-            Out::out('Version not found!');
+            Throw new \Exception('Version not found!');
         }
     }
 
@@ -253,8 +260,9 @@ class Console
     }
 
     public function commandConfig() {
-        $configList = $this->getVersionManager()->getConfigList();
-        $configName = $this->getVersionManager()->getConfigName();
+        $versionManager = $this->getVersionManager();
+        $configList = $versionManager->getConfigList();
+        $configName = $versionManager->getConfigName();
 
         foreach ($configList as $configItem) {
             $current = ($configItem['name'] == $configName) ? '*' : '';
@@ -262,20 +270,19 @@ class Console
             Out::initTable(array(),false);
             foreach ($configItem['values'] as $key => $val) {
                 $val = is_array($val) ? implode(',', $val) : $val;
-                if (!empty($val)){
-                    Out::addTableRow(array($key, $val));
-                }
+                Out::addTableRow(array($key, $val));
             }
             Out::outTable();
         }
     }
 
     protected function executeAll($filter, $limit = 0, $force = false) {
+        $versionManager = $this->getVersionManager();
         $limit = (int)$limit;
 
         $success = 0;
 
-        $versions = $this->getVersionManager()->getVersions($filter);
+        $versions = $versionManager->getVersions($filter);
 
         $action = ($filter['status'] == 'new') ? 'up' : 'down';
 
@@ -294,6 +301,7 @@ class Console
     }
 
     protected function executeOnce($version, $action = 'up', $force = false) {
+        $versionManager = $this->getVersionManager();
         $params = array();
         $restart = 0;
 
@@ -304,16 +312,30 @@ class Console
                 Out::out('%s (%s) start', $version, $action);
             }
 
-            $ok = $this->getVersionManager()->startMigration($version, $action, $params, $force);
-            if ($this->getVersionManager()->needRestart($version)) {
-                $params = $this->getVersionManager()->getRestartParams($version);
-                $restart = 1;
+            $success = $versionManager->startMigration($version, $action, $params, $force);
+            $restart = $versionManager->needRestart($version);
+
+            if ($restart) {
+                $params = $versionManager->getRestartParams($version);
                 $exec = 1;
+            }
+
+            if ($success && !$restart){
+                Out::out('%s (%s) success', $version, $action);
+            }
+
+            if (!$success && !$restart) {
+                $error = sprintf('%s (%s) error: %s',$version, $action, $versionManager->getLastError());
+                if ($versionManager->getConfigVal('stop_on_errors') == 'yes'){
+                    Throw new \Exception($error);
+                } else {
+                    Out::outError($error);
+                }
             }
 
         } while ($exec == 1);
 
-        return $ok;
+        return $success;
     }
 
     protected function outVersionMeta($meta) {
@@ -337,7 +359,7 @@ class Console
     public function executeConsoleCommand($args) {
         $this->script = array_shift($args);
 
-        if (empty($args) || count($args) <= 0) {
+        if (empty($args)) {
             $this->commandHelp();
             return false;
         }
@@ -353,15 +375,12 @@ class Console
 
         $command = 'command' . implode('', $tmp);
 
-        if (!method_exists($this, $command)) {
-            Out::out('Command not found, see help');
-            return false;
+        if (method_exists($this, $command)) {
+            $this->initializeArgs($args);
+            call_user_func(array($this, $command));
+        } else {
+            Throw new \Exception('Command not found, see help');
         }
-
-        $this->initializeArgs($args);
-
-        call_user_func(array($this, $command));
-        return true;
     }
 
     protected function initializeArgs($args) {

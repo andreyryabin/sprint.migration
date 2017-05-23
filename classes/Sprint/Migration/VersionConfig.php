@@ -8,15 +8,15 @@ class VersionConfig
 
     private $configList = array();
 
-
     private $availablekeys = array(
-        'title',
         'migration_table',
         'migration_extend_class',
+        'stop_on_errors',
         'migration_dir',
         'tracker_task_url',
         'version_prefix',
-        'builders'
+        'builders',
+        'title',
     );
 
     public function __construct($configName) {
@@ -90,18 +90,18 @@ class VersionConfig
     }
 
     protected function prepareConfigValues($values = array()) {
-        if (!$values['migration_extend_class']) {
+        if (empty($values['migration_extend_class'])) {
             $values['migration_extend_class'] = 'Version';
         }
 
-        if (!$values['migration_table']) {
+        if (empty($values['migration_table'])) {
             $values['migration_table'] = 'sprint_migration_versions';
         }
 
-        if ($values['migration_dir']) {
-            $values['migration_dir'] = Module::getDocRoot() . $values['migration_dir'];
-        } else {
+        if (empty($values['migration_dir'])) {
             $values['migration_dir'] = Module::getPhpInterfaceDir() . '/migrations';
+        } else {
+            $values['migration_dir'] = Module::getDocRoot() . $values['migration_dir'];
         }
 
         if (!is_dir($values['migration_dir'])) {
@@ -111,11 +111,15 @@ class VersionConfig
             $values['migration_dir'] = realpath($values['migration_dir']);
         }
 
-        if (!$values['version_prefix']) {
+        if (empty($values['version_prefix'])) {
             $values['version_prefix'] = 'Version';
         }
 
-        if (!$values['tracker_task_url']) {
+        if (empty($values['stop_on_errors'])){
+            $values['stop_on_errors'] = 'no';
+        }
+
+        if (empty($values['tracker_task_url'])) {
             $values['tracker_task_url'] = '';
         }
 

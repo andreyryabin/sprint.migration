@@ -1,5 +1,7 @@
 <?php
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
+    die();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sessid')) {
     /** @noinspection PhpIncludeInspection */
@@ -14,8 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
-    if (!$version){
-        if ($nextAction == 'up' || $nextAction == 'down'){
+    if (!$version) {
+        if ($nextAction == 'up' || $nextAction == 'down') {
 
             $version = 0;
             $action = $nextAction;
@@ -25,8 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
                 'search' => $search,
             ));
 
-            foreach ($items as $aItem){
-                if (!in_array($aItem['version'], $skipVersions)){
+            foreach ($items as $aItem) {
+                if (!in_array($aItem['version'], $skipVersions)) {
                     $version = $aItem['version'];
                     break;
                 }
@@ -35,14 +37,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
         }
     }
 
-    if ($version && $action){
+    if ($version && $action) {
 
-        if (!$restart){
+        if (!$restart) {
             Sprint\Migration\Out::out('[%s]%s (%s) start[/]', $action, $version, $action);
         }
 
         $success = $versionManager->startMigration($version, $action, $params);
-        if ($versionManager->needRestart($version)){
+        $restart = $versionManager->needRestart($version);
+
+        if ($success && !$restart){
+            Sprint\Migration\Out::out('%s (%s) success', $version, $action);
+        }
+
+        if (!$success && !$restart) {
+            Sprint\Migration\Out::outError('%s (%s) error: %s', $version, $action, $versionManager->getLastError());
+            if ($versionManager->getConfigVal('stop_on_errors') == 'yes') {
+                $nextAction = false;
+            } else {
+                $skipVersions[] = $version;
+            }
+        }
+
+        if ($restart) {
             $json = json_encode(array(
                 'params' => $versionManager->getRestartParams($version),
                 'action' => $action,
@@ -52,31 +69,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
                 'search' => $search,
             ));
 
-            ?><script>migrationExecuteStep('migration_execute', <?=$json?>);</script><?
-        } elseif ($nextAction){
-
-            if (!$success) {
-                $skipVersions[] = $version;
-            }
-
-            $json = json_encode(array(
+            ?>
+            <script>migrationExecuteStep('migration_execute', <?=$json?>);</script><?
+        } elseif ($nextAction) {
+           $json = json_encode(array(
                 'next_action' => $nextAction,
                 'skip_versions' => $skipVersions,
                 'search' => $search,
             ));
 
-            ?><script>
-                migrationMigrationRefresh(function(){
+            ?>
+            <script>
+                migrationMigrationRefresh(function () {
                     migrationExecuteStep('migration_execute', <?=$json?>);
                 });
             </script><?
         } else {
-            ?><script>
+            ?>
+            <script>
                 migrationMigrationRefresh();
             </script><?
         }
     } else {
-        ?><script>
+        ?>
+        <script>
             migrationMigrationRefresh();
         </script><?
     }
