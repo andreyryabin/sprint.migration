@@ -45,7 +45,7 @@ class Console
 
         $postvars = array();
         foreach ($fields as $code => $field) {
-            if (empty($field['bind'])){
+            if (empty($field['bind'])) {
                 fwrite(STDOUT, $field['title'] . ':');
                 $val = fgets(STDIN);
                 $postvars[$code] = trim($val);
@@ -57,10 +57,36 @@ class Console
         $versionName = $builder->build();
 
         $meta = $versionManager->getVersionByName($versionName);
-        if ($meta){
-            Out::out(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS2'));
-            $this->outVersionMeta($meta);
+
+        if (!$meta || empty($meta['class'])) {
+            Throw new \Exception(GetMessage('SPRINT_MIGRATION_CREATED_ERROR'));
         }
+
+        $table = new ConsoleTable(-1, array(
+            'horizontal' => '=',
+            'vertical' => '',
+            'intersection' => ''
+        ), 1, 'UTF-8');
+
+        $table->setBorderVisibility(array('bottom' => false));
+
+        Out::out(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS2'));
+
+        foreach (array('version', 'status', 'description', 'location') as $param) {
+            if (empty($meta[$param])) {
+                continue;
+            }
+
+            if ($param == 'status') {
+                $val = GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$param]));
+            } else {
+                $val = $meta[$param];
+            }
+
+            $table->addRow(array(ucfirst($param) . ':', $val));
+        }
+
+        Out::out($table->getTable());
     }
 
     public function commandMark() {
@@ -75,7 +101,7 @@ class Console
                 Out::out($val['message']);
             }
         } else {
-            Throw new \Exception('Command not found, see help');
+            Throw new \Exception('Invalid arguments, see help');
         }
     }
 
@@ -107,48 +133,40 @@ class Console
             );
         }
 
-        Out::initTable(array(
+        $table = new ConsoleTable(-1, array(
+            'horizontal' => '=',
+            'vertical' => '',
+            'intersection' => ''
+        ), 1, 'UTF-8');
+
+        $table->setHeaders(array(
             'Version',
             'Status',
             'Description',
-            //'Location'
         ));
 
-        foreach ($versions as $aItem) {
-            Out::addTableRow(array(
+        foreach ($versions as $index => $aItem) {
+            $table->addRow(array(
                 $aItem['version'],
                 GetMessage('SPRINT_MIGRATION_META_' . strtoupper($aItem['status'])),
                 $aItem['description'],
-                //$aItem['location'],
             ));
 
             $stval = $aItem['status'];
             $summary[$stval]++;
         }
-        Out::outTable();
 
-        Out::initTable(array(), false);
+        Out::out($table->getTable());
+
+        $table = new ConsoleTable(-1, '', 1, 'UTF-8');
         foreach ($summary as $k => $v) {
-            Out::addTableRow(array(
+            $table->addRow(array(
                 GetMessage('SPRINT_MIGRATION_META_' . strtoupper($k)) . ':',
                 $v
             ));
         }
 
-        Out::outTable();
-
-    }
-
-    public function commandStatus() {
-        $versionManager = $this->getVersionManager();
-        $version = $this->getArg(0, '');
-        $meta = $versionManager->getVersionByName($version);
-
-        if ($meta){
-            $this->outVersionMeta($meta);
-        } else {
-            Throw new \Exception('Version not found!');
-        }
+        Out::out($table->getTable());
 
     }
 
@@ -267,12 +285,26 @@ class Console
         foreach ($configList as $configItem) {
             $current = ($configItem['name'] == $configName) ? '*' : '';
             Out::out('%s %s', $configItem['title'], $current);
-            Out::initTable(array(),false);
+
+            $table = new ConsoleTable(-1, array(
+                'horizontal' => '=',
+                'vertical' => '',
+                'intersection' => ''
+            ), 1, 'UTF-8');
+
+            $table->setBorderVisibility(array('bottom' => false));
+
             foreach ($configItem['values'] as $key => $val) {
-                $val = is_array($val) ? implode(',', $val) : $val;
-                Out::addTableRow(array($key, $val));
+
+                if ($key == 'version_builders') {
+                    $val = array_keys($val);
+                    $val = implode(PHP_EOL, $val);
+                }
+
+                $table->addRow(array($key, $val));
             }
-            Out::outTable();
+
+            Out::out($table->getTable());
         }
     }
 
@@ -320,13 +352,13 @@ class Console
                 $exec = 1;
             }
 
-            if ($success && !$restart){
+            if ($success && !$restart) {
                 Out::out('%s (%s) success', $version, $action);
             }
 
             if (!$success && !$restart) {
-                $error = sprintf('%s (%s) error: %s',$version, $action, $versionManager->getLastError());
-                if ($versionManager->getConfigVal('stop_on_errors') == 'yes'){
+                $error = sprintf('%s (%s) error: %s', $version, $action, $versionManager->getLastError());
+                if ($versionManager->getConfigVal('stop_on_errors') == 'yes') {
                     Throw new \Exception($error);
                 } else {
                     Out::outError($error);
@@ -338,24 +370,7 @@ class Console
         return $success;
     }
 
-    protected function outVersionMeta($meta) {
-        Out::initTable(array(), false);
-        foreach (array('version', 'status', 'description', 'location') as $val) {
-            if (!empty($meta[$val])) {
-                if ($val == 'status') {
-                    Out::addTableRow(array(
-                        ucfirst($val) . ':',
-                        GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$val]))
-                    ));
-                } else {
-                    Out::addTableRow(array(ucfirst($val) . ':', $meta[$val]));
-                }
-            }
-        }
-        Out::outTable();
-    }
 
-    //
     public function executeConsoleCommand($args) {
         $this->script = array_shift($args);
 
@@ -411,11 +426,16 @@ class Console
         $this->commandList();
     }
 
-    public function commandSt() {
-        $this->commandStatus();
+    public function commandMi() {
+        $this->commandMigrate();
     }
 
     public function commandAdd() {
         $this->commandCreate();
     }
+
+    public function commandStatus() {
+        /** @deprecated */
+    }
+
 }

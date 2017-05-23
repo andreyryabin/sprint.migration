@@ -84,6 +84,6 @@
     "SPRINT_MIGRATION_RIGHT_D" => "Доступ запрещен",
     "SPRINT_MIGRATION_RIGHT_W" => "Доступ разрешен",
 
-    "SPRINT_MIGRATION_ADVERT_sprint_editor" => "Если вам понравился этот модуль - посмотрите еще <br/> Редактор для контент-менеджеров<br/>"
+    "SPRINT_MIGRATION_ADVERT_sprint_editor" => "Если вам нравится этот модуль - посмотрите еще <br/> Редактор для контент-менеджеров<br/>"
 
 ));

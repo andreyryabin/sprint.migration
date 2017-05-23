@@ -21,6 +21,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
         )));
     }
 
+    if (!$meta){
+        Sprint\Migration\Out::outError(GetMessage('SPRINT_MIGRATION_CREATED_ERROR'));
+    }
+
+
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
     die();
