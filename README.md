@@ -116,7 +116,7 @@ class Version20150520000001 extends Version {
   'migration_extend_class' => '',
   'version_prefix' => '',
   'tracker_task_url' => '',
-  'stop_on_errors' => '',
+  'stop_on_errors' => 'no',
   'version_builders' => array(),
 );
 ```
@@ -136,7 +136,7 @@ class Version20150520000001 extends Version {
 
 **version_builders** - Конструкторы миграций
 
-**stop_on_errors** - Останавливать выполнение миграций при ошибках, варианты значений: yes|no, по умолчанию no
+**stop_on_errors** - Останавливать выполнение миграций при ошибках, варианты значений: yes|no, по умолчанию no (не останавливать)
 
 Ни один из параметров не является обязательным.
 
