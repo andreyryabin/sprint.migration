@@ -12,6 +12,7 @@ class VersionConfig
         'migration_table',
         'migration_extend_class',
         'stop_on_errors',
+        'show_other_solutions',
         'migration_dir',
         'tracker_task_url',
         'version_prefix',
@@ -119,6 +120,12 @@ class VersionConfig
             $values['stop_on_errors'] = 'yes';
         } else {
             $values['stop_on_errors'] = 'no';
+        }
+
+        if (!empty($values['show_other_solutions']) && $values['show_other_solutions'] == 'no'){
+            $values['show_other_solutions'] = 'no';
+        } else {
+            $values['show_other_solutions'] = 'yes';
         }
 
         if (empty($values['tracker_task_url'])) {

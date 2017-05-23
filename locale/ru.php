@@ -59,6 +59,7 @@
     "SPRINT_MIGRATION_CONFIG_version_prefix" => "Заголовок класса миграции",
     "SPRINT_MIGRATION_CONFIG_version_builders" => "Конструкторы миграций",
     "SPRINT_MIGRATION_CONFIG_stop_on_errors" => "Останавливать выполнение миграций при ошибках",
+    "SPRINT_MIGRATION_CONFIG_show_other_solutions" => "Показывать другие решения разработчика",
 
     "SPRINT_MIGRATION_BUILDER_Version1" => "Создать простую миграцию",
     "SPRINT_MIGRATION_BUILDER_Version2" => "",
@@ -85,6 +86,6 @@
     "SPRINT_MIGRATION_RIGHT_D" => "Доступ запрещен",
     "SPRINT_MIGRATION_RIGHT_W" => "Доступ разрешен",
 
-    "SPRINT_MIGRATION_ADVERT_sprint_editor" => "Если вам нравится этот модуль - посмотрите еще <br/> Редактор для контент-менеджеров<br/>"
+    "SPRINT_MIGRATION_ABOUT_sprint_editor" => "Если вам нравится этот модуль, посмотрите еще <br/> Редактор для контент-менеджеров<br/>"
 
 ));
