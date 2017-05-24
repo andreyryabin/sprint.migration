@@ -51,6 +51,7 @@ class AdminIblockHelper extends Helper
                 if ($fieldIndex == 0) {
                     $tabTitle = $fieldTitle;
                 } else {
+                    $fieldCode = $this->revertCode($fieldCode);
                     $extractedFields[$fieldCode] = $fieldTitle;
                 }
             }
@@ -208,7 +209,7 @@ class AdminIblockHelper extends Helper
         while ($aItem = $dbResult->Fetch()) {
             if (!empty($aItem['CODE'])) {
                 $this->titles['PROPERTY_' . $aItem['ID']] = $aItem['NAME'];
-                $this->props[$aItem['CODE']] = $aItem;
+                $this->props[] = $aItem;
             }
         }
 
@@ -261,8 +262,25 @@ class AdminIblockHelper extends Helper
     protected function prepareCode($fieldCode) {
         if (0 === strpos($fieldCode, 'PROPERTY_')) {
             $fieldCode = substr($fieldCode, 9);
-            if (isset($this->props[$fieldCode])) {
-                $fieldCode = $this->props[$fieldCode]['ID'];
+            foreach ($this->props as $prop){
+                if ($prop['CODE'] == $fieldCode){
+                    $fieldCode = $prop['ID'];
+                    break;
+                }
+            }
+            $fieldCode = 'PROPERTY_' . $fieldCode;
+        }
+        return $fieldCode;
+    }
+
+    protected function revertCode($fieldCode) {
+        if (0 === strpos($fieldCode, 'PROPERTY_')) {
+            $fieldCode = substr($fieldCode, 9);
+            foreach ($this->props as $prop){
+                if ($prop['ID'] == $fieldCode){
+                    $fieldCode = $prop['CODE'];
+                    break;
+                }
             }
             $fieldCode = 'PROPERTY_' . $fieldCode;
         }

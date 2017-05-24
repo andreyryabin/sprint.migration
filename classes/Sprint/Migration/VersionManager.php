@@ -17,6 +17,7 @@ class VersionManager
 
     private $restarts = array();
 
+    private $lastError = '';
 
     public function __construct($configName = '') {
         $configName = empty($configName) ? Module::getDbOption('config_name', '') : $configName;
@@ -39,6 +40,8 @@ class VersionManager
         if (isset($this->restarts[$versionName])) {
             unset($this->restarts[$versionName]);
         }
+
+        $this->lastError = '';
 
         try {
 
@@ -88,17 +91,13 @@ class VersionManager
                 throw new MigrationException('unable to write migration to the database');
             }
 
-            Out::out('%s (%s) success', $versionName, $action);
             return true;
 
         } catch (RestartException $e) {
             $this->restarts[$versionName] = isset($versionInstance) ? $versionInstance->getParams() : array();
 
-        } catch (MigrationException $e) {
-            Out::outError('%s (%s) error: %s', $versionName, $action, $e->getMessage());
-
         } catch (\Exception $e) {
-            Out::outError('%s (%s) error: %s', $versionName, $action, $e->getMessage());
+            $this->lastError = $e->getMessage();
         }
 
         return false;
@@ -111,6 +110,10 @@ class VersionManager
 
     public function getRestartParams($version) {
         return $this->restarts[$version];
+    }
+
+    public function getLastError(){
+        return $this->lastError;
     }
 
     /**

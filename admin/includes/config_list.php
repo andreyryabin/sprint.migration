@@ -23,14 +23,18 @@ $configName = $versionManager->getConfigName();
         </thead>
         <tbody>
         <? foreach ($configItem['values'] as $key => $val) :
-            $val = is_array($val) ? implode('<br/>', $val) : $val;
-            if (!empty($val)): ?>
-                <tr>
-                    <td><?= GetMessage('SPRINT_MIGRATION_CONFIG_' . $key) ?></td>
-                    <td><?= $key ?></td>
-                    <td><?= $val ?></td>
-                </tr>
-            <? endif; endforeach; ?>
+
+            if ($key == 'version_builders'){
+                $val = array_keys($val);
+                $val = implode('<br/>', $val);
+            }
+
+            ?><tr>
+                <td><?= GetMessage('SPRINT_MIGRATION_CONFIG_' . $key) ?></td>
+                <td><?= $key ?></td>
+                <td><?= $val ?></td>
+            </tr>
+            <?endforeach; ?>
         </tbody>
     </table>
 <? endforeach; ?>

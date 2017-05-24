@@ -5,6 +5,7 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Module;
 use Sprint\Migration\AbstractBuilder;
 use Sprint\Migration\HelperManager;
+use Sprint\Migration\Exceptions\HelperException;
 
 class IblockExport extends AbstractBuilder
 {
@@ -22,7 +23,7 @@ class IblockExport extends AbstractBuilder
     }
 
 
-    public function execute(){
+    public function execute() {
         $helper = new HelperManager();
 
         $iblockId = $this->getFieldValue('iblock_id');
@@ -34,7 +35,7 @@ class IblockExport extends AbstractBuilder
         $iblockType = $helper->Iblock()->getIblockType($iblock['IBLOCK_TYPE_ID']);
 
         $iblockProperties = $helper->Iblock()->getProperties($iblock['ID']);
-        foreach ($iblockProperties as $index => $iblockProperty){
+        foreach ($iblockProperties as $index => $iblockProperty) {
             unset($iblockProperty['ID']);
             unset($iblockProperty['TIMESTAMP_X']);
             $iblockProperties[$index] = $iblockProperty;
@@ -42,12 +43,19 @@ class IblockExport extends AbstractBuilder
 
         $allFields = $helper->Iblock()->getIblockFields($iblock['ID']);
         $iblockFields = array();
-        foreach ($allFields as $fieldId => $iblockField){
-            if ($iblockField["VISIBLE"] == "N" || preg_match("/^(SECTION_|LOG_)/", $fieldId)){
+        foreach ($allFields as $fieldId => $iblockField) {
+            if ($iblockField["VISIBLE"] == "N" || preg_match("/^(SECTION_|LOG_)/", $fieldId)) {
                 continue;
             }
 
             $iblockFields[$fieldId] = $iblockField;
+        }
+
+
+        try {
+            $iblockAdminTabs = $helper->AdminIblock()->extractElementForm($iblock['ID']);
+        } catch (HelperException $e) {
+            $iblockAdminTabs = !empty($iblockAdminTabs) ? $iblockAdminTabs : array();
         }
 
         unset($iblock['ID']);
@@ -57,5 +65,6 @@ class IblockExport extends AbstractBuilder
         $this->setTemplateVar('iblockType', $iblockType);
         $this->setTemplateVar('iblockFields', $iblockFields);
         $this->setTemplateVar('iblockProperties', $iblockProperties);
+        $this->setTemplateVar('iblockAdminTabs', $iblockAdminTabs);
     }
 }

@@ -42,8 +42,7 @@
     "SPRINT_MIGRATION_META_NEW" => "New",
     "SPRINT_MIGRATION_META_INSTALLED" => "Installed",
     "SPRINT_MIGRATION_META_UNKNOWN" => "Unknown",
-    "SPRINT_MIGRATION_CREATED_SUCCESS1" => "Миграция #VERSION# создана",
-    "SPRINT_MIGRATION_CREATED_SUCCESS2" => "Миграция создана",
+    "SPRINT_MIGRATION_CREATED_SUCCESS" => "Миграция #VERSION# создана",
     "SPRINT_MIGRATION_CREATED_ERROR" => "Ошибка создания миграции",
     "SPRINT_MIGRATION_SEARCH" => "Поиск",
     "SPRINT_MIGRATION_CONFIG_TITLE" => "Миграции",
@@ -59,12 +58,16 @@
     "SPRINT_MIGRATION_CONFIG_tracker_task_url" => "Шаблон ссылки на задачу в трекере",
     "SPRINT_MIGRATION_CONFIG_version_prefix" => "Заголовок класса миграции",
     "SPRINT_MIGRATION_CONFIG_version_builders" => "Конструкторы миграций",
+    "SPRINT_MIGRATION_CONFIG_stop_on_errors" => "Останавливать выполнение миграций при появлении ошибок",
+    "SPRINT_MIGRATION_CONFIG_show_other_solutions" => "Показывать другие решения разработчика",
 
     "SPRINT_MIGRATION_BUILDER_Version1" => "Создать простую миграцию",
     "SPRINT_MIGRATION_BUILDER_Version2" => "",
     "SPRINT_MIGRATION_BUILDER_IblockExport1" => "Создать миграцию для инфоблока",
     "SPRINT_MIGRATION_BUILDER_IblockExport2" => "",
     "SPRINT_MIGRATION_BUILDER_IblockExport_IblockId" => "Инфоблок для экспорта",
+    "SPRINT_MIGRATION_BUILDER_HlblockExport1" => "Создать миграцию для highload-блока",
+    "SPRINT_MIGRATION_BUILDER_HlblockExport2" => "",
 
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
     "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля",
@@ -83,6 +86,6 @@
     "SPRINT_MIGRATION_RIGHT_D" => "Доступ запрещен",
     "SPRINT_MIGRATION_RIGHT_W" => "Доступ разрешен",
 
-    "SPRINT_MIGRATION_ADVERT_sprint_editor" => "Если вам понравился этот модуль - посмотрите еще <br/> Редактор для контент-менеджеров<br/>"
+    "SPRINT_MIGRATION_ABOUT_sprint_editor" => "Если вам нравится этот модуль, посмотрите еще <br/> Редактор для контент-менеджеров<br/>"
 
 ));
