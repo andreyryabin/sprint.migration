@@ -27,6 +27,12 @@ $configName = $versionManager->getConfigName();
             if ($key == 'version_builders'){
                 $val = array_keys($val);
                 $val = implode('<br/>', $val);
+            } elseif ($key == 'show_other_solutions') {
+                $val = ($val) ? 'yes' : 'no';
+                $val = GetMessage('SPRINT_MIGRATION_CONFIG_'.$val);
+            } elseif ($key == 'stop_on_errors') {
+                $val = ($val) ? 'yes' : 'no';
+                $val = GetMessage('SPRINT_MIGRATION_CONFIG_'.$val);
             }
 
             ?><tr>

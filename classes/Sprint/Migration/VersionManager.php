@@ -17,7 +17,7 @@ class VersionManager
 
     private $restarts = array();
 
-    private $lastError = '';
+    private $lastException = null;
 
     public function __construct($configName = '') {
         $configName = empty($configName) ? Module::getDbOption('config_name', '') : $configName;
@@ -30,6 +30,8 @@ class VersionManager
             $this->getConfigVal('migration_table')
         );
 
+        $this->lastException = new \Exception();
+
         Module::setDbOption('config_name', $this->versionConfig->getConfigName());
     }
 
@@ -41,7 +43,7 @@ class VersionManager
             unset($this->restarts[$versionName]);
         }
 
-        $this->lastError = '';
+        $this->lastException = new \Exception();
 
         try {
 
@@ -97,7 +99,7 @@ class VersionManager
             $this->restarts[$versionName] = isset($versionInstance) ? $versionInstance->getParams() : array();
 
         } catch (\Exception $e) {
-            $this->lastError = $e->getMessage();
+            $this->lastException = $e;
         }
 
         return false;
@@ -112,8 +114,8 @@ class VersionManager
         return $this->restarts[$version];
     }
 
-    public function getLastError(){
-        return $this->lastError;
+    public function getLastException(){
+        return $this->lastException;
     }
 
     /**
