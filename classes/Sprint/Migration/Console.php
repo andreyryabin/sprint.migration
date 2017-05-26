@@ -224,6 +224,19 @@ class Console
         }
     }
 
+    public function commandRedo(){
+        $version = $this->getArg(0, '');
+        $force = $this->getArg('--force');
+        if ($version) {
+            $this->executeVersion($version, 'down', $force);
+            $this->executeVersion($version, 'up', $force);
+        } else {
+            Out::out('Version not found!');
+            die(1);
+        }
+    }
+
+
     public function commandForce() {
         /** @compability */
         $this->addArg('--force');
@@ -319,15 +332,11 @@ class Console
 
         foreach ($versions as $aItem) {
 
-            Out::out('%s (%s) start', $aItem['version'], $action);
+            $ok = $this->executeVersion($aItem['version'], $action, $force);
 
-            $res = $this->executeVersion($aItem['version'], $action, $force);
-
-            if ($res['success']) {
-                Out::out('%s (%s) success', $aItem['version'], $action);
+            if ($ok) {
                 $success++;
             } else {
-                Out::out('%s (%s) error: %s', $aItem['version'], $action, $res['message']);
                 $fails++;
             }
 
@@ -348,21 +357,19 @@ class Console
     }
 
     protected function executeOnce($version, $action = 'up', $force = false) {
-        Out::out('%s (%s) start', $version, $action);
+        $ok = $this->executeVersion($version, $action, $force);
 
-        $res = $this->executeVersion($version, $action, $force);
-
-        if ($res['success']) {
-            Out::out('%s (%s) success', $version, $action);
-        } else {
-            Out::out('%s (%s) error: %s', $version, $action, $res['message']);
+        if (!$ok){
             die(1);
         }
+
     }
 
     protected function executeVersion($version, $action = 'up', $force = false) {
         $versionManager = $this->getVersionManager();
         $params = array();
+
+        Out::out('%s (%s) start', $version, $action);
 
         do {
             $exec = 0;
@@ -375,14 +382,21 @@ class Console
                 $exec = 1;
             }
 
-            $mess = $versionManager->getLastException()->getMessage();
+            if ($success && !$restart) {
+                Out::out('%s (%s) success', $version, $action);
+            }
+
+            if (!$success && !$restart) {
+                Out::out('%s (%s) error: %s',
+                    $version,
+                    $action,
+                    $versionManager->getLastException()->getMessage()
+                );
+            }
 
         } while ($exec == 1);
 
-        return array(
-            'message' => $mess,
-            'success' => $success,
-        );
+        return $success;
     }
 
 
@@ -409,10 +423,8 @@ class Console
             $this->initializeArgs($args);
             call_user_func(array($this, $command));
         } else {
-
             Out::out('Command not found, see help');
             die(1);
-
         }
     }
 
@@ -450,15 +462,5 @@ class Console
 
     public function commandAdd() {
         $this->commandCreate();
-    }
-
-    public function commandStatus() {
-        Out::out('Command deprecated');
-        die(1);
-    }
-
-    public function commandRedo() {
-        Out::out('Command deprecated');
-        die(1);
     }
 }

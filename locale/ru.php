@@ -71,6 +71,7 @@
     "SPRINT_MIGRATION_BUILDER_IblockExport_IblockId" => "Инфоблок для экспорта",
     "SPRINT_MIGRATION_BUILDER_HlblockExport1" => "Создать миграцию для highload-блока",
     "SPRINT_MIGRATION_BUILDER_HlblockExport2" => "",
+    "SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId" => "Highload-блок для экспорта",
 
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
     "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля",

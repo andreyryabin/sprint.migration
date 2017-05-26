@@ -20,8 +20,12 @@ class <?php echo $version?> extends <?php echo $extendClass?> {
     public function up(){
         $helper = new HelperManager();
 
-        // :)
+        $hlblockId = $helper->Hlblock()->addHlblockIfNotExists(<?php echo var_export($hlblock, 1)?>);
+        $entityId = 'HLBLOCK_' . $hlblockId;
 
+        <?php foreach ($hlblockEntities as $entity):?>
+        $helper->UserTypeEntity()->addUserTypeEntityIfNotExists($entityId, '<?php echo $entity['FIELD_NAME']?>', <?php echo var_export($entity, 1)?>);
+        <?endforeach;?>
     }
 
     public function down(){

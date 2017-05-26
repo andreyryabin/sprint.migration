@@ -1,6 +1,6 @@
 <div id="migration_migration_mark_result"></div>
 <p>
-    <input placeholder="<?= GetMessage('SPRINT_MIGRATION_MARK_VERSION') ?>" type="text"
+    <input placeholder="<?= GetMessage('SPRINT_MIGRATION_MARK_VERSION') ?>|installed|new|unknown" type="text"
            style="width: 250px;" id="migration_migration_mark" value=""/>
 </p>
 <p>

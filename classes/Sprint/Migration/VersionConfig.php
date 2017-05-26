@@ -154,7 +154,7 @@ class VersionConfig
         return array(
             'Version' => '\Sprint\Migration\Builders\Version',
             'IblockExport' => '\Sprint\Migration\Builders\IblockExport',
-            //'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
+            'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
         );
     }
 
