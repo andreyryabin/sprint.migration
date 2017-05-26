@@ -324,26 +324,21 @@ class Console
             $res = $this->executeVersion($aItem['version'], $action, $force);
 
             if ($res['success']) {
-                $success++;
-
                 Out::out('%s (%s) success', $aItem['version'], $action);
-
+                $success++;
             } else {
-                $fails++;
-
                 Out::out('%s (%s) error: %s', $aItem['version'], $action, $res['message']);
+                $fails++;
+            }
 
-                if ($versionManager->getConfigVal('stop_on_errors')) {
-                    break;
-                }
-
+            if ($fails && $versionManager->getConfigVal('stop_on_errors')){
+                break;
             }
 
             if ($limit > 0 && $limit == $success) {
                 break;
             }
         }
-
 
         Out::out('migrations (%s): %d', $action, $success);
 
@@ -360,7 +355,6 @@ class Console
         if ($res['success']) {
             Out::out('%s (%s) success', $version, $action);
         } else {
-
             Out::out('%s (%s) error: %s', $version, $action, $res['message']);
             die(1);
         }
