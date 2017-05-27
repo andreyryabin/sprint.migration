@@ -48,6 +48,7 @@ class IblockExport extends AbstractBuilder
         $iblockProperties = $helper->Iblock()->getProperties($iblock['ID']);
         foreach ($iblockProperties as $index => $iblockProperty) {
             unset($iblockProperty['ID']);
+            unset($iblockProperty['IBLOCK_ID']);
             unset($iblockProperty['TIMESTAMP_X']);
             $iblockProperties[$index] = $iblockProperty;
         }
