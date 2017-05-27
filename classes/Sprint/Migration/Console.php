@@ -75,7 +75,8 @@ class Console
                 Out::out($val['message']);
             }
         } else {
-            Throw new \Exception('Invalid arguments, see help');
+            Out::out('Invalid arguments, see help');
+            die(1);
         }
     }
 
@@ -208,17 +209,6 @@ class Console
 
     }
 
-    public function commandRedo() {
-        $version = $this->getArg(0, '');
-        $force = $this->getArg('--force');
-        if ($version) {
-            $this->executeOnce($version, 'down', $force);
-            $this->executeOnce($version, 'up', $force);
-        } else {
-            Throw new \Exception('Version not found!');
-        }
-    }
-
     public function commandExecute() {
         $version = $this->getArg(0, '');
         $force = $this->getArg('--force');
@@ -229,9 +219,23 @@ class Console
                 $this->executeOnce($version, 'up', $force);
             }
         } else {
-            Throw new \Exception('Version not found!');
+            Out::out('Version not found!');
+            die(1);
         }
     }
+
+    public function commandRedo(){
+        $version = $this->getArg(0, '');
+        $force = $this->getArg('--force');
+        if ($version) {
+            $this->executeVersion($version, 'down', $force);
+            $this->executeVersion($version, 'up', $force);
+        } else {
+            Out::out('Version not found!');
+            die(1);
+        }
+    }
+
 
     public function commandForce() {
         /** @compability */
@@ -273,6 +277,12 @@ class Console
                 if ($key == 'version_builders') {
                     $val = array_keys($val);
                     $val = implode(PHP_EOL, $val);
+                } elseif ($key == 'show_other_solutions') {
+                    $val = ($val) ? 'yes' : 'no';
+                    $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
+                } elseif ($key == 'stop_on_errors') {
+                    $val = ($val) ? 'yes' : 'no';
+                    $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
                 }
 
                 $table->addRow(array($key, $val));
@@ -282,7 +292,7 @@ class Console
         }
     }
 
-    protected function outVersionMeta($meta = array()){
+    protected function outVersionMeta($meta = array()) {
         $table = new ConsoleTable(-1, array(
             'horizontal' => '=',
             'vertical' => '',
@@ -314,14 +324,24 @@ class Console
         $limit = (int)$limit;
 
         $success = 0;
+        $fails = 0;
 
         $versions = $versionManager->getVersions($filter);
 
         $action = ($filter['status'] == 'new') ? 'up' : 'down';
 
         foreach ($versions as $aItem) {
-            if ($this->executeOnce($aItem['version'], $action, $force)) {
+
+            $ok = $this->executeVersion($aItem['version'], $action, $force);
+
+            if ($ok) {
                 $success++;
+            } else {
+                $fails++;
+            }
+
+            if ($fails && $versionManager->getConfigVal('stop_on_errors')){
+                break;
             }
 
             if ($limit > 0 && $limit == $success) {
@@ -330,20 +350,29 @@ class Console
         }
 
         Out::out('migrations (%s): %d', $action, $success);
-        return $success;
+
+        if ($fails) {
+            die(1);
+        }
     }
 
     protected function executeOnce($version, $action = 'up', $force = false) {
+        $ok = $this->executeVersion($version, $action, $force);
+
+        if (!$ok){
+            die(1);
+        }
+
+    }
+
+    protected function executeVersion($version, $action = 'up', $force = false) {
         $versionManager = $this->getVersionManager();
         $params = array();
-        $restart = 0;
+
+        Out::out('%s (%s) start', $version, $action);
 
         do {
             $exec = 0;
-
-            if (!$restart) {
-                Out::out('%s (%s) start', $version, $action);
-            }
 
             $success = $versionManager->startMigration($version, $action, $params, $force);
             $restart = $versionManager->needRestart($version);
@@ -358,12 +387,11 @@ class Console
             }
 
             if (!$success && !$restart) {
-                $error = sprintf('%s (%s) error: %s', $version, $action, $versionManager->getLastError());
-                if ($versionManager->getConfigVal('stop_on_errors') == 'yes') {
-                    Throw new \Exception($error);
-                } else {
-                    Out::outError($error);
-                }
+                Out::out('%s (%s) error: %s',
+                    $version,
+                    $action,
+                    $versionManager->getLastException()->getMessage()
+                );
             }
 
         } while ($exec == 1);
@@ -377,7 +405,7 @@ class Console
 
         if (empty($args)) {
             $this->commandHelp();
-            return false;
+            die(1);
         }
 
         $command = array_shift($args);
@@ -395,7 +423,8 @@ class Console
             $this->initializeArgs($args);
             call_user_func(array($this, $command));
         } else {
-            Throw new \Exception('Command not found, see help');
+            Out::out('Command not found, see help');
+            die(1);
         }
     }
 
@@ -434,9 +463,4 @@ class Console
     public function commandAdd() {
         $this->commandCreate();
     }
-
-    public function commandStatus() {
-        /** @deprecated */
-    }
-
 }

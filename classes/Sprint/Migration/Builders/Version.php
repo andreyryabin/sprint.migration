@@ -20,6 +20,17 @@ class Version extends AbstractBuilder
             $this->setTemplateFile(Module::getModuleDir() . '/templates/version.php');
         }
 
+        $this->setField('prefix', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
+            'value' => $this->getConfigVal('version_prefix'),
+            'width' => 250,
+        ));
+
+        $this->setField('description', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
+            'width' => 350,
+            'height' => 40,
+        ));
     }
 
     protected function execute() {

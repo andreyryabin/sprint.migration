@@ -61,6 +61,9 @@
     "SPRINT_MIGRATION_CONFIG_stop_on_errors" => "Останавливать выполнение миграций при появлении ошибок",
     "SPRINT_MIGRATION_CONFIG_show_other_solutions" => "Показывать другие решения разработчика",
 
+    "SPRINT_MIGRATION_CONFIG_yes" => "да",
+    "SPRINT_MIGRATION_CONFIG_no" => "нет",
+
     "SPRINT_MIGRATION_BUILDER_Version1" => "Создать простую миграцию",
     "SPRINT_MIGRATION_BUILDER_Version2" => "",
     "SPRINT_MIGRATION_BUILDER_IblockExport1" => "Создать миграцию для инфоблока",
@@ -68,6 +71,7 @@
     "SPRINT_MIGRATION_BUILDER_IblockExport_IblockId" => "Инфоблок для экспорта",
     "SPRINT_MIGRATION_BUILDER_HlblockExport1" => "Создать миграцию для highload-блока",
     "SPRINT_MIGRATION_BUILDER_HlblockExport2" => "",
+    "SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId" => "Highload-блок для экспорта",
 
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
     "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля",

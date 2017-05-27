@@ -116,16 +116,16 @@ class VersionConfig
             $values['version_prefix'] = 'Version';
         }
 
-        if (!empty($values['stop_on_errors']) && $values['stop_on_errors'] == 'yes'){
-            $values['stop_on_errors'] = 'yes';
+        if (isset($values['stop_on_errors']) && $values['stop_on_errors']){
+            $values['stop_on_errors'] = true;
         } else {
-            $values['stop_on_errors'] = 'no';
+            $values['stop_on_errors'] = false;
         }
 
-        if (!empty($values['show_other_solutions']) && $values['show_other_solutions'] == 'no'){
-            $values['show_other_solutions'] = 'no';
+        if (isset($values['show_other_solutions']) && !$values['show_other_solutions']){
+            $values['show_other_solutions'] = false;
         } else {
-            $values['show_other_solutions'] = 'yes';
+            $values['show_other_solutions'] = true;
         }
 
         if (empty($values['tracker_task_url'])) {
@@ -154,7 +154,7 @@ class VersionConfig
         return array(
             'Version' => '\Sprint\Migration\Builders\Version',
             'IblockExport' => '\Sprint\Migration\Builders\IblockExport',
-            //'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
+            'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
         );
     }
 

@@ -16,13 +16,27 @@ class HlblockHelper extends Helper
     }
 
     public function getHlblock($name) {
+        if (is_array($name)){
+            $filter = $name;
+        } elseif (is_numeric($name)){
+            $filter = array('ID' => $name);
+        } else {
+            $filter = array('NAME' => $name);
+        }
+
         $result = HL\HighloadBlockTable::getList(
             array(
-                'select' => array('ID'),
-                'filter' => array('NAME' => $name),
+                'select' => array('*'),
+                'filter' => $filter,
             )
         );
-        return $result->fetch();
+
+        $hlblock = $result->fetch();
+        if ($hlblock){
+            $hlblock['LANG'] = $this->getHblockLangs($hlblock['ID']);
+        }
+
+        return $hlblock;
     }
 
     public function getHlblockId($name) {
@@ -33,11 +47,17 @@ class HlblockHelper extends Helper
     public function addHlblock($fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('NAME', 'TABLE_NAME'));
 
+        $lang = array();
+        if (isset($fields['LANG'])){
+            $lang = $fields['LANG'];
+            unset($fields['LANG']);
+        }
+
         $fields['NAME'] = ucfirst($fields['NAME']);
 
         $result = HL\HighloadBlockTable::add($fields);
-
-        if ($result->getId()) {
+        if ($result->isSuccess()) {
+            $this->replaceHblockLangs($result->getId(), $lang);
             return $result->getId();
         }
 
@@ -56,8 +76,15 @@ class HlblockHelper extends Helper
     }
 
     public function updateHlblock($hlblockId, $fields) {
+        $lang = array();
+        if (isset($fields['LANG'])){
+            $lang = $fields['LANG'];
+            unset($fields['LANG']);
+        }
+
         $result = HL\HighloadBlockTable::update($hlblockId, $fields);
         if ($result->isSuccess()) {
+            $this->replaceHblockLangs($hlblockId, $lang);
             return true;
         }
 
@@ -91,4 +118,46 @@ class HlblockHelper extends Helper
         return $this->deleteHlblock($aItem['ID']);
     }
 
+    protected function getHblockLangs($hlblockId){
+        $dbres = HL\HighloadBlockLangTable::getList(array(
+            'filter' => array('ID' => $hlblockId)
+        ));
+
+        $result = array();
+        while ($aItem = $dbres->fetch()){
+            $result[$aItem['LID']] = array(
+                'NAME' => $aItem['NAME']
+            );
+        }
+        return $result;
+    }
+
+    protected function deleteHblockLangs($hlblockId){
+        $res = HL\HighloadBlockLangTable::getList(array(
+            'filter' => array('ID' => $hlblockId)
+        ));
+
+        while ($row = $res->fetch()){
+            HL\HighloadBlockLangTable::delete($row['ID']);
+        }
+    }
+
+    protected function addHblockLangs($hlblockId, $lang = array()){
+        foreach ($lang as $lid => $item){
+            if (!empty($item['NAME'])){
+                HL\HighloadBlockLangTable::add(array(
+                    'ID' => $hlblockId,
+                    'LID' => $lid,
+                    'NAME' => $item['NAME']
+                ));
+            }
+        }
+    }
+
+    protected function replaceHblockLangs($hlblockId, $lang = array()){
+        if (!empty($lang) && is_array($lang)){
+            $this->deleteHblockLangs($hlblockId);
+            $this->addHblockLangs($hlblockId, $lang);
+        }
+    }
 }

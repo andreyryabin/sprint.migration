@@ -65,12 +65,21 @@ class UserTypeEntityHelper extends Helper
         }
     }
 
+    public function getUserTypeEntities($entityId) {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        $dbRes = \CUserTypeEntity::GetList(array(), array('ENTITY_ID' => $entityId));
+        $result = array();
+        while ($aItem = $dbRes->Fetch()){
+            $result[] = \CUserTypeEntity::GetByID($aItem['ID']);
+        }
+        return $result;
+    }
 
     public function getUserTypeEntity($entityId, $fieldName) {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbRes = \CUserTypeEntity::GetList(array(), array('ENTITY_ID' => $entityId, 'FIELD_NAME' => $fieldName));
         $aItem = $dbRes->Fetch();
-        return (!empty($aItem)) ? $aItem : false;
+        return (!empty($aItem)) ? \CUserTypeEntity::GetByID($aItem['ID']) : false;
     }
 
     public function deleteUserTypeEntityIfExists($entityId, $fieldName) {

@@ -9,11 +9,12 @@
     <? foreach ($fields as $fieldCode => $fieldItem): ?>
         <p>
             <?= $fieldItem['title'] ?><br/>
-            <? if (!empty($fieldItem['rows'])): ?>
+            <? if (!empty($fieldItem['height'])): ?>
                 <textarea name="<?= $fieldCode ?>"
-                          rows="<?= $fieldItem['rows'] ?>"
                     <? if (!empty($fieldItem['width'])): ?>
-                        style="width: <?= $fieldItem['width'] ?>px;"
+                        style="width: <?= $fieldItem['width'] ?>px;height: <?= $fieldItem['height'] ?>px;"
+                    <?else:?>
+                        style="height: <?= $fieldItem['height'] ?>px;"
                     <? endif; ?>
                 ><?= $fieldItem['value'] ?></textarea>
 

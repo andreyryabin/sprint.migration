@@ -46,13 +46,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
         $success = $versionManager->startMigration($version, $action, $params);
         $restart = $versionManager->needRestart($version);
 
-        if ($success && !$restart){
+        if ($success && !$restart) {
             Sprint\Migration\Out::out('%s (%s) success', $version, $action);
         }
 
         if (!$success && !$restart) {
-            Sprint\Migration\Out::outError('%s (%s) error: %s', $version, $action, $versionManager->getLastError());
-            if ($versionManager->getConfigVal('stop_on_errors') == 'yes') {
+            Sprint\Migration\Out::outError(
+                '%s (%s) error: %s',
+                $version,
+                $action,
+                $versionManager->getLastException()->getMessage()
+            );
+
+            if ($versionManager->getConfigVal('stop_on_errors')) {
                 $nextAction = false;
             } else {
                 $skipVersions[] = $version;
@@ -72,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
             ?>
             <script>migrationExecuteStep('migration_execute', <?=$json?>);</script><?
         } elseif ($nextAction) {
-           $json = json_encode(array(
+            $json = json_encode(array(
                 'next_action' => $nextAction,
                 'skip_versions' => $skipVersions,
                 'search' => $search,

@@ -22,22 +22,37 @@ try {
 
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
-    if (\CModule::IncludeModule('sprint.migration')) {
-        $console = new Sprint\Migration\Console();
-        $console->executeConsoleCommand($argv);
-    } else {
+    if (!\CModule::IncludeModule('sprint.migration')) {
         Throw new \Exception('need to install module sprint.migration');
     }
+
+    $console = new Sprint\Migration\Console();
+    $console->executeConsoleCommand($argv);
 
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php");
 
 } catch (Throwable $e) {
-    fwrite(STDOUT, $e->getMessage().PHP_EOL);
+    fwrite(STDOUT, sprintf(
+        "[%s] %s (%s)\n%s\n",
+        get_class($e),
+        $e->getMessage(),
+        $e->getCode(),
+        $e->getTraceAsString()
+    ));
+
     die(1);
 
 } catch (Exception $e) {
-    fwrite(STDOUT, $e->getMessage().PHP_EOL);
+    fwrite(STDOUT, sprintf(
+        "[%s] %s (%s)\n%s\n",
+        get_class($e),
+        $e->getMessage(),
+        $e->getCode(),
+        $e->getTraceAsString()
+    ));
+
     die(1);
+
 }
 
 
