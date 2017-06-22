@@ -16,9 +16,9 @@ class HlblockHelper extends Helper
     }
 
     public function getHlblock($name) {
-        if (is_array($name)){
+        if (is_array($name)) {
             $filter = $name;
-        } elseif (is_numeric($name)){
+        } elseif (is_numeric($name)) {
             $filter = array('ID' => $name);
         } else {
             $filter = array('NAME' => $name);
@@ -32,7 +32,7 @@ class HlblockHelper extends Helper
         );
 
         $hlblock = $result->fetch();
-        if ($hlblock && class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')) {
+        if ($hlblock) {
             $hlblock['LANG'] = $this->getHblockLangs($hlblock['ID']);
         }
 
@@ -48,7 +48,7 @@ class HlblockHelper extends Helper
         $this->checkRequiredKeys(__METHOD__, $fields, array('NAME', 'TABLE_NAME'));
 
         $lang = array();
-        if (isset($fields['LANG'])){
+        if (isset($fields['LANG'])) {
             $lang = $fields['LANG'];
             unset($fields['LANG']);
         }
@@ -77,7 +77,7 @@ class HlblockHelper extends Helper
 
     public function updateHlblock($hlblockId, $fields) {
         $lang = array();
-        if (isset($fields['LANG'])){
+        if (isset($fields['LANG'])) {
             $lang = $fields['LANG'];
             unset($fields['LANG']);
         }
@@ -118,44 +118,71 @@ class HlblockHelper extends Helper
         return $this->deleteHlblock($aItem['ID']);
     }
 
-    protected function getHblockLangs($hlblockId){
+    protected function getHblockLangs($hlblockId) {
+        $result = array();
+
+        if (!class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')) {
+            return $result;
+        }
+
         $dbres = HL\HighloadBlockLangTable::getList(array(
             'filter' => array('ID' => $hlblockId)
         ));
 
-        $result = array();
-        while ($aItem = $dbres->fetch()){
+
+        while ($aItem = $dbres->fetch()) {
             $result[$aItem['LID']] = array(
                 'NAME' => $aItem['NAME']
             );
         }
+
         return $result;
     }
 
-    protected function deleteHblockLangs($hlblockId){
+    protected function deleteHblockLangs($hlblockId) {
+        $del = 0;
+
+        if (!class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')) {
+            return $del;
+        }
+
         $res = HL\HighloadBlockLangTable::getList(array(
             'filter' => array('ID' => $hlblockId)
         ));
 
-        while ($row = $res->fetch()){
+
+        while ($row = $res->fetch()) {
             HL\HighloadBlockLangTable::delete($row['ID']);
+            $del++;
         }
+
+        return $del;
     }
 
-    protected function addHblockLangs($hlblockId, $lang = array()){
-        foreach ($lang as $lid => $item){
-            if (!empty($item['NAME'])){
+    protected function addHblockLangs($hlblockId, $lang = array()) {
+        $add = 0;
+
+        if (!class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')) {
+            return $add;
+        }
+
+        foreach ($lang as $lid => $item) {
+            if (!empty($item['NAME'])) {
                 HL\HighloadBlockLangTable::add(array(
                     'ID' => $hlblockId,
                     'LID' => $lid,
                     'NAME' => $item['NAME']
                 ));
+
+                $add++;
             }
         }
+
+        return $add;
     }
 
-    protected function replaceHblockLangs($hlblockId, $lang = array()){
-        if (!empty($lang) && is_array($lang)){
+    protected function replaceHblockLangs($hlblockId, $lang = array()) {
+        if (!empty($lang) && is_array($lang)) {
             $this->deleteHblockLangs($hlblockId);
             $this->addHblockLangs($hlblockId, $lang);
         }
