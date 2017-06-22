@@ -32,7 +32,7 @@ class HlblockHelper extends Helper
         );
 
         $hlblock = $result->fetch();
-        if ($hlblock){
+        if ($hlblock && class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')) {
             $hlblock['LANG'] = $this->getHblockLangs($hlblock['ID']);
         }
 
