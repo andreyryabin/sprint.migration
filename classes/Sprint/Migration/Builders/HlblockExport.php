@@ -15,18 +15,6 @@ class HlblockExport extends AbstractBuilder
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport2'));
         $this->setTemplateFile(Module::getModuleDir() . '/templates/HlblockExport.php');
 
-        $this->setField('prefix', array(
-            'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
-            'value' => $this->getConfigVal('version_prefix'),
-            'width' => 250,
-        ));
-
-        $this->setField('description', array(
-            'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
-            'width' => 350,
-            'height' => 40,
-        ));
-
         $this->setField('hlblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId'),
             'placeholder' => 'ID|NAME'

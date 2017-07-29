@@ -11,10 +11,10 @@ $configName = $versionManager->getConfigName();
                 <? if ($configItem['name'] == $configName): ?>
                     <strong><?= $configItem['title'] ?> *</strong>
                 <? else: ?>
-                    <form method="get" action="">
+                    <form method="post" action="">
+                        <?=bitrix_sessid_post('send_sessid')?>
                         <strong><?= $configItem['title'] ?></strong> &nbsp;
-                        <input name="config" type="hidden" value="<?= $configItem['name'] ?>">
-                        <input name="lang" type="hidden" value="<?= LANGUAGE_ID ?>">
+                        <input name="change_config" type="hidden" value="<?= $configItem['name'] ?>">
                         <input type="submit" value="<?= GetMessage('SPRINT_MIGRATION_CONFIG_SWITCH') ?>">
                     </form>
                 <? endif ?>
@@ -24,15 +24,12 @@ $configName = $versionManager->getConfigName();
         <tbody>
         <? foreach ($configItem['values'] as $key => $val) :
 
-            if ($key == 'version_builders'){
+            if (strpos($key,'stop') === 0 || strpos($key,'show') === 0) {
+                $val = ($val) ? 'yes' : 'no';
+                $val = GetMessage('SPRINT_MIGRATION_CONFIG_'.$val);
+            } elseif ($key == 'version_builders') {
                 $val = array_keys($val);
                 $val = implode('<br/>', $val);
-            } elseif ($key == 'show_other_solutions') {
-                $val = ($val) ? 'yes' : 'no';
-                $val = GetMessage('SPRINT_MIGRATION_CONFIG_'.$val);
-            } elseif ($key == 'stop_on_errors') {
-                $val = ($val) ? 'yes' : 'no';
-                $val = GetMessage('SPRINT_MIGRATION_CONFIG_'.$val);
             }
 
             ?><tr>

@@ -16,8 +16,8 @@ class VersionConfig
         'migration_dir',
         'tracker_task_url',
         'version_prefix',
-        'builders',
-        'title',
+        'version_builders',
+        'show_admin_interface'
     );
 
     public function __construct($configName) {
@@ -116,6 +116,12 @@ class VersionConfig
             $values['version_prefix'] = 'Version';
         }
 
+        if (isset($values['show_admin_interface']) && !$values['show_admin_interface']){
+            $values['show_admin_interface'] = false;
+        } else {
+            $values['show_admin_interface'] = true;
+        }
+
         if (isset($values['stop_on_errors']) && $values['stop_on_errors']){
             $values['stop_on_errors'] = true;
         } else {
@@ -155,6 +161,7 @@ class VersionConfig
             'Version' => '\Sprint\Migration\Builders\Version',
             'IblockExport' => '\Sprint\Migration\Builders\IblockExport',
             'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
+            'UserTypeEntities' => '\Sprint\Migration\Builders\UserTypeEntities',
         );
     }
 

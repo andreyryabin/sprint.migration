@@ -31,9 +31,6 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
     postData['send_sessid'] = $('input[name=send_sessid]').val();
     postData['search'] = $('input[name=migration_search]').val();
 
-    console.log(postData);
-
-
     migrationEnableButtons(0);
 
     jQuery.ajax({
@@ -138,21 +135,29 @@ jQuery(document).ready(function ($) {
 
     });
 
-    $('.sp-block_body').first().show();
+    var openblockIx = 0;
+    if (localStorage){
+        openblockIx = localStorage.getItem('migrations_open_block');
+        openblockIx = (openblockIx) ? parseInt(openblockIx,10) : 0;
+    }
+
+    $('.sp-block_body').eq(openblockIx).show();
 
     $('.sp-block_title').on('click',function(){
+
+        if (localStorage){
+            openblockIx = $('.sp-block_title').index(this);
+            openblockIx = parseInt(openblockIx,10);
+            localStorage.setItem('migrations_open_block', openblockIx);
+        }
+
         var $body = $(this).siblings('.sp-block_body');
         $body.show();
         $('.sp-block_body').not($body).hide();
 
-        // if ($body.is(':visible')){
-        //     $body.hide();
-        // } else {
-        //     $body.show();
-        //     $('.sp-block_body').not($body).hide();
-        // }
-
         $('.sp-block').find('.adm-info-message-wrap').remove();
     });
+
+
 
 });
