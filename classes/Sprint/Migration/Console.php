@@ -318,188 +318,177 @@ class Console
 
             Out::out($table->getTable());
         }
-}
+    }
 
-protected
-function outVersionMeta($meta = array()) {
-    $table = new ConsoleTable(-1, array(
-        'horizontal' => '=',
-        'vertical' => '',
-        'intersection' => ''
-    ), 1, 'UTF-8');
+    protected function outVersionMeta($meta = array()) {
+        $table = new ConsoleTable(-1, array(
+            'horizontal' => '=',
+            'vertical' => '',
+            'intersection' => ''
+        ), 1, 'UTF-8');
 
-    $table->setBorderVisibility(array('bottom' => false));
+        $table->setBorderVisibility(array('bottom' => false));
 
-    foreach (array('version', 'status', 'description', 'location') as $param) {
-        if (empty($meta[$param])) {
-            continue;
+        foreach (array('version', 'status', 'description', 'location') as $param) {
+            if (empty($meta[$param])) {
+                continue;
+            }
+
+            if ($param == 'status') {
+                $val = GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$param]));
+            } else {
+                $val = $meta[$param];
+            }
+
+            $table->addRow(array(ucfirst($param) . ':', $val));
         }
 
-        if ($param == 'status') {
-            $val = GetMessage('SPRINT_MIGRATION_META_' . strtoupper($meta[$param]));
+        Out::out($table->getTable());
+    }
+
+
+    protected function executeAll($filter, $limit = 0, $force = false) {
+        $versionManager = $this->getVersionManager();
+        $limit = (int)$limit;
+
+        $success = 0;
+        $fails = 0;
+
+        $versions = $versionManager->getVersions($filter);
+
+        $action = ($filter['status'] == 'new') ? 'up' : 'down';
+
+        foreach ($versions as $aItem) {
+
+            $ok = $this->executeVersion($aItem['version'], $action, $force);
+
+            if ($ok) {
+                $success++;
+            } else {
+                $fails++;
+            }
+
+            if ($fails && $versionManager->getConfigVal('stop_on_errors')) {
+                break;
+            }
+
+            if ($limit > 0 && $limit == $success) {
+                break;
+            }
+        }
+
+        Out::out('migrations (%s): %d', $action, $success);
+
+        if ($fails) {
+            die(1);
+        }
+    }
+
+    protected function executeOnce($version, $action = 'up', $force = false) {
+        $ok = $this->executeVersion($version, $action, $force);
+
+        if (!$ok) {
+            die(1);
+        }
+
+    }
+
+    protected function executeVersion($version, $action = 'up', $force = false) {
+        $versionManager = $this->getVersionManager();
+        $params = array();
+
+        Out::out('%s (%s) start', $version, $action);
+
+        do {
+            $exec = 0;
+
+            $success = $versionManager->startMigration($version, $action, $params, $force);
+            $restart = $versionManager->needRestart($version);
+
+            if ($restart) {
+                $params = $versionManager->getRestartParams($version);
+                $exec = 1;
+            }
+
+            if ($success && !$restart) {
+                Out::out('%s (%s) success', $version, $action);
+            }
+
+            if (!$success && !$restart) {
+                Out::out('%s (%s) error: %s',
+                    $version,
+                    $action,
+                    $versionManager->getLastException()->getMessage()
+                );
+            }
+
+        } while ($exec == 1);
+
+        return $success;
+    }
+
+
+    public function executeConsoleCommand($args) {
+        $this->script = array_shift($args);
+
+        if (empty($args)) {
+            $this->commandHelp();
+            die(1);
+        }
+
+        $command = array_shift($args);
+
+        $command = str_replace(array('_', '-', ' '), '*', $command);
+        $command = explode('*', $command);
+        $tmp = array();
+        foreach ($command as $val) {
+            $tmp[] = ucfirst(strtolower($val));
+        }
+
+        $command = 'command' . implode('', $tmp);
+
+        if (method_exists($this, $command)) {
+            $this->initializeArgs($args);
+            call_user_func(array($this, $command));
         } else {
-            $val = $meta[$param];
+            Out::out('Command not found, see help');
+            die(1);
         }
-
-        $table->addRow(array(ucfirst($param) . ':', $val));
     }
 
-    Out::out($table->getTable());
-}
+    protected function initializeArgs($args) {
+        foreach ($args as $val) {
+            $this->addArg($val);
+        }
+    }
 
-
-protected
-function executeAll($filter, $limit = 0, $force = false) {
-    $versionManager = $this->getVersionManager();
-    $limit = (int)$limit;
-
-    $success = 0;
-    $fails = 0;
-
-    $versions = $versionManager->getVersions($filter);
-
-    $action = ($filter['status'] == 'new') ? 'up' : 'down';
-
-    foreach ($versions as $aItem) {
-
-        $ok = $this->executeVersion($aItem['version'], $action, $force);
-
-        if ($ok) {
-            $success++;
+    protected function addArg($arg) {
+        list($name, $val) = explode('=', $arg);
+        $isparam = (0 === strpos($name, '--')) ? 1 : 0;
+        if ($isparam) {
+            if (!is_null($val)) {
+                $this->arguments[$name . '='] = $val;
+            } else {
+                $this->arguments[$name] = 1;
+            }
         } else {
-            $fails++;
-        }
-
-        if ($fails && $versionManager->getConfigVal('stop_on_errors')) {
-            break;
-        }
-
-        if ($limit > 0 && $limit == $success) {
-            break;
+            $this->arguments[] = $name;
         }
     }
 
-    Out::out('migrations (%s): %d', $action, $success);
-
-    if ($fails) {
-        die(1);
-    }
-}
-
-protected
-function executeOnce($version, $action = 'up', $force = false) {
-    $ok = $this->executeVersion($version, $action, $force);
-
-    if (!$ok) {
-        die(1);
+    protected function getArg($name, $default = '') {
+        return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
     }
 
-}
-
-protected
-function executeVersion($version, $action = 'up', $force = false) {
-    $versionManager = $this->getVersionManager();
-    $params = array();
-
-    Out::out('%s (%s) start', $version, $action);
-
-    do {
-        $exec = 0;
-
-        $success = $versionManager->startMigration($version, $action, $params, $force);
-        $restart = $versionManager->needRestart($version);
-
-        if ($restart) {
-            $params = $versionManager->getRestartParams($version);
-            $exec = 1;
-        }
-
-        if ($success && !$restart) {
-            Out::out('%s (%s) success', $version, $action);
-        }
-
-        if (!$success && !$restart) {
-            Out::out('%s (%s) error: %s',
-                $version,
-                $action,
-                $versionManager->getLastException()->getMessage()
-            );
-        }
-
-    } while ($exec == 1);
-
-    return $success;
-}
-
-
-public
-function executeConsoleCommand($args) {
-    $this->script = array_shift($args);
-
-    if (empty($args)) {
-        $this->commandHelp();
-        die(1);
+    public function commandLs() {
+        $this->commandList();
     }
 
-    $command = array_shift($args);
-
-    $command = str_replace(array('_', '-', ' '), '*', $command);
-    $command = explode('*', $command);
-    $tmp = array();
-    foreach ($command as $val) {
-        $tmp[] = ucfirst(strtolower($val));
+    public function commandMi() {
+        $this->commandMigrate();
     }
 
-    $command = 'command' . implode('', $tmp);
-
-    if (method_exists($this, $command)) {
-        $this->initializeArgs($args);
-        call_user_func(array($this, $command));
-    } else {
-        Out::out('Command not found, see help');
-        die(1);
+    public function commandAdd() {
+        $this->commandCreate();
     }
-}
-
-protected
-function initializeArgs($args) {
-    foreach ($args as $val) {
-        $this->addArg($val);
-    }
-}
-
-protected
-function addArg($arg) {
-    list($name, $val) = explode('=', $arg);
-    $isparam = (0 === strpos($name, '--')) ? 1 : 0;
-    if ($isparam) {
-        if (!is_null($val)) {
-            $this->arguments[$name . '='] = $val;
-        } else {
-            $this->arguments[$name] = 1;
-        }
-    } else {
-        $this->arguments[] = $name;
-    }
-}
-
-protected
-function getArg($name, $default = '') {
-    return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
-}
-
-public
-function commandLs() {
-    $this->commandList();
-}
-
-public
-function commandMi() {
-    $this->commandMigrate();
-}
-
-public
-function commandAdd() {
-    $this->commandCreate();
-}
 }
