@@ -113,12 +113,6 @@ class VersionConfig
             $values['migration_dir'] = realpath($values['migration_dir']);
         }
 
-        if (empty($values['migration_webdir'])){
-            if (strpos($values['migration_dir'], Module::getDocRoot()) === 0) {
-                $values['migration_webdir'] = substr($values['migration_dir'], strlen(Module::getDocRoot()));
-            }
-        }
-
         if (empty($values['version_prefix'])) {
             $values['version_prefix'] = 'Version';
         }
