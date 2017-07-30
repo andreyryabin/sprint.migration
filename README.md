@@ -118,7 +118,7 @@ class Version20150520000001 extends Version {
   'tracker_task_url' => '',
   'stop_on_errors' => false,
   'show_admin_interface' => true,
-  'authorize_as_admin' => true,
+  'console_user' => 'admin',
   'version_builders' => array(),
 );
 ```
@@ -142,7 +142,7 @@ class Version20150520000001 extends Version {
 
 **show_admin_interface** - Показывать сервис миграций в админке, варианты значений: true|false, по умолчанию true (показывать)
 
-**authorize_as_admin** - Запускать консоль от админа, варианты значений: true|false, по умолчанию true (запускать)
+**console_user** - Пользователь от которого запускаются миграции в консоли, варианты значений: admin|login:userlogin|false, по умолчанию admin (запускать от админа)
 
 **show_other_solutions** - Показывать другие решения разработчика, варианты значений: true|false, по умолчанию true (показывать)
 
@@ -252,6 +252,11 @@ class Version20151113185212 extends MyVersion {
 
 Такие методы есть в Sprint\Migration\Helpers\IblockHelper, например addIblockIfNotExists, addPropertyIfNotExists
 
+При работе из консоли можно указать пользователя от которого будут запускаться миграции, 
+это регулируется параметром в конфиге console_user, с вариантами значений:
+admin - авторизоваться под первым найденным админом (по умолчанию)
+login:userlogin - авторизоваться под логином userlogin
+false - неавторизовываться  
 
 Скриншоты
 -------------------------

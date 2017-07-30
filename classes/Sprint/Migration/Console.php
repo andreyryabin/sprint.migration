@@ -11,11 +11,24 @@ class Console
     protected function createVersionManager() {
         $versionManager = new VersionManager($this->getArg('--config='));
 
-        if ($versionManager->getConfigVal('authorize_as_admin')) {
+        $userlogin = $versionManager->getConfigVal('console_user');
+        if ($userlogin == 'admin') {
             $this->authorizeAsAdmin();
+        } elseif (strpos($userlogin, 'login:') === 0) {
+            $userlogin = substr($userlogin, 6);
+            $this->authorizeAsLogin($userlogin);
         }
 
         return $versionManager;
+    }
+
+    protected function authorizeAsLogin($login) {
+        global $USER;
+        $dbres = \CUser::GetByLogin($login);
+        $useritem = $dbres->Fetch();
+        if ($useritem) {
+            $USER->Authorize($useritem['ID']);
+        }
     }
 
     protected function authorizeAsAdmin() {
@@ -311,7 +324,7 @@ class Console
 
             foreach ($configItem['values'] as $key => $val) {
 
-                if ($val === true || $val === false){
+                if ($val === true || $val === false) {
                     $val = ($val) ? 'yes' : 'no';
                     $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
                 } elseif ($key == 'version_builders') {

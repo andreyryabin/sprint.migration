@@ -18,7 +18,7 @@ class VersionConfig
         'version_prefix',
         'version_builders',
         'show_admin_interface',
-        'authorize_as_admin',
+        'console_user',
     );
 
     public function __construct($configName) {
@@ -47,14 +47,14 @@ class VersionConfig
             $this->configList[$cname] = $this->prepareConfig($cname, $values);
         }
 
-        if (isset($this->configList[$configName])){
+        if (isset($this->configList[$configName])) {
             $this->configCurrent = $this->configList[$configName];
         } else {
             $this->configCurrent = $this->configList['cfg'];
         }
     }
 
-    public function getConfigName(){
+    public function getConfigName() {
         return $this->configCurrent['name'];
     }
 
@@ -75,7 +75,7 @@ class VersionConfig
         return false;
     }
 
-    protected function prepareConfig($configName, $configValues = array()){
+    protected function prepareConfig($configName, $configValues = array()) {
         $configValues = $this->prepareConfigValues($configValues);
         if (!empty($configValues['title'])) {
             $title = $configValues['title'];
@@ -83,7 +83,7 @@ class VersionConfig
         } else {
             $title = GetMessage('SPRINT_MIGRATION_CONFIG_TITLE');
         }
-        $title = sprintf('%s (%s)', $title,'migrations.' . $configName . '.php');
+        $title = sprintf('%s (%s)', $title, 'migrations.' . $configName . '.php');
         return array(
             'name' => $configName,
             'title' => $title,
@@ -113,39 +113,45 @@ class VersionConfig
             $values['migration_dir'] = realpath($values['migration_dir']);
         }
 
+        if (empty($values['migration_webdir'])){
+            if (strpos($values['migration_dir'], Module::getDocRoot()) === 0) {
+                $values['migration_webdir'] = substr($values['migration_dir'], strlen(Module::getDocRoot()));
+            }
+        }
+
         if (empty($values['version_prefix'])) {
             $values['version_prefix'] = 'Version';
         }
 
-        if (isset($values['show_admin_interface']) && !$values['show_admin_interface']){
+        if (isset($values['show_admin_interface']) && !$values['show_admin_interface']) {
             $values['show_admin_interface'] = false;
         } else {
             $values['show_admin_interface'] = true;
         }
 
-        if (isset($values['stop_on_errors']) && $values['stop_on_errors']){
+        if (isset($values['stop_on_errors']) && $values['stop_on_errors']) {
             $values['stop_on_errors'] = true;
         } else {
             $values['stop_on_errors'] = false;
         }
 
-        if (isset($values['show_other_solutions']) && !$values['show_other_solutions']){
+        if (isset($values['show_other_solutions']) && !$values['show_other_solutions']) {
             $values['show_other_solutions'] = false;
         } else {
             $values['show_other_solutions'] = true;
-        }
-
-        if (isset($values['authorize_as_admin']) && !$values['authorize_as_admin']){
-            $values['authorize_as_admin'] = false;
-        } else {
-            $values['authorize_as_admin'] = true;
         }
 
         if (empty($values['tracker_task_url'])) {
             $values['tracker_task_url'] = '';
         }
 
-        if (!empty($values['version_builders']) && is_array($values['version_builders'])){
+        $cond1 = isset($values['console_user']);
+        $cond2 = ($cond1 && $values['console_user'] === false);
+        $cond3 = ($cond1 && strpos($values['console_user'],'login:') === 0);
+
+        $values['console_user'] = ($cond2 || $cond3) ? $values['console_user'] : 'admin';
+
+        if (!empty($values['version_builders']) && is_array($values['version_builders'])) {
             $values['version_builders'] = array_merge($this->getVersionBuilders(), $values['version_builders']);
         } else {
             $values['version_builders'] = $this->getVersionBuilders();
@@ -155,30 +161,25 @@ class VersionConfig
         return $values;
     }
 
-    public function getConfigVal($val, $default = '') {
-        if ($val == 'migration_webdir'){
-            return $this->getWebdir($default);
-        } else {
-            return !empty($this->configCurrent['values'][$val]) ? $this->configCurrent['values'][$val] : $default;
+    public function getConfigVal($name, $default = '') {
+        if (isset($this->configCurrent['values'][$name])) {
+            if (is_bool($this->configCurrent['values'][$name])){
+                return $this->configCurrent['values'][$name];
+            } elseif (!empty($this->configCurrent['values'][$name])){
+                return $this->configCurrent['values'][$name];
+            }
         }
+
+        return $default;
     }
 
-    protected function getVersionBuilders(){
+    protected function getVersionBuilders() {
         return array(
             'Version' => '\Sprint\Migration\Builders\Version',
             'IblockExport' => '\Sprint\Migration\Builders\IblockExport',
             'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
             'UserTypeEntities' => '\Sprint\Migration\Builders\UserTypeEntities',
         );
-    }
-
-    protected function getWebdir($default = ''){
-        $dir = $this->configCurrent['values']['migration_dir'];
-        if (0 === strpos($dir, Module::getDocRoot())) {
-            return substr($dir, strlen(Module::getDocRoot()));
-        } else {
-            return $default;
-        }
     }
 
 }
