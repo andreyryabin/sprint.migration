@@ -17,7 +17,7 @@ class IblockExport extends AbstractBuilder
 
         $this->setField('iblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_IblockId'),
-            'placeholder' => 'ID'
+            'placeholder' => ''
         ));
     }
 

@@ -17,7 +17,7 @@ class HlblockExport extends AbstractBuilder
 
         $this->setField('hlblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId'),
-            'placeholder' => 'ID|NAME'
+            'placeholder' => ''
         ));
     }
 

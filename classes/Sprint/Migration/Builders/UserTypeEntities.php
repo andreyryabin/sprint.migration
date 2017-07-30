@@ -16,7 +16,7 @@ class UserTypeEntities extends AbstractBuilder
 
         $this->setField('entity_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId'),
-            'placeholder' => 'ENTITY_ID'
+            'placeholder' => ''
         ));
     }
 
