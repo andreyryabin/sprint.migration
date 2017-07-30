@@ -61,15 +61,15 @@ class Console
         $versionManager = $this->createVersionManager();
 
         /** @compability */
-        $descr = $this->getArg(0, '');
+        $descr = $this->getArg(0);
         /** @compability */
-        $prefix = $this->getArg(1, '');
+        $prefix = $this->getArg(1);
         /** @compability */
         $prefix = $this->getArg('--name=', $prefix);
 
         $descr = $this->getArg('--desc=', $descr);
         $prefix = $this->getArg('--prefix=', $prefix);
-        $from = $this->getArg('--from=', '');
+        $from = $this->getArg('--from=');
 
         $builder = $versionManager->createVersionBuilder($from);
 
@@ -103,8 +103,8 @@ class Console
     public function commandMark() {
         $versionManager = $this->createVersionManager();
 
-        $search = $this->getArg(0, '');
-        $status = $this->getArg('--as=', '');
+        $search = $this->getArg(0);
+        $status = $this->getArg('--as=');
 
         if ($search && $status) {
             $markresult = $versionManager->markMigration($search, $status);
@@ -183,90 +183,48 @@ class Console
 
     }
 
-    public function commandMigrate() {
-        $force = $this->getArg('--force');
-
-        $filter = array();
-        $filter['search'] = $this->getArg('--search=');
-        $filter['status'] = ($this->getArg('--down')) ? 'installed' : 'new';
-
-        $filter['from'] = $this->getArg('--from=');
-        $filter['to'] = $this->getArg('--to=');
-
-        $this->executeAll($filter, $force);
-    }
-
     public function commandUp() {
+        $versionName = $this->getArg(0);
         $versionManager = $this->createVersionManager();
 
-        $force = $this->getArg('--force');
-        $var = $this->getArg(0, 1);
-
-        $search = $this->getArg('--search=');
-        $status = 'new';
-
-        if ($versionManager->checkVersionName($var)) {
-            $this->executeOnce($var, 'up', $force);
-
-        } elseif ($this->getArg('--all')) {
-            $this->executeAll(array(
-                'status' => $status,
-                'search' => $search
-            ), $force);
-
-        } else {
-            $this->executeAll(array(
-                'status' => $status,
-                'search' => $search
-            ), $force);
+        if (is_numeric($versionName)){
+            /** @deprecated */
+            Out::out('limit is no longer supported');
+            die(1);
         }
 
+        if ($versionManager->checkVersionName($versionName)) {
+            $this->executeOnce($versionName, 'up', $this->getArg('--force'));
+        } else {
+            $this->executeAll(array(
+                'search' => $this->getArg('--search='),
+                'status' => 'new',
+            ), $this->getArg('--force'));
+        }
     }
 
     public function commandDown() {
+        $versionName = $this->getArg(0);
         $versionManager = $this->createVersionManager();
 
-        $force = $this->getArg('--force');
-        $var = $this->getArg(0, 1);
-
-        $search = $this->getArg('--search=');
-        $status = 'installed';
-
-        if ($versionManager->checkVersionName($var)) {
-            $this->executeOnce($var, 'down', $force);
-
-        } elseif ($this->getArg('--all')) {
-            $this->executeAll(array(
-                'status' => $status,
-                'search' => $search
-            ), $force);
-
-        } else {
-            $this->executeAll(array(
-                'status' => $status,
-                'search' => $search
-            ), $force);
+        if (is_numeric($versionName)){
+            /** @deprecated */
+            Out::out('limit is no longer supported');
+            die(1);
         }
 
-    }
-
-    public function commandExecute() {
-        $version = $this->getArg(0, '');
-        $force = $this->getArg('--force');
-        if ($version) {
-            if ($this->getArg('--down')) {
-                $this->executeOnce($version, 'down', $force);
-            } else {
-                $this->executeOnce($version, 'up', $force);
-            }
+        if ($versionManager->checkVersionName($versionName)) {
+            $this->executeOnce($versionName, 'down', $this->getArg('--force'));
         } else {
-            Out::out('Version not found!');
-            die(1);
+            $this->executeAll(array(
+                'search' => $this->getArg('--search='),
+                'status' => 'installed',
+            ), $this->getArg('--force'));
         }
     }
 
     public function commandRedo() {
-        $version = $this->getArg(0, '');
+        $version = $this->getArg(0);
         $force = $this->getArg('--force');
         if ($version) {
             $this->executeVersion($version, 'down', $force);
@@ -275,13 +233,6 @@ class Console
             Out::out('Version not found!');
             die(1);
         }
-    }
-
-
-    public function commandForce() {
-        /** @compability */
-        $this->addArg('--force');
-        $this->commandExecute();
     }
 
     public function commandHelp() {
@@ -376,9 +327,9 @@ class Console
 
         $action = ($filter['status'] == 'new') ? 'up' : 'down';
 
-        foreach ($versions as $aItem) {
+        foreach ($versions as $item) {
 
-            $ok = $this->executeVersion($aItem['version'], $action, $force);
+            $ok = $this->executeVersion($item['version'], $action, $force);
 
             if ($ok) {
                 $success++;
@@ -500,11 +451,44 @@ class Console
         $this->commandList();
     }
 
-    public function commandMi() {
-        $this->commandMigrate();
-    }
-
     public function commandAdd() {
         $this->commandCreate();
     }
+
+    public function commandMigrate() {
+        /** @compability */
+        $status = $this->getArg('--down') ? 'installed' : 'new';
+        $this->executeAll(array(
+            'search' => $this->getArg('--search='),
+            'status' => $status,
+        ), $this->getArg('--force'));
+    }
+
+    public function commandMi() {
+        /** @compability */
+        $this->commandMigrate();
+    }
+
+    public function commandExecute() {
+        /** @compability */
+        $version = $this->getArg(0);
+        $force = $this->getArg('--force');
+        if ($version) {
+            if ($this->getArg('--down')) {
+                $this->executeOnce($version, 'down', $force);
+            } else {
+                $this->executeOnce($version, 'up', $force);
+            }
+        } else {
+            Out::out('Version not found!');
+            die(1);
+        }
+    }
+
+    public function commandForce() {
+        /** @compability */
+        $this->addArg('--force');
+        $this->commandExecute();
+    }
+
 }

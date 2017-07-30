@@ -50,10 +50,10 @@ require_once realpath(__DIR__) . '/local/modules/sprint.migration/tools/migrate.
 
 Примеры команд
 -------------------------
-* php migrate.php create (создать новую миграцию)
-* php migrate.php list --search=text (список миграций отфильтрованных по названию и описанию)
-* php migrate.php migrate (накатить все)
-* php migrate.php execute <version> (накатить выбранную миграцию)
+* php migrate.php add (создать новую миграцию)
+* php migrate.php ls --search=text (список миграций отфильтрованных по названию и описанию)
+* php migrate.php up (накатить все)
+* php migrate.php up <version> (накатить выбранную миграцию)
 * php migrate.php mark <version> --as=installed (отметить миграцию как установленную не запуская ее)
 * php migrate.php mark unknown --as=new (отметить все неизвестные миграции как новые, фактически удаление их из бд)
 
