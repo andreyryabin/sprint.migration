@@ -24,7 +24,7 @@ $configName = $versionManager->getConfigName();
         <tbody>
         <? foreach ($configItem['values'] as $key => $val) :
 
-            if (strpos($key,'stop') === 0 || strpos($key,'show') === 0) {
+            if ($val === true || $val === false){
                 $val = ($val) ? 'yes' : 'no';
                 $val = GetMessage('SPRINT_MIGRATION_CONFIG_'.$val);
             } elseif ($key == 'version_builders') {

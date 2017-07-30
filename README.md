@@ -117,6 +117,8 @@ class Version20150520000001 extends Version {
   'version_prefix' => '',
   'tracker_task_url' => '',
   'stop_on_errors' => false,
+  'show_admin_interface' => true,
+  'authorize_as_admin' => true,
   'version_builders' => array(),
 );
 ```
@@ -138,7 +140,11 @@ class Version20150520000001 extends Version {
 
 **stop_on_errors** - Останавливать выполнение миграций при появлении ошибок, варианты значений: true|false, по умолчанию false (не останавливать)
 
-**show_other_solutions** - Показывать другие решения разработчика: true|false, по умолчанию true (показывать)
+**show_admin_interface** - Показывать сервис миграций в админке, варианты значений: true|false, по умолчанию true (показывать)
+
+**authorize_as_admin** - Запускать консоль от админа, варианты значений: true|false, по умолчанию true (запускать)
+
+**show_other_solutions** - Показывать другие решения разработчика, варианты значений: true|false, по умолчанию true (показывать)
 
 Ни один из параметров не является обязательным.
 

@@ -45,7 +45,7 @@
     "SPRINT_MIGRATION_CREATED_SUCCESS" => "Миграция #VERSION# создана",
     "SPRINT_MIGRATION_CREATED_ERROR" => "Ошибка создания миграции",
     "SPRINT_MIGRATION_SEARCH" => "Поиск",
-    "SPRINT_MIGRATION_ADMIN_INTERFACE_HIDDEN" => "Доступ из админки запрещен",
+    "SPRINT_MIGRATION_ADMIN_INTERFACE_HIDDEN" => "Управление миграциями через админку отключено",
 
     "SPRINT_MIGRATION_CONFIG_TITLE" => "Миграции",
     "SPRINT_MIGRATION_CONFIG_NOFILE" => "нет конфига",
@@ -63,6 +63,7 @@
     "SPRINT_MIGRATION_CONFIG_stop_on_errors" => "Останавливать выполнение миграций при ошибках",
     "SPRINT_MIGRATION_CONFIG_show_other_solutions" => "Показывать другие решения разработчика",
     "SPRINT_MIGRATION_CONFIG_show_admin_interface" => "Показывать сервис миграций в админке",
+    "SPRINT_MIGRATION_CONFIG_authorize_as_admin" => "Запускать в консоли от админа",
 
     "SPRINT_MIGRATION_CONFIG_yes" => "да",
     "SPRINT_MIGRATION_CONFIG_no" => "нет",

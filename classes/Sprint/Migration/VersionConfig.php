@@ -17,7 +17,8 @@ class VersionConfig
         'tracker_task_url',
         'version_prefix',
         'version_builders',
-        'show_admin_interface'
+        'show_admin_interface',
+        'authorize_as_admin',
     );
 
     public function __construct($configName) {
@@ -67,7 +68,7 @@ class VersionConfig
 
     protected function validConfig($values) {
         foreach ($this->availablekeys as $key) {
-            if (!empty($values[$key])) {
+            if (isset($values[$key])) {
                 return true;
             }
         }
@@ -132,6 +133,12 @@ class VersionConfig
             $values['show_other_solutions'] = false;
         } else {
             $values['show_other_solutions'] = true;
+        }
+
+        if (isset($values['authorize_as_admin']) && !$values['authorize_as_admin']){
+            $values['authorize_as_admin'] = false;
+        } else {
+            $values['authorize_as_admin'] = true;
         }
 
         if (empty($values['tracker_task_url'])) {

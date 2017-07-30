@@ -35,8 +35,6 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 
 if ($versionManager->getConfigVal('show_admin_interface')) {
     include __DIR__ . '/includes/interface.php';
-} else {
-    Sprint\Migration\Out::outError(GetMessage('SPRINT_MIGRATION_ADMIN_INTERFACE_HIDDEN'));
 }
 
 include __DIR__ . '/includes/help.php';

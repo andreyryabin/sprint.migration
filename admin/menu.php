@@ -8,11 +8,6 @@ if ($APPLICATION->GetGroupRight("sprint.migration") == "D") {
     return false;
 }
 
-$versionManager = new Sprint\Migration\VersionManager();
-if (!$versionManager->getConfigVal('show_admin_interface')){
-    return false;
-}
-
 $aMenu = array(
     "parent_menu" => "global_menu_services",
     "section" => "Sprint",

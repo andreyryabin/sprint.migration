@@ -7,52 +7,46 @@ class Console
 
     private $script = 'migrate.php';
     private $arguments = array();
-    private $versionManager = null;
 
-    private $currentuser = array('ID' => '', 'LOGIN' => '');
+    protected function createVersionManager() {
+        $versionManager = new VersionManager($this->getArg('--config='));
 
-    public function __construct() {
-        $this->authorizeAsAdmin();
+        if ($versionManager->getConfigVal('authorize_as_admin')) {
+            $this->authorizeAsAdmin();
+        }
+
+        return $versionManager;
     }
-
 
     protected function authorizeAsAdmin() {
         global $USER;
 
-        $group = \CGroup::GetList($by, $order, array(
+        $groupitem = \CGroup::GetList($by, $order, array(
             'ADMIN' => 'Y',
             'ACTIVE' => 'Y'
         ))->Fetch();
 
-        if (!empty($group)) {
+        if (!empty($groupitem)) {
             $by = 'id';
             $order = 'asc';
 
-            $item = \CUser::GetList($by, $order, array(
-                'GROUPS_ID' => array($group['ID']),
+            $useritem = \CUser::GetList($by, $order, array(
+                'GROUPS_ID' => array($groupitem['ID']),
                 'ACTIVE' => 'Y'
             ), array(
                 'NAV_PARAMS' => array('nTopCount' => 1)
             ))->Fetch();
 
-            if (!empty($item)) {
-                $this->currentuser = $item;
-                $USER->Authorize($item['ID']);
+            if (!empty($useritem)) {
+                $USER->Authorize($useritem['ID']);
             }
         }
 
     }
 
-    /** @return VersionManager */
-    protected function getVersionManager() {
-        if (!$this->versionManager) {
-            $this->versionManager = new VersionManager($this->getArg('--config='));
-        }
-        return $this->versionManager;
-    }
-
     public function commandCreate() {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
+
         /** @compability */
         $descr = $this->getArg(0, '');
         /** @compability */
@@ -94,7 +88,7 @@ class Console
     }
 
     public function commandMark() {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
 
         $search = $this->getArg(0, '');
         $status = $this->getArg('--as=', '');
@@ -111,7 +105,8 @@ class Console
     }
 
     public function commandList() {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
+
         $search = $this->getArg('--search=');
 
         if ($this->getArg('--new')) {
@@ -178,17 +173,19 @@ class Console
     public function commandMigrate() {
         $force = $this->getArg('--force');
 
-        $search = $this->getArg('--search=');
-        $status = ($this->getArg('--down')) ? 'installed' : 'new';
+        $filter = array();
+        $filter['search'] = $this->getArg('--search=');
+        $filter['status'] = ($this->getArg('--down')) ? 'installed' : 'new';
 
-        $this->executeAll(array(
-            'status' => $status,
-            'search' => $search
-        ), 0, $force);
+        $filter['from'] = $this->getArg('--from=');
+        $filter['to'] = $this->getArg('--to=');
+
+        $this->executeAll($filter, $force);
     }
 
     public function commandUp() {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
+
         $force = $this->getArg('--force');
         $var = $this->getArg(0, 1);
 
@@ -202,19 +199,20 @@ class Console
             $this->executeAll(array(
                 'status' => $status,
                 'search' => $search
-            ), 0, $force);
+            ), $force);
 
         } else {
             $this->executeAll(array(
                 'status' => $status,
                 'search' => $search
-            ), intval($var), $force);
+            ), $force);
         }
 
     }
 
     public function commandDown() {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
+
         $force = $this->getArg('--force');
         $var = $this->getArg(0, 1);
 
@@ -228,13 +226,13 @@ class Console
             $this->executeAll(array(
                 'status' => $status,
                 'search' => $search
-            ), 0, $force);
+            ), $force);
 
         } else {
             $this->executeAll(array(
                 'status' => $status,
                 'search' => $search
-            ), intval($var), $force);
+            ), $force);
         }
 
     }
@@ -274,10 +272,17 @@ class Console
     }
 
     public function commandHelp() {
+        $this->createVersionManager();
+        global $USER;
+
         Out::out(GetMessage('SPRINT_MIGRATION_MODULE_NAME'));
         Out::out('Версия bitrix: %s', defined('SM_VERSION') ? SM_VERSION : '');
         Out::out('Версия модуля: %s', Module::getVersion());
-        Out::out('Текущий пользователь: [%d] %s', $this->currentuser['ID'], $this->currentuser['LOGIN']);
+
+        if ($USER && $USER->GetID()) {
+            Out::out('Текущий пользователь: [%d] %s', $USER->GetID(), $USER->GetLogin());
+        }
+
         Out::out('');
 
         Out::out('Запуск:' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL, $this->script);
@@ -287,7 +292,8 @@ class Console
     }
 
     public function commandConfig() {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
+
         $configList = $versionManager->getConfigList();
         $configName = $versionManager->getConfigName();
 
@@ -305,7 +311,7 @@ class Console
 
             foreach ($configItem['values'] as $key => $val) {
 
-                if (strpos($key, 'stop') === 0 || strpos($key, 'show') === 0) {
+                if ($val === true || $val === false){
                     $val = ($val) ? 'yes' : 'no';
                     $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
                 } elseif ($key == 'version_builders') {
@@ -347,9 +353,8 @@ class Console
     }
 
 
-    protected function executeAll($filter, $limit = 0, $force = false) {
-        $versionManager = $this->getVersionManager();
-        $limit = (int)$limit;
+    protected function executeAll($filter, $force = false) {
+        $versionManager = $this->createVersionManager();
 
         $success = 0;
         $fails = 0;
@@ -372,9 +377,6 @@ class Console
                 break;
             }
 
-            if ($limit > 0 && $limit == $success) {
-                break;
-            }
         }
 
         Out::out('migrations (%s): %d', $action, $success);
@@ -394,7 +396,8 @@ class Console
     }
 
     protected function executeVersion($version, $action = 'up', $force = false) {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
+
         $params = array();
 
         Out::out('%s (%s) start', $version, $action);
