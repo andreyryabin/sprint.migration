@@ -354,6 +354,8 @@ class IblockHelper extends Helper
         );
 
         $filter['IBLOCK_ID'] = $iblockId;
+        $filter['CHECK_PERMISSIONS'] = 'N';
+
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return \CIBlockElement::GetList(array(
             'SORT' => 'ASC'
@@ -374,6 +376,7 @@ class IblockHelper extends Helper
 
     public function getElements($iblockId, $filter = array(), $select = array()) {
         $filter['IBLOCK_ID'] = $iblockId;
+        $filter['CHECK_PERMISSIONS'] = 'N';
 
         $select = array_merge(array(
             'ID',
@@ -490,6 +493,8 @@ class IblockHelper extends Helper
         );
 
         $filter['IBLOCK_ID'] = $iblockId;
+        $filter['CHECK_PERMISSIONS'] = 'N';
+
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return \CIBlockSection::GetList(array(
             'ID' => 'ASC'
@@ -508,6 +513,7 @@ class IblockHelper extends Helper
 
     public function getSections($iblockId, $filter = array()){
         $filter['IBLOCK_ID'] = $iblockId;
+        $filter['CHECK_PERMISSIONS'] = 'N';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbResult = \CIBlockSection::GetList(array(

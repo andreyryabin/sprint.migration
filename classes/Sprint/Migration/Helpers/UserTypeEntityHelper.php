@@ -82,6 +82,31 @@ class UserTypeEntityHelper extends Helper
         return (!empty($aItem)) ? \CUserTypeEntity::GetByID($aItem['ID']) : false;
     }
 
+    public function updateUserTypeEntityIfExists($entityId, $fieldName, $fields) {
+        /* @global $APPLICATION \CMain */
+        global $APPLICATION;
+
+        $aItem = $this->getUserTypeEntity($entityId, $fieldName);
+        if (!$aItem){
+            return false;
+        }
+
+        $fields['FIELD_NAME'] = $fieldName;
+        $fields['ENTITY_ID'] = $entityId;
+
+        $entity = new \CUserTypeEntity;
+
+        if ($entity->Update($aItem['ID'], $fields)) {
+            return true;
+        }
+
+        if ($APPLICATION->GetException()) {
+            $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
+        } else {
+            $this->throwException(__METHOD__, 'UserType %s not updated', $fieldName);
+        }
+    }
+
     public function deleteUserTypeEntityIfExists($entityId, $fieldName) {
         $aItem = $this->getUserTypeEntity($entityId, $fieldName);
         if (!$aItem){

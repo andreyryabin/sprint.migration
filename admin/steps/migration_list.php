@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
     $taskUrl = $versionManager->getConfigVal('tracker_task_url');
-    $webdir = $versionManager->getConfigVal('migration_webdir');
+    $webdir = $versionManager->getWebDir();
 
     if ($_POST["step_code"] == "migration_new") {
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'new');

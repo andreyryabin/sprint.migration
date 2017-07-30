@@ -50,10 +50,10 @@ require_once realpath(__DIR__) . '/local/modules/sprint.migration/tools/migrate.
 
 Примеры команд
 -------------------------
-* php migrate.php create (создать новую миграцию)
-* php migrate.php list --search=text (список миграций отфильтрованных по названию и описанию)
-* php migrate.php migrate (накатить все)
-* php migrate.php execute <version> (накатить выбранную миграцию)
+* php migrate.php add (создать новую миграцию)
+* php migrate.php ls --search=text (список миграций отфильтрованных по названию и описанию)
+* php migrate.php up (накатить все)
+* php migrate.php up <version> (накатить выбранную миграцию)
 * php migrate.php mark <version> --as=installed (отметить миграцию как установленную не запуская ее)
 * php migrate.php mark unknown --as=new (отметить все неизвестные миграции как новые, фактически удаление их из бд)
 
@@ -117,6 +117,8 @@ class Version20150520000001 extends Version {
   'version_prefix' => '',
   'tracker_task_url' => '',
   'stop_on_errors' => false,
+  'show_admin_interface' => true,
+  'console_user' => 'admin',
   'version_builders' => array(),
 );
 ```
@@ -138,7 +140,11 @@ class Version20150520000001 extends Version {
 
 **stop_on_errors** - Останавливать выполнение миграций при появлении ошибок, варианты значений: true|false, по умолчанию false (не останавливать)
 
-**show_other_solutions** - Показывать другие решения разработчика: true|false, по умолчанию true (показывать)
+**show_admin_interface** - Показывать сервис миграций в админке, варианты значений: true|false, по умолчанию true (показывать)
+
+**console_user** - Пользователь от которого запускаются миграции в консоли, варианты значений: admin|login:userlogin|false, по умолчанию admin (запускать от админа)
+
+**show_other_solutions** - Показывать другие решения разработчика, варианты значений: true|false, по умолчанию true (показывать)
 
 Ни один из параметров не является обязательным.
 
@@ -246,6 +252,11 @@ class Version20151113185212 extends MyVersion {
 
 Такие методы есть в Sprint\Migration\Helpers\IblockHelper, например addIblockIfNotExists, addPropertyIfNotExists
 
+При работе из консоли можно указать пользователя от которого будут запускаться миграции, 
+это регулируется параметром в конфиге console_user, с вариантами значений:
+admin - авторизоваться под первым найденным админом (по умолчанию)
+login:userlogin - авторизоваться под логином userlogin
+false - неавторизовываться  
 
 Скриншоты
 -------------------------

@@ -7,32 +7,69 @@ class Console
 
     private $script = 'migrate.php';
     private $arguments = array();
-    private $versionManager = null;
 
-    public function __construct() {
-        //
+    protected function createVersionManager() {
+        $versionManager = new VersionManager($this->getArg('--config='));
+
+        $userlogin = $versionManager->getConfigVal('console_user');
+        if ($userlogin == 'admin') {
+            $this->authorizeAsAdmin();
+        } elseif (strpos($userlogin, 'login:') === 0) {
+            $userlogin = substr($userlogin, 6);
+            $this->authorizeAsLogin($userlogin);
+        }
+
+        return $versionManager;
     }
 
-    /** @return VersionManager */
-    protected function getVersionManager() {
-        if (!$this->versionManager) {
-            $this->versionManager = new VersionManager($this->getArg('--config='));
+    protected function authorizeAsLogin($login) {
+        global $USER;
+        $dbres = \CUser::GetByLogin($login);
+        $useritem = $dbres->Fetch();
+        if ($useritem) {
+            $USER->Authorize($useritem['ID']);
         }
-        return $this->versionManager;
+    }
+
+    protected function authorizeAsAdmin() {
+        global $USER;
+
+        $groupitem = \CGroup::GetList($by, $order, array(
+            'ADMIN' => 'Y',
+            'ACTIVE' => 'Y'
+        ))->Fetch();
+
+        if (!empty($groupitem)) {
+            $by = 'id';
+            $order = 'asc';
+
+            $useritem = \CUser::GetList($by, $order, array(
+                'GROUPS_ID' => array($groupitem['ID']),
+                'ACTIVE' => 'Y'
+            ), array(
+                'NAV_PARAMS' => array('nTopCount' => 1)
+            ))->Fetch();
+
+            if (!empty($useritem)) {
+                $USER->Authorize($useritem['ID']);
+            }
+        }
+
     }
 
     public function commandCreate() {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
+
         /** @compability */
-        $descr = $this->getArg(0, '');
+        $descr = $this->getArg(0);
         /** @compability */
-        $prefix = $this->getArg(1, '');
+        $prefix = $this->getArg(1);
         /** @compability */
         $prefix = $this->getArg('--name=', $prefix);
 
         $descr = $this->getArg('--desc=', $descr);
         $prefix = $this->getArg('--prefix=', $prefix);
-        $from = $this->getArg('--from=', '');
+        $from = $this->getArg('--from=');
 
         $builder = $versionManager->createVersionBuilder($from);
 
@@ -64,10 +101,10 @@ class Console
     }
 
     public function commandMark() {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
 
-        $search = $this->getArg(0, '');
-        $status = $this->getArg('--as=', '');
+        $search = $this->getArg(0);
+        $status = $this->getArg('--as=');
 
         if ($search && $status) {
             $markresult = $versionManager->markMigration($search, $status);
@@ -81,7 +118,8 @@ class Console
     }
 
     public function commandList() {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
+
         $search = $this->getArg('--search=');
 
         if ($this->getArg('--new')) {
@@ -145,87 +183,48 @@ class Console
 
     }
 
-    public function commandMigrate() {
-        $force = $this->getArg('--force');
-
-        $search = $this->getArg('--search=');
-        $status = ($this->getArg('--down')) ? 'installed' : 'new';
-
-        $this->executeAll(array(
-            'status' => $status,
-            'search' => $search
-        ), 0, $force);
-    }
-
     public function commandUp() {
-        $versionManager = $this->getVersionManager();
-        $force = $this->getArg('--force');
-        $var = $this->getArg(0, 1);
+        $versionName = $this->getArg(0);
+        $versionManager = $this->createVersionManager();
 
-        $search = $this->getArg('--search=');
-        $status = 'new';
-
-        if ($versionManager->checkVersionName($var)) {
-            $this->executeOnce($var, 'up', $force);
-
-        } elseif ($this->getArg('--all')) {
-            $this->executeAll(array(
-                'status' => $status,
-                'search' => $search
-            ), 0, $force);
-
-        } else {
-            $this->executeAll(array(
-                'status' => $status,
-                'search' => $search
-            ), intval($var), $force);
+        if (is_numeric($versionName)){
+            /** @deprecated */
+            Out::out('limit is no longer supported');
+            die(1);
         }
 
+        if ($versionManager->checkVersionName($versionName)) {
+            $this->executeOnce($versionName, 'up', $this->getArg('--force'));
+        } else {
+            $this->executeAll(array(
+                'search' => $this->getArg('--search='),
+                'status' => 'new',
+            ), $this->getArg('--force'));
+        }
     }
 
     public function commandDown() {
-        $versionManager = $this->getVersionManager();
-        $force = $this->getArg('--force');
-        $var = $this->getArg(0, 1);
+        $versionName = $this->getArg(0);
+        $versionManager = $this->createVersionManager();
 
-        $search = $this->getArg('--search=');
-        $status = 'installed';
-
-        if ($versionManager->checkVersionName($var)) {
-            $this->executeOnce($var, 'down', $force);
-
-        } elseif ($this->getArg('--all')) {
-            $this->executeAll(array(
-                'status' => $status,
-                'search' => $search
-            ), 0, $force);
-
-        } else {
-            $this->executeAll(array(
-                'status' => $status,
-                'search' => $search
-            ), intval($var), $force);
-        }
-
-    }
-
-    public function commandExecute() {
-        $version = $this->getArg(0, '');
-        $force = $this->getArg('--force');
-        if ($version) {
-            if ($this->getArg('--down')) {
-                $this->executeOnce($version, 'down', $force);
-            } else {
-                $this->executeOnce($version, 'up', $force);
-            }
-        } else {
-            Out::out('Version not found!');
+        if (is_numeric($versionName)){
+            /** @deprecated */
+            Out::out('limit is no longer supported');
             die(1);
         }
+
+        if ($versionManager->checkVersionName($versionName)) {
+            $this->executeOnce($versionName, 'down', $this->getArg('--force'));
+        } else {
+            $this->executeAll(array(
+                'search' => $this->getArg('--search='),
+                'status' => 'installed',
+            ), $this->getArg('--force'));
+        }
     }
 
-    public function commandRedo(){
-        $version = $this->getArg(0, '');
+    public function commandRedo() {
+        $version = $this->getArg(0);
         $force = $this->getArg('--force');
         if ($version) {
             $this->executeVersion($version, 'down', $force);
@@ -236,17 +235,18 @@ class Console
         }
     }
 
-
-    public function commandForce() {
-        /** @compability */
-        $this->addArg('--force');
-        $this->commandExecute();
-    }
-
     public function commandHelp() {
+        $this->createVersionManager();
+        global $USER;
+
         Out::out(GetMessage('SPRINT_MIGRATION_MODULE_NAME'));
         Out::out('Версия bitrix: %s', defined('SM_VERSION') ? SM_VERSION : '');
         Out::out('Версия модуля: %s', Module::getVersion());
+
+        if ($USER && $USER->GetID()) {
+            Out::out('Текущий пользователь: [%d] %s', $USER->GetID(), $USER->GetLogin());
+        }
+
         Out::out('');
 
         Out::out('Запуск:' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL, $this->script);
@@ -256,7 +256,8 @@ class Console
     }
 
     public function commandConfig() {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
+
         $configList = $versionManager->getConfigList();
         $configName = $versionManager->getConfigName();
 
@@ -274,15 +275,12 @@ class Console
 
             foreach ($configItem['values'] as $key => $val) {
 
-                if ($key == 'version_builders') {
+                if ($val === true || $val === false) {
+                    $val = ($val) ? 'yes' : 'no';
+                    $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
+                } elseif ($key == 'version_builders') {
                     $val = array_keys($val);
                     $val = implode(PHP_EOL, $val);
-                } elseif ($key == 'show_other_solutions') {
-                    $val = ($val) ? 'yes' : 'no';
-                    $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
-                } elseif ($key == 'stop_on_errors') {
-                    $val = ($val) ? 'yes' : 'no';
-                    $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
                 }
 
                 $table->addRow(array($key, $val));
@@ -319,9 +317,8 @@ class Console
     }
 
 
-    protected function executeAll($filter, $limit = 0, $force = false) {
-        $versionManager = $this->getVersionManager();
-        $limit = (int)$limit;
+    protected function executeAll($filter, $force = false) {
+        $versionManager = $this->createVersionManager();
 
         $success = 0;
         $fails = 0;
@@ -330,9 +327,9 @@ class Console
 
         $action = ($filter['status'] == 'new') ? 'up' : 'down';
 
-        foreach ($versions as $aItem) {
+        foreach ($versions as $item) {
 
-            $ok = $this->executeVersion($aItem['version'], $action, $force);
+            $ok = $this->executeVersion($item['version'], $action, $force);
 
             if ($ok) {
                 $success++;
@@ -340,13 +337,10 @@ class Console
                 $fails++;
             }
 
-            if ($fails && $versionManager->getConfigVal('stop_on_errors')){
+            if ($fails && $versionManager->getConfigVal('stop_on_errors')) {
                 break;
             }
 
-            if ($limit > 0 && $limit == $success) {
-                break;
-            }
         }
 
         Out::out('migrations (%s): %d', $action, $success);
@@ -359,14 +353,15 @@ class Console
     protected function executeOnce($version, $action = 'up', $force = false) {
         $ok = $this->executeVersion($version, $action, $force);
 
-        if (!$ok){
+        if (!$ok) {
             die(1);
         }
 
     }
 
     protected function executeVersion($version, $action = 'up', $force = false) {
-        $versionManager = $this->getVersionManager();
+        $versionManager = $this->createVersionManager();
+
         $params = array();
 
         Out::out('%s (%s) start', $version, $action);
@@ -456,11 +451,44 @@ class Console
         $this->commandList();
     }
 
-    public function commandMi() {
-        $this->commandMigrate();
-    }
-
     public function commandAdd() {
         $this->commandCreate();
     }
+
+    public function commandMigrate() {
+        /** @compability */
+        $status = $this->getArg('--down') ? 'installed' : 'new';
+        $this->executeAll(array(
+            'search' => $this->getArg('--search='),
+            'status' => $status,
+        ), $this->getArg('--force'));
+    }
+
+    public function commandMi() {
+        /** @compability */
+        $this->commandMigrate();
+    }
+
+    public function commandExecute() {
+        /** @compability */
+        $version = $this->getArg(0);
+        $force = $this->getArg('--force');
+        if ($version) {
+            if ($this->getArg('--down')) {
+                $this->executeOnce($version, 'down', $force);
+            } else {
+                $this->executeOnce($version, 'up', $force);
+            }
+        } else {
+            Out::out('Version not found!');
+            die(1);
+        }
+    }
+
+    public function commandForce() {
+        /** @compability */
+        $this->addArg('--force');
+        $this->commandExecute();
+    }
+
 }

@@ -45,6 +45,8 @@
     "SPRINT_MIGRATION_CREATED_SUCCESS" => "Миграция #VERSION# создана",
     "SPRINT_MIGRATION_CREATED_ERROR" => "Ошибка создания миграции",
     "SPRINT_MIGRATION_SEARCH" => "Поиск",
+    "SPRINT_MIGRATION_ADMIN_INTERFACE_HIDDEN" => "Управление миграциями через админку отключено",
+
     "SPRINT_MIGRATION_CONFIG_TITLE" => "Миграции",
     "SPRINT_MIGRATION_CONFIG_NOFILE" => "нет конфига",
     "SPRINT_MIGRATION_CONFIG_SWITCH" => "переключить",
@@ -58,20 +60,28 @@
     "SPRINT_MIGRATION_CONFIG_tracker_task_url" => "Шаблон ссылки на задачу в трекере",
     "SPRINT_MIGRATION_CONFIG_version_prefix" => "Заголовок класса миграции",
     "SPRINT_MIGRATION_CONFIG_version_builders" => "Конструкторы миграций",
-    "SPRINT_MIGRATION_CONFIG_stop_on_errors" => "Останавливать выполнение миграций при появлении ошибок",
+    "SPRINT_MIGRATION_CONFIG_stop_on_errors" => "Останавливать выполнение миграций при ошибках",
     "SPRINT_MIGRATION_CONFIG_show_other_solutions" => "Показывать другие решения разработчика",
+    "SPRINT_MIGRATION_CONFIG_show_admin_interface" => "Показывать сервис миграций в админке",
+    "SPRINT_MIGRATION_CONFIG_console_user" => "Пользователь от которого запускаются миграции в консоли",
 
     "SPRINT_MIGRATION_CONFIG_yes" => "да",
     "SPRINT_MIGRATION_CONFIG_no" => "нет",
 
     "SPRINT_MIGRATION_BUILDER_Version1" => "Создать простую миграцию",
     "SPRINT_MIGRATION_BUILDER_Version2" => "",
+
     "SPRINT_MIGRATION_BUILDER_IblockExport1" => "Создать миграцию для инфоблока",
     "SPRINT_MIGRATION_BUILDER_IblockExport2" => "",
-    "SPRINT_MIGRATION_BUILDER_IblockExport_IblockId" => "Инфоблок для экспорта",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_IblockId" => "Укажите ID инфоблока",
+
     "SPRINT_MIGRATION_BUILDER_HlblockExport1" => "Создать миграцию для highload-блока",
     "SPRINT_MIGRATION_BUILDER_HlblockExport2" => "",
-    "SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId" => "Highload-блок для экспорта",
+    "SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId" => "Укажите ID или имя highload-блока",
+
+    "SPRINT_MIGRATION_BUILDER_UserTypeEntities1" => "Создать миграцию для пользовательских полей",
+    "SPRINT_MIGRATION_BUILDER_UserTypeEntities2" => "",
+    "SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId" => "Укажите ENTITY_ID для выгрузки",
 
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
     "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля",

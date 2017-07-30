@@ -377,6 +377,14 @@ class VersionManager
         return $this->versionConfig->getConfigVal($val, $default);
     }
 
+    public function getWebDir(){
+        $dir = $this->getConfigVal('migration_dir', '');
+        if (strpos($dir, Module::getDocRoot()) === 0) {
+            return substr($dir, strlen(Module::getDocRoot()));
+        }
+        return '';
+    }
+
     public function getConfigList() {
         return $this->versionConfig->getConfigList();
     }
