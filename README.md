@@ -52,9 +52,9 @@ require_once realpath(__DIR__) . '/local/modules/sprint.migration/tools/migrate.
 -------------------------
 * php migrate.php add (создать новую миграцию)
 * php migrate.php ls --search=text (список миграций отфильтрованных по названию и описанию)
-* php migrate.php up (накатить все)
+* php migrate.php up (накатить все миграции) 
 * php migrate.php up <version> (накатить выбранную миграцию)
-* php migrate.php mark <version> --as=installed (отметить миграцию как установленную не запуская ее)
+* php migrate.php mark <version> --as=installed (отметить миграцию как установленную не выполняя ее)
 * php migrate.php mark unknown --as=new (отметить все неизвестные миграции как новые, фактически удаление их из бд)
 
 Все команды: https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/commands.txt?fileviewer=file-view-default
