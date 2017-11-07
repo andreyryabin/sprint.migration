@@ -61,7 +61,6 @@
     "SPRINT_MIGRATION_CONFIG_version_prefix" => "Заголовок класса миграции",
     "SPRINT_MIGRATION_CONFIG_version_builders" => "Конструкторы миграций",
     "SPRINT_MIGRATION_CONFIG_stop_on_errors" => "Останавливать выполнение миграций при ошибках",
-    "SPRINT_MIGRATION_CONFIG_show_other_solutions" => "Показывать другие решения разработчика",
     "SPRINT_MIGRATION_CONFIG_show_admin_interface" => "Показывать сервис миграций в админке",
     "SPRINT_MIGRATION_CONFIG_console_user" => "Пользователь от которого запускаются миграции в консоли",
 

@@ -12,7 +12,6 @@ class VersionConfig
         'migration_table',
         'migration_extend_class',
         'stop_on_errors',
-        'show_other_solutions',
         'migration_dir',
         'tracker_task_url',
         'version_prefix',
@@ -25,7 +24,6 @@ class VersionConfig
         $configName = empty($configName) ? 'cfg' : $configName;
 
         $this->configList = array();
-        $this->configList['cfg'] = $this->prepareConfig('cfg', array());
 
         $directory = new \DirectoryIterator(Module::getPhpInterfaceDir());
         foreach ($directory as $item) {
@@ -50,6 +48,7 @@ class VersionConfig
         if (isset($this->configList[$configName])) {
             $this->configCurrent = $this->configList[$configName];
         } else {
+            $this->configList['cfg'] = $this->prepareConfig('cfg', array());
             $this->configCurrent = $this->configList['cfg'];
         }
     }
@@ -127,12 +126,6 @@ class VersionConfig
             $values['stop_on_errors'] = true;
         } else {
             $values['stop_on_errors'] = false;
-        }
-
-        if (isset($values['show_other_solutions']) && !$values['show_other_solutions']) {
-            $values['show_other_solutions'] = false;
-        } else {
-            $values['show_other_solutions'] = true;
         }
 
         if (empty($values['tracker_task_url'])) {
