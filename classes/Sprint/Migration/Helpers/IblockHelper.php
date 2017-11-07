@@ -16,7 +16,7 @@ class IblockHelper extends Helper
         $filter['CHECK_PERMISSIONS'] = 'N';
         $aItem = \CIBlockType::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
 
-        if ($aItem){
+        if ($aItem) {
             $aItem['LANG'] = $this->getIblockTypeLangs($aItem['ID']);
         }
 
@@ -216,7 +216,27 @@ class IblockHelper extends Helper
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
         /* do not use =CODE in filter */
-        return \CIBlockProperty::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
+        $property = \CIBlockProperty::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
+        return $this->prepareProperty($property);
+    }
+
+    protected function prepareProperty($property){
+        if ($property && $property['PROPERTY_TYPE'] == 'L' && $property['IBLOCK_ID'] && $property['ID']){
+            $property['VALUES'] = $this->getPropertyEnumValues($property['IBLOCK_ID'],$property['ID']);
+        }
+        return $property;
+    }
+    
+    public function getPropertyEnumValues($iblockId, $propertyId) {
+        $result = array();
+        $dbres = \CIBlockPropertyEnum::GetList(array("SORT" => "ASC", "VALUE" => "ASC"), array(
+            'IBLOCK_ID' => $iblockId,
+            'PROPERTY_ID' => $propertyId
+        ));
+        while ($aItem = $dbres->Fetch()){
+            $result[] = $aItem;
+        }
+        return $result;
     }
 
     public function getPropertyId($iblockId, $code) {
@@ -231,8 +251,8 @@ class IblockHelper extends Helper
         $dbResult = \CIBlockProperty::GetList(array('SORT' => 'ASC'), $filter);
 
         $list = array();
-        while ($aItem = $dbResult->Fetch()) {
-            $list[] = $aItem;
+        while ($property = $dbResult->Fetch()) {
+            $list[] = $this->prepareProperty($property);
         }
         return $list;
     }
@@ -277,7 +297,7 @@ class IblockHelper extends Helper
 
         $fields = array_replace_recursive($default, $fields);
 
-        if (false !== strpos($fields['PROPERTY_TYPE'], ':')){
+        if (false !== strpos($fields['PROPERTY_TYPE'], ':')) {
             list($ptype, $utype) = explode(':', $fields['PROPERTY_TYPE']);
             $fields['PROPERTY_TYPE'] = $ptype;
             $fields['USER_TYPE'] = $utype;
@@ -333,7 +353,7 @@ class IblockHelper extends Helper
             $fields['PROPERTY_TYPE'] = 'E';
         }
 
-        if (false !== strpos($fields['PROPERTY_TYPE'], ':')){
+        if (false !== strpos($fields['PROPERTY_TYPE'], ':')) {
             list($ptype, $utype) = explode(':', $fields['PROPERTY_TYPE']);
             $fields['PROPERTY_TYPE'] = $ptype;
             $fields['USER_TYPE'] = $utype;
@@ -511,7 +531,7 @@ class IblockHelper extends Helper
         return ($aItem && isset($aItem['ID'])) ? $aItem['ID'] : 0;
     }
 
-    public function getSections($iblockId, $filter = array()){
+    public function getSections($iblockId, $filter = array()) {
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
 
@@ -626,12 +646,12 @@ class IblockHelper extends Helper
         self::updateIblockFields($iblockId, $fields);
     }
 
-    public function getIblockTypeLangs($typeId){
+    public function getIblockTypeLangs($typeId) {
         $result = array();
-        $dbRes = \CLanguage::GetList($lby="sort", $lorder="asc");
-        while($aItem = $dbRes->GetNext()){
+        $dbRes = \CLanguage::GetList($lby = "sort", $lorder = "asc");
+        while ($aItem = $dbRes->GetNext()) {
             $values = \CIBlockType::GetByIDLang($typeId, $aItem['LID'], false);
-            if (!empty($values)){
+            if (!empty($values)) {
                 $result[$aItem['LID']] = array(
                     'NAME' => $values['NAME'],
                     'SECTION_NAME' => $values['SECTION_NAME'],

@@ -71,6 +71,11 @@ class Console
         $prefix = $this->getArg('--prefix=', $prefix);
         $from = $this->getArg('--from=');
 
+        if ($from && !$versionManager->isVersionBuilder($from)){
+            Out::out('Builder not found');
+            die(1);
+        }
+
         $builder = $versionManager->createVersionBuilder($from);
 
         $builder->bind(array(

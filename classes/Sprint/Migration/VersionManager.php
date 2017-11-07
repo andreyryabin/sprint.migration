@@ -123,13 +123,13 @@ class VersionManager
      * @return AbstractBuilder
      */
     public function createVersionBuilder($name = '') {
-        $builders = $this->getConfigVal('version_builders', array());
+        $builders = $this->getVersionBuilders();
 
-        if (empty($name) || !class_exists($builders[$name])){
-            $name = 'Version';
+        if (isset($builders[$name]) && class_exists($builders[$name])){
+            $class = $builders[$name];
+        } else {
+            $class = $builders['Version'];
         }
-
-        $class = $builders[$name];
 
         $builder = new $class(
             $this->versionConfig,
@@ -139,8 +139,15 @@ class VersionManager
         return $builder;
     }
 
+    public function isVersionBuilder($name = ''){
+        $builders = $this->getVersionBuilders();
+        return (isset($builders[$name]) && class_exists($builders[$name]));
+    }
+
+
     public function getVersionBuilders() {
-        return $this->getConfigVal('version_builders', array());
+        $builders = $this->getConfigVal('version_builders', array());
+        return is_array($builders) ? $builders : array();
     }
 
     public function markMigration($search, $status) {
