@@ -283,9 +283,13 @@ class Console
                 if ($val === true || $val === false) {
                     $val = ($val) ? 'yes' : 'no';
                     $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
-                } elseif ($key == 'version_builders') {
-                    $val = array_keys($val);
-                    $val = implode(PHP_EOL, $val);
+                } elseif (is_array($val)) {
+                    $fres = [];
+                    foreach ($val as $fkey => $fval){
+                        $fres[] = '[' . $fkey . '] => ' . $fval;
+                    }
+                    $val = implode(PHP_EOL,$fres);
+
                 }
 
                 $table->addRow(array($key, $val));

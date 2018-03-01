@@ -9,10 +9,13 @@ class Version
 {
 
     protected $description = "";
+    protected $filterdata = array();
 
     protected $params = array();
 
     protected $storageName = 'default';
+
+
 
     public function up() {
         return true;
@@ -29,6 +32,10 @@ class Version
 
     public function getDescription() {
         return $this->description;
+    }
+
+    public function getFilterdata() {
+        return $this->filterdata;
     }
 
     public function saveData($name, $data){
