@@ -9,7 +9,7 @@ class Version
 {
 
     protected $description = "";
-    protected $filterdata = array();
+    protected $versionFilter = array();
 
     protected $params = array();
 
@@ -25,6 +25,10 @@ class Version
         return true;
     }
 
+    public function isVersionEnabled(){
+        return true;
+    }
+
     public function getVersionName(){
         $path = explode('\\', get_class($this));
         return array_pop($path);
@@ -34,8 +38,8 @@ class Version
         return $this->description;
     }
 
-    public function getFilterdata() {
-        return $this->filterdata;
+    public function getVersionFilter() {
+        return $this->versionFilter;
     }
 
     public function saveData($name, $data){

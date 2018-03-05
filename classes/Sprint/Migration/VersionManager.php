@@ -232,10 +232,10 @@ class VersionManager
 
     public function getVersions($filter = array())
     {
-        /** @var  $globalfilter array */
-        $globalfilter = $this->getConfigVal('migration_filter', []);
+        /** @var  $versionFilter array */
+        $versionFilter = $this->getConfigVal('version_filter', []);
 
-        $filter = array_merge($globalfilter, array('status' => '', 'search' => ''), $filter);
+        $filter = array_merge($versionFilter, array('status' => '', 'search' => ''), $filter);
 
         $records = array();
         /* @var $dbres \CDBResult */
@@ -276,9 +276,10 @@ class VersionManager
             $meta = $this->prepVersionMeta($version, $isFile, $isRecord);
 
             if (
+                $this->isVersionEnabled($meta) &&
                 $this->containsFilterStatus($meta, $filter) &&
                 $this->containsFilterSearch($meta, $filter) &&
-                $this->containsFilterOther($meta, $filter)
+                $this->containsFilterVersion($meta, $filter)
             ) {
                 $result[] = $meta;
             }
@@ -287,13 +288,17 @@ class VersionManager
         return $result;
     }
 
-    protected function containsFilterOther($meta, $filter)
+    protected function isVersionEnabled($meta){
+        return (isset($meta['enabled']) && $meta['enabled']);
+    }
+
+    protected function containsFilterVersion($meta, $filter)
     {
         unset($filter['status']);
         unset($filter['search']);
 
         foreach ($filter as $k => $v) {
-            if (empty($meta['filterdata'][$k]) || $meta['filterdata'][$k] != $v) {
+            if (empty($meta['versionfilter'][$k]) || $meta['versionfilter'][$k] != $v) {
                 return false;
             }
         }
@@ -373,21 +378,24 @@ class VersionManager
 
         $descr = '';
         $filter = [];
+        $enabled = true;
         if (!method_exists($class, '__construct')) {
             /** @var $versionInstance Version */
             $versionInstance = new $class;
             $descr = $versionInstance->getDescription();
-            $filter = $versionInstance->getFilterdata();
+            $filter = $versionInstance->getVersionFilter();
+            $enabled = $versionInstance->isVersionEnabled();
         } elseif (class_exists('\ReflectionClass')) {
             $reflect = new \ReflectionClass($class);
             $props = $reflect->getDefaultProperties();
             $descr = $props['description'];
-            $filter = $props['filterdata'];
+            $filter = $props['versionfilter'];
         }
 
         $meta['class'] = $class;
         $meta['description'] = $this->purifyDescriptionForMeta($descr);
-        $meta['filterdata'] = $filter;
+        $meta['versionfilter'] = $filter;
+        $meta['enabled'] = $enabled;
 
         return $meta;
 

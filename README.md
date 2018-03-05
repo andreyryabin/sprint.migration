@@ -120,6 +120,7 @@ class Version20150520000001 extends Version {
   'show_admin_interface' => true,
   'console_user' => 'admin',
   'version_builders' => array(),
+  'version_filter' => array(),
 );
 ```
 
@@ -144,6 +145,9 @@ class Version20150520000001 extends Version {
 
 **console_user** - Пользователь от которого запускаются миграции в консоли, варианты значений: admin | login:userlogin | false, по умолчанию admin (запускать от админа)
 
+**version_filter** - Массив по которому будет фильтроваться и выполняться список миграций
+
+
 Ни один из параметров не является обязательным.
 
 При указании в конфиге несуществующей директорий для миграций (migration_dir) или таблицы в бд (migration_table) 
@@ -160,6 +164,75 @@ class Version20150520000001 extends Version {
 
 Модуль запомнит выбранный конфиг после переключения
 
+Пример фильтрации списка миграций
+-------------------------
+Создайте конфиг и задайте параметры для фильтрации
+```
+<?php
+
+$config = [
+    'migration_dir' => '/migrations/',
+];
+
+if (\MyProject::IsDev()){
+    $config['version_filter'] = [
+        'env' => 'dev',
+    ];
+}
+
+return $config;
+
+```
+
+
+Укажите этот фильтр у нужных миграций в свойстве $versionFilter
+
+
+
+
+```
+<?php
+
+namespace Sprint\Migration;
+
+
+class Version20171219185225 extends Version
+{
+
+    protected $description = "";
+
+    protected $versionFilter = [
+        'env' => 'dev',
+    ];
+
+}
+
+```
+
+И при просмотре списка миграций или установке\откату всех сразу выборка будет производиться только по вашему фильтру 
+
+Такого же результата можно добиться определив метод  isVersionEnabled() в коде миграции, метод должен вернуть true или 
+false в зависимости от какого-либо условия и миграция появится или пропадет из списка миграций
+
+
+```
+<?php
+
+namespace Sprint\Migration;
+
+class Version20171219185225 extends Version
+{
+
+    protected $description = "";
+
+    public function isVersionEnabled()
+    {
+        return false;
+    }
+
+}
+
+```
 
 Пример создания конструктора миграции
 -------------------------

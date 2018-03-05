@@ -60,7 +60,7 @@
     "SPRINT_MIGRATION_CONFIG_tracker_task_url" => "Шаблон ссылки на задачу в трекере",
     "SPRINT_MIGRATION_CONFIG_version_prefix" => "Заголовок класса миграции",
     "SPRINT_MIGRATION_CONFIG_version_builders" => "Конструкторы миграций",
-    "SPRINT_MIGRATION_CONFIG_migration_filter" => "Фильтрация списка миграций",
+    "SPRINT_MIGRATION_CONFIG_version_filter" => "Фильтрация списка миграций",
     "SPRINT_MIGRATION_CONFIG_stop_on_errors" => "Останавливать выполнение миграций при ошибках",
     "SPRINT_MIGRATION_CONFIG_show_admin_interface" => "Показывать сервис миграций в админке",
     "SPRINT_MIGRATION_CONFIG_console_user" => "Пользователь от которого запускаются миграции в консоли",

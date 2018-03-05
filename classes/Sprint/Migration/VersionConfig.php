@@ -13,9 +13,9 @@ class VersionConfig
         'migration_extend_class',
         'stop_on_errors',
         'migration_dir',
-        'migration_filter',
         'tracker_task_url',
         'version_prefix',
+        'version_filter',
         'version_builders',
         'show_admin_interface',
         'console_user',
@@ -117,8 +117,8 @@ class VersionConfig
             $values['version_prefix'] = 'Version';
         }
 
-        if (!isset($values['migration_filter']) || !is_array($values['migration_filter'])){
-            $values['migration_filter'] = [];
+        if (!isset($values['version_filter']) || !is_array($values['version_filter'])){
+            $values['version_filter'] = [];
         }
 
         if (isset($values['show_admin_interface']) && !$values['show_admin_interface']) {
