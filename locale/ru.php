@@ -5,7 +5,7 @@
     "SPRINT_MIGRATION_MODULE_NAME" => "Миграции для разработчиков",
     "SPRINT_MIGRATION_MODULE_DESCRIPTION" => "Модуль для управления миграциями бд, создание, установка, откат миграций",
     "SPRINT_MIGRATION_PARTNER_NAME" => "Андрей Рябин",
-    "SPRINT_MIGRATION_PARTNER_URI" => "http://dev.1c-bitrix.ru/community/webdev/user/39653/blog/",
+    "SPRINT_MIGRATION_PARTNER_URI" => "https://dev.1c-bitrix.ru/community/webdev/user/39653/blog/",
     "SPRINT_MIGRATION_MENU_SPRINT" => "Спринт",
     "SPRINT_MIGRATION_MENU_MIGRATIONS" => "Миграции",
     "SPRINT_MIGRATION_TITLE" => "Миграции",
