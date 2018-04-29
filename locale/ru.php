@@ -55,7 +55,7 @@
     "SPRINT_MIGRATION_CONFIG_LIST" => "Список конфигураций",
 
     "SPRINT_MIGRATION_CONFIG_migration_dir" => "Директория для миграций",
-    "SPRINT_MIGRATION_CONFIG_migration_extend_class" => "Класс от которого наследуются миграции",
+    "SPRINT_MIGRATION_CONFIG_migration_extend_class" => "Класс, от которого наследуются миграции",
     "SPRINT_MIGRATION_CONFIG_migration_table" => "Таблица в бд с миграциями",
     "SPRINT_MIGRATION_CONFIG_tracker_task_url" => "Шаблон ссылки на задачу в трекере",
     "SPRINT_MIGRATION_CONFIG_version_prefix" => "Заголовок класса миграции",
@@ -63,7 +63,7 @@
     "SPRINT_MIGRATION_CONFIG_version_filter" => "Фильтрация списка миграций",
     "SPRINT_MIGRATION_CONFIG_stop_on_errors" => "Останавливать выполнение миграций при ошибках",
     "SPRINT_MIGRATION_CONFIG_show_admin_interface" => "Показывать сервис миграций в админке",
-    "SPRINT_MIGRATION_CONFIG_console_user" => "Пользователь от которого запускаются миграции в консоли",
+    "SPRINT_MIGRATION_CONFIG_console_user" => "Пользователь, от которого запускаются миграции в консоли",
 
     "SPRINT_MIGRATION_CONFIG_yes" => "да",
     "SPRINT_MIGRATION_CONFIG_no" => "нет",
