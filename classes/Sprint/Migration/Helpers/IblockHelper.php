@@ -7,6 +7,42 @@ use Sprint\Migration\Helper;
 class IblockHelper extends Helper
 {
 
+    public function findIblockType($typeId){
+        $aItem = $this->getIblockType($typeId);
+        if ($aItem && isset($aItem['ID'])){
+            return $aItem;
+        }
+
+        $this->throwException(__METHOD__, "iblock type not found");
+    }
+
+    public function findIblockTypeId($typeId){
+        $aItem = $this->getIblockType($typeId);
+        if ($aItem && isset($aItem['ID'])){
+            return $aItem['ID'];
+        }
+
+        $this->throwException(__METHOD__, "iblock type id not found");
+    }
+
+    public function findIblock($code, $typeId = ''){
+        $aItem = $this->getIblock($code, $typeId);
+        if ($aItem && isset($aItem['ID'])){
+            return $aItem;
+        }
+
+        $this->throwException(__METHOD__, "iblock not found");
+    }
+
+    public function findIblockId($code, $typeId = ''){
+        $aItem = $this->getIblock($code, $typeId);
+        if ($aItem && isset($aItem['ID'])){
+            return $aItem['ID'];
+        }
+
+        $this->throwException(__METHOD__, "iblock id not found");
+    }
+
     public function getIblockType($typeId) {
         /** @compatibility filter or $typeId */
         $filter = is_array($typeId) ? $typeId : array(
@@ -179,6 +215,24 @@ class IblockHelper extends Helper
             return $iblockId;
         }
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
+    }
+
+    public function updateIblock($iblockId, $fields = array()){
+        $ib = new \CIBlock;
+        if ($ib->Update($iblockId, $fields)){
+            return true;
+        }
+
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+
+    }
+
+    public function updateIblockIfExists($code, $fields = array()){
+        $aIblock = $this->getIblock($code);
+        if (!$aIblock) {
+            return false;
+        }
+        return $this->updateIblock($aIblock['ID'],$fields);
     }
 
     public function deleteIblockIfExists($code, $typeId = '') {
