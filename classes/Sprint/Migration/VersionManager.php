@@ -262,6 +262,7 @@ class VersionManager
         }
 
         $merge = array_merge($records, $files);
+
         if ($filter['status'] == 'installed' || $filter['status'] == 'unknown') {
             arsort($merge);
         } else {
@@ -347,6 +348,7 @@ class VersionManager
             'is_file' => $isFile,
             'is_record' => $isRecord,
             'version' => $versionName,
+            'enabled' => true,
         );
 
         if ($isRecord && $isFile) {
