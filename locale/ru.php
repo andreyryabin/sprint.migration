@@ -73,7 +73,7 @@
 
     "SPRINT_MIGRATION_BUILDER_IblockExport1" => "Создать миграцию для инфоблока",
     "SPRINT_MIGRATION_BUILDER_IblockExport2" => "",
-    "SPRINT_MIGRATION_BUILDER_IblockExport_IblockId" => "Укажите ID инфоблока",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_IblockId" => "Выберите инфоблок",
 
     "SPRINT_MIGRATION_BUILDER_HlblockExport1" => "Создать миграцию для highload-блока",
     "SPRINT_MIGRATION_BUILDER_HlblockExport2" => "",
