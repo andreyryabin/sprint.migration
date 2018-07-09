@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Builders;
 
-use Bitrix\Main\Context;
 use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Module;
 use Sprint\Migration\AbstractBuilder;
@@ -20,6 +19,7 @@ class IblockExport extends AbstractBuilder
         $this->setField('iblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_IblockId'),
             'placeholder' => '',
+            'width' => 250,
             'items' => self::getIblocksStructure()
         ));
 
@@ -41,9 +41,10 @@ class IblockExport extends AbstractBuilder
         $iblockHelper = new IblockHelper();
 
         $iblockTypes = $iblockHelper->getIblockTypes();
+
         foreach ($iblockTypes as $iblockType) {
             $structure[$iblockType['ID']] = [
-                'title' => $iblockType['LANG'][Context::getCurrent()->getLanguage()]['NAME']
+                'title' => $iblockType['LANG'][LANGUAGE_ID]['NAME']
             ];
         }
 
@@ -97,6 +98,7 @@ class IblockExport extends AbstractBuilder
 
         unset($iblock['ID']);
         unset($iblock['TIMESTAMP_X']);
+        unset($iblock['TMP_ID']);
 
         $this->setTemplateVar('iblock', $iblock);
         $this->setTemplateVar('iblockType', $iblockType);

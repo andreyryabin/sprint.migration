@@ -21,7 +21,7 @@ class <?php echo $version?> extends <?php echo $extendClass?> {
         $helper = new HelperManager();
 
         <?php foreach ($entities as $entity):?>
-        $helper->UserTypeEntity()->addUserTypeEntityIfNotExists('<?php echo $entity['ENTITY_ID']?>', '<?php echo $entity['FIELD_NAME']?>', <?php echo var_export($entity, 1)?>);
+        $helper->UserTypeEntity()->addUserTypeEntityIfNotExists('<?php echo $entity['ENTITY_ID']?>', '<?php echo $entity['FIELD_NAME']?>', <?php echo var_export($entity['FIELDS'], 1)?>);
         <?endforeach;?>
     }
 

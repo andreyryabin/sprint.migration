@@ -18,6 +18,12 @@ class UserTypeEntities extends AbstractBuilder
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId'),
             'placeholder' => ''
         ));
+
+        $this->setField('description', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
+            'width' => 350,
+            'height' => 40,
+        ));
     }
 
 
@@ -31,8 +37,18 @@ class UserTypeEntities extends AbstractBuilder
         $this->exitIfEmpty($entities, 'Entities not found');
 
         foreach ($entities as $index => $entity){
-            unset($entity['ID']);
-            $entities[$index] = $entity;
+
+            $fields = $entity;
+
+            unset($fields['ID']);
+            unset($fields['ENTITY_ID']);
+            unset($fields['FIELD_NAME']);
+
+            $entities[$index] = array(
+                'ENTITY_ID' => $entity['ENTITY_ID'],
+                'FIELD_NAME' => $entity['FIELD_NAME'],
+                'FIELDS' => $fields
+            );
         }
 
         $this->setTemplateVar('entities', $entities);

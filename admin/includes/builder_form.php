@@ -20,7 +20,11 @@
 
             <?elseif(!empty($fieldItem['items'])):?>
 
-                <select name="<?= $fieldCode ?>">
+                <select name="<?= $fieldCode ?>"
+                    <? if (!empty($fieldItem['width'])): ?>
+                        style="width: <?= $fieldItem['width'] ?>px;"
+                    <? endif; ?>
+                >
                     <? foreach ($fieldItem['items'] as $group): ?>
                         <optgroup label="<?=$group['title']?>">
                             <? foreach ($group['items'] as $item): ?>
