@@ -18,6 +18,18 @@
                     <? endif; ?>
                 ><?= $fieldItem['value'] ?></textarea>
 
+            <?elseif(!empty($fieldItem['items'])):?>
+
+                <select name="<?= $fieldCode ?>">
+                    <? foreach ($fieldItem['items'] as $group): ?>
+                        <optgroup label="<?=$group['title']?>">
+                            <? foreach ($group['items'] as $item): ?>
+                                <option value="<?=$item['value']?>"><?=$item['title']?></option>
+                            <?endforeach;?>
+                        </optgroup>
+                    <?endforeach;?>
+                </select>
+
             <? else: ?>
                 <input name="<?= $fieldCode ?>"
                        type="text"

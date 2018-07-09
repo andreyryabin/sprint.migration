@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration\Builders;
 
+use Bitrix\Main\Context;
+use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Module;
 use Sprint\Migration\AbstractBuilder;
 use Sprint\Migration\HelperManager;
@@ -17,8 +19,43 @@ class IblockExport extends AbstractBuilder
 
         $this->setField('iblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_IblockId'),
-            'placeholder' => ''
+            'placeholder' => '',
+            'items' => self::getIblocksStructure()
         ));
+
+        $this->setField('description', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
+            'width' => 350,
+            'height' => 40,
+        ));
+    }
+
+
+    /**
+     * Структура инфоблоков для построения выпадающего списка
+     * @return array
+     */
+    public function getIblocksStructure() {
+
+        $structure = [];
+        $iblockHelper = new IblockHelper();
+
+        $iblockTypes = $iblockHelper->getIblockTypes();
+        foreach ($iblockTypes as $iblockType) {
+            $structure[$iblockType['ID']] = [
+                'title' => $iblockType['LANG'][Context::getCurrent()->getLanguage()]['NAME']
+            ];
+        }
+
+        $iblocks = $iblockHelper->getIblocks();
+        foreach ($iblocks as $iblock) {
+            $structure[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
+                'title' => $iblock['NAME'],
+                'value' => $iblock['ID']
+            ];
+        }
+
+        return $structure;
     }
 
 
