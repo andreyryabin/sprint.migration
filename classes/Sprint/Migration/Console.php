@@ -76,27 +76,28 @@ class Console
             die(1);
         }
 
-        $builder = $versionManager->createVersionBuilder($from);
-
-        $builder->bind(array(
+        $postvars = array(
             'description' => $descr,
             'prefix' => $prefix,
-        ));
+        );
 
-        $fields = $builder->getFields();
+        do {
+            $builder = $versionManager->createVersionBuilder($from, $postvars);
+            $fields = $builder->getFields();
 
-        $postvars = array();
-        foreach ($fields as $code => $field) {
-            if (empty($field['bind'])) {
-                fwrite(STDOUT, $field['title'] . ':');
-                $val = fgets(STDIN);
-                $postvars[$code] = trim($val);
+            foreach ($fields as $code => $field) {
+                if (empty($field['bind'])) {
+                    fwrite(STDOUT, $field['title'] . ':');
+                    $val = fgets(STDIN);
+                    $postvars[$code] = trim($val);
+                }
             }
-        }
 
-        $builder->bind($postvars);
+            $builder->bind($postvars);
 
-        $versionName = $builder->build();
+            $versionName = $builder->build();
+
+        } while ($versionName == -1);
 
         $meta = $versionManager->getVersionByName($versionName);
 

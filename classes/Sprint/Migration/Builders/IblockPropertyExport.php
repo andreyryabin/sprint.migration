@@ -41,7 +41,12 @@ class IblockPropertyExport extends AbstractBuilder
 
         $iblockId = $this->getFieldValue('iblock_id');
         $propertyIds = $this->getFieldValue('property_ids');
-        $propertyIds = is_array($propertyIds) ? $propertyIds : array();;
+
+        if (is_numeric($propertyIds)) {
+            $propertyIds = array($propertyIds);
+        } elseif (!is_array($propertyIds)) {
+            $propertyIds = array();
+        }
 
         if (empty($iblockId) || empty($propertyIds)) {
             $this->exitWithMessage('empty iblock or property');
@@ -52,15 +57,20 @@ class IblockPropertyExport extends AbstractBuilder
 
         $iblock = $iblockHelper->getIblock(array('ID' => $iblockId));
 
+        $this->exitIfEmpty($iblock, 'iblock not found');
+
         $iblockProperties = array();
         foreach ($propertyIds as $propertyId) {
             $iblockProperty = $iblockHelper->getProperty($iblockId, array('ID' => $propertyId));
-            unset($iblockProperty['ID']);
-            unset($iblockProperty['IBLOCK_ID']);
-            unset($iblockProperty['TIMESTAMP_X']);
-            $iblockProperties[] = $iblockProperty;
+            if ($iblockProperty) {
+                unset($iblockProperty['ID']);
+                unset($iblockProperty['IBLOCK_ID']);
+                unset($iblockProperty['TIMESTAMP_X']);
+                $iblockProperties[] = $iblockProperty;
+            }
         }
 
+        $this->exitIfEmpty($iblockProperties, 'properties not found');
 
         $this->setTemplateVar('iblock', $iblock);
         $this->setTemplateVar('iblockProperties', $iblockProperties);

@@ -22,7 +22,8 @@ abstract class AbstractBuilder
     private $description = '';
 
     private $postvars = array();
-    private $canExecute = 1;
+    private $initRebuild = 0;
+    private $initException = 0;
 
 
     abstract protected function initialize();
@@ -39,11 +40,11 @@ abstract class AbstractBuilder
             $this->initialize();
 
         } catch (RebuildException $e) {
-            $this->canExecute = 0;
+            $this->initRebuild = 1;
 
         } catch (\Exception $e) {
             Out::outError('%s: %s', GetMessage('SPRINT_MIGRATION_CREATED_ERROR'), $e->getMessage());
-            $this->canExecute = 0;
+            $this->initException = 1;
         }
     }
 
@@ -70,7 +71,7 @@ abstract class AbstractBuilder
     protected function requiredField($code, $param = array()) {
         $field = $this->setField($code, $param);
 
-        if (empty($field['value'])){
+        if (empty($field['value'])) {
             $this->rebuild();
         }
 
@@ -119,15 +120,17 @@ abstract class AbstractBuilder
     public function build() {
         try {
 
-            if ($this->canExecute) {
-                $this->execute();
-            } else {
+            if ($this->initRebuild) {
+                return -1;
+            } elseif ($this->initException) {
                 return false;
+            } else {
+                $this->execute();
             }
 
 
         } catch (RebuildException $e) {
-            return false;
+            return -1;
 
         } catch (\Exception $e) {
             Out::outError('%s: %s', GetMessage('SPRINT_MIGRATION_CREATED_ERROR'), $e->getMessage());
