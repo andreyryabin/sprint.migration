@@ -83,6 +83,24 @@ function migrationMigrationRefresh(callbackAfterRefresh) {
 }
 
 jQuery(document).ready(function ($) {
+
+    $.fn.serializeFormJSON = function () {
+
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
     migrationMigrationRefresh(function () {
         migrationEnableButtons(1);
     });
@@ -116,38 +134,33 @@ jQuery(document).ready(function ($) {
     });
 
 
-    $('.sp-builder-form').on('submit', function (e) {
+    $('.sp-builder-form').on('submit', 'form', function (e) {
         e.preventDefault();
 
-        var postdata = {};
-        var arr = $(this).serializeArray();
+        var $form = $(this);
 
-        $.each(arr, function(index, item){
-            postdata[item.name] = item.value;
-        });
-
-        var $res = $(this).find('.sp-builder-form-result');
+        var postdata = $form.serializeFormJSON();
 
         migrationExecuteStep('migration_create', postdata, function (result) {
-            $res.html(result);
+            $form.parent().html(result);
             migrationMigrationRefresh();
         });
 
     });
 
     var openblockIx = 0;
-    if (localStorage){
+    if (localStorage) {
         openblockIx = localStorage.getItem('migrations_open_block');
-        openblockIx = (openblockIx) ? parseInt(openblockIx,10) : 0;
+        openblockIx = (openblockIx) ? parseInt(openblockIx, 10) : 0;
     }
 
     $('.sp-block_body').eq(openblockIx).show();
 
-    $('.sp-block_title').on('click',function(){
+    $('.sp-block_title').on('click', function () {
 
-        if (localStorage){
+        if (localStorage) {
             openblockIx = $('.sp-block_title').index(this);
-            openblockIx = parseInt(openblockIx,10);
+            openblockIx = parseInt(openblockIx, 10);
             localStorage.setItem('migrations_open_block', openblockIx);
         }
 
@@ -157,7 +170,6 @@ jQuery(document).ready(function ($) {
 
         $('.sp-block').find('.adm-info-message-wrap').remove();
     });
-
 
 
 });

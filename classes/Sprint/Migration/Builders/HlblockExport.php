@@ -19,6 +19,12 @@ class HlblockExport extends AbstractBuilder
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId'),
             'placeholder' => ''
         ));
+
+        $this->setField('description', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
+            'width' => 350,
+            'height' => 40,
+        ));
     }
 
 

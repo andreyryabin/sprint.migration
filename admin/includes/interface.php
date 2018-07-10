@@ -58,7 +58,7 @@
         <div class="sp-block">
             <? $builder = $versionManager->createVersionBuilder($builderName) ?>
             <div class="sp-block_title"><?= $builder->getTitle() ?></div>
-            <div class="sp-block_body"><? include __DIR__ . '/builder_form.php' ?></div>
+            <div class="sp-block_body sp-builder-form"><?=$builder->render()?></div>
         </div>
     <? endforeach; ?>
 

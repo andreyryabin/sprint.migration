@@ -169,6 +169,7 @@ class VersionConfig
         return array(
             'Version' => '\Sprint\Migration\Builders\Version',
             'IblockExport' => '\Sprint\Migration\Builders\IblockExport',
+            'IblockPropertyExport' => '\Sprint\Migration\Builders\IblockPropertyExport',
             'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
             'UserTypeEntities' => '\Sprint\Migration\Builders\UserTypeEntities',
         );

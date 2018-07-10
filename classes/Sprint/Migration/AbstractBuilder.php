@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\BuilderException;
+use Sprint\Migration\Exceptions\RebuildException;
 
 abstract class AbstractBuilder
 {
@@ -20,14 +21,30 @@ abstract class AbstractBuilder
     private $title = '';
     private $description = '';
 
+    private $postvars = array();
+    private $canExecute = 1;
+
+
     abstract protected function initialize();
+
     abstract protected function execute();
 
-    public function __construct(VersionConfig $versionConfig, $name) {
+    public function __construct(VersionConfig $versionConfig, $name, $postvars = array()) {
         $this->versionConfig = $versionConfig;
         $this->name = $name;
 
-        $this->initialize();
+        $this->bind($postvars);
+
+        try {
+            $this->initialize();
+
+        } catch (RebuildException $e) {
+            $this->canExecute = 0;
+
+        } catch (\Exception $e) {
+            Out::outError('%s: %s', GetMessage('SPRINT_MIGRATION_CREATED_ERROR'), $e->getMessage());
+            $this->canExecute = 0;
+        }
     }
 
     protected function setField($code, $param = array()) {
@@ -35,27 +52,37 @@ abstract class AbstractBuilder
             'title' => '',
             'value' => '',
             'bind' => 0
-        ),$param);
+        ), $param);
 
-        if (empty($param['title'])){
+        if (empty($param['title'])) {
             $param['title'] = $code;
         }
 
+        if (isset($this->postvars[$code])) {
+            $param['value'] = $this->postvars[$code];
+            $param['bind'] = 1;
+        }
+
         $this->fields[$code] = $param;
+        return $param;
     }
+
+    protected function requiredField($code, $param = array()) {
+        $field = $this->setField($code, $param);
+
+        if (empty($field['value'])){
+            $this->rebuild();
+        }
+
+    }
+
 
     protected function getFieldValue($code, $default = '') {
         return isset($this->fields[$code]) ? $this->fields[$code]['value'] : $default;
     }
 
     public function bind($postvars = array()) {
-        foreach ($this->fields as $code => $field) {
-            if (isset($postvars[$code])) {
-                $field['value'] = $postvars[$code];
-                $field['bind'] = 1;
-            }
-            $this->fields[$code] = $field;
-        }
+        $this->postvars = array_merge($this->postvars, $postvars);
     }
 
     protected function renderFile($file, $vars = array()) {
@@ -75,7 +102,7 @@ abstract class AbstractBuilder
         return $html;
     }
 
-    protected function setTemplateFile($path){
+    protected function setTemplateFile($path) {
         $this->templateFile = $path;
     }
 
@@ -83,11 +110,24 @@ abstract class AbstractBuilder
         $this->templateVars[$code] = $value;
     }
 
+    public function render() {
+        echo $this->renderFile(Module::getModuleDir() . '/admin/includes/builder_form.php', array(
+            'builder' => $this
+        ));
+    }
+
     public function build() {
         try {
-            if (false === $this->execute()) {
-                throw new BuilderException('builder returns false');
+
+            if ($this->canExecute) {
+                $this->execute();
+            } else {
+                return false;
             }
+
+
+        } catch (RebuildException $e) {
+            return false;
 
         } catch (\Exception $e) {
             Out::outError('%s: %s', GetMessage('SPRINT_MIGRATION_CREATED_ERROR'), $e->getMessage());
@@ -122,7 +162,7 @@ abstract class AbstractBuilder
             'extendClass' => $extendClass,
         ), $this->templateVars);
 
-        if (!is_file($this->templateFile)){
+        if (!is_file($this->templateFile)) {
             $this->templateFile = Module::getModuleDir() . '/templates/version.php';
         }
 
@@ -139,7 +179,6 @@ abstract class AbstractBuilder
         Out::outSuccess(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS', array(
             '#VERSION#' => $versionName
         )));
-
         return $versionName;
     }
 
@@ -191,6 +230,14 @@ abstract class AbstractBuilder
         return $ts;
     }
 
+    protected function rebuild() {
+        Throw new RebuildException('rebuild form');
+    }
+
+    protected function exitWithMessage($msg) {
+        Throw new BuilderException($msg);
+    }
+
     protected function exitIf($cond, $msg) {
         if ($cond) {
             Throw new BuilderException($msg);
@@ -203,23 +250,23 @@ abstract class AbstractBuilder
         }
     }
 
-    protected function setTitle($title = ''){
+    protected function setTitle($title = '') {
         $this->title = $title;
     }
 
-    protected function setDescription($description = ''){
+    protected function setDescription($description = '') {
         $this->description = $description;
     }
 
-    public function getName(){
+    public function getName() {
         return $this->name;
     }
 
-    public function getTitle(){
+    public function getTitle() {
         return $this->title;
     }
 
-    public function getDescription(){
+    public function getDescription() {
         return $this->description;
     }
 

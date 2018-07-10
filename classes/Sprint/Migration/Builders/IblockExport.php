@@ -20,7 +20,7 @@ class IblockExport extends AbstractBuilder
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_IblockId'),
             'placeholder' => '',
             'width' => 250,
-            'items' => self::getIblocksStructure()
+            'items' => $this->getIblocksStructure()
         ));
 
         $this->setField('description', array(
@@ -44,7 +44,8 @@ class IblockExport extends AbstractBuilder
 
         foreach ($iblockTypes as $iblockType) {
             $structure[$iblockType['ID']] = [
-                'title' => $iblockType['LANG'][LANGUAGE_ID]['NAME']
+                'title' => $iblockType['LANG'][LANGUAGE_ID]['NAME'],
+                'items' => array(),
             ];
         }
 

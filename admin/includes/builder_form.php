@@ -1,10 +1,10 @@
 <?php
 /** @var $builder \Sprint\Migration\AbstractBuilder */
 ?>
-<form method="post" class="sp-builder-form">
-    <?=$builder->getDescription()?>
-    <div class="sp-builder-form-result"></div>
-    <input type="hidden" name="builder_name" value="<?=$builder->getName()?>"/>
+<form method="post">
+    <?= $builder->getDescription() ?>
+    <input type="hidden" name="builder_name" value="<?= $builder->getName() ?>"/>
+
     <? $fields = $builder->getFields() ?>
     <? foreach ($fields as $fieldCode => $fieldItem): ?>
         <p>
@@ -13,12 +13,12 @@
                 <textarea name="<?= $fieldCode ?>"
                     <? if (!empty($fieldItem['width'])): ?>
                         style="width: <?= $fieldItem['width'] ?>px;height: <?= $fieldItem['height'] ?>px;"
-                    <?else:?>
+                    <? else: ?>
                         style="height: <?= $fieldItem['height'] ?>px;"
                     <? endif; ?>
                 ><?= $fieldItem['value'] ?></textarea>
 
-            <?elseif(!empty($fieldItem['items'])):?>
+            <? elseif (!empty($fieldItem['items']) && !$fieldItem['multiple']): ?>
 
                 <select name="<?= $fieldCode ?>"
                     <? if (!empty($fieldItem['width'])): ?>
@@ -26,20 +26,37 @@
                     <? endif; ?>
                 >
                     <? foreach ($fieldItem['items'] as $group): ?>
-                        <optgroup label="<?=$group['title']?>">
+                        <optgroup label="<?= $group['title'] ?>">
                             <? foreach ($group['items'] as $item): ?>
-                                <option value="<?=$item['value']?>"><?=$item['title']?></option>
-                            <?endforeach;?>
+                                <option value="<?= $item['value'] ?>"
+                                <?if ($fieldItem['value'] == $item['value']): ?>
+                                    selected="selected"
+                                <?endif;?>
+                                ><?= $item['title'] ?></option>
+                            <? endforeach; ?>
                         </optgroup>
-                    <?endforeach;?>
+                    <? endforeach; ?>
                 </select>
+            <? elseif (!empty($fieldItem['items']) && $fieldItem['multiple']): ?>
+                <? foreach ($fieldItem['items'] as $group): ?>
+                    <? foreach ($group['items'] as $item): ?>
+                        <label>
+                            <input name="<?= $fieldCode ?>[]"
+                                   value="<?= $item['value'] ?>"
+                                <?if (in_array($item['value'],$fieldItem['value'])): ?>
+                                    checked="checked"
+                                <?endif;?>
+                                   type="checkbox"
+                            ><?= $item['title'] ?></label> <br/>
+                    <? endforeach; ?>
+                <? endforeach; ?>
 
             <? else: ?>
                 <input name="<?= $fieldCode ?>"
                        type="text"
                        value="<?= $fieldItem['value'] ?>"
                     <? if (!empty($fieldItem['placeholder'])): ?>
-                        placeholder="<?=$fieldItem['placeholder']?>"
+                        placeholder="<?= $fieldItem['placeholder'] ?>"
                     <? endif; ?>
                     <? if (!empty($fieldItem['width'])): ?>
                         style="width: <?= $fieldItem['width'] ?>px;"

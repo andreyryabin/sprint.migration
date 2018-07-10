@@ -15,7 +15,7 @@
     "SPRINT_MIGRATION_UP" => "Установить",
     "SPRINT_MIGRATION_DOWN" => "Откатить",
     "SPRINT_MIGRATION_UP_START" => "Установить новые",
-    "SPRINT_MIGRATION_DOWN_START" => "Откатить",
+    "SPRINT_MIGRATION_DOWN_START" => "Откатить все",
     "SPRINT_MIGRATION_UP_CONFIRM" => "Установить новые миграции?",
     "SPRINT_MIGRATION_DOWN_CONFIRM" => "Откатить все установленные миграции?",
     "SPRINT_MIGRATION_GENERATE" => "Создать",

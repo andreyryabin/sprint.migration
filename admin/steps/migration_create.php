@@ -7,11 +7,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
 
     $name = !empty($_POST['builder_name']) ? trim($_POST['builder_name']) : '';
 
-    $builder = $versionManager->createVersionBuilder($name);
-
-    $builder->bind($_POST);
-
+    $builder = $versionManager->createVersionBuilder($name,$_POST);
     $builder->build();
+
+    $builder->render();
 
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
