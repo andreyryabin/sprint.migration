@@ -83,6 +83,10 @@
     "SPRINT_MIGRATION_BUILDER_UserTypeEntities2" => "",
     "SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId" => "Укажите ENTITY_ID для выгрузки",
 
+    "SPRINT_MIGRATION_BUILDER_IblockPropertyExport" => "Создать миграцию для свойств инфоблока",
+    "SPRINT_MIGRATION_BUILDER_IblockPropertyExport_IblockId" => "Выберите инфоблок",
+    "SPRINT_MIGRATION_BUILDER_IblockPropertyExport_PropertyIds" => "Выберите свойства",
+
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
     "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля",
     "SPRINT_MIGRATION_MARK" => "Отметить миграцию",

@@ -53,7 +53,7 @@
 
     <div style="margin-top: 10px">&nbsp;</div>
 
-    <? $builders = $versionManager->getVersionBuilders() ?>
+    <? $builders = $versionManager->getVersionBuilders();?>
     <? foreach ($builders as $builderName => $builderClass): ?>
         <div class="sp-block">
             <? $builder = $versionManager->createVersionBuilder($builderName) ?>
@@ -61,6 +61,8 @@
             <div class="sp-block_body sp-builder-form"><?=$builder->render()?></div>
         </div>
     <? endforeach; ?>
+
+    <div style="margin-top: 10px">&nbsp;</div>
 
     <div class="sp-block">
         <div class="sp-block_title"><?= GetMessage('SPRINT_MIGRATION_MARK') ?></div>

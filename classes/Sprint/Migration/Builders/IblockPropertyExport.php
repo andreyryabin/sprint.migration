@@ -13,7 +13,7 @@ class IblockPropertyExport extends AbstractBuilder
 {
 
     public function initialize() {
-        $this->setTitle('SimpleWizard');
+        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockPropertyExport'));
         $this->setTemplateFile(Module::getModuleDir() . '/templates/IblockPropertyExport.php');
 
         $this->requiredField('iblock_id', array(
@@ -32,7 +32,6 @@ class IblockPropertyExport extends AbstractBuilder
                 $this->getFieldValue('iblock_id')
             )
         ));
-
 
     }
 

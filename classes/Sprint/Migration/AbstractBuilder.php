@@ -39,6 +39,10 @@ abstract class AbstractBuilder
         try {
             $this->initialize();
 
+            if (!$this->isFieldsBinded()){
+                $this->rebuild();
+            }
+
         } catch (RebuildException $e) {
             $this->initRebuild = 1;
 
@@ -77,6 +81,14 @@ abstract class AbstractBuilder
 
     }
 
+    protected function isFieldsBinded(){
+        foreach ($this->fields as $code => $field){
+            if (!$field['bind']){
+                return false;
+            }
+        }
+        return true;
+    }
 
     protected function getFieldValue($code, $default = '') {
         return isset($this->fields[$code]) ? $this->fields[$code]['value'] : $default;
