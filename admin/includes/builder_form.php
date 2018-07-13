@@ -66,6 +66,6 @@
         </p>
     <? endforeach ?>
     <p>
-        <input type="submit" value="<?= GetMessage('SPRINT_MIGRATION_GENERATE') ?>"/>
+        <input type="submit" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"/>
     </p>
 </form>
