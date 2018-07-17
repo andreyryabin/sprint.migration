@@ -1,5 +1,5 @@
 <?php
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_create" && check_bitrix_sessid('send_sessid')) {
     /** @noinspection PhpIncludeInspection */
@@ -7,10 +7,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
 
     $name = !empty($_POST['builder_name']) ? trim($_POST['builder_name']) : '';
 
-    $builder = $versionManager->createVersionBuilder($name,$_POST);
+    $builder = $versionManager->createVersionBuilder($name, $_POST);
+
     $builder->build();
+    $builder->buildAfter();
 
     $builder->render();
+
+    if ($builder->isRestart()) {
+        $json = json_encode($builder->getRestartParams());
+        ?><script>migrationCreate(<?=$json?>);</script><?
+    } else {
+        ?><script>migrationMigrationRefresh();</script><?
+    }
 
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");

@@ -82,6 +82,15 @@ function migrationMigrationRefresh(callbackAfterRefresh) {
     });
 }
 
+function migrationCreate(postData){
+
+    var $block = $('[data-builder="'+postData['builder_name']+'"]');
+
+    migrationExecuteStep('migration_create', postData, function (result) {
+        $block.html(result);
+    });
+}
+
 jQuery(document).ready(function ($) {
 
     $.fn.serializeFormJSON = function () {
@@ -134,19 +143,21 @@ jQuery(document).ready(function ($) {
     });
 
 
-    $('.sp-builder-form').on('submit', 'form', function (e) {
+    $('[data-builder]').on('submit', 'form', function (e) {
         e.preventDefault();
-
-        var $form = $(this);
-
-        var postdata = $form.serializeFormJSON();
-
-        migrationExecuteStep('migration_create', postdata, function (result) {
-            $form.parent().html(result);
-            migrationMigrationRefresh();
-        });
-
+        var postData = $(this).serializeFormJSON();
+        migrationCreate(postData);
     });
+
+    $('[data-builder]').on('reset', 'form', function (e) {
+        e.preventDefault();
+        var postData = $(this).serializeFormJSON();
+
+
+
+        migrationCreate({builder_name: postData['builder_name']});
+    });
+
 
     var openblockIx = 0;
     if (localStorage) {

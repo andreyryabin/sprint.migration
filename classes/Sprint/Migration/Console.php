@@ -71,7 +71,7 @@ class Console
         $prefix = $this->getArg('--prefix=', $prefix);
         $from = $this->getArg('--from=');
 
-        if ($from && !$versionManager->isVersionBuilder($from)){
+        if ($from && !$versionManager->isVersionBuilder($from)) {
             Out::out('Builder not found');
             die(1);
         }
@@ -89,17 +89,31 @@ class Console
                 if (empty($field['bind'])) {
                     fwrite(STDOUT, $field['title'] . ':');
                     $val = fgets(STDIN);
-                    $postvars[$code] = trim($val);
+                    $val = trim($val);
+                    $builder->bindField($code, $val);
                 }
             }
 
-            $builder->bind($postvars);
+            $builder->build();
+            $builder->buildAfter();
 
-            $versionName = $builder->build();
+            $fields = $builder->getFields();
 
-        } while ($versionName == -1);
+            foreach ($fields as $code => $field) {
+                if (empty($field['bind'])) {
+                    fwrite(STDOUT, $field['title'] . ':');
+                    $val = fgets(STDIN);
+                    $val = trim($val);
+                    $builder->bindField($code, $val);
+                }
+            }
 
-        $meta = $versionManager->getVersionByName($versionName);
+            $postvars = $builder->getRestartParams();
+
+
+        } while ($builder->isRestart() || $builder->isRebuild());
+
+        $meta = $versionManager->getVersionByName($builder->getVersion());
 
         if (!empty($meta['class'])) {
             $this->outVersionMeta($meta);
@@ -193,7 +207,7 @@ class Console
         $versionName = $this->getArg(0);
         $versionManager = $this->createVersionManager();
 
-        if (is_numeric($versionName)){
+        if (is_numeric($versionName)) {
             /** @deprecated */
             Out::out('limit is no longer supported');
             die(1);
@@ -213,7 +227,7 @@ class Console
         $versionName = $this->getArg(0);
         $versionManager = $this->createVersionManager();
 
-        if (is_numeric($versionName)){
+        if (is_numeric($versionName)) {
             /** @deprecated */
             Out::out('limit is no longer supported');
             die(1);
@@ -286,10 +300,10 @@ class Console
                     $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
                 } elseif (is_array($val)) {
                     $fres = [];
-                    foreach ($val as $fkey => $fval){
+                    foreach ($val as $fkey => $fval) {
                         $fres[] = '[' . $fkey . '] => ' . $fval;
                     }
-                    $val = implode(PHP_EOL,$fres);
+                    $val = implode(PHP_EOL, $fres);
 
                 }
 

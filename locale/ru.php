@@ -19,6 +19,8 @@
     "SPRINT_MIGRATION_UP_CONFIRM" => "Установить новые миграции?",
     "SPRINT_MIGRATION_DOWN_CONFIRM" => "Откатить все установленные миграции?",
     "SPRINT_MIGRATION_BUILDER_NEXT" => "Далее",
+    "SPRINT_MIGRATION_BUILDER_RESET" => "Сбросить",
+    "SPRINT_MIGRATION_SET_REQUIRED_FIELD" => "Заполните обязательное поле: #TITLE#",
     "SPRINT_MIGRATION_REFRESH" => "Обновить",
     "SPRINT_MIGRATION_TOGGLE_LIST" => "Все",
     "SPRINT_MIGRATION_TOGGLE_NEW" => "Новые",
