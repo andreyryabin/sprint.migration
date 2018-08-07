@@ -72,7 +72,7 @@
     </div>
 
     <div class="sp-block">
-        <div class="sp-block_title"><?= GetMessage('SPRINT_MIGRATION_CONFIG_LIST') ?></div>
+        <div class="sp-block_title"><?= GetMessage('SPRINT_MIGRATION_CONFIG') ?></div>
         <div class="sp-block_body"><? include __DIR__ . '/config_list.php' ?></div>
     </div>
 

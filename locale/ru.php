@@ -50,11 +50,7 @@
     "SPRINT_MIGRATION_ADMIN_INTERFACE_HIDDEN" => "Управление миграциями через админку отключено",
 
     "SPRINT_MIGRATION_CONFIG_TITLE" => "Миграции",
-    "SPRINT_MIGRATION_CONFIG_NOFILE" => "нет конфига",
-    "SPRINT_MIGRATION_CONFIG_SWITCH" => "переключить",
-    "SPRINT_MIGRATION_CONFIG_SWITCHED" => "Конфиг переключен",
-    "SPRINT_MIGRATION_CONFIG_CURRENT" => "текущий",
-    "SPRINT_MIGRATION_CONFIG_LIST" => "Список конфигураций",
+    "SPRINT_MIGRATION_CONFIG" => "Конфигурация",
 
     "SPRINT_MIGRATION_CONFIG_migration_dir" => "Директория для миграций",
     "SPRINT_MIGRATION_CONFIG_migration_extend_class" => "Класс, от которого наследуются миграции",
@@ -105,7 +101,5 @@
     "SPRINT_MIGRATION_VERSION_NOT_FOUND" => "Миграция не найдена",
     "SPRINT_MIGRATION_RIGHT_D" => "Доступ запрещен",
     "SPRINT_MIGRATION_RIGHT_W" => "Доступ разрешен",
-
-    "SPRINT_MIGRATION_ABOUT_sprint_editor" => "Если вам нравится этот модуль, посмотрите еще <br/> Редактор для контент-менеджеров<br/>"
 
 ));

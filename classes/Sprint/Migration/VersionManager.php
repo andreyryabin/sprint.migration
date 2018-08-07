@@ -21,8 +21,6 @@ class VersionManager
 
     public function __construct($configName = '')
     {
-        $configName = empty($configName) ? Module::getDbOption('config_name', '') : $configName;
-
         $this->versionConfig = new VersionConfig(
             $configName
         );
@@ -32,8 +30,6 @@ class VersionManager
         );
 
         $this->lastException = new \Exception();
-
-        Module::setDbOption('config_name', $this->versionConfig->getConfigName());
     }
 
     public function startMigration($versionName, $action = 'up', $params = array(), $force = false)

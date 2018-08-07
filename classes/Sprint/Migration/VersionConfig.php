@@ -21,7 +21,7 @@ class VersionConfig
         'console_user',
     );
 
-    public function __construct($configName) {
+    public function __construct($configName = '') {
         $configName = empty($configName) ? 'cfg' : $configName;
 
         $this->configList = array();
@@ -83,7 +83,9 @@ class VersionConfig
         } else {
             $title = GetMessage('SPRINT_MIGRATION_CONFIG_TITLE');
         }
+
         $title = sprintf('%s (%s)', $title, 'migrations.' . $configName . '.php');
+
         return array(
             'name' => $configName,
             'title' => $title,

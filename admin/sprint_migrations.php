@@ -18,10 +18,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
 }
 
-$versionManager = new Sprint\Migration\VersionManager();
+$config = isset($_REQUEST['config']) ? $_REQUEST['config'] : '';
+$versionManager = new Sprint\Migration\VersionManager($config);
 
 if ($versionManager->getConfigVal('show_admin_interface')) {
-    include __DIR__ . '/steps/migration_config.php';
     include __DIR__ . '/steps/migration_execute.php';
     include __DIR__ . '/steps/migration_list.php';
     include __DIR__ . '/steps/migration_status.php';

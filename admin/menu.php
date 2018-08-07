@@ -1,11 +1,22 @@
-<?
+<?php
 global $APPLICATION;
-
-include(__DIR__ .'/../loader.php');
-include(__DIR__ .'/../locale/ru.php');
 
 if ($APPLICATION->GetGroupRight("sprint.migration") == "D") {
     return false;
+}
+
+\CModule::IncludeModule('sprint.migration');
+
+$versionConfig = new Sprint\Migration\VersionConfig();
+
+$configList = $versionConfig->getConfigList();
+
+$items = array();
+foreach ($configList as $item) {
+    $items[] = array(
+        "text" => $item['title'],
+        "url" => "sprint_migrations.php?config=" . $item['name'] . "&lang=" . LANGUAGE_ID,
+    );
 }
 
 $aMenu = array(
@@ -16,13 +27,7 @@ $aMenu = array(
     "icon" => "sys_menu_icon",
     "page_icon" => "sys_page_icon",
     "items_id" => "sprint_migrations",
-    "items" => array(
-        array(
-            "text" => GetMessage('SPRINT_MIGRATION_MENU_MIGRATIONS'),
-            "url" => "sprint_migrations.php?lang=" . LANGUAGE_ID,
-        ),
-
-    )
+    "items" => $items
 );
 
 return $aMenu;
