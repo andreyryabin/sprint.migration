@@ -23,6 +23,13 @@ try {
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
     if (!\CModule::IncludeModule('sprint.migration')) {
+        /** @var sprint_migration $ob */
+        if ($ob = \CModule::CreateModuleObject('sprint.migration')) {
+            $ob->DoInstall();
+        }
+    }
+
+    if (!\CModule::IncludeModule('sprint.migration')) {
         Throw new \Exception('need to install module sprint.migration');
     }
 
