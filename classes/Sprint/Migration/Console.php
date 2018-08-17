@@ -279,11 +279,19 @@ class Console
         $versionManager = $this->createVersionManager();
 
         $configList = $versionManager->getConfigList();
-        $configName = $versionManager->getConfigName();
 
+        $curname = $versionManager->getConfigName();
+
+        $num = 0;
         foreach ($configList as $configItem) {
-            $current = ($configItem['name'] == $configName) ? '*' : '';
-            Out::out('%s %s', $configItem['title'], $current);
+            $num++;
+            $cur = ($configItem['name'] == $curname) ? '*' : '';
+
+            Out::out('%s) %s %s', $num, $configItem['title'],$cur);
+            Out::out('%s: %s',
+                GetMessage('SPRINT_MIGRATION_CONFIG_config_file'),
+                $configItem['config_file']
+            );
 
             $table = new ConsoleTable(-1, array(
                 'horizontal' => '=',
@@ -312,6 +320,7 @@ class Console
 
             Out::out($table->getTable());
         }
+
     }
 
     protected function outVersionMeta($meta = array()) {

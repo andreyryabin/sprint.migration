@@ -88,9 +88,13 @@ class VersionConfig
             $title = sprintf('%s (%s)',GetMessage('SPRINT_MIGRATION_CONFIG_TITLE'),$configName);
         }
 
+        $file = $configValues['config_file'];
+        unset($configValues['config_file']);
+
         return array(
             'name' => $configName,
             'title' => $title,
+            'config_file' => $file,
             'values' => $configValues,
         );
     }
