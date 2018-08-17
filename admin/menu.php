@@ -20,7 +20,7 @@ foreach ($configList as $item) {
 }
 
 $aMenu = array(
-    "parent_menu" => "global_menu_services",
+    "parent_menu" => "global_menu_settings",
     "section" => "Sprint",
     "sort" => 50,
     "text" => GetMessage('SPRINT_MIGRATION_MENU_SPRINT'),

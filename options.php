@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()){
 ?>
 
 <p>
-    <a href="/bitrix/admin/sprint_migrations.php?lang=<?=LANGUAGE_ID?>"><?= GetMessage('SPRINT_MIGRATION_GOTO_MIGRATION') ?></a>
+    <a href="/bitrix/admin/sprint_migrations.php?config=cfg&lang=<?=LANGUAGE_ID?>"><?= GetMessage('SPRINT_MIGRATION_GOTO_MIGRATION') ?></a>
 </p>
 <p>
     <a href="https://bitbucket.org/andrey_ryabin/sprint.migration" target="_blank"><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></a>

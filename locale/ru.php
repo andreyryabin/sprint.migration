@@ -6,7 +6,7 @@
     "SPRINT_MIGRATION_MODULE_DESCRIPTION" => "Модуль для управления миграциями бд, создание, установка, откат миграций",
     "SPRINT_MIGRATION_PARTNER_NAME" => "Андрей Рябин",
     "SPRINT_MIGRATION_PARTNER_URI" => "https://dev.1c-bitrix.ru/community/webdev/user/39653/blog/",
-    "SPRINT_MIGRATION_MENU_SPRINT" => "Спринт",
+    "SPRINT_MIGRATION_MENU_SPRINT" => "Миграции для разработчиков",
     "SPRINT_MIGRATION_MENU_MIGRATIONS" => "Миграции",
     "SPRINT_MIGRATION_TITLE" => "Миграции",
     "SPRINT_MIGRATION_FORM_DESCR" => "Описание",
@@ -62,6 +62,7 @@
     "SPRINT_MIGRATION_CONFIG_stop_on_errors" => "Останавливать выполнение миграций при ошибках",
     "SPRINT_MIGRATION_CONFIG_show_admin_interface" => "Показывать сервис миграций в админке",
     "SPRINT_MIGRATION_CONFIG_console_user" => "Пользователь, от которого запускаются миграции в консоли",
+    "SPRINT_MIGRATION_CONFIG_config_file" => "Файл конфигурации",
 
     "SPRINT_MIGRATION_CONFIG_yes" => "да",
     "SPRINT_MIGRATION_CONFIG_no" => "нет",

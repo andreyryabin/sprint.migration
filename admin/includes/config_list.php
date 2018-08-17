@@ -5,13 +5,6 @@
 $configItem = $versionManager->getConfigCurrent();
 ?>
 <table class="sp-config">
-    <thead>
-    <tr>
-        <td colspan="3">
-            <strong><?= $configItem['title'] ?></strong>
-        </td>
-    </tr>
-    </thead>
     <tbody>
     <? foreach ($configItem['values'] as $key => $val) :
 

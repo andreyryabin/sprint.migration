@@ -42,6 +42,8 @@ class VersionConfig
                 continue;
             }
 
+            $values['config_file'] = $item->getPathname();
+
             $cname = $matches[1];
             $this->configList[$cname] = $this->prepareConfig($cname, $values);
         }
@@ -49,7 +51,9 @@ class VersionConfig
         if (isset($this->configList[$configName])) {
             $this->configCurrent = $this->configList[$configName];
         } else {
-            $this->configList['cfg'] = $this->prepareConfig('cfg', array());
+            $this->configList['cfg'] = $this->prepareConfig('cfg', array(
+                'config_file' => GetMessage('SPRINT_MIGRATION_CONFIG_no'),
+            ));
             $this->configCurrent = $this->configList['cfg'];
         }
     }
@@ -78,18 +82,16 @@ class VersionConfig
     protected function prepareConfig($configName, $configValues = array()) {
         $configValues = $this->prepareConfigValues($configValues);
         if (!empty($configValues['title'])) {
-            $title = $configValues['title'];
+            $title = sprintf('%s (%s)',$configValues['title'],$configName);
             unset($configValues['title']);
         } else {
-            $title = GetMessage('SPRINT_MIGRATION_CONFIG_TITLE');
+            $title = sprintf('%s (%s)',GetMessage('SPRINT_MIGRATION_CONFIG_TITLE'),$configName);
         }
-
-        $title = sprintf('%s (%s)', $title, 'migrations.' . $configName . '.php');
 
         return array(
             'name' => $configName,
             'title' => $title,
-            'values' => $configValues
+            'values' => $configValues,
         );
     }
 
