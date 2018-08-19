@@ -6,7 +6,7 @@ use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 
-abstract class VersionBuilder
+abstract class AbstractBuilder
 {
 
     private $name;
