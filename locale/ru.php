@@ -88,7 +88,7 @@
     "SPRINT_MIGRATION_BUILDER_IblockPropertyExport_PropertyIds" => "Выберите свойства",
 
     "SPRINT_MIGRATION_BUILDER_CacheCleaner1" => "Очистка кеша",
-    "SPRINT_MIGRATION_BUILDER_CacheCleaner2" => "Выполнить BXClearCache",
+    "SPRINT_MIGRATION_BUILDER_CacheCleaner2" => "Выполнить BXClearCache(true)",
 
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
     "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля",

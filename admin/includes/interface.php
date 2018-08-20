@@ -69,11 +69,11 @@
         <div class="sp-block_body"><? include __DIR__ . '/mark_form.php' ?></div>
     </div>
 
-    <div class="sp-block">
-        <div class="sp-block_title"><?= GetMessage('SPRINT_MIGRATION_CONFIG') ?></div>
-        <div class="sp-block_body"><? include __DIR__ . '/config_list.php' ?></div>
-    </div>
-
     <div class="sp-clear" style="margin-top: 10px"></div>
+
+    <div class="sp-block">
+        <div class="sp-block_head"><?= GetMessage('SPRINT_MIGRATION_CONFIG') ?></div>
+        <? include __DIR__ . '/config_list.php' ?>
+    </div>
 
 </div>

@@ -16,6 +16,12 @@ class CacheCleaner extends AbstractBuilder
     }
 
     protected function execute() {
-        \BXClearCache(true);
+        if (\BXClearCache(true)){
+            $this->outSuccess('Success');
+        } else {
+            $this->outError('Error');
+        }
+
+
     }
 }
