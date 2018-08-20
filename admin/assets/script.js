@@ -82,9 +82,9 @@ function migrationMigrationRefresh(callbackAfterRefresh) {
     });
 }
 
-function migrationCreate(postData){
+function migrationCreate(postData) {
 
-    var $block = $('[data-builder="'+postData['builder_name']+'"]');
+    var $block = $('[data-builder="' + postData['builder_name'] + '"]');
 
     migrationExecuteStep('migration_create', postData, function (result) {
         $block.html(result);
@@ -152,7 +152,6 @@ jQuery(document).ready(function ($) {
     $('[data-builder]').on('reset', 'form', function (e) {
         e.preventDefault();
         var postData = $(this).serializeFormJSON();
-
 
 
         migrationCreate({builder_name: postData['builder_name']});

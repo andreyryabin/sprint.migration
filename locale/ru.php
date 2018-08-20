@@ -63,6 +63,7 @@
     "SPRINT_MIGRATION_CONFIG_show_admin_interface" => "Показывать сервис миграций в админке",
     "SPRINT_MIGRATION_CONFIG_console_user" => "Пользователь, от которого запускаются миграции в консоли",
     "SPRINT_MIGRATION_CONFIG_config_file" => "Файл конфигурации",
+    "SPRINT_MIGRATION_CONFIG_title" => "Название конфигурации",
 
     "SPRINT_MIGRATION_CONFIG_yes" => "да",
     "SPRINT_MIGRATION_CONFIG_no" => "нет",
@@ -85,6 +86,9 @@
     "SPRINT_MIGRATION_BUILDER_IblockPropertyExport" => "Создать миграцию для свойств инфоблока",
     "SPRINT_MIGRATION_BUILDER_IblockPropertyExport_IblockId" => "Выберите инфоблок",
     "SPRINT_MIGRATION_BUILDER_IblockPropertyExport_PropertyIds" => "Выберите свойства",
+
+    "SPRINT_MIGRATION_BUILDER_CacheCleaner1" => "Очистка кеша",
+    "SPRINT_MIGRATION_BUILDER_CacheCleaner2" => "Выполнить BXClearCache",
 
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
     "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля",

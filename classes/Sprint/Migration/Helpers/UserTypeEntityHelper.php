@@ -23,7 +23,7 @@ class UserTypeEntityHelper extends Helper
         global $APPLICATION;
 
         $aItem = $this->getUserTypeEntity($entityId, $fieldName);
-        if ($aItem){
+        if ($aItem) {
             return $aItem['ID'];
         }
 
@@ -69,7 +69,7 @@ class UserTypeEntityHelper extends Helper
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbRes = \CUserTypeEntity::GetList(array(), array('ENTITY_ID' => $entityId));
         $result = array();
-        while ($aItem = $dbRes->Fetch()){
+        while ($aItem = $dbRes->Fetch()) {
             $result[] = \CUserTypeEntity::GetByID($aItem['ID']);
         }
         return $result;
@@ -87,7 +87,7 @@ class UserTypeEntityHelper extends Helper
         global $APPLICATION;
 
         $aItem = $this->getUserTypeEntity($entityId, $fieldName);
-        if (!$aItem){
+        if (!$aItem) {
             return false;
         }
 
@@ -109,7 +109,7 @@ class UserTypeEntityHelper extends Helper
 
     public function deleteUserTypeEntityIfExists($entityId, $fieldName) {
         $aItem = $this->getUserTypeEntity($entityId, $fieldName);
-        if (!$aItem){
+        if (!$aItem) {
             return false;
         }
 

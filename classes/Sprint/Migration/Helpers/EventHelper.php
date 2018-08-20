@@ -1,6 +1,7 @@
 <?php
 
 namespace Sprint\Migration\Helpers;
+
 use Sprint\Migration\Helper;
 
 class EventHelper extends Helper
@@ -38,7 +39,7 @@ class EventHelper extends Helper
         $event = new \CEventType;
         $id = $event->Add($fields);
 
-        if ($id){
+        if ($id) {
             return $id;
         }
 
@@ -88,7 +89,7 @@ class EventHelper extends Helper
             return $id;
         }
 
-        $this->throwException(__METHOD__, 'Event message %s not added, error: %s',$eventName, $event->LAST_ERROR);
+        $this->throwException(__METHOD__, 'Event message %s not added, error: %s', $eventName, $event->LAST_ERROR);
     }
 
     /**

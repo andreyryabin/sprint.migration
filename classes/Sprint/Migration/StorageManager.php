@@ -59,7 +59,7 @@ class StorageManager extends AbstractTable
         return $default;
     }
 
-    public function deleteSavedData($category, $name = false){
+    public function deleteSavedData($category, $name = false) {
         $category = $this->forSql($category);
 
         if ($category && $name) {
@@ -68,7 +68,7 @@ class StorageManager extends AbstractTable
                 $category,
                 $name
             );
-        } elseif ($category){
+        } elseif ($category) {
             $this->query('DELETE FROM `#TABLE1#` WHERE `category` = "%s"',
                 $category
             );

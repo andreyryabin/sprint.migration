@@ -108,7 +108,7 @@ class AdminIblockHelper extends Helper
         $tabVals = array();
         foreach ($tabs as $tabTitle => $fields) {
 
-            if ($tabTitle == 'SEO' && empty($fields)){
+            if ($tabTitle == 'SEO' && empty($fields)) {
                 $fields = $this->getSeoTab();
             }
 
@@ -262,8 +262,8 @@ class AdminIblockHelper extends Helper
     protected function prepareCode($fieldCode) {
         if (0 === strpos($fieldCode, 'PROPERTY_')) {
             $fieldCode = substr($fieldCode, 9);
-            foreach ($this->props as $prop){
-                if ($prop['CODE'] == $fieldCode){
+            foreach ($this->props as $prop) {
+                if ($prop['CODE'] == $fieldCode) {
                     $fieldCode = $prop['ID'];
                     break;
                 }
@@ -276,8 +276,8 @@ class AdminIblockHelper extends Helper
     protected function revertCode($fieldCode) {
         if (0 === strpos($fieldCode, 'PROPERTY_')) {
             $fieldCode = substr($fieldCode, 9);
-            foreach ($this->props as $prop){
-                if ($prop['ID'] == $fieldCode){
+            foreach ($this->props as $prop) {
+                if ($prop['ID'] == $fieldCode) {
                     $fieldCode = $prop['CODE'];
                     break;
                 }

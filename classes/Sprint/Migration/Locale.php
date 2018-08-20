@@ -2,7 +2,8 @@
 
 namespace Sprint\Migration;
 
-class Locale {
+class Locale
+{
     private static $localeLoaded = false;
 
     public static function isWin1251() {
@@ -10,20 +11,20 @@ class Locale {
     }
 
     public static function convertToWin1251IfNeed($msg) {
-        if (self::isWin1251() && self::detectUtf8($msg)){
+        if (self::isWin1251() && self::detectUtf8($msg)) {
             $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
         }
         return $msg;
     }
 
     public static function convertToUtf8IfNeed($msg) {
-        if (self::isWin1251() && !self::detectUtf8($msg)){
+        if (self::isWin1251() && !self::detectUtf8($msg)) {
             $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
         }
         return $msg;
     }
 
-    protected static function detectUtf8($msg){
+    protected static function detectUtf8($msg) {
         return (md5($msg) == md5(iconv('utf-8', 'utf-8', $msg))) ? 1 : 0;
     }
 

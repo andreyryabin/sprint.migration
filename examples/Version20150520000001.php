@@ -1,29 +1,31 @@
 <?php
 
 namespace Sprint\Migration;
+
 use \Sprint\Migration\Helpers\IblockHelper;
 use \Sprint\Migration\Helpers\EventHelper;
 use \Sprint\Migration\Helpers\UserTypeEntityHelper;
 
-class Version20150520000001 extends Version {
+class Version20150520000001 extends Version
+{
 
     protected $description = "Добавляем инфоблок новости, добавляем настройки SEO";
 
-    public function up(){
+    public function up() {
         $helper = new HelperManager();
 
         $helper->Iblock()->addIblockTypeIfNotExists(array(
             'ID' => 'content',
-            'LANG'=>Array(
-                'en'=>Array(
-                    'NAME'=>'Контент',
-                    'SECTION_NAME'=>'Sections',
-                    'ELEMENT_NAME'=>'Elements'
+            'LANG' => Array(
+                'en' => Array(
+                    'NAME' => 'Контент',
+                    'SECTION_NAME' => 'Sections',
+                    'ELEMENT_NAME' => 'Elements'
                 ),
-                'ru'=>Array(
-                    'NAME'=>'Контент',
-                    'SECTION_NAME'=>'Разделы',
-                    'ELEMENT_NAME'=>'Элементы'
+                'ru' => Array(
+                    'NAME' => 'Контент',
+                    'SECTION_NAME' => 'Разделы',
+                    'ELEMENT_NAME' => 'Элементы'
                 ),
             ),
         ));
@@ -78,11 +80,11 @@ class Version20150520000001 extends Version {
 
     }
 
-    public function down(){
+    public function down() {
         $helper = new HelperManager();
         $ok = $helper->Iblock()->deleteIblockIfExists('content_news');
 
-        if ($ok){
+        if ($ok) {
             $this->outSuccess('Инфоблок удален');
         } else {
             $this->outError('Ошибка удаления инфоблока');

@@ -2,11 +2,12 @@
 
 namespace Sprint\Migration;
 
-class Version20170213000006 extends Version {
+class Version20170213000006 extends Version
+{
 
     protected $description = "Пример работы с highload-блоками # 2";
 
-    public function up(){
+    public function up() {
         $helper = new HelperManager();
         $hlblockId = $helper->Hlblock()->addHlblockIfNotExists(array(
             'NAME' => 'Test',
@@ -25,7 +26,7 @@ class Version20170213000006 extends Version {
         );
     }
 
-    public function down(){
+    public function down() {
         $helper = new HelperManager();
         if ($hlblockId = $helper->Hlblock()->getHlblockId('Test')) {
             $helper->UserTypeEntity()->deleteUserTypeEntitiesIfExists(

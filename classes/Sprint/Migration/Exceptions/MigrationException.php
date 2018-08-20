@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Exceptions;
 
-class MigrationException extends \Exception{
+class MigrationException extends \Exception
+{
 
 }

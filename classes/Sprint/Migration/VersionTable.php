@@ -3,7 +3,7 @@
 namespace Sprint\Migration;
 
 class VersionTable extends AbstractTable
-{ 
+{
 
     /**
      * @return bool|\CDBResult

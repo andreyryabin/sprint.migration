@@ -2,7 +2,8 @@
 
 namespace Sprint\Migration\Exceptions;
 
-class BuilderException extends \Exception{
+class BuilderException extends \Exception
+{
 
 
 }

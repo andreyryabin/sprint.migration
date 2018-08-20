@@ -1,12 +1,13 @@
 <?php
 
 namespace Sprint\Migration\Helpers;
+
 use Sprint\Migration\Helper;
 
 class AgentHelper extends Helper
 {
 
-    public function replaceAgent($moduleName, $name, $interval, $nextExec){
+    public function replaceAgent($moduleName, $name, $interval, $nextExec) {
 
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
@@ -18,7 +19,7 @@ class AgentHelper extends Helper
             'NAME' => $name
         ))->Fetch();
 
-        if ($aAgent){
+        if ($aAgent) {
             /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             \CAgent::RemoveAgent($name, $moduleName);
         }
@@ -26,7 +27,7 @@ class AgentHelper extends Helper
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $agentId = \CAgent::AddAgent($name, $moduleName, 'N', $interval, '', 'Y', $nextExec);
 
-        if ($agentId){
+        if ($agentId) {
             return $agentId;
         }
 
@@ -38,7 +39,7 @@ class AgentHelper extends Helper
 
     }
 
-    public function addAgentIfNotExists($moduleName, $name, $interval, $nextExec){
+    public function addAgentIfNotExists($moduleName, $name, $interval, $nextExec) {
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
 
@@ -48,14 +49,14 @@ class AgentHelper extends Helper
             'NAME' => $name
         ))->Fetch();
 
-        if ($aAgent){
+        if ($aAgent) {
             return $aAgent['ID'];
         }
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $agentId = \CAgent::AddAgent($name, $moduleName, 'N', $interval, '', 'Y', $nextExec);
 
-        if ($agentId){
+        if ($agentId) {
             return $agentId;
         }
 
@@ -66,14 +67,14 @@ class AgentHelper extends Helper
         }
     }
 
-    public function deleteAgentIfExists($moduleName, $name){
+    public function deleteAgentIfExists($moduleName, $name) {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $aAgent = \CAgent::GetList(array("ID" => "DESC"), array(
             'MODULE_ID' => $moduleName,
             'NAME' => $name
         ))->Fetch();
 
-        if (!$aAgent){
+        if (!$aAgent) {
             return false;
         }
 

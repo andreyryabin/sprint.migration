@@ -1,5 +1,5 @@
 <?php
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_status" && check_bitrix_sessid('send_sessid')) {
     /** @noinspection PhpIncludeInspection */
@@ -30,19 +30,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
 
     ?>
     <table class="sp-status">
-    <?foreach ($status as $code => $cnt): $ucode = strtoupper($code);?>
-        <tr>
-            <td class="sp-status-l">
+        <? foreach ($status as $code => $cnt): $ucode = strtoupper($code); ?>
+            <tr>
+                <td class="sp-status-l">
                 <span class="sp-item-<?= $code ?>">
                     <?= GetMessage('SPRINT_MIGRATION_' . $ucode) ?>
                 </span>
-                <?= GetMessage('SPRINT_MIGRATION_DESC_' . $ucode) ?>
-            </td>
-            <td  class="sp-status-r">
-                <?= $cnt ?>
-            </td>
-        </tr>
-    <?endforeach ?>
+                    <?= GetMessage('SPRINT_MIGRATION_DESC_' . $ucode) ?>
+                </td>
+                <td class="sp-status-r">
+                    <?= $cnt ?>
+                </td>
+            </tr>
+        <? endforeach ?>
     </table>
     <?
     /** @noinspection PhpIncludeInspection */

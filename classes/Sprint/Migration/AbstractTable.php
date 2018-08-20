@@ -63,7 +63,7 @@ abstract class AbstractTable
         return $this->bitrixDb->Query($query);
     }
 
-    protected function forSql($query){
+    protected function forSql($query) {
         return $this->bitrixDb->ForSql($query);
     }
 }

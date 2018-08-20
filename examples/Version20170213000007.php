@@ -3,11 +3,12 @@
 namespace Sprint\Migration;
 
 
-class Version20170213000007 extends Version {
+class Version20170213000007 extends Version
+{
 
     protected $description = "Пример работы с шаблонами сайта";
 
-    public function up(){
+    public function up() {
         $helper = new HelperManager();
 
         //получить список шаблонов
@@ -32,7 +33,7 @@ class Version20170213000007 extends Version {
             //Для групп пользователей
             array(
                 'TEMPLATE' => 'main',
-                'IN_GROUP' => array(1,2,3),
+                'IN_GROUP' => array(1, 2, 3),
             ),
 
             //Параметр в URL
@@ -56,7 +57,7 @@ class Version20170213000007 extends Version {
 
     }
 
-    public function down(){
+    public function down() {
         //
     }
 

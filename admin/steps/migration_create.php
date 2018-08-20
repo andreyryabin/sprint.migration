@@ -10,15 +10,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
     $builder = $versionManager->createVersionBuilder($name, $_POST);
 
     $builder->build();
-    $builder->buildAfter();
 
-    $builder->render();
+    $builder->renderHtml();
 
     if ($builder->isRestart()) {
         $json = json_encode($builder->getRestartParams());
-        ?><script>migrationCreate(<?=$json?>);</script><?
+        ?>
+        <script>migrationCreate(<?=$json?>);</script><?
     } else {
-        ?><script>migrationMigrationRefresh();</script><?
+        ?>
+        <script>migrationMigrationRefresh();</script><?
     }
 
     /** @noinspection PhpIncludeInspection */

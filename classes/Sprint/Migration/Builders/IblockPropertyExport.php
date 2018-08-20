@@ -4,33 +4,22 @@ namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Module;
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\VersionBuilder;
 use Sprint\Migration\HelperManager;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
 
-class IblockPropertyExport extends AbstractBuilder
+class IblockPropertyExport extends VersionBuilder
 {
 
     public function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockPropertyExport'));
-        $this->setTemplateFile(Module::getModuleDir() . '/templates/IblockPropertyExport.php');
 
-        $this->requiredField('iblock_id', array(
+        $this->setField('iblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockPropertyExport_IblockId'),
             'placeholder' => '',
             'width' => 250,
             'items' => $this->getIblocksStructure()
-        ));
-
-        $this->requiredField('property_ids', array(
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockPropertyExport_PropertyIds'),
-            'width' => 250,
-            'multiple' => 1,
-            'value' => array(),
-            'items' => $this->getPropertiesStructure(
-                $this->getFieldValue('iblock_id')
-            )
         ));
 
     }
@@ -39,6 +28,20 @@ class IblockPropertyExport extends AbstractBuilder
     public function execute() {
 
         $iblockId = $this->getFieldValue('iblock_id');
+
+        if (empty($iblockId)){
+            $this->rebuildField('iblock_id');
+        }
+
+        $this->setField('property_ids', array(
+            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockPropertyExport_PropertyIds'),
+            'width' => 250,
+            'multiple' => 1,
+            'value' => array(),
+            'items' => $this->getPropertiesStructure($iblockId)
+        ));
+
+
         $propertyIds = $this->getFieldValue('property_ids');
 
         if (is_numeric($propertyIds)) {
@@ -47,10 +50,9 @@ class IblockPropertyExport extends AbstractBuilder
             $propertyIds = array();
         }
 
-        if (empty($iblockId) || empty($propertyIds)) {
-            $this->exitWithMessage('empty iblock or property');
+        if (empty($propertyIds)) {
+            $this->rebuildField('property_ids');
         }
-
 
         $iblockHelper = new IblockHelper();
 
@@ -71,8 +73,11 @@ class IblockPropertyExport extends AbstractBuilder
 
         $this->exitIfEmpty($iblockProperties, 'properties not found');
 
-        $this->setTemplateVar('iblock', $iblock);
-        $this->setTemplateVar('iblockProperties', $iblockProperties);
+
+        $this->createVersionFile(Module::getModuleDir() . '/templates/IblockPropertyExport.php', array(
+            'iblock' => $iblock,
+            'iblockProperties' => $iblockProperties,
+        ));
 
     }
 

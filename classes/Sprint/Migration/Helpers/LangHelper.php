@@ -1,12 +1,13 @@
 <?php
 
 namespace Sprint\Migration\Helpers;
+
 use Sprint\Migration\Helper;
 
 class LangHelper extends Helper
 {
 
-    public function getDefaultLangIdIfExists(){
+    public function getDefaultLangIdIfExists() {
         $by = 'def';
         $order = 'desc';
 
@@ -34,9 +35,9 @@ class LangHelper extends Helper
         return $lids;
     }
 
-    public function getLangsIfExists(){
+    public function getLangsIfExists() {
         $items = $this->getLangs(array('ACTIVE' => 'Y'));
-        if (!empty($items)){
+        if (!empty($items)) {
             return $items;
         }
         $this->throwException(__METHOD__, 'Active langs not found');

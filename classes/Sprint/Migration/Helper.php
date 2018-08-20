@@ -1,9 +1,11 @@
 <?php
 
 namespace Sprint\Migration;
+
 use Sprint\Migration\Exceptions\HelperException;
 
-class Helper {
+class Helper
+{
 
     /**
      * @deprecated
@@ -15,7 +17,7 @@ class Helper {
      * @deprecated
      * @return string
      */
-    public function getLastError(){
+    public function getLastError() {
         return $this->lastError;
     }
 
@@ -31,16 +33,16 @@ class Helper {
         Throw new HelperException($msg);
     }
 
-    protected function checkRequiredKeys($method, $fields, $reqKeys = array()){
-        foreach ($reqKeys as $name){
-            if (!isset($fields[$name])){
+    protected function checkRequiredKeys($method, $fields, $reqKeys = array()) {
+        foreach ($reqKeys as $name) {
+            if (!isset($fields[$name])) {
                 $msg = sprintf('%s: requred key "%s" not found', $this->getMethod($method), $name);
                 Throw new HelperException($msg);
             }
         }
     }
 
-    private function getMethod($method){
+    private function getMethod($method) {
         $path = explode('\\', $method);
         $short = array_pop($path);
         return $short;

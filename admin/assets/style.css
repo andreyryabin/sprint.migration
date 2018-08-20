@@ -3,15 +3,16 @@
     background-color: #f5f9f9;
     border: 1px solid;
     border-color: #c4ced2 #dce7ed #dce7ed;
-    padding: 19px
+    padding: 19px;
 }
+
 .sp-block:after {
     content: '';
     display: block;
     clear: both;
 }
 
-.sp-block_body{
+.sp-block_body {
     display: none;
 }
 
@@ -30,7 +31,7 @@
     clear: both;
 }
 
-.sp-filter{
+.sp-filter {
     /*margin: 10px 0;*/
     /*background: #ccc;*/
     /*padding: 10px;*/
@@ -59,11 +60,12 @@ table.sp-config {
     margin-bottom: 20px !important;
 }
 
-table.sp-config thead td{
+table.sp-config thead td {
     /*text-align: center;*/
 
 }
-table.sp-config td{
+
+table.sp-config td {
     /*border-bottom: 1px solid #c4ced2;*/
 
     padding: 5px;
@@ -73,29 +75,30 @@ table.sp-list {
     border-collapse: collapse;
 }
 
-table.sp-list td.sp-list-l{
+table.sp-list td.sp-list-l {
     width: 110px;
     vertical-align: middle;
     text-align: left;
     padding: 5px 5px 5px 0;
 }
-table.sp-list td.sp-list-r{
+
+table.sp-list td.sp-list-r {
     vertical-align: middle;
     text-align: left;
     padding: 5px 0 5px 5px;
 }
 
-
 table.sp-status {
     border-collapse: collapse;
 }
 
-table.sp-status td.sp-status-l{
+table.sp-status td.sp-status-l {
     vertical-align: middle;
     text-align: left;
     padding: 5px 5px 5px 0;
 }
-table.sp-status td.sp-status-r{
+
+table.sp-status td.sp-status-r {
     vertical-align: middle;
     text-align: left;
     padding: 5px 0 5px 5px;
@@ -114,8 +117,7 @@ table.sp-status td.sp-status-r{
 a.sp-item-installed,
 a.sp-item-installed:link,
 a.sp-item-installed:hover,
-a.sp-item-installed:visited
-{
+a.sp-item-installed:visited {
     color: #080;
 }
 
@@ -126,8 +128,7 @@ a.sp-item-installed:visited
 a.sp-item-new,
 a.sp-item-new:link,
 a.sp-item-new:hover,
-a.sp-item-new:visited
-{
+a.sp-item-new:visited {
     color: #a00;
 }
 
@@ -138,7 +139,6 @@ a.sp-item-new:visited
 a.sp-item-unknown,
 a.sp-item-unknown:link,
 a.sp-item-unknown:hover,
-a.sp-item-unknown:visited
-{
+a.sp-item-unknown:visited {
     color: #00a;
 }

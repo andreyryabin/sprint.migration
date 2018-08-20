@@ -3,16 +3,15 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\Module;
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\VersionBuilder;
 use Sprint\Migration\HelperManager;
 
-class UserTypeEntities extends AbstractBuilder
+class UserTypeEntities extends VersionBuilder
 {
 
     public function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities2'));
-        $this->setTemplateFile(Module::getModuleDir() . '/templates/UserTypeEntities.php');
 
         $this->setField('entity_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId'),
@@ -36,7 +35,7 @@ class UserTypeEntities extends AbstractBuilder
         $entities = $helper->UserTypeEntity()->getUserTypeEntities($entityid);
         $this->exitIfEmpty($entities, 'Entities not found');
 
-        foreach ($entities as $index => $entity){
+        foreach ($entities as $index => $entity) {
 
             $fields = $entity;
 
@@ -51,6 +50,8 @@ class UserTypeEntities extends AbstractBuilder
             );
         }
 
-        $this->setTemplateVar('entities', $entities);
+        $this->createVersionFile(Module::getModuleDir() . '/templates/UserTypeEntities.php', array(
+            'entities' => $entities,
+        ));
     }
 }

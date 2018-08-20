@@ -4,17 +4,16 @@ namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Module;
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\VersionBuilder;
 use Sprint\Migration\HelperManager;
 use Sprint\Migration\Exceptions\HelperException;
 
-class IblockExport extends AbstractBuilder
+class IblockExport extends VersionBuilder
 {
 
     public function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport2'));
-        $this->setTemplateFile(Module::getModuleDir() . '/templates/IblockExport.php');
 
         $this->setField('iblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_IblockId'),
@@ -101,10 +100,13 @@ class IblockExport extends AbstractBuilder
         unset($iblock['TIMESTAMP_X']);
         unset($iblock['TMP_ID']);
 
-        $this->setTemplateVar('iblock', $iblock);
-        $this->setTemplateVar('iblockType', $iblockType);
-        $this->setTemplateVar('iblockFields', $iblockFields);
-        $this->setTemplateVar('iblockProperties', $iblockProperties);
-        $this->setTemplateVar('iblockAdminTabs', $iblockAdminTabs);
+        $this->createVersionFile(
+            Module::getModuleDir() . '/templates/IblockExport.php', array(
+            'iblock' => $iblock,
+            'iblockType' => $iblockType,
+            'iblockFields' => $iblockFields,
+            'iblockProperties' => $iblockProperties,
+            'iblockAdminTabs' => $iblockAdminTabs,
+        ));
     }
 }

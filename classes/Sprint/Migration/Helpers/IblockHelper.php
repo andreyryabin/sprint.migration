@@ -7,36 +7,36 @@ use Sprint\Migration\Helper;
 class IblockHelper extends Helper
 {
 
-    public function findIblockType($typeId){
+    public function findIblockType($typeId) {
         $aItem = $this->getIblockType($typeId);
-        if ($aItem && isset($aItem['ID'])){
+        if ($aItem && isset($aItem['ID'])) {
             return $aItem;
         }
 
         $this->throwException(__METHOD__, "iblock type not found");
     }
 
-    public function findIblockTypeId($typeId){
+    public function findIblockTypeId($typeId) {
         $aItem = $this->getIblockType($typeId);
-        if ($aItem && isset($aItem['ID'])){
+        if ($aItem && isset($aItem['ID'])) {
             return $aItem['ID'];
         }
 
         $this->throwException(__METHOD__, "iblock type id not found");
     }
 
-    public function findIblock($code, $typeId = ''){
+    public function findIblock($code, $typeId = '') {
         $aItem = $this->getIblock($code, $typeId);
-        if ($aItem && isset($aItem['ID'])){
+        if ($aItem && isset($aItem['ID'])) {
             return $aItem;
         }
 
         $this->throwException(__METHOD__, "iblock not found");
     }
 
-    public function findIblockId($code, $typeId = ''){
+    public function findIblockId($code, $typeId = '') {
         $aItem = $this->getIblock($code, $typeId);
-        if ($aItem && isset($aItem['ID'])){
+        if ($aItem && isset($aItem['ID'])) {
             return $aItem['ID'];
         }
 
@@ -217,9 +217,9 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
-    public function updateIblock($iblockId, $fields = array()){
+    public function updateIblock($iblockId, $fields = array()) {
         $ib = new \CIBlock;
-        if ($ib->Update($iblockId, $fields)){
+        if ($ib->Update($iblockId, $fields)) {
             return true;
         }
 
@@ -227,12 +227,12 @@ class IblockHelper extends Helper
 
     }
 
-    public function updateIblockIfExists($code, $fields = array()){
+    public function updateIblockIfExists($code, $fields = array()) {
         $aIblock = $this->getIblock($code);
         if (!$aIblock) {
             return false;
         }
-        return $this->updateIblock($aIblock['ID'],$fields);
+        return $this->updateIblock($aIblock['ID'], $fields);
     }
 
     public function deleteIblockIfExists($code, $typeId = '') {
@@ -274,20 +274,20 @@ class IblockHelper extends Helper
         return $this->prepareProperty($property);
     }
 
-    protected function prepareProperty($property){
-        if ($property && $property['PROPERTY_TYPE'] == 'L' && $property['IBLOCK_ID'] && $property['ID']){
-            $property['VALUES'] = $this->getPropertyEnumValues($property['IBLOCK_ID'],$property['ID']);
+    protected function prepareProperty($property) {
+        if ($property && $property['PROPERTY_TYPE'] == 'L' && $property['IBLOCK_ID'] && $property['ID']) {
+            $property['VALUES'] = $this->getPropertyEnumValues($property['IBLOCK_ID'], $property['ID']);
         }
         return $property;
     }
-    
+
     public function getPropertyEnumValues($iblockId, $propertyId) {
         $result = array();
         $dbres = \CIBlockPropertyEnum::GetList(array("SORT" => "ASC", "VALUE" => "ASC"), array(
             'IBLOCK_ID' => $iblockId,
             'PROPERTY_ID' => $propertyId
         ));
-        while ($aItem = $dbres->Fetch()){
+        while ($aItem = $dbres->Fetch()) {
             $result[] = $aItem;
         }
         return $result;

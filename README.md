@@ -57,7 +57,7 @@ require_once realpath(__DIR__) . '/local/modules/sprint.migration/tools/migrate.
 * php migrate.php mark <version> --as=installed (отметить миграцию как установленную не выполняя ее)
 * php migrate.php mark unknown --as=new (отметить все неизвестные миграции как новые, фактически удаление их из бд)
 
-Все команды: https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/commands.txt?fileviewer=file-view-default
+Все команды: https://github.com/andreyryabin/sprint.migration/blob/master/commands.txt
 
 
 Пример файла миграции
@@ -85,7 +85,7 @@ class Version20150520000001 extends Version {
 в нем необходимо реализовать 2 метода up и down, которые запускаются при установке и откате миграции,
 например создание инфоблоков или какое либо другое изменение, которое должны получить все копии проекта.
 
-Все примеры: https://bitbucket.org/andrey_ryabin/sprint.migration/src/master/examples/?at=master
+Все примеры: https://github.com/andreyryabin/sprint.migration/tree/master/examples
 
 Состояния миграций
 -------------------------

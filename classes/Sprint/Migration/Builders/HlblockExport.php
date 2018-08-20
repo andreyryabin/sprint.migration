@@ -3,17 +3,16 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\Module;
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\VersionBuilder;
 use Sprint\Migration\HelperManager;
 use Sprint\Migration\Exceptions\HelperException;
 
-class HlblockExport extends AbstractBuilder
+class HlblockExport extends VersionBuilder
 {
 
     public function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport2'));
-        $this->setTemplateFile(Module::getModuleDir() . '/templates/HlblockExport.php');
 
         $this->setField('hlblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId'),
@@ -37,15 +36,20 @@ class HlblockExport extends AbstractBuilder
         $hlblock = $helper->Hlblock()->getHlblock($hlblockId);
         $this->exitIfEmpty($hlblock, 'Hlblock not found');
 
-        $hlblockEntities = $helper->UserTypeEntity()->getUserTypeEntities('HLBLOCK_'.$hlblock['ID']);
-        foreach ($hlblockEntities as $index => $entity){
+        $hlblockEntities = $helper->UserTypeEntity()->getUserTypeEntities('HLBLOCK_' . $hlblock['ID']);
+        foreach ($hlblockEntities as $index => $entity) {
             unset($entity['ID']);
             unset($entity['ENTITY_ID']);
             $hlblockEntities[$index] = $entity;
         }
 
         unset($hlblock['ID']);
-        $this->setTemplateVar('hlblock', $hlblock);
-        $this->setTemplateVar('hlblockEntities', $hlblockEntities);
+
+        $this->createVersionFile(
+            Module::getModuleDir() . '/templates/HlblockExport.php', array(
+            'hlblock' => $hlblock,
+            'hlblockEntities' => $hlblockEntities
+        ));
+
     }
 }

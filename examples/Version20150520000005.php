@@ -2,11 +2,12 @@
 
 namespace Sprint\Migration;
 
-class Version20150520000005 extends Version {
+class Version20150520000005 extends Version
+{
 
     protected $description = "Пример работы с highload-блоками";
 
-    public function up(){
+    public function up() {
 
         $helper = new HelperManager();
 
@@ -26,7 +27,7 @@ class Version20150520000005 extends Version {
 
     }
 
-    public function down(){
+    public function down() {
         //
     }
 

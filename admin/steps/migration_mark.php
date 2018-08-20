@@ -1,5 +1,5 @@
 <?php
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_mark" && check_bitrix_sessid('send_sessid')) {
     /** @noinspection PhpIncludeInspection */
@@ -9,8 +9,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ma
     $status = !empty($_POST['status']) ? $_POST['status'] : 0;
 
     $markresult = $versionManager->markMigration($version, $status);
-    foreach ($markresult as $val){
-        if ($val['success']){
+    foreach ($markresult as $val) {
+        if ($val['success']) {
             Sprint\Migration\Out::outSuccess($val['message']);
         } else {
             Sprint\Migration\Out::outError($val['message']);

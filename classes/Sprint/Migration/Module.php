@@ -15,7 +15,7 @@ class Module
         }
     }
 
-    public static function removeDbOptions(){
+    public static function removeDbOptions() {
         \COption::RemoveOption('sprint.migration');
     }
 

@@ -2,7 +2,8 @@
 
 namespace Sprint\Migration\Exceptions;
 
-class HelperException extends \Exception{
+class HelperException extends \Exception
+{
 
 
 }

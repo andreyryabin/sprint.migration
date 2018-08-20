@@ -27,7 +27,6 @@ use Sprint\Migration\Helpers\UserGroupHelper;
  * @method UserTypeEntityHelper     UserTypeEntity()
  * @method UserGroupHelper          UserGroup()
  */
-
 class HelperManager
 {
 
@@ -37,13 +36,13 @@ class HelperManager
         return $this->callHelper($name);
     }
 
-    protected function callHelper($name){
-        if (isset($this->cache[$name])){
+    protected function callHelper($name) {
+        if (isset($this->cache[$name])) {
             return $this->cache[$name];
         }
 
         $helperClass = '\\Sprint\\Migration\\Helpers\\' . $name . 'Helper';
-        if (!class_exists($helperClass)){
+        if (!class_exists($helperClass)) {
             Throw new HelperException("Helper $name not found");
         }
 

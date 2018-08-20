@@ -2,11 +2,12 @@
 
 namespace Sprint\Migration;
 
-class Version20150520000004 extends Version {
+class Version20150520000004 extends Version
+{
 
     protected $description = "Пример настройки отображения списка и формы для элементов инфоблока в админке";
 
-    public function up(){
+    public function up() {
 
         $helper = new HelperManager();
 
@@ -52,7 +53,7 @@ class Version20150520000004 extends Version {
 
     }
 
-    public function down(){
+    public function down() {
         //
     }
 

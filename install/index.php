@@ -21,8 +21,8 @@ Class sprint_migration extends CModule
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
 
-        include(__DIR__ .'/../loader.php');
-        include(__DIR__ .'/../locale/ru.php');
+        include(__DIR__ . '/../loader.php');
+        include(__DIR__ . '/../locale/ru.php');
 
         $this->MODULE_NAME = GetMessage("SPRINT_MIGRATION_MODULE_NAME");
         $this->MODULE_DESCRIPTION = GetMessage("SPRINT_MIGRATION_MODULE_DESCRIPTION");
@@ -41,12 +41,12 @@ Class sprint_migration extends CModule
         UnRegisterModule($this->MODULE_ID);
     }
 
-    function GetModuleRightList(){
+    function GetModuleRightList() {
         $arr = array(
-            "reference_id" => array("D","W"),
+            "reference_id" => array("D", "W"),
             "reference" => array(
-                "[D] ".GetMessage("SPRINT_MIGRATION_RIGHT_D"),
-                "[W] ".GetMessage("SPRINT_MIGRATION_RIGHT_W"))
+                "[D] " . GetMessage("SPRINT_MIGRATION_RIGHT_D"),
+                "[W] " . GetMessage("SPRINT_MIGRATION_RIGHT_W"))
         );
         return $arr;
     }

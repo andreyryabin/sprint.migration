@@ -82,19 +82,14 @@ class VersionConfig
     protected function prepareConfig($configName, $configValues = array()) {
         $configValues = $this->prepareConfigValues($configValues);
         if (!empty($configValues['title'])) {
-            $title = sprintf('%s (%s)',$configValues['title'],$configName);
-            unset($configValues['title']);
+            $title = sprintf('%s (%s)', $configValues['title'], $configName);
         } else {
-            $title = sprintf('%s (%s)',GetMessage('SPRINT_MIGRATION_CONFIG_TITLE'),$configName);
+            $title = sprintf('%s (%s)', GetMessage('SPRINT_MIGRATION_CONFIG_TITLE'), $configName);
         }
-
-        $file = $configValues['config_file'];
-        unset($configValues['config_file']);
 
         return array(
             'name' => $configName,
             'title' => $title,
-            'config_file' => $file,
             'values' => $configValues,
         );
     }
@@ -125,7 +120,7 @@ class VersionConfig
             $values['version_prefix'] = 'Version';
         }
 
-        if (!isset($values['version_filter']) || !is_array($values['version_filter'])){
+        if (!isset($values['version_filter']) || !is_array($values['version_filter'])) {
             $values['version_filter'] = [];
         }
 
@@ -147,7 +142,7 @@ class VersionConfig
 
         $cond1 = isset($values['console_user']);
         $cond2 = ($cond1 && $values['console_user'] === false);
-        $cond3 = ($cond1 && strpos($values['console_user'],'login:') === 0);
+        $cond3 = ($cond1 && strpos($values['console_user'], 'login:') === 0);
 
         $values['console_user'] = ($cond2 || $cond3) ? $values['console_user'] : 'admin';
 
@@ -163,9 +158,9 @@ class VersionConfig
 
     public function getConfigVal($name, $default = '') {
         if (isset($this->configCurrent['values'][$name])) {
-            if (is_bool($this->configCurrent['values'][$name])){
+            if (is_bool($this->configCurrent['values'][$name])) {
                 return $this->configCurrent['values'][$name];
-            } elseif (!empty($this->configCurrent['values'][$name])){
+            } elseif (!empty($this->configCurrent['values'][$name])) {
                 return $this->configCurrent['values'][$name];
             }
         }
@@ -180,6 +175,7 @@ class VersionConfig
             'IblockPropertyExport' => '\Sprint\Migration\Builders\IblockPropertyExport',
             'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
             'UserTypeEntities' => '\Sprint\Migration\Builders\UserTypeEntities',
+            'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
         );
     }
 

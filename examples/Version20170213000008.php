@@ -3,11 +3,12 @@
 namespace Sprint\Migration;
 
 
-class Version20170213000008 extends Version {
+class Version20170213000008 extends Version
+{
 
     protected $description = "Пример работы миграции с сохранением промежуточных данных в бд";
 
-    public function up(){
+    public function up() {
         //сохраняем данные этой миграции
         $this->saveData('var1', '1234567');
         $this->saveData('var2', array(
@@ -31,7 +32,7 @@ class Version20170213000008 extends Version {
 
     }
 
-    public function down(){
+    public function down() {
         //
     }
 

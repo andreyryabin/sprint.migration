@@ -51,20 +51,18 @@
     </div>
     <? $tabControl1->End(); ?>
 
-    <div style="margin-top: 10px">&nbsp;</div>
+    <div class="sp-clear" style="margin-top: 10px"></div>
 
-    <? $builders = $versionManager->getVersionBuilders();?>
+    <? $builders = $versionManager->getVersionBuilders(); ?>
     <? foreach ($builders as $builderName => $builderClass): ?>
         <div class="sp-block">
             <? $builder = $versionManager->createVersionBuilder($builderName) ?>
             <div class="sp-block_title"><?= $builder->getTitle() ?></div>
-            <div class="sp-block_body" data-builder="<?=$builder->getName()?>">
-                <? $builder->render()?>
+            <div class="sp-block_body" data-builder="<?= $builder->getName() ?>">
+                <? $builder->renderHtml() ?>
             </div>
         </div>
     <? endforeach; ?>
-
-    <div style="margin-top: 10px">&nbsp;</div>
 
     <div class="sp-block">
         <div class="sp-block_title"><?= GetMessage('SPRINT_MIGRATION_MARK') ?></div>
@@ -76,6 +74,6 @@
         <div class="sp-block_body"><? include __DIR__ . '/config_list.php' ?></div>
     </div>
 
-    <div style="margin-top: 10px">&nbsp;</div>
+    <div class="sp-clear" style="margin-top: 10px"></div>
 
 </div>

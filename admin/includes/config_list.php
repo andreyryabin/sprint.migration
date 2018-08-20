@@ -21,9 +21,9 @@ $configItem = $versionManager->getConfigCurrent();
 
         ?>
         <tr>
-        <td><?= GetMessage('SPRINT_MIGRATION_CONFIG_' . $key) ?></td>
-        <td><?= $key ?></td>
-        <td><?= $val ?></td>
+            <td><?= GetMessage('SPRINT_MIGRATION_CONFIG_' . $key) ?></td>
+            <td><?= $key ?></td>
+            <td><?= $val ?></td>
         </tr>
     <? endforeach; ?>
     </tbody>
