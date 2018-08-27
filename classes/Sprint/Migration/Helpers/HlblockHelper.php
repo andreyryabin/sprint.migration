@@ -15,6 +15,23 @@ class HlblockHelper extends Helper
         Loader::includeModule('highloadblock');
     }
 
+    public function getHlblocks($filter = array()) {
+        $dbres = HL\HighloadBlockTable::getList(
+            array(
+                'select' => array('*'),
+                'filter' => $filter,
+            )
+        );
+
+        $result = [];
+        while ($hlblock = $dbres->fetch()){
+            $hlblock['LANG'] = $this->getHblockLangs($hlblock['ID']);
+            $result[] = $hlblock;
+        }
+
+        return $result;
+    }
+
     public function getHlblock($name) {
         if (is_array($name)) {
             $filter = $name;

@@ -84,7 +84,7 @@
 
     "SPRINT_MIGRATION_BUILDER_HlblockExport1" => "Создать миграцию для highload-блока",
     "SPRINT_MIGRATION_BUILDER_HlblockExport2" => "",
-    "SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId" => "Укажите ID или имя highload-блока",
+    "SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId" => "Выберите highload-блоки",
 
     "SPRINT_MIGRATION_BUILDER_UserTypeEntities1" => "Создать миграцию для пользовательских полей",
     "SPRINT_MIGRATION_BUILDER_UserTypeEntities2" => "",

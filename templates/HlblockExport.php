@@ -20,11 +20,15 @@ protected $description = "<?php echo $description ?>";
 public function up(){
 $helper = new HelperManager();
 
-$hlblockId = $helper->Hlblock()->addHlblockIfNotExists(<?php echo var_export($hlblock, 1) ?>);
+<?foreach ($items as $item):?>
+
+$hlblockId = $helper->Hlblock()->addHlblockIfNotExists(<?php echo var_export($item['hlblock'], 1) ?>);
 $entityId = 'HLBLOCK_' . $hlblockId;
 
-<?php foreach ($hlblockEntities as $entity): ?>
+<?php foreach ($item['hlblockEntities'] as $entity): ?>
     $helper->UserTypeEntity()->addUserTypeEntityIfNotExists($entityId, '<?php echo $entity['FIELD_NAME'] ?>', <?php echo var_export($entity, 1) ?>);
+<? endforeach; ?>
+
 <? endforeach; ?>
 }
 

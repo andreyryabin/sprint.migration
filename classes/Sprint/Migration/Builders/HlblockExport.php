@@ -16,7 +16,11 @@ class HlblockExport extends VersionBuilder
 
         $this->addField('hlblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId'),
-            'placeholder' => ''
+            'placeholder' => '',
+            'multiple' => 1,
+            'value' => array(),
+            'width' => 250,
+            'items' => $this->getHlStructure()
         ));
 
         $this->addField('description', array(
@@ -30,26 +34,63 @@ class HlblockExport extends VersionBuilder
     public function execute() {
         $helper = new HelperManager();
 
-        $hlblockId = $this->getFieldValue('hlblock_id');
-        $this->exitIfEmpty($hlblockId, 'Hlblock not found');
-
-        $hlblock = $helper->Hlblock()->getHlblock($hlblockId);
-        $this->exitIfEmpty($hlblock, 'Hlblock not found');
-
-        $hlblockEntities = $helper->UserTypeEntity()->getUserTypeEntities('HLBLOCK_' . $hlblock['ID']);
-        foreach ($hlblockEntities as $index => $entity) {
-            unset($entity['ID']);
-            unset($entity['ENTITY_ID']);
-            $hlblockEntities[$index] = $entity;
+        $hlblockIds = $this->getFieldValue('hlblock_id');
+        if (!empty($hlblockIds)) {
+            $hlblockIds = is_array($hlblockIds) ? $hlblockIds : array($hlblockIds);
+        } else {
+            $this->rebuildField('hlblock_id');
         }
 
-        unset($hlblock['ID']);
+
+        $items = array();
+
+        foreach ($hlblockIds as $hlblockId) {
+            $hlblock = $helper->Hlblock()->getHlblock($hlblockId);
+            if (empty($hlblock['ID'])) {
+                continue;
+            }
+
+            $hlblockEntities = $helper->UserTypeEntity()->getUserTypeEntities('HLBLOCK_' . $hlblock['ID']);
+            foreach ($hlblockEntities as $index => $entity) {
+                unset($entity['ID']);
+                unset($entity['ENTITY_ID']);
+                $hlblockEntities[$index] = $entity;
+            }
+
+            unset($hlblock['ID']);
+
+            $items[] = array(
+                'hlblock' => $hlblock,
+                'hlblockEntities' => $hlblockEntities
+            );
+
+        }
+
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/HlblockExport.php', array(
-            'hlblock' => $hlblock,
-            'hlblockEntities' => $hlblockEntities
+            'items' => $items,
         ));
+
+    }
+
+    public function getHlStructure() {
+        $helper = new HelperManager();
+
+        $hlblocks = $helper->Hlblock()->getHlblocks();
+
+        $structure = [
+            0 => ['items' => []]
+        ];
+
+        foreach ($hlblocks as $hlblock) {
+            $structure[0]['items'][] = [
+                'title' => $hlblock['NAME'],
+                'value' => $hlblock['ID']
+            ];
+        }
+
+        return $structure;
 
     }
 }

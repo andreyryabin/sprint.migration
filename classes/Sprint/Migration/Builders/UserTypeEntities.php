@@ -35,7 +35,7 @@ class UserTypeEntities extends VersionBuilder
 
         $typeCodes = $this->getFieldValue('type_codes');
 
-        if (empty($typeCodes)){
+        if (empty($typeCodes)) {
             $this->rebuildField('type_codes');
         }
 
@@ -48,6 +48,10 @@ class UserTypeEntities extends VersionBuilder
             list($entityId, $fieldName) = explode(':', $typeCode);
 
             $entity = $helper->UserTypeEntity()->getUserTypeEntity($entityId, $fieldName);
+            if (empty($entity)) {
+                continue;
+            }
+
             $fields = $entity;
 
             unset($fields['ID']);
@@ -59,6 +63,8 @@ class UserTypeEntities extends VersionBuilder
                 'FIELD_NAME' => $entity['FIELD_NAME'],
                 'FIELDS' => $fields
             );
+
+
         }
 
 
@@ -76,7 +82,7 @@ class UserTypeEntities extends VersionBuilder
         while ($item = $dbRes->Fetch()) {
             $entId = $item['ENTITY_ID'];
 
-            if (!isset($structure[$entId])){
+            if (!isset($structure[$entId])) {
                 $structure[$entId] = array(
                     'title' => $entId,
                     'items' => array()
