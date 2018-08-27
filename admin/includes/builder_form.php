@@ -54,6 +54,9 @@
                                        type="checkbox"
                                 ><?= $item['title'] ?></label> <br/>
                         <? endforeach; ?>
+
+                    <br/>
+
                     <? endforeach; ?>
 
                 <? else: ?>

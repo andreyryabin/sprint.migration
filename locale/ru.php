@@ -88,7 +88,7 @@
 
     "SPRINT_MIGRATION_BUILDER_UserTypeEntities1" => "Создать миграцию для пользовательских полей",
     "SPRINT_MIGRATION_BUILDER_UserTypeEntities2" => "",
-    "SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId" => "Укажите ENTITY_ID для выгрузки",
+    "SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId" => "Укажите поле для выгрузки",
 
     "SPRINT_MIGRATION_BUILDER_CacheCleaner1" => "Очистка кеша",
     "SPRINT_MIGRATION_BUILDER_CacheCleaner2" => "Выполнить BXClearCache(true)",
