@@ -88,10 +88,15 @@ class IblockExport extends VersionBuilder
             $this->rebuildField('what');
         }
 
+        $iblockExport = false;
         $iblockType = array();
         $iblockProperties = array();
         $iblockFields = array();
         $iblockAdminTabs = array();
+
+        if (in_array('iblock', $what)) {
+            $iblockExport = true;
+        }
 
         if (in_array('iblockType', $what)) {
             $iblockType = $helper->Iblock()->getIblockType($iblock['IBLOCK_TYPE_ID']);
@@ -122,6 +127,17 @@ class IblockExport extends VersionBuilder
                     unset($iblockProperty['ID']);
                     unset($iblockProperty['IBLOCK_ID']);
                     unset($iblockProperty['TIMESTAMP_X']);
+
+                    if (!empty($iblockProperty['LINK_IBLOCK_ID'])) {
+                        $linked = $helper->Iblock()->getIblock([
+                            'ID' => $iblockProperty['LINK_IBLOCK_ID']
+                        ]);
+
+                        if ($linked) {
+                            $iblockProperty['LINK_IBLOCK_ID'] = $iblock['IBLOCK_TYPE_ID'] . ':' . $iblock['CODE'];
+                        }
+                    }
+
                     $iblockProperties[] = $iblockProperty;
                 }
             }
@@ -148,14 +164,10 @@ class IblockExport extends VersionBuilder
             }
         }
 
-
-        if (!in_array('iblock', $what)) {
-            $iblock = array();
-        }
-
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockExport.php',
             array(
+                'iblockExport' => $iblockExport,
                 'iblock' => $iblock,
                 'iblockType' => $iblockType,
                 'iblockFields' => $iblockFields,

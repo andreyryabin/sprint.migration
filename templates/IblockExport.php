@@ -18,18 +18,20 @@ class <?php echo $version ?> extends <?php echo $extendClass ?> {
 protected $description = "<?php echo $description ?>";
 
 public function up(){
-$helper = new HelperManager();
+    $helper = new HelperManager();
 
 <? if (!empty($iblockType)): ?>
-$helper->Iblock()->addIblockTypeIfNotExists(<?php echo var_export($iblockType, 1) ?>);
+    $helper->Iblock()->addIblockTypeIfNotExists(<?php echo var_export($iblockType, 1) ?>);
 <? endif; ?>
 
-<? if (!empty($iblock)): ?>
-$iblockId = $helper->Iblock()->addIblockIfNotExists(<?php echo var_export($iblock, 1) ?>);
+<? if (!empty($iblockExport)): ?>
+    $iblockId = $helper->Iblock()->addIblockIfNotExists(<?php echo var_export($iblock, 1) ?>);
+<? else:?>
+    $iblockId = $helper->Iblock()->getIblockId('<?php echo $iblock['CODE'] ?>','<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
 <? endif; ?>
 
 <? if (!empty($iblockFields)): ?>
-$helper->Iblock()->updateIblockFields($iblockId, <?php echo var_export($iblockFields, 1) ?>);
+    $helper->Iblock()->updateIblockFields($iblockId, <?php echo var_export($iblockFields, 1) ?>);
 <? endif; ?>
 
 <? if (!empty($iblockProperties)): ?>
