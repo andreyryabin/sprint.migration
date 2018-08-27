@@ -122,23 +122,23 @@ class IblockExport extends VersionBuilder
 
             $iblockProperties = array();
             foreach ($propertyIds as $propertyId) {
-                $iblockProperty = $this->getPropById($propertyId, $props);
-                if ($iblockProperty) {
-                    unset($iblockProperty['ID']);
-                    unset($iblockProperty['IBLOCK_ID']);
-                    unset($iblockProperty['TIMESTAMP_X']);
+                $prop = $this->getPropById($propertyId, $props);
+                if ($prop) {
+                    unset($prop['ID']);
+                    unset($prop['IBLOCK_ID']);
+                    unset($prop['TIMESTAMP_X']);
 
-                    if (!empty($iblockProperty['LINK_IBLOCK_ID'])) {
+                    if (!empty($prop['LINK_IBLOCK_ID'])) {
                         $linked = $helper->Iblock()->getIblock([
-                            'ID' => $iblockProperty['LINK_IBLOCK_ID']
+                            'ID' => $prop['LINK_IBLOCK_ID']
                         ]);
 
-                        if ($linked) {
-                            $iblockProperty['LINK_IBLOCK_ID'] = $iblock['IBLOCK_TYPE_ID'] . ':' . $iblock['CODE'];
+                        if (!empty($linked['CODE'])) {
+                            $prop['LINK_IBLOCK_ID'] = $linked['IBLOCK_TYPE_ID'] . ':' . $linked['CODE'];
                         }
                     }
 
-                    $iblockProperties[] = $iblockProperty;
+                    $iblockProperties[] = $prop;
                 }
             }
         }
