@@ -20,15 +20,23 @@ protected $description = "<?php echo $description ?>";
 public function up(){
 $helper = new HelperManager();
 
+<? if (!empty($iblockType)): ?>
 $helper->Iblock()->addIblockTypeIfNotExists(<?php echo var_export($iblockType, 1) ?>);
+<? endif; ?>
 
+<? if (!empty($iblock)): ?>
 $iblockId = $helper->Iblock()->addIblockIfNotExists(<?php echo var_export($iblock, 1) ?>);
+<? endif; ?>
 
+<? if (!empty($iblockFields)): ?>
 $helper->Iblock()->updateIblockFields($iblockId, <?php echo var_export($iblockFields, 1) ?>);
+<? endif; ?>
 
+<? if (!empty($iblockProperties)): ?>
 <?php foreach ($iblockProperties as $iblockProperty): ?>
     $helper->Iblock()->addPropertyIfNotExists($iblockId, <?php echo var_export($iblockProperty, 1) ?>);
 <? endforeach; ?>
+<? endif; ?>
 
 <? if (!empty($iblockAdminTabs)): ?>
     $helper->AdminIblock()->buildElementForm($iblockId, <?php echo var_export($iblockAdminTabs, 1) ?>);

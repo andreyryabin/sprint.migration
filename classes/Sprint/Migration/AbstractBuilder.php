@@ -78,7 +78,11 @@ abstract class AbstractBuilder
     }
 
     protected function getFieldValue($code, $default = '') {
-        return isset($this->fields[$code]) ? $this->fields[$code]['value'] : $default;
+        if (isset($this->fields[$code]) && $this->fields[$code]['bind'] == 1) {
+            return $this->fields[$code]['value'];
+        } else {
+            return $default;
+        }
     }
 
     public function bindField($code, $val) {
@@ -197,19 +201,6 @@ abstract class AbstractBuilder
         Throw new RebuildException('rebuild form');
     }
 
-    protected function rebuildField2($code, $cond) {
-        $ok = true;
-
-        if (is_callable($cond)) {
-            $val = $this->getFieldValue($code);
-            $ok = $cond($val);
-        }
-
-        if ($ok){
-            $this->rebuildField($code);
-        }
-    }
-
     protected function restart() {
         Throw new RestartException('restart form');
     }
@@ -277,11 +268,11 @@ abstract class AbstractBuilder
 
     /** @deprecated */
     protected function requiredField($code, $param = array()) {
-        $this->addField($code,$param);
+        $this->addField($code, $param);
     }
 
     /** @deprecated */
     protected function setField($code, $param = array()) {
-        $this->addField($code,$param);
+        $this->addField($code, $param);
     }
 }

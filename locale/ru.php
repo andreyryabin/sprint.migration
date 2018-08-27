@@ -74,6 +74,13 @@
     "SPRINT_MIGRATION_BUILDER_IblockExport1" => "Создать миграцию для инфоблока",
     "SPRINT_MIGRATION_BUILDER_IblockExport2" => "",
     "SPRINT_MIGRATION_BUILDER_IblockExport_IblockId" => "Выберите инфоблок",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_PropertyIds" => "Выберите свойства",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_What" => "Что экспортируем",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblock" => "Инфоблок",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockType" => "Тип инфоблока",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockFields" => "Поля инфоблока",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockProperties" => "Свойства инфоблока",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIiblockAdminTabs" => "Настройки формы редактирования",
 
     "SPRINT_MIGRATION_BUILDER_HlblockExport1" => "Создать миграцию для highload-блока",
     "SPRINT_MIGRATION_BUILDER_HlblockExport2" => "",
@@ -82,10 +89,6 @@
     "SPRINT_MIGRATION_BUILDER_UserTypeEntities1" => "Создать миграцию для пользовательских полей",
     "SPRINT_MIGRATION_BUILDER_UserTypeEntities2" => "",
     "SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId" => "Укажите ENTITY_ID для выгрузки",
-
-    "SPRINT_MIGRATION_BUILDER_IblockPropertyExport" => "Создать миграцию для свойств инфоблока",
-    "SPRINT_MIGRATION_BUILDER_IblockPropertyExport_IblockId" => "Выберите инфоблок",
-    "SPRINT_MIGRATION_BUILDER_IblockPropertyExport_PropertyIds" => "Выберите свойства",
 
     "SPRINT_MIGRATION_BUILDER_CacheCleaner1" => "Очистка кеша",
     "SPRINT_MIGRATION_BUILDER_CacheCleaner2" => "Выполнить BXClearCache(true)",
