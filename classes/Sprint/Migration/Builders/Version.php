@@ -13,13 +13,13 @@ class Version extends VersionBuilder
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Version1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_Version2'));
 
-        $this->setField('prefix', array(
+        $this->addField('prefix', array(
             'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
             'value' => $this->getConfigVal('version_prefix'),
             'width' => 250,
         ));
 
-        $this->setField('description', array(
+        $this->addField('description', array(
             'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
             'width' => 350,
             'height' => 40,

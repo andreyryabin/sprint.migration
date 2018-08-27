@@ -17,7 +17,7 @@ class VersionBuilder extends AbstractBuilder
         //your code
     }
 
-    protected function preparePrefix($prefix = '') {
+    protected function purifyPrefix($prefix = '') {
         $prefix = trim($prefix);
         if (empty($prefix)) {
             $prefix = $this->getConfigVal('version_prefix');
@@ -41,7 +41,7 @@ class VersionBuilder extends AbstractBuilder
         return $prefix;
     }
 
-    protected function purifyDescriptionForFile($descr = '') {
+    protected function purifyDescription($descr = '') {
         $descr = strval($descr);
         $descr = str_replace(array("\n\r", "\r\n", "\n", "\r"), ' ', $descr);
         $descr = strip_tags($descr);
@@ -54,12 +54,11 @@ class VersionBuilder extends AbstractBuilder
     }
 
     public function createVersionFile($templateFile = '', $templateVars = array()) {
-
-        $description = $this->purifyDescriptionForFile(
+        $description = $this->purifyDescription(
             $this->getFieldValue('description')
         );
 
-        $prefix = $this->preparePrefix(
+        $prefix = $this->purifyPrefix(
             $this->getFieldValue('prefix')
         );
 

@@ -15,13 +15,12 @@ class IblockPropertyExport extends VersionBuilder
     public function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockPropertyExport'));
 
-        $this->setField('iblock_id', array(
+        $this->addField('iblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockPropertyExport_IblockId'),
             'placeholder' => '',
             'width' => 250,
             'items' => $this->getIblocksStructure()
         ));
-
     }
 
 
@@ -33,7 +32,7 @@ class IblockPropertyExport extends VersionBuilder
             $this->rebuildField('iblock_id');
         }
 
-        $this->setField('property_ids', array(
+        $this->addField('property_ids', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockPropertyExport_PropertyIds'),
             'width' => 250,
             'multiple' => 1,

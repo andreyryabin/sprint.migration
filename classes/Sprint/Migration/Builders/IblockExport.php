@@ -15,14 +15,14 @@ class IblockExport extends VersionBuilder
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport2'));
 
-        $this->setField('iblock_id', array(
+        $this->addField('iblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_IblockId'),
             'placeholder' => '',
             'width' => 250,
             'items' => $this->getIblocksStructure()
         ));
 
-        $this->setField('description', array(
+        $this->addField('description', array(
             'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
             'width' => 350,
             'height' => 40,

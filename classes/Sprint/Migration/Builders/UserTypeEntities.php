@@ -13,12 +13,12 @@ class UserTypeEntities extends VersionBuilder
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities2'));
 
-        $this->setField('entity_id', array(
+        $this->addField('entity_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId'),
             'placeholder' => ''
         ));
 
-        $this->setField('description', array(
+        $this->addField('description', array(
             'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
             'width' => 350,
             'height' => 40,

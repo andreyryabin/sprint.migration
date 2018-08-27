@@ -34,7 +34,7 @@ abstract class AbstractBuilder
         $this->name = $name;
         $this->params = $params;
 
-        $this->setField('builder_name', array(
+        $this->addField('builder_name', array(
             'value' => $name,
             'type' => 'hidden',
             'bind' => 1
@@ -43,7 +43,7 @@ abstract class AbstractBuilder
         $this->initialize();
     }
 
-    protected function setField($code, $param = array()) {
+    protected function addField($code, $param = array()) {
         $param = array_merge(array(
             'title' => '',
             'value' => '',
@@ -112,14 +112,14 @@ abstract class AbstractBuilder
         ));
     }
 
-    public function renderConsole(){
+    public function renderConsole() {
         $fields = $this->getFields();
         foreach ($fields as $code => $field) {
             if (empty($field['bind'])) {
                 fwrite(STDOUT, $field['title'] . ':');
                 $val = fgets(STDIN);
                 $val = trim($val);
-                $this->bindField($code,$val);
+                $this->bindField($code, $val);
             }
         }
     }
@@ -141,7 +141,7 @@ abstract class AbstractBuilder
         $this->buildAfter();
     }
 
-    protected function buildExecute(){
+    protected function buildExecute() {
         $this->initRestart = 0;
         $this->initRebuild = 0;
         $this->initException = 0;
@@ -171,7 +171,7 @@ abstract class AbstractBuilder
         foreach ($this->params as $code => $val) {
             if (!isset($this->fields[$code])) {
                 if (is_numeric($val) || is_string($val)) {
-                    $this->setField($code, array(
+                    $this->addField($code, array(
                         'value' => $val,
                         'type' => 'hidden',
                         'bind' => 1
@@ -186,15 +186,28 @@ abstract class AbstractBuilder
     }
 
     protected function unbindField($code) {
-        if (isset($this->fields[$code])){
+        if (isset($this->fields[$code])) {
             $this->fields[$code]['bind'] = 0;
             unset($this->params[$code]);
         }
     }
 
-    protected function rebuildField($fieldCode) {
-        $this->unbindField($fieldCode);
+    protected function rebuildField($code) {
+        $this->unbindField($code);
         Throw new RebuildException('rebuild form');
+    }
+
+    protected function rebuildField2($code, $cond) {
+        $ok = true;
+
+        if (is_callable($cond)) {
+            $val = $this->getFieldValue($code);
+            $ok = $cond($val);
+        }
+
+        if ($ok){
+            $this->rebuildField($code);
+        }
     }
 
     protected function restart() {
@@ -259,5 +272,16 @@ abstract class AbstractBuilder
     public function outError($msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'outError'), $args);
+    }
+
+
+    /** @deprecated */
+    protected function requiredField($code, $param = array()) {
+        $this->addField($code,$param);
+    }
+
+    /** @deprecated */
+    protected function setField($code, $param = array()) {
+        $this->addField($code,$param);
     }
 }
