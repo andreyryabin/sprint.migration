@@ -91,13 +91,13 @@ class Console
             'prefix' => $prefix,
         );
 
-        if (!$versionManager->isVersionBuilder($from)){
+        if (!$versionManager->isBuilder($from)){
             Out::out('Builder not found');
             die(1);
         }
 
         do {
-            $builder = $versionManager->createVersionBuilder($from, $postvars);
+            $builder = $versionManager->createBuilder($from, $postvars);
 
             $builder->renderConsole();
 

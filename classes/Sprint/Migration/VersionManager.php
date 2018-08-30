@@ -121,8 +121,8 @@ class VersionManager
      * @param array $postvars
      * @return AbstractBuilder
      */
-    public function createVersionBuilder($name = '', $postvars = array()) {
-        $builders = $this->getVersionBuilders();
+    public function createBuilder($name = '', $postvars = array()) {
+        $builders = $this->getBuilders();
 
         $class = $builders[$name];
 
@@ -138,13 +138,13 @@ class VersionManager
         return $builder;
     }
 
-    public function isVersionBuilder($name) {
-        $builders = $this->getVersionBuilders();
+    public function isBuilder($name) {
+        $builders = $this->getBuilders();
         return ($name && isset($builders[$name]));
     }
 
 
-    public function getVersionBuilders() {
+    public function getBuilders() {
         if (!empty($this->buildersList)) {
             return $this->buildersList;
         }
