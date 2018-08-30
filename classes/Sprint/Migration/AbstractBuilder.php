@@ -139,11 +139,29 @@ abstract class AbstractBuilder
         $fields = $this->getFields();
         foreach ($fields as $code => $field) {
             if (empty($field['bind'])) {
-                fwrite(STDOUT, $field['title'] . ':');
+                $this->renderConsoleField($field);
                 $val = fgets(STDIN);
                 $val = trim($val);
                 $this->bindField($code, $val);
             }
+        }
+    }
+
+    protected function renderConsoleField($field) {
+        if (!empty($field['items'])) {
+            fwrite(STDOUT, $field['title'] . PHP_EOL);
+
+            foreach ($field['items'] as $group) {
+                fwrite(STDOUT, '---' . $group['title'] . PHP_EOL);
+
+                foreach ($group['items'] as $item) {
+                    fwrite(STDOUT, ' > ' . $item['value'] . ' (' . $item['title'] . ')' . PHP_EOL);
+                }
+            }
+
+            fwrite(STDOUT, 'input value' . ':');
+        } else {
+            fwrite(STDOUT, $field['title'] . ':');
         }
     }
 

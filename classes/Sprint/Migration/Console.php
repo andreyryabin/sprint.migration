@@ -8,31 +8,23 @@ class Console
     private $script = 'migrate.php';
 
     private $arguments = array();
+    private $argoptions = array();
 
     public function executeConsoleCommand($args) {
         $this->script = array_shift($args);
 
-        if (empty($args)) {
+        $command = $this->initializeArgs($args);
+
+        if (empty($command)) {
             $this->commandHelp();
             die(1);
         }
 
-        $command = array_shift($args);
-
-        $command = str_replace(array('_', '-', ' '), '*', $command);
-        $command = explode('*', $command);
-        $tmp = array();
-        foreach ($command as $val) {
-            $tmp[] = ucfirst(strtolower($val));
-        }
-
-        $command = 'command' . implode('', $tmp);
 
         if (method_exists($this, $command)) {
-            $this->initializeArgs($args);
             call_user_func(array($this, $command));
         } else {
-            Out::out('Command not found, see help');
+            Out::out('Command "%s" not found, see help', $command);
             die(1);
         }
     }
@@ -84,14 +76,14 @@ class Console
 
         $descr = $this->getArg('--desc=', $descr);
         $prefix = $this->getArg('--prefix=', $prefix);
-        $from = $this->getArg('--from=','Version');
+        $from = $this->getArg('--from=', 'Version');
 
         $postvars = array(
             'description' => $descr,
             'prefix' => $prefix,
         );
 
-        if (!$versionManager->isBuilder($from)){
+        if (!$versionManager->isBuilder($from)) {
             Out::out('Builder not found');
             die(1);
         }
@@ -247,7 +239,7 @@ class Console
     }
 
     public function commandHelp() {
-        $this->createVersionManager();
+        $versionManager = $this->createVersionManager();
         global $USER;
 
         Out::out(GetMessage('SPRINT_MIGRATION_MODULE_NAME'));
@@ -258,6 +250,22 @@ class Console
             Out::out('Текущий пользователь: [%d] %s', $USER->GetID(), $USER->GetLogin());
         }
 
+        $configList = $versionManager->getConfigList();
+        $configName = $versionManager->getConfigName();
+
+        Out::out('');
+
+        Out::out('Список конфигураций:');
+        foreach ($configList as $configItem) {
+            if ($configItem['name'] == $configName) {
+                Out::out('  ' . $configItem['title'] . ' *');
+            } else {
+                Out::out('  ' . $configItem['title']);
+            }
+
+        }
+
+
         Out::out('');
 
         Out::out('Запуск:' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL, $this->script);
@@ -267,44 +275,37 @@ class Console
     public function commandConfig() {
         $versionManager = $this->createVersionManager();
 
-        $configList = $versionManager->getConfigList();
+        $configItem = $versionManager->getConfigCurrent();
 
-        $curname = $versionManager->getConfigName();
+        Out::out($configItem['title']);
 
-        $num = 0;
-        foreach ($configList as $configItem) {
-            $num++;
-            $cur = ($configItem['name'] == $curname) ? '*' : '';
+        $table = new ConsoleTable(-1, array(
+            'horizontal' => '=',
+            'vertical' => '',
+            'intersection' => ''
+        ), 1, 'UTF-8');
 
-            Out::out('%s) %s %s', $num, $configItem['title'], $cur);
+        $table->setBorderVisibility(array('bottom' => false));
 
-            $table = new ConsoleTable(-1, array(
-                'horizontal' => '=',
-                'vertical' => '',
-                'intersection' => ''
-            ), 1, 'UTF-8');
+        foreach ($configItem['values'] as $key => $val) {
 
-            $table->setBorderVisibility(array('bottom' => false));
-
-            foreach ($configItem['values'] as $key => $val) {
-
-                if ($val === true || $val === false) {
-                    $val = ($val) ? 'yes' : 'no';
-                    $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
-                } elseif (is_array($val)) {
-                    $fres = [];
-                    foreach ($val as $fkey => $fval) {
-                        $fres[] = '[' . $fkey . '] => ' . $fval;
-                    }
-                    $val = implode(PHP_EOL, $fres);
-
+            if ($val === true || $val === false) {
+                $val = ($val) ? 'yes' : 'no';
+                $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
+            } elseif (is_array($val)) {
+                $fres = [];
+                foreach ($val as $fkey => $fval) {
+                    $fres[] = '[' . $fkey . '] => ' . $fval;
                 }
+                $val = implode(PHP_EOL, $fres);
 
-                $table->addRow(array($key, $val));
             }
 
-            Out::out($table->getTable());
+            $table->addRow(array($key, $val));
         }
+
+        Out::out($table->getTable());
+
 
     }
 
@@ -446,16 +447,34 @@ class Console
         foreach ($args as $val) {
             $this->addArg($val);
         }
+
+        $command = '';
+
+        if (isset($this->arguments[0])) {
+            $command = array_shift($this->arguments);
+
+            $command = str_replace(array('_', '-', ' '), '*', $command);
+            $command = explode('*', $command);
+            $tmp = array();
+            foreach ($command as $val) {
+                $tmp[] = ucfirst(strtolower($val));
+            }
+
+            $command = 'command' . implode('', $tmp);
+
+        }
+
+        return $command;
     }
 
     protected function addArg($arg) {
         list($name, $val) = explode('=', $arg);
-        $isparam = (0 === strpos($name, '--')) ? 1 : 0;
-        if ($isparam) {
+        $isoption = (0 === strpos($name, '--')) ? 1 : 0;
+        if ($isoption) {
             if (!is_null($val)) {
-                $this->arguments[$name . '='] = $val;
+                $this->argoptions[$name . '='] = $val;
             } else {
-                $this->arguments[$name] = 1;
+                $this->argoptions[$name] = 1;
             }
         } else {
             $this->arguments[] = $name;
@@ -463,7 +482,11 @@ class Console
     }
 
     protected function getArg($name, $default = '') {
-        return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
+        if (is_numeric($name)) {
+            return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
+        } else {
+            return isset($this->argoptions[$name]) ? $this->argoptions[$name] : $default;
+        }
     }
 
 
