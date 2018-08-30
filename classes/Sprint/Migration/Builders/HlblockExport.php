@@ -10,7 +10,11 @@ use Sprint\Migration\Exceptions\HelperException;
 class HlblockExport extends VersionBuilder
 {
 
-    public function initialize() {
+    protected function isBuilderEnabled() {
+        return (\CModule::IncludeModule('highloadblock'));
+    }
+
+    protected function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport2'));
 
@@ -31,7 +35,7 @@ class HlblockExport extends VersionBuilder
     }
 
 
-    public function execute() {
+    protected function execute() {
         $helper = new HelperManager();
 
         $hlblockIds = $this->getFieldValue('hlblock_id');
@@ -74,7 +78,7 @@ class HlblockExport extends VersionBuilder
 
     }
 
-    public function getHlStructure() {
+    protected function getHlStructure() {
         $helper = new HelperManager();
 
         $hlblocks = $helper->Hlblock()->getHlblocks();

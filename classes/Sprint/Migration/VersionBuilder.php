@@ -9,14 +9,6 @@ use Sprint\Migration\Exceptions\RestartException;
 class VersionBuilder extends AbstractBuilder
 {
 
-    protected function initialize() {
-        //your code
-    }
-
-    protected function execute() {
-        //your code
-    }
-
     protected function purifyPrefix($prefix = '') {
         $prefix = trim($prefix);
         if (empty($prefix)) {

@@ -11,7 +11,7 @@
             <input type="hidden" name="<?= $fieldCode ?>" value="<?= $fieldItem['value'] ?>"/>
         <? else: ?>
             <p>
-                <?if(!empty($fieldItem['title'])):?><?=$fieldItem['title']?><br/><?endif;?>
+                <? if (!empty($fieldItem['title'])): ?><?= $fieldItem['title'] ?><br/><? endif; ?>
                 <? if (!empty($fieldItem['height'])): ?>
                     <textarea name="<?= $fieldCode ?>"
                         <? if (!empty($fieldItem['width'])): ?>
@@ -42,7 +42,7 @@
                     </select>
                 <? elseif (!empty($fieldItem['items']) && $fieldItem['multiple']): ?>
                     <? foreach ($fieldItem['items'] as $group): ?>
-                        <?if(!empty($group['title'])):?><?=$group['title']?><br/><?endif;?>
+                        <? if (!empty($group['title'])): ?><?= $group['title'] ?><br/><? endif; ?>
 
                         <? foreach ($group['items'] as $item): ?>
                             <label>
@@ -55,7 +55,7 @@
                                 ><?= $item['title'] ?></label> <br/>
                         <? endforeach; ?>
 
-                    <br/>
+                        <br/>
 
                     <? endforeach; ?>
 
@@ -77,12 +77,9 @@
     <p>
         <input type="submit" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"/>
     </p>
-
-
     <? if ($builder->canShowReset()): ?>
         <p>
             <input type="reset" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_RESET') ?>"/>
         </p>
     <? endif; ?>
-
 </form>

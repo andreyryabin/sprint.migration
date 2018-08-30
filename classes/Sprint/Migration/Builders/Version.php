@@ -9,6 +9,11 @@ use Sprint\Migration\HelperManager;
 class Version extends VersionBuilder
 {
 
+    protected function isBuilderEnabled() {
+        return true;
+    }
+
+
     protected function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Version1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_Version2'));

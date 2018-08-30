@@ -11,7 +11,11 @@ use Sprint\Migration\Exceptions\HelperException;
 class IblockExport extends VersionBuilder
 {
 
-    public function initialize() {
+    protected function isBuilderEnabled() {
+        return (\CModule::IncludeModule('iblock'));
+    }
+
+    protected function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport2'));
 
@@ -68,7 +72,7 @@ class IblockExport extends VersionBuilder
 
     }
 
-    public function execute() {
+    protected function execute() {
         $helper = new HelperManager();
 
         $iblockId = $this->getFieldValue('iblock_id');

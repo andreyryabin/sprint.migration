@@ -9,6 +9,11 @@ use Sprint\Migration\HelperManager;
 class CacheCleaner extends AbstractBuilder
 {
 
+    protected function isBuilderEnabled() {
+        return true;
+    }
+
+
     protected function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_CacheCleaner1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_CacheCleaner2'));

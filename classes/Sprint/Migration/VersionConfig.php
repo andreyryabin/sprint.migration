@@ -147,9 +147,9 @@ class VersionConfig
         $values['console_user'] = ($cond2 || $cond3) ? $values['console_user'] : 'admin';
 
         if (!empty($values['version_builders']) && is_array($values['version_builders'])) {
-            $values['version_builders'] = array_merge($this->getVersionBuilders(), $values['version_builders']);
+            $values['version_builders'] = array_merge($this->getDefaultBuilders(), $values['version_builders']);
         } else {
-            $values['version_builders'] = $this->getVersionBuilders();
+            $values['version_builders'] = $this->getDefaultBuilders();
         }
 
         ksort($values);
@@ -168,7 +168,7 @@ class VersionConfig
         return $default;
     }
 
-    protected function getVersionBuilders() {
+    protected function getDefaultBuilders() {
         return array(
             'Version' => '\Sprint\Migration\Builders\Version',
             'IblockExport' => '\Sprint\Migration\Builders\IblockExport',

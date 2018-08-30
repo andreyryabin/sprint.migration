@@ -84,17 +84,17 @@ class Console
 
         $descr = $this->getArg('--desc=', $descr);
         $prefix = $this->getArg('--prefix=', $prefix);
-        $from = $this->getArg('--from=');
-
-        if ($from && !$versionManager->isVersionBuilder($from)) {
-            Out::out('Builder not found');
-            die(1);
-        }
+        $from = $this->getArg('--from=','Version');
 
         $postvars = array(
             'description' => $descr,
             'prefix' => $prefix,
         );
+
+        if (!$versionManager->isVersionBuilder($from)){
+            Out::out('Builder not found');
+            die(1);
+        }
 
         do {
             $builder = $versionManager->createVersionBuilder($from, $postvars);

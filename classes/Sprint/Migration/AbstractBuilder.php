@@ -25,22 +25,41 @@ abstract class AbstractBuilder
     private $initException = 0;
     private $initRestart = 0;
 
-    abstract protected function initialize();
+    private $enabled = false;
 
-    abstract protected function execute();
+    protected function initialize() {
+        //your code
+    }
 
-    public function __construct(VersionConfig $versionConfig, $name, $params = array()) {
+    protected function execute() {
+        //your code
+    }
+
+    protected function isBuilderEnabled() {
+        //your code
+
+        return false;
+    }
+
+    public function __construct(VersionConfig $versionConfig, $name, $params = array(), $initialize = true) {
         $this->versionConfig = $versionConfig;
         $this->name = $name;
         $this->params = $params;
+        $this->enabled = $this->isBuilderEnabled();
 
-        $this->addField('builder_name', array(
-            'value' => $name,
-            'type' => 'hidden',
-            'bind' => 1
-        ));
+        if ($this->enabled && $initialize) {
+            $this->addField('builder_name', array(
+                'value' => $this->getName(),
+                'type' => 'hidden',
+                'bind' => 1
+            ));
 
-        $this->initialize();
+            $this->initialize();
+        }
+    }
+
+    public function isEnabled() {
+        return $this->enabled;
     }
 
     protected function addField($code, $param = array()) {
@@ -145,7 +164,7 @@ abstract class AbstractBuilder
         $this->buildAfter();
     }
 
-    protected function buildExecute() {
+    private function buildExecute() {
         $this->initRestart = 0;
         $this->initRebuild = 0;
         $this->initException = 0;
@@ -153,6 +172,7 @@ abstract class AbstractBuilder
         try {
 
             $this->execute();
+
 
         } catch (RestartException $e) {
             $this->initRestart = 1;
@@ -171,7 +191,7 @@ abstract class AbstractBuilder
         return true;
     }
 
-    protected function buildAfter() {
+    private function buildAfter() {
         foreach ($this->params as $code => $val) {
             if (!isset($this->fields[$code])) {
                 if (is_numeric($val) || is_string($val)) {

@@ -9,7 +9,12 @@ use Sprint\Migration\HelperManager;
 class UserTypeEntities extends VersionBuilder
 {
 
-    public function initialize() {
+    protected function isBuilderEnabled() {
+        return true;
+    }
+
+
+    protected function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities2'));
 
@@ -30,7 +35,7 @@ class UserTypeEntities extends VersionBuilder
     }
 
 
-    public function execute() {
+    protected function execute() {
         $helper = new HelperManager();
 
         $typeCodes = $this->getFieldValue('type_codes');

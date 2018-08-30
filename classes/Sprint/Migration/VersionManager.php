@@ -19,6 +19,8 @@ class VersionManager
 
     private $lastException = null;
 
+    private $buildersList = array();
+
     public function __construct($configName = '') {
         $this->versionConfig = new VersionConfig(
             $configName
@@ -122,30 +124,52 @@ class VersionManager
     public function createVersionBuilder($name = '', $postvars = array()) {
         $builders = $this->getVersionBuilders();
 
-        if (isset($builders[$name]) && class_exists($builders[$name])) {
-            $class = $builders[$name];
-        } else {
-            $class = $builders['Version'];
-        }
+        $class = $builders[$name];
+
+        /** @var  $builder AbstractBuilder */
 
         $builder = new $class(
             $this->versionConfig,
             $name,
-            $postvars
+            $postvars,
+            true
         );
 
         return $builder;
     }
 
-    public function isVersionBuilder($name = '') {
+    public function isVersionBuilder($name) {
         $builders = $this->getVersionBuilders();
-        return (isset($builders[$name]) && class_exists($builders[$name]));
+        return ($name && isset($builders[$name]));
     }
 
 
     public function getVersionBuilders() {
+        if (!empty($this->buildersList)) {
+            return $this->buildersList;
+        }
+
         $builders = $this->getConfigVal('version_builders', array());
-        return is_array($builders) ? $builders : array();
+        $builders = is_array($builders) ? $builders : array();
+
+        /** @var  $builder AbstractBuilder */
+
+        foreach ($builders as $name => $class) {
+            if (class_exists($class)) {
+                $builder = new $class(
+                    $this->versionConfig,
+                    $name,
+                    array(),
+                    false
+                );
+                if ($builder->isEnabled()) {
+                    $this->buildersList[$name] = $class;
+                }
+
+            }
+        }
+
+        return $this->buildersList;
     }
 
     public function markMigration($search, $status) {
