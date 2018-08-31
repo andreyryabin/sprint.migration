@@ -20,43 +20,41 @@
                             style="height: <?= $fieldItem['height'] ?>px;"
                         <? endif; ?>
                     ><?= $fieldItem['value'] ?></textarea>
-
-                <? elseif (!empty($fieldItem['items']) && !$fieldItem['multiple']): ?>
-
+                <? elseif (isset($fieldItem['items']) && !$fieldItem['multiple']): ?>
                     <select name="<?= $fieldCode ?>"
                         <? if (!empty($fieldItem['width'])): ?>
                             style="width: <?= $fieldItem['width'] ?>px;"
                         <? endif; ?>
-                    >
-                        <? foreach ($fieldItem['items'] as $group): ?>
+                    ><? foreach ($fieldItem['items'] as $group): ?>
                             <optgroup label="<?= $group['title'] ?>">
-                                <? foreach ($group['items'] as $item): ?>
-                                    <option value="<?= $item['value'] ?>"
-                                        <? if ($fieldItem['value'] == $item['value']): ?>
-                                            selected="selected"
-                                        <? endif; ?>
-                                    ><?= $item['title'] ?></option>
-                                <? endforeach; ?>
+                                <? if (isset($group['items'])): ?>
+                                    <? foreach ($group['items'] as $item): ?>
+                                        <option value="<?= $item['value'] ?>"
+                                            <? if ($fieldItem['value'] == $item['value']): ?>
+                                                selected="selected"
+                                            <? endif; ?>
+                                        ><?= $item['title'] ?></option>
+                                    <? endforeach; ?>
+                                <? endif; ?>
                             </optgroup>
                         <? endforeach; ?>
                     </select>
-                <? elseif (!empty($fieldItem['items']) && $fieldItem['multiple']): ?>
+                <? elseif (isset($fieldItem['items']) && $fieldItem['multiple']): ?>
                     <? foreach ($fieldItem['items'] as $group): ?>
                         <? if (!empty($group['title'])): ?><?= $group['title'] ?><br/><? endif; ?>
-
-                        <? foreach ($group['items'] as $item): ?>
-                            <label>
-                                <input name="<?= $fieldCode ?>[]"
-                                       value="<?= $item['value'] ?>"
-                                    <? if (in_array($item['value'], $fieldItem['value'])): ?>
-                                        checked="checked"
-                                    <? endif; ?>
-                                       type="checkbox"
-                                ><?= $item['title'] ?></label> <br/>
-                        <? endforeach; ?>
-
+                        <? if (isset($group['items'])): ?>
+                            <? foreach ($group['items'] as $item): ?>
+                                <label>
+                                    <input name="<?= $fieldCode ?>[]"
+                                           value="<?= $item['value'] ?>"
+                                        <? if (in_array($item['value'], $fieldItem['value'])): ?>
+                                            checked="checked"
+                                        <? endif; ?>
+                                           type="checkbox"
+                                    ><?= $item['title'] ?></label> <br/>
+                            <? endforeach; ?>
+                        <? endif; ?>
                         <br/>
-
                     <? endforeach; ?>
 
                 <? else: ?>
