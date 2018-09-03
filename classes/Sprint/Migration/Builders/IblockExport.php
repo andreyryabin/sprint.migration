@@ -106,9 +106,8 @@ class IblockExport extends VersionBuilder
             $iblockType = $helper->Iblock()->getIblockType($iblock['IBLOCK_TYPE_ID']);
         }
 
-        if (in_array('iblockProperties', $what)) {
-
-            $props = $helper->Iblock()->getProperties($iblockId);
+        $props = $helper->Iblock()->getProperties($iblockId);
+        if (in_array('iblockProperties', $what) && !empty($props)) {
             $this->addField('property_ids', array(
                 'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_PropertyIds'),
                 'width' => 250,
