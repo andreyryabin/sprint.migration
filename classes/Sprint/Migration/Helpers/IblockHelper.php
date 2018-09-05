@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Helpers;
 
+use Bitrix\Iblock\PropertyTable;
 use Sprint\Migration\Helper;
 
 class IblockHelper extends Helper
@@ -424,6 +425,28 @@ class IblockHelper extends Helper
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
+    }
+
+    /**
+     * Update property by CODE
+     * @param $iblockId
+     * @param $propertyCode
+     * @param $fields
+     * @return bool
+     */
+    public function updatePropertyByCode($iblockId, $propertyCode, $fields) {
+        $property = PropertyTable::getRow([
+           'filter' => [
+               'CODE' => $propertyCode,
+               'IBLOCK_ID' => $iblockId
+           ],
+           'select' => [
+               'CODE',
+               'ID'
+           ]
+        ]);
+
+        return $this->updatePropertyById($property['ID'], $fields);
     }
 
     public function getElement($iblockId, $code) {
