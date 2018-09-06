@@ -8,9 +8,6 @@ class StorageManager extends AbstractTable
 {
 
     public function __construct($name = 'default') {
-        if ($this->isMssql) {
-            Throw new MigrationException('StorageManager doesn\'t work in mssql mode');
-        }
         parent::__construct('sprint_storage_' . $name);
     }
 

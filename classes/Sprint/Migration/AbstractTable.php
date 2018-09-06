@@ -5,7 +5,6 @@ namespace Sprint\Migration;
 abstract class AbstractTable
 {
 
-    protected $isMssql = false;
     private $dbName = false;
 
     /** @var \CDatabase */
@@ -19,7 +18,6 @@ abstract class AbstractTable
     public function __construct($tableName) {
         $this->tableName = $tableName;
 
-        $this->isMssql = ($GLOBALS['DBType'] == 'mssql');
         $this->bitrixDb = $GLOBALS['DB'];
         $this->dbName = $GLOBALS['DBName'];
 
