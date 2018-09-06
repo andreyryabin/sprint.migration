@@ -33,6 +33,8 @@ try {
         Throw new \Exception('need to install module sprint.migration');
     }
 
+    Sprint\Migration\Module::checkHealth();
+
     $console = new Sprint\Migration\Console();
     $console->executeConsoleCommand($argv);
 

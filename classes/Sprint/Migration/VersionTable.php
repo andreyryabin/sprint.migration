@@ -46,6 +46,7 @@ class VersionTable extends AbstractTable
         $this->query('CREATE TABLE IF NOT EXISTS `#TABLE1#`(
               `id` MEDIUMINT NOT NULL AUTO_INCREMENT NOT NULL,
               `version` varchar(255) COLLATE #COLLATE# NOT NULL,
+              `hash` varchar(50) COLLATE #COLLATE# NOT NULL,
               PRIMARY KEY (id), UNIQUE KEY(version)
               )ENGINE=InnoDB DEFAULT CHARSET=#CHARSET# COLLATE=#COLLATE# AUTO_INCREMENT=1;'
         );

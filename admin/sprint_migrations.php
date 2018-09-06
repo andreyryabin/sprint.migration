@@ -3,16 +3,37 @@
 /** @noinspection PhpIncludeInspection */
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
-\CModule::IncludeModule("sprint.migration");
-
 /** @global $APPLICATION \CMain */
-
 global $APPLICATION;
-$APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATION_TITLE'));
 
-if ($APPLICATION->GetGroupRight("sprint.migration") == "D") {
-    $APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
+try {
+    if (!\CModule::IncludeModule('sprint.migration')) {
+        Throw new \Exception('need to install module sprint.migration');
+    }
+
+    if ($APPLICATION->GetGroupRight("sprint.migration") == "D") {
+        Throw new \Exception(GetMessage("ACCESS_DENIED"));
+    }
+
+    \Sprint\Migration\Module::checkHealth();
+
+} catch (\Exception $e) {
+    /** @noinspection PhpIncludeInspection */
+    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
+
+    $sperrors = array();
+    $sperrors[] = $e->getMessage();
+
+    include __DIR__ . '/includes/errors.php';
+    include __DIR__ . '/includes/help.php';
+    include __DIR__ . '/assets/assets.php';
+
+    /** @noinspection PhpIncludeInspection */
+    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");
 }
+
+
+$APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATION_TITLE'));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
@@ -37,6 +58,12 @@ if ($versionManager->getConfigVal('show_admin_interface')) {
     include __DIR__ . '/includes/interface.php';
 }
 
+$sperrors = array();
+if (!$versionManager->getConfigVal('show_admin_interface')) {
+    $sperrors[] = GetMessage('SPRINT_MIGRATION_ADMIN_INTERFACE_HIDDEN');
+}
+
+include __DIR__ . '/includes/errors.php';
 include __DIR__ . '/includes/help.php';
 include __DIR__ . '/assets/assets.php';
 
