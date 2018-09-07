@@ -161,14 +161,18 @@ class Console
             'Description',
         ));
 
-        foreach ($versions as $index => $aItem) {
+        foreach ($versions as $index => $item) {
+            if ($item['modified']){
+                $item['version'] .= ' ('.GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL').')';
+            }
+
             $table->addRow(array(
-                $aItem['version'],
-                GetMessage('SPRINT_MIGRATION_META_' . strtoupper($aItem['status'])),
-                $aItem['description'],
+                $item['version'],
+                GetMessage('SPRINT_MIGRATION_META_' . strtoupper($item['status'])),
+                $item['description'],
             ));
 
-            $stval = $aItem['status'];
+            $stval = $item['status'];
             $summary[$stval]++;
         }
 

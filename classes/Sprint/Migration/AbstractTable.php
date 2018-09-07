@@ -21,11 +21,12 @@ abstract class AbstractTable
         $this->bitrixDb = $GLOBALS['DB'];
         $this->dbName = $GLOBALS['DBName'];
 
-        $opt = 'table_' . md5($this->tableName);
+        $opt = 'upgrade2_' . md5($this->tableName);
         if (!Module::getDbOption($opt)) {
             $this->createTable();
             Module::setDbOption($opt, 1);
         }
+
     }
 
     /**

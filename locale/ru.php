@@ -110,4 +110,7 @@
     "SPRINT_MIGRATION_RIGHT_D" => "Доступ запрещен",
     "SPRINT_MIGRATION_RIGHT_W" => "Доступ разрешен",
 
+    "SPRINT_MIGRATION_MODIFIED_INFO" => "Код миграции был изменен после установки",
+    "SPRINT_MIGRATION_MODIFIED_LABEL" => "M",
+
 ));

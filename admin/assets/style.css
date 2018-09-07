@@ -149,3 +149,10 @@ a.sp-item-unknown:hover,
 a.sp-item-unknown:visited {
     color: #00a;
 }
+
+.sp-modified {
+    padding: 0 10px;
+    background: #ccc;
+    color: #555;
+    border-radius: 10px;
+}

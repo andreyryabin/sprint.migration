@@ -66,6 +66,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                         <? else: ?>
                             <span class="sp-item-<?= $aItem['status'] ?>"><?= $aItem['version'] ?></span>
                         <? endif ?>
+                        <?if ($aItem['modified']):?><span class="sp-modified" title="<?=GetMessage('SPRINT_MIGRATION_MODIFIED_INFO')?>"><?=GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL')?></span><?endif;?>
+
                         <? if (!empty($aItem['description'])): ?><?php
                             if ($taskUrl && false !== strpos($taskUrl, '$1')) {
                                 $aItem['description'] = preg_replace('/#(\d+)/', '<a target="_blank" href="' . $taskUrl . '">#$1</a>', $aItem['description']);

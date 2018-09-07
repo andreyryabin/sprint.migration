@@ -82,9 +82,9 @@ class VersionManager
             }
 
             if ($action == 'up') {
-                $ok = $this->addRecord($versionName);
+                $ok = $this->addRecord($meta);
             } else {
-                $ok = $this->removeRecord($versionName);
+                $ok = $this->removeRecord($meta);
             }
 
             if ($ok === false) {
@@ -210,7 +210,7 @@ class VersionManager
 
         if ($status == 'new') {
             if ($meta['is_record']) {
-                $this->removeRecord($meta['version']);
+                $this->removeRecord($meta);
                 $msg = 'SPRINT_MIGRATION_MARK_SUCCESS1';
                 $success = true;
             } else {
@@ -218,7 +218,7 @@ class VersionManager
             }
         } elseif ($status == 'installed') {
             if (!$meta['is_record']) {
-                $this->addRecord($meta['version']);
+                $this->addRecord($meta);
                 $msg = 'SPRINT_MIGRATION_MARK_SUCCESS2';
                 $success = true;
             } else {
@@ -234,9 +234,9 @@ class VersionManager
 
     public function getVersionByName($versionName) {
         if ($this->checkVersionName($versionName)) {
-            $isRecord = $this->isRecordExists($versionName);
-            $isFile = $this->isFileExists($versionName);
-            return $this->prepVersionMeta($versionName, $isFile, $isRecord);
+            $record = $this->getRecordIfExists($versionName);
+            $file = $this->getFileIfExists($versionName);
+            return $this->prepVersionMeta($versionName, $file, $record);
         }
         return false;
     }
@@ -247,13 +247,16 @@ class VersionManager
 
         $filter = array_merge($versionFilter, array('status' => '', 'search' => ''), $filter);
 
+        $merge = array();
+
         $records = array();
         /* @var $dbres \CDBResult */
         $dbres = $this->getRecords();
-        while ($aItem = $dbres->Fetch()) {
-            $ts = $this->getVersionTimestamp($aItem['version']);
+        while ($item = $dbres->Fetch()) {
+            $ts = $this->getVersionTimestamp($item['version']);
             if ($ts) {
-                $records[$aItem['version']] = $ts;
+                $records[$item['version']] = $item;
+                $merge[$item['version']] = $ts;
             }
         }
 
@@ -265,13 +268,12 @@ class VersionManager
                 $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
                 $ts = $this->getVersionTimestamp($fileName);
                 if ($ts) {
-                    $files[$fileName] = $ts;
+                    $files[$fileName] = $item->getPathname();
+                    $merge[$fileName] = $ts;
                 }
             }
 
         }
-
-        $merge = array_merge($records, $files);
 
         if ($filter['status'] == 'installed' || $filter['status'] == 'unknown') {
             arsort($merge);
@@ -281,10 +283,10 @@ class VersionManager
 
         $result = array();
         foreach ($merge as $version => $ts) {
-            $isRecord = array_key_exists($version, $records);
-            $isFile = array_key_exists($version, $files);
+            $record = isset($records[$version]) ? $records[$version] : 0;
+            $file = isset($files[$version]) ? $files[$version] : 0;
 
-            $meta = $this->prepVersionMeta($version, $isFile, $isRecord);
+            $meta = $this->prepVersionMeta($version, $file, $record);
 
             if (
                 $this->isVersionEnabled($meta) &&
@@ -349,12 +351,18 @@ class VersionManager
     }
 
 
-    protected function prepVersionMeta($versionName, $isFile, $isRecord) {
+    protected function prepVersionMeta($versionName, $file, $record) {
+
+        $isFile = ($file) ? 1 : 0;
+        $isRecord = ($record) ? 1 : 0;
+
         $meta = array(
             'is_file' => $isFile,
             'is_record' => $isRecord,
             'version' => $versionName,
             'enabled' => true,
+            'modified' => false,
+            'hash' => ''
         );
 
         if ($isRecord && $isFile) {
@@ -371,7 +379,6 @@ class VersionManager
             return $meta;
         }
 
-        $file = $this->getVersionFile($versionName);
         $meta['location'] = $file;
 
         ob_start();
@@ -404,6 +411,11 @@ class VersionManager
         $meta['description'] = $this->purifyDescriptionForMeta($descr);
         $meta['versionfilter'] = $filter;
         $meta['enabled'] = $enabled;
+        $meta['hash'] = md5(file_get_contents($file));
+
+        if (!empty($record['hash'])) {
+            $meta['modified'] = ($meta['hash'] != $record['hash']);
+        }
 
         return $meta;
 
@@ -414,14 +426,14 @@ class VersionManager
         return $this->getConfigVal('migration_dir') . '/' . $versionName . '.php';
     }
 
-    protected function isFileExists($versionName) {
+    protected function getFileIfExists($versionName) {
         $file = $this->getVersionFile($versionName);
-        return file_exists($file) ? 1 : 0;
+        return file_exists($file) ? $file : 0;
     }
 
-    protected function isRecordExists($versionName) {
+    protected function getRecordIfExists($versionName) {
         $record = $this->getRecord($versionName)->Fetch();
-        return (empty($record)) ? 0 : 1;
+        return ($record && isset($record['version'])) ? $record : 0;
     }
 
 
@@ -481,11 +493,11 @@ class VersionManager
         return $this->versionTable->getRecord($versionName);
     }
 
-    protected function addRecord($versionName) {
-        return $this->versionTable->addRecord($versionName);
+    protected function addRecord($meta = array()) {
+        return $this->versionTable->addRecord($meta['version'], $meta['hash']);
     }
 
-    protected function removeRecord($versionName) {
-        return $this->versionTable->removeRecord($versionName);
+    protected function removeRecord($meta = array()) {
+        return $this->versionTable->removeRecord($meta['version']);
     }
 }

@@ -24,11 +24,13 @@ class VersionTable extends AbstractTable
 
     /**
      * @param $versionName
+     * @param $hash
      * @return bool|\CDBResult
      */
-    public function addRecord($versionName) {
-        return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`) VALUES ("%s")',
-            $this->forSql($versionName)
+    public function addRecord($versionName,$hash='') {
+        return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `hash`) VALUES ("%s", "%s")',
+            $this->forSql($versionName),
+            $this->forSql($hash)
         );
     }
 
@@ -43,13 +45,18 @@ class VersionTable extends AbstractTable
     }
 
     protected function createTable() {
+        //upgrade1
         $this->query('CREATE TABLE IF NOT EXISTS `#TABLE1#`(
               `id` MEDIUMINT NOT NULL AUTO_INCREMENT NOT NULL,
               `version` varchar(255) COLLATE #COLLATE# NOT NULL,
-              `hash` varchar(50) COLLATE #COLLATE# NOT NULL,
               PRIMARY KEY (id), UNIQUE KEY(version)
               )ENGINE=InnoDB DEFAULT CHARSET=#CHARSET# COLLATE=#COLLATE# AUTO_INCREMENT=1;'
         );
+
+        //upgrade2
+        if (empty($this->query('SHOW COLUMNS FROM `#TABLE1#` LIKE "hash"')->Fetch())) {
+            $this->query('ALTER TABLE #TABLE1# ADD COLUMN `hash` VARCHAR(50) NULL AFTER `version`');
+        }
     }
 
 }
