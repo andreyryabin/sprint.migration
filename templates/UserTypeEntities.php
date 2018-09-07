@@ -18,7 +18,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     protected $description = "<?php echo $description ?>";
 
-    public function up(){
+    public function up() {
         $helper = new HelperManager();
 
     <?php foreach ($entities as $entity): ?>
@@ -26,7 +26,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     <? endforeach; ?>
     }
 
-    public function down(){
+    public function down() {
         $helper = new HelperManager();
 
         //your code ...
