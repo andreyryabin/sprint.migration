@@ -418,6 +418,11 @@ class IblockHelper extends Helper
             $fields['USER_TYPE'] = $utype;
         }
 
+        if (false !== strpos($fields['LINK_IBLOCK_ID'], ':')) {
+            list($ibtype, $ibcode) = explode(':', $fields['LINK_IBLOCK_ID']);
+            $fields['LINK_IBLOCK_ID'] = $this->getIblockId($ibcode, $ibtype);
+        }
+
         $ib = new \CIBlockProperty();
         if ($ib->Update($propertyId, $fields)) {
             return true;
