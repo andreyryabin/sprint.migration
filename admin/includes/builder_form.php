@@ -10,7 +10,7 @@
         <? if ($fieldItem['type'] == 'hidden'): ?>
             <input type="hidden" name="<?= $fieldCode ?>" value="<?= $fieldItem['value'] ?>"/>
         <? else: ?>
-            <p>
+            <div style="margin-bottom: 20px;">
                 <? if (!empty($fieldItem['title'])): ?><?= $fieldItem['title'] ?><br/><? endif; ?>
                 <? if (!empty($fieldItem['height'])): ?>
                     <textarea name="<?= $fieldCode ?>"
@@ -41,8 +41,14 @@
                     </select>
                 <? elseif (isset($fieldItem['items']) && $fieldItem['multiple']): ?>
                     <? foreach ($fieldItem['items'] as $group): ?>
+                    <div class="sp-optgroup">
                         <? if (!empty($group['title'])): ?><?= $group['title'] ?><br/><? endif; ?>
                         <? if (isset($group['items'])): ?>
+
+                            <? if (isset($group['items'])): ?>
+                                <div style="padding: 5px 0;"><a href="#" class="sp-optgroup-check"><?=GetMessage('SPRINT_MIGRATION_BUILDER_SELECT_ALL')?></a></div>
+                            <?endif;?>
+
                             <? foreach ($group['items'] as $item): ?>
                                 <label>
                                     <input name="<?= $fieldCode ?>[]"
@@ -54,7 +60,7 @@
                                     ><?= $item['title'] ?></label> <br/>
                             <? endforeach; ?>
                         <? endif; ?>
-                        <br/>
+                    </div>
                     <? endforeach; ?>
 
                 <? else: ?>
@@ -69,7 +75,7 @@
                         <? endif; ?>
                     />
                 <? endif; ?>
-            </p>
+            </div>
         <? endif ?>
     <? endforeach ?>
     <p>

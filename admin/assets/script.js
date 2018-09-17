@@ -119,14 +119,14 @@ jQuery(document).ready(function ($) {
         outProgress.scrollTop(outProgress.prop("scrollHeight"));
     });
 
-    $('.sp-stat').on('change', function () {
+    $('#migration-container').on('change', '.sp-stat', function () {
         migrationMigrationRefresh(function () {
             migrationEnableButtons(1);
             $('#tab_cont_tab1').click();
         });
     });
 
-    $('input[name=migration_search]').on('keypress', function (e) {
+    $('#migration-container').on('keypress', 'input[name=migration_search]', function (e) {
         if (e.keyCode == 13) {
             migrationMigrationRefresh(function () {
                 migrationEnableButtons(1);
@@ -135,13 +135,18 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    $('.sp-search').on('click', function () {
+    $('#migration-container').on('click', '.sp-search', function () {
         migrationMigrationRefresh(function () {
             migrationEnableButtons(1);
             $('#tab_cont_tab1').click();
         });
     });
 
+    $('#migration-container').on('click', '.sp-optgroup-check', function (e) {
+        var checkboxes = $(this).closest('.sp-optgroup').find(':checkbox');
+        checkboxes.attr("checked", !checkboxes.attr("checked"));
+        e.preventDefault();
+    });
 
     $('[data-builder]').on('submit', 'form', function (e) {
         e.preventDefault();
