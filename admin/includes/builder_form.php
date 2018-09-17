@@ -44,11 +44,9 @@
                     <div class="sp-optgroup">
                         <? if (!empty($group['title'])): ?><?= $group['title'] ?><br/><? endif; ?>
                         <? if (isset($group['items'])): ?>
-
-                            <? if (isset($group['items'])): ?>
-                                <div style="padding: 5px 0;"><a href="#" class="sp-optgroup-check"><?=GetMessage('SPRINT_MIGRATION_BUILDER_SELECT_ALL')?></a></div>
-                            <?endif;?>
-
+                            <div style="padding: 5px 0;">
+                                <a href="#" class="sp-optgroup-check"><?=GetMessage('SPRINT_MIGRATION_BUILDER_SELECT_ALL')?></a>
+                            </div>
                             <? foreach ($group['items'] as $item): ?>
                                 <label>
                                     <input name="<?= $fieldCode ?>[]"
