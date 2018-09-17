@@ -156,3 +156,10 @@ a.sp-item-unknown:visited {
     color: #555;
     border-radius: 10px;
 }
+.sp-optgroup{
+    margin-bottom: 20px;
+}
+
+.sp-field {
+    margin-bottom: 20px;
+}

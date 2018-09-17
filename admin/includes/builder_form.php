@@ -10,7 +10,7 @@
         <? if ($fieldItem['type'] == 'hidden'): ?>
             <input type="hidden" name="<?= $fieldCode ?>" value="<?= $fieldItem['value'] ?>"/>
         <? else: ?>
-            <div style="margin-bottom: 20px;">
+            <div class="sp-field">
                 <? if (!empty($fieldItem['title'])): ?><?= $fieldItem['title'] ?><br/><? endif; ?>
                 <? if (!empty($fieldItem['height'])): ?>
                     <textarea name="<?= $fieldCode ?>"
@@ -76,12 +76,12 @@
             </div>
         <? endif ?>
     <? endforeach ?>
-    <p>
+    <div class="sp-field">
         <input type="submit" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"/>
-    </p>
+    </div>
     <? if ($builder->canShowReset()): ?>
-        <p>
+        <div class="sp-field">
             <input type="reset" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_RESET') ?>"/>
-        </p>
+        </div>
     <? endif; ?>
 </form>
