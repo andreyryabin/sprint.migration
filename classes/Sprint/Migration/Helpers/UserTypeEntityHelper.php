@@ -22,9 +22,9 @@ class UserTypeEntityHelper extends Helper
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
 
-        $aItem = $this->getUserTypeEntity($entityId, $fieldName);
-        if ($aItem) {
-            return $aItem['ID'];
+        $item = $this->getUserTypeEntity($entityId, $fieldName);
+        if ($item) {
+            return $item['ID'];
         }
 
         $default = array(
@@ -51,10 +51,21 @@ class UserTypeEntityHelper extends Helper
         $fields['FIELD_NAME'] = $fieldName;
         $fields['ENTITY_ID'] = $entityId;
 
+        $enums = array();
+        if (isset($fields['ENUM_VALUES'])) {
+            $enums = $fields['ENUM_VALUES'];
+            unset($fields['ENUM_VALUES']);
+        }
+
         $obUserField = new \CUserTypeEntity;
         $userFieldId = $obUserField->Add($fields);
 
-        if ($userFieldId) {
+        $enumsCreated = true;
+        if ($userFieldId && $fields['USER_TYPE_ID'] == 'enumeration') {
+            $enumsCreated = $this->setUserTypeEntityEnumValues($userFieldId, $enums);
+        }
+
+        if ($userFieldId && $enumsCreated) {
             return $userFieldId;
         }
 
@@ -65,39 +76,34 @@ class UserTypeEntityHelper extends Helper
         }
     }
 
-    public function getUserTypeEntities($entityId) {
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = \CUserTypeEntity::GetList(array(), array('ENTITY_ID' => $entityId));
-        $result = array();
-        while ($aItem = $dbRes->Fetch()) {
-            $result[] = \CUserTypeEntity::GetByID($aItem['ID']);
-        }
-        return $result;
-    }
-
-    public function getUserTypeEntity($entityId, $fieldName) {
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = \CUserTypeEntity::GetList(array(), array('ENTITY_ID' => $entityId, 'FIELD_NAME' => $fieldName));
-        $aItem = $dbRes->Fetch();
-        return (!empty($aItem)) ? \CUserTypeEntity::GetByID($aItem['ID']) : false;
-    }
-
     public function updateUserTypeEntityIfExists($entityId, $fieldName, $fields) {
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
 
-        $aItem = $this->getUserTypeEntity($entityId, $fieldName);
-        if (!$aItem) {
+        $item = $this->getUserTypeEntity($entityId, $fieldName);
+        if (!$item) {
             return false;
         }
 
         $fields['FIELD_NAME'] = $fieldName;
         $fields['ENTITY_ID'] = $entityId;
 
-        $entity = new \CUserTypeEntity;
+        $enums = array();
+        if (isset($fields['ENUM_VALUES'])) {
+            $enums = $fields['ENUM_VALUES'];
+            unset($fields['ENUM_VALUES']);
+        }
 
-        if ($entity->Update($aItem['ID'], $fields)) {
-            return true;
+        $entity = new \CUserTypeEntity;
+        $userFieldUpdated = $entity->Update($item['ID'], $fields);
+
+        $enumsCreated = true;
+        if ($userFieldUpdated && $fields['USER_TYPE_ID'] == 'enumeration') {
+            $enumsCreated = $this->setUserTypeEntityEnumValues($item['ID'], $enums);
+        }
+
+        if ($userFieldUpdated && $enumsCreated) {
+            return $userFieldUpdated;
         }
 
         if ($APPLICATION->GetException()) {
@@ -107,14 +113,65 @@ class UserTypeEntityHelper extends Helper
         }
     }
 
+    public function getUserTypeEntities($entityId) {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        $dbRes = \CUserTypeEntity::GetList(array(), array('ENTITY_ID' => $entityId));
+        $result = array();
+        while ($item = $dbRes->Fetch()) {
+            $result[] = $this->getUserTypeEntityById($item['ID']);
+        }
+        return $result;
+    }
+
+    public function getUserTypeEntity($entityId, $fieldName) {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        $item = \CUserTypeEntity::GetList(array(), array(
+            'ENTITY_ID' => $entityId,
+            'FIELD_NAME' => $fieldName
+        ))->Fetch();
+
+        return (!empty($item)) ? $this->getUserTypeEntityById($item['ID']) : false;
+    }
+
+    public function setUserTypeEntityEnumValues($fieldId, $newenums) {
+        $newenums = is_array($newenums) ? $newenums : array();
+        $oldenums = $this->getEnumValues($fieldId, true);
+
+        $index = 0;
+
+        $updates = array();
+        foreach ($oldenums as $oldenum) {
+            $newenum = $this->searchEnum($oldenum, $newenums);
+            if ($newenum) {
+                $updates[$oldenum['ID']] = $newenum;
+            } else {
+                $oldenum['DEL'] = 'Y';
+                $updates[$oldenum['ID']] = $oldenum;
+            }
+        }
+
+        foreach ($newenums as $newenum) {
+            $oldenum = $this->searchEnum($newenum, $oldenums);
+            if ($oldenum) {
+                $updates[$oldenum['ID']] = $newenum;
+            } else {
+                $updates['n' . $index++] = $newenum;
+            }
+        }
+
+        $obEnum = new \CUserFieldEnum();
+        return $obEnum->SetEnumValues($fieldId, $updates);
+
+    }
+
     public function deleteUserTypeEntityIfExists($entityId, $fieldName) {
-        $aItem = $this->getUserTypeEntity($entityId, $fieldName);
-        if (!$aItem) {
+        $item = $this->getUserTypeEntity($entityId, $fieldName);
+        if (!$item) {
             return false;
         }
 
         $entity = new \CUserTypeEntity();
-        if ($entity->Delete($aItem['ID'])) {
+        if ($entity->Delete($item['ID'])) {
             return true;
         }
 
@@ -126,5 +183,44 @@ class UserTypeEntityHelper extends Helper
         return $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
     }
 
+    protected function getUserTypeEntityById($fieldId) {
+        $item = \CUserTypeEntity::GetByID($fieldId);
+
+        if ($item && $item['USER_TYPE_ID'] == 'enumeration') {
+            $item['ENUM_VALUES'] = $this->getEnumValues($fieldId, false);
+        }
+
+        return $item;
+    }
+
+    protected function getEnumValues($fieldId, $full = false) {
+        $obEnum = new \CUserFieldEnum;
+        $dbres = $obEnum->GetList(array(), array("USER_FIELD_ID" => $fieldId));
+
+        $result = array();
+        while ($enum = $dbres->Fetch()) {
+            if ($full) {
+                $result[] = $enum;
+            } else {
+                $result[] = array(
+                    'VALUE' => $enum['VALUE'],
+                    'DEF' => $enum['DEF'],
+                    'SORT' => $enum['SORT'],
+                    'XML_ID' => $enum['XML_ID'],
+                );
+            }
+        }
+
+        return $result;
+    }
+
+    protected function searchEnum($enum, $haystack = array()) {
+        foreach ($haystack as $item) {
+            if (!empty($item['XML_ID']) && $item['XML_ID'] == $enum['XML_ID']) {
+                return $item;
+            }
+        }
+        return false;
+    }
 
 }
