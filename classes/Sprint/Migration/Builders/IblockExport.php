@@ -36,13 +36,7 @@ class IblockExport extends VersionBuilder
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_What'),
             'width' => 250,
             'multiple' => 1,
-            'value' => array(
-                'iblockType',
-                'iblock',
-                'iblockFields',
-                'iblockProperties',
-                'iblockAdminTabs',
-            ),
+            'value' => array(),
             'items' => [0 => [
                 'items' => [
                     [
@@ -112,7 +106,7 @@ class IblockExport extends VersionBuilder
                 'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_PropertyIds'),
                 'width' => 250,
                 'multiple' => 1,
-                'value' => $this->getPropsValues($props),
+                'value' => array(),
                 'items' => $this->getPropsStructure($props)
             ));
 

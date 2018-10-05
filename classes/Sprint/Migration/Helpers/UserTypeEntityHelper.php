@@ -19,14 +19,15 @@ class UserTypeEntityHelper extends Helper
     }
 
     public function addUserTypeEntityIfNotExists($entityId, $fieldName, $fields) {
-        /* @global $APPLICATION \CMain */
-        global $APPLICATION;
-
         $item = $this->getUserTypeEntity($entityId, $fieldName);
         if ($item) {
             return $item['ID'];
         }
 
+        return $this->addUserTypeEntity($entityId, $fieldName, $fields);
+    }
+
+    public function addUserTypeEntity($entityId, $fieldName, $fields){
         $default = array(
             "ENTITY_ID" => '',
             "FIELD_NAME" => '',
@@ -69,6 +70,8 @@ class UserTypeEntityHelper extends Helper
             return $userFieldId;
         }
 
+        /* @global $APPLICATION \CMain */
+        global $APPLICATION;
         if ($APPLICATION->GetException()) {
             $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
         } else {
@@ -76,18 +79,7 @@ class UserTypeEntityHelper extends Helper
         }
     }
 
-    public function updateUserTypeEntityIfExists($entityId, $fieldName, $fields) {
-        /* @global $APPLICATION \CMain */
-        global $APPLICATION;
-
-        $item = $this->getUserTypeEntity($entityId, $fieldName);
-        if (!$item) {
-            return false;
-        }
-
-        $fields['FIELD_NAME'] = $fieldName;
-        $fields['ENTITY_ID'] = $entityId;
-
+    public function updateUserTypeEntity($id, $fields) {
         $enums = array();
         if (isset($fields['ENUM_VALUES'])) {
             $enums = $fields['ENUM_VALUES'];
@@ -95,22 +87,33 @@ class UserTypeEntityHelper extends Helper
         }
 
         $entity = new \CUserTypeEntity;
-        $userFieldUpdated = $entity->Update($item['ID'], $fields);
+        $userFieldUpdated = $entity->Update($id, $fields);
 
         $enumsCreated = true;
         if ($userFieldUpdated && $fields['USER_TYPE_ID'] == 'enumeration') {
-            $enumsCreated = $this->setUserTypeEntityEnumValues($item['ID'], $enums);
+            $enumsCreated = $this->setUserTypeEntityEnumValues($id, $enums);
         }
 
         if ($userFieldUpdated && $enumsCreated) {
-            return $userFieldUpdated;
+            return $id;
         }
-
+        /* @global $APPLICATION \CMain */
+        global $APPLICATION;
         if ($APPLICATION->GetException()) {
             $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
         } else {
-            $this->throwException(__METHOD__, 'UserType %s not updated', $fieldName);
+            $this->throwException(__METHOD__, 'UserType %s not updated', $id);
         }
+    }
+
+    public function updateUserTypeEntityIfExists($entityId, $fieldName, $fields) {
+        $item = $this->getUserTypeEntity($entityId, $fieldName);
+        if (!$item) {
+            return false;
+        }
+
+        return $this->updateUserTypeEntity($item['ID'],$fields);
+
     }
 
     public function getUserTypeEntities($entityId) {
@@ -223,4 +226,16 @@ class UserTypeEntityHelper extends Helper
         return false;
     }
 
+
+    //version 2
+
+    public function saveUserTypeEntity($entityId, $fieldName, $fields) {
+        $item = $this->getUserTypeEntity($entityId, $fieldName);
+        if ($item) {
+            return $this->updateUserTypeEntity($item['ID'],$fields);
+        } else {
+            return $this->addUserTypeEntity($entityId, $fieldName, $fields);
+        }
+
+    }
 }

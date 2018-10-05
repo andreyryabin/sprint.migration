@@ -24,7 +24,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
         <?foreach ($items as $item):?>
 
-        $hlblockId = $helper->Hlblock()->addHlblockIfNotExists(<?php echo var_export($item['hlblock'], 1) ?>);
+        $hlblockId = $helper->Hlblock()->saveHlblock(<?php echo var_export($item['hlblock'], 1) ?>);
         $entityId = 'HLBLOCK_' . $hlblockId;
 
         <?php foreach ($item['hlblockEntities'] as $entity): ?>
