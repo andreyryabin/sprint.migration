@@ -29,7 +29,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     <? if (!empty($iblockExport)): ?>
         $iblockId = $helper->Iblock()->saveIblock(<?php echo var_export($iblock, 1) ?>);
     <? else:?>
-        $iblockId = $helper->Iblock()->getIblockId('<?php echo $iblock['CODE'] ?>','<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
+        $iblockId = $helper->Iblock()->findIblockId('<?php echo $iblock['CODE'] ?>','<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
     <? endif; ?>
 
     <? if (!empty($iblockFields)): ?>
@@ -43,7 +43,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     <? endif; ?>
 
     <? if (!empty($iblockAdminTabs)): ?>
-        $helper->AdminIblock()->buildElementForm($iblockId, <?php echo var_export($iblockAdminTabs, 1) ?>);
+        $helper->AdminIblock()->saveElementForm($iblockId, <?php echo var_export($iblockAdminTabs, 1) ?>);
     <? endif; ?>
 
     }
