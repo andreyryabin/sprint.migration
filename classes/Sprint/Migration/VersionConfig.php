@@ -175,6 +175,7 @@ class VersionConfig
             'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
             'UserTypeEntities' => '\Sprint\Migration\Builders\UserTypeEntities',
             'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
+            'FormExport' => '\Sprint\Migration\Builders\FormExport'
         );
     }
 
