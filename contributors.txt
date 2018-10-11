@@ -18,3 +18,4 @@ Web Architect
 ildar r. khasanshin
 Max Lyaptsev
 Горбунов Александр
+Михнев Никита
