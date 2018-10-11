@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
                 $versionManager->getLastException()->getMessage()
             );
 
-            if ($versionManager->getConfigVal('stop_on_errors')) {
+            if ($versionManager->getVersionConfig()->getConfigVal('stop_on_errors')) {
                 $nextAction = false;
             } else {
                 $skipVersions[] = $version;

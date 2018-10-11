@@ -2,7 +2,7 @@
 /** @var $versionManager \Sprint\Migration\VersionManager */
 
 
-$configItem = $versionManager->getConfigCurrent();
+$configItem = $versionManager->getVersionConfig()->getConfigCurrent();
 ?>
 <table class="sp-config">
     <tbody>

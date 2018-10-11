@@ -20,6 +20,19 @@
                             style="height: <?= $fieldItem['height'] ?>px;"
                         <? endif; ?>
                     ><?= $fieldItem['value'] ?></textarea>
+                <? elseif (isset($fieldItem['select']) && !$fieldItem['multiple']): ?>
+                    <select name="<?= $fieldCode ?>"
+                        <? if (!empty($fieldItem['width'])): ?>
+                            style="width: <?= $fieldItem['width'] ?>px;"
+                        <? endif; ?>
+                    ><? foreach ($fieldItem['select'] as $item): ?>
+                            <option value="<?= $item['value'] ?>"
+                                <? if ($fieldItem['value'] == $item['value']): ?>
+                                    selected="selected"
+                                <? endif; ?>
+                            ><?= $item['title'] ?></option>
+                        <? endforeach; ?>
+                    </select>
                 <? elseif (isset($fieldItem['items']) && !$fieldItem['multiple']): ?>
                     <select name="<?= $fieldCode ?>"
                         <? if (!empty($fieldItem['width'])): ?>
@@ -41,24 +54,24 @@
                     </select>
                 <? elseif (isset($fieldItem['items']) && $fieldItem['multiple']): ?>
                     <? foreach ($fieldItem['items'] as $group): ?>
-                    <div class="sp-optgroup">
-                        <? if (!empty($group['title'])): ?><?= $group['title'] ?><br/><? endif; ?>
-                        <? if (isset($group['items'])): ?>
-                            <div style="padding: 5px 0;">
-                                <a href="#" class="sp-optgroup-check"><?=GetMessage('SPRINT_MIGRATION_BUILDER_SELECT_ALL')?></a>
-                            </div>
-                            <? foreach ($group['items'] as $item): ?>
-                                <label>
-                                    <input name="<?= $fieldCode ?>[]"
-                                           value="<?= $item['value'] ?>"
-                                        <? if (in_array($item['value'], $fieldItem['value'])): ?>
-                                            checked="checked"
-                                        <? endif; ?>
-                                           type="checkbox"
-                                    ><?= $item['title'] ?></label> <br/>
-                            <? endforeach; ?>
-                        <? endif; ?>
-                    </div>
+                        <div class="sp-optgroup">
+                            <? if (!empty($group['title'])): ?><?= $group['title'] ?><br/><? endif; ?>
+                            <? if (isset($group['items'])): ?>
+                                <div style="padding: 5px 0;">
+                                    <a href="#" class="sp-optgroup-check"><?= GetMessage('SPRINT_MIGRATION_BUILDER_SELECT_ALL') ?></a>
+                                </div>
+                                <? foreach ($group['items'] as $item): ?>
+                                    <label>
+                                        <input name="<?= $fieldCode ?>[]"
+                                               value="<?= $item['value'] ?>"
+                                            <? if (in_array($item['value'], $fieldItem['value'])): ?>
+                                                checked="checked"
+                                            <? endif; ?>
+                                               type="checkbox"
+                                        ><?= $item['title'] ?></label> <br/>
+                                <? endforeach; ?>
+                            <? endif; ?>
+                        </div>
                     <? endforeach; ?>
 
                 <? else: ?>

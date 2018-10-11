@@ -58,6 +58,10 @@ abstract class AbstractBuilder
         }
     }
 
+    public function getVersionConfig() {
+        return $this->versionConfig;
+    }
+
     public function isEnabled() {
         return $this->enabled;
     }
@@ -160,6 +164,14 @@ abstract class AbstractBuilder
             }
 
             fwrite(STDOUT, 'input value' . ':');
+
+        } elseif (!empty($field['select'])) {
+            fwrite(STDOUT, $field['title'] . PHP_EOL);
+            foreach ($field['select'] as $item) {
+                fwrite(STDOUT, ' > ' . $item['value'] . ' (' . $item['title'] . ')' . PHP_EOL);
+            }
+            fwrite(STDOUT, 'input value' . ':');
+
         } else {
             fwrite(STDOUT, $field['title'] . ':');
         }
@@ -202,7 +214,7 @@ abstract class AbstractBuilder
 
         } catch (\Exception $e) {
             $this->initException = 1;
-            Out::outError('%s: %s', GetMessage('SPRINT_MIGRATION_CREATED_ERROR'), $e->getMessage());
+            Out::outError('%s: %s', GetMessage('SPRINT_MIGRATION_BUILDER_ERROR'), $e->getMessage());
             return false;
         }
 
@@ -221,10 +233,6 @@ abstract class AbstractBuilder
                 }
             }
         }
-    }
-
-    protected function getConfigVal($val, $default = '') {
-        return $this->versionConfig->getConfigVal($val, $default);
     }
 
     protected function unbindField($code) {

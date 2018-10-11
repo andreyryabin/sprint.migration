@@ -64,11 +64,6 @@
         </div>
     <? endforeach; ?>
 
-    <div class="sp-block">
-        <div class="sp-block_title"><?= GetMessage('SPRINT_MIGRATION_MARK') ?></div>
-        <div class="sp-block_body"><? include __DIR__ . '/mark_form.php' ?></div>
-    </div>
-
     <div class="sp-clear" style="margin-top: 10px"></div>
 
     <div class="sp-block">

@@ -27,12 +27,20 @@ class VersionManager
         );
 
         $this->versionTable = new VersionTable(
-            $this->getConfigVal('migration_table')
+            $this->getVersionConfig()->getConfigVal('migration_table')
         );
 
         $this->lastException = new \Exception();
     }
 
+    public function getVersionConfig() {
+        return $this->versionConfig;
+    }
+
+    public function getVersionTable() {
+        return $this->versionTable;
+    }
+    
     public function startMigration($versionName, $action = 'up', $params = array(), $force = false) {
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
@@ -82,9 +90,9 @@ class VersionManager
             }
 
             if ($action == 'up') {
-                $ok = $this->addRecord($meta);
+                $ok = $this->getVersionTable()->addRecord($meta);
             } else {
-                $ok = $this->removeRecord($meta);
+                $ok = $this->getVersionTable()->removeRecord($meta);
             }
 
             if ($ok === false) {
@@ -129,7 +137,7 @@ class VersionManager
         /** @var  $builder AbstractBuilder */
 
         $builder = new $class(
-            $this->versionConfig,
+            $this->getVersionConfig(),
             $name,
             $postvars,
             true
@@ -149,7 +157,7 @@ class VersionManager
             return $this->buildersList;
         }
 
-        $builders = $this->getConfigVal('version_builders', array());
+        $builders = $this->getVersionConfig()->getConfigVal('version_builders', array());
         $builders = is_array($builders) ? $builders : array();
 
         /** @var  $builder AbstractBuilder */
@@ -157,7 +165,7 @@ class VersionManager
         foreach ($builders as $name => $class) {
             if (class_exists($class)) {
                 $builder = new $class(
-                    $this->versionConfig,
+                    $this->getVersionConfig(),
                     $name,
                     array(),
                     false
@@ -210,7 +218,7 @@ class VersionManager
 
         if ($status == 'new') {
             if ($meta['is_record']) {
-                $this->removeRecord($meta);
+                $this->getVersionTable()->removeRecord($meta);
                 $msg = 'SPRINT_MIGRATION_MARK_SUCCESS1';
                 $success = true;
             } else {
@@ -218,7 +226,7 @@ class VersionManager
             }
         } elseif ($status == 'installed') {
             if (!$meta['is_record']) {
-                $this->addRecord($meta);
+                $this->getVersionTable()->addRecord($meta);
                 $msg = 'SPRINT_MIGRATION_MARK_SUCCESS2';
                 $success = true;
             } else {
@@ -243,7 +251,7 @@ class VersionManager
 
     public function getVersions($filter = array()) {
         /** @var  $versionFilter array */
-        $versionFilter = $this->getConfigVal('version_filter', []);
+        $versionFilter = $this->getVersionConfig()->getConfigVal('version_filter', []);
 
         $filter = array_merge($versionFilter, array('status' => '', 'search' => ''), $filter);
 
@@ -251,7 +259,7 @@ class VersionManager
 
         $records = array();
         /* @var $dbres \CDBResult */
-        $dbres = $this->getRecords();
+        $dbres = $this->getVersionTable()->getRecords();
         while ($item = $dbres->Fetch()) {
             $ts = $this->getVersionTimestamp($item['version']);
             if ($ts) {
@@ -262,7 +270,7 @@ class VersionManager
 
         $files = array();
         /* @var $item \SplFileInfo */
-        $directory = new \DirectoryIterator($this->getConfigVal('migration_dir'));
+        $directory = new \DirectoryIterator($this->getVersionConfig()->getConfigVal('migration_dir'));
         foreach ($directory as $item) {
             if ($item->isFile()) {
                 $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
@@ -423,7 +431,7 @@ class VersionManager
 
 
     protected function getVersionFile($versionName) {
-        return $this->getConfigVal('migration_dir') . '/' . $versionName . '.php';
+        return $this->getVersionConfig()->getConfigVal('migration_dir') . '/' . $versionName . '.php';
     }
 
     protected function getFileIfExists($versionName) {
@@ -432,7 +440,7 @@ class VersionManager
     }
 
     protected function getRecordIfExists($versionName) {
-        $record = $this->getRecord($versionName)->Fetch();
+        $record = $this->getVersionTable()->getRecord($versionName)->Fetch();
         return ($record && isset($record['version'])) ? $record : 0;
     }
 
@@ -458,46 +466,11 @@ class VersionManager
         return $descr;
     }
 
-
-    //config
-    public function getConfigName() {
-        return $this->versionConfig->getConfigName();
-    }
-
-    public function getConfigVal($val, $default = '') {
-        return $this->versionConfig->getConfigVal($val, $default);
-    }
-
     public function getWebDir() {
-        $dir = $this->getConfigVal('migration_dir', '');
+        $dir = $this->getVersionConfig()->getConfigVal('migration_dir', '');
         if (strpos($dir, Module::getDocRoot()) === 0) {
             return substr($dir, strlen(Module::getDocRoot()));
         }
         return '';
-    }
-
-    public function getConfigList() {
-        return $this->versionConfig->getConfigList();
-    }
-
-    public function getConfigCurrent() {
-        return $this->versionConfig->getConfigCurrent();
-    }
-
-    //table
-    protected function getRecords() {
-        return $this->versionTable->getRecords();
-    }
-
-    protected function getRecord($versionName) {
-        return $this->versionTable->getRecord($versionName);
-    }
-
-    protected function addRecord($meta = array()) {
-        return $this->versionTable->addRecord($meta['version'], $meta['hash']);
-    }
-
-    protected function removeRecord($meta = array()) {
-        return $this->versionTable->removeRecord($meta['version']);
     }
 }

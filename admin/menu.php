@@ -8,7 +8,6 @@ if ($APPLICATION->GetGroupRight("sprint.migration") == "D") {
 \CModule::IncludeModule('sprint.migration');
 
 $versionConfig = new Sprint\Migration\VersionConfig();
-
 $configList = $versionConfig->getConfigList();
 
 $items = array();

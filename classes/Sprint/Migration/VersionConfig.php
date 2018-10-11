@@ -48,14 +48,35 @@ class VersionConfig
             $this->configList[$cname] = $this->prepareConfig($cname, $values);
         }
 
+        if (!isset($this->configList['cfg'])) {
+            $this->configList['cfg'] = $this->prepareConfig('cfg', array(
+                'config_file' => GetMessage('SPRINT_MIGRATION_CONFIG_no'),
+            ), 100);
+        }
+
+        if (!isset($this->configList['archive'])) {
+            $this->configList['archive'] = $this->prepareConfig('archive', array(
+                'title' => GetMessage('SPRINT_MIGRATION_CONFIG_archive'),
+                'config_file' => GetMessage('SPRINT_MIGRATION_CONFIG_no'),
+                'migration_dir' => Module::getPhpInterfaceDir(false) . '/migrations_archive',
+                'migration_table' => 'sprint_migration_archive',
+            ), 110);
+        }
+
+
+        uasort($this->configList, function ($a, $b) {
+            return ($a['sort'] >= $b['sort']);
+        });
+
         if (isset($this->configList[$configName])) {
             $this->configCurrent = $this->configList[$configName];
         } else {
-            $this->configList['cfg'] = $this->prepareConfig('cfg', array(
-                'config_file' => GetMessage('SPRINT_MIGRATION_CONFIG_no'),
-            ));
             $this->configCurrent = $this->configList['cfg'];
         }
+    }
+
+    public function isConfigExists($configName) {
+        return (isset($this->configList[$configName]));
     }
 
     public function getConfigName() {
@@ -79,7 +100,7 @@ class VersionConfig
         return false;
     }
 
-    protected function prepareConfig($configName, $configValues = array()) {
+    protected function prepareConfig($configName, $configValues = array(), $sort = 500) {
         $configValues = $this->prepareConfigValues($configValues);
         if (!empty($configValues['title'])) {
             $title = sprintf('%s (%s)', $configValues['title'], $configName);
@@ -87,8 +108,13 @@ class VersionConfig
             $title = sprintf('%s (%s)', GetMessage('SPRINT_MIGRATION_CONFIG_TITLE'), $configName);
         }
 
+        if (isset($configValues['title'])) {
+            unset($configValues['title']);
+        }
+
         return array(
             'name' => $configName,
+            'sort' => $sort,
             'title' => $title,
             'values' => $configValues,
         );
@@ -174,6 +200,8 @@ class VersionConfig
             'IblockExport' => '\Sprint\Migration\Builders\IblockExport',
             'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
             'UserTypeEntities' => '\Sprint\Migration\Builders\UserTypeEntities',
+            'Transfer' => '\Sprint\Migration\Builders\Transfer',
+            'Marker' => '\Sprint\Migration\Builders\Marker',
             'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
         );
     }

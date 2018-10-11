@@ -59,17 +59,6 @@ function migrationEnableButtons(enable) {
     }
 }
 
-function migrationMarkMigration(status) {
-    $('#migration_migration_mark_result').html('');
-    migrationExecuteStep('migration_mark', {
-        version: $('#migration_migration_mark').val(),
-        status: status
-    }, function (result) {
-        $('#migration_migration_mark_result').html(result);
-        migrationMigrationRefresh();
-    });
-}
-
 function migrationMigrationRefresh(callbackAfterRefresh) {
     var view = $('.sp-stat').val();
     migrationExecuteStep('migration_' + view, {}, function (data) {

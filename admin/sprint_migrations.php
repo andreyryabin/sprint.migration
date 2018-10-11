@@ -42,11 +42,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $config = isset($_REQUEST['config']) ? $_REQUEST['config'] : '';
 $versionManager = new Sprint\Migration\VersionManager($config);
 
-if ($versionManager->getConfigVal('show_admin_interface')) {
+if ($versionManager->getVersionConfig()->getConfigVal('show_admin_interface')) {
     include __DIR__ . '/steps/migration_execute.php';
     include __DIR__ . '/steps/migration_list.php';
     include __DIR__ . '/steps/migration_status.php';
-    include __DIR__ . '/steps/migration_mark.php';
     include __DIR__ . '/steps/migration_create.php';
 }
 
@@ -54,12 +53,12 @@ if ($versionManager->getConfigVal('show_admin_interface')) {
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 \CUtil::InitJSCore(Array("jquery"));
 
-if ($versionManager->getConfigVal('show_admin_interface')) {
+if ($versionManager->getVersionConfig()->getConfigVal('show_admin_interface')) {
     include __DIR__ . '/includes/interface.php';
 }
 
 $sperrors = array();
-if (!$versionManager->getConfigVal('show_admin_interface')) {
+if (!$versionManager->getVersionConfig()->getConfigVal('show_admin_interface')) {
     $sperrors[] = GetMessage('SPRINT_MIGRATION_ADMIN_INTERFACE_HIDDEN');
 }
 

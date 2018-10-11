@@ -23,24 +23,23 @@ class VersionTable extends AbstractTable
     }
 
     /**
-     * @param $versionName
-     * @param $hash
+     * @param $meta
      * @return bool|\CDBResult
      */
-    public function addRecord($versionName,$hash='') {
+    public function addRecord($meta) {
         return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `hash`) VALUES ("%s", "%s")',
-            $this->forSql($versionName),
-            $this->forSql($hash)
+            $this->forSql($meta['version']),
+            $this->forSql($meta['hash'])
         );
     }
 
     /**
-     * @param $versionName
+     * @param $meta
      * @return bool|\CDBResult
      */
-    public function removeRecord($versionName) {
+    public function removeRecord($meta) {
         return $this->query('DELETE FROM `#TABLE1#` WHERE `version` = "%s"',
-            $this->forSql($versionName)
+            $this->forSql($meta['version'])
         );
     }
 
