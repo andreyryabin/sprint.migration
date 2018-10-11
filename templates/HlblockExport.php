@@ -28,7 +28,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $entityId = 'HLBLOCK_' . $hlblockId;
 
         <?php foreach ($item['hlblockEntities'] as $entity): ?>
-        $helper->UserTypeEntity()->addUserTypeEntityIfNotExists($entityId, '<?php echo $entity['FIELD_NAME'] ?>', <?php echo var_export($entity, 1) ?>);
+        $helper->UserTypeEntity()->saveUserTypeEntity($entityId, '<?php echo $entity['FIELD_NAME'] ?>', <?php echo var_export($entity, 1) ?>);
         <? endforeach; ?>
 
         <? endforeach; ?>
