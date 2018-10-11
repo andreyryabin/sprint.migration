@@ -27,7 +27,7 @@ class VersionManager
         );
 
         $this->versionTable = new VersionTable(
-            $this->getVersionConfig()->getConfigVal('migration_table')
+            $this->getVersionConfig()->getVal('migration_table')
         );
 
         $this->lastException = new \Exception();
@@ -157,7 +157,7 @@ class VersionManager
             return $this->buildersList;
         }
 
-        $builders = $this->getVersionConfig()->getConfigVal('version_builders', array());
+        $builders = $this->getVersionConfig()->getVal('version_builders', array());
         $builders = is_array($builders) ? $builders : array();
 
         /** @var  $builder AbstractBuilder */
@@ -251,7 +251,7 @@ class VersionManager
 
     public function getVersions($filter = array()) {
         /** @var  $versionFilter array */
-        $versionFilter = $this->getVersionConfig()->getConfigVal('version_filter', []);
+        $versionFilter = $this->getVersionConfig()->getVal('version_filter', []);
 
         $filter = array_merge($versionFilter, array('status' => '', 'search' => ''), $filter);
 
@@ -270,7 +270,7 @@ class VersionManager
 
         $files = array();
         /* @var $item \SplFileInfo */
-        $directory = new \DirectoryIterator($this->getVersionConfig()->getConfigVal('migration_dir'));
+        $directory = new \DirectoryIterator($this->getVersionConfig()->getVal('migration_dir'));
         foreach ($directory as $item) {
             if ($item->isFile()) {
                 $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
@@ -431,7 +431,7 @@ class VersionManager
 
 
     protected function getVersionFile($versionName) {
-        return $this->getVersionConfig()->getConfigVal('migration_dir') . '/' . $versionName . '.php';
+        return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '.php';
     }
 
     protected function getFileIfExists($versionName) {
@@ -467,7 +467,7 @@ class VersionManager
     }
 
     public function getWebDir() {
-        $dir = $this->getVersionConfig()->getConfigVal('migration_dir', '');
+        $dir = $this->getVersionConfig()->getVal('migration_dir', '');
         if (strpos($dir, Module::getDocRoot()) === 0) {
             return substr($dir, strlen(Module::getDocRoot()));
         }

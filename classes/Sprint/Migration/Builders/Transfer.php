@@ -20,11 +20,11 @@ class Transfer extends AbstractBuilder
         //$this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_Transfer2'));
 
 
-        $configFrom = $this->getVersionConfig()->getConfigName();
-        $items = $this->getVersionConfig()->getConfigList();
+        $configFrom = $this->getVersionConfig()->getName();
+        $items = $this->getVersionConfig()->getList();
         $structure = [];
         foreach ($items as $item) {
-            if ($item['name'] != $configFrom){
+            if ($item['name'] != $configFrom) {
                 $structure[] = [
                     'title' => $item['title'],
                     'value' => $item['name']
@@ -32,18 +32,39 @@ class Transfer extends AbstractBuilder
             }
         }
 
+        $this->addField('transfer_status', array(
+            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferSelect'),
+            'placeholder' => '',
+            'width' => 250,
+            'select' => [
+                [
+                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferInstalled'),
+                    'value' => 'installed',
+                ],
+                [
+                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferNew'),
+                    'value' => 'new',
+                ],
+                [
+                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferAll'),
+                    'value' => 'all',
+                ],
+            ]
+        ));
+
         $this->addField('transfer_to', array(
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_Transfer2'),
+            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferTo'),
             'placeholder' => '',
             'width' => 250,
             'select' => $structure
         ));
 
+
     }
 
     protected function execute() {
 
-        $configFrom = $this->getVersionConfig()->getConfigName();
+        $configFrom = $this->getVersionConfig()->getName();
         $configTo = $this->getFieldValue('transfer_to');
 
         $this->exitIfEmpty($configTo, GetMessage('SPRINT_MIGRATION_BUILDER_TransferEmptyDest'));
@@ -52,7 +73,7 @@ class Transfer extends AbstractBuilder
             $this->exitWithMessage(GetMessage('SPRINT_MIGRATION_BUILDER_TransferBadDest'));
         }
 
-        if (!$this->getVersionConfig()->isConfigExists($configTo)){
+        if (!$this->getVersionConfig()->isExists($configTo)) {
             $this->exitWithMessage(GetMessage('SPRINT_MIGRATION_BUILDER_TransferBadDest'));
         }
 
@@ -60,22 +81,37 @@ class Transfer extends AbstractBuilder
         $vmFrom = new VersionManager($configFrom);
         $vmTo = new VersionManager($configTo);
 
-        $versions = $vmFrom->getVersions(array('status' => 'installed'));
+        $status = $this->getFieldValue('transfer_status');
+        if (in_array($status, array('installed', 'new'))) {
+            $filter = array('status' => $status);
+        } else {
+            $filter = array();
+        }
+
+
+        $versions = $vmFrom->getVersions($filter);
 
         $cnt = 0;
-        foreach ($versions as $version) {
+        foreach ($versions as $meta) {
 
-            $source = $version['location'];
-            $dest = $vmTo->getVersionConfig()->getConfigVal('migration_dir') . '/' . $version['version'] . '.php';
+            if ($meta['is_file']) {
+                $source = $meta['location'];
+                $dest = $vmTo->getVersionConfig()->getVal('migration_dir') . '/' . $meta['version'] . '.php';
 
-            if (is_file($dest)) {
-                unlink($source);
-            } else {
-                rename($source, $dest);
+                if (is_file($dest)) {
+                    unlink($source);
+                } else {
+                    rename($source, $dest);
+                }
             }
 
-            $vmFrom->getVersionTable()->removeRecord($version);
-            $vmTo->getVersionTable()->addRecord($version);
+
+            if ($meta['is_record']) {
+                $vmFrom->getVersionTable()->removeRecord($meta);
+                $vmTo->getVersionTable()->addRecord($meta);
+            }
+
+
             $cnt++;
         }
 

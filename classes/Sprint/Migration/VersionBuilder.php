@@ -12,7 +12,7 @@ class VersionBuilder extends AbstractBuilder
     protected function purifyPrefix($prefix = '') {
         $prefix = trim($prefix);
         if (empty($prefix)) {
-            $prefix = $this->getVersionConfig()->getConfigVal('version_prefix');
+            $prefix = $this->getVersionConfig()->getVal('version_prefix');
             $prefix = trim($prefix);
         }
 
@@ -42,7 +42,7 @@ class VersionBuilder extends AbstractBuilder
     }
 
     protected function getVersionFile($versionName) {
-        return $this->getVersionConfig()->getConfigVal('migration_dir') . '/' . $versionName . '.php';
+        return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '.php';
     }
 
     public function createVersionFile($templateFile = '', $templateVars = array()) {
@@ -56,7 +56,7 @@ class VersionBuilder extends AbstractBuilder
 
         $versionName = $prefix . $this->getTimestamp();
 
-        list($extendUse, $extendClass) = explode(' as ', $this->getVersionConfig()->getConfigVal('migration_extend_class'));
+        list($extendUse, $extendClass) = explode(' as ', $this->getVersionConfig()->getVal('migration_extend_class'));
         $extendUse = trim($extendUse);
         $extendClass = trim($extendClass);
 

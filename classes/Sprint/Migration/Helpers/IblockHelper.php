@@ -705,12 +705,12 @@ class IblockHelper extends Helper
 
     /** @deprecated */
     public function mergeIblockFields($iblockId, $fields) {
-        self::saveIblockFields($iblockId, $fields);
+        $this->saveIblockFields($iblockId, $fields);
     }
 
     /** @deprecated */
     public function updateIblockFields($iblockId, $fields) {
-        self::saveIblockFields($iblockId, $fields);
+        $this->saveIblockFields($iblockId, $fields);
     }
 
     public function getIblockTypeLangs($typeId) {

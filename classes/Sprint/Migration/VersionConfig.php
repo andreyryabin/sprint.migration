@@ -38,24 +38,24 @@ class VersionConfig
 
             /** @noinspection PhpIncludeInspection */
             $values = include $item->getPathname();
-            if (!$this->validConfig($values)) {
+            if (!$this->isValuesValid($values)) {
                 continue;
             }
 
             $values['config_file'] = $item->getPathname();
 
             $cname = $matches[1];
-            $this->configList[$cname] = $this->prepareConfig($cname, $values);
+            $this->configList[$cname] = $this->prepare($cname, $values);
         }
 
         if (!isset($this->configList['cfg'])) {
-            $this->configList['cfg'] = $this->prepareConfig('cfg', array(
+            $this->configList['cfg'] = $this->prepare('cfg', array(
                 'config_file' => GetMessage('SPRINT_MIGRATION_CONFIG_no'),
             ), 100);
         }
 
         if (!isset($this->configList['archive'])) {
-            $this->configList['archive'] = $this->prepareConfig('archive', array(
+            $this->configList['archive'] = $this->prepare('archive', array(
                 'title' => GetMessage('SPRINT_MIGRATION_CONFIG_archive'),
                 'config_file' => GetMessage('SPRINT_MIGRATION_CONFIG_no'),
                 'migration_dir' => Module::getPhpInterfaceDir(false) . '/migrations_archive',
@@ -75,23 +75,23 @@ class VersionConfig
         }
     }
 
-    public function isConfigExists($configName) {
+    public function isExists($configName) {
         return (isset($this->configList[$configName]));
     }
 
-    public function getConfigName() {
+    public function getName() {
         return $this->configCurrent['name'];
     }
 
-    public function getConfigList() {
+    public function getList() {
         return $this->configList;
     }
 
-    public function getConfigCurrent() {
+    public function getCurrent() {
         return $this->configCurrent;
     }
 
-    protected function validConfig($values) {
+    protected function isValuesValid($values) {
         foreach ($this->availablekeys as $key) {
             if (isset($values[$key])) {
                 return true;
@@ -100,8 +100,8 @@ class VersionConfig
         return false;
     }
 
-    protected function prepareConfig($configName, $configValues = array(), $sort = 500) {
-        $configValues = $this->prepareConfigValues($configValues);
+    protected function prepare($configName, $configValues = array(), $sort = 500) {
+        $configValues = $this->prepareValues($configValues);
         if (!empty($configValues['title'])) {
             $title = sprintf('%s (%s)', $configValues['title'], $configName);
         } else {
@@ -120,7 +120,7 @@ class VersionConfig
         );
     }
 
-    protected function prepareConfigValues($values = array()) {
+    protected function prepareValues($values = array()) {
         if (empty($values['migration_extend_class'])) {
             $values['migration_extend_class'] = 'Version';
         }
@@ -182,7 +182,7 @@ class VersionConfig
         return $values;
     }
 
-    public function getConfigVal($name, $default = '') {
+    public function getVal($name, $default = '') {
         if (isset($this->configCurrent['values'][$name])) {
             if (is_bool($this->configCurrent['values'][$name])) {
                 return $this->configCurrent['values'][$name];

@@ -254,8 +254,8 @@ class Console
             Out::out('Текущий пользователь: [%d] %s', $USER->GetID(), $USER->GetLogin());
         }
 
-        $configList = $versionManager->getVersionConfig()->getConfigList();
-        $configName = $versionManager->getVersionConfig()->getConfigName();
+        $configList = $versionManager->getVersionConfig()->getList();
+        $configName = $versionManager->getVersionConfig()->getName();
 
         Out::out('');
 
@@ -279,7 +279,7 @@ class Console
     public function commandConfig() {
         $versionManager = $this->createVersionManager();
 
-        $configItem = $versionManager->getVersionConfig()->getConfigCurrent();
+        $configItem = $versionManager->getVersionConfig()->getCurrent();
 
         Out::out($configItem['title']);
 
@@ -377,7 +377,7 @@ class Console
                 $fails++;
             }
 
-            if ($fails && $versionManager->getVersionConfig()->getConfigVal('stop_on_errors')) {
+            if ($fails && $versionManager->getVersionConfig()->getVal('stop_on_errors')) {
                 break;
             }
 
@@ -436,7 +436,7 @@ class Console
     protected function createVersionManager() {
         $versionManager = new VersionManager($this->getArg('--config='));
 
-        $userlogin = $versionManager->getVersionConfig()->getConfigVal('console_user');
+        $userlogin = $versionManager->getVersionConfig()->getVal('console_user');
         if ($userlogin == 'admin') {
             $this->authorizeAsAdmin();
         } elseif (strpos($userlogin, 'login:') === 0) {
