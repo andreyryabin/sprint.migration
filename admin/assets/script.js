@@ -168,9 +168,7 @@ jQuery(document).ready(function ($) {
             localStorage.setItem('migrations_open_block', openblockIx);
         }
 
-        var $body = $(this).siblings('.sp-block_body');
-        $body.show();
-        $('.sp-block_body').not($body).hide();
+        $(this).siblings('.sp-block_body').toggle();
 
         $('.sp-block').find('.adm-info-message-wrap').remove();
     });
