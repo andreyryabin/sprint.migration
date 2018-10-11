@@ -168,10 +168,20 @@ jQuery(document).ready(function ($) {
             localStorage.setItem('migrations_open_block', openblockIx);
         }
 
-        $(this).siblings('.sp-block_body').toggle();
+
+        var $body = $(this).siblings('.sp-block_body');
+
+        $('.sp-block_body').not($body).hide();
+        $body.show();
+
+        var docViewTop = $(window).scrollTop();
+        var elemTop = $(this).offset().top;
+        if (elemTop <= docViewTop){
+            $(document).scrollTop(elemTop- 25);
+        }
+
 
         $('.sp-block').find('.adm-info-message-wrap').remove();
     });
-
 
 });
