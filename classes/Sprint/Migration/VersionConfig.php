@@ -58,7 +58,7 @@ class VersionConfig
             $this->configList['archive'] = $this->prepare('archive', array(
                 'title' => GetMessage('SPRINT_MIGRATION_CONFIG_archive'),
                 'config_file' => GetMessage('SPRINT_MIGRATION_CONFIG_no'),
-                'migration_dir' => Module::getPhpInterfaceDir(false) . '/migrations_archive',
+                'migration_dir' => $this->getArchiveDir($this->configList['cfg']),
                 'migration_table' => 'sprint_migration_archive',
             ), 110);
         }
@@ -192,6 +192,17 @@ class VersionConfig
         }
 
         return $default;
+    }
+
+    protected function getArchiveDir($configItem) {
+        $docroot = Module::getDocRoot();
+        $dir = $configItem['values']['migration_dir'] . '/archive';
+
+        if (strpos($dir, $docroot) === 0) {
+            $dir = substr($dir, strlen($docroot));
+        }
+
+        return $dir;
     }
 
     protected function getDefaultBuilders() {

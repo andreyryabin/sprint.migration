@@ -23,12 +23,11 @@ class Module
         return rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
     }
 
-    public static function getPhpInterfaceDir($abs = true) {
-        $docroot = ($abs) ? self::getDocRoot() : '';
+    public static function getPhpInterfaceDir() {
         if (is_dir(self::getDocRoot() . '/local/php_interface')) {
-            return $docroot . '/local/php_interface';
+            return self::getDocRoot() . '/local/php_interface';
         } else {
-            return $docroot . '/bitrix/php_interface';
+            return self::getDocRoot() . '/bitrix/php_interface';
         }
     }
 

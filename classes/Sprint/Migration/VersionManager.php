@@ -430,7 +430,7 @@ class VersionManager
     }
 
 
-    protected function getVersionFile($versionName) {
+    public function getVersionFile($versionName) {
         return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '.php';
     }
 
@@ -467,7 +467,7 @@ class VersionManager
     }
 
     public function getWebDir() {
-        $dir = $this->getVersionConfig()->getVal('migration_dir', '');
+        $dir = $this->getVersionConfig()->getVal('migration_dir');
         if (strpos($dir, Module::getDocRoot()) === 0) {
             return substr($dir, strlen(Module::getDocRoot()));
         }

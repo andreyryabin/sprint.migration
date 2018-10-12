@@ -96,7 +96,7 @@ class Transfer extends AbstractBuilder
 
             if ($meta['is_file']) {
                 $source = $meta['location'];
-                $dest = $vmTo->getVersionConfig()->getVal('migration_dir') . '/' . $meta['version'] . '.php';
+                $dest = $vmTo->getVersionFile($meta['version']);
 
                 if (is_file($dest)) {
                     unlink($source);
