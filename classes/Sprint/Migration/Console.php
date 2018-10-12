@@ -64,9 +64,11 @@ class Console
 
     }
 
-    public function commandCreate() {
-        $versionManager = $this->createVersionManager();
+    public function commandRun() {
+        $this->executeBuilder($this->getArg(0));
+    }
 
+    public function commandCreate() {
         /** @compability */
         $descr = $this->getArg(0);
         /** @compability */
@@ -78,29 +80,10 @@ class Console
         $prefix = $this->getArg('--prefix=', $prefix);
         $from = $this->getArg('--from=', 'Version');
 
-        $postvars = array(
+        $this->executeBuilder($from,array(
             'description' => $descr,
             'prefix' => $prefix,
-        );
-
-        if (!$versionManager->isBuilder($from)) {
-            Out::out('Builder not found');
-            die(1);
-        }
-
-        do {
-            $builder = $versionManager->createBuilder($from, $postvars);
-
-            $builder->renderConsole();
-
-            $builder->build();
-
-            $builder->renderConsole();
-
-            $postvars = $builder->getRestartParams();
-
-        } while ($builder->isRestart() || $builder->isRebuild());
-
+        ));
     }
 
     public function commandMark() {
@@ -433,6 +416,29 @@ class Console
         return $success;
     }
 
+    protected function executeBuilder($from, $postvars = array()){
+        $versionManager = $this->createVersionManager();
+
+        if (!$versionManager->isBuilder($from)) {
+            Out::out('Builder not found');
+            die(1);
+        }
+
+        do {
+            $builder = $versionManager->createBuilder($from, $postvars);
+
+            $builder->renderConsole();
+
+            $builder->build();
+
+            $builder->renderConsole();
+
+            $postvars = $builder->getRestartParams();
+
+        } while ($builder->isRestart() || $builder->isRebuild());
+    }
+
+
     protected function createVersionManager() {
         $versionManager = new VersionManager($this->getArg('--config='));
 
@@ -492,6 +498,5 @@ class Console
             return isset($this->argoptions[$name]) ? $this->argoptions[$name] : $default;
         }
     }
-
 
 }
