@@ -4,6 +4,7 @@ namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\HelperException;
 
+use Sprint\Migration\Helpers\FormHelper;
 use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Helpers\HlblockHelper;
 use Sprint\Migration\Helpers\AdminIblockHelper;
@@ -26,6 +27,7 @@ use Sprint\Migration\Helpers\UserGroupHelper;
  * @method SiteHelper               Site()
  * @method UserTypeEntityHelper     UserTypeEntity()
  * @method UserGroupHelper          UserGroup()
+ * @method FormHelper               Form()
  */
 class HelperManager
 {

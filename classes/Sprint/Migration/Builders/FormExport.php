@@ -32,9 +32,23 @@ class FormExport extends VersionBuilder
     protected function execute()
     {
         $helper = new HelperManager();
+        $formHelper = $helper->Form();
 
         $formId = $this->getFieldValue('form_id');
-        $this->exitIfEmpty($formId, 'Form not found');
+        $this->exitIfEmpty($formId, 'Form id is not valid');
 
+        $form = $formHelper->initForm($formId);
+        $this->exitIfEmpty($form, 'Form not found');
+
+        $statuses = $formHelper->getFormStatuses();
+        $form['_STATUSES'] = $statuses;
+
+        $fields = $formHelper->getFormFields();
+        $form['_FIELDS'] = $fields;
+
+        $validators = $formHelper->getFormValidators();
+        $form['_VALIDATORS'] = $validators;
+
+        debmes($form);
     }
 }
