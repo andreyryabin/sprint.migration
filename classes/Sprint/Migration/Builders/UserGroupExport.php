@@ -26,6 +26,12 @@ class UserGroupExport extends VersionBuilder
             'width' => 250,
             'select' => $this->getUserGroups()
         ));
+
+        $this->addField('description', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
+            'width' => 350,
+            'height' => 40,
+        ));
     }
 
 
