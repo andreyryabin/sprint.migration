@@ -29,18 +29,40 @@ class UserGroupHelper extends Helper
     }
 
     public function getGroup($code) {
-        $groupId = $this->getGroupId($code);
+        $groupId = is_numeric($code) ? $code : $this->getGroupId($code);
+
         return ($groupId) ? \CGroup::GetByID($groupId)->Fetch() : false;
     }
 
+    public function saveGroup($code, $fields = array()) {
+        $groupId = $this->getGroupId($code);
+        if ($groupId) {
+            return $this->updateGroup($groupId, $fields);
+        } else {
+            return $this->addGroup($code, $fields);
+        }
+    }
 
     public function addGroupIfNotExists($code, $fields = array()) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
-
         $groupId = $this->getGroupId($code);
         if ($groupId) {
             return intval($groupId);
         }
+
+        return $this->addGroup($code, $fields);
+    }
+
+    public function updateGroupIfExists($code, $fields = array()) {
+        $groupId = $this->getGroupId($code);
+        if (!$groupId) {
+            return false;
+        }
+
+        return $this->updateGroup($groupId, $fields);
+    }
+
+    protected function addGroup($code, $fields = array()) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
 
         $fields['STRING_ID'] = $code;
 
@@ -52,27 +74,18 @@ class UserGroupHelper extends Helper
         }
 
         $this->throwException(__METHOD__, $group->LAST_ERROR);
-
     }
 
-    public function updateGroupIfExists($code, $fields = array()) {
-        $groupId = $this->getGroupId($code);
-        if (!$groupId) {
-            return false;
-        }
-
+    protected function updateGroup($groupId, $fields = array()) {
         if (empty($fields)) {
-            $this->throwException(__METHOD__, 'Set fields for group %s', $code);
+            $this->throwException(__METHOD__, 'Set fields for group');
         }
 
         $group = new \CGroup;
-
         if ($group->Update($groupId, $fields)) {
             return intval($groupId);
         }
 
         $this->throwException(__METHOD__, $group->LAST_ERROR);
-
     }
-
 }

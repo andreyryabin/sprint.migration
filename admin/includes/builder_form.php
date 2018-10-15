@@ -33,6 +33,22 @@
                             ><?= $item['title'] ?></option>
                         <? endforeach; ?>
                     </select>
+                <? elseif (isset($fieldItem['select']) && $fieldItem['multiple']): ?>
+                <div class="sp-optgroup">
+                    <div style="padding: 5px 0;">
+                        <a href="#" class="sp-optgroup-check"><?= GetMessage('SPRINT_MIGRATION_BUILDER_SELECT_ALL') ?></a>
+                    </div>
+                    <? foreach ($fieldItem['select'] as $item): ?>
+                        <label>
+                            <input name="<?= $fieldCode ?>[]"
+                                   value="<?= $item['value'] ?>"
+                                <? if (in_array($item['value'], $fieldItem['value'])): ?>
+                                    checked="checked"
+                                <? endif; ?>
+                                   type="checkbox"
+                            ><?= $item['title'] ?></label> <br/>
+                    <? endforeach; ?>
+                </div>
                 <? elseif (isset($fieldItem['items']) && !$fieldItem['multiple']): ?>
                     <select name="<?= $fieldCode ?>"
                         <? if (!empty($fieldItem['width'])): ?>

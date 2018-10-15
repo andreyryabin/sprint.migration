@@ -85,11 +85,16 @@
     "SPRINT_MIGRATION_BUILDER_Version1" => "Создать простую миграцию",
     "SPRINT_MIGRATION_BUILDER_Version2" => "",
 
+    "SPRINT_MIGRATION_BUILDER_UserGroupExport1" => "Создать миграцию для групп пользователей",
+    "SPRINT_MIGRATION_BUILDER_UserGroupExport2" => "",
+    "SPRINT_MIGRATION_BUILDER_UserGroupExport_user_group" => "Выберите группы",
+    "SPRINT_MIGRATION_BUILDER_UserGroupExport_empty_group" => "Группы для импорта не найдены",
+
     "SPRINT_MIGRATION_BUILDER_IblockExport1" => "Создать миграцию для инфоблока",
     "SPRINT_MIGRATION_BUILDER_IblockExport2" => "",
     "SPRINT_MIGRATION_BUILDER_IblockExport_IblockId" => "Выберите инфоблок",
     "SPRINT_MIGRATION_BUILDER_IblockExport_PropertyIds" => "Выберите свойства",
-    "SPRINT_MIGRATION_BUILDER_IblockExport_What" => "Что экспортируем",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_What" => "Что переносим",
     "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblock" => "Инфоблок",
     "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockType" => "Тип инфоблока",
     "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockFields" => "Поля инфоблока",

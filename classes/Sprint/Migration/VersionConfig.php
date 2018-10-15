@@ -211,6 +211,7 @@ class VersionConfig
             'IblockExport' => '\Sprint\Migration\Builders\IblockExport',
             'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
             'UserTypeEntities' => '\Sprint\Migration\Builders\UserTypeEntities',
+            'UserGroupExport' => '\Sprint\Migration\Builders\UserGroupExport',
             'Transfer' => '\Sprint\Migration\Builders\Transfer',
             'Marker' => '\Sprint\Migration\Builders\Marker',
             'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
