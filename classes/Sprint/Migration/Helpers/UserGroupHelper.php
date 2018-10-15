@@ -17,7 +17,7 @@ class UserGroupHelper extends Helper
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbRes = \CGroup::GetList($by, $order, $filter);
         while ($aItem = $dbRes->Fetch()) {
-            $res[] = $aItem;
+            $res[] = $this->getGroup($aItem['ID']);
         }
 
         return $res;
@@ -31,7 +31,22 @@ class UserGroupHelper extends Helper
     public function getGroup($code) {
         $groupId = is_numeric($code) ? $code : $this->getGroupId($code);
 
-        return ($groupId) ? \CGroup::GetByID($groupId)->Fetch() : false;
+        if (empty($groupId)) {
+            return false;
+        }
+
+        /* extract SECURITY_POLICY */
+        $item = \CGroup::GetByID($groupId)->Fetch();
+        if (empty($item)) {
+            return false;
+        }
+
+        if (!empty($item['SECURITY_POLICY'])) {
+            $item['SECURITY_POLICY'] = unserialize($item['SECURITY_POLICY']);
+        }
+
+        return $item;
+
     }
 
     public function saveGroup($code, $fields = array()) {
@@ -67,7 +82,7 @@ class UserGroupHelper extends Helper
         $fields['STRING_ID'] = $code;
 
         $group = new \CGroup;
-        $groupId = $group->Add($fields);
+        $groupId = $group->Add($this->prepareFields($fields));
 
         if ($groupId) {
             return intval($groupId);
@@ -82,10 +97,18 @@ class UserGroupHelper extends Helper
         }
 
         $group = new \CGroup;
-        if ($group->Update($groupId, $fields)) {
+        if ($group->Update($groupId, $this->prepareFields($fields))) {
             return intval($groupId);
         }
 
         $this->throwException(__METHOD__, $group->LAST_ERROR);
+    }
+
+    protected function prepareFields($fields) {
+        if (!empty($fields['SECURITY_POLICY']) && is_array($fields['SECURITY_POLICY'])) {
+            $fields['SECURITY_POLICY'] = serialize($fields['SECURITY_POLICY']);
+        }
+
+        return $fields;
     }
 }
