@@ -56,7 +56,9 @@ class UserGroupExport extends VersionBuilder
             }
         }
 
-        $this->exitIfEmpty($items, GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport_empty_group'));
+        if (empty($items)) {
+            $this->rebuildField('user_group');
+        }
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/UserGroupExport.php', array(
