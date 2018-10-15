@@ -82,7 +82,7 @@ class UserGroupExport extends VersionBuilder
         foreach ($groups as $group) {
             if (!empty($group['STRING_ID'])) {
                 $result[] = [
-                    'title' => $group['NAME'],
+                    'title' => '[' . $group['STRING_ID'] . '] ' . $group['NAME'],
                     'value' => $group['ID']
                 ];
             }

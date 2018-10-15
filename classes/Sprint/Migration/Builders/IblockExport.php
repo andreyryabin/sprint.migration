@@ -191,7 +191,7 @@ class IblockExport extends VersionBuilder
 
         foreach ($iblockTypes as $iblockType) {
             $structure[$iblockType['ID']] = [
-                'title' => $iblockType['LANG'][LANGUAGE_ID]['NAME'],
+                'title' => '['.$iblockType['ID'] . '] ' . $iblockType['LANG'][LANGUAGE_ID]['NAME'],
                 'items' => array(),
             ];
         }
@@ -199,7 +199,7 @@ class IblockExport extends VersionBuilder
         $iblocks = $iblockHelper->getIblocks();
         foreach ($iblocks as $iblock) {
             $structure[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
-                'title' => $iblock['NAME'],
+                'title' => '['.$iblock['CODE'] . '] ' . $iblock['NAME'],
                 'value' => $iblock['ID']
             ];
         }
@@ -215,7 +215,7 @@ class IblockExport extends VersionBuilder
 
         foreach ($props as $prop) {
             $structure[0]['items'][] = [
-                'title' => $prop['NAME'],
+                'title' => '['.$prop['CODE'] . '] ' . $prop['NAME'],
                 'value' => $prop['ID']
             ];
         }

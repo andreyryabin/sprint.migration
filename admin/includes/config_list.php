@@ -4,6 +4,9 @@
 
 $configItem = $versionManager->getVersionConfig()->getCurrent();
 ?>
+
+<div class="sp-block_head"><?= GetMessage('SPRINT_MIGRATION_CONFIG') ?>: <?=$configItem['title']?></div>
+
 <table class="sp-config">
     <tbody>
     <? foreach ($configItem['values'] as $key => $val) :

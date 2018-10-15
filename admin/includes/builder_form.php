@@ -3,15 +3,14 @@
 ?>
 <form method="post">
     <?= $builder->getDescription() ?>
-
     <? $fields = $builder->getFields() ?>
     <? foreach ($fields as $fieldCode => $fieldItem): ?>
-
         <? if ($fieldItem['type'] == 'hidden'): ?>
             <input type="hidden" name="<?= $fieldCode ?>" value="<?= $fieldItem['value'] ?>"/>
         <? else: ?>
             <div class="sp-field">
                 <? if (!empty($fieldItem['title'])): ?><?= $fieldItem['title'] ?><br/><? endif; ?>
+                <? if (!empty($fieldItem['note'])): ?><div class="sp-field-note"><?= $fieldItem['note'] ?></div><? endif; ?>
                 <? if (!empty($fieldItem['height'])): ?>
                     <textarea name="<?= $fieldCode ?>"
                         <? if (!empty($fieldItem['width'])): ?>
@@ -89,7 +88,6 @@
                             <? endif; ?>
                         </div>
                     <? endforeach; ?>
-
                 <? else: ?>
                     <input name="<?= $fieldCode ?>"
                            type="text"

@@ -80,7 +80,7 @@ class Console
         $prefix = $this->getArg('--prefix=', $prefix);
         $from = $this->getArg('--from=', 'Version');
 
-        $this->executeBuilder($from,array(
+        $this->executeBuilder($from, array(
             'description' => $descr,
             'prefix' => $prefix,
         ));
@@ -145,8 +145,8 @@ class Console
         ));
 
         foreach ($versions as $index => $item) {
-            if ($item['modified']){
-                $item['version'] .= ' ('.GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL').')';
+            if ($item['modified']) {
+                $item['version'] .= ' (' . GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL') . ')';
             }
 
             $table->addRow(array(
@@ -264,7 +264,7 @@ class Console
 
         $configItem = $versionManager->getVersionConfig()->getCurrent();
 
-        Out::out($configItem['title']);
+        Out::out('%s: %s', GetMessage('SPRINT_MIGRATION_CONFIG'), $configItem['title']);
 
         $table = new ConsoleTable(-1, array(
             'horizontal' => '=',
@@ -416,7 +416,7 @@ class Console
         return $success;
     }
 
-    protected function executeBuilder($from, $postvars = array()){
+    protected function executeBuilder($from, $postvars = array()) {
         $versionManager = $this->createVersionManager();
 
         if (!$versionManager->isBuilder($from)) {

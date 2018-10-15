@@ -85,6 +85,11 @@
     "SPRINT_MIGRATION_BUILDER_Version1" => "Создать простую миграцию",
     "SPRINT_MIGRATION_BUILDER_Version2" => "",
 
+    "SPRINT_MIGRATION_BUILDER_Configurator" => "Создать конфигурацию",
+    "SPRINT_MIGRATION_BUILDER_Configurator_config_name" => "Название (лат буквы и цифры)",
+    "SPRINT_MIGRATION_BUILDER_Configurator_config_created" => "Конфигурация создана",
+    "SPRINT_MIGRATION_BUILDER_Configurator_config_error" => "Ошибка создания конфигурации",
+
     "SPRINT_MIGRATION_BUILDER_UserGroupExport1" => "Создать миграцию для групп пользователей",
     "SPRINT_MIGRATION_BUILDER_UserGroupExport2" => "",
     "SPRINT_MIGRATION_BUILDER_UserGroupExport_user_group" => "Выберите группы",

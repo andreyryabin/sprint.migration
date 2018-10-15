@@ -67,7 +67,6 @@
     <div class="sp-clear" style="margin-top: 10px"></div>
 
     <div class="sp-block">
-        <div class="sp-block_head"><?= GetMessage('SPRINT_MIGRATION_CONFIG') ?></div>
         <? include __DIR__ . '/config_list.php' ?>
     </div>
 
