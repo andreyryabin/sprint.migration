@@ -21,9 +21,7 @@ abstract class AbstractBuilder
 
     protected $params = array();
 
-    private $initRebuild = 0;
-    private $initException = 0;
-    private $initRestart = 0;
+    private $execStatus = '';
 
     private $enabled = false;
 
@@ -108,13 +106,7 @@ abstract class AbstractBuilder
     }
 
     public function canShowReset() {
-        $bind = 0;
-        foreach ($this->fields as $field) {
-            if ($field['bind']) {
-                $bind++;
-            }
-        }
-        return ($bind >= 2);
+        return (empty($this->execStatus)) ? 0 : 1;
     }
 
     protected function renderFile($file, $vars = array()) {
@@ -179,11 +171,11 @@ abstract class AbstractBuilder
     }
 
     public function isRebuild() {
-        return $this->initRebuild;
+        return ($this->execStatus == 'rebuild');
     }
 
     public function isRestart() {
-        return $this->initRestart;
+        return ($this->execStatus == 'restart');
     }
 
     public function getRestartParams() {
@@ -191,29 +183,26 @@ abstract class AbstractBuilder
     }
 
     private function buildExecute() {
-        $this->initRestart = 0;
-        $this->initRebuild = 0;
-        $this->initException = 0;
+        $this->execStatus = '';
 
         try {
 
             $this->execute();
 
-
         } catch (RestartException $e) {
-            $this->initRestart = 1;
+            $this->execStatus = 'restart';
             return false;
 
         } catch (RebuildException $e) {
-            $this->initRebuild = 1;
+            $this->execStatus = 'rebuild';
             return false;
 
         } catch (\Exception $e) {
-            $this->initException = 1;
             Out::outError('%s: %s', GetMessage('SPRINT_MIGRATION_BUILDER_ERROR'), $e->getMessage());
             return false;
         }
 
+        $this->execStatus = 'success';
         return true;
     }
 
