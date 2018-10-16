@@ -266,6 +266,7 @@ class VersionConfig
             'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
             'UserTypeEntities' => '\Sprint\Migration\Builders\UserTypeEntities',
             'UserGroupExport' => '\Sprint\Migration\Builders\UserGroupExport',
+            'AgentExport' => '\Sprint\Migration\Builders\AgentExport',
             'Marker' => '\Sprint\Migration\Builders\Marker',
             'Transfer' => '\Sprint\Migration\Builders\Transfer',
             'Configurator' => '\Sprint\Migration\Builders\Configurator',
