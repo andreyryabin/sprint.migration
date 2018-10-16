@@ -53,9 +53,8 @@
 
     <div class="sp-clear" style="margin-top: 10px"></div>
 
-    <? $builders = $versionManager->getBuilders(); ?>
-    <? foreach ($builders as $builderName => $builderClass): ?>
-        <? $builder = $versionManager->createBuilder($builderName); ?>
+    <? $builders = $versionManager->createBuilders(); ?>
+    <? foreach ($builders as $builder): ?>
         <div class="sp-block">
             <div class="sp-block_title"><?= $builder->getTitle() ?></div>
             <div class="sp-block_body" data-builder="<?= $builder->getName() ?>">

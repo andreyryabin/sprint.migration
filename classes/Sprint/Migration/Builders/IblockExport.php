@@ -43,7 +43,6 @@ class IblockExport extends VersionBuilder
             'items' => $this->getIblocksStructure()
         ));
 
-
         $this->addField('what', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_What'),
             'width' => 250,
@@ -73,14 +72,15 @@ class IblockExport extends VersionBuilder
             ]
         ));
 
-
         $iblockId = $this->getFieldValue('iblock_id');
         if (empty($iblockId)) {
             $this->rebuildField('iblock_id');
         }
 
         $iblock = $helper->Iblock()->getIblock(array('ID' => $iblockId));
-        $this->exitIfEmpty($iblock, 'Iblock not found');
+        if (empty($iblock)){
+            $this->rebuildField('iblock_id');
+        }
 
         unset($iblock['ID']);
         unset($iblock['TIMESTAMP_X']);

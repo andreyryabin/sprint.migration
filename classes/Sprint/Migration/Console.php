@@ -419,17 +419,18 @@ class Console
     protected function executeBuilder($from, $postvars = array()) {
         $versionManager = $this->createVersionManager();
 
-        if (!$versionManager->isBuilder($from)) {
-            Out::out('Builder not found');
-            die(1);
-        }
-
         do {
+
             $builder = $versionManager->createBuilder($from, $postvars);
+
+            if (!$builder) {
+                Out::out('Builder not found');
+                die(1);
+            }
 
             $builder->renderConsole();
 
-            $builder->build();
+            $builder->executeBuilder();
 
             $builder->renderConsole();
 

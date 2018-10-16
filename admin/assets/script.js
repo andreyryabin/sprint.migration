@@ -71,11 +71,16 @@ function migrationMigrationRefresh(callbackAfterRefresh) {
     });
 }
 
-function migrationCreate(postData) {
-
+function migrationBuilder(postData) {
     var $block = $('[data-builder="' + postData['builder_name'] + '"]');
-
     migrationExecuteStep('migration_create', postData, function (result) {
+        $block.html(result);
+    });
+}
+
+function migrationBuilderReset(postData){
+    var $block = $('[data-builder="' + postData['builder_name'] + '"]');
+    migrationExecuteStep('migration_reset', postData, function (result) {
         $block.html(result);
     });
 }
@@ -140,15 +145,13 @@ jQuery(document).ready(function ($) {
     $('[data-builder]').on('submit', 'form', function (e) {
         e.preventDefault();
         var postData = $(this).serializeFormJSON();
-        migrationCreate(postData);
+        migrationBuilder(postData);
     });
 
     $('[data-builder]').on('reset', 'form', function (e) {
         e.preventDefault();
         var postData = $(this).serializeFormJSON();
-
-
-        migrationCreate({builder_name: postData['builder_name']});
+        migrationBuilderReset(postData);
     });
 
 

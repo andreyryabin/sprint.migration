@@ -19,8 +19,6 @@ class VersionManager
 
     private $lastException = null;
 
-    private $buildersList = array();
-
     public function __construct($configName = '') {
         $this->versionConfig = new VersionConfig(
             $configName
@@ -40,7 +38,7 @@ class VersionManager
     public function getVersionTable() {
         return $this->versionTable;
     }
-    
+
     public function startMigration($versionName, $action = 'up', $params = array(), $force = false) {
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
@@ -125,60 +123,48 @@ class VersionManager
     }
 
     /**
-     * @param string $name
-     * @param array $postvars
-     * @return AbstractBuilder
+     * @param $name
+     * @param $params
+     * @return bool|AbstractBuilder
      */
-    public function createBuilder($name = '', $postvars = array()) {
-        $builders = $this->getBuilders();
+    public function createBuilder($name, $params = array()) {
+        $builders = $this->getVersionConfig()->getVal('version_builders', array());
+
+        if (empty($builders[$name])) {
+            return false;
+        }
 
         $class = $builders[$name];
 
+        if (!class_exists($class)) {
+            return false;
+        }
+
         /** @var  $builder AbstractBuilder */
+        $builder = new $class($this->getVersionConfig(), $name, $params);
 
-        $builder = new $class(
-            $this->getVersionConfig(),
-            $name,
-            $postvars,
-            true
-        );
+        if (!$builder->isEnabled()) {
+            return false;
+        }
 
+        $builder->initializeBuilder();
         return $builder;
     }
 
-    public function isBuilder($name) {
-        $builders = $this->getBuilders();
-        return ($name && isset($builders[$name]));
-    }
-
-
-    public function getBuilders() {
-        if (!empty($this->buildersList)) {
-            return $this->buildersList;
-        }
-
+    /**
+     * @return AbstractBuilder[]
+     */
+    public function createBuilders() {
+        $res = array();
         $builders = $this->getVersionConfig()->getVal('version_builders', array());
-        $builders = is_array($builders) ? $builders : array();
-
-        /** @var  $builder AbstractBuilder */
-
-        foreach ($builders as $name => $class) {
-            if (class_exists($class)) {
-                $builder = new $class(
-                    $this->getVersionConfig(),
-                    $name,
-                    array(),
-                    false
-                );
-                if ($builder->isEnabled()) {
-                    $this->buildersList[$name] = $class;
-                }
-
+        foreach ($builders as $builderName => $builderClass) {
+            if ($builder = $this->createBuilder($builderName)) {
+                $res[] = $builder;
             }
         }
-
-        return $this->buildersList;
+        return $res;
     }
+
 
     public function markMigration($search, $status) {
         // $search - VersionName | new | installed | unknown

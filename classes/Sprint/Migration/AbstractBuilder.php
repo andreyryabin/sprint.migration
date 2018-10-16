@@ -41,21 +41,26 @@ abstract class AbstractBuilder
         return false;
     }
 
-    public function __construct(VersionConfig $versionConfig, $name, $params = array(), $initialize = true) {
+    public function __construct(VersionConfig $versionConfig, $name, $params = array()) {
         $this->versionConfig = $versionConfig;
         $this->name = $name;
-        $this->params = $params;
         $this->enabled = $this->isBuilderEnabled();
+        $this->params = $params;
 
-        if ($this->enabled && $initialize) {
-            $this->addField('builder_name', array(
-                'value' => $this->getName(),
-                'type' => 'hidden',
-                'bind' => 1
-            ));
+        $this->addField('builder_name', array(
+            'value' => $this->getName(),
+            'type' => 'hidden',
+            'bind' => 1
+        ));
+    }
 
-            $this->initialize();
-        }
+    public function initializeBuilder() {
+        $this->initialize();
+    }
+
+    public function executeBuilder() {
+        $this->buildExecute();
+        $this->buildAfter();
     }
 
     public function getVersionConfig() {
@@ -100,6 +105,16 @@ abstract class AbstractBuilder
             $this->fields[$code]['value'] = $val;
             $this->params[$code] = $val;
         }
+    }
+
+    public function canShowReset() {
+        $bind = 0;
+        foreach ($this->fields as $field) {
+            if ($field['bind']) {
+                $bind++;
+            }
+        }
+        return ($bind >= 2);
     }
 
     protected function renderFile($file, $vars = array()) {
@@ -173,11 +188,6 @@ abstract class AbstractBuilder
 
     public function getRestartParams() {
         return $this->params;
-    }
-
-    public function build() {
-        $this->buildExecute();
-        $this->buildAfter();
     }
 
     private function buildExecute() {
