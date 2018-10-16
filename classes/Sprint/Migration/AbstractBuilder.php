@@ -106,7 +106,7 @@ abstract class AbstractBuilder
     }
 
     public function canShowReset() {
-        return (empty($this->execStatus)) ? 0 : 1;
+        return 0;
     }
 
     protected function renderFile($file, $vars = array()) {
@@ -198,6 +198,7 @@ abstract class AbstractBuilder
             return false;
 
         } catch (\Exception $e) {
+            $this->execStatus = 'error';
             Out::outError('%s: %s', GetMessage('SPRINT_MIGRATION_BUILDER_ERROR'), $e->getMessage());
             return false;
         }
