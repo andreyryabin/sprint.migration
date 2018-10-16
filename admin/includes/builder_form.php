@@ -106,9 +106,4 @@
     <div class="sp-field">
         <input type="submit" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"/>
     </div>
-    <? if ($builder->canShowReset()): ?>
-        <div class="sp-field">
-            <input type="reset" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_RESET') ?>"/>
-        </div>
-    <? endif; ?>
 </form>

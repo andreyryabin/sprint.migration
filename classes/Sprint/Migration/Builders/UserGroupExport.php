@@ -18,13 +18,10 @@ class UserGroupExport extends VersionBuilder
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport2'));
 
-        $this->addField('user_group', array(
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport_user_group'),
-            'placeholder' => '',
-            'multiple' => 1,
-            'value' => array(),
+        $this->addField('prefix', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
+            'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
-            'select' => $this->getUserGroups()
         ));
 
         $this->addField('description', array(
@@ -38,12 +35,21 @@ class UserGroupExport extends VersionBuilder
     protected function execute() {
         $helper = new HelperManager();
 
-        $userGroups = $this->getFieldValue('user_group');
-        $userGroups = is_array($userGroups) ? $userGroups : array($userGroups);
+        $this->addField('user_group', array(
+            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport_user_group'),
+            'placeholder' => '',
+            'multiple' => 1,
+            'value' => array(),
+            'width' => 250,
+            'select' => $this->getUserGroups()
+        ));
 
+        $userGroups = $this->getFieldValue('user_group');
         if (empty($userGroups)) {
             $this->rebuildField('user_group');
         }
+
+        $userGroups = is_array($userGroups) ? $userGroups : array($userGroups);
 
         $items = array();
         foreach ($userGroups as $groupId) {

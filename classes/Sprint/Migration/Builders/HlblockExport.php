@@ -18,13 +18,10 @@ class HlblockExport extends VersionBuilder
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport2'));
 
-        $this->addField('hlblock_id', array(
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId'),
-            'placeholder' => '',
-            'multiple' => 1,
-            'value' => array(),
+        $this->addField('prefix', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
+            'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
-            'items' => $this->getHlStructure()
         ));
 
         $this->addField('description', array(
@@ -37,6 +34,15 @@ class HlblockExport extends VersionBuilder
 
     protected function execute() {
         $helper = new HelperManager();
+
+        $this->addField('hlblock_id', array(
+            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId'),
+            'placeholder' => '',
+            'multiple' => 1,
+            'value' => array(),
+            'width' => 250,
+            'items' => $this->getHlStructure()
+        ));
 
         $hlblockIds = $this->getFieldValue('hlblock_id');
         if (!empty($hlblockIds)) {

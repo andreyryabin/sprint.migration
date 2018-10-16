@@ -86,20 +86,6 @@ abstract class AbstractBuilder
         return $param;
     }
 
-    public function canShowReset() {
-        $foundBind = 0;
-        $foundNo = 0;
-        foreach ($this->fields as $code => $field) {
-            if ($field['bind']) {
-                $foundBind++;
-            } else {
-                $foundNo++;
-            }
-        }
-
-        return ($foundBind > 1 && $foundNo > 1);
-    }
-
     protected function getFieldValue($code, $default = '') {
         if (isset($this->fields[$code]) && $this->fields[$code]['bind'] == 1) {
             return $this->fields[$code]['value'];
