@@ -18,13 +18,10 @@ class UserTypeEntities extends VersionBuilder
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities2'));
 
-        $this->addField('type_codes', array(
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId'),
-            'placeholder' => '',
+        $this->addField('prefix', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
+            'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
-            'multiple' => 1,
-            'items' => $this->getEntitiesStructure(),
-            'value' => array()
         ));
 
         $this->addField('description', array(
@@ -38,8 +35,16 @@ class UserTypeEntities extends VersionBuilder
     protected function execute() {
         $helper = new HelperManager();
 
-        $typeCodes = $this->getFieldValue('type_codes');
+        $this->addField('type_codes', array(
+            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId'),
+            'placeholder' => '',
+            'width' => 250,
+            'multiple' => 1,
+            'items' => $this->getEntitiesStructure(),
+            'value' => array()
+        ));
 
+        $typeCodes = $this->getFieldValue('type_codes');
         if (empty($typeCodes)) {
             $this->rebuildField('type_codes');
         }

@@ -24,7 +24,7 @@ class HlblockHelper extends Helper
         );
 
         $result = [];
-        while ($hlblock = $dbres->fetch()){
+        while ($hlblock = $dbres->fetch()) {
             $hlblock['LANG'] = $this->getHblockLangs($hlblock['ID']);
             $result[] = $hlblock;
         }
@@ -102,7 +102,7 @@ class HlblockHelper extends Helper
         $result = HL\HighloadBlockTable::update($hlblockId, $fields);
         if ($result->isSuccess()) {
             $this->replaceHblockLangs($hlblockId, $lang);
-            return true;
+            return $hlblockId;
         }
 
         $this->throwException(__METHOD__, implode(', ', $result->getErrors()));
@@ -204,4 +204,20 @@ class HlblockHelper extends Helper
             $this->addHblockLangs($hlblockId, $lang);
         }
     }
+
+
+    //version 2
+
+
+    public function saveHlblock($fields) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
+
+        $aItem = $this->getHlblock($fields['NAME']);
+        if ($aItem) {
+            return $this->updateHlblock($aItem['ID'], $fields);
+        } else {
+            return $this->addHlblock($fields);
+        }
+    }
+
 }

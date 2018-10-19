@@ -20,7 +20,7 @@ class Version extends VersionBuilder
 
         $this->addField('prefix', array(
             'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
-            'value' => $this->getConfigVal('version_prefix'),
+            'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
         ));
 
@@ -32,7 +32,7 @@ class Version extends VersionBuilder
     }
 
     protected function execute() {
-        $template = $this->getConfigVal('migration_template');
+        $template = $this->getVersionConfig()->getVal('migration_template');
         if ($template && is_file(Module::getDocRoot() . $template)) {
             $template = Module::getDocRoot() . $template;
         } else {

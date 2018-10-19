@@ -23,27 +23,27 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper = new HelperManager();
 
     <? if (!empty($iblockType)): ?>
-        $helper->Iblock()->addIblockTypeIfNotExists(<?php echo var_export($iblockType, 1) ?>);
+        $helper->Iblock()->saveIblockType(<?php echo var_export($iblockType, 1) ?>);
     <? endif; ?>
 
     <? if (!empty($iblockExport)): ?>
-        $iblockId = $helper->Iblock()->addIblockIfNotExists(<?php echo var_export($iblock, 1) ?>);
+        $iblockId = $helper->Iblock()->saveIblock(<?php echo var_export($iblock, 1) ?>);
     <? else:?>
-        $iblockId = $helper->Iblock()->getIblockId('<?php echo $iblock['CODE'] ?>','<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
+        $iblockId = $helper->Iblock()->findIblockId('<?php echo $iblock['CODE'] ?>','<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
     <? endif; ?>
 
     <? if (!empty($iblockFields)): ?>
-        $helper->Iblock()->updateIblockFields($iblockId, <?php echo var_export($iblockFields, 1) ?>);
+        $helper->Iblock()->saveIblockFields($iblockId, <?php echo var_export($iblockFields, 1) ?>);
     <? endif; ?>
 
     <? if (!empty($iblockProperties)): ?>
     <?php foreach ($iblockProperties as $iblockProperty): ?>
-        $helper->Iblock()->addPropertyIfNotExists($iblockId, <?php echo var_export($iblockProperty, 1) ?>);
+        $helper->Iblock()->saveProperty($iblockId, <?php echo var_export($iblockProperty, 1) ?>);
     <? endforeach; ?>
     <? endif; ?>
 
     <? if (!empty($iblockAdminTabs)): ?>
-        $helper->AdminIblock()->buildElementForm($iblockId, <?php echo var_export($iblockAdminTabs, 1) ?>);
+        $helper->AdminIblock()->saveElementForm($iblockId, <?php echo var_export($iblockAdminTabs, 1) ?>);
     <? endif; ?>
 
     }

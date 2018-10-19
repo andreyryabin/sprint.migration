@@ -69,7 +69,7 @@ class AdminIblockHelper extends Helper
         $this->throwException(__METHOD__, 'Iblock form options not found');
     }
 
-    public function buildElementForm($iblockId, $tabs = array(), $params = array()) {
+    public function saveElementForm($iblockId, $tabs = array(), $params = array()) {
         $this->initializeVars($iblockId);
 
         /** @example *//*
@@ -155,7 +155,7 @@ class AdminIblockHelper extends Helper
         \CUserOptions::SetOption($params['category'], $name, $value, true);
     }
 
-    public function buildElementList($iblockId, $columns = array(), $params = array()) {
+    public function saveElementList($iblockId, $columns = array(), $params = array()) {
         $this->initializeVars($iblockId);
 
         /** @example *//*
@@ -285,5 +285,15 @@ class AdminIblockHelper extends Helper
             $fieldCode = 'PROPERTY_' . $fieldCode;
         }
         return $fieldCode;
+    }
+
+    /** @deprecated use saveElementForm */
+    public function buildElementForm($iblockId, $tabs = array(), $params = array()) {
+        $this->saveElementForm($iblockId, $tabs, $params);
+    }
+
+    /** @deprecated use saveElementList */
+    public function buildElementList($iblockId, $columns = array(), $params = array()) {
+        $this->saveElementList($iblockId, $columns, $params);
     }
 }

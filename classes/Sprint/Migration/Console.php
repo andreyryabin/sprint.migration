@@ -64,9 +64,11 @@ class Console
 
     }
 
-    public function commandCreate() {
-        $versionManager = $this->createVersionManager();
+    public function commandRun() {
+        $this->executeBuilder($this->getArg(0));
+    }
 
+    public function commandCreate() {
         /** @compability */
         $descr = $this->getArg(0);
         /** @compability */
@@ -78,29 +80,10 @@ class Console
         $prefix = $this->getArg('--prefix=', $prefix);
         $from = $this->getArg('--from=', 'Version');
 
-        $postvars = array(
+        $this->executeBuilder($from, array(
             'description' => $descr,
             'prefix' => $prefix,
-        );
-
-        if (!$versionManager->isBuilder($from)) {
-            Out::out('Builder not found');
-            die(1);
-        }
-
-        do {
-            $builder = $versionManager->createBuilder($from, $postvars);
-
-            $builder->renderConsole();
-
-            $builder->build();
-
-            $builder->renderConsole();
-
-            $postvars = $builder->getRestartParams();
-
-        } while ($builder->isRestart() || $builder->isRebuild());
-
+        ));
     }
 
     public function commandMark() {
@@ -162,8 +145,8 @@ class Console
         ));
 
         foreach ($versions as $index => $item) {
-            if ($item['modified']){
-                $item['version'] .= ' ('.GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL').')';
+            if ($item['modified']) {
+                $item['version'] .= ' (' . GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL') . ')';
             }
 
             $table->addRow(array(
@@ -254,8 +237,8 @@ class Console
             Out::out('Текущий пользователь: [%d] %s', $USER->GetID(), $USER->GetLogin());
         }
 
-        $configList = $versionManager->getConfigList();
-        $configName = $versionManager->getConfigName();
+        $configList = $versionManager->getVersionConfig()->getList();
+        $configName = $versionManager->getVersionConfig()->getName();
 
         Out::out('');
 
@@ -279,9 +262,9 @@ class Console
     public function commandConfig() {
         $versionManager = $this->createVersionManager();
 
-        $configItem = $versionManager->getConfigCurrent();
+        $configItem = $versionManager->getVersionConfig()->getCurrent();
 
-        Out::out($configItem['title']);
+        Out::out('%s: %s', GetMessage('SPRINT_MIGRATION_CONFIG'), $configItem['title']);
 
         $table = new ConsoleTable(-1, array(
             'horizontal' => '=',
@@ -377,7 +360,7 @@ class Console
                 $fails++;
             }
 
-            if ($fails && $versionManager->getConfigVal('stop_on_errors')) {
+            if ($fails && $versionManager->getVersionConfig()->getVal('stop_on_errors')) {
                 break;
             }
 
@@ -433,10 +416,34 @@ class Console
         return $success;
     }
 
+    protected function executeBuilder($from, $postvars = array()) {
+        $versionManager = $this->createVersionManager();
+
+        do {
+
+            $builder = $versionManager->createBuilder($from, $postvars);
+
+            if (!$builder) {
+                Out::out('Builder not found');
+                die(1);
+            }
+
+            $builder->renderConsole();
+
+            $builder->executeBuilder();
+
+            $builder->renderConsole();
+
+            $postvars = $builder->getRestartParams();
+
+        } while ($builder->isRestart() || $builder->isRebuild());
+    }
+
+
     protected function createVersionManager() {
         $versionManager = new VersionManager($this->getArg('--config='));
 
-        $userlogin = $versionManager->getConfigVal('console_user');
+        $userlogin = $versionManager->getVersionConfig()->getVal('console_user');
         if ($userlogin == 'admin') {
             $this->authorizeAsAdmin();
         } elseif (strpos($userlogin, 'login:') === 0) {
@@ -492,6 +499,5 @@ class Console
             return isset($this->argoptions[$name]) ? $this->argoptions[$name] : $default;
         }
     }
-
 
 }
