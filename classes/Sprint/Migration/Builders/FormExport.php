@@ -53,7 +53,7 @@ class FormExport extends VersionBuilder
         $validators = $formHelper->getFormValidators();
         $form['VALIDATORS'] = $validators;
 
-
+        //  TODO - получить список пунктов меню
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/FormExport.php', array(
             'form' => $form,

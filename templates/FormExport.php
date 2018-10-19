@@ -26,11 +26,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper = new HelperManager();
 
         $formHelper = $helper->Form();
-
         $formId = $formHelper->saveForm(<?= var_export($form, 1)?>, '<?= $SID?>');
-        $formHelper->saveStatuses($formId, <?= var_export($form['STATUSES'], 1)?>);
-        $formHelper->saveFieldsWithValidators($formId, <?= var_export($form['FIELDS'], 1)?>, <?= var_export($form['VALIDATORS'], 1)?>);
-
 
     }
 
