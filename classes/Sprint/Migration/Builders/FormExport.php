@@ -21,6 +21,10 @@ class FormExport extends VersionBuilder
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_FormId'),
             'width' => 250,
         ));
+        $this->addField('sid', array(
+            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport3'),
+            'width' => 250,
+        ));
 
         $this->addField('description', array(
             'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
@@ -41,14 +45,21 @@ class FormExport extends VersionBuilder
         $this->exitIfEmpty($form, 'Form not found');
 
         $statuses = $formHelper->getFormStatuses();
-        $form['_STATUSES'] = $statuses;
+        $form['STATUSES'] = $statuses;
 
         $fields = $formHelper->getFormFields();
-        $form['_FIELDS'] = $fields;
+        $form['FIELDS'] = $fields;
 
         $validators = $formHelper->getFormValidators();
-        $form['_VALIDATORS'] = $validators;
+        $form['VALIDATORS'] = $validators;
 
+
+        $this->createVersionFile(
+            Module::getModuleDir() . '/templates/FormExport.php', array(
+            'form' => $form,
+            'description' =>  htmlspecialchars($this->getFieldValue('description')),     //  You shouldn't hack yourself!
+            'sid' => $this->getFieldValue('sid')
+        ));
         debmes($form);
     }
 }

@@ -119,6 +119,7 @@
 
     "SPRINT_MIGRATION_BUILDER_FormExport1" => "Создать миграцию для веб-формы",
     "SPRINT_MIGRATION_BUILDER_FormExport2" => "",
+    "SPRINT_MIGRATION_BUILDER_FormExport3" => "Введите новый символьный идентификатор (необязательно)",
     "SPRINT_MIGRATION_BUILDER_FormExport_FormId" => "Введите ID формы",
 
     "SPRINT_MIGRATION_BUILDER_CacheCleaner1" => "Очистка кеша",
