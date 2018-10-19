@@ -117,6 +117,14 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    public function updateIblockType($iblockTypeId, $fields = array()) {
+        $ib = new \CIBlockType;
+        if ($ib->Update($iblockTypeId, $fields)) {
+            return $iblockTypeId;
+        }
+
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+    }
 
     public function deleteIblockTypeIfExists($typeId) {
         $aIblockType = $this->getIblockType($typeId);
@@ -220,7 +228,7 @@ class IblockHelper extends Helper
     public function updateIblock($iblockId, $fields = array()) {
         $ib = new \CIBlock;
         if ($ib->Update($iblockId, $fields)) {
-            return true;
+            return $iblockId;
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
@@ -252,13 +260,6 @@ class IblockHelper extends Helper
 
     public function getIblockFields($iblockId) {
         return \CIBlock::GetFields($iblockId);
-    }
-
-    public function updateIblockFields($iblockId, $fields = array()) {
-        $default = \CIBlock::GetFields($iblockId);
-        $fields = array_replace_recursive($default, $fields);
-        \CIBlock::SetFields($iblockId, $fields);
-        return true;
     }
 
     public function getProperty($iblockId, $code) {
@@ -374,7 +375,6 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
-
     public function deletePropertyIfExists($iblockId, $code) {
         $aProperty = $this->getProperty($iblockId, $code);
         if (!$aProperty) {
@@ -393,7 +393,6 @@ class IblockHelper extends Helper
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
-
 
     public function updatePropertyIfExists($iblockId, $code, $fields) {
         $aProperty = $this->getProperty($iblockId, $code);
@@ -425,7 +424,7 @@ class IblockHelper extends Helper
 
         $ib = new \CIBlockProperty();
         if ($ib->Update($propertyId, $fields)) {
-            return true;
+            return $propertyId;
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
@@ -532,7 +531,6 @@ class IblockHelper extends Helper
         return $this->updateElement($aItem['ID'], $fields, $props);
     }
 
-
     public function updateElement($elementId, $fields = array(), $props = array()) {
         $iblockId = !empty($fields['IBLOCK_ID']) ? $fields['IBLOCK_ID'] : false;
         unset($fields['IBLOCK_ID']);
@@ -548,7 +546,7 @@ class IblockHelper extends Helper
             \CIBlockElement::SetPropertyValuesEx($elementId, $iblockId, $props);
         }
 
-        return true;
+        return $elementId;
     }
 
     public function deleteElementIfExists($iblockId, $code) {
@@ -670,7 +668,7 @@ class IblockHelper extends Helper
     public function updateSection($sectionId, $fields) {
         $ib = new \CIBlockSection;
         if ($ib->Update($sectionId, $fields)) {
-            return true;
+            return $sectionId;
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
@@ -707,7 +705,12 @@ class IblockHelper extends Helper
 
     /** @deprecated */
     public function mergeIblockFields($iblockId, $fields) {
-        self::updateIblockFields($iblockId, $fields);
+        $this->saveIblockFields($iblockId, $fields);
+    }
+
+    /** @deprecated */
+    public function updateIblockFields($iblockId, $fields) {
+        $this->saveIblockFields($iblockId, $fields);
     }
 
     public function getIblockTypeLangs($typeId) {
@@ -724,5 +727,54 @@ class IblockHelper extends Helper
             }
         }
         return $result;
+    }
+
+
+    //version 2
+
+
+    public function saveIblockType($fields = array()) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
+
+        $aIblockType = $this->getIblockType($fields['ID']);
+        if ($aIblockType) {
+            return $this->updateIblockType($aIblockType['ID'], $fields);
+        } else {
+            return $this->addIblockType($fields);
+        }
+    }
+
+    public function saveIblock($fields = array()) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
+
+        $typeId = false;
+        if (!empty($fields['IBLOCK_TYPE_ID'])) {
+            $typeId = $fields['IBLOCK_TYPE_ID'];
+        }
+
+        $aIblock = $this->getIblock($fields['CODE'], $typeId);
+        if ($aIblock) {
+            return $this->updateIblock($aIblock['ID'], $fields);
+        } else {
+            return $this->addIblock($fields);
+        }
+    }
+
+    public function saveIblockFields($iblockId, $fields = array()) {
+        $default = \CIBlock::GetFields($iblockId);
+        $fields = array_replace_recursive($default, $fields);
+        \CIBlock::SetFields($iblockId, $fields);
+        return true;
+    }
+
+    public function saveProperty($iblockId, $fields) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
+
+        $aProperty = $this->getProperty($iblockId, $fields['CODE']);
+        if ($aProperty) {
+            return $this->updatePropertyById($aProperty['ID'], $fields);
+        } else {
+            return $this->addProperty($iblockId, $fields);
+        }
     }
 }

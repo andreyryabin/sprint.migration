@@ -59,17 +59,6 @@ function migrationEnableButtons(enable) {
     }
 }
 
-function migrationMarkMigration(status) {
-    $('#migration_migration_mark_result').html('');
-    migrationExecuteStep('migration_mark', {
-        version: $('#migration_migration_mark').val(),
-        status: status
-    }, function (result) {
-        $('#migration_migration_mark_result').html(result);
-        migrationMigrationRefresh();
-    });
-}
-
 function migrationMigrationRefresh(callbackAfterRefresh) {
     var view = $('.sp-stat').val();
     migrationExecuteStep('migration_' + view, {}, function (data) {
@@ -82,11 +71,16 @@ function migrationMigrationRefresh(callbackAfterRefresh) {
     });
 }
 
-function migrationCreate(postData) {
-
+function migrationBuilder(postData) {
     var $block = $('[data-builder="' + postData['builder_name'] + '"]');
-
     migrationExecuteStep('migration_create', postData, function (result) {
+        $block.html(result);
+    });
+}
+
+function migrationBuilderReset(postData){
+    var $block = $('[data-builder="' + postData['builder_name'] + '"]');
+    migrationExecuteStep('migration_reset', postData, function (result) {
         $block.html(result);
     });
 }
@@ -151,15 +145,13 @@ jQuery(document).ready(function ($) {
     $('[data-builder]').on('submit', 'form', function (e) {
         e.preventDefault();
         var postData = $(this).serializeFormJSON();
-        migrationCreate(postData);
+        migrationBuilder(postData);
     });
 
     $('[data-builder]').on('reset', 'form', function (e) {
         e.preventDefault();
         var postData = $(this).serializeFormJSON();
-
-
-        migrationCreate({builder_name: postData['builder_name']});
+        migrationBuilderReset(postData);
     });
 
 
@@ -179,12 +171,20 @@ jQuery(document).ready(function ($) {
             localStorage.setItem('migrations_open_block', openblockIx);
         }
 
+
         var $body = $(this).siblings('.sp-block_body');
-        $body.show();
+
         $('.sp-block_body').not($body).hide();
+        $body.show();
+
+        var docViewTop = $(window).scrollTop();
+        var elemTop = $(this).offset().top;
+        if (elemTop <= docViewTop){
+            $(document).scrollTop(elemTop- 25);
+        }
+
 
         $('.sp-block').find('.adm-info-message-wrap').remove();
     });
-
 
 });

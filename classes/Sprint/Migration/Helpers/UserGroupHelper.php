@@ -17,7 +17,7 @@ class UserGroupHelper extends Helper
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbRes = \CGroup::GetList($by, $order, $filter);
         while ($aItem = $dbRes->Fetch()) {
-            $res[] = $aItem;
+            $res[] = $this->getGroup($aItem['ID']);
         }
 
         return $res;
@@ -29,30 +29,42 @@ class UserGroupHelper extends Helper
     }
 
     public function getGroup($code) {
-        $groupId = $this->getGroupId($code);
-        return ($groupId) ? \CGroup::GetByID($groupId)->Fetch() : false;
+        $groupId = is_numeric($code) ? $code : $this->getGroupId($code);
+
+        if (empty($groupId)) {
+            return false;
+        }
+
+        /* extract SECURITY_POLICY */
+        $item = \CGroup::GetByID($groupId)->Fetch();
+        if (empty($item)) {
+            return false;
+        }
+
+        if (!empty($item['SECURITY_POLICY'])) {
+            $item['SECURITY_POLICY'] = unserialize($item['SECURITY_POLICY']);
+        }
+
+        return $item;
+
     }
 
+    public function saveGroup($code, $fields = array()) {
+        $groupId = $this->getGroupId($code);
+        if ($groupId) {
+            return $this->updateGroup($groupId, $fields);
+        } else {
+            return $this->addGroup($code, $fields);
+        }
+    }
 
     public function addGroupIfNotExists($code, $fields = array()) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
-
         $groupId = $this->getGroupId($code);
         if ($groupId) {
             return intval($groupId);
         }
 
-        $fields['STRING_ID'] = $code;
-
-        $group = new \CGroup;
-        $groupId = $group->Add($fields);
-
-        if ($groupId) {
-            return intval($groupId);
-        }
-
-        $this->throwException(__METHOD__, $group->LAST_ERROR);
-
+        return $this->addGroup($code, $fields);
     }
 
     public function updateGroupIfExists($code, $fields = array()) {
@@ -61,18 +73,42 @@ class UserGroupHelper extends Helper
             return false;
         }
 
-        if (empty($fields)) {
-            $this->throwException(__METHOD__, 'Set fields for group %s', $code);
-        }
+        return $this->updateGroup($groupId, $fields);
+    }
+
+    protected function addGroup($code, $fields = array()) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
+
+        $fields['STRING_ID'] = $code;
 
         $group = new \CGroup;
+        $groupId = $group->Add($this->prepareFields($fields));
 
-        if ($group->Update($groupId, $fields)) {
+        if ($groupId) {
             return intval($groupId);
         }
 
         $this->throwException(__METHOD__, $group->LAST_ERROR);
-
     }
 
+    protected function updateGroup($groupId, $fields = array()) {
+        if (empty($fields)) {
+            $this->throwException(__METHOD__, 'Set fields for group');
+        }
+
+        $group = new \CGroup;
+        if ($group->Update($groupId, $this->prepareFields($fields))) {
+            return intval($groupId);
+        }
+
+        $this->throwException(__METHOD__, $group->LAST_ERROR);
+    }
+
+    protected function prepareFields($fields) {
+        if (!empty($fields['SECURITY_POLICY']) && is_array($fields['SECURITY_POLICY'])) {
+            $fields['SECURITY_POLICY'] = serialize($fields['SECURITY_POLICY']);
+        }
+
+        return $fields;
+    }
 }

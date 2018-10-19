@@ -53,9 +53,8 @@
 
     <div class="sp-clear" style="margin-top: 10px"></div>
 
-    <? $builders = $versionManager->getBuilders(); ?>
-    <? foreach ($builders as $builderName => $builderClass): ?>
-        <? $builder = $versionManager->createBuilder($builderName); ?>
+    <? $builders = $versionManager->createBuilders(); ?>
+    <? foreach ($builders as $builder): ?>
         <div class="sp-block">
             <div class="sp-block_title"><?= $builder->getTitle() ?></div>
             <div class="sp-block_body" data-builder="<?= $builder->getName() ?>">
@@ -64,15 +63,9 @@
         </div>
     <? endforeach; ?>
 
-    <div class="sp-block">
-        <div class="sp-block_title"><?= GetMessage('SPRINT_MIGRATION_MARK') ?></div>
-        <div class="sp-block_body"><? include __DIR__ . '/mark_form.php' ?></div>
-    </div>
-
     <div class="sp-clear" style="margin-top: 10px"></div>
 
     <div class="sp-block">
-        <div class="sp-block_head"><?= GetMessage('SPRINT_MIGRATION_CONFIG') ?></div>
         <? include __DIR__ . '/config_list.php' ?>
     </div>
 
