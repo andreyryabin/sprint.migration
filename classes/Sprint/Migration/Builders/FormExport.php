@@ -38,10 +38,34 @@ class FormExport extends VersionBuilder
         $helper = new HelperManager();
         $formHelper = $helper->Form();
 
+        $this->addField('what_else', array(
+            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_What'),
+            'width' => 250,
+            'multiple' => 1,
+            'value' => array(),
+            'select' => [
+                [
+                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Rights'),
+                    'value' => 'rights'
+                ],
+                [
+                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Templates'),
+                    'value' => 'templates'
+                ],
+            ]
+        ));
+
+        $what = $this->getFieldValue('what_else');
+        if (!empty($what)) {
+            $what = is_array($what) ? $what : array($what);
+        } else {
+            $what = [];
+        }
+
         $formId = $this->getFieldValue('form_id');
         $this->exitIfEmpty($formId, 'Form id is not valid');
 
-        $form = $formHelper->initForm($formId);
+        $form = $formHelper->initForm($formId, $what);
         $this->exitIfEmpty($form, 'Form not found');
 
         $statuses = $formHelper->getFormStatuses();
@@ -53,13 +77,11 @@ class FormExport extends VersionBuilder
         $validators = $formHelper->getFormValidators();
         $form['VALIDATORS'] = $validators;
 
-        //  TODO - получить список пунктов меню
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/FormExport.php', array(
             'form' => $form,
             'description' =>  htmlspecialchars($this->getFieldValue('description')),     //  You shouldn't hack yourself!
             'sid' => $this->getFieldValue('sid')
         ));
-        debmes($form);
     }
 }

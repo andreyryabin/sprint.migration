@@ -22,7 +22,7 @@ class FormHelper extends Helper
      * @param $formId
      * @return array|null
      */
-    public function initForm($formId)
+    public function initForm($formId, $what)
     {
         $formId = (int)$formId;
 
@@ -35,6 +35,30 @@ class FormHelper extends Helper
         $form['arSITE'] = [];
         while ($ar = $dbSites->Fetch()) {
             $form['arSITE'][] = $ar["SITE_ID"];
+        }
+        $dbMenu = $this->db->Query("SELECT LID, MENU FROM b_form_menu WHERE FORM_ID = {$formId}");
+        $form['arMENU'] = [];
+        while ($menu = $dbMenu->Fetch()) {
+            $form['arMENU'][$menu['LID']] = $menu["MENU"];
+        }
+        /**
+         * Внимание! Последние 2 поля ориентируются на ID сущностей, так что могут быть расхождения. Применяйте на свой страх и риск
+         * В будущем переработать на модель при которой шаблоны будут задаваться явно со всеми данными, а группы пользователей находиться по символьному коду в целевой системе
+         * Сейчас же эти поля надо проверять вручную или же не использовать вообще (закомментировать)
+         */
+        if(in_array('rights', $what)){
+            $dbGroup = $this->db->Query("SELECT GROUP_ID, PERMISSION FROM b_form_2_group WHERE FORM_ID = {$formId}");
+            $form['arGROUP'] = [];
+            while ($group = $dbGroup->Fetch()) {
+                $form['arGROUP'][$group['GROUP_ID']] = $group["PERMISSION"];
+            }
+        }
+        if(in_array('templates', $what)){
+            $dbTemplate = $this->db->Query("SELECT MAIL_TEMPLATE_ID FROM b_form_2_mail_template WHERE FORM_ID = {$formId}");
+            $form['arMAIL_TEMPLATE'] = [];
+            while ($tmpl = $dbTemplate->Fetch()) {
+                $form['arMAIL_TEMPLATE'][] = $tmpl["MAIL_TEMPLATE_ID"];
+            }
         }
         return ['FORM' => $form];
     }
@@ -65,8 +89,8 @@ class FormHelper extends Helper
             \CForm::Delete($formId);
             throw $e;
         }
-        //  TODO - доработать, проверить работоспособность
-        \CForm::SetMailTemplate($formId, 'Y');
+        $addNewTemplate = isset($formArray['arMAIL_TEMPLATE']) ? 'N' : 'Y';
+        \CForm::SetMailTemplate($formId, $addNewTemplate);
 
         return $formId;
     }
