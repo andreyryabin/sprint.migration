@@ -71,6 +71,8 @@ class FormHelper extends Helper
      */
     public function saveForm($form, $SID)
     {
+        global $DB;
+        $DB->StartTransaction();
         $formArray = $form['FORM'];
         $oldSid = $formArray['SID'];
         $formArray['SID'] = $SID;
@@ -85,12 +87,12 @@ class FormHelper extends Helper
             $this->saveStatuses($formId, $form['STATUSES']);
             $this->saveFieldsWithValidators($formId, $form['FIELDS'], $form['VALIDATORS']);
         } catch (\Exception $e) {
-            //  Суровая транзакция
-            \CForm::Delete($formId);
+            $DB->Rollback();
             throw $e;
         }
         $addNewTemplate = isset($formArray['arMAIL_TEMPLATE']) ? 'N' : 'Y';
         \CForm::SetMailTemplate($formId, $addNewTemplate);
+        $DB->Commit();
 
         return $formId;
     }
@@ -138,6 +140,7 @@ class FormHelper extends Helper
             $fieldId = \CFormField::Set($field);
             if (!$fieldId) {
                 global $strError;
+                var_dump($field);
                 throw new \Exception('Error while field setting - ' . $strError);
             }
             foreach ($answers as $answer) {
@@ -148,19 +151,16 @@ class FormHelper extends Helper
                 $answerID = \CFormAnswer::Set($answer);
                 if (!$answerID) {
                     global $strError;
-                    throw new \Exception('Error while answers setting - ' . $strError);
+                    var_dump([$field, $answer]);
+                    throw new \Exception('Error while answers setting - ' . $strError );
                 }
             }
             foreach ($validators as $validator) {
-                unset($validator['FORM_ID']);
-                unset($validator['FIELD_ID']);
-                unset($validator['ID']);
-                $validator['SID'] = $validator['NAME'];
-                $validatorId = \CFormValidator::Set($formId, $fieldId, $validator);
+                $validatorId = \CFormValidator::Set($formId, $fieldId, $validator['NAME']);
                 if (!$validatorId) {
                     //  Имхо, тут падать не стоит
                     global $strError;
-                    echo $strError;
+                    var_dump([$strError, $formId, $fieldId, $validator]);
                 }
             }
         }
