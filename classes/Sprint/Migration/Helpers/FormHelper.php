@@ -149,6 +149,7 @@ class FormHelper extends Helper
      */
     public function addField($formId, $field, $answers, $validators = array())
     {
+        $field['FORM_ID'] = $formId;
         $fieldId = \CFormField::Set($field);
         if (!$fieldId) {
             global $strError;
@@ -230,17 +231,27 @@ class FormHelper extends Helper
     }
 
     /**
-     * @param $sid
+     * @param string $sid
      * @throws \Exception
      */
     public function deleteFormBySID($sid)
     {
-        $form = \CForm::GetBySID($sid)->Fetch();
-        $id = $form['ID'];
+        $id = $this->getFormIdBySid($sid);
         $res = \CForm::Delete($id);
         if (!$res) {
             throw new \Exception('Cannot delete form "' . $sid . '"');
         }
+    }
+
+    /**
+     * @param string $sid
+     * @return mixed
+     */
+    public function getFormIdBySid($sid)
+    {
+        $form = \CForm::GetBySID($sid)->Fetch();
+        $id = $form['ID'];
+        return $id;
     }
 
 }

@@ -45,6 +45,10 @@ class FormExport extends VersionBuilder
             'value' => array(),
             'select' => [
                 [
+                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Form'),
+                    'value' => 'body'
+                ],
+                [
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Rights'),
                     'value' => 'rights'
                 ],
@@ -59,7 +63,7 @@ class FormExport extends VersionBuilder
         if (!empty($what)) {
             $what = is_array($what) ? $what : array($what);
         } else {
-            $what = [];
+            $this->rebuildField('what_else');
         }
 
         $formId = $this->getFieldValue('form_id');
