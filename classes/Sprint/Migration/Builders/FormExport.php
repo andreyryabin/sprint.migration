@@ -65,16 +65,16 @@ class FormExport extends VersionBuilder
         $formId = $this->getFieldValue('form_id');
         $this->exitIfEmpty($formId, 'Form id is not valid');
 
-        $form = $formHelper->initForm($formId, $what);
+        $form = $formHelper->getFormById($formId, $what);
         $this->exitIfEmpty($form, 'Form not found');
 
-        $statuses = $formHelper->getFormStatuses();
+        $statuses = $formHelper->getFormStatuses($formId);
         $form['STATUSES'] = $statuses;
 
-        $fields = $formHelper->getFormFields();
+        $fields = $formHelper->getFormFields($formId);
         $form['FIELDS'] = $fields;
 
-        $validators = $formHelper->getFormValidators();
+        $validators = $formHelper->getFormValidators($formId);
         $form['VALIDATORS'] = $validators;
 
         $this->createVersionFile(

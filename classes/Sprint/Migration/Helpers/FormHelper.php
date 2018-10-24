@@ -7,8 +7,7 @@ use Sprint\Migration\Helper;
 
 class FormHelper extends Helper
 {
-    private $formId;
-
+    /** @var \CDatabase $DB */
     private $db;
 
     public function __construct()
@@ -20,9 +19,10 @@ class FormHelper extends Helper
 
     /**
      * @param $formId
+     * @param $what
      * @return array|null
      */
-    public function initForm($formId, $what)
+    public function getFormById($formId, $what)
     {
         $formId = (int)$formId;
 
@@ -30,7 +30,7 @@ class FormHelper extends Helper
         if (!$form) {
             return null;
         }
-        $this->formId = $formId;
+
         $dbSites = $this->db->Query("SELECT SITE_ID FROM b_form_2_site WHERE FORM_ID = {$formId}");
         $form['arSITE'] = [];
         while ($ar = $dbSites->Fetch()) {
@@ -71,8 +71,7 @@ class FormHelper extends Helper
      */
     public function saveForm($form, $SID)
     {
-        global $DB;
-        $DB->StartTransaction();
+        $this->db->StartTransaction();
         $formArray = $form['FORM'];
         $oldSid = $formArray['SID'];
         $formArray['SID'] = $SID;
@@ -87,12 +86,12 @@ class FormHelper extends Helper
             $this->saveStatuses($formId, $form['STATUSES']);
             $this->saveFieldsWithValidators($formId, $form['FIELDS'], $form['VALIDATORS']);
         } catch (\Exception $e) {
-            $DB->Rollback();
+            $this->db->Rollback();
             throw $e;
         }
         $addNewTemplate = isset($formArray['arMAIL_TEMPLATE']) ? 'N' : 'Y';
         \CForm::SetMailTemplate($formId, $addNewTemplate);
-        $DB->Commit();
+        $this->db->Commit();
 
         return $formId;
     }
@@ -137,31 +136,40 @@ class FormHelper extends Helper
             unset($field['VARNAME']);
             unset($field['TIMESTAMP_X']);
             unset($field['ID']);
-            $fieldId = \CFormField::Set($field);
-            if (!$fieldId) {
+            $this->addField($formId, $field, $answers, $validators);
+        }
+    }
+
+    /**
+     * @param $formId
+     * @param array $field
+     * @param array $answers
+     * @param array $validators
+     * @throws \Exception
+     */
+    public function addField($formId, $field, $answers, $validators = array())
+    {
+        $fieldId = \CFormField::Set($field);
+        if (!$fieldId) {
+            global $strError;
+            throw new \Exception('Error while field setting - ' . $strError);
+        }
+        foreach ($answers as $answer) {
+            $answer['QUESTION_ID'] = $fieldId;
+            unset($answer['ID']);
+            unset($answer['FIELD_ID']);
+            unset($answer['TIMESTAMP_X']);
+            $answerID = \CFormAnswer::Set($answer);
+            if (!$answerID) {
                 global $strError;
-                var_dump($field);
-                throw new \Exception('Error while field setting - ' . $strError);
+                throw new \Exception('Error while answers setting - ' . $strError );
             }
-            foreach ($answers as $answer) {
-                $answer['QUESTION_ID'] = $fieldId;
-                unset($answer['ID']);
-                unset($answer['FIELD_ID']);
-                unset($answer['TIMESTAMP_X']);
-                $answerID = \CFormAnswer::Set($answer);
-                if (!$answerID) {
-                    global $strError;
-                    var_dump([$field, $answer]);
-                    throw new \Exception('Error while answers setting - ' . $strError );
-                }
-            }
-            foreach ($validators as $validator) {
-                $validatorId = \CFormValidator::Set($formId, $fieldId, $validator['NAME']);
-                if (!$validatorId) {
-                    //  Имхо, тут падать не стоит
-                    global $strError;
-                    var_dump([$strError, $formId, $fieldId, $validator]);
-                }
+        }
+        foreach ($validators as $validator) {
+            $validatorId = \CFormValidator::Set($formId, $fieldId, $validator['NAME']);
+            if (!$validatorId) {
+                //  TODO - мигрировать валидаторы, ибо тут предполагается их наличие в системе
+                global $strError;
             }
         }
     }
@@ -169,18 +177,18 @@ class FormHelper extends Helper
     /**
      * @return array
      */
-    public function getFormStatuses()
+    public function getFormStatuses($formId)
     {
-        $dbStatuses = \CFormStatus::GetList($this->formId, $by = 's_sort', $order = 'asc', [], $f);
+        $dbStatuses = \CFormStatus::GetList($formId, $by = 's_sort', $order = 'asc', [], $f);
         return $this->fetchDbRes($dbStatuses);
     }
 
     /**
      * @return array
      */
-    public function getFormFields()
+    public function getFormFields($formId)
     {
-        $dbFields = \CFormField::GetList($this->formId, 'ALL', $by = 's_sort', $order = 'asc', [], $f);
+        $dbFields = \CFormField::GetList($formId, 'ALL', $by = 's_sort', $order = 'asc', [], $f);
         $fields = $this->fetchDbRes($dbFields);
         foreach ($fields as $k => $field) {
             $fields[$k]['_ANSWERS'] = $this->getFieldAnswers($field['ID']);
@@ -201,9 +209,9 @@ class FormHelper extends Helper
     /**
      * @return array
      */
-    public function getFormValidators()
+    public function getFormValidators($formId)
     {
-        $dbValidators = \CFormValidator::GetList($this->formId, [], $by = 's_sort', $order = 'asc');
+        $dbValidators = \CFormValidator::GetList($formId, [], $by = 's_sort', $order = 'asc');
         return $this->fetchDbRes($dbValidators);
     }
 
