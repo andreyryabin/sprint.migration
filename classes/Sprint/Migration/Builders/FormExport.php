@@ -69,8 +69,24 @@ class FormExport extends VersionBuilder
         $formId = $this->getFieldValue('form_id');
         $this->exitIfEmpty($formId, 'Form id is not valid');
 
-        $form = $formHelper->getFormById($formId, $what);
-        $this->exitIfEmpty($form, 'Form not found');
+        $form = [];
+        $formBody = $formHelper->getFormById($formId);
+        $this->exitIfEmpty($formBody, 'Form not found');
+
+        /**
+         * Внимание! Последние 2 поля ориентируются на ID сущностей, так что могут быть расхождения. Применяйте на свой страх и риск
+         * В будущем переработать на модель при которой шаблоны будут задаваться явно со всеми данными, а группы пользователей находиться по символьному коду в целевой системе
+         * Сейчас же эти поля надо проверять вручную или же не использовать вообще
+         */
+        if(in_array('rights', $what)){
+            $rights = $formHelper->getRights($formId);
+            $formBody['arGROUP'] = $rights;
+        }
+        if(in_array('templates', $what)){
+            $templates = $formHelper->getMailTemplates($formId);
+            $formBody['arMAIL_TEMPLATE'] = $templates;
+        }
+        $form['FORM'] = $formBody;
 
         $statuses = $formHelper->getFormStatuses($formId);
         $form['STATUSES'] = $statuses;
@@ -84,7 +100,7 @@ class FormExport extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/FormExport.php', array(
             'form' => $form,
-            'description' =>  htmlspecialchars($this->getFieldValue('description')),     //  You shouldn't hack yourself!
+            'description' => $this->getFieldValue('description'),
             'sid' => $this->getFieldValue('sid')
         ));
     }

@@ -22,7 +22,7 @@ class FormHelper extends Helper
      * @param $what
      * @return array|null
      */
-    public function getFormById($formId, $what)
+    public function getFormById($formId)
     {
         $formId = (int)$formId;
 
@@ -41,26 +41,38 @@ class FormHelper extends Helper
         while ($menu = $dbMenu->Fetch()) {
             $form['arMENU'][$menu['LID']] = $menu["MENU"];
         }
-        /**
-         * Внимание! Последние 2 поля ориентируются на ID сущностей, так что могут быть расхождения. Применяйте на свой страх и риск
-         * В будущем переработать на модель при которой шаблоны будут задаваться явно со всеми данными, а группы пользователей находиться по символьному коду в целевой системе
-         * Сейчас же эти поля надо проверять вручную или же не использовать вообще (закомментировать)
-         */
-        if(in_array('rights', $what)){
-            $dbGroup = $this->db->Query("SELECT GROUP_ID, PERMISSION FROM b_form_2_group WHERE FORM_ID = {$formId}");
-            $form['arGROUP'] = [];
-            while ($group = $dbGroup->Fetch()) {
-                $form['arGROUP'][$group['GROUP_ID']] = $group["PERMISSION"];
-            }
+
+        return $form;
+    }
+
+
+    /**
+     * @param int $formId
+     * @return array
+     */
+    public function getRights($formId)
+    {
+        $rights = [];
+        $dbGroup = $this->db->Query("SELECT GROUP_ID, PERMISSION FROM b_form_2_group WHERE FORM_ID = {$formId}");
+        while ($group = $dbGroup->Fetch()) {
+            $rights[$group['GROUP_ID']] = $group["PERMISSION"];
         }
-        if(in_array('templates', $what)){
-            $dbTemplate = $this->db->Query("SELECT MAIL_TEMPLATE_ID FROM b_form_2_mail_template WHERE FORM_ID = {$formId}");
-            $form['arMAIL_TEMPLATE'] = [];
-            while ($tmpl = $dbTemplate->Fetch()) {
-                $form['arMAIL_TEMPLATE'][] = $tmpl["MAIL_TEMPLATE_ID"];
-            }
+        return $rights;
+    }
+
+
+    /**
+     * @param int $formId
+     * @return array
+     */
+    public function getMailTemplates($formId)
+    {
+        $templates = [];
+        $dbTemplate = $this->db->Query("SELECT MAIL_TEMPLATE_ID FROM b_form_2_mail_template WHERE FORM_ID = {$formId}");
+        while ($tmpl = $dbTemplate->Fetch()) {
+            $templates[] = $tmpl["MAIL_TEMPLATE_ID"];
         }
-        return ['FORM' => $form];
+        return $templates;
     }
 
     /**
