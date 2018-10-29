@@ -24,12 +24,12 @@ class AgentHelper extends Helper
 
     public function deleteAgentIfExists($moduleName, $name) {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $aAgent = \CAgent::GetList(array("ID" => "DESC"), array(
+        $item = \CAgent::GetList(array("ID" => "DESC"), array(
             'MODULE_ID' => $moduleName,
             'NAME' => $name
         ))->Fetch();
 
-        if (!$aAgent) {
+        if (!$item) {
             return false;
         }
 
@@ -65,12 +65,12 @@ class AgentHelper extends Helper
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
 
-        $aAgent = \CAgent::GetList(array("ID" => "DESC"), array(
+        $item = \CAgent::GetList(array("ID" => "DESC"), array(
             'MODULE_ID' => $fields['MODULE_ID'],
             'NAME' => $fields['NAME']
         ))->Fetch();
 
-        if ($aAgent) {
+        if ($item) {
             /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             \CAgent::RemoveAgent($fields['NAME'], $fields['MODULE_ID']);
         }

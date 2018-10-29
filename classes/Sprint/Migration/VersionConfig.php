@@ -267,11 +267,11 @@ class VersionConfig
             'UserTypeEntities' => '\Sprint\Migration\Builders\UserTypeEntities',
             'UserGroupExport' => '\Sprint\Migration\Builders\UserGroupExport',
             'AgentExport' => '\Sprint\Migration\Builders\AgentExport',
+            'FormExport' => '\Sprint\Migration\Builders\FormExport',
+            'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
             'Marker' => '\Sprint\Migration\Builders\Marker',
             'Transfer' => '\Sprint\Migration\Builders\Transfer',
             'Configurator' => '\Sprint\Migration\Builders\Configurator',
-            'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
-            'FormExport' => '\Sprint\Migration\Builders\FormExport'
         );
     }
 

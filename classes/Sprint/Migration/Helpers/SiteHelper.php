@@ -12,10 +12,10 @@ class SiteHelper extends Helper
         $order = 'desc';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $aItem = \CSite::GetList($by, $order, array('ACTIVE' => 'Y'))->Fetch();
+        $item = \CSite::GetList($by, $order, array('ACTIVE' => 'Y'))->Fetch();
 
-        if ($aItem) {
-            return $aItem['LID'];
+        if ($item) {
+            return $item['LID'];
         }
 
         $this->throwException(__METHOD__, 'Default site not found');
@@ -27,9 +27,9 @@ class SiteHelper extends Helper
 
         $sids = array();
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = \CSite::GetList($by, $order, $filter);
-        while ($aItem = $dbRes->Fetch()) {
-            $sids[] = $aItem;
+        $dbres = \CSite::GetList($by, $order, $filter);
+        while ($item = $dbres->Fetch()) {
+            $sids[] = $item;
         }
 
         return $sids;
@@ -46,12 +46,12 @@ class SiteHelper extends Helper
     public function getSiteTemplates($siteId) {
         $templates = array();
 
-        $dbRes = \CSite::GetTemplateList($siteId);
-        while ($aItem = $dbRes->Fetch()) {
+        $dbres = \CSite::GetTemplateList($siteId);
+        while ($item = $dbres->Fetch()) {
             $templates[] = array(
-                "TEMPLATE" => $aItem['TEMPLATE'],
-                "SORT" => $aItem['SORT'],
-                "CONDITION" => $aItem['CONDITION']
+                "TEMPLATE" => $item['TEMPLATE'],
+                "SORT" => $item['SORT'],
+                "CONDITION" => $item['CONDITION']
             );
         }
 

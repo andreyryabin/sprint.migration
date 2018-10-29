@@ -12,10 +12,10 @@ class LangHelper extends Helper
         $order = 'desc';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $aItem = \CLanguage::GetList($by, $order, array('ACTIVE' => 'Y'))->Fetch();
+        $item = \CLanguage::GetList($by, $order, array('ACTIVE' => 'Y'))->Fetch();
 
-        if ($aItem) {
-            return $aItem['LID'];
+        if ($item) {
+            return $item['LID'];
         }
 
         $this->throwException(__METHOD__, 'Default language not found');
@@ -27,9 +27,9 @@ class LangHelper extends Helper
 
         $lids = array();
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = \CLanguage::GetList($by, $order, $filter);
-        while ($aItem = $dbRes->Fetch()) {
-            $lids[] = $aItem;
+        $dbres = \CLanguage::GetList($by, $order, $filter);
+        while ($item = $dbres->Fetch()) {
+            $lids[] = $item;
         }
 
         return $lids;

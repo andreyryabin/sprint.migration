@@ -15,9 +15,9 @@ class UserGroupHelper extends Helper
         $res = array();
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = \CGroup::GetList($by, $order, $filter);
-        while ($aItem = $dbRes->Fetch()) {
-            $res[] = $this->getGroup($aItem['ID']);
+        $dbres = \CGroup::GetList($by, $order, $filter);
+        while ($item = $dbres->Fetch()) {
+            $res[] = $this->getGroup($item['ID']);
         }
 
         return $res;

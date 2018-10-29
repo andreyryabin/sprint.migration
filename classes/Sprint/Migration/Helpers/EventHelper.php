@@ -17,13 +17,13 @@ class EventHelper extends Helper
         $this->checkRequiredKeys(__METHOD__, $fields, array('LID'));
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $aItem = \CEventType::GetList(array(
+        $item = \CEventType::GetList(array(
             'TYPE_ID' => $eventName,
             'LID' => $fields['LID']
         ))->Fetch();
 
-        if ($aItem) {
-            return $aItem['ID'];
+        if ($item) {
+            return $item['ID'];
         }
 
         $default = array(
@@ -59,13 +59,13 @@ class EventHelper extends Helper
         $by = 'id';
         $order = 'asc';
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $aItem = \CEventMessage::GetList($by, $order, array(
+        $item = \CEventMessage::GetList($by, $order, array(
             'TYPE_ID' => $eventName,
             'SUBJECT' => $fields['SUBJECT']
         ))->Fetch();
 
-        if ($aItem) {
-            return $aItem['ID'];
+        if ($item) {
+            return $item['ID'];
         }
 
         $default = array(
@@ -119,11 +119,11 @@ class EventHelper extends Helper
         $order = "desc";
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = \CEventMessage::GetList($by, $order, $filter);
+        $dbres = \CEventMessage::GetList($by, $order, $filter);
 
-        while ($aItem = $dbRes->getNext()) {
+        while ($item = $dbres->getNext()) {
             $event = new \CEventMessage;
-            if (!$event->Update($aItem["ID"], $fields)) {
+            if (!$event->Update($item["ID"], $fields)) {
                 $this->throwException(__METHOD__, $event->LAST_ERROR);
             }
         }

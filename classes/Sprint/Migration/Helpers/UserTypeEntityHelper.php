@@ -118,9 +118,9 @@ class UserTypeEntityHelper extends Helper
 
     public function getUserTypeEntities($entityId) {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = \CUserTypeEntity::GetList(array(), array('ENTITY_ID' => $entityId));
+        $dbres = \CUserTypeEntity::GetList(array(), array('ENTITY_ID' => $entityId));
         $result = array();
-        while ($item = $dbRes->Fetch()) {
+        while ($item = $dbres->Fetch()) {
             $result[] = $this->getUserTypeEntityById($item['ID']);
         }
         return $result;

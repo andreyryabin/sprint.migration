@@ -8,36 +8,36 @@ class IblockHelper extends Helper
 {
 
     public function findIblockType($typeId) {
-        $aItem = $this->getIblockType($typeId);
-        if ($aItem && isset($aItem['ID'])) {
-            return $aItem;
+        $item = $this->getIblockType($typeId);
+        if ($item && isset($item['ID'])) {
+            return $item;
         }
 
         $this->throwException(__METHOD__, "iblock type not found");
     }
 
     public function findIblockTypeId($typeId) {
-        $aItem = $this->getIblockType($typeId);
-        if ($aItem && isset($aItem['ID'])) {
-            return $aItem['ID'];
+        $item = $this->getIblockType($typeId);
+        if ($item && isset($item['ID'])) {
+            return $item['ID'];
         }
 
         $this->throwException(__METHOD__, "iblock type id not found");
     }
 
     public function findIblock($code, $typeId = '') {
-        $aItem = $this->getIblock($code, $typeId);
-        if ($aItem && isset($aItem['ID'])) {
-            return $aItem;
+        $item = $this->getIblock($code, $typeId);
+        if ($item && isset($item['ID'])) {
+            return $item;
         }
 
         $this->throwException(__METHOD__, "iblock not found");
     }
 
     public function findIblockId($code, $typeId = '') {
-        $aItem = $this->getIblock($code, $typeId);
-        if ($aItem && isset($aItem['ID'])) {
-            return $aItem['ID'];
+        $item = $this->getIblock($code, $typeId);
+        if ($item && isset($item['ID'])) {
+            return $item['ID'];
         }
 
         $this->throwException(__METHOD__, "iblock id not found");
@@ -50,28 +50,28 @@ class IblockHelper extends Helper
         );
 
         $filter['CHECK_PERMISSIONS'] = 'N';
-        $aItem = \CIBlockType::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
+        $item = \CIBlockType::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
 
-        if ($aItem) {
-            $aItem['LANG'] = $this->getIblockTypeLangs($aItem['ID']);
+        if ($item) {
+            $item['LANG'] = $this->getIblockTypeLangs($item['ID']);
         }
 
-        return $aItem;
+        return $item;
     }
 
     public function getIblockTypeId($typeId) {
-        $aIblock = $this->getIblockType($typeId);
-        return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
+        $iblockType = $this->getIblockType($typeId);
+        return ($iblockType && isset($iblockType['ID'])) ? $iblockType['ID'] : 0;
     }
 
     public function getIblockTypes($filter = array()) {
         $filter['CHECK_PERMISSIONS'] = 'N';
-        $dbResult = \CIBlockType::GetList(array('SORT' => 'ASC'), $filter);
+        $dbres = \CIBlockType::GetList(array('SORT' => 'ASC'), $filter);
 
         $list = array();
-        while ($aItem = $dbResult->Fetch()) {
-            $aItem['LANG'] = $this->getIblockTypeLangs($aItem['ID']);
-            $list[] = $aItem;
+        while ($item = $dbres->Fetch()) {
+            $item['LANG'] = $this->getIblockTypeLangs($item['ID']);
+            $list[] = $item;
         }
         return $list;
     }
@@ -79,9 +79,9 @@ class IblockHelper extends Helper
     public function addIblockTypeIfNotExists($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
 
-        $aIblockType = $this->getIblockType($fields['ID']);
-        if ($aIblockType) {
-            return $aIblockType['ID'];
+        $iblockType = $this->getIblockType($fields['ID']);
+        if ($iblockType) {
+            return $iblockType['ID'];
         }
 
         return $this->addIblockType($fields);
@@ -127,12 +127,12 @@ class IblockHelper extends Helper
     }
 
     public function deleteIblockTypeIfExists($typeId) {
-        $aIblockType = $this->getIblockType($typeId);
-        if (!$aIblockType) {
+        $iblockType = $this->getIblockType($typeId);
+        if (!$iblockType) {
             return false;
         }
 
-        return $this->deleteIblockType($aIblockType['ID']);
+        return $this->deleteIblockType($iblockType['ID']);
 
     }
 
@@ -162,18 +162,18 @@ class IblockHelper extends Helper
     }
 
     public function getIblockId($code, $typeId = '') {
-        $aIblock = $this->getIblock($code, $typeId);
-        return ($aIblock && isset($aIblock['ID'])) ? $aIblock['ID'] : 0;
+        $iblock = $this->getIblock($code, $typeId);
+        return ($iblock && isset($iblock['ID'])) ? $iblock['ID'] : 0;
     }
 
     public function getIblocks($filter = array()) {
         $filter['CHECK_PERMISSIONS'] = 'N';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbResult = \CIBlock::GetList(array('SORT' => 'ASC'), $filter);
+        $dbres = \CIBlock::GetList(array('SORT' => 'ASC'), $filter);
         $list = array();
-        while ($aItem = $dbResult->Fetch()) {
-            $list[] = $aItem;
+        while ($item = $dbres->Fetch()) {
+            $list[] = $item;
         }
         return $list;
     }
@@ -186,9 +186,9 @@ class IblockHelper extends Helper
             $typeId = $fields['IBLOCK_TYPE_ID'];
         }
 
-        $aIblock = $this->getIblock($fields['CODE'], $typeId);
-        if ($aIblock) {
-            return $aIblock['ID'];
+        $iblock = $this->getIblock($fields['CODE'], $typeId);
+        if ($iblock) {
+            return $iblock['ID'];
         }
 
         return $this->addIblock($fields);
@@ -236,19 +236,19 @@ class IblockHelper extends Helper
     }
 
     public function updateIblockIfExists($code, $fields = array()) {
-        $aIblock = $this->getIblock($code);
-        if (!$aIblock) {
+        $iblock = $this->getIblock($code);
+        if (!$iblock) {
             return false;
         }
-        return $this->updateIblock($aIblock['ID'], $fields);
+        return $this->updateIblock($iblock['ID'], $fields);
     }
 
     public function deleteIblockIfExists($code, $typeId = '') {
-        $aIblock = $this->getIblock($code, $typeId);
-        if (!$aIblock) {
+        $iblock = $this->getIblock($code, $typeId);
+        if (!$iblock) {
             return false;
         }
-        return $this->deleteIblock($aIblock['ID']);
+        return $this->deleteIblock($iblock['ID']);
     }
 
     public function deleteIblock($iblockId) {
@@ -288,25 +288,25 @@ class IblockHelper extends Helper
             'IBLOCK_ID' => $iblockId,
             'PROPERTY_ID' => $propertyId
         ));
-        while ($aItem = $dbres->Fetch()) {
-            $result[] = $aItem;
+        while ($item = $dbres->Fetch()) {
+            $result[] = $item;
         }
         return $result;
     }
 
     public function getPropertyId($iblockId, $code) {
-        $aItem = $this->getProperty($iblockId, $code);
-        return ($aItem && isset($aItem['ID'])) ? $aItem['ID'] : 0;
+        $item = $this->getProperty($iblockId, $code);
+        return ($item && isset($item['ID'])) ? $item['ID'] : 0;
     }
 
     public function getProperties($iblockId, $filter = array()) {
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
 
-        $dbResult = \CIBlockProperty::GetList(array('SORT' => 'ASC'), $filter);
+        $dbres = \CIBlockProperty::GetList(array('SORT' => 'ASC'), $filter);
 
         $list = array();
-        while ($property = $dbResult->Fetch()) {
+        while ($property = $dbres->Fetch()) {
             $list[] = $this->prepareProperty($property);
         }
         return $list;
@@ -315,9 +315,9 @@ class IblockHelper extends Helper
     public function addPropertyIfNotExists($iblockId, $fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
-        $aProperty = $this->getProperty($iblockId, $fields['CODE']);
-        if ($aProperty) {
-            return $aProperty['ID'];
+        $property = $this->getProperty($iblockId, $fields['CODE']);
+        if ($property) {
+            return $property['ID'];
         }
 
         return $this->addProperty($iblockId, $fields);
@@ -376,12 +376,12 @@ class IblockHelper extends Helper
     }
 
     public function deletePropertyIfExists($iblockId, $code) {
-        $aProperty = $this->getProperty($iblockId, $code);
-        if (!$aProperty) {
+        $property = $this->getProperty($iblockId, $code);
+        if (!$property) {
             return false;
         }
 
-        return $this->deletePropertyById($aProperty['ID']);
+        return $this->deletePropertyById($property['ID']);
 
     }
 
@@ -395,11 +395,11 @@ class IblockHelper extends Helper
     }
 
     public function updatePropertyIfExists($iblockId, $code, $fields) {
-        $aProperty = $this->getProperty($iblockId, $code);
-        if (!$aProperty) {
+        $property = $this->getProperty($iblockId, $code);
+        if (!$property) {
             return false;
         }
-        return $this->updatePropertyById($aProperty['ID'], $fields);
+        return $this->updatePropertyById($property['ID'], $fields);
     }
 
     public function updatePropertyById($propertyId, $fields) {
@@ -453,8 +453,8 @@ class IblockHelper extends Helper
     }
 
     public function getElementId($iblockId, $code) {
-        $aItem = $this->getElement($iblockId, $code);
-        return ($aItem && isset($aItem['ID'])) ? $aItem['ID'] : 0;
+        $item = $this->getElement($iblockId, $code);
+        return ($item && isset($item['ID'])) ? $item['ID'] : 0;
     }
 
     public function getElements($iblockId, $filter = array(), $select = array()) {
@@ -469,13 +469,13 @@ class IblockHelper extends Helper
         ), $select);
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbResult = \CIBlockElement::GetList(array(
+        $dbres = \CIBlockElement::GetList(array(
             'ID' => 'ASC'
         ), $filter, false, false, $select);
 
         $list = array();
-        while ($aItem = $dbResult->Fetch()) {
-            $list[] = $aItem;
+        while ($item = $dbres->Fetch()) {
+            $list[] = $item;
         }
         return $list;
     }
@@ -483,9 +483,9 @@ class IblockHelper extends Helper
     public function addElementIfNotExists($iblockId, $fields, $props = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
-        $aItem = $this->getElement($iblockId, $fields['CODE']);
-        if ($aItem) {
-            return $aItem['ID'];
+        $item = $this->getElement($iblockId, $fields['CODE']);
+        if ($item) {
+            return $item['ID'];
         }
 
         return $this->addElement($iblockId, $fields, $props);
@@ -520,15 +520,15 @@ class IblockHelper extends Helper
     public function updateElementIfExists($iblockId, $fields = array(), $props = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
-        $aItem = $this->getElement($iblockId, $fields['CODE']);
-        if (!$aItem) {
+        $item = $this->getElement($iblockId, $fields['CODE']);
+        if (!$item) {
             return false;
         }
 
         $fields['IBLOCK_ID'] = $iblockId;
         unset($fields['CODE']);
 
-        return $this->updateElement($aItem['ID'], $fields, $props);
+        return $this->updateElement($item['ID'], $fields, $props);
     }
 
     public function updateElement($elementId, $fields = array(), $props = array()) {
@@ -550,13 +550,13 @@ class IblockHelper extends Helper
     }
 
     public function deleteElementIfExists($iblockId, $code) {
-        $aItem = $this->getElement($iblockId, $code);
+        $item = $this->getElement($iblockId, $code);
 
-        if (!$aItem) {
+        if (!$item) {
             return false;
         }
 
-        return $this->deleteElement($aItem['ID']);
+        return $this->deleteElement($item['ID']);
     }
 
     public function deleteElement($elementId) {
@@ -589,8 +589,8 @@ class IblockHelper extends Helper
     }
 
     public function getSectionId($iblockId, $code) {
-        $aItem = $this->getSection($iblockId, $code);
-        return ($aItem && isset($aItem['ID'])) ? $aItem['ID'] : 0;
+        $item = $this->getSection($iblockId, $code);
+        return ($item && isset($item['ID'])) ? $item['ID'] : 0;
     }
 
     public function getSections($iblockId, $filter = array()) {
@@ -598,7 +598,7 @@ class IblockHelper extends Helper
         $filter['CHECK_PERMISSIONS'] = 'N';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbResult = \CIBlockSection::GetList(array(
+        $dbres = \CIBlockSection::GetList(array(
             'SORT' => 'ASC'
         ), $filter, false, array(
             'ID',
@@ -608,8 +608,8 @@ class IblockHelper extends Helper
         ));
 
         $list = array();
-        while ($aItem = $dbResult->Fetch()) {
-            $list[] = $aItem;
+        while ($item = $dbres->Fetch()) {
+            $list[] = $item;
         }
         return $list;
     }
@@ -617,9 +617,9 @@ class IblockHelper extends Helper
     public function addSectionIfNotExists($iblockId, $fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
-        $aItem = $this->getSection($iblockId, $fields['CODE']);
-        if ($aItem) {
-            return $aItem['ID'];
+        $item = $this->getSection($iblockId, $fields['CODE']);
+        if ($item) {
+            return $item['ID'];
         }
 
         return $this->addSection($iblockId, $fields);
@@ -654,14 +654,14 @@ class IblockHelper extends Helper
     public function updateSectionIfExists($iblockId, $fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
-        $aItem = $this->getSection($iblockId, $fields['CODE']);
-        if (!$aItem) {
+        $item = $this->getSection($iblockId, $fields['CODE']);
+        if (!$item) {
             return false;
         }
 
         unset($fields['CODE']);
 
-        return $this->updateSection($aItem['ID'], $fields);
+        return $this->updateSection($item['ID'], $fields);
 
     }
 
@@ -675,12 +675,12 @@ class IblockHelper extends Helper
     }
 
     public function deleteSectionIfExists($iblockId, $code) {
-        $aItem = $this->getSection($iblockId, $code);
-        if (!$aItem) {
+        $item = $this->getSection($iblockId, $code);
+        if (!$item) {
             return false;
         }
 
-        return $this->deleteSection($aItem['ID']);
+        return $this->deleteSection($item['ID']);
 
     }
 
@@ -715,11 +715,11 @@ class IblockHelper extends Helper
 
     public function getIblockTypeLangs($typeId) {
         $result = array();
-        $dbRes = \CLanguage::GetList($lby = "sort", $lorder = "asc");
-        while ($aItem = $dbRes->GetNext()) {
-            $values = \CIBlockType::GetByIDLang($typeId, $aItem['LID'], false);
+        $dbres = \CLanguage::GetList($lby = "sort", $lorder = "asc");
+        while ($item = $dbres->GetNext()) {
+            $values = \CIBlockType::GetByIDLang($typeId, $item['LID'], false);
             if (!empty($values)) {
-                $result[$aItem['LID']] = array(
+                $result[$item['LID']] = array(
                     'NAME' => $values['NAME'],
                     'SECTION_NAME' => $values['SECTION_NAME'],
                     'ELEMENT_NAME' => $values['ELEMENT_NAME']
@@ -736,9 +736,9 @@ class IblockHelper extends Helper
     public function saveIblockType($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
 
-        $aIblockType = $this->getIblockType($fields['ID']);
-        if ($aIblockType) {
-            return $this->updateIblockType($aIblockType['ID'], $fields);
+        $iblockType = $this->getIblockType($fields['ID']);
+        if ($iblockType) {
+            return $this->updateIblockType($iblockType['ID'], $fields);
         } else {
             return $this->addIblockType($fields);
         }
@@ -752,9 +752,9 @@ class IblockHelper extends Helper
             $typeId = $fields['IBLOCK_TYPE_ID'];
         }
 
-        $aIblock = $this->getIblock($fields['CODE'], $typeId);
-        if ($aIblock) {
-            return $this->updateIblock($aIblock['ID'], $fields);
+        $iblock = $this->getIblock($fields['CODE'], $typeId);
+        if ($iblock) {
+            return $this->updateIblock($iblock['ID'], $fields);
         } else {
             return $this->addIblock($fields);
         }
@@ -770,9 +770,9 @@ class IblockHelper extends Helper
     public function saveProperty($iblockId, $fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
-        $aProperty = $this->getProperty($iblockId, $fields['CODE']);
-        if ($aProperty) {
-            return $this->updatePropertyById($aProperty['ID'], $fields);
+        $property = $this->getProperty($iblockId, $fields['CODE']);
+        if ($property) {
+            return $this->updatePropertyById($property['ID'], $fields);
         } else {
             return $this->addProperty($iblockId, $fields);
         }

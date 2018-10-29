@@ -120,7 +120,7 @@
     "SPRINT_MIGRATION_BUILDER_FormExport1" => "Создать миграцию для веб-формы",
     "SPRINT_MIGRATION_BUILDER_FormExport2" => "",
     "SPRINT_MIGRATION_BUILDER_FormExport3" => "Введите новый символьный идентификатор (необязательно)",
-    "SPRINT_MIGRATION_BUILDER_FormExport_FormId" => "Введите ID формы",
+    "SPRINT_MIGRATION_BUILDER_FormExport_FormId" => "Выберите форму",
     "SPRINT_MIGRATION_BUILDER_FormExport_What" => "Что переносим?",
     "SPRINT_MIGRATION_BUILDER_FormExport_Form" => "Форму с вопросами и ответами",
     "SPRINT_MIGRATION_BUILDER_FormExport_Rights" => "Права на доступ к формам (ID групп пользователей могут не совпадать)",

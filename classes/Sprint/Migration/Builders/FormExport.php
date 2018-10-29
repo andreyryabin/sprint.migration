@@ -17,12 +17,9 @@ class FormExport extends VersionBuilder
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_FormExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_FormExport2'));
 
-        $this->addField('form_id', array(
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_FormId'),
-            'width' => 250,
-        ));
-        $this->addField('sid', array(
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport3'),
+        $this->addField('prefix', array(
+            'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
+            'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
         ));
 
@@ -33,10 +30,36 @@ class FormExport extends VersionBuilder
         ));
     }
 
-    protected function execute()
-    {
+    protected function execute() {
         $helper = new HelperManager();
         $formHelper = $helper->Form();
+
+        $forms = $formHelper->getList();
+
+        $structure = array();
+        foreach ($forms as $item) {
+            $structure[] = array(
+                'title' => '[' . $item['ID'] . '] ' . $item['NAME'],
+                'value' => $item['ID'],
+            );
+        }
+
+        $this->addField('form_id', array(
+            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_FormId'),
+            'width' => 250,
+            'select' => $structure
+        ));
+
+        $formId = $this->getFieldValue('form_id');
+        if (empty($formId)) {
+            $this->rebuildField('form_id');
+        }
+
+
+        $this->addField('sid', array(
+            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport3'),
+            'width' => 250,
+        ));
 
         $this->addField('what_else', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_What'),
@@ -66,10 +89,7 @@ class FormExport extends VersionBuilder
             $this->rebuildField('what_else');
         }
 
-        $formId = $this->getFieldValue('form_id');
-        $this->exitIfEmpty($formId, 'Form id is not valid');
-
-        $form = [];
+        $form = array();
         $formBody = $formHelper->getFormById($formId);
         $this->exitIfEmpty($formBody, 'Form not found');
 
@@ -78,11 +98,11 @@ class FormExport extends VersionBuilder
          * В будущем переработать на модель при которой шаблоны будут задаваться явно со всеми данными, а группы пользователей находиться по символьному коду в целевой системе
          * Сейчас же эти поля надо проверять вручную или же не использовать вообще
          */
-        if(in_array('rights', $what)){
+        if (in_array('rights', $what)) {
             $rights = $formHelper->getRights($formId);
             $formBody['arGROUP'] = $rights;
         }
-        if(in_array('templates', $what)){
+        if (in_array('templates', $what)) {
             $templates = $formHelper->getMailTemplates($formId);
             $formBody['arMAIL_TEMPLATE'] = $templates;
         }
@@ -100,7 +120,6 @@ class FormExport extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/FormExport.php', array(
             'form' => $form,
-            'description' => $this->getFieldValue('description'),
             'sid' => $this->getFieldValue('sid')
         ));
     }
