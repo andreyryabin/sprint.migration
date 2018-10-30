@@ -55,72 +55,62 @@ class FormExport extends VersionBuilder
             $this->rebuildField('form_id');
         }
 
+//        $this->addField('what_else', array(
+//            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_What'),
+//            'width' => 250,
+//            'multiple' => 1,
+//            'value' => array(),
+//            'select' => [
+//                [
+//                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Form'),
+//                    'value' => 'body'
+//                ],
+//                [
+//                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Rights'),
+//                    'value' => 'rights'
+//                ],
+//                [
+//                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Templates'),
+//                    'value' => 'templates'
+//                ],
+//            ]
+//        ));
 
-        $this->addField('sid', array(
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport3'),
-            'width' => 250,
-        ));
+//        $what = $this->getFieldValue('what_else');
+//        if (!empty($what)) {
+//            $what = is_array($what) ? $what : array($what);
+//        } else {
+//            $this->rebuildField('what_else');
+//        }
 
-        $this->addField('what_else', array(
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_What'),
-            'width' => 250,
-            'multiple' => 1,
-            'value' => array(),
-            'select' => [
-                [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Form'),
-                    'value' => 'body'
-                ],
-                [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Rights'),
-                    'value' => 'rights'
-                ],
-                [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Templates'),
-                    'value' => 'templates'
-                ],
-            ]
-        ));
+        $form = $formHelper->getFormById($formId);
+        $this->exitIfEmpty($form, 'Form not found');
 
-        $what = $this->getFieldValue('what_else');
-        if (!empty($what)) {
-            $what = is_array($what) ? $what : array($what);
-        } else {
-            $this->rebuildField('what_else');
-        }
 
-        $form = array();
-        $formBody = $formHelper->getFormById($formId);
-        $this->exitIfEmpty($formBody, 'Form not found');
-
-        /**
-         * Внимание! Последние 2 поля ориентируются на ID сущностей, так что могут быть расхождения. Применяйте на свой страх и риск
-         * В будущем переработать на модель при которой шаблоны будут задаваться явно со всеми данными, а группы пользователей находиться по символьному коду в целевой системе
-         * Сейчас же эти поля надо проверять вручную или же не использовать вообще
-         */
-        if (in_array('rights', $what)) {
-            $rights = $formHelper->getRights($formId);
-            $formBody['arGROUP'] = $rights;
-        }
-        if (in_array('templates', $what)) {
-            $templates = $formHelper->getMailTemplates($formId);
-            $formBody['arMAIL_TEMPLATE'] = $templates;
-        }
-        $form['FORM'] = $formBody;
+        unset($form['ID']);
+        unset($form['TIMESTAMP_X']);
+        unset($form['VARNAME']);
 
         $statuses = $formHelper->getFormStatuses($formId);
-        $form['STATUSES'] = $statuses;
+
+        foreach ($statuses as $index => $status){
+            unset($status['ID']);
+            unset($status['TIMESTAMP_X']);
+            unset($status['FORM_ID']);
+            unset($status['RESULTS']);
+            $statuses[$index] = $status;
+        }
 
         $fields = $formHelper->getFormFields($formId);
-        $form['FIELDS'] = $fields;
 
         $validators = $formHelper->getFormValidators($formId);
-        $form['VALIDATORS'] = $validators;
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/FormExport.php', array(
             'form' => $form,
-            'sid' => $this->getFieldValue('sid')
+            'statuses' => $statuses,
+            'fields' => $fields,
+            'validators' => $validators,
         ));
     }
 }

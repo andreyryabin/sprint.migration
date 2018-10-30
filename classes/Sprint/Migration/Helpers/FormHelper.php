@@ -34,51 +34,69 @@ class FormHelper extends Helper
         $formId = (int)$formId;
 
         $form = \CForm::GetByID($formId)->Fetch();
-        if (!$form) {
-            return null;
+        if (empty($form)) {
+            return false;
         }
 
-        $dbSites = $this->db->Query("SELECT SITE_ID FROM b_form_2_site WHERE FORM_ID = {$formId}");
-        $form['arSITE'] = [];
-        while ($ar = $dbSites->Fetch()) {
-            $form['arSITE'][] = $ar["SITE_ID"];
-        }
-        $dbMenu = $this->db->Query("SELECT LID, MENU FROM b_form_menu WHERE FORM_ID = {$formId}");
-        $form['arMENU'] = [];
-        while ($menu = $dbMenu->Fetch()) {
-            $form['arMENU'][$menu['LID']] = $menu["MENU"];
-        }
+        $form['arSITE'] = $this->exportSites($formId);
+
+        $form["arMENU"] = $this->exportMenus($formId);
+
+        $form['arGROUP'] = $this->exportRights($formId);
+
+        $form['arMAIL_TEMPLATE'] = $this->exportMailTemplates($formId);
 
         return $form;
     }
 
+    /**
+     * @param string $sid
+     * @return mixed
+     */
+    public function getFormIdBySid($sid) {
+        $form = \CForm::GetBySID($sid)->Fetch();
+        return ($form && isset($form['ID'])) ? $form['ID'] : 0;
+    }
 
     /**
      * @param int $formId
      * @return array
      */
-    public function getRights($formId) {
+    public function exportRights($formId) {
+        $userGroupHelper = new UserGroupHelper();
+
         $rights = [];
         $dbGroup = $this->db->Query("SELECT GROUP_ID, PERMISSION FROM b_form_2_group WHERE FORM_ID = {$formId}");
         while ($group = $dbGroup->Fetch()) {
-            $rights[$group['GROUP_ID']] = $group["PERMISSION"];
+            $groupCode = $userGroupHelper->getGroupCode($group['GROUP_ID']);
+            if ($groupCode) {
+                $rights[$groupCode] = $group["PERMISSION"];
+            }
         }
         return $rights;
     }
 
+    public function exportSites($formId) {
+        return \CForm::GetSiteArray($formId);
+    }
 
     /**
      * @param int $formId
      * @return array
      */
-    public function getMailTemplates($formId) {
-        $templates = [];
-        $dbTemplate = $this->db->Query("SELECT MAIL_TEMPLATE_ID FROM b_form_2_mail_template WHERE FORM_ID = {$formId}");
-        while ($tmpl = $dbTemplate->Fetch()) {
-            $templates[] = $tmpl["MAIL_TEMPLATE_ID"];
-        }
-        return $templates;
+    public function exportMailTemplates($formId) {
+        return \CForm::GetMailTemplateArray($formId);
     }
+
+    public function exportMenus($formId) {
+        $res = array();
+        $dbres = \CForm::GetMenuList(array('FORM_ID' => $formId), 'N');
+        while ($menuItem = $dbres->Fetch()) {
+            $res[$menuItem["LID"]] = $menuItem["MENU"];
+        }
+        return $res;
+    }
+
 
     /**
      * @param $form
@@ -86,29 +104,30 @@ class FormHelper extends Helper
      * @return bool|int
      * @throws \Exception
      */
-    public function saveForm($form, $sid) {
-        $this->db->StartTransaction();
-        $formArray = $form['FORM'];
-        $oldSid = $formArray['SID'];
-        $formArray['SID'] = $sid;
-        $formArray['VARNAME'] = $sid;
-        $formArray['MAIL_EVENT_TYPE'] = str_replace($oldSid, $sid, $formArray['MAIL_EVENT_TYPE']);
-        $formId = \CForm::Set($formArray);
-        if (!$formId) {
-            $this->throwException(__METHOD__, $GLOBALS['strError']);
-        }
-        try {
-            $this->saveStatuses($formId, $form['STATUSES']);
-            $this->saveFieldsWithValidators($formId, $form['FIELDS'], $form['VALIDATORS']);
-        } catch (\Exception $e) {
-            $this->db->Rollback();
-            throw $e;
-        }
-        $addNewTemplate = isset($formArray['arMAIL_TEMPLATE']) ? 'N' : 'Y';
-        \CForm::SetMailTemplate($formId, $addNewTemplate);
-        $this->db->Commit();
+    public function saveForm($form) {
+        $this->checkRequiredKeys(__METHOD__, $form, array('SID'));
 
-        return $formId;
+        $form['VARNAME'] = $form['SID'];
+
+        $userGroupHelper = new UserGroupHelper();
+        if (isset($form['arGROUP']) && is_array($form['arGROUP'])) {
+            $arGroup = array();
+            foreach ($form['arGROUP'] as $groupCode => $permissionValue) {
+                $groupId = $userGroupHelper->getGroupId($groupCode);
+                $arGroup[$groupId] = $permissionValue;
+            }
+            $form['arGROUP'] = $arGroup;
+        }
+
+
+        $formId = $this->getFormIdBySid($form['SID']);
+        $formId = \CForm::Set($form, $formId, 'N');
+
+        if ($formId) {
+            return $formId;
+        }
+
+        $this->throwException(__METHOD__, $GLOBALS['strError']);
     }
 
     /**
@@ -117,16 +136,33 @@ class FormHelper extends Helper
      * @throws \Exception
      */
     public function saveStatuses($formId, $statuses) {
+        $currentStatuses = $this->getFormStatuses($formId);
+
+        $updatedIds = array();
+
         foreach ($statuses as $status) {
             $status['FORM_ID'] = $formId;
-            unset($status['TIMESTAMP_X']);
-            unset($status['RESULTS']);
-            unset($status['ID']);
-            $statusID = \CFormStatus::Set($status);
-            if (!$statusID) {
+
+            $statusId = false;
+            foreach ($currentStatuses as $currentStatus) {
+                if ($currentStatus['TITLE'] == $status['TITLE']) {
+                    $statusId = $currentStatus['ID'];
+                    $updatedIds[] = $currentStatus['ID'];
+                    break;
+                }
+            }
+
+            if (!\CFormStatus::Set($status, $statusId, 'N')) {
                 $this->throwException(__METHOD__, $GLOBALS['strError']);
             }
         }
+
+        foreach ($currentStatuses as $status) {
+            if (!in_array($status['ID'], $updatedIds)) {
+                \CFormStatus::Delete($status['ID'], 'N');
+            }
+        }
+
     }
 
     /**
@@ -140,10 +176,12 @@ class FormHelper extends Helper
         foreach ($validators as $validator) {
             $arValidators[$validator['FIELD_ID']][] = $validator;
         }
+
         foreach ($fields as $field) {
             $answers = $field['_ANSWERS'];
             $validators = $arValidators[$field['ID']];
             $field['FORM_ID'] = $formId;
+
             unset($field['_ANSWERS']);
             unset($field['VARNAME']);
             unset($field['TIMESTAMP_X']);
@@ -166,24 +204,31 @@ class FormHelper extends Helper
             $this->throwException(__METHOD__, $GLOBALS['strError']);
         }
 
-        foreach ($answers as $answer) {
-            $answer['QUESTION_ID'] = $fieldId;
-            unset($answer['ID']);
-            unset($answer['FIELD_ID']);
-            unset($answer['TIMESTAMP_X']);
-            $answerID = \CFormAnswer::Set($answer);
-            if (!$answerID) {
-                $this->throwException(__METHOD__, $GLOBALS['strError']);
+        if (!empty($validators)) {
+            foreach ($answers as $answer) {
+                $answer['QUESTION_ID'] = $fieldId;
+                unset($answer['ID']);
+                unset($answer['FIELD_ID']);
+                unset($answer['TIMESTAMP_X']);
+                $answerID = \CFormAnswer::Set($answer);
+                if (!$answerID) {
+                    $this->throwException(__METHOD__, $GLOBALS['strError']);
+                }
             }
         }
 
-        foreach ($validators as $validator) {
-            $validatorId = \CFormValidator::Set($formId, $fieldId, $validator['NAME']);
-            if (!$validatorId) {
-                //  TODO - мигрировать валидаторы, ибо тут предполагается их наличие в системе
-                global $strError;
+
+        if (!empty($validators)) {
+            foreach ($validators as $validator) {
+                $validatorId = \CFormValidator::Set($formId, $fieldId, $validator['NAME']);
+                if (!$validatorId) {
+                    //  TODO - мигрировать валидаторы, ибо тут предполагается их наличие в системе
+                    global $strError;
+                }
             }
         }
+
+
     }
 
     /**
@@ -225,36 +270,35 @@ class FormHelper extends Helper
 
 
     /**
-     * @param CDBResult $dbres
-     * @return array
-     */
-    private function fetchAll(\CDBResult $dbres) {
-        $res = [];
-        while ($value = $dbres->Fetch()) {
-            $res[] = $value;
-        }
-        return $res;
-    }
-
-    /**
      * @param string $sid
      * @throws \Exception
      */
     public function deleteFormBySid($sid) {
         $id = $this->getFormIdBySid($sid);
-        $res = \CForm::Delete($id);
-        if (!$res) {
-            $this->throwException(__METHOD__,'Cannot delete form "%s"', $sid);
+        if (!$id) {
+            return false;
         }
+
+        if (\CForm::Delete($id)) {
+            return true;
+        }
+
+        $this->throwException(__METHOD__, 'Cannot delete form "%s"', $sid);
     }
 
+
     /**
-     * @param string $sid
-     * @return mixed
+     * @param CDBResult $dbres
+     * @return array
      */
-    public function getFormIdBySid($sid) {
-        $form = \CForm::GetBySID($sid)->Fetch();
-        return ($form && isset($form['ID'])) ? $form['ID'] : false;
+    private function fetchAll(\CDBResult $dbres) {
+        $res = array();
+
+        while ($value = $dbres->Fetch()) {
+            $res[] = $value;
+        }
+
+        return $res;
     }
 
 }

@@ -23,13 +23,18 @@ class UserGroupHelper extends Helper
         return $res;
     }
 
+    public function getGroupCode($id) {
+        $group = $this->getGroup($id);
+        return ($group) ? $group['STRING_ID'] : false;
+    }
 
     public function getGroupId($code) {
-        return \CGroup::GetIDByCode($code);
+        $group = $this->getGroup($code);
+        return ($group) ? $group['ID'] : false;
     }
 
     public function getGroup($code) {
-        $groupId = is_numeric($code) ? $code : $this->getGroupId($code);
+        $groupId = is_numeric($code) ? $code : \CGroup::GetIDByCode($code);
 
         if (empty($groupId)) {
             return false;
@@ -43,6 +48,12 @@ class UserGroupHelper extends Helper
 
         if (!empty($item['SECURITY_POLICY'])) {
             $item['SECURITY_POLICY'] = unserialize($item['SECURITY_POLICY']);
+        }
+
+        if ($item['ID'] == 1) {
+            $item['STRING_ID'] = 'administrators';
+        } elseif ($item['ID'] == 2) {
+            $item['STRING_ID'] = 'everyone';
         }
 
         return $item;

@@ -6,10 +6,11 @@
  * @var $extendUse
  * @var $extendClass
  * @var $form
- * @var $sid
+ * @var $statuses
+ * @var $fields
+ * @var $validators
  */
 
-$SID = $sid ? $sid : $form['FORM']['SID']
 ?><?php echo "<?php\n" ?>
 
 namespace Sprint\Migration;
@@ -26,14 +27,16 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper = new HelperManager();
 
         $formHelper = $helper->Form();
-        $formId = $formHelper->saveForm(<?= var_export($form, 1)?>, '<?= $SID?>');
 
+        $formId = $formHelper->saveForm(<?= var_export($form, 1)?>);
+
+        $formHelper->saveStatuses($formId, <?= var_export($statuses, 1)?>);
     }
 
     public function down() {
         $helper = new HelperManager();
 
-        $helper->Form()->deleteFormBySID('<?= $SID?>');
+        $helper->Form()->deleteFormBySid('<?= $form['SID']?>');
 
     }
 
