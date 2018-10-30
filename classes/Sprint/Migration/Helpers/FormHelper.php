@@ -62,7 +62,7 @@ class FormHelper extends Helper
      * @param int $formId
      * @return array
      */
-    public function exportRights($formId) {
+    protected function exportRights($formId) {
         $userGroupHelper = new UserGroupHelper();
 
         $rights = [];
@@ -76,7 +76,7 @@ class FormHelper extends Helper
         return $rights;
     }
 
-    public function exportSites($formId) {
+    protected function exportSites($formId) {
         return \CForm::GetSiteArray($formId);
     }
 
@@ -84,11 +84,11 @@ class FormHelper extends Helper
      * @param int $formId
      * @return array
      */
-    public function exportMailTemplates($formId) {
+    protected function exportMailTemplates($formId) {
         return \CForm::GetMailTemplateArray($formId);
     }
 
-    public function exportMenus($formId) {
+    protected function exportMenus($formId) {
         $res = array();
         $dbres = \CForm::GetMenuList(array('FORM_ID' => $formId), 'N');
         while ($menuItem = $dbres->Fetch()) {
@@ -96,7 +96,6 @@ class FormHelper extends Helper
         }
         return $res;
     }
-
 
     /**
      * @param $form
@@ -130,6 +129,51 @@ class FormHelper extends Helper
         $this->throwException(__METHOD__, $GLOBALS['strError']);
     }
 
+    public function saveFields($formId, $fields) {
+
+        $currentFields = $this->getFormFields($formId);
+        $updatedIds = array();
+
+        foreach ($fields as $field) {
+            $field['FORM_ID'] = $formId;
+            $field['VARNAME'] = $field['SID'];
+
+            $answers = array();
+            if (isset($field['ANSWERS'])) {
+                if (is_array($field['ANSWERS'])) {
+                    $answers = $field['ANSWERS'];
+                }
+                unset($field['ANSWERS']);
+            }
+
+            $fieldId = false;
+            foreach ($currentFields as $currentField) {
+                if (
+                    !in_array($currentField['ID'], $updatedIds) &&
+                    $currentField['SID'] == $field['SID']
+                ) {
+                    $fieldId = $currentField['ID'];
+                    $updatedIds[] = $currentField['ID'];
+                    break;
+                }
+            }
+
+            $fieldId = \CFormField::Set($field, $fieldId, 'N');
+            if (empty($fieldId)) {
+                $this->throwException(__METHOD__, $GLOBALS['strError']);
+            }
+
+            $this->saveFieldAnswers($fieldId, $answers);
+
+        }
+
+        foreach ($currentFields as $currentField) {
+            if (!in_array($currentField['ID'], $updatedIds)) {
+                \CFormField::Delete($currentField['ID'], 'N');
+            }
+        }
+    }
+
     /**
      * @param $formId
      * @param $statuses
@@ -145,90 +189,58 @@ class FormHelper extends Helper
 
             $statusId = false;
             foreach ($currentStatuses as $currentStatus) {
-                if ($currentStatus['TITLE'] == $status['TITLE']) {
+                if (
+                    !in_array($currentStatus['ID'], $updatedIds) &&
+                    $currentStatus['TITLE'] == $status['TITLE']
+                ) {
                     $statusId = $currentStatus['ID'];
                     $updatedIds[] = $currentStatus['ID'];
                     break;
                 }
             }
 
-            if (!\CFormStatus::Set($status, $statusId, 'N')) {
+            $statusId = \CFormStatus::Set($status, $statusId, 'N');
+            if (empty($statusId)) {
                 $this->throwException(__METHOD__, $GLOBALS['strError']);
             }
         }
 
-        foreach ($currentStatuses as $status) {
-            if (!in_array($status['ID'], $updatedIds)) {
-                \CFormStatus::Delete($status['ID'], 'N');
+        foreach ($currentStatuses as $currentStatus) {
+            if (!in_array($currentStatus['ID'], $updatedIds)) {
+                \CFormStatus::Delete($currentStatus['ID'], 'N');
             }
         }
 
     }
 
-    /**
-     * @param $formId
-     * @param $fields
-     * @param $validators
-     * @throws \Exception
-     */
-    public function saveFieldsWithValidators($formId, $fields, $validators) {
-        $arValidators = [];
-        foreach ($validators as $validator) {
-            $arValidators[$validator['FIELD_ID']][] = $validator;
-        }
 
-        foreach ($fields as $field) {
-            $answers = $field['_ANSWERS'];
-            $validators = $arValidators[$field['ID']];
-            $field['FORM_ID'] = $formId;
+    protected function saveFieldAnswers($fieldId, $answers) {
+        $currentAnswers = $this->getFieldAnswers($fieldId);
 
-            unset($field['_ANSWERS']);
-            unset($field['VARNAME']);
-            unset($field['TIMESTAMP_X']);
-            unset($field['ID']);
-            $this->addField($formId, $field, $answers, $validators);
-        }
-    }
+        $updatedIds = array();
 
-    /**
-     * @param $formId
-     * @param array $field
-     * @param array $answers
-     * @param array $validators
-     * @throws \Exception
-     */
-    public function addField($formId, $field, $answers, $validators = array()) {
-        $field['FORM_ID'] = $formId;
-        $fieldId = \CFormField::Set($field);
-        if (!$fieldId) {
-            $this->throwException(__METHOD__, $GLOBALS['strError']);
-        }
+        foreach ($answers as $index => $answer) {
 
-        if (!empty($validators)) {
-            foreach ($answers as $answer) {
-                $answer['QUESTION_ID'] = $fieldId;
-                unset($answer['ID']);
-                unset($answer['FIELD_ID']);
-                unset($answer['TIMESTAMP_X']);
-                $answerID = \CFormAnswer::Set($answer);
-                if (!$answerID) {
-                    $this->throwException(__METHOD__, $GLOBALS['strError']);
-                }
+            $answerId = false;
+            if (isset($currentAnswers[$index])) {
+                $currentAnswer = $currentAnswers[$index];
+                $answerId = $currentAnswer['ID'];
+                $updatedIds[] = $currentAnswer['ID'];
+                break;
+            }
+
+            $answerId = \CFormAnswer::Set($answer, $answerId);
+            if (empty($answerId)) {
+                $this->throwException(__METHOD__, $GLOBALS['strError']);
             }
         }
 
 
-        if (!empty($validators)) {
-            foreach ($validators as $validator) {
-                $validatorId = \CFormValidator::Set($formId, $fieldId, $validator['NAME']);
-                if (!$validatorId) {
-                    //  TODO - мигрировать валидаторы, ибо тут предполагается их наличие в системе
-                    global $strError;
-                }
+        foreach ($currentAnswers as $currentAnswer) {
+            if (!in_array($currentAnswer['ID'], $updatedIds)) {
+                \CFormAnswer::Delete($currentAnswer['ID'], $fieldId);
             }
         }
-
-
     }
 
     /**
@@ -245,8 +257,8 @@ class FormHelper extends Helper
     public function getFormFields($formId) {
         $dbFields = \CFormField::GetList($formId, 'ALL', $by = 's_sort', $order = 'asc', [], $f);
         $fields = $this->fetchAll($dbFields);
-        foreach ($fields as $k => $field) {
-            $fields[$k]['_ANSWERS'] = $this->getFieldAnswers($field['ID']);
+        foreach ($fields as $index => $field) {
+            $fields[$index]['ANSWERS'] = $this->getFieldAnswers($field['ID']);
         }
         return $fields;
     }
@@ -255,7 +267,7 @@ class FormHelper extends Helper
      * @param $fieldId
      * @return array
      */
-    private function getFieldAnswers($fieldId) {
+    protected function getFieldAnswers($fieldId) {
         $dbAnswers = \CFormAnswer::GetList($fieldId, $by = 's_sort', $order = 'asc', [], $f);
         return $this->fetchAll($dbAnswers);
     }

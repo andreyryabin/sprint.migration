@@ -93,7 +93,7 @@ class FormExport extends VersionBuilder
 
         $statuses = $formHelper->getFormStatuses($formId);
 
-        foreach ($statuses as $index => $status){
+        foreach ($statuses as $index => $status) {
             unset($status['ID']);
             unset($status['TIMESTAMP_X']);
             unset($status['FORM_ID']);
@@ -102,6 +102,26 @@ class FormExport extends VersionBuilder
         }
 
         $fields = $formHelper->getFormFields($formId);
+        foreach ($fields as $index => $field) {
+            unset($field['ID']);
+            unset($field['TIMESTAMP_X']);
+            unset($field['FORM_ID']);
+            unset($field['VARNAME']);
+
+            if (is_array($field['ANSWERS'])){
+                foreach ($field['ANSWERS'] as $answerIndex => $answer){
+                    unset($answer['ID']);
+                    unset($answer['FIELD_ID']);
+                    unset($answer['QUESTION_ID']);
+                    unset($answer['TIMESTAMP_X']);
+
+                    $field['ANSWERS'][$answerIndex] = $answer;
+                }
+            }
+
+            $fields[$index] = $field;
+        }
+
 
         $validators = $formHelper->getFormValidators($formId);
 
