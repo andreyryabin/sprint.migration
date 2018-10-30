@@ -34,7 +34,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
         $formHelper->saveFields($formId, <?= var_export($fields, 1)?>);
 
-        $formHelper->saveValidators($formId, <?= var_export($validators, 1)?>);
     }
 
     public function down() {

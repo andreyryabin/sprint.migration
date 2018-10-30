@@ -146,6 +146,15 @@ class FormHelper extends Helper
                 unset($field['ANSWERS']);
             }
 
+
+            $validators = array();
+            if (isset($field['VALIDATORS'])) {
+                if (is_array($field['VALIDATORS'])) {
+                    $validators = $field['VALIDATORS'];
+                }
+                unset($field['VALIDATORS']);
+            }
+
             $fieldId = false;
             foreach ($currentFields as $currentField) {
                 if (
@@ -163,7 +172,8 @@ class FormHelper extends Helper
                 $this->throwException(__METHOD__, $GLOBALS['strError']);
             }
 
-            $this->saveFieldAnswers($fieldId, $answers);
+            $this->saveFieldAnswers($formId, $fieldId, $answers);
+            $this->saveFieldValidators($formId, $fieldId, $validators);
 
         }
 
@@ -173,6 +183,7 @@ class FormHelper extends Helper
             }
         }
     }
+
 
     /**
      * @param $formId
@@ -214,7 +225,7 @@ class FormHelper extends Helper
     }
 
 
-    protected function saveFieldAnswers($fieldId, $answers) {
+    protected function saveFieldAnswers($formId, $fieldId, $answers) {
         $currentAnswers = $this->getFieldAnswers($fieldId);
 
         $updatedIds = array();
@@ -222,6 +233,7 @@ class FormHelper extends Helper
         foreach ($answers as $index => $answer) {
 
             $answerId = false;
+
             if (isset($currentAnswers[$index])) {
                 $currentAnswer = $currentAnswers[$index];
                 $answerId = $currentAnswer['ID'];
@@ -229,7 +241,10 @@ class FormHelper extends Helper
                 break;
             }
 
-            $answerId = \CFormAnswer::Set($answer, $answerId);
+            $answerId = \CFormAnswer::Set(
+                $answer,
+                $answerId
+            );
             if (empty($answerId)) {
                 $this->throwException(__METHOD__, $GLOBALS['strError']);
             }
@@ -243,22 +258,46 @@ class FormHelper extends Helper
         }
     }
 
+
+    protected function saveFieldValidators($formId, $fieldId, $validators) {
+
+        \CFormValidator::Clear($fieldId);
+
+        foreach ($validators as $index => $validator) {
+
+            $validatorId = \CFormValidator::Set(
+                $formId,
+                $fieldId,
+                $validator['NAME'],
+                $validator['PARAMS'],
+                $validator['C_SORT']
+            );
+
+            if (empty($validatorId)) {
+                $this->throwException(__METHOD__, $GLOBALS['strError']);
+            }
+        }
+
+    }
+
+
     /**
      * @return array
      */
     public function getFormStatuses($formId) {
-        $dbStatuses = \CFormStatus::GetList($formId, $by = 's_sort', $order = 'asc', [], $f);
-        return $this->fetchAll($dbStatuses);
+        $dbres = \CFormStatus::GetList($formId, $by = 's_sort', $order = 'asc', [], $f);
+        return $this->fetchAll($dbres);
     }
 
     /**
      * @return array
      */
     public function getFormFields($formId) {
-        $dbFields = \CFormField::GetList($formId, 'ALL', $by = 's_sort', $order = 'asc', [], $f);
-        $fields = $this->fetchAll($dbFields);
+        $dbres = \CFormField::GetList($formId, 'ALL', $by = 's_sort', $order = 'asc', [], $f);
+        $fields = $this->fetchAll($dbres);
         foreach ($fields as $index => $field) {
             $fields[$index]['ANSWERS'] = $this->getFieldAnswers($field['ID']);
+            $fields[$index]['VALIDATORS'] = $this->getFieldValidators($field['ID']);
         }
         return $fields;
     }
@@ -268,16 +307,17 @@ class FormHelper extends Helper
      * @return array
      */
     protected function getFieldAnswers($fieldId) {
-        $dbAnswers = \CFormAnswer::GetList($fieldId, $by = 's_sort', $order = 'asc', [], $f);
-        return $this->fetchAll($dbAnswers);
+        $dbres = \CFormAnswer::GetList($fieldId, $by = 's_sort', $order = 'asc', [], $f);
+        return $this->fetchAll($dbres);
     }
 
     /**
+     * @param $fieldId
      * @return array
      */
-    public function getFormValidators($formId) {
-        $dbValidators = \CFormValidator::GetList($formId, [], $by = 's_sort', $order = 'asc');
-        return $this->fetchAll($dbValidators);
+    protected function getFieldValidators($fieldId) {
+        $dbres = \CFormValidator::GetList($fieldId, array(), $by = 's_sort', $order = 'asc');
+        return $this->fetchAll($dbres);
     }
 
 

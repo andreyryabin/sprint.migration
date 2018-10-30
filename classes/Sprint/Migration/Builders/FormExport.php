@@ -119,18 +119,27 @@ class FormExport extends VersionBuilder
                 }
             }
 
+
+            if (is_array($field['VALIDATORS'])){
+                foreach ($field['VALIDATORS'] as $validatorIndex => $validator){
+                    unset($validator['ID']);
+                    unset($validator['FORM_ID']);
+                    unset($validator['FIELD_ID']);
+                    unset($validator['TIMESTAMP_X']);
+                    unset($validator['PARAMS_FULL']);
+
+                    $field['VALIDATORS'][$validatorIndex] = $validator;
+                }
+            }
+
             $fields[$index] = $field;
         }
-
-
-        $validators = $formHelper->getFormValidators($formId);
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/FormExport.php', array(
             'form' => $form,
             'statuses' => $statuses,
             'fields' => $fields,
-            'validators' => $validators,
         ));
     }
 }
