@@ -92,7 +92,6 @@ class FormExport extends VersionBuilder
         unset($form['VARNAME']);
 
         $statuses = $formHelper->getFormStatuses($formId);
-
         foreach ($statuses as $index => $status) {
             unset($status['ID']);
             unset($status['TIMESTAMP_X']);
