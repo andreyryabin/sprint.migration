@@ -27,19 +27,26 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper = new HelperManager();
 
         $formHelper = $helper->Form();
-
+<? if (!empty($formExport)): ?>
         $formId = $formHelper->saveForm(<?= var_export($form, 1)?>);
+<?else:?>
+        $formId = $formHelper->getFormIdIfExists('<?= $form['SID']?>');
+<?endif?>
 
+<? if (!empty($statuses)): ?>
         $formHelper->saveStatuses($formId, <?= var_export($statuses, 1)?>);
+<?endif;?>
 
+<? if (!empty($fields)): ?>
         $formHelper->saveFields($formId, <?= var_export($fields, 1)?>);
+<?endif;?>
 
     }
 
     public function down() {
         $helper = new HelperManager();
 
-        $helper->Form()->deleteFormBySid('<?= $form['SID']?>');
+        $helper->Form()->deleteFormIfExists('<?= $form['SID']?>');
 
     }
 

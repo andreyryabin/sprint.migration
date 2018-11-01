@@ -7,7 +7,8 @@ use Sprint\Migration\Helper;
 class IblockHelper extends Helper
 {
 
-    public function findIblockType($typeId) {
+
+    public function getIblockTypeIfExists($typeId) {
         $item = $this->getIblockType($typeId);
         if ($item && isset($item['ID'])) {
             return $item;
@@ -16,7 +17,8 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, "iblock type not found");
     }
 
-    public function findIblockTypeId($typeId) {
+
+    public function getIblockTypeIdIfExists($typeId) {
         $item = $this->getIblockType($typeId);
         if ($item && isset($item['ID'])) {
             return $item['ID'];
@@ -25,7 +27,8 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, "iblock type id not found");
     }
 
-    public function findIblock($code, $typeId = '') {
+
+    public function getIblockIfExists($code, $typeId = '') {
         $item = $this->getIblock($code, $typeId);
         if ($item && isset($item['ID'])) {
             return $item;
@@ -34,7 +37,7 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, "iblock not found");
     }
 
-    public function findIblockId($code, $typeId = '') {
+    public function getIblockIdIfExists($code, $typeId = '') {
         $item = $this->getIblock($code, $typeId);
         if ($item && isset($item['ID'])) {
             return $item['ID'];
@@ -693,26 +696,6 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
-    /* @deprecated */
-    public function deleteProperty($iblockId, $code) {
-        return $this->deletePropertyIfExists($iblockId, $code);
-    }
-
-    /* @deprecated */
-    public function updateProperty($iblockId, $code, $fields) {
-        return $this->updatePropertyIfExists($iblockId, $code, $fields);
-    }
-
-    /** @deprecated */
-    public function mergeIblockFields($iblockId, $fields) {
-        $this->saveIblockFields($iblockId, $fields);
-    }
-
-    /** @deprecated */
-    public function updateIblockFields($iblockId, $fields) {
-        $this->saveIblockFields($iblockId, $fields);
-    }
-
     public function getIblockTypeLangs($typeId) {
         $result = array();
         $dbres = \CLanguage::GetList($lby = "sort", $lorder = "asc");
@@ -776,5 +759,46 @@ class IblockHelper extends Helper
         } else {
             return $this->addProperty($iblockId, $fields);
         }
+    }
+
+
+    /* @deprecated */
+    public function deleteProperty($iblockId, $code) {
+        return $this->deletePropertyIfExists($iblockId, $code);
+    }
+
+    /* @deprecated */
+    public function updateProperty($iblockId, $code, $fields) {
+        return $this->updatePropertyIfExists($iblockId, $code, $fields);
+    }
+
+    /** @deprecated */
+    public function mergeIblockFields($iblockId, $fields) {
+        $this->saveIblockFields($iblockId, $fields);
+    }
+
+    /** @deprecated */
+    public function updateIblockFields($iblockId, $fields) {
+        $this->saveIblockFields($iblockId, $fields);
+    }
+
+    /** @deprecated */
+    public function findIblockType($typeId) {
+        return $this->findIblockType($typeId);
+    }
+
+    /** @deprecated */
+    public function findIblockId($code, $typeId = '') {
+        return $this->getIblockIdIfExists($code, $typeId);
+    }
+
+    /** @deprecated */
+    public function findIblock($code, $typeId = '') {
+        return $this->getIblockIfExists($code, $typeId);
+    }
+
+    /** @deprecated */
+    public function findIblockTypeId($typeId) {
+        return $this->getIblockTypeIdIfExists($typeId);
     }
 }

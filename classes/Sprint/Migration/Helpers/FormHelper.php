@@ -53,9 +53,20 @@ class FormHelper extends Helper
      * @param string $sid
      * @return mixed
      */
-    public function getFormIdBySid($sid) {
+    public function getFormId($sid) {
         $form = \CForm::GetBySID($sid)->Fetch();
-        return ($form && isset($form['ID'])) ? $form['ID'] : 0;
+        return ($form && isset($form['ID'])) ? $form['ID'] : false;
+
+    }
+
+    public function getFormIdIfExists($sid) {
+        $formId = $this->getFormId($sid);
+        if ($formId) {
+            return $formId;
+        }
+
+        $this->throwException(__METHOD__, "Form %s not found", $sid);
+
     }
 
     /**
@@ -119,7 +130,7 @@ class FormHelper extends Helper
         }
 
 
-        $formId = $this->getFormIdBySid($form['SID']);
+        $formId = $this->getFormId($form['SID']);
         $formId = \CForm::Set($form, $formId, 'N');
 
         if ($formId) {
@@ -231,15 +242,20 @@ class FormHelper extends Helper
         $updatedIds = array();
 
         foreach ($answers as $index => $answer) {
-
             $answerId = false;
 
-            if (isset($currentAnswers[$index])) {
-                $currentAnswer = $currentAnswers[$index];
-                $answerId = $currentAnswer['ID'];
-                $updatedIds[] = $currentAnswer['ID'];
-                break;
+            foreach ($currentAnswers as $currentAnswer) {
+                if (
+                    !in_array($currentAnswer['ID'], $updatedIds) &&
+                    $currentAnswer['MESSAGE'] == $answer['MESSAGE']
+                ) {
+                    $answerId = $currentAnswer['ID'];
+                    $updatedIds[] = $currentAnswer['ID'];
+                    break;
+                }
             }
+
+            $answer['FIELD_ID'] = $fieldId;
 
             $answerId = \CFormAnswer::Set(
                 $answer,
@@ -325,13 +341,14 @@ class FormHelper extends Helper
      * @param string $sid
      * @throws \Exception
      */
-    public function deleteFormBySid($sid) {
-        $id = $this->getFormIdBySid($sid);
-        if (!$id) {
+    public function deleteFormIfExists($sid) {
+        $formId = $this->getFormId($sid);
+
+        if (!$formId) {
             return false;
         }
 
-        if (\CForm::Delete($id)) {
+        if (\CForm::Delete($formId)) {
             return true;
         }
 

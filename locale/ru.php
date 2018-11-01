@@ -121,9 +121,9 @@
     "SPRINT_MIGRATION_BUILDER_FormExport2" => "",
     "SPRINT_MIGRATION_BUILDER_FormExport_FormId" => "Выберите форму",
     "SPRINT_MIGRATION_BUILDER_FormExport_What" => "Что переносим?",
-    "SPRINT_MIGRATION_BUILDER_FormExport_Form" => "Форму с вопросами и ответами",
-    "SPRINT_MIGRATION_BUILDER_FormExport_Rights" => "Права на доступ к формам",
-    "SPRINT_MIGRATION_BUILDER_FormExport_Templates" => "Список ID почтовых шаблонов (если не выбрано - сгенерируется системой)",
+    "SPRINT_MIGRATION_BUILDER_FormExport_Form" => "Форму",
+    "SPRINT_MIGRATION_BUILDER_FormExport_Fields" => "Поля формы",
+    "SPRINT_MIGRATION_BUILDER_FormExport_Statuses" => "Статусы",
 
     "SPRINT_MIGRATION_BUILDER_CacheCleaner1" => "Очистка кеша",
     "SPRINT_MIGRATION_BUILDER_CacheCleaner2" => "Выполнить BXClearCache(true)",
