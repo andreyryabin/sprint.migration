@@ -54,7 +54,7 @@ class VersionTable extends AbstractTable
 
         //upgrade2
         if (empty($this->query('SHOW COLUMNS FROM `#TABLE1#` LIKE "hash"')->Fetch())) {
-            $this->query('ALTER TABLE #TABLE1# ADD COLUMN `hash` VARCHAR(50) NULL AFTER `version`');
+            $this->query('ALTER TABLE `#TABLE1#` ADD COLUMN `hash` VARCHAR(50) NULL AFTER `version`');
         }
     }
 

@@ -200,26 +200,23 @@ class VersionConfig
         return $default;
     }
 
-    public function createConfig($configName, $configValues = array()) {
+    public function createConfig($configName) {
+        $fileName = 'migrations.' . $configName . '.php';
+        if (!$this->getConfigName($fileName)) {
+            return false;
+        }
+
         if (isset($this->configList[$configName])) {
             $curValues = $this->configList[$configName]['values'];
-            $defaultValues = array(
+            $configValues = array(
                 'migration_dir' => $this->getRelativeDir($curValues['migration_dir']),
                 'migration_table' => $curValues['migration_table'],
             );
         } else {
-            $defaultValues = array(
+            $configValues = array(
                 'migration_dir' => $this->getArchiveDir($configName),
                 'migration_table' => 'sprint_migration_' . $configName,
             );
-        }
-
-        $configValues = array_merge($defaultValues, $configValues);
-
-        $fileName = 'migrations.' . $configName . '.php';
-
-        if (!$this->getConfigName($fileName)) {
-            return false;
         }
 
         $configPath = Module::getPhpInterfaceDir() . '/' . $fileName;

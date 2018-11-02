@@ -32,15 +32,14 @@ class Configurator extends AbstractBuilder
         }
 
         if ($this->getVersionConfig()->createConfig($configname)) {
-            $this->outSuccess(GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_config_created'));
+            $this->redirect('/bitrix/admin/sprint_migrations.php?' . http_build_query(array(
+                    'lang' => LANGUAGE_ID,
+                    'config' => $configname,
+                )));
         } else {
             $this->outError(GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_config_error'));
         }
 
     }
 
-    protected function createConfig($configName, $params = array()) {
-
-
-    }
 }

@@ -25,6 +25,9 @@ abstract class AbstractBuilder
 
     private $enabled = false;
 
+
+    private $actions = array();
+
     protected function initialize() {
         //your code
     }
@@ -297,6 +300,20 @@ abstract class AbstractBuilder
         call_user_func_array(array('Sprint\Migration\Out', 'outError'), $args);
     }
 
+    protected function redirect($url) {
+        $this->actions[] = array(
+            'type' => 'redirect',
+            'url' => $url
+        );
+    }
+
+    public function hasActions() {
+        return !empty($this->actions);
+    }
+
+    public function getActions() {
+        return $this->actions;
+    }
 
     /** @deprecated */
     protected function requiredField($code, $param = array()) {

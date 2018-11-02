@@ -1,5 +1,4 @@
 Andrey Ryabin
-
 Alexandr Kuznecov
 Антон Тузлуков
 XOlegator
@@ -19,3 +18,4 @@ ildar r. khasanshin
 Max Lyaptsev
 Горбунов Александр
 Михнев Никита
+Stepan Rodionov
