@@ -206,6 +206,11 @@ class VersionConfig
             return false;
         }
 
+        $configPath = Module::getPhpInterfaceDir() . '/' . $fileName;
+        if (is_file($configPath)) {
+            return false;
+        }
+
         if (isset($this->configList[$configName])) {
             $curValues = $this->configList[$configName]['values'];
             $configValues = array(
@@ -217,11 +222,6 @@ class VersionConfig
                 'migration_dir' => $this->getArchiveDir($configName),
                 'migration_table' => 'sprint_migration_' . $configName,
             );
-        }
-
-        $configPath = Module::getPhpInterfaceDir() . '/' . $fileName;
-        if (is_file($configPath)) {
-            return false;
         }
 
         file_put_contents($configPath, '<?php return ' . var_export($configValues, 1) . ';');
