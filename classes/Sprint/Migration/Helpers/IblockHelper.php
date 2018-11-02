@@ -784,7 +784,7 @@ class IblockHelper extends Helper
 
     /** @deprecated */
     public function findIblockType($typeId) {
-        return $this->findIblockType($typeId);
+        return $this->getIblockTypeIfExists($typeId);
     }
 
     /** @deprecated */
