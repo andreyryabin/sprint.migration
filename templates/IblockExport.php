@@ -29,7 +29,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     <? if (!empty($iblockExport)): ?>
         $iblockId = $helper->Iblock()->saveIblock(<?php echo var_export($iblock, 1) ?>);
     <? else:?>
-        $iblockId = $helper->Iblock()->geIblockIdIfExists('<?php echo $iblock['CODE'] ?>','<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
+        $iblockId = $helper->Iblock()->getIblockIdIfExists('<?php echo $iblock['CODE'] ?>','<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
     <? endif; ?>
 
     <? if (!empty($iblockFields)): ?>
