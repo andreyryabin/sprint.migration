@@ -247,6 +247,7 @@ class VersionConfig
             unlink($configFile);
         }
 
+        return true;
     }
 
     protected function getRelativeDir($dir) {

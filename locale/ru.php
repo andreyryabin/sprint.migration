@@ -128,8 +128,9 @@
     "SPRINT_MIGRATION_BUILDER_CacheCleaner1" => "Очистка кеша",
     "SPRINT_MIGRATION_BUILDER_CacheCleaner2" => "Выполнить BXClearCache(true)",
 
-    "SPRINT_MIGRATION_BUILDER_Cleaner" => "Удалить конфигурации",
-    "SPRINT_MIGRATION_BUILDER_Cleaner_config_name" => "Выберите конфигурации",
+    "SPRINT_MIGRATION_BUILDER_Cleaner" => "Удалить конфигурацию",
+    "SPRINT_MIGRATION_BUILDER_Cleaner_config_name" => "Выберите конфигурацию",
+    "SPRINT_MIGRATION_BUILDER_Cleaner_config_error" => "Ошибка удаления конфигурации",
 
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
     "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля",
