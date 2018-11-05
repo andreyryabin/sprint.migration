@@ -15,6 +15,10 @@ class Module
         }
     }
 
+    public static function removeDbOption($name) {
+        \COption::RemoveOption('sprint.migration', $name);
+    }
+
     public static function removeDbOptions() {
         \COption::RemoveOption('sprint.migration');
     }
@@ -46,8 +50,8 @@ class Module
         return isset($arModuleVersion['VERSION']) ? $arModuleVersion['VERSION'] : '';
     }
 
-    public static function checkHealth(){
-        if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql'){
+    public static function checkHealth() {
+        if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql') {
             Throw new \Exception('mssql not supported');
         }
     }

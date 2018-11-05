@@ -13,6 +13,7 @@ abstract class AbstractTable
     private $tableName = '';
 
     abstract protected function createTable();
+    abstract protected function dropTable();
 
 
     public function __construct($tableName) {
@@ -28,6 +29,14 @@ abstract class AbstractTable
         }
 
     }
+
+    public function deleteTable(){
+        $this->dropTable();
+
+        $opt = 'upgrade2_' . md5($this->tableName);
+        Module::removeDbOption($opt);
+    }
+
 
     /**
      * @param $query

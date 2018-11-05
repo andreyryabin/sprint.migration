@@ -228,6 +228,41 @@ class VersionConfig
         return is_file($configPath);
     }
 
+    public function deleteConfig($configName) {
+        $fileName = 'migrations.' . $configName . '.php';
+        if (!$this->getConfigName($fileName)) {
+            return false;
+        }
+
+        if (!isset($this->configList[$configName])) {
+            return false;
+        }
+
+        $configFile = $this->configList[$configName]['file'];
+        $migrationTable = $this->configList[$configName]['values']['migration_table'];
+        $migrationDir = $this->configList[$configName]['values']['migration_dir'];
+
+
+        //delete migration files
+        $vmFrom = new VersionManager($configName);
+        $vmFrom->clean();
+
+
+        if (!empty($migrationDir) && is_dir($migrationDir)) {
+            if (count(scandir($migrationDir)) == 2){
+                rmdir($migrationDir);
+            }
+        }
+
+
+
+
+        if (!empty($configFile) && is_file($configFile)) {
+            unlink($configFile);
+        }
+
+    }
+
     protected function getRelativeDir($dir) {
         $docroot = Module::getDocRoot();
 
@@ -269,6 +304,7 @@ class VersionConfig
             'Marker' => '\Sprint\Migration\Builders\Marker',
             'Transfer' => '\Sprint\Migration\Builders\Transfer',
             'Configurator' => '\Sprint\Migration\Builders\Configurator',
+            'Cleaner' => '\Sprint\Migration\Builders\Cleaner',
         );
     }
 

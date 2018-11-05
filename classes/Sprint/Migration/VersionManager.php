@@ -228,9 +228,11 @@ class VersionManager
 
     public function getVersionByName($versionName) {
         if ($this->checkVersionName($versionName)) {
-            $record = $this->getRecordIfExists($versionName);
-            $file = $this->getFileIfExists($versionName);
-            return $this->prepVersionMeta($versionName, $file, $record);
+            return $this->prepVersionMeta(
+                $versionName,
+                $this->getFileIfExists($versionName),
+                $this->getRecordIfExists($versionName)
+            );
         }
         return false;
     }
@@ -243,30 +245,15 @@ class VersionManager
 
         $merge = array();
 
-        $records = array();
-        /* @var $dbres \CDBResult */
-        $dbres = $this->getVersionTable()->getRecords();
-        while ($item = $dbres->Fetch()) {
-            $ts = $this->getVersionTimestamp($item['version']);
-            if ($ts) {
-                $records[$item['version']] = $item;
-                $merge[$item['version']] = $ts;
-            }
+        $records = $this->getRecords();
+        $files = $this->getFiles();
+
+        foreach ($records as $item) {
+            $merge[$item['version']] = $item['ts'];
         }
 
-        $files = array();
-        /* @var $item \SplFileInfo */
-        $directory = new \DirectoryIterator($this->getVersionConfig()->getVal('migration_dir'));
-        foreach ($directory as $item) {
-            if ($item->isFile()) {
-                $fileName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
-                $ts = $this->getVersionTimestamp($fileName);
-                if ($ts) {
-                    $files[$fileName] = $item->getPathname();
-                    $merge[$fileName] = $ts;
-                }
-            }
-
+        foreach ($files as $item) {
+            $merge[$item['version']] = $item['ts'];
         }
 
         if ($filter['status'] == 'installed' || $filter['status'] == 'unknown') {
@@ -344,7 +331,6 @@ class VersionManager
         return false;
     }
 
-
     protected function prepVersionMeta($versionName, $file, $record) {
 
         $isFile = ($file) ? 1 : 0;
@@ -373,11 +359,11 @@ class VersionManager
             return $meta;
         }
 
-        $meta['location'] = $file;
+        $meta['location'] = $file['location'];
 
         ob_start();
         /** @noinspection PhpIncludeInspection */
-        require_once($file);
+        require_once($meta['location']);
         ob_end_clean();
 
         $class = 'Sprint\Migration\\' . $versionName;
@@ -405,7 +391,7 @@ class VersionManager
         $meta['description'] = $this->purifyDescriptionForMeta($descr);
         $meta['versionfilter'] = $filter;
         $meta['enabled'] = $enabled;
-        $meta['hash'] = md5(file_get_contents($file));
+        $meta['hash'] = md5(file_get_contents($meta['location']));
 
         if (!empty($record['hash'])) {
             $meta['modified'] = ($meta['hash'] != $record['hash']);
@@ -422,11 +408,14 @@ class VersionManager
 
     protected function getFileIfExists($versionName) {
         $file = $this->getVersionFile($versionName);
-        return file_exists($file) ? $file : 0;
+        return file_exists($file) ? array(
+            'version' => $versionName,
+            'location' => $file,
+        ) : 0;
     }
 
     protected function getRecordIfExists($versionName) {
-        $record = $this->getVersionTable()->getRecord($versionName)->Fetch();
+        $record = $this->getVersionTable()->getRecord($versionName);
         return ($record && isset($record['version'])) ? $record : 0;
     }
 
@@ -458,5 +447,64 @@ class VersionManager
             return substr($dir, strlen(Module::getDocRoot()));
         }
         return '';
+    }
+
+
+    public function getRecords() {
+        $result = array();
+
+        $records = $this->getVersionTable()->getRecords();
+        foreach ($records as $item) {
+            if (empty($item['version'])) {
+                continue;
+            }
+
+            $timestamp = $this->getVersionTimestamp($item['version']);
+            if (!$timestamp) {
+                continue;
+            }
+
+            $item['ts'] = $timestamp;
+
+            $result[$item['version']] = $item;
+        }
+
+        return $result;
+    }
+
+    public function getFiles() {
+        $files = array();
+        /* @var $item \SplFileInfo */
+        $directory = new \DirectoryIterator($this->getVersionConfig()->getVal('migration_dir'));
+        foreach ($directory as $item) {
+            if (!$item->isFile()) {
+                continue;
+            }
+
+            $filename = pathinfo($item->getPathname(), PATHINFO_FILENAME);
+            $timestamp = $this->getVersionTimestamp($filename);
+            if (!$timestamp) {
+                continue;
+            }
+
+            $files[$filename] = array(
+                'version' => $filename,
+                'location' => $item->getPathname(),
+                'ts' => $timestamp
+            );
+        }
+
+        return $files;
+    }
+
+    public function clean() {
+        $files = $this->getFiles();
+
+        foreach ($files as $meta) {
+            unlink($meta['location']);
+        }
+
+        $this->getVersionTable()
+            ->deleteTable();
     }
 }

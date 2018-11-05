@@ -2,8 +2,6 @@
 
 namespace Sprint\Migration;
 
-use Sprint\Migration\Exceptions\MigrationException;
-
 class StorageManager extends AbstractTable
 {
 
@@ -20,6 +18,10 @@ class StorageManager extends AbstractTable
               PRIMARY KEY (id), UNIQUE KEY `fullname` (`category`,`name`)
               )ENGINE=InnoDB DEFAULT CHARSET=#CHARSET# COLLATE=#COLLATE# AUTO_INCREMENT=1;'
         );
+    }
+
+    protected function dropTable() {
+        $this->query('DROP TABLE IF EXISTS `#TABLE1#`;');
     }
 
     public function saveData($category, $name, $value = '') {

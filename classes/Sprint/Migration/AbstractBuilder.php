@@ -73,9 +73,15 @@ abstract class AbstractBuilder
     }
 
     protected function addField($code, $param = array()) {
+        if (isset($param['multiple']) && $param['multiple']){
+            $value = array();
+        } else {
+            $value = '';
+        }
+
         $param = array_merge(array(
             'title' => '',
-            'value' => '',
+            'value' => $value,
             'bind' => 0
         ), $param);
 
