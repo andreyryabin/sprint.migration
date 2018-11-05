@@ -14,14 +14,14 @@ function migrationMigrationsDownConfirm() {
     }
 }
 
-function migrationOutProgress(result) {
-    var outProgress = $('#migration_progress');
-    var lastOutElem = outProgress.children('div').last();
+function migrationOutLog(result) {
+    var $el = $('#migration_progress');
+    var lastOutElem = $el.children('div').last();
     if (lastOutElem.hasClass('migration-bar') && $(result).first().hasClass('migration-bar')) {
         lastOutElem.replaceWith(result);
     } else {
-        outProgress.append(result);
-        outProgress.scrollTop(outProgress.prop("scrollHeight"));
+        $el.append(result);
+        $el.scrollTop($el.prop("scrollHeight"));
     }
 }
 
@@ -41,7 +41,7 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
             if (succesCallback) {
                 succesCallback(result)
             } else {
-                migrationOutProgress(result);
+                migrationOutLog(result);
             }
         },
         error: function (result) {
@@ -78,11 +78,16 @@ function migrationBuilder(postData) {
     });
 }
 
-function migrationBuilderReset(postData){
+function migrationBuilderReset(postData) {
     var $block = $('[data-builder="' + postData['builder_name'] + '"]');
     migrationExecuteStep('migration_reset', postData, function (result) {
         $block.html(result);
     });
+}
+
+function migrationScrollList() {
+    var $el = $('#migration_migrations');
+    $el.scrollTop($el.prop("scrollHeight"));
 }
 
 jQuery(document).ready(function ($) {
@@ -106,11 +111,7 @@ jQuery(document).ready(function ($) {
 
     migrationMigrationRefresh(function () {
         migrationEnableButtons(1);
-    });
-
-    $('#tab_cont_tab3').on('click', function () {
-        var outProgress = $('#migration_progress');
-        outProgress.scrollTop(outProgress.prop("scrollHeight"));
+        migrationScrollList();
     });
 
     $('#migration-container').on('change', '.sp-stat', function () {
@@ -154,7 +155,6 @@ jQuery(document).ready(function ($) {
         migrationBuilderReset(postData);
     });
 
-
     var openblockIx = 0;
     if (localStorage) {
         openblockIx = localStorage.getItem('migrations_open_block');
@@ -179,8 +179,8 @@ jQuery(document).ready(function ($) {
 
         var docViewTop = $(window).scrollTop();
         var elemTop = $(this).offset().top;
-        if (elemTop <= docViewTop){
-            $(document).scrollTop(elemTop- 25);
+        if (elemTop <= docViewTop) {
+            $(document).scrollTop(elemTop - 25);
         }
 
 

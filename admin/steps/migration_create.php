@@ -45,7 +45,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
             }
 
         } else {
-            ?><script>migrationMigrationRefresh();</script><?
+            ?><script>
+                migrationMigrationRefresh(function () {
+                    migrationScrollList();
+                    migrationEnableButtons(1);
+                });
+            </script><?
         }
     }
 
