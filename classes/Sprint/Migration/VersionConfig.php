@@ -239,23 +239,9 @@ class VersionConfig
         }
 
         $configFile = $this->configList[$configName]['file'];
-        $migrationTable = $this->configList[$configName]['values']['migration_table'];
-        $migrationDir = $this->configList[$configName]['values']['migration_dir'];
 
-
-        //delete migration files
         $vmFrom = new VersionManager($configName);
         $vmFrom->clean();
-
-
-        if (!empty($migrationDir) && is_dir($migrationDir)) {
-            if (count(scandir($migrationDir)) == 2){
-                rmdir($migrationDir);
-            }
-        }
-
-
-
 
         if (!empty($configFile) && is_file($configFile)) {
             unlink($configFile);

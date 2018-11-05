@@ -403,7 +403,8 @@ class VersionManager
 
 
     public function getVersionFile($versionName) {
-        return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '.php';
+        $dir = $this->getVersionConfig()->getVal('migration_dir');
+        return $dir . '/' . $versionName . '.php';
     }
 
     protected function getFileIfExists($versionName) {
@@ -473,10 +474,12 @@ class VersionManager
     }
 
     public function getFiles() {
+        $dir = $this->getVersionConfig()->getVal('migration_dir');
         $files = array();
+
         /* @var $item \SplFileInfo */
-        $directory = new \DirectoryIterator($this->getVersionConfig()->getVal('migration_dir'));
-        foreach ($directory as $item) {
+        $items = new \DirectoryIterator($dir);
+        foreach ($items as $item) {
             if (!$item->isFile()) {
                 continue;
             }
@@ -498,10 +501,17 @@ class VersionManager
     }
 
     public function clean() {
-        $files = $this->getFiles();
+        $dir = $this->getVersionConfig()->getVal('migration_dir');
 
+        $files = $this->getFiles();
         foreach ($files as $meta) {
             unlink($meta['location']);
+        }
+
+        if (!empty($dir) && is_dir($dir)) {
+            if (count(scandir($dir)) == 2) {
+                rmdir($dir);
+            }
         }
 
         $this->getVersionTable()
