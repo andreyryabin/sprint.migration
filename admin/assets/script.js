@@ -117,6 +117,7 @@ jQuery(document).ready(function ($) {
     $('#migration-container').on('change', '.sp-stat', function () {
         migrationMigrationRefresh(function () {
             migrationEnableButtons(1);
+            migrationScrollList();
             $('#tab_cont_tab1').click();
         });
     });
@@ -125,6 +126,7 @@ jQuery(document).ready(function ($) {
         if (e.keyCode == 13) {
             migrationMigrationRefresh(function () {
                 migrationEnableButtons(1);
+                migrationScrollList();
                 $('#tab_cont_tab1').click();
             });
         }
@@ -133,6 +135,7 @@ jQuery(document).ready(function ($) {
     $('#migration-container').on('click', '.sp-search', function () {
         migrationMigrationRefresh(function () {
             migrationEnableButtons(1);
+            migrationScrollList();
             $('#tab_cont_tab1').click();
         });
     });

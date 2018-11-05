@@ -1,3 +1,8 @@
+.sp-scroll {
+    overflow-x: auto;
+    overflow-y: scroll;
+    height: 310px;
+}
 
 .sp-block {
     background-color: #f5f9f9;

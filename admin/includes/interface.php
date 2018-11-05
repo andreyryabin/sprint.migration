@@ -18,13 +18,13 @@
     ?>
     <tr>
         <td style="vertical-align: top;">
-            <div id="migration_migrations" style="overflow-x:auto;overflow-y: scroll;height: 310px;"></div>
+            <div id="migration_migrations" class="sp-scroll"></div>
         </td>
     </tr>
     <? $tabControl1->BeginNextTab(); ?>
     <tr>
         <td style="vertical-align: top;">
-            <div id="migration_progress" style="overflow-x:auto;overflow-y: scroll;height: 310px;"></div>
+            <div id="migration_progress" class="sp-scroll"></div>
         </td>
     </tr>
     <? $tabControl1->Buttons(); ?>
