@@ -152,11 +152,11 @@ class VersionManager
     }
 
     /**
-     * @param array $params
+     * @param array $filter
      * @return AbstractBuilder[]
      */
-    public function createBuilders($params = array()) {
-        $group = !empty($params['group']) ? $params['group'] : 'default';
+    public function createBuilders($filter = array()) {
+        $group = !empty($filter['group']) ? $filter['group'] : 'default';
 
         $res = array();
         $builders = $this->getVersionConfig()->getVal('version_builders', array());
@@ -167,33 +167,7 @@ class VersionManager
                 }
             }
         }
-
-        if (empty($params['col'])) {
-            return $res;
-        }
-
-        $rows = array();
-        $rowIndex = 0;
-        $colIndex = 0;
-
-        foreach ($res as $builder) {
-            if ($colIndex >= $params['col']) {
-                $colIndex = 0;
-                $rowIndex++;
-            }
-
-            $rows['row' . $rowIndex][] = $builder;
-            $colIndex++;
-        }
-
-        $diff = $params['col'] - count($rows['row' . $rowIndex]);
-        if ($diff >= 0) {
-            for ($index = 0; $index < $diff; $index++) {
-                $rows['row' . $rowIndex][] = array();
-            }
-        }
-
-        return $rows;
+        return $res;
     }
 
     public function markMigration($search, $status) {

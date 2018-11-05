@@ -82,6 +82,9 @@
     "SPRINT_MIGRATION_BUILDER_TransferEmptyDest" => "Укажите конфигурацию для перемещения",
     "SPRINT_MIGRATION_BUILDER_TransferBadDest" => "Укажите подходящую конфигурацию",
 
+    "SPRINT_MIGRATION_BUILDER_EventMessages1" => "Создать миграцию для почтовых шаблонов",
+    "SPRINT_MIGRATION_BUILDER_EventMessages2" => "",
+
     "SPRINT_MIGRATION_BUILDER_AgentExport1" => "Создать миграцию для агентов",
     "SPRINT_MIGRATION_BUILDER_AgentExport2" => "",
     "SPRINT_MIGRATION_BUILDER_AgentExport_agent_id" => "Выберите агенты",
