@@ -51,22 +51,24 @@
     </div>
     <? $tabControl1->End(); ?>
 
-    <div class="sp-clear" style="margin-top: 10px"></div>
-
-    <? $builders = $versionManager->createBuilders(); ?>
-    <? foreach ($builders as $builder): ?>
-        <div class="sp-block">
-            <div class="sp-block_title"><?= $builder->getTitle() ?></div>
-            <div class="sp-block_body" data-builder="<?= $builder->getName() ?>">
-                <? $builder->renderHtml() ?>
-            </div>
+    <? foreach (array('default', 'configurator') as $builderGroup): ?>
+        <div class="sp-group">
+            <? $builderRows = $versionManager->createBuilders(array('group' => $builderGroup, 'col' => 2)); ?>
+            <? foreach ($builderRows as $builders): ?>
+                <div class="sp-group-row2">
+                    <? foreach ($builders as $builder): ?>
+                        <div class="sp-block">
+                            <div class="sp-block_title"><?= $builder->getTitle() ?></div>
+                            <div class="sp-block_body" data-builder="<?= $builder->getName() ?>">
+                                <? $builder->renderHtml() ?>
+                            </div>
+                        </div>
+                    <? endforeach; ?>
+                </div>
+            <? endforeach; ?>
         </div>
     <? endforeach; ?>
 
-    <div class="sp-clear" style="margin-top: 10px"></div>
-
-    <div class="sp-block">
-        <? include __DIR__ . '/config_list.php' ?>
-    </div>
+    <? include __DIR__ . '/config_list.php' ?>
 
 </div>

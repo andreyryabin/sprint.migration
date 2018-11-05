@@ -17,6 +17,7 @@ class Configurator extends AbstractBuilder
 
     protected function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Configurator'));
+        $this->setGroup('configurator');
 
         $this->addField('config_name', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_config_name'),

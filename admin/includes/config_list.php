@@ -4,7 +4,7 @@
 
 $configItem = $versionManager->getVersionConfig()->getCurrent();
 ?>
-
+<div class="sp-block" style="margin-top: 10px;">
 <div class="sp-block_head"><?= GetMessage('SPRINT_MIGRATION_CONFIG') ?>: <?=$configItem['title']?></div>
 
 <table class="sp-config">
@@ -31,3 +31,4 @@ $configItem = $versionManager->getVersionConfig()->getCurrent();
     <? endforeach; ?>
     </tbody>
 </table>
+</div>

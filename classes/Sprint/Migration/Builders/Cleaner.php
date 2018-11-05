@@ -14,9 +14,10 @@ class Cleaner extends AbstractBuilder
         return true;
     }
 
-
     protected function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner'));
+        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_desc'));
+        $this->setGroup('configurator');
 
         $configs = $this->getVersionConfig()->getList();
 
@@ -32,6 +33,7 @@ class Cleaner extends AbstractBuilder
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_config_name'),
             'select' => $structure,
             'width' => 250,
+            'value' => $this->getVersionConfig()->getName()
         ));
 
     }

@@ -129,6 +129,7 @@
     "SPRINT_MIGRATION_BUILDER_CacheCleaner2" => "Выполнить BXClearCache(true)",
 
     "SPRINT_MIGRATION_BUILDER_Cleaner" => "Удалить конфигурацию",
+    "SPRINT_MIGRATION_BUILDER_Cleaner_desc" => "Удаление файла конфигурации, файлов миграций и записей в таблице миграций",
     "SPRINT_MIGRATION_BUILDER_Cleaner_config_name" => "Выберите конфигурацию",
     "SPRINT_MIGRATION_BUILDER_Cleaner_config_error" => "Ошибка удаления конфигурации",
 

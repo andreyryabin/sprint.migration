@@ -17,7 +17,7 @@ class Marker extends AbstractBuilder
 
     protected function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_MARK'));
-        //$this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_Transfer2'));
+        $this->setGroup('configurator');
 
         $this->addField('mark_version', array(
             'title' => GetMessage('SPRINT_MIGRATION_MARK_FIELD1'),

@@ -17,7 +17,7 @@ class Transfer extends AbstractBuilder
 
     protected function initialize() {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Transfer1'));
-        //$this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_Transfer2'));
+        $this->setGroup('configurator');
 
 
         $configFrom = $this->getVersionConfig()->getName();

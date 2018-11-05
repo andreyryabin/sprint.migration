@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
             ?><script>migrationBuilder(<?=$json?>);</script><?
 
         } elseif ($builder->isRebuild()){
-            //
+            ?><script>migrationEnableButtons(1);</script><?
 
         } elseif ($builder->hasActions()){
             $actions = $builder->getActions();

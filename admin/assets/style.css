@@ -4,8 +4,6 @@
     border: 1px solid;
     border-color: #c4ced2 #dce7ed #dce7ed;
     padding: 19px;
-    /*width: 33%;*/
-    /*float: left;*/
 }
 
 .sp-block:after {
@@ -24,12 +22,40 @@
     position: relative;
     min-height: 25px;
 }
+
 .sp-block_title {
     color: #000;
     font-size: 20px;
     position: relative;
     min-height: 25px;
     cursor: pointer;
+}
+
+.sp-group {
+    margin-top: 10px;
+    display: table;
+    width: 100%;
+}
+
+.sp-group .sp-group-row1,
+.sp-group .sp-group-row2,
+.sp-group .sp-group-row3 {
+    display: table-row;
+}
+
+.sp-group .sp-group-row1 .sp-block {
+    display: table-cell;
+    width: 100%;
+}
+
+.sp-group .sp-group-row2 .sp-block {
+    display: table-cell;
+    width: 50%;
+}
+
+.sp-group .sp-group-row3 .sp-block {
+    display: table-cell;
+    width: 33%;
 }
 
 .sp-clear:after {
@@ -156,7 +182,8 @@ a.sp-item-unknown:visited {
     color: #555;
     border-radius: 10px;
 }
-.sp-optgroup{
+
+.sp-optgroup {
     margin-bottom: 20px;
 }
 
