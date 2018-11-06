@@ -17,9 +17,18 @@
     clear: both;
 }
 
-.sp-block_body {
+.sp-block .sp-block_body {
     display: none;
 }
+
+.sp-block.sp-active {
+    background: #fff;
+}
+
+.sp-block.sp-active .sp-block_body {
+    display: inline;
+}
+
 
 .sp-block_head {
     color: #000;
@@ -56,13 +65,17 @@
 .sp-group .sp-group-row2 .sp-block {
     display: table-cell;
     width: 50%;
+    /*float: left;*/
+    /*width: 350px;*/
 }
 
 .sp-group .sp-group-row3 .sp-block {
     display: table-cell;
+    /*float: left;*/
     width: 33%;
 }
 
+.sp-group:after,
 .sp-clear:after {
     content: '';
     display: block;
@@ -75,21 +88,6 @@
     /*padding: 10px;*/
 
     float: right;
-}
-
-.sp-table {
-    display: table;
-    border-collapse: collapse;
-    width: 100%;
-}
-
-.sp-table .sp-row {
-    display: table-row;
-}
-
-.sp-table .sp-col {
-    display: table-cell;
-    vertical-align: top;
 }
 
 table.sp-config {

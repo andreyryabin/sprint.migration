@@ -115,7 +115,7 @@ class EventHelper extends Helper
 
     public function updateEventTypeById($id, $fields) {
         $event = new \CEventType();
-        if ($event->Update($id, $fields)) {
+        if ($event->Update(array('ID' => $id), $fields)) {
             return $id;
         }
 
@@ -133,7 +133,6 @@ class EventHelper extends Helper
         ));
 
         $fields['EVENT_NAME'] = $eventName;
-        $fields['SITE_ID'] = $fields['LID'];
 
         if ($item) {
             return $this->updateEventMessageById($item['ID'], $fields);
@@ -153,7 +152,7 @@ class EventHelper extends Helper
         if ($item) {
             return $this->updateEventTypeById($item['ID'], $fields);
         } else {
-            return $this->addEventMessage($eventName, $fields);
+            return $this->addEventType($eventName, $fields);
         }
 
     }
@@ -166,14 +165,7 @@ class EventHelper extends Helper
 
 
     public function addEventType($eventName, $fields) {
-        $default = array(
-            "LID" => $fields['LID'],
-            "EVENT_NAME" => 'event_name',
-            "NAME" => 'NAME',
-            "DESCRIPTION" => 'description',
-        );
-
-        $fields = array_replace_recursive($default, $fields);
+        $this->checkRequiredKeys(__METHOD__, $fields, array('LID', 'NAME'));
         $fields['EVENT_NAME'] = $eventName;
 
         $event = new \CEventType;
@@ -188,18 +180,18 @@ class EventHelper extends Helper
 
 
     public function addEventMessage($eventName, $fields) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('LID', 'SUBJECT'));
+
         $default = array(
             'ACTIVE' => 'Y',
-            'LID' => 's1',
             'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
             'EMAIL_TO' => '#EMAIL_TO#',
             'BCC' => '',
-            'SUBJECT' => 'subject',
             'BODY_TYPE' => 'text',
-            'MESSAGE' => 'message',
+            'MESSAGE' => '',
         );
 
-        $fields = array_replace_recursive($default, $fields);
+        $fields = array_merge($default, $fields);
         $fields['EVENT_NAME'] = $eventName;
 
         $event = new \CEventMessage;

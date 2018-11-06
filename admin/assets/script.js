@@ -164,7 +164,7 @@ jQuery(document).ready(function ($) {
         openblockIx = (openblockIx) ? parseInt(openblockIx, 10) : 0;
     }
 
-    $('.sp-block_body').eq(openblockIx).show();
+    $('.sp-block').eq(openblockIx).addClass('sp-active');
 
     $('.sp-block_title').on('click', function () {
 
@@ -174,11 +174,10 @@ jQuery(document).ready(function ($) {
             localStorage.setItem('migrations_open_block', openblockIx);
         }
 
+        var $block = $(this).closest('.sp-block');
 
-        var $body = $(this).siblings('.sp-block_body');
-
-        $('.sp-block_body').not($body).hide();
-        $body.show();
+        $('.sp-block').not($block).removeClass('sp-active');
+        $block.addClass('sp-active');
 
         var docViewTop = $(window).scrollTop();
         var elemTop = $(this).offset().top;
