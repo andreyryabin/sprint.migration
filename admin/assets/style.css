@@ -1,7 +1,7 @@
 .sp-scroll {
     overflow-x: auto;
     overflow-y: scroll;
-    height: 310px;
+    max-height: 425px;
 }
 
 .sp-block {
@@ -21,6 +21,7 @@
     display: none;
 }
 
+.sp-block.sp-white,
 .sp-block.sp-active {
     background: #fff;
 }
@@ -29,8 +30,11 @@
     display: inline;
 }
 
+.sp-noblock_body {
+    display: block;
+}
 
-.sp-block_head {
+.sp-noblock_title {
     color: #000;
     font-size: 20px;
     position: relative;
@@ -46,9 +50,13 @@
 }
 
 .sp-group {
-    margin-top: 10px;
     display: table;
     width: 100%;
+}
+
+.sp-separator {
+    display: block;
+    padding: 10px;
 }
 
 .sp-group .sp-group-row1,
@@ -59,11 +67,13 @@
 
 .sp-group .sp-group-row1 .sp-block {
     display: table-cell;
+    vertical-align: top;
     width: 100%;
 }
 
 .sp-group .sp-group-row2 .sp-block {
     display: table-cell;
+    vertical-align: top;
     width: 50%;
     /*float: left;*/
     /*width: 350px;*/
@@ -71,6 +81,7 @@
 
 .sp-group .sp-group-row3 .sp-block {
     display: table-cell;
+    vertical-align: top;
     /*float: left;*/
     width: 33%;
 }

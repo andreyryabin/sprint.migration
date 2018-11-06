@@ -1,16 +1,10 @@
 <?php
 /** @var $versionManager \Sprint\Migration\VersionManager */
-
-
-$configItem = $versionManager->getVersionConfig()->getCurrent();
+$configValues = $versionManager->getVersionConfig()->getCurrent('values');
 ?>
-<div class="sp-group">
-<div class="sp-block">
-<div class="sp-block_head"><?= GetMessage('SPRINT_MIGRATION_CONFIG') ?>: <?=$configItem['title']?></div>
-
 <table class="sp-config">
     <tbody>
-    <? foreach ($configItem['values'] as $key => $val) :
+    <? foreach ($configValues as $key => $val) :
 
         if ($val === true || $val === false) {
             $val = ($val) ? 'yes' : 'no';
@@ -32,5 +26,3 @@ $configItem = $versionManager->getVersionConfig()->getCurrent();
     <? endforeach; ?>
     </tbody>
 </table>
-</div>
-</div>

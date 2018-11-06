@@ -109,6 +109,19 @@ jQuery(document).ready(function ($) {
         return o;
     };
 
+
+    var openblockIx = 0;
+
+    (function () {
+        if (localStorage) {
+            openblockIx = localStorage.getItem('migrations_open_block');
+            openblockIx = (openblockIx) ? parseInt(openblockIx, 10) : 0;
+        }
+
+        var $block = $('.sp-block_title').eq(openblockIx).closest('.sp-block');
+        $block.addClass('sp-active');
+    })();
+
     migrationMigrationRefresh(function () {
         migrationEnableButtons(1);
         migrationScrollList();
@@ -158,35 +171,25 @@ jQuery(document).ready(function ($) {
         migrationBuilderReset(postData);
     });
 
-    var openblockIx = 0;
-    if (localStorage) {
-        openblockIx = localStorage.getItem('migrations_open_block');
-        openblockIx = (openblockIx) ? parseInt(openblockIx, 10) : 0;
-    }
-
-    $('.sp-block').eq(openblockIx).addClass('sp-active');
-
-    $('.sp-block_title').on('click', function () {
-
-        if (localStorage) {
-            openblockIx = $('.sp-block_title').index(this);
-            openblockIx = parseInt(openblockIx, 10);
-            localStorage.setItem('migrations_open_block', openblockIx);
-        }
-
+    $('#migration-container').on('click', '.sp-block_title', function () {
         var $block = $(this).closest('.sp-block');
 
         $('.sp-block').not($block).removeClass('sp-active');
         $block.addClass('sp-active');
 
+        if (localStorage) {
+            openblockIx = $('.sp-block_title').index(this);
+            localStorage.setItem('migrations_open_block', '' + parseInt(openblockIx, 10));
+        }
+
         var docViewTop = $(window).scrollTop();
-        var elemTop = $(this).offset().top;
+        var elemTop = $block.offset().top;
         if (elemTop <= docViewTop) {
             $(document).scrollTop(elemTop - 25);
         }
 
-
         $('.sp-block').find('.adm-info-message-wrap').remove();
     });
+
 
 });

@@ -54,6 +54,10 @@ class Module
         if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql') {
             Throw new \Exception('mssql not supported');
         }
+
+        if (!function_exists('json_encode')){
+            Throw new \Exception('json functions not found');
+        }
     }
 }
 

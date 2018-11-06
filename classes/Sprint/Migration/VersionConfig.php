@@ -51,16 +51,16 @@ class VersionConfig
         return (isset($this->configList[$configName]));
     }
 
-    public function getName() {
-        return $this->configCurrent['name'];
-    }
-
-    public function getCurrent() {
-        return $this->configCurrent;
+    public function getCurrent($key = false) {
+        return ($key) ? $this->configCurrent[$key] : $this->configCurrent;
     }
 
     public function getList() {
         return $this->configList;
+    }
+
+    public function getName() {
+        return $this->getCurrent('name');
     }
 
     protected function searchConfigs() {
@@ -189,11 +189,13 @@ class VersionConfig
     }
 
     public function getVal($name, $default = '') {
-        if (isset($this->configCurrent['values'][$name])) {
-            if (is_bool($this->configCurrent['values'][$name])) {
-                return $this->configCurrent['values'][$name];
-            } elseif (!empty($this->configCurrent['values'][$name])) {
-                return $this->configCurrent['values'][$name];
+        $values = $this->getCurrent('values');
+
+        if (isset($values[$name])) {
+            if (is_bool($values[$name])) {
+                return $values[$name];
+            } elseif (!empty($values[$name])) {
+                return $values[$name];
             }
         }
 

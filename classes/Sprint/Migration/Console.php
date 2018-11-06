@@ -262,9 +262,13 @@ class Console
     public function commandConfig() {
         $versionManager = $this->createVersionManager();
 
-        $configItem = $versionManager->getVersionConfig()->getCurrent();
+        $configValues = $versionManager->getVersionConfig()->getCurrent('values');
+        $configTitle = $versionManager->getVersionConfig()->getCurrent('title');
 
-        Out::out('%s: %s', GetMessage('SPRINT_MIGRATION_CONFIG'), $configItem['title']);
+        Out::out('%s: %s',
+            GetMessage('SPRINT_MIGRATION_CONFIG'),
+            $configTitle
+        );
 
         $table = new ConsoleTable(-1, array(
             'horizontal' => '=',
@@ -274,8 +278,7 @@ class Console
 
         $table->setBorderVisibility(array('bottom' => false));
 
-        foreach ($configItem['values'] as $key => $val) {
-
+        foreach ($configValues as $key => $val) {
             if ($val === true || $val === false) {
                 $val = ($val) ? 'yes' : 'no';
                 $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
@@ -285,7 +288,6 @@ class Console
                     $fres[] = '[' . $fkey . '] => ' . $fval;
                 }
                 $val = implode(PHP_EOL, $fres);
-
             }
 
             $table->addRow(array($key, $val));
