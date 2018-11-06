@@ -287,7 +287,7 @@ class VersionConfig
             'UserGroupExport' => '\Sprint\Migration\Builders\UserGroupExport',
             'AgentExport' => '\Sprint\Migration\Builders\AgentExport',
             'FormExport' => '\Sprint\Migration\Builders\FormExport',
-            'EventMessages' => '\Sprint\Migration\Builders\EventMessages',
+            //'EventExport' => '\Sprint\Migration\Builders\EventExport',
             'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
             'Marker' => '\Sprint\Migration\Builders\Marker',
             'Transfer' => '\Sprint\Migration\Builders\Transfer',

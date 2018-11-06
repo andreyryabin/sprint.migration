@@ -42,6 +42,34 @@ class Helper
         }
     }
 
+
+    /**
+     * @param \CDBResult $dbres
+     * @param bool $indexKey
+     * @param bool $valueKey
+     * @return array
+     */
+    protected function fetchAll(\CDBResult $dbres, $indexKey = false, $valueKey = false) {
+        $res = array();
+
+        while ($item = $dbres->Fetch()) {
+            if ($valueKey) {
+                $value = $item[$valueKey];
+            } else {
+                $value = $item;
+            }
+
+            if ($indexKey) {
+                $indexVal = $item[$indexKey];
+                $res[$indexVal] = $value;
+            } else {
+                $res[] = $value;
+            }
+        }
+
+        return $res;
+    }
+
     private function getMethod($method) {
         $path = explode('\\', $method);
         $short = array_pop($path);

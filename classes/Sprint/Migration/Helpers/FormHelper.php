@@ -355,19 +355,4 @@ class FormHelper extends Helper
         $this->throwException(__METHOD__, 'Cannot delete form "%s"', $sid);
     }
 
-
-    /**
-     * @param CDBResult $dbres
-     * @return array
-     */
-    private function fetchAll(\CDBResult $dbres) {
-        $res = array();
-
-        while ($value = $dbres->Fetch()) {
-            $res[] = $value;
-        }
-
-        return $res;
-    }
-
 }

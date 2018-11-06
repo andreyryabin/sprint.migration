@@ -82,8 +82,9 @@
     "SPRINT_MIGRATION_BUILDER_TransferEmptyDest" => "Укажите конфигурацию для перемещения",
     "SPRINT_MIGRATION_BUILDER_TransferBadDest" => "Укажите подходящую конфигурацию",
 
-    "SPRINT_MIGRATION_BUILDER_EventMessages1" => "Создать миграцию для почтовых шаблонов",
-    "SPRINT_MIGRATION_BUILDER_EventMessages2" => "",
+    "SPRINT_MIGRATION_BUILDER_EventExport1" => "Создать миграцию для почтовых событий",
+    "SPRINT_MIGRATION_BUILDER_EventExport2" => "",
+    "SPRINT_MIGRATION_BUILDER_EventExport_event_types" => "Выберите типы почтовых событий",
 
     "SPRINT_MIGRATION_BUILDER_AgentExport1" => "Создать миграцию для агентов",
     "SPRINT_MIGRATION_BUILDER_AgentExport2" => "",
