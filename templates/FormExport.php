@@ -46,8 +46,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     public function down() {
         $helper = new HelperManager();
 
-        $helper->Form()->deleteFormIfExists('<?= $form['SID']?>');
-
     }
 
 }
