@@ -6,10 +6,10 @@
 
     <div class="sp-group">
         <div class="sp-group-row2">
-            <div class="sp-block sp-white">
+            <div class="sp-block sp-block-scroll sp-white">
                 <div id="migration_migrations" class="sp-scroll"></div>
             </div>
-            <div class="sp-block">
+            <div class="sp-block sp-block-scroll">
                 <div id="migration_progress" class="sp-scroll"></div>
             </div>
         </div>

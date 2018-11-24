@@ -104,7 +104,11 @@ class VersionManager
 
         } catch (\Exception $e) {
             $this->lastException = $e;
+
+        } catch (\Throwable $e) {
+            $this->lastException = $e;
         }
+
 
         return false;
     }
