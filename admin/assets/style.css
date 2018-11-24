@@ -2,13 +2,14 @@
     overflow-x: auto;
     overflow-y: scroll;
     max-height: 425px;
+    padding: 0 15px 0 0;
 }
 
 .sp-block {
     background-color: #f5f9f9;
     border: 1px solid;
     border-color: #c4ced2 #dce7ed #dce7ed;
-    padding: 19px;
+    padding: 15px;
 }
 
 .sp-block:after {
@@ -123,16 +124,16 @@ table.sp-list {
 }
 
 table.sp-list td.sp-list-l {
-    width: 110px;
     vertical-align: middle;
     text-align: left;
-    padding: 5px 5px 5px 0;
+    padding: 5px 0;
+    width: 105px;
 }
 
 table.sp-list td.sp-list-r {
     vertical-align: middle;
     text-align: left;
-    padding: 5px 0 5px 5px;
+    padding: 5px 0;
 }
 
 table.sp-status {
