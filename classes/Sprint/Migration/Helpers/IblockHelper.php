@@ -306,13 +306,26 @@ class IblockHelper extends Helper
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
 
+        $filterIds = false;
+        if (isset($filter['ID']) && is_array($filter['ID'])) {
+            $filterIds = $filter['ID'];
+            unset($filter['ID']);
+        }
+
         $dbres = \CIBlockProperty::GetList(array('SORT' => 'ASC'), $filter);
 
-        $list = array();
+        $result = array();
+
         while ($property = $dbres->Fetch()) {
-            $list[] = $this->prepareProperty($property);
+            if ($filterIds) {
+                if (in_array($property['ID'], $filterIds)) {
+                    $result[] = $this->prepareProperty($property);
+                }
+            } else {
+                $result[] = $this->prepareProperty($property);
+            }
         }
-        return $list;
+        return $result;
     }
 
     public function addPropertyIfNotExists($iblockId, $fields) {
@@ -761,6 +774,75 @@ class IblockHelper extends Helper
         }
     }
 
+
+    //exports
+
+    public function exportIblockType($typeId) {
+        return $this->getIblockType($typeId);
+    }
+
+    public function exportIblock($iblockId) {
+        $iblock = $this->getIblock(array('ID' => $iblockId));
+        if (!$iblock) {
+            return false;
+        }
+
+        unset($iblock['ID']);
+        unset($iblock['TIMESTAMP_X']);
+        unset($iblock['TMP_ID']);
+
+        return $iblock;
+    }
+
+    public function exportIblockFields($iblockId) {
+        $iblockFields = array();
+        $allFields = $this->getIblockFields($iblockId);
+        foreach ($allFields as $fieldId => $iblockField) {
+            if ($iblockField["VISIBLE"] == "N" || preg_match("/^(SECTION_|LOG_)/", $fieldId)) {
+                continue;
+            }
+            $iblockFields[$fieldId] = $iblockField;
+        }
+
+        return $iblockFields;
+    }
+
+    public function exportProperties($iblockId, $propertyIds = array()) {
+
+        if (!empty($propertyIds)) {
+            $filter = array(
+                'ID' => $propertyIds
+            );
+        } else {
+            $filter = array();
+        }
+
+
+        $props = $this->getProperties($iblockId, $filter);
+
+        $exportProps = array();
+
+        foreach ($props as $prop) {
+            unset($prop['ID']);
+            unset($prop['IBLOCK_ID']);
+            unset($prop['TIMESTAMP_X']);
+            unset($prop['TMP_ID']);
+
+            if (!empty($prop['LINK_IBLOCK_ID'])) {
+                $linked = $this->getIblock([
+                    'ID' => $prop['LINK_IBLOCK_ID']
+                ]);
+
+                if (!empty($linked['CODE'])) {
+                    $prop['LINK_IBLOCK_ID'] = $linked['IBLOCK_TYPE_ID'] . ':' . $linked['CODE'];
+                }
+            }
+
+            $exportProps[] = $prop;
+        }
+
+        return $exportProps;
+    }
 
     /* @deprecated */
     public function deleteProperty($iblockId, $code) {

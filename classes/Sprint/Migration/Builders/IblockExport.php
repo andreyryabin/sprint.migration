@@ -77,14 +77,10 @@ class IblockExport extends VersionBuilder
             $this->rebuildField('iblock_id');
         }
 
-        $iblock = $helper->Iblock()->getIblock(array('ID' => $iblockId));
-        if (empty($iblock)){
+        $iblock = $helper->Iblock()->exportIblock($iblockId);
+        if (empty($iblock)) {
             $this->rebuildField('iblock_id');
         }
-
-        unset($iblock['ID']);
-        unset($iblock['TIMESTAMP_X']);
-        unset($iblock['TMP_ID']);
 
         $what = $this->getFieldValue('what');
         if (!empty($what)) {
@@ -104,7 +100,7 @@ class IblockExport extends VersionBuilder
         }
 
         if (in_array('iblockType', $what)) {
-            $iblockType = $helper->Iblock()->getIblockType($iblock['IBLOCK_TYPE_ID']);
+            $iblockType = $helper->Iblock()->exportIblockType($iblock['IBLOCK_TYPE_ID']);
         }
 
         $props = $helper->Iblock()->getProperties($iblockId);
@@ -124,42 +120,12 @@ class IblockExport extends VersionBuilder
                 $this->rebuildField('property_ids');
             }
 
-            $iblockProperties = array();
-            foreach ($propertyIds as $propertyId) {
-                $prop = $this->getPropById($propertyId, $props);
-                if (empty($prop)) {
-                    continue;
-                }
-
-                unset($prop['ID']);
-                unset($prop['IBLOCK_ID']);
-                unset($prop['TIMESTAMP_X']);
-
-                if (!empty($prop['LINK_IBLOCK_ID'])) {
-                    $linked = $helper->Iblock()->getIblock([
-                        'ID' => $prop['LINK_IBLOCK_ID']
-                    ]);
-
-                    if (!empty($linked['CODE'])) {
-                        $prop['LINK_IBLOCK_ID'] = $linked['IBLOCK_TYPE_ID'] . ':' . $linked['CODE'];
-                    }
-                }
-
-                $iblockProperties[] = $prop;
-
-            }
+            $iblockProperties = $helper->Iblock()->exportProperties($iblockId, $propertyIds);
         }
 
 
         if (in_array('iblockFields', $what)) {
-            $iblockFields = array();
-            $allFields = $helper->Iblock()->getIblockFields($iblockId);
-            foreach ($allFields as $fieldId => $iblockField) {
-                if ($iblockField["VISIBLE"] == "N" || preg_match("/^(SECTION_|LOG_)/", $fieldId)) {
-                    continue;
-                }
-                $iblockFields[$fieldId] = $iblockField;
-            }
+            $iblockFields = $helper->Iblock()->exportIblockFields($iblockId);
         }
 
 
@@ -228,23 +194,6 @@ class IblockExport extends VersionBuilder
         }
 
         return $structure;
-    }
-
-    protected function getPropById($propId, $props = array()) {
-        foreach ($props as $prop) {
-            if ($propId == $prop['ID']) {
-                return $prop;
-            }
-        }
-        return false;
-    }
-
-    protected function getPropsValues($props = array()) {
-        $propsIds = array();
-        foreach ($props as $prop) {
-            $propsIds[] = $prop['ID'];
-        }
-        return $propsIds;
     }
 
 }

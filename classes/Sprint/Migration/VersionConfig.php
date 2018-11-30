@@ -31,7 +31,7 @@ class VersionConfig
         if (!isset($this->configList['archive'])) {
             $this->configList['archive'] = $this->prepare('archive', array(
                 'title' => GetMessage('SPRINT_MIGRATION_CONFIG_archive'),
-                'migration_dir' => $this->getArchiveDir('archive'),
+                'migration_dir' => $this->getSubDir('archive'),
                 'migration_table' => 'sprint_migration_archive',
             ));
         }
@@ -221,7 +221,7 @@ class VersionConfig
             );
         } else {
             $configValues = array(
-                'migration_dir' => $this->getArchiveDir($configName),
+                'migration_dir' => $this->getSubDir($configName),
                 'migration_table' => 'sprint_migration_' . $configName,
             );
         }
@@ -262,7 +262,7 @@ class VersionConfig
         return $dir;
     }
 
-    protected function getArchiveDir($dirname) {
+    protected function getSubDir($dirname) {
         $def = $this->configList['cfg'];
 
         return $this->getRelativeDir(
@@ -295,6 +295,8 @@ class VersionConfig
             'Transfer' => '\Sprint\Migration\Builders\Transfer',
             'Configurator' => '\Sprint\Migration\Builders\Configurator',
             'Cleaner' => '\Sprint\Migration\Builders\Cleaner',
+            'SchemaExport' => '\Sprint\Migration\Builders\SchemaExport',
+            'SchemaImport' => '\Sprint\Migration\Builders\SchemaImport',
         );
     }
 

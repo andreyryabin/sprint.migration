@@ -45,15 +45,10 @@
 
     <div class="sp-separator"></div>
 
-    <? $builderGroup = 'default';
-    include __DIR__ . '/builder_group.php' ?>
-
-    <div class="sp-separator"></div>
-
-    <? $builderGroup = 'configurator';
-    include __DIR__ . '/builder_group.php' ?>
-
-    <div class="sp-separator"></div>
+    <? foreach (array('default', 'configurator', 'schema') as $builderGroup): ?>
+        <? include __DIR__ . '/builder_group.php' ?>
+        <div class="sp-separator"></div>
+    <? endforeach ?>
 
     <div class="sp-group">
         <div class="sp-block">
