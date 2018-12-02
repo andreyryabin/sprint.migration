@@ -13,7 +13,7 @@ class SchemaImport extends AbstractBuilder
     }
 
     protected function initialize() {
-        $this->setTitle('SchemaImport');
+        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_SchemaImport'));
         $this->setGroup('schema');
     }
 

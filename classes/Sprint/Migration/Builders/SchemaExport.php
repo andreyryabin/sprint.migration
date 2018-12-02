@@ -13,7 +13,7 @@ class SchemaExport extends AbstractBuilder
     }
 
     protected function initialize() {
-        $this->setTitle('SchemaExport');
+        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_SchemaExport'));
         $this->setGroup('schema');
     }
 

@@ -137,6 +137,9 @@
     "SPRINT_MIGRATION_BUILDER_Cleaner_config_name" => "Выберите конфигурацию",
     "SPRINT_MIGRATION_BUILDER_Cleaner_config_error" => "Ошибка удаления конфигурации",
 
+    "SPRINT_MIGRATION_BUILDER_SchemaImport" => "Импорт схемы",
+    "SPRINT_MIGRATION_BUILDER_SchemaExport" => "Экспорт схемы",
+
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
     "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля",
 
