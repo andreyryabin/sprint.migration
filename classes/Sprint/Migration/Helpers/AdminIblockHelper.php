@@ -12,6 +12,16 @@ class AdminIblockHelper extends Helper
     private $iblock = array();
 
     public function extractElementForm($iblockId, $params = array()) {
+        $result = $this->exportElementForm($iblockId, $params);
+
+        if (!empty($result)) {
+            return $result;
+        }
+
+        $this->throwException(__METHOD__, 'Iblock form options not found');
+    }
+
+    public function exportElementForm($iblockId, $params = array()) {
         $this->initializeVars($iblockId);
 
         $params = array_merge(array(
@@ -62,11 +72,8 @@ class AdminIblockHelper extends Helper
 
         }
 
-        if (!empty($extractedTabs)) {
-            return $extractedTabs;
-        }
+        return $extractedTabs;
 
-        $this->throwException(__METHOD__, 'Iblock form options not found');
     }
 
     public function saveElementForm($iblockId, $tabs = array(), $params = array()) {

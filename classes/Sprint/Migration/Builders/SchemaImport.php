@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Schema\IblockSchema;
 
 class SchemaImport extends AbstractBuilder
 {
@@ -18,7 +19,8 @@ class SchemaImport extends AbstractBuilder
 
 
     protected function execute() {
-
+        $schema = new IblockSchema($this->getVersionConfig());
+        $schema->import();
     }
 
 }
