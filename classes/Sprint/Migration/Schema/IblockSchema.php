@@ -24,7 +24,6 @@ class IblockSchema extends AbstractSchema
             'items' => $exportTypes
         ));
 
-
         $iblocks = $helper->Iblock()->getIblocks();
         foreach ($iblocks as $iblock) {
             if (!empty($iblock['CODE'])) {

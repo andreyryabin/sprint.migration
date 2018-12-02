@@ -10,8 +10,11 @@ abstract class AbstractSchema
     /** @var VersionConfig */
     private $versionConfig = null;
 
-    public function __construct(VersionConfig $versionConfig) {
+    protected $params = array();
+
+    public function __construct(VersionConfig $versionConfig, $params = array()) {
         $this->versionConfig = $versionConfig;
+        $this->params = $params;
     }
 
     abstract public function import();
@@ -129,5 +132,9 @@ abstract class AbstractSchema
 
     protected function getVersionConfig() {
         return $this->versionConfig;
+    }
+
+    public function getParams(){
+        return $this->params;
     }
 }
