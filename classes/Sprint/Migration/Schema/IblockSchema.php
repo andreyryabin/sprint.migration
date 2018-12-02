@@ -49,7 +49,7 @@ class IblockSchema extends AbstractSchema
 
             if ($exists != $type) {
                 $helper->Iblock()->saveIblockType($type);
-                Out::out('iblock type %s updated', $type['ID']);
+                Out::outSuccess('iblock type %s updated', $type['ID']);
             } else {
                 Out::out('iblock type %s is equal', $type['ID']);
             }
@@ -69,7 +69,7 @@ class IblockSchema extends AbstractSchema
             $exists = $helper->Iblock()->exportIblock($iblockId);
             if ($exists != $schemaIblock['iblock']) {
                 $helper->Iblock()->saveIblock($schemaIblock['iblock']);
-                Out::out('iblock %s:%s updated',
+                Out::outSuccess('iblock %s:%s updated',
                     $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                     $schemaIblock['iblock']['CODE']
                 );
@@ -83,7 +83,7 @@ class IblockSchema extends AbstractSchema
             $exists = $helper->Iblock()->exportIblockFields($iblockId);
             if ($exists != $schemaIblock['fields']) {
                 $helper->Iblock()->saveIblockFields($schemaIblock['fields']);
-                Out::out('iblock fields %s:%s updated',
+                Out::outSuccess('iblock fields %s:%s updated',
                     $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                     $schemaIblock['iblock']['CODE']
                 );
@@ -105,11 +105,11 @@ class IblockSchema extends AbstractSchema
             $existsProps = $helper->Iblock()->exportProperties($iblockId);
 
             foreach ($schemaIblock['props'] as $prop) {
-                $exists = $this->findProperty($prop['CODE'], $existsProps);
+                $exists = $this->findByCode($prop['CODE'], $existsProps);
 
                 if ($exists != $prop) {
                     $helper->Iblock()->saveProperty($iblockId, $prop);
-                    Out::out('iblock property %s updated',
+                    Out::outSuccess('iblock property %s updated',
                         $prop['CODE']
                     );
                 } else {
@@ -117,7 +117,15 @@ class IblockSchema extends AbstractSchema
                         $prop['CODE']
                     );
                 }
+            }
 
+            foreach ($existsProps as $existsProp) {
+                if (!$this->findByCode($existsProp['CODE'], $schemaIblock['props'])) {
+                    $helper->Iblock()->deletePropertyIfExists($iblockId, $existsProp['CODE']);
+                    Out::outError('iblock property %s is delete',
+                        $existsProp['CODE']
+                    );
+                }
             }
 
 
@@ -125,7 +133,7 @@ class IblockSchema extends AbstractSchema
                 $exists = $helper->AdminIblock()->extractElementForm($iblockId);
                 if ($exists != $schemaIblock['element_form']) {
                     $helper->AdminIblock()->saveElementForm($iblockId, $schemaIblock['element_form']);
-                    Out::out('iblock admin form %s:%s updated',
+                    Out::outSuccess('iblock admin form %s:%s updated',
                         $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                         $schemaIblock['iblock']['CODE']
                     );
@@ -142,14 +150,14 @@ class IblockSchema extends AbstractSchema
 
     }
 
-    protected function findProperty($code, $props) {
-        foreach ($props as $prop) {
-            if ($prop['CODE'] == $code) {
-                return $prop;
+    protected function findByCode($code, $haystack) {
+        foreach ($haystack as $item) {
+            if ($item['CODE'] == $code) {
+                return $item;
             }
         }
 
-        return array();
+        return false;
     }
 
 

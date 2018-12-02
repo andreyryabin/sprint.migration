@@ -42,23 +42,15 @@ class Out
 
         self::$needEol = true;
 
-        if (self::canOutAsAdminMessage()) {
-            if (self::canOutProgressBar()) {
-                $mess = array(
-                    "MESSAGE" => $msg,
-                    "DETAILS" => "#PROGRESS_BAR#",
-                    "HTML" => true,
-                    "TYPE" => "PROGRESS",
-                    "PROGRESS_TOTAL" => $total,
-                    "PROGRESS_VALUE" => $val,
-                );
-            } else {
-                $mess = array(
-                    "MESSAGE" => $msg . ' ' . round($val / $total * 100) . '%',
-                    'HTML' => true,
-                    'TYPE' => 'OK'
-                );
-            }
+        if (self::canOutProgressBar()) {
+            $mess = array(
+                "MESSAGE" => $msg,
+                "DETAILS" => "#PROGRESS_BAR#",
+                "HTML" => true,
+                "TYPE" => "PROGRESS",
+                "PROGRESS_TOTAL" => $total,
+                "PROGRESS_VALUE" => $val,
+            );
 
             $m = new \CAdminMessage($mess);
             echo '<div class="migration-bar">' . $m->Show() . '</div>';
@@ -74,11 +66,40 @@ class Out
 
     }
 
+    public static function outSuccessText($msg, $var1 = null, $var2 = null) {
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $msg = call_user_func_array('sprintf', $params);
+        }
+
+        if (self::canOutAsHtml()) {
+            self::outToHtml('[green]' . $msg . '[/]');
+
+        } else {
+            self::outToConsole($msg);
+        }
+    }
+
+    public static function outErrorText($msg, $var1 = null, $var2 = null) {
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $msg = call_user_func_array('sprintf', $params);
+        }
+
+        if (self::canOutAsHtml()) {
+            self::outToHtml('[red]' . $msg . '[/]');
+        } else {
+            self::outToConsole($msg);
+        }
+    }
+
+
     public static function outSuccess($msg, $var1 = null, $var2 = null) {
         if (func_num_args() > 1) {
             $params = func_get_args();
             $msg = call_user_func_array('sprintf', $params);
         }
+
         if (self::canOutAsAdminMessage()) {
             $msg = self::prepareToHtml($msg);
             /** @noinspection PhpDynamicAsStaticMethodCallInspection */
@@ -87,11 +108,8 @@ class Out
                 'HTML' => true,
                 'TYPE' => 'OK'
             ));
-        } elseif (self::canOutAsHtml()) {
-            self::outToHtml('[green]' . $msg . '[/]');
-
         } else {
-            self::outToConsole($msg);
+            self::outSuccessText($msg);
         }
     }
 
@@ -100,6 +118,7 @@ class Out
             $params = func_get_args();
             $msg = call_user_func_array('sprintf', $params);
         }
+
         if (self::canOutAsAdminMessage()) {
             $msg = self::prepareToHtml($msg);
             /** @noinspection PhpDynamicAsStaticMethodCallInspection */
@@ -108,13 +127,10 @@ class Out
                 'HTML' => true,
                 'TYPE' => 'ERROR'
             ));
-        } elseif (self::canOutAsHtml()) {
-            self::outToHtml('[red]' . $msg . '[/]');
         } else {
-            self::outToConsole($msg);
+            self::outErrorText($msg);
         }
     }
-
 
     public static function prepareToConsole($msg) {
         foreach (self::$colors as $key => $val) {

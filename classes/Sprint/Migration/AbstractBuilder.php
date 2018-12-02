@@ -211,7 +211,7 @@ abstract class AbstractBuilder
 
         } catch (\Exception $e) {
             $this->execStatus = 'error';
-            Out::outError('%s: %s', GetMessage('SPRINT_MIGRATION_BUILDER_ERROR'), $e->getMessage());
+            $this->outError('%s: %s', GetMessage('SPRINT_MIGRATION_BUILDER_ERROR'), $e->getMessage());
             return false;
         }
 

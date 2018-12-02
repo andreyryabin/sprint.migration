@@ -188,7 +188,7 @@ jQuery(document).ready(function ($) {
             $(document).scrollTop(elemTop - 25);
         }
 
-        $('[data-builder]').find('.adm-info-message-wrap').remove();
+        $('[data-builder]').find('.adm-info-message-wrap,.migration-out').remove();
     });
 
 
