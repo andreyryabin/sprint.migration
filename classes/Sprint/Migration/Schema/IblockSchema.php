@@ -4,7 +4,6 @@ namespace Sprint\Migration\Schema;
 
 use \Sprint\Migration\AbstractSchema;
 use Sprint\Migration\HelperManager;
-use Sprint\Migration\Out;
 
 class IblockSchema extends AbstractSchema
 {
@@ -43,16 +42,14 @@ class IblockSchema extends AbstractSchema
     public function import() {
         $helper = new HelperManager();
 
-
         $schemaTypes = $this->loadSchema('iblock_types');
-        $this->exitIfEmpty($schemaTypes, 'iblock types not found');
 
         foreach ($schemaTypes['items'] as $type) {
             $exists = $helper->Iblock()->exportIblockType($type['ID']);
 
             if ($exists != $type) {
                 $helper->Iblock()->saveIblockType($type);
-                $this->outSuccess('iblock type %s updated', $type['ID']);
+                $this->outSuccess('iblock type %s saved', $type['ID']);
             } else {
                 $this->out('iblock type %s is equal', $type['ID']);
             }
@@ -76,7 +73,7 @@ class IblockSchema extends AbstractSchema
 
         foreach ($schemaIblocks as $name => $schemaIblock) {
 
-            if (in_array($schemaIblock['IBLOCK_TYPE_ID'],$deletedTypes)){
+            if (in_array($schemaIblock['IBLOCK_TYPE_ID'], $deletedTypes)) {
                 continue;
             }
 
@@ -88,7 +85,7 @@ class IblockSchema extends AbstractSchema
             $exists = $helper->Iblock()->exportIblock($iblockId);
             if ($exists != $schemaIblock['iblock']) {
                 $helper->Iblock()->saveIblock($schemaIblock['iblock']);
-                $this->outSuccess('iblock %s:%s updated',
+                $this->outSuccess('iblock %s:%s saved',
                     $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                     $schemaIblock['iblock']['CODE']
                 );
@@ -102,7 +99,7 @@ class IblockSchema extends AbstractSchema
             $exists = $helper->Iblock()->exportIblockFields($iblockId);
             if ($exists != $schemaIblock['fields']) {
                 $helper->Iblock()->saveIblockFields($schemaIblock['fields']);
-                $this->outSuccess('iblock fields %s:%s updated',
+                $this->outSuccess('iblock fields %s:%s saved',
                     $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                     $schemaIblock['iblock']['CODE']
                 );
@@ -116,7 +113,7 @@ class IblockSchema extends AbstractSchema
 
         foreach ($schemaIblocks as $name => $schemaIblock) {
 
-            if (in_array($schemaIblock['IBLOCK_TYPE_ID'],$deletedTypes)){
+            if (in_array($schemaIblock['IBLOCK_TYPE_ID'], $deletedTypes)) {
                 continue;
             }
 
@@ -133,7 +130,7 @@ class IblockSchema extends AbstractSchema
 
                 if ($exists != $prop) {
                     $helper->Iblock()->saveProperty($iblockId, $prop);
-                    $this->outSuccess('iblock property %s updated',
+                    $this->outSuccess('iblock property %s saved',
                         $prop['CODE']
                     );
                 } else {
@@ -153,21 +150,21 @@ class IblockSchema extends AbstractSchema
             }
 
 
-            if (!empty($schemaIblock['element_form'])) {
-                $exists = $helper->AdminIblock()->extractElementForm($iblockId);
-                if ($exists != $schemaIblock['element_form']) {
-                    $helper->AdminIblock()->saveElementForm($iblockId, $schemaIblock['element_form']);
-                    $this->outSuccess('iblock admin form %s:%s updated',
-                        $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
-                        $schemaIblock['iblock']['CODE']
-                    );
-                } else {
-                    $this->out('iblock admin form %s:%s is equal',
-                        $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
-                        $schemaIblock['iblock']['CODE']
-                    );
-                }
+            $exists = $helper->AdminIblock()->exportElementForm($iblockId);
+
+            if ($exists != $schemaIblock['element_form']) {
+                $helper->AdminIblock()->saveElementForm($iblockId, $schemaIblock['element_form']);
+                $this->outSuccess('iblock admin form %s:%s saved',
+                    $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
+                    $schemaIblock['iblock']['CODE']
+                );
+            } else {
+                $this->out('iblock admin form %s:%s is equal',
+                    $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
+                    $schemaIblock['iblock']['CODE']
+                );
             }
+
 
         }
 

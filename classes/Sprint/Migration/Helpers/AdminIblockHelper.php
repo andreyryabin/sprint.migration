@@ -29,14 +29,16 @@ class AdminIblockHelper extends Helper
             'category' => 'form',
         ), $params);
 
-        $name = $params['name_prefix'] . $iblockId;
-        $option = \CUserOptions::GetOption($params['category'], $name, false, false);
+        $params['name'] = $params['name_prefix'] . $iblockId;
 
-        if (!$option || empty($option['tabs'])) {
-            $this->throwException(__METHOD__, 'Iblock form options not found');
-        }
+
+        $option = \CUserOptions::GetOption($params['category'], $params['name'], false, false);
 
         $extractedTabs = array();
+
+        if (!$option || empty($option['tabs'])) {
+            return $extractedTabs;
+        }
 
         $optionTabs = explode(';', $option['tabs']);
         foreach ($optionTabs as $tabStrings) {
@@ -78,6 +80,18 @@ class AdminIblockHelper extends Helper
 
     public function saveElementForm($iblockId, $tabs = array(), $params = array()) {
         $this->initializeVars($iblockId);
+
+        $params = array_merge(array(
+            'name_prefix' => 'form_element_',
+            'category' => 'form',
+        ), $params);
+
+        $params['name'] = $params['name_prefix'] . $iblockId;
+
+        if (empty($tabs)) {
+            \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
+            return true;
+        }
 
         /** @example *//*
         $tabs = array(
@@ -148,18 +162,14 @@ class AdminIblockHelper extends Helper
 
         $opts = implode(';', $opts) . ';--';
 
-        $params = array_merge(array(
-            'name_prefix' => 'form_element_',
-            'category' => 'form',
-        ), $params);
-
-        $name = $params['name_prefix'] . $iblockId;
         $value = array(
             'tabs' => $opts
         );
 
-        \CUserOptions::DeleteOptionsByName($params['category'], $name);
-        \CUserOptions::SetOption($params['category'], $name, $value, true);
+        \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
+        \CUserOptions::SetOption($params['category'], $params['name'], $value, true);
+
+        return true;
     }
 
     public function saveElementList($iblockId, $columns = array(), $params = array()) {
