@@ -49,9 +49,9 @@ class IblockSchema extends AbstractSchema
 
             if ($exists != $type) {
                 $helper->Iblock()->saveIblockType($type);
-                Out::outSuccess('iblock type %s updated', $type['ID']);
+                $this->outSuccess('iblock type %s updated', $type['ID']);
             } else {
-                Out::out('iblock type %s is equal', $type['ID']);
+                $this->out('iblock type %s is equal', $type['ID']);
             }
 
         }
@@ -69,12 +69,12 @@ class IblockSchema extends AbstractSchema
             $exists = $helper->Iblock()->exportIblock($iblockId);
             if ($exists != $schemaIblock['iblock']) {
                 $helper->Iblock()->saveIblock($schemaIblock['iblock']);
-                Out::outSuccess('iblock %s:%s updated',
+                $this->outSuccess('iblock %s:%s updated',
                     $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                     $schemaIblock['iblock']['CODE']
                 );
             } else {
-                Out::out('iblock %s:%s is equal',
+                $this->out('iblock %s:%s is equal',
                     $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                     $schemaIblock['iblock']['CODE']
                 );
@@ -83,12 +83,12 @@ class IblockSchema extends AbstractSchema
             $exists = $helper->Iblock()->exportIblockFields($iblockId);
             if ($exists != $schemaIblock['fields']) {
                 $helper->Iblock()->saveIblockFields($schemaIblock['fields']);
-                Out::outSuccess('iblock fields %s:%s updated',
+                $this->outSuccess('iblock fields %s:%s updated',
                     $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                     $schemaIblock['iblock']['CODE']
                 );
             } else {
-                Out::out('iblock fields %s:%s is equal',
+                $this->out('iblock fields %s:%s is equal',
                     $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                     $schemaIblock['iblock']['CODE']
                 );
@@ -109,11 +109,11 @@ class IblockSchema extends AbstractSchema
 
                 if ($exists != $prop) {
                     $helper->Iblock()->saveProperty($iblockId, $prop);
-                    Out::outSuccess('iblock property %s updated',
+                    $this->outSuccess('iblock property %s updated',
                         $prop['CODE']
                     );
                 } else {
-                    Out::out('iblock property %s is equal',
+                    $this->out('iblock property %s is equal',
                         $prop['CODE']
                     );
                 }
@@ -122,7 +122,7 @@ class IblockSchema extends AbstractSchema
             foreach ($existsProps as $existsProp) {
                 if (!$this->findByCode($existsProp['CODE'], $schemaIblock['props'])) {
                     $helper->Iblock()->deletePropertyIfExists($iblockId, $existsProp['CODE']);
-                    Out::outError('iblock property %s is delete',
+                    $this->outError('iblock property %s is delete',
                         $existsProp['CODE']
                     );
                 }
@@ -133,12 +133,12 @@ class IblockSchema extends AbstractSchema
                 $exists = $helper->AdminIblock()->extractElementForm($iblockId);
                 if ($exists != $schemaIblock['element_form']) {
                     $helper->AdminIblock()->saveElementForm($iblockId, $schemaIblock['element_form']);
-                    Out::outSuccess('iblock admin form %s:%s updated',
+                    $this->outSuccess('iblock admin form %s:%s updated',
                         $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                         $schemaIblock['iblock']['CODE']
                     );
                 } else {
-                    Out::out('iblock admin form %s:%s is equal',
+                    $this->out('iblock admin form %s:%s is equal',
                         $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                         $schemaIblock['iblock']['CODE']
                     );

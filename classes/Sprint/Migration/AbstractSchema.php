@@ -112,13 +112,6 @@ abstract class AbstractSchema
         call_user_func_array(array('Sprint\Migration\Out', 'outErrorText'), $args);
     }
 
-    protected function redirect($url) {
-        $this->actions[] = array(
-            'type' => 'redirect',
-            'url' => $url
-        );
-    }
-
     protected function getVersionConfig() {
         return $this->versionConfig;
     }
