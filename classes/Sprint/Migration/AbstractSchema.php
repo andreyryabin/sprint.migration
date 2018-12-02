@@ -44,6 +44,21 @@ abstract class AbstractSchema
         return array();
     }
 
+    protected function deleteSchema($name) {
+        $file = $this->getVersionConfig()->getVal('migration_dir') . '/schema/' . $name . '.json';
+        if (is_file($file)) {
+            unlink($file);
+        }
+    }
+
+    protected function deleteSchemas($path) {
+        $names = $this->getSchemas($path);
+
+        foreach ($names as $name) {
+            $this->deleteSchema($name);
+        }
+    }
+
     protected function getSchemas($path) {
         $path = trim($path, '/') . '/';
 

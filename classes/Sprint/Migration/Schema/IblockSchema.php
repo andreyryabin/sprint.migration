@@ -12,6 +12,9 @@ class IblockSchema extends AbstractSchema
     public function export() {
         $helper = new HelperManager();
 
+        $this->deleteSchema('iblock_types');
+        $this->deleteSchemas('iblocks');
+
         $types = $helper->Iblock()->getIblockTypes();
         $exportTypes = array();
         foreach ($types as $type) {
@@ -56,10 +59,26 @@ class IblockSchema extends AbstractSchema
 
         }
 
+        $deletedTypes = array();
+        $existsTypes = $helper->Iblock()->getIblockTypes();
+        foreach ($existsTypes as $existsType) {
+            if (!$this->findByKey('ID', $existsType, $schemaTypes['items'])) {
+                $deletedTypes[] = $existsType['ID'];
+                $helper->Iblock()->deleteIblockType($existsType['ID']);
+                $this->outError('iblock type %s is delete',
+                    $existsType['ID']
+                );
+            }
+        }
+
 
         $schemaIblocks = $this->loadSchemas('iblocks/');
 
         foreach ($schemaIblocks as $name => $schemaIblock) {
+
+            if (in_array($schemaIblock['IBLOCK_TYPE_ID'],$deletedTypes)){
+                continue;
+            }
 
             $iblockId = $helper->Iblock()->getIblockId(
                 $schemaIblock['iblock']['CODE'],
@@ -96,6 +115,11 @@ class IblockSchema extends AbstractSchema
         }
 
         foreach ($schemaIblocks as $name => $schemaIblock) {
+
+            if (in_array($schemaIblock['IBLOCK_TYPE_ID'],$deletedTypes)){
+                continue;
+            }
+
             $iblockId = $helper->Iblock()->getIblockId(
                 $schemaIblock['iblock']['CODE'],
                 $schemaIblock['iblock']['IBLOCK_TYPE_ID']
@@ -105,7 +129,7 @@ class IblockSchema extends AbstractSchema
             $existsProps = $helper->Iblock()->exportProperties($iblockId);
 
             foreach ($schemaIblock['props'] as $prop) {
-                $exists = $this->findByCode($prop['CODE'], $existsProps);
+                $exists = $this->findByKey('CODE', $prop, $existsProps);
 
                 if ($exists != $prop) {
                     $helper->Iblock()->saveProperty($iblockId, $prop);
@@ -120,7 +144,7 @@ class IblockSchema extends AbstractSchema
             }
 
             foreach ($existsProps as $existsProp) {
-                if (!$this->findByCode($existsProp['CODE'], $schemaIblock['props'])) {
+                if (!$this->findByKey('CODE', $existsProp, $schemaIblock['props'])) {
                     $helper->Iblock()->deletePropertyIfExists($iblockId, $existsProp['CODE']);
                     $this->outError('iblock property %s is delete',
                         $existsProp['CODE']
@@ -150,9 +174,9 @@ class IblockSchema extends AbstractSchema
 
     }
 
-    protected function findByCode($code, $haystack) {
+    protected function findByKey($key, $needle, $haystack) {
         foreach ($haystack as $item) {
-            if ($item['CODE'] == $code) {
+            if ($item[$key] == $needle[$key]) {
                 return $item;
             }
         }
