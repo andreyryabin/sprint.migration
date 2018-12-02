@@ -32,7 +32,7 @@ class IblockSchema extends AbstractSchema
                     'iblock' => $helper->Iblock()->exportIblock($iblock['ID']),
                     'fields' => $helper->Iblock()->exportIblockFields($iblock['ID']),
                     'props' => $helper->Iblock()->exportProperties($iblock['ID']),
-                    'element_form' => $helper->AdminIblock()->extractElementForm($iblock['ID'])
+                    'element_form' => $helper->AdminIblock()->exportElementForm($iblock['ID'])
                 ));
             }
         }
