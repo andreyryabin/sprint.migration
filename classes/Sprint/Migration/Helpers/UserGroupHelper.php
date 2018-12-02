@@ -87,7 +87,7 @@ class UserGroupHelper extends Helper
         return $this->updateGroup($groupId, $fields);
     }
 
-    protected function addGroup($code, $fields = array()) {
+    public function addGroup($code, $fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
 
         $fields['STRING_ID'] = $code;
@@ -102,7 +102,7 @@ class UserGroupHelper extends Helper
         $this->throwException(__METHOD__, $group->LAST_ERROR);
     }
 
-    protected function updateGroup($groupId, $fields = array()) {
+    public function updateGroup($groupId, $fields = array()) {
         if (empty($fields)) {
             $this->throwException(__METHOD__, 'Set fields for group');
         }
