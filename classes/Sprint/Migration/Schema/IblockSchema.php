@@ -41,7 +41,9 @@ class IblockSchema extends AbstractSchema
     public function import() {
         $helper = new HelperManager();
 
-        $schemaTypes = $this->loadSchema('iblock_types');
+        $schemaTypes = $this->loadSchema('iblock_types', array(
+            'items' => array()
+        ));
 
         foreach ($schemaTypes['items'] as $type) {
             $exists = $helper->Iblock()->exportIblockType($type['ID']);

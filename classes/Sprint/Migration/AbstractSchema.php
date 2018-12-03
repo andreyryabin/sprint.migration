@@ -35,16 +35,16 @@ abstract class AbstractSchema
         );
     }
 
-    protected function loadSchema($name) {
+    protected function loadSchema($name, $merge = array()) {
         $file = $this->getVersionConfig()->getVal('migration_dir') . '/schema/' . $name . '.json';
         if (is_file($file)) {
             $json = file_get_contents($file);
             $json = json_decode($json, true);
             if (json_last_error() == JSON_ERROR_NONE) {
-                return $json;
+                return array_replace_recursive($merge, $json);
             }
         }
-        return array();
+        return $merge;
     }
 
     protected function deleteSchema($name) {
@@ -83,12 +83,12 @@ abstract class AbstractSchema
         return $result;
     }
 
-    protected function loadSchemas($path) {
+    protected function loadSchemas($path, $merge = array()) {
         $names = $this->getSchemas($path);
 
         $schemas = array();
         foreach ($names as $name) {
-            $schemas[$name] = $this->loadSchema($name);
+            $schemas[$name] = $this->loadSchema($name, $merge);
         }
 
         return $schemas;
@@ -134,7 +134,7 @@ abstract class AbstractSchema
         return $this->versionConfig;
     }
 
-    public function getParams(){
+    public function getParams() {
         return $this->params;
     }
 }
