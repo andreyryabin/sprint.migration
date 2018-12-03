@@ -20,10 +20,7 @@ class SchemaExport extends AbstractBuilder
 
     protected function execute() {
         $schema = new IblockSchema($this->getVersionConfig());
-
-        $schema->export();
-
-        $this->outSuccess('ok');
+        $schema->runExport();
     }
 
 

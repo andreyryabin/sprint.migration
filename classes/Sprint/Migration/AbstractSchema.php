@@ -17,12 +17,35 @@ abstract class AbstractSchema
         $this->params = $params;
     }
 
-    abstract public function import();
+    abstract protected function import($execute);
 
-    abstract public function export();
+    abstract protected function export($execute);
+
+    public function testImport() {
+        $this->import(0);
+    }
+
+    public function testExport() {
+        $this->export(0);
+    }
+
+    public function runImport() {
+        $this->import(1);
+    }
+
+    public function runExport() {
+        $this->export(1);
+    }
+
+    protected function getSchemaDir($relative = false) {
+        $dir = $this->getVersionConfig()->getVal('migration_dir') . '/schema/';
+        return ($relative) ? Module::getRelativeDir($dir) : $dir;
+    }
+
+
 
     protected function saveSchema($name, $data) {
-        $file = $this->getVersionConfig()->getVal('migration_dir') . '/schema/' . $name . '.json';
+        $file = $this->getSchemaDir() . $name . '.json';
 
         $dir = pathinfo($file, PATHINFO_DIRNAME);
 
@@ -36,7 +59,7 @@ abstract class AbstractSchema
     }
 
     protected function loadSchema($name, $merge = array()) {
-        $file = $this->getVersionConfig()->getVal('migration_dir') . '/schema/' . $name . '.json';
+        $file = $this->getSchemaDir() . $name . '.json';
         if (is_file($file)) {
             $json = file_get_contents($file);
             $json = json_decode($json, true);
@@ -48,7 +71,7 @@ abstract class AbstractSchema
     }
 
     protected function deleteSchema($name) {
-        $file = $this->getVersionConfig()->getVal('migration_dir') . '/schema/' . $name . '.json';
+        $file = $this->getSchemaDir() . $name . '.json';
         if (is_file($file)) {
             unlink($file);
         }
@@ -65,7 +88,7 @@ abstract class AbstractSchema
     protected function getSchemas($path) {
         $path = trim($path, '/') . '/';
 
-        $dir = $this->getVersionConfig()->getVal('migration_dir') . '/schema/' . $path;
+        $dir = $this->getSchemaDir() . $path;
 
         $result = array();
 
@@ -110,22 +133,22 @@ abstract class AbstractSchema
         }
     }
 
-    public function out($msg, $var1 = null, $var2 = null) {
+    protected function out($msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'out'), $args);
     }
 
-    public function outProgress($msg, $val, $total) {
+    protected function outProgress($msg, $val, $total) {
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'outProgress'), $args);
     }
 
-    public function outSuccess($msg, $var1 = null, $var2 = null) {
+    protected function outSuccess($msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'outSuccessText'), $args);
     }
 
-    public function outError($msg, $var1 = null, $var2 = null) {
+    protected function outError($msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'outErrorText'), $args);
     }

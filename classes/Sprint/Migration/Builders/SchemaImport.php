@@ -20,7 +20,7 @@ class SchemaImport extends AbstractBuilder
 
     protected function execute() {
         $schema = new IblockSchema($this->getVersionConfig());
-        $schema->import();
+        $schema->testImport();
     }
 
 }

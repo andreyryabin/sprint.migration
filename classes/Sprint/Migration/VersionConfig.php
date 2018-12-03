@@ -216,7 +216,7 @@ class VersionConfig
         if (isset($this->configList[$configName])) {
             $curValues = $this->configList[$configName]['values'];
             $configValues = array(
-                'migration_dir' => $this->getRelativeDir($curValues['migration_dir']),
+                'migration_dir' => Module::getRelativeDir($curValues['migration_dir']),
                 'migration_table' => $curValues['migration_table'],
             );
         } else {
@@ -252,20 +252,10 @@ class VersionConfig
         return true;
     }
 
-    protected function getRelativeDir($dir) {
-        $docroot = Module::getDocRoot();
-
-        if (strpos($dir, $docroot) === 0) {
-            $dir = substr($dir, strlen($docroot));
-        }
-
-        return $dir;
-    }
-
     protected function getSubDir($dirname) {
         $def = $this->configList['cfg'];
 
-        return $this->getRelativeDir(
+        return Module::getRelativeDir(
             $def['values']['migration_dir'] . '/' . $dirname
         );
     }

@@ -8,7 +8,7 @@ use Sprint\Migration\HelperManager;
 class IblockSchema extends AbstractSchema
 {
 
-    public function export() {
+    protected function export($execute) {
         $helper = new HelperManager();
 
         $this->deleteSchema('iblock_types');
@@ -35,10 +35,13 @@ class IblockSchema extends AbstractSchema
                 ));
             }
         }
+
+        $this->outSuccess('schema saved to %s', $this->getSchemaDir(true));
+
     }
 
+    protected function import($execute) {
 
-    public function import() {
         $helper = new HelperManager();
 
         $schemaTypes = $this->loadSchema('iblock_types', array(
@@ -49,7 +52,11 @@ class IblockSchema extends AbstractSchema
             $exists = $helper->Iblock()->exportIblockType($type['ID']);
 
             if ($exists != $type) {
-                $helper->Iblock()->saveIblockType($type);
+
+                if ($execute) {
+                    $helper->Iblock()->saveIblockType($type);
+                }
+
                 $this->outSuccess('iblock type %s saved', $type['ID']);
             } else {
                 $this->out('iblock type %s is equal', $type['ID']);
@@ -62,7 +69,10 @@ class IblockSchema extends AbstractSchema
         foreach ($existsTypes as $existsType) {
             if (!$this->findByKey('ID', $existsType, $schemaTypes['items'])) {
                 $deletedTypes[] = $existsType['ID'];
-                $helper->Iblock()->deleteIblockType($existsType['ID']);
+
+                if ($execute) {
+                    $helper->Iblock()->deleteIblockType($existsType['ID']);
+                }
                 $this->outError('iblock type %s is delete',
                     $existsType['ID']
                 );
@@ -85,7 +95,11 @@ class IblockSchema extends AbstractSchema
 
             $exists = $helper->Iblock()->exportIblock($iblockId);
             if ($exists != $schemaIblock['iblock']) {
-                $helper->Iblock()->saveIblock($schemaIblock['iblock']);
+
+                if ($execute) {
+                    $helper->Iblock()->saveIblock($schemaIblock['iblock']);
+                }
+
                 $this->outSuccess('iblock %s:%s saved',
                     $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                     $schemaIblock['iblock']['CODE']
@@ -99,7 +113,11 @@ class IblockSchema extends AbstractSchema
 
             $exists = $helper->Iblock()->exportIblockFields($iblockId);
             if ($exists != $schemaIblock['fields']) {
-                $helper->Iblock()->saveIblockFields($schemaIblock['fields']);
+
+                if ($execute) {
+                    $helper->Iblock()->saveIblockFields($schemaIblock['fields']);
+                }
+
                 $this->outSuccess('iblock fields %s:%s saved',
                     $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                     $schemaIblock['iblock']['CODE']
@@ -130,7 +148,11 @@ class IblockSchema extends AbstractSchema
                 $exists = $this->findByKey('CODE', $prop, $existsProps);
 
                 if ($exists != $prop) {
-                    $helper->Iblock()->saveProperty($iblockId, $prop);
+
+                    if ($execute) {
+                        $helper->Iblock()->saveProperty($iblockId, $prop);
+                    }
+
                     $this->outSuccess('iblock property %s saved',
                         $prop['CODE']
                     );
@@ -143,7 +165,11 @@ class IblockSchema extends AbstractSchema
 
             foreach ($existsProps as $existsProp) {
                 if (!$this->findByKey('CODE', $existsProp, $schemaIblock['props'])) {
-                    $helper->Iblock()->deletePropertyIfExists($iblockId, $existsProp['CODE']);
+
+                    if ($execute) {
+                        $helper->Iblock()->deletePropertyIfExists($iblockId, $existsProp['CODE']);
+                    }
+
                     $this->outError('iblock property %s is delete',
                         $existsProp['CODE']
                     );
@@ -154,7 +180,11 @@ class IblockSchema extends AbstractSchema
             $exists = $helper->AdminIblock()->exportElementForm($iblockId);
 
             if ($exists != $schemaIblock['element_form']) {
-                $helper->AdminIblock()->saveElementForm($iblockId, $schemaIblock['element_form']);
+
+                if ($execute) {
+                    $helper->AdminIblock()->saveElementForm($iblockId, $schemaIblock['element_form']);
+                }
+
                 $this->outSuccess('iblock admin form %s:%s saved',
                     $schemaIblock['iblock']['IBLOCK_TYPE_ID'],
                     $schemaIblock['iblock']['CODE']

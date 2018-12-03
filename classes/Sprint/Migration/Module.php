@@ -43,6 +43,16 @@ class Module
         }
     }
 
+    public static function getRelativeDir($dir) {
+        $docroot = Module::getDocRoot();
+
+        if (strpos($dir, $docroot) === 0) {
+            $dir = substr($dir, strlen($docroot));
+        }
+
+        return $dir;
+    }
+
     public static function getVersion() {
         $arModuleVersion = array();
         /** @noinspection PhpIncludeInspection */
