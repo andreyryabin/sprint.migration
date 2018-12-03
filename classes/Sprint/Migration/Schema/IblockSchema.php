@@ -8,7 +8,7 @@ use Sprint\Migration\HelperManager;
 class IblockSchema extends AbstractSchema
 {
 
-    protected function export($execute) {
+    public function export() {
         $helper = new HelperManager();
 
         $this->deleteSchema('iblock_types');
@@ -37,16 +37,28 @@ class IblockSchema extends AbstractSchema
         }
 
         $this->outSuccess('schema saved to %s', $this->getSchemaDir(true));
-
     }
 
-    protected function import($execute) {
+    public function import() {
+        $this->importTypes(1);
+        $this->importIblocks(1);
+    }
 
+    public function testImport() {
+        $this->importTypes(0);
+        $this->importIblocks(0);
+    }
+
+    protected function importTypes($execute) {
         $helper = new HelperManager();
 
-        $schemaTypes = $this->loadSchema('iblock_types', array(
-            'items' => array()
-        ));
+        $schemaTypes = $this->loadSchema('iblock_types');
+
+        if (empty($schemaTypes['items'])) {
+            $this->outError('iblock schema not found');
+            return false;
+        }
+
 
         foreach ($schemaTypes['items'] as $type) {
             $exists = $helper->Iblock()->exportIblockType($type['ID']);
@@ -64,12 +76,9 @@ class IblockSchema extends AbstractSchema
 
         }
 
-        $deletedTypes = array();
         $existsTypes = $helper->Iblock()->getIblockTypes();
         foreach ($existsTypes as $existsType) {
-            if (!$this->findByKey('ID', $existsType, $schemaTypes['items'])) {
-                $deletedTypes[] = $existsType['ID'];
-
+            if (!$this->findValue($existsType['ID'], $schemaTypes['items'], 'ID')) {
                 if ($execute) {
                     $helper->Iblock()->deleteIblockType($existsType['ID']);
                 }
@@ -79,12 +88,19 @@ class IblockSchema extends AbstractSchema
             }
         }
 
+        return true;
+    }
+
+    protected function importIblocks($execute) {
+        $helper = new HelperManager();
 
         $schemaIblocks = $this->loadSchemas('iblocks/');
 
+        $existsTypes = $helper->Iblock()->getIblockTypes();
+
         foreach ($schemaIblocks as $name => $schemaIblock) {
 
-            if (in_array($schemaIblock['IBLOCK_TYPE_ID'], $deletedTypes)) {
+            if (!$this->findValue($schemaIblock['iblock']['IBLOCK_TYPE_ID'], $existsTypes, 'ID')) {
                 continue;
             }
 
@@ -132,9 +148,10 @@ class IblockSchema extends AbstractSchema
 
         foreach ($schemaIblocks as $name => $schemaIblock) {
 
-            if (in_array($schemaIblock['IBLOCK_TYPE_ID'], $deletedTypes)) {
+            if (!$this->findValue($schemaIblock['iblock']['IBLOCK_TYPE_ID'], $existsTypes, 'ID')) {
                 continue;
             }
+
 
             $iblockId = $helper->Iblock()->getIblockId(
                 $schemaIblock['iblock']['CODE'],
@@ -145,7 +162,7 @@ class IblockSchema extends AbstractSchema
             $existsProps = $helper->Iblock()->exportProperties($iblockId);
 
             foreach ($schemaIblock['props'] as $prop) {
-                $exists = $this->findByKey('CODE', $prop, $existsProps);
+                $exists = $this->findValue($prop['CODE'], $existsProps, 'CODE');
 
                 if ($exists != $prop) {
 
@@ -164,7 +181,7 @@ class IblockSchema extends AbstractSchema
             }
 
             foreach ($existsProps as $existsProp) {
-                if (!$this->findByKey('CODE', $existsProp, $schemaIblock['props'])) {
+                if (!$this->findValue($existsProp['CODE'], $schemaIblock['props'], 'CODE')) {
 
                     if ($execute) {
                         $helper->Iblock()->deletePropertyIfExists($iblockId, $existsProp['CODE']);
@@ -198,13 +215,11 @@ class IblockSchema extends AbstractSchema
 
 
         }
-
-
     }
 
-    protected function findByKey($key, $needle, $haystack) {
+    protected function findValue($value, $haystack, $haystackKey) {
         foreach ($haystack as $item) {
-            if ($item[$key] == $needle[$key]) {
+            if ($item[$haystackKey] == $value) {
                 return $item;
             }
         }

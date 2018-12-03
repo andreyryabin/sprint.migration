@@ -17,31 +17,16 @@ abstract class AbstractSchema
         $this->params = $params;
     }
 
-    abstract protected function import($execute);
+    abstract public function export();
 
-    abstract protected function export($execute);
+    abstract public function import();
 
-    public function testImport() {
-        $this->import(0);
-    }
-
-    public function testExport() {
-        $this->export(0);
-    }
-
-    public function runImport() {
-        $this->import(1);
-    }
-
-    public function runExport() {
-        $this->export(1);
-    }
+    abstract public function testImport();
 
     protected function getSchemaDir($relative = false) {
         $dir = $this->getVersionConfig()->getVal('migration_dir') . '/schema/';
         return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
-
 
 
     protected function saveSchema($name, $data) {
