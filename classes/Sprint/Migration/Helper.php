@@ -35,8 +35,8 @@ class Helper
 
     protected function checkRequiredKeys($method, $fields, $reqKeys = array()) {
         foreach ($reqKeys as $name) {
-            if (!isset($fields[$name])) {
-                $msg = sprintf('%s: requred key "%s" not found', $this->getMethod($method), $name);
+            if (empty($fields[$name])) {
+                $msg = sprintf('%s: requred key "%s" empty', $this->getMethod($method), $name);
                 Throw new HelperException($msg);
             }
         }
