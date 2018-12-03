@@ -807,40 +807,54 @@ class IblockHelper extends Helper
         return $iblockFields;
     }
 
+
+    public function exportProperty($iblockId, $code = false) {
+        if (is_array($iblockId) && empty($code)) {
+            $prop = $iblockId;
+        } else {
+            $prop = $this->getProperty($iblockId, $code);
+        }
+
+        if (empty($prop)) {
+            return false;
+        }
+
+        unset($prop['ID']);
+        unset($prop['IBLOCK_ID']);
+        unset($prop['TIMESTAMP_X']);
+        unset($prop['TMP_ID']);
+
+        if (empty($prop['LINK_IBLOCK_ID'])) {
+            return $prop;
+        }
+
+        $linked = $this->getIblock([
+            'ID' => $prop['LINK_IBLOCK_ID']
+        ]);
+
+        if (empty($linked['CODE'])) {
+            return $prop;
+        }
+
+        $prop['LINK_IBLOCK_ID'] = $linked['IBLOCK_TYPE_ID'] . ':' . $linked['CODE'];
+        return $prop;
+    }
+
     public function exportProperties($iblockId, $propertyIds = array()) {
+        $filter = array();
 
         if (!empty($propertyIds)) {
             $filter = array(
                 'ID' => $propertyIds
             );
-        } else {
-            $filter = array();
         }
-
-
-        $props = $this->getProperties($iblockId, $filter);
 
         $exportProps = array();
 
+        $props = $this->getProperties($iblockId, $filter);
         foreach ($props as $prop) {
-            unset($prop['ID']);
-            unset($prop['IBLOCK_ID']);
-            unset($prop['TIMESTAMP_X']);
-            unset($prop['TMP_ID']);
-
-            if (!empty($prop['LINK_IBLOCK_ID'])) {
-                $linked = $this->getIblock([
-                    'ID' => $prop['LINK_IBLOCK_ID']
-                ]);
-
-                if (!empty($linked['CODE'])) {
-                    $prop['LINK_IBLOCK_ID'] = $linked['IBLOCK_TYPE_ID'] . ':' . $linked['CODE'];
-                }
-            }
-
-            $exportProps[] = $prop;
+            $exportProps[] = $this->exportProperty($prop);
         }
-
         return $exportProps;
     }
 

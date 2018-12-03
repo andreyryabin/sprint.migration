@@ -17,6 +17,7 @@ class VersionConfig
         'version_prefix',
         'version_filter',
         'version_builders',
+        'version_schemas',
         'show_admin_interface',
         'console_user',
     );
@@ -184,6 +185,12 @@ class VersionConfig
             $values['version_builders'] = $this->getDefaultBuilders();
         }
 
+        if (!empty($values['version_schemas']) && is_array($values['version_schemas'])) {
+            $values['version_schemas'] = array_merge($this->getDefaultSchemas(), $values['version_schemas']);
+        } else {
+            $values['version_schemas'] = $this->getDefaultSchemas();
+        }
+
         ksort($values);
         return $values;
     }
@@ -288,6 +295,13 @@ class VersionConfig
             'SchemaExport' => '\Sprint\Migration\Builders\SchemaExport',
             'SchemaImport' => '\Sprint\Migration\Builders\SchemaImport',
         );
+    }
+
+    protected function getDefaultSchemas() {
+        return array(
+            'IblockSchema' => '\Sprint\Migration\Schema\IblockSchema',
+        );
+
     }
 
 }

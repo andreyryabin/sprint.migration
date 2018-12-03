@@ -12,16 +12,20 @@ abstract class AbstractSchema
 
     protected $params = array();
 
+    private $queue = array();
+
     public function __construct(VersionConfig $versionConfig, $params = array()) {
         $this->versionConfig = $versionConfig;
         $this->params = $params;
+
+        $this->initialize();
     }
 
     abstract public function export();
 
     abstract public function import();
 
-    abstract public function testImport();
+    abstract protected function initialize();
 
     protected function getSchemaDir($relative = false) {
         $dir = $this->getVersionConfig()->getVal('migration_dir') . '/schema/';
@@ -115,6 +119,24 @@ abstract class AbstractSchema
     protected function exitIfEmpty($var, $msg) {
         if (empty($var)) {
             Throw new SchemaException($msg);
+        }
+    }
+
+    public function getQueue() {
+        return $this->queue;
+    }
+
+    protected function addToQueue($method, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        $method = array_shift($args);
+        $this->queue[] = array($method, $args);
+    }
+
+    public function executeQueue($item) {
+        if (method_exists($this, $item[0])) {
+            call_user_func_array(array($this, $item[0]), $item[1]);
+        } else {
+            $this->outError('method %s not found', $item[0]);
         }
     }
 
