@@ -36,11 +36,18 @@ class SchemaManager
         $schemas = $this->getSchemas();
         $schemas = array_keys($schemas);
 
-        foreach ($schemas as $name) {
-            $this->exportSchema($name);
+        if (!isset($this->params['schema'])) {
+            $this->params['schema'] = 0;
         }
 
+        if (isset($schemas[$this->params['schema']])) {
+            $name = $schemas[$this->params['schema']];
+            $this->exportSchema($name);
 
+            $this->setProgress('full', $this->params['schema'] + 1, count($schemas));
+            $this->params['schema']++;
+            $this->restart();
+        }
     }
 
     public function import() {
@@ -57,13 +64,11 @@ class SchemaManager
             $name = $schemas[$this->params['schema']];
             $this->importSchema($name);
 
-
-            $this->setProgress('full', $this->params['schema']+1, count($schemas));
+            $this->setProgress('full', $this->params['schema'] + 1, count($schemas));
             $this->params['schema']++;
             $this->restart();
         }
 
-        unset($this->params['schema']);
     }
 
     public function getProgress() {
@@ -97,7 +102,7 @@ class SchemaManager
         $queue = $this->loadQueue($schema);
 
         if (isset($queue[$this->params['index']])) {
-            $this->setProgress('current', $this->params['index']+1, count($queue) );
+            $this->setProgress('current', $this->params['index'] + 1, count($queue));
 
             $item = $queue[$this->params['index']];
             $this->executeQueue($schema, $item);
@@ -107,8 +112,6 @@ class SchemaManager
         }
 
         $this->removeQueue($schema);
-        unset($this->params['index']);
-
         $this->out('%s (import) success', $name);
     }
 
