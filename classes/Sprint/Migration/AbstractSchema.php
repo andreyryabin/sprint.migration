@@ -138,21 +138,6 @@ abstract class AbstractSchema
         call_user_func_array(array('Sprint\Migration\Out', 'out'), $args);
     }
 
-    protected function outProgress($msg, $val, $total) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outProgress'), $args);
-    }
-
-    protected function outSuccess($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outSuccessText'), $args);
-    }
-
-    protected function outError($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outErrorText'), $args);
-    }
-
     protected function getVersionConfig() {
         return $this->versionConfig;
     }
