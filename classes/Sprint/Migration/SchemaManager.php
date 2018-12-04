@@ -13,9 +13,12 @@ class SchemaManager
         $this->versionConfig = new VersionConfig('cfg');
     }
 
+    protected function getSchemas(){
+        return $this->getVersionConfig()->getVal('version_schemas');
+    }
 
     public function export() {
-        $schemas = $this->getVersionConfig()->getVal('version_schemas');
+        $schemas = $this->getSchemas();
         $schemas = array_keys($schemas);
 
         foreach ($schemas as $name) {
@@ -29,14 +32,14 @@ class SchemaManager
 
     /** @return AbstractSchema */
     protected function createSchema($name) {
-        $schemas = $this->getVersionConfig()->getVal('version_schemas');
+        $schemas = $this->getSchemas();
         $class = $schemas[$name];
 
         return new $class($this->getVersionConfig(), $name);
     }
 
     public function import() {
-        $schemas = $this->getVersionConfig()->getVal('version_schemas');
+        $schemas = $this->getSchemas();
         $schemas = array_keys($schemas);
 
         if (!isset($this->params['schema'])) {

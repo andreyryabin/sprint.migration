@@ -11,15 +11,11 @@ abstract class AbstractSchema
     /** @var VersionConfig */
     private $versionConfig = null;
 
-    protected $params = array();
-
     private $queue = array();
 
-    public function __construct(VersionConfig $versionConfig, $name, $params = array()) {
+    public function __construct(VersionConfig $versionConfig, $name) {
         $this->versionConfig = $versionConfig;
         $this->name = $name;
-        $this->params = $params;
-
         $this->initialize();
     }
 
@@ -167,9 +163,5 @@ abstract class AbstractSchema
 
     protected function getVersionConfig() {
         return $this->versionConfig;
-    }
-
-    public function getParams() {
-        return $this->params;
     }
 }
