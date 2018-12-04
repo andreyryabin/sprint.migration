@@ -6,6 +6,7 @@ use Sprint\Migration\Exceptions\SchemaException;
 
 abstract class AbstractSchema
 {
+    private $name;
 
     /** @var VersionConfig */
     private $versionConfig = null;
@@ -14,8 +15,9 @@ abstract class AbstractSchema
 
     private $queue = array();
 
-    public function __construct(VersionConfig $versionConfig, $params = array()) {
+    public function __construct(VersionConfig $versionConfig, $name, $params = array()) {
         $this->versionConfig = $versionConfig;
+        $this->name = $name;
         $this->params = $params;
 
         $this->initialize();
@@ -32,6 +34,9 @@ abstract class AbstractSchema
         return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
 
+    public function getName() {
+        return $this->name;
+    }
 
     protected function saveSchema($name, $data) {
         $file = $this->getSchemaDir() . $name . '.json';

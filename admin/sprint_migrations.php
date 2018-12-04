@@ -26,7 +26,7 @@ try {
 
     include __DIR__ . '/includes/errors.php';
     include __DIR__ . '/includes/help.php';
-    include __DIR__ . '/assets/assets.php';
+    include __DIR__ . '/assets/style.php';
 
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");
@@ -40,13 +40,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 $config = isset($_REQUEST['config']) ? $_REQUEST['config'] : '';
+$view = isset($_REQUEST['view']) ? $_REQUEST['view'] : '';
+
 $versionManager = new Sprint\Migration\VersionManager($config);
 
 if ($versionManager->getVersionConfig()->getVal('show_admin_interface')) {
-    include __DIR__ . '/steps/migration_execute.php';
-    include __DIR__ . '/steps/migration_list.php';
-    include __DIR__ . '/steps/migration_status.php';
-    include __DIR__ . '/steps/migration_create.php';
+    if ($view == 'schema') {
+
+    } else {
+        include __DIR__ . '/steps/migration_execute.php';
+        include __DIR__ . '/steps/migration_list.php';
+        include __DIR__ . '/steps/migration_status.php';
+        include __DIR__ . '/steps/migration_create.php';
+    }
+
 }
 
 /** @noinspection PhpIncludeInspection */
@@ -54,7 +61,11 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 \CUtil::InitJSCore(Array("jquery"));
 
 if ($versionManager->getVersionConfig()->getVal('show_admin_interface')) {
-    include __DIR__ . '/includes/interface.php';
+    if ($view == 'schema') {
+        include __DIR__ . '/includes/schema.php';
+    } else {
+        include __DIR__ . '/includes/version.php';
+    }
 }
 
 $sperrors = array();
@@ -64,7 +75,8 @@ if (!$versionManager->getVersionConfig()->getVal('show_admin_interface')) {
 
 include __DIR__ . '/includes/errors.php';
 include __DIR__ . '/includes/help.php';
-include __DIR__ . '/assets/assets.php';
+include __DIR__ . '/assets/style.php';
+
 
 /** @noinspection PhpIncludeInspection */
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");

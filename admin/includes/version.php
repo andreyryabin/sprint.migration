@@ -45,7 +45,7 @@
 
     <div class="sp-separator"></div>
 
-    <? foreach (array('default', 'configurator', 'schema') as $builderGroup): ?>
+    <? foreach (array('default', 'configurator') as $builderGroup): ?>
         <? include __DIR__ . '/builder_group.php' ?>
         <div class="sp-separator"></div>
     <? endforeach ?>
@@ -62,3 +62,5 @@
     </div>
 
 </div>
+
+<? include __DIR__ . '/../assets/version.php'; ?>

@@ -165,4 +165,5 @@
     "SPRINT_MIGRATION_MODIFIED_INFO" => "Код миграции был изменен после установки",
     "SPRINT_MIGRATION_MODIFIED_LABEL" => "M",
 
+    "SPRINT_MIGRATION_MENU_SCHEMA" => "Cхема БД"
 ));

@@ -292,8 +292,6 @@ class VersionConfig
             'Transfer' => '\Sprint\Migration\Builders\Transfer',
             'Configurator' => '\Sprint\Migration\Builders\Configurator',
             'Cleaner' => '\Sprint\Migration\Builders\Cleaner',
-            'SchemaExport' => '\Sprint\Migration\Builders\SchemaExport',
-            'SchemaImport' => '\Sprint\Migration\Builders\SchemaImport',
         );
     }
 
