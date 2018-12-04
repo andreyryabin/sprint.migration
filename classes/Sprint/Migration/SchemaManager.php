@@ -11,7 +11,7 @@ class SchemaManager
 
     protected $params = array();
 
-    private $progress = 0;
+    private $progress = array();
 
     public function __construct($params = array()) {
         $this->versionConfig = new VersionConfig('cfg');
@@ -44,6 +44,8 @@ class SchemaManager
     }
 
     public function import() {
+        $this->progress = array();
+
         $schemas = $this->getSchemas();
         $schemas = array_keys($schemas);
 
@@ -52,10 +54,11 @@ class SchemaManager
         }
 
         if (isset($schemas[$this->params['schema']])) {
-
             $name = $schemas[$this->params['schema']];
             $this->importSchema($name);
 
+
+            $this->setProgress('full', $this->params['schema']+1, count($schemas));
             $this->params['schema']++;
             $this->restart();
         }
@@ -67,11 +70,11 @@ class SchemaManager
         return $this->progress;
     }
 
-    protected function setProgress($index, $cnt) {
+    protected function setProgress($type, $index, $cnt) {
         if ($cnt > 0) {
-            $this->progress = round($index / $cnt * 100);
+            $this->progress[$type] = round($index / $cnt * 100);
         } else {
-            $this->progress = 0;
+            $this->progress[$type] = 0;
         }
     }
 
@@ -92,16 +95,12 @@ class SchemaManager
         }
 
         $queue = $this->loadQueue($schema);
-        $queueCount = count($queue);
 
         if (isset($queue[$this->params['index']])) {
+            $this->setProgress('current', $this->params['index']+1, count($queue) );
+
             $item = $queue[$this->params['index']];
             $this->executeQueue($schema, $item);
-
-            $this->setProgress(
-                $this->params['index'],
-                $queueCount - 1
-            );
 
             $this->params['index']++;
             $this->restart();

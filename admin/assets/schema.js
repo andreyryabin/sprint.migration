@@ -9,15 +9,22 @@ function schemaOutLog(result) {
     $log.scrollTop($log.prop("scrollHeight"));
 }
 
-function schemaProgress(val) {
-    var $progress = $('#schema_progress');
+function schemaProgress(type, val) {
+    var $progress = $('#schema_progress_' + type);
+    var $bar = $progress.find('span');
+
     val = parseInt(val, 10);
     if (val) {
-        $('#schema_progress_bar').width(val + '%');
+        $bar.width(val + '%');
         $progress.show();
     } else {
         $progress.hide();
     }
+}
+
+function schemaProgressReset() {
+    schemaProgress('full', 0);
+    schemaProgress('current', 0);
 }
 
 function schemaRefresh(callbackAfterRefresh) {
@@ -108,6 +115,7 @@ jQuery(document).ready(function ($) {
 
     $container.on('click', '.sp-schema-import', function (e) {
         e.preventDefault();
+        schemaProgressReset();
         schemaExecuteStep('schema_import');
     });
 

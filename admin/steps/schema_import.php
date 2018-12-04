@@ -26,14 +26,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
             'params' => $schemaManager->getRestartParams(),
         ));
 
-        ?><script>schemaProgress(<?=$schemaManager->getProgress()?>);</script><?
-        ?><script>schemaExecuteStep('schema_import', <?=$json?>);</script><?
+        ?>
+        <script>
+            schemaExecuteStep('schema_import', <?=$json?>);
+        </script>
+        <?
     }
 
-    ?><script>schemaProgress(<?=$schemaManager->getProgress()?>);</script><?
+    $progress = $schemaManager->getProgress();
+    foreach ($progress as $type => $val) {
+        ?>
+        <script>
+            schemaProgress('<?=$type?>',<?=$val?>);
+        </script>
+        <?
+    }
 
-    if ($ok){
-        ?><script>schemaEnableButtons(1)</script><?
+    if ($ok) {
+        ?>
+        <script>
+            schemaEnableButtons(1);
+            schemaProgressReset();
+        </script>
+        <?
     }
 
 
