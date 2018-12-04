@@ -98,7 +98,7 @@ class IblockSchema extends AbstractSchema
             $this->helper->Iblock()->saveIblockType($type);
             $this->out('iblock type %s saved', $type['ID']);
         } else {
-            $this->out('iblock type %s is equal', $type['ID']);
+            $this->out('iblock type %s equal', $type['ID']);
         }
     }
 
