@@ -17,6 +17,25 @@ class IblockSchema extends AbstractSchema
         $this->helper = new HelperManager();
     }
 
+    public function outDescription() {
+
+        $schema = $this->loadSchema('iblock_types');
+        if (!empty($schema)) {
+            $this->out('[b]Типы инфоблоков[/]');
+            $this->out($this->getSchemaFile('iblock_types', true));
+        }
+
+
+        $schemas = $this->loadSchemas('iblocks/');
+        if (!empty($schemas)) {
+            $this->out('[b]Инфоблоки[/]');
+            foreach ($schemas as $name => $schema) {
+                $this->out($this->getSchemaFile($name, true));
+            }
+        }
+
+    }
+
     public function export() {
 
         $this->deleteSchema('iblock_types');
@@ -73,7 +92,7 @@ class IblockSchema extends AbstractSchema
     }
 
 
-    protected function saveIblockType($type) {
+    public function saveIblockType($type) {
         $exists = $this->helper->Iblock()->exportIblockType($type['ID']);
         if ($exists != $type) {
             $this->helper->Iblock()->saveIblockType($type);
@@ -83,7 +102,7 @@ class IblockSchema extends AbstractSchema
         }
     }
 
-    protected function saveIblock($iblockId, $iblock) {
+    public function saveIblock($iblockId, $iblock) {
         $exists = $this->helper->Iblock()->exportIblock($iblockId);
         if ($exists != $iblock) {
             $this->helper->Iblock()->saveIblock($iblock);
@@ -94,7 +113,7 @@ class IblockSchema extends AbstractSchema
     }
 
 
-    protected function saveIblockFields($iblockId, $fields) {
+    public function saveIblockFields($iblockId, $fields) {
         $exists = $this->helper->Iblock()->exportIblockFields($iblockId);
         if ($exists != $fields) {
             $this->helper->Iblock()->saveIblockFields($iblockId, $fields);
@@ -104,7 +123,7 @@ class IblockSchema extends AbstractSchema
         }
     }
 
-    protected function saveElementForm($iblockId, $elementForm) {
+    public function saveElementForm($iblockId, $elementForm) {
         $exists = $this->helper->AdminIblock()->exportElementForm($iblockId);
         if ($exists != $elementForm) {
             $this->helper->AdminIblock()->saveElementForm($iblockId, $elementForm);
@@ -115,7 +134,7 @@ class IblockSchema extends AbstractSchema
     }
 
 
-    protected function saveProperty($iblockId, $property) {
+    public function saveProperty($iblockId, $property) {
         $exists = $this->helper->Iblock()->exportProperty($iblockId, $property['CODE']);
         if ($exists != $property) {
             $this->helper->Iblock()->saveProperty($iblockId, $property);
@@ -126,15 +145,15 @@ class IblockSchema extends AbstractSchema
     }
 
 
-    protected function deleteProperty($iblockId, $propertyCode) {
+    public function deleteProperty($iblockId, $propertyCode) {
         $this->helper->Iblock()->deletePropertyIfExists($iblockId, $propertyCode);
     }
 
-    protected function deleteIblockType($typeId) {
+    public function deleteIblockType($typeId) {
         $this->helper->Iblock()->deleteIblockType($typeId);
     }
 
-    protected function deleteIblock($iblockId) {
+    public function deleteIblock($iblockId) {
         $this->helper->Iblock()->deleteIblock($iblockId);
     }
 

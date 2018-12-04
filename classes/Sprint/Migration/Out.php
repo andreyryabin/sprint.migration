@@ -53,11 +53,11 @@ class Out
             );
 
             $m = new \CAdminMessage($mess);
-            echo '<div class="migration-bar">' . $m->Show() . '</div>';
+            echo '<div class="sp-progress">' . $m->Show() . '</div>';
 
         } elseif (self::canOutAsHtml()) {
             $msg = self::prepareToHtml($msg);
-            echo '<div class="migration-bar">' . "$msg $val/$total" . '</div>';
+            echo '<div class="sp-progress">' . "$msg $val/$total" . '</div>';
 
         } else {
             $msg = self::prepareToConsole($msg);
@@ -143,6 +143,8 @@ class Out
 
 
     public static function prepareToHtml($msg) {
+        $msg = nl2br($msg);
+
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
@@ -160,7 +162,7 @@ class Out
 
     protected static function outToHtml($msg) {
         $msg = self::prepareToHtml($msg);
-        echo '<div class="migration-out">' . "$msg" . '</div>';
+        echo '<div class="sp-out">' . "$msg" . '</div>';
     }
 
     protected static function outToConsole($msg) {

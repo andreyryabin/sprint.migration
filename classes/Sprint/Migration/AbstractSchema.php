@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\SchemaException;
+use Sprint\Migration\Exceptions\RestartException;
 
 abstract class AbstractSchema
 {
@@ -13,9 +14,14 @@ abstract class AbstractSchema
 
     private $queue = array();
 
-    public function __construct(VersionConfig $versionConfig, $name) {
+    protected $params = array();
+
+    public function __construct(VersionConfig $versionConfig, $name, $params = array()) {
         $this->versionConfig = $versionConfig;
         $this->name = $name;
+        $this->params = $params;
+
+
         $this->initialize();
     }
 
@@ -25,17 +31,25 @@ abstract class AbstractSchema
 
     abstract protected function initialize();
 
+    abstract public function outDescription();
+
     protected function getSchemaDir($relative = false) {
         $dir = $this->getVersionConfig()->getVal('migration_dir') . '/schema/';
         return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
+
+    protected function getSchemaFile($name, $relative = false) {
+        $file = $this->getSchemaDir() . $name . '.json';
+        return ($relative) ? Module::getRelativeDir($file) : $file;
+    }
+
 
     public function getName() {
         return $this->name;
     }
 
     protected function saveSchema($name, $data) {
-        $file = $this->getSchemaDir() . $name . '.json';
+        $file = $this->getSchemaFile($name);
 
         $dir = pathinfo($file, PATHINFO_DIRNAME);
 
@@ -49,7 +63,8 @@ abstract class AbstractSchema
     }
 
     protected function loadSchema($name, $merge = array()) {
-        $file = $this->getSchemaDir() . $name . '.json';
+        $file = $this->getSchemaFile($name);
+
         if (is_file($file)) {
             $json = file_get_contents($file);
             $json = json_decode($json, true);
@@ -61,7 +76,8 @@ abstract class AbstractSchema
     }
 
     protected function deleteSchema($name) {
-        $file = $this->getSchemaDir() . $name . '.json';
+        $file = $this->getSchemaFile($name);
+
         if (is_file($file)) {
             unlink($file);
         }
@@ -107,22 +123,6 @@ abstract class AbstractSchema
         return $schemas;
     }
 
-    protected function exitWithMessage($msg) {
-        Throw new SchemaException($msg);
-    }
-
-    protected function exitIf($cond, $msg) {
-        if ($cond) {
-            Throw new SchemaException($msg);
-        }
-    }
-
-    protected function exitIfEmpty($var, $msg) {
-        if (empty($var)) {
-            Throw new SchemaException($msg);
-        }
-    }
-
     public function getQueue() {
         return $this->queue;
     }
@@ -131,14 +131,6 @@ abstract class AbstractSchema
         $args = func_get_args();
         $method = array_shift($args);
         $this->queue[] = array($method, $args);
-    }
-
-    public function executeQueue($item) {
-        if (method_exists($this, $item[0])) {
-            call_user_func_array(array($this, $item[0]), $item[1]);
-        } else {
-            $this->outError('method %s not found', $item[0]);
-        }
     }
 
     protected function out($msg, $var1 = null, $var2 = null) {

@@ -165,5 +165,8 @@
     "SPRINT_MIGRATION_MODIFIED_INFO" => "Код миграции был изменен после установки",
     "SPRINT_MIGRATION_MODIFIED_LABEL" => "M",
 
-    "SPRINT_MIGRATION_MENU_SCHEMA" => "Cхема БД"
+    "SPRINT_MIGRATION_MENU_SCHEMA" => "Cхема БД",
+    "SPRINT_MIGRATION_SCHEMA_COMPARE" => "Сравнить",
+    "SPRINT_MIGRATION_SCHEMA_IMPORT" => "Импортировать",
+    "SPRINT_MIGRATION_SCHEMA_EXPORT" => "Экспортировать",
 ));

@@ -1,9 +1,7 @@
 <?php
 /** @var $versionManager \Sprint\Migration\VersionManager */
 ?>
-<input type="hidden" value="<?= bitrix_sessid() ?>" name="send_sessid"/>
-<div id="migration-container">
-
+<div id="migration-container" data-sessid="<?= bitrix_sessid() ?>">
     <div class="sp-group">
         <div class="sp-group-row2">
             <div class="sp-block sp-block-scroll sp-white">

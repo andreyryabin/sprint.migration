@@ -17,7 +17,7 @@ function migrationMigrationsDownConfirm() {
 function migrationOutLog(result) {
     var $el = $('#migration_progress');
     var lastOutElem = $el.children('div').last();
-    if (lastOutElem.hasClass('migration-bar') && $(result).first().hasClass('migration-bar')) {
+    if (lastOutElem.hasClass('sp-progress') && $(result).first().hasClass('sp-progress')) {
         lastOutElem.replaceWith(result);
     } else {
         $el.append(result);
@@ -28,7 +28,7 @@ function migrationOutLog(result) {
 function migrationExecuteStep(step_code, postData, succesCallback) {
     postData = postData || {};
     postData['step_code'] = step_code;
-    postData['send_sessid'] = $('input[name=send_sessid]').val();
+    postData['send_sessid'] = $('#migration-container').data('sessid');
     postData['search'] = $('input[name=migration_search]').val();
 
     migrationEnableButtons(0);
@@ -188,7 +188,7 @@ jQuery(document).ready(function ($) {
             $(document).scrollTop(elemTop - 25);
         }
 
-        $('[data-builder]').find('.adm-info-message-wrap,.migration-out').remove();
+        $('[data-builder]').find('.adm-info-message-wrap,.sp-out').remove();
     });
 
 

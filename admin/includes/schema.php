@@ -4,26 +4,30 @@
 $schemaManager = new \Sprint\Migration\SchemaManager();
 
 ?>
-<div id="migration-container">
+<div id="schema-container" data-sessid="<?= bitrix_sessid() ?>">
     <div class="sp-group">
         <div class="sp-group-row2">
             <div class="sp-block sp-block-scroll sp-white">
-                <div id="migration_schema_list" class="sp-scroll">
-
-                    <?
-
-                    $schemaManager->export()
-
-                    ?>
-
-
-                </div>
+                <div id="schema_list" class="sp-scroll"></div>
             </div>
             <div class="sp-block sp-block-scroll">
-                <div id="migration_schema_progress" class="sp-scroll"></div>
+                <div id="schema_log" class="sp-scroll"></div>
             </div>
         </div>
     </div>
+
+    <div class="sp-group">
+        <div class="sp-group-row1">
+            <div class="sp-block">
+                <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_COMPARE') ?>" class="sp-schema-compare adm-btn-green"/>
+                <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_IMPORT') ?>" class="sp-schema-import"/>
+                <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_EXPORT') ?>" class="sp-schema-export"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="sp-separator"></div>
 </div>
+
 
 <? include __DIR__ . '/../assets/schema.php'; ?>
