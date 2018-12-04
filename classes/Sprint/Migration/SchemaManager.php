@@ -11,6 +11,8 @@ class SchemaManager
 
     protected $params = array();
 
+    private $progress = 0;
+
     public function __construct($params = array()) {
         $this->versionConfig = new VersionConfig('cfg');
 
@@ -61,6 +63,18 @@ class SchemaManager
         unset($this->params['schema']);
     }
 
+    public function getProgress() {
+        return $this->progress;
+    }
+
+    protected function setProgress($index, $cnt) {
+        if ($cnt > 0) {
+            $this->progress = round($index / $cnt * 100);
+        } else {
+            $this->progress = 0;
+        }
+    }
+
     protected function exportSchema($name) {
         $schema = $this->createSchema($name);
         $schema->export();
@@ -70,7 +84,7 @@ class SchemaManager
         $schema = $this->createSchema($name);
 
         if (!isset($this->params['index'])) {
-            $this->out('schema %s import start', $name);
+            $this->outSuccess('%s (import) start', $name);
 
             $this->params['index'] = 0;
             $schema->import();
@@ -78,11 +92,16 @@ class SchemaManager
         }
 
         $queue = $this->loadQueue($schema);
-        //$queueCount = count($queue);
+        $queueCount = count($queue);
 
         if (isset($queue[$this->params['index']])) {
             $item = $queue[$this->params['index']];
             $this->executeQueue($schema, $item);
+
+            $this->setProgress(
+                $this->params['index'],
+                $queueCount - 1
+            );
 
             $this->params['index']++;
             $this->restart();
@@ -91,7 +110,7 @@ class SchemaManager
         $this->removeQueue($schema);
         unset($this->params['index']);
 
-        $this->outSuccess('schema %s import finish', $name);
+        $this->out('%s (import) success', $name);
     }
 
     protected function getVersionConfig() {

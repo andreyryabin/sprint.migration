@@ -9,6 +9,17 @@ function schemaOutLog(result) {
     $log.scrollTop($log.prop("scrollHeight"));
 }
 
+function schemaProgress(val) {
+    var $progress = $('#schema_progress');
+    val = parseInt(val, 10);
+    if (val) {
+        $('#schema_progress_bar').width(val + '%');
+        $progress.show();
+    } else {
+        $progress.hide();
+    }
+}
+
 function schemaRefresh(callbackAfterRefresh) {
     var $el = $('#schema_list');
 

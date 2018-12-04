@@ -22,6 +22,13 @@ $schemaManager = new \Sprint\Migration\SchemaManager();
                 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_COMPARE') ?>" class="sp-schema-compare adm-btn-green"/>
                 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_IMPORT') ?>" class="sp-schema-import"/>
                 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_EXPORT') ?>" class="sp-schema-export"/>
+
+                <div style="float: right;width: 300px;" id="schema_progress">
+                    <div style="height: 10px;background: #eee">
+                        <div id="schema_progress_bar" style="height: 10px;background: #99d;width: 30%;"></div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

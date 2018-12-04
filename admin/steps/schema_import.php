@@ -26,8 +26,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
             'params' => $schemaManager->getRestartParams(),
         ));
 
+        ?><script>schemaProgress(<?=$schemaManager->getProgress()?>);</script><?
         ?><script>schemaExecuteStep('schema_import', <?=$json?>);</script><?
     }
+
+    ?><script>schemaProgress(<?=$schemaManager->getProgress()?>);</script><?
 
     if ($ok){
         ?><script>schemaEnableButtons(1)</script><?

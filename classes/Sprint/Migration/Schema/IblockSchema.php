@@ -21,14 +21,11 @@ class IblockSchema extends AbstractSchema
 
         $schema = $this->loadSchema('iblock_types');
         if (!empty($schema)) {
-            $this->out('[b]Типы инфоблоков[/]');
             $this->out($this->getSchemaFile('iblock_types', true));
         }
 
-
         $schemas = $this->loadSchemas('iblocks/');
         if (!empty($schemas)) {
-            $this->out('[b]Инфоблоки[/]');
             foreach ($schemas as $name => $schema) {
                 $this->out($this->getSchemaFile($name, true));
             }
