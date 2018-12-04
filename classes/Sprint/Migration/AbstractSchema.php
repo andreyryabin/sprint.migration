@@ -2,9 +2,6 @@
 
 namespace Sprint\Migration;
 
-use Sprint\Migration\Exceptions\SchemaException;
-use Sprint\Migration\Exceptions\RestartException;
-
 abstract class AbstractSchema
 {
     private $name;
@@ -69,7 +66,7 @@ abstract class AbstractSchema
             $json = file_get_contents($file);
             $json = json_decode($json, true);
             if (json_last_error() == JSON_ERROR_NONE) {
-                return array_replace_recursive($merge, $json);
+                return array_merge($merge, $json);
             }
         }
         return $merge;

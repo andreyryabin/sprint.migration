@@ -45,8 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     if ($ok) {
         ?>
         <script>
-            schemaEnableButtons(1);
             schemaProgressReset();
+            schemaRefresh();
         </script>
         <?
     }

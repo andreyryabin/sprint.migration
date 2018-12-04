@@ -64,8 +64,16 @@ class IblockSchema extends AbstractSchema
     }
 
     public function import() {
-        $schemaTypes = $this->loadSchema('iblock_types');
-        $schemaIblocks = $this->loadSchemas('iblocks/');
+        $schemaTypes = $this->loadSchema('iblock_types', array(
+            'items' => array()
+        ));
+
+        $schemaIblocks = $this->loadSchemas('iblocks/', array(
+            'iblock' => array(),
+            'fields' => array(),
+            'props' => array(),
+            'element_form' => array()
+        ));
 
         foreach ($schemaTypes['items'] as $type) {
             $this->addToQueue('saveIblockType', $type);
@@ -76,7 +84,6 @@ class IblockSchema extends AbstractSchema
 
             $this->addToQueue('saveIblock', $iblockId, $schemaIblock['iblock']);
             $this->addToQueue('saveIblockFields', $iblockId, $schemaIblock['fields']);
-            $this->addToQueue('saveElementForm', $iblockId, $schemaIblock['element_form']);
         }
 
         foreach ($schemaIblocks as $schemaIblock) {
@@ -85,7 +92,35 @@ class IblockSchema extends AbstractSchema
             foreach ($schemaIblock['props'] as $prop) {
                 $this->addToQueue('saveProperty', $iblockId, $prop);
             }
+
+            $this->addToQueue('saveElementForm', $iblockId, $schemaIblock['element_form']);
         }
+
+        foreach ($schemaIblocks as $schemaIblock) {
+            $iblockId = $this->getIblockId($schemaIblock['iblock']);
+
+            $skip = array();
+            foreach ($schemaIblock['props'] as $prop) {
+                $skip[] = $this->getUniqProp($prop);
+            }
+
+            $this->addToQueue('cleanProperties', $iblockId, $skip);
+        }
+
+        $skip = array();
+        foreach ($schemaIblocks as $schemaIblock) {
+            $skip[] = $this->getUniqIblock($schemaIblock['iblock']);
+        }
+
+        $this->addToQueue('cleanIblocks', $skip);
+
+
+        $skip = array();
+        foreach ($schemaTypes['items'] as $type) {
+            $skip[] = $this->getUniqIblockType($type);
+        }
+
+        $this->addToQueue('cleanIblockTypes', $skip);
     }
 
 
@@ -142,38 +177,62 @@ class IblockSchema extends AbstractSchema
     }
 
 
-    public function deleteProperty($iblockId, $propertyCode) {
-        $this->helper->Iblock()->deletePropertyIfExists($iblockId, $propertyCode);
-    }
-
-    public function deleteIblockType($typeId) {
-        $this->helper->Iblock()->deleteIblockType($typeId);
-    }
-
-    public function deleteIblock($iblockId) {
-        $this->helper->Iblock()->deleteIblock($iblockId);
-    }
-
-    protected function findValue($value, $haystack, $haystackKey) {
-        foreach ($haystack as $item) {
-            if ($item[$haystackKey] == $value) {
-                return $item;
+    public function cleanProperties($iblockId, $skip = array()) {
+        $olds = $this->helper->Iblock()->getProperties($iblockId);
+        foreach ($olds as $old) {
+            $uniq = $this->getUniqProp($old);
+            if (!in_array($uniq, $skip)) {
+                $this->helper->Iblock()->deletePropertyById($old['ID']);
+                $this->out('iblock %s property %s deleted', $iblockId, $old['ID']);
             }
         }
-        return false;
+    }
+
+    public function cleanIblockTypes($skip = array()) {
+        $olds = $this->helper->Iblock()->getIblockTypes();
+        foreach ($olds as $old) {
+            $uniq = $this->getUniqIblockType($old);
+            if (!in_array($uniq, $skip)) {
+                $this->helper->Iblock()->deleteIblockType($old['ID']);
+                $this->out('iblock type %s deleted', $old['ID']);
+            }
+        }
+    }
+
+    public function cleanIblocks($skip = array()) {
+        $olds = $this->helper->Iblock()->getIblocks();
+        foreach ($olds as $old) {
+            $uniq = $this->getUniqIblock($old);
+            if (!in_array($uniq, $skip)) {
+                $this->helper->Iblock()->deleteIblock($old['ID']);
+                $this->out('iblock %s deleted', $old['ID']);
+            }
+        }
+    }
+
+    protected function getUniqProp($prop) {
+        return $prop['CODE'];
+    }
+
+    protected function getUniqIblockType($type) {
+        return $type['ID'];
+    }
+
+    protected function getUniqIblock($iblock) {
+        return $iblock['IBLOCK_TYPE_ID'] . $iblock['CODE'];
     }
 
     protected function getIblockId($iblock) {
-        $key = 'ib' . $iblock['IBLOCK_TYPE_ID'] . $iblock['CODE'];
+        $uniq = $this->getUniqIblock($iblock);
 
-        if (!isset($this->cache[$key])) {
-            $this->cache[$key] = $this->helper->Iblock()->getIblockId(
+        if (!isset($this->cache[$uniq])) {
+            $this->cache[$uniq] = $this->helper->Iblock()->getIblockId(
                 $iblock['CODE'],
                 $iblock['IBLOCK_TYPE_ID']
             );
         }
 
-        return $this->cache[$key];
+        return $this->cache[$uniq];
 
     }
 

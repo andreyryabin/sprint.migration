@@ -111,7 +111,7 @@ class SchemaManager
             $this->restart();
         }
 
-        $this->removeQueue($schema);
+        //$this->removeQueue($schema);
         $this->out('%s (import) success', $name);
     }
 
@@ -153,7 +153,7 @@ class SchemaManager
     protected function removeQueue(AbstractSchema $schema) {
         $file = $this->getQueueFile($schema->getName());
         if (is_file($file)) {
-            //unlink($file);
+            unlink($file);
         }
     }
 
