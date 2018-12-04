@@ -151,14 +151,14 @@ class SchemaManager
     }
 
     protected function removeQueue(AbstractSchema $schema) {
-        $file = $this->getQueueFile($schema);
+        $file = $this->getQueueFile($schema->getName());
         if (is_file($file)) {
-            unlink($file);
+            //unlink($file);
         }
     }
 
     protected function loadQueue(AbstractSchema $schema) {
-        $file = $this->getQueueFile($schema);
+        $file = $this->getQueueFile($schema->getName());
         if (is_file($file)) {
             $items = include $file;
             if (
@@ -175,8 +175,8 @@ class SchemaManager
 
 
     protected function saveQueue(AbstractSchema $schema) {
+        $file = $this->getQueueFile($schema->getName());
         $data = $schema->getQueue();
-        $file = $this->getQueueFile($schema);
 
         $dir = dirname($file);
         if (!is_dir($dir)) {
@@ -186,11 +186,9 @@ class SchemaManager
         file_put_contents($file, '<?php return ' . var_export(array('items' => $data), 1) . ';');
     }
 
-    protected function getQueueFile(AbstractSchema $schema) {
-        $name = $schema->getName();
-
-        $name = 'compiled__' . strtolower($name);
-        return $this->getVersionConfig()->getVal('migration_dir') . '/schema/' . $name . '.php';
+    protected function getQueueFile($name) {
+        $name = 'queue__' . strtolower($name);
+        return Module::getDocRoot() . '/bitrix/tmp/sprint.migration/' . $name . '.php';
     }
 
     protected function restart() {
