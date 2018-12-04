@@ -19,24 +19,16 @@ class IblockSchema extends AbstractSchema
 
     public function outDescription() {
 
-        $schema = $this->loadSchema('iblock_types');
-        if (!empty($schema)) {
-            $this->out($this->getSchemaFile('iblock_types', true));
-        }
+        $this->out('[b]%s[/]', $this->getName());
 
-        $schemas = $this->loadSchemas('iblocks/');
-        if (!empty($schemas)) {
-            foreach ($schemas as $name => $schema) {
-                $this->out($this->getSchemaFile($name, true));
-            }
+        $schemas = $this->getSchemas(array('iblock_types', 'iblocks/'));
+        foreach ($schemas as $name) {
+            $this->out($this->getSchemaFile($name, true));
         }
-
     }
 
     public function export() {
-
-        $this->deleteSchema('iblock_types');
-        $this->deleteSchemas('iblocks');
+        $this->deleteSchemas(array('iblock_types', 'iblocks/'));
 
         $types = $this->helper->Iblock()->getIblockTypes();
         $exportTypes = array();
@@ -124,91 +116,110 @@ class IblockSchema extends AbstractSchema
     }
 
 
-    public function saveIblockType($type) {
+    protected function saveIblockType($type) {
         $exists = $this->helper->Iblock()->exportIblockType($type['ID']);
         if ($exists != $type) {
-            $this->helper->Iblock()->saveIblockType($type);
+
+            if (!$this->testMode) {
+                $this->helper->Iblock()->saveIblockType($type);
+            }
+
             $this->out('iblock type %s saved', $type['ID']);
         } else {
             $this->out('iblock type %s equal', $type['ID']);
         }
     }
 
-    public function saveIblock($iblockId, $iblock) {
+    protected function saveIblock($iblockId, $iblock) {
         $exists = $this->helper->Iblock()->exportIblock($iblockId);
         if ($exists != $iblock) {
-            $this->helper->Iblock()->saveIblock($iblock);
+            if (!$this->testMode) {
+                $this->helper->Iblock()->saveIblock($iblock);
+            }
+
             $this->out('iblock %s saved', $iblockId);
         } else {
             $this->out('iblock %s is equal', $iblockId);
         }
     }
 
-
-    public function saveIblockFields($iblockId, $fields) {
+    protected function saveIblockFields($iblockId, $fields) {
         $exists = $this->helper->Iblock()->exportIblockFields($iblockId);
         if ($exists != $fields) {
-            $this->helper->Iblock()->saveIblockFields($iblockId, $fields);
+
+            if (!$this->testMode) {
+                $this->helper->Iblock()->saveIblockFields($iblockId, $fields);
+            }
+
             $this->out('iblock %s fields saved', $iblockId);
         } else {
             $this->out('iblock %s fields equal', $iblockId);
         }
     }
 
-    public function saveElementForm($iblockId, $elementForm) {
+    protected function saveElementForm($iblockId, $elementForm) {
         $exists = $this->helper->AdminIblock()->exportElementForm($iblockId);
         if ($exists != $elementForm) {
-            $this->helper->AdminIblock()->saveElementForm($iblockId, $elementForm);
+            if (!$this->testMode) {
+                $this->helper->AdminIblock()->saveElementForm($iblockId, $elementForm);
+            }
             $this->out('iblock %s admin form saved', $iblockId);
         } else {
             $this->out('iblock %s admin form equal', $iblockId);
         }
     }
 
-
-    public function saveProperty($iblockId, $property) {
+    protected function saveProperty($iblockId, $property) {
         $exists = $this->helper->Iblock()->exportProperty($iblockId, $property['CODE']);
         if ($exists != $property) {
-            $this->helper->Iblock()->saveProperty($iblockId, $property);
+            if (!$this->testMode) {
+                $this->helper->Iblock()->saveProperty($iblockId, $property);
+            }
             $this->out('iblock %s property %s saved', $iblockId, $property['CODE']);
         } else {
             $this->out('iblock %s property %s equal', $iblockId, $property['CODE']);
         }
     }
 
-
-    public function cleanProperties($iblockId, $skip = array()) {
+    protected function cleanProperties($iblockId, $skip = array()) {
         $olds = $this->helper->Iblock()->getProperties($iblockId);
         foreach ($olds as $old) {
             $uniq = $this->getUniqProp($old);
             if (!in_array($uniq, $skip)) {
-                $this->helper->Iblock()->deletePropertyById($old['ID']);
+                if (!$this->testMode) {
+                    $this->helper->Iblock()->deletePropertyById($old['ID']);
+                }
                 $this->out('iblock %s property %s deleted', $iblockId, $old['ID']);
             }
         }
     }
 
-    public function cleanIblockTypes($skip = array()) {
+    protected function cleanIblockTypes($skip = array()) {
         $olds = $this->helper->Iblock()->getIblockTypes();
         foreach ($olds as $old) {
             $uniq = $this->getUniqIblockType($old);
             if (!in_array($uniq, $skip)) {
-                $this->helper->Iblock()->deleteIblockType($old['ID']);
+                if (!$this->testMode) {
+                    $this->helper->Iblock()->deleteIblockType($old['ID']);
+                }
                 $this->out('iblock type %s deleted', $old['ID']);
             }
         }
     }
 
-    public function cleanIblocks($skip = array()) {
+    protected function cleanIblocks($skip = array()) {
         $olds = $this->helper->Iblock()->getIblocks();
         foreach ($olds as $old) {
             $uniq = $this->getUniqIblock($old);
             if (!in_array($uniq, $skip)) {
-                $this->helper->Iblock()->deleteIblock($old['ID']);
+                if (!$this->testMode) {
+                    $this->helper->Iblock()->deleteIblock($old['ID']);
+                }
                 $this->out('iblock %s deleted', $old['ID']);
             }
         }
     }
+
 
     protected function getUniqProp($prop) {
         return $prop['CODE'];

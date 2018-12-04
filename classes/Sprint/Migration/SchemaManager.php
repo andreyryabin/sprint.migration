@@ -13,10 +13,16 @@ class SchemaManager
 
     private $progress = array();
 
+    protected $testMode = 0;
+
     public function __construct($params = array()) {
         $this->versionConfig = new VersionConfig('cfg');
 
         $this->params = $params;
+    }
+
+    public function setTestMode($testMode = 1) {
+        $this->testMode = $testMode;
     }
 
     public function outDescriptions() {
@@ -90,9 +96,10 @@ class SchemaManager
 
     protected function importSchema($name) {
         $schema = $this->createSchema($name);
+        $schema->setTestMode($this->testMode);
 
         if (!isset($this->params['index'])) {
-            $this->outSuccess('%s (import) start', $name);
+            $this->outSuccess('%s (test import) start', $name);
 
             $this->params['index'] = 0;
             $schema->import();
@@ -105,14 +112,14 @@ class SchemaManager
             $this->setProgress('current', $this->params['index'] + 1, count($queue));
 
             $item = $queue[$this->params['index']];
-            $this->executeQueue($schema, $item);
+            $schema->executeQueue($item);
 
             $this->params['index']++;
             $this->restart();
         }
 
         //$this->removeQueue($schema);
-        $this->out('%s (import) success', $name);
+        $this->out('%s (test import) success', $name);
     }
 
     protected function getVersionConfig() {
@@ -140,14 +147,6 @@ class SchemaManager
     protected function outSuccess($msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'outSuccessText'), $args);
-    }
-
-    protected function executeQueue(AbstractSchema $schema, $item) {
-        if (method_exists($schema, $item[0])) {
-            call_user_func_array(array($schema, $item[0]), $item[1]);
-        } else {
-            $this->outError('method %s not found', $item[0]);
-        }
     }
 
     protected function removeQueue(AbstractSchema $schema) {

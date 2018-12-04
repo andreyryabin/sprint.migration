@@ -13,14 +13,7 @@ abstract class AbstractSchema
 
     protected $params = array();
 
-    public function __construct(VersionConfig $versionConfig, $name, $params = array()) {
-        $this->versionConfig = $versionConfig;
-        $this->name = $name;
-        $this->params = $params;
-
-
-        $this->initialize();
-    }
+    protected $testMode = 0;
 
     abstract public function export();
 
@@ -30,19 +23,35 @@ abstract class AbstractSchema
 
     abstract public function outDescription();
 
+    public function __construct(VersionConfig $versionConfig, $name, $params = array()) {
+        $this->versionConfig = $versionConfig;
+        $this->name = $name;
+        $this->params = $params;
+
+        $this->initialize();
+    }
+
+    public function setTestMode($testMode = 1) {
+        $this->testMode = $testMode;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
     protected function getSchemaDir($relative = false) {
         $dir = $this->getVersionConfig()->getVal('migration_dir') . '/schema/';
+        return ($relative) ? Module::getRelativeDir($dir) : $dir;
+    }
+
+    protected function getSchemaDirname($name, $relative = false) {
+        $dir = $this->getSchemaDir() . $name;
         return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
 
     protected function getSchemaFile($name, $relative = false) {
         $file = $this->getSchemaDir() . $name . '.json';
         return ($relative) ? Module::getRelativeDir($file) : $file;
-    }
-
-
-    public function getName() {
-        return $this->name;
     }
 
     protected function saveSchema($name, $data) {
@@ -72,39 +81,39 @@ abstract class AbstractSchema
         return $merge;
     }
 
-    protected function deleteSchema($name) {
-        $file = $this->getSchemaFile($name);
-
-        if (is_file($file)) {
-            unlink($file);
-        }
-    }
-
     protected function deleteSchemas($path) {
         $names = $this->getSchemas($path);
 
         foreach ($names as $name) {
-            $this->deleteSchema($name);
+            $file = $this->getSchemaFile($name);
+            unlink($file);
         }
     }
 
-    protected function getSchemas($path) {
-        $path = trim($path, '/') . '/';
-
-        $dir = $this->getSchemaDir() . $path;
+    protected function getSchemas($paths = array()) {
+        $paths = is_array($paths) ? $paths : array($paths);
 
         $result = array();
+        foreach ($paths as $path) {
 
-        if (is_dir($dir)) {
-            /* @var $item \SplFileInfo */
-            $items = new \DirectoryIterator($dir);
-            foreach ($items as $item) {
-                if ($item->isFile() && $item->getExtension() == 'json') {
-                    $name = $item->getBasename('.json');
-                    $result[] = $path . $name;
+            $dir = $this->getSchemaDirname($path);
+            $file = $this->getSchemaFile($path);
+
+            if (is_dir($dir)) {
+                /* @var $item \SplFileInfo */
+                $items = new \DirectoryIterator($dir);
+                foreach ($items as $item) {
+                    if ($item->isFile() && $item->getExtension() == 'json') {
+                        $result[] = $path . $item->getBasename('.json');
+                    }
                 }
             }
+
+            if (is_file($file)) {
+                $result[] = $path;
+            }
         }
+
 
         return $result;
     }
@@ -130,9 +139,22 @@ abstract class AbstractSchema
         $this->queue[] = array($method, $args);
     }
 
+    public function executeQueue($item) {
+        if (method_exists($this, $item[0])) {
+            call_user_func_array(array($this, $item[0]), $item[1]);
+        } else {
+            $this->outError('method %s not found', $item[0]);
+        }
+    }
+
     protected function out($msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'out'), $args);
+    }
+
+    public function outError($msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        call_user_func_array(array('Sprint\Migration\Out', 'outErrorText'), $args);
     }
 
     protected function getVersionConfig() {

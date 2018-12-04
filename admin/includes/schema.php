@@ -19,7 +19,7 @@ $schemaManager = new \Sprint\Migration\SchemaManager();
     <div class="sp-group">
         <div class="sp-group-row1">
             <div class="sp-block">
-                <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_COMPARE') ?>" class="sp-schema-compare adm-btn-green"/>
+                <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_TEST') ?>" class="sp-schema-test adm-btn-green"/>
                 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_IMPORT') ?>" class="sp-schema-import"/>
                 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_EXPORT') ?>" class="sp-schema-export"/>
                 <div style="float: right;width: 300px;">

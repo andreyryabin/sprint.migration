@@ -2,7 +2,8 @@
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 $hasSteps = (
-($_POST["step_code"] == "schema_import")
+    ($_POST["step_code"] == "schema_import") ||
+    ($_POST["step_code"] == "schema_test")
 );
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('send_sessid')) {
@@ -12,6 +13,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     $params = !empty($_POST['params']) ? $_POST['params'] : array();
 
     $schemaManager = new \Sprint\Migration\SchemaManager($params);
+
+    if ($_POST["step_code"] == "schema_test") {
+        $schemaManager->setTestMode(1);
+    }
 
     $ok = false;
 

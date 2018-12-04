@@ -49,7 +49,6 @@ if ($versionManager->getVersionConfig()->getVal('show_admin_interface')) {
         include __DIR__ . '/steps/schema_list.php';
         include __DIR__ . '/steps/schema_export.php';
         include __DIR__ . '/steps/schema_import.php';
-        include __DIR__ . '/steps/schema_compare.php';
     } else {
         include __DIR__ . '/steps/migration_execute.php';
         include __DIR__ . '/steps/migration_list.php';

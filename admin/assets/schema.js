@@ -104,17 +104,25 @@ jQuery(document).ready(function ($) {
 
     $container.on('click', '.sp-schema-export', function (e) {
         e.preventDefault();
+
+        $('#schema_log').empty();
+        schemaProgressReset();
         schemaExecuteStep('schema_export');
     });
 
 
-    $container.on('click', '.sp-schema-compare', function (e) {
+    $container.on('click', '.sp-schema-test', function (e) {
         e.preventDefault();
-        schemaExecuteStep('schema_compare');
+
+        $('#schema_log').empty();
+        schemaProgressReset();
+        schemaExecuteStep('schema_test');
     });
 
     $container.on('click', '.sp-schema-import', function (e) {
         e.preventDefault();
+
+        $('#schema_log').empty();
         schemaProgressReset();
         schemaExecuteStep('schema_import');
     });
