@@ -18,22 +18,16 @@ class AgentSchema extends AbstractSchema
         ));
 
         $this->out('Агенты: %d', count($schemaAgents['items']));
-
-//        foreach ($schemaAgents['items'] as $agent){
-//            $this->out($agent['NAME']);
-//        }
     }
 
     public function export() {
         $this->deleteSchemas('agents');
-
 
         $exportAgents = $this->helper->Agent()->exportAgents();
 
         $this->saveSchema('agents', array(
             'items' => $exportAgents
         ));
-
 
         $this->outSuccess('%s сохранена в:', $this->getTitle());
         $this->outSchemas(array('agents'));
