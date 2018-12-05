@@ -15,9 +15,13 @@ abstract class AbstractSchema
 
     protected $testMode = 0;
 
-    private $info = array(
+    protected $info = array(
         'title' => '',
     );
+
+    /**@var HelperManager */
+    protected $helper;
+
 
     abstract public function export();
 
@@ -31,6 +35,8 @@ abstract class AbstractSchema
         $this->versionConfig = $versionConfig;
         $this->name = $name;
         $this->params = $params;
+
+        $this->helper = new HelperManager();
 
         $this->initialize();
     }

@@ -26,20 +26,23 @@ class SchemaManager
     }
 
     public function outDescriptions() {
-        $schemas = $this->getSchemas();
+        $schemas = $this->getVersionSchemas();
         $schemas = array_keys($schemas);
 
         foreach ($schemas as $name) {
-            $this->createSchema($name)->outDescription();
+            $schema = $this->createSchema($name);
+            $this->out('[b]%s[/]', $schema->getTitle());
+            $schema->outDescription();
+            $this->out(PHP_EOL);
         }
     }
 
-    protected function getSchemas() {
+    protected function getVersionSchemas() {
         return $this->getVersionConfig()->getVal('version_schemas');
     }
 
     public function export() {
-        $schemas = $this->getSchemas();
+        $schemas = $this->getVersionSchemas();
         $schemas = array_keys($schemas);
 
         if (!isset($this->params['schema'])) {
@@ -59,7 +62,7 @@ class SchemaManager
     public function import() {
         $this->progress = array();
 
-        $schemas = $this->getSchemas();
+        $schemas = $this->getVersionSchemas();
         $schemas = array_keys($schemas);
 
         if (!isset($this->params['schema'])) {
@@ -121,7 +124,7 @@ class SchemaManager
 
         unset($this->params['index']);
 
-        //$this->removeQueue($schema);
+        $this->removeQueue($schema);
         $this->out('%s (test import) success', $schema->getTitle());
     }
 
@@ -131,7 +134,7 @@ class SchemaManager
 
     /** @return AbstractSchema */
     protected function createSchema($name) {
-        $schemas = $this->getSchemas();
+        $schemas = $this->getVersionSchemas();
         $class = $schemas[$name];
 
         return new $class($this->getVersionConfig(), $name);

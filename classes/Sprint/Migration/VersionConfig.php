@@ -298,6 +298,7 @@ class VersionConfig
     protected function getDefaultSchemas() {
         return array(
             'IblockSchema' => '\Sprint\Migration\Schema\IblockSchema',
+            'AgentSchema' => '\Sprint\Migration\Schema\AgentSchema',
         );
 
     }

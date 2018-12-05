@@ -5,16 +5,15 @@ namespace Sprint\Migration\Schema;
 use \Sprint\Migration\AbstractSchema;
 use Sprint\Migration\HelperManager;
 
-class IblockSchema extends AbstractSchema
+class AgentSchema extends AbstractSchema
 {
 
-    private $cache = array();
-
     protected function initialize() {
-        $this->setTitle('Схема инфоблоков');
+        $this->setTitle('Схема агентов');
     }
 
     public function outDescription() {
+
         $schemaTypes = $this->loadSchema('iblock_types', array(
             'items' => array()
         ));
@@ -50,6 +49,8 @@ class IblockSchema extends AbstractSchema
                 $this->out('[t][t]%s', $this->getTitleProp($prop));
             }
         }
+
+
     }
 
     public function export() {
