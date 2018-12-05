@@ -29,7 +29,6 @@ class AgentSchema extends AbstractSchema
             'items' => $exportAgents
         ));
 
-        $this->outSuccess('%s сохранена в:', $this->getTitle());
         $this->outSchemas(array('agents'));
     }
 

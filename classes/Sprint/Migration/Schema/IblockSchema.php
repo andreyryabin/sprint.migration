@@ -69,7 +69,6 @@ class IblockSchema extends AbstractSchema
             }
         }
 
-        $this->outSuccess('%s сохранена в:', $this->getTitle());
         $this->outSchemas(array('iblock_types', 'iblocks/'));
     }
 
