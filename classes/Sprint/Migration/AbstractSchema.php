@@ -99,17 +99,11 @@ abstract class AbstractSchema
         return $merge;
     }
 
-    protected function deleteSchema($name) {
-        $file = $this->getSchemaFile($name);
-        if (is_file($file)) {
-            unlink($file);
-        }
-    }
-
-    protected function deleteSchemas($path) {
-        $names = $this->getSchemas($path);
+    protected function deleteSchemas($paths) {
+        $names = $this->getSchemas($paths);
         foreach ($names as $name) {
-            $this->deleteSchema($name);
+            $file = $this->getSchemaFile($name);
+            unlink($file);
         }
     }
 
@@ -138,6 +132,13 @@ abstract class AbstractSchema
         }
 
         return $result;
+    }
+
+    protected function outSchemas($paths){
+        $names = $this->getSchemas($paths);
+        foreach ($names as $name) {
+            $this->out($this->getSchemaFile($name, true));
+        }
     }
 
     protected function loadSchemas($path, $merge = array()) {

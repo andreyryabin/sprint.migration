@@ -31,9 +31,8 @@ class SchemaManager
 
         foreach ($schemas as $name) {
             $schema = $this->createSchema($name);
-            $this->out('[b]%s[/]', $schema->getTitle());
+            $this->outSuccess($schema->getTitle());
             $schema->outDescription();
-            $this->out(PHP_EOL);
         }
     }
 

@@ -54,17 +54,11 @@ class AgentExport extends VersionBuilder
         $items = array();
 
         foreach ($agentIds as $agentId) {
-            $agent = $helper->Agent()->getAgent(array('ID' => $agentId));
-            if (empty($agent['ID'])) {
+            $agent = $helper->Agent()->exportAgent(array('ID' => $agentId));
+            if (empty($agent)) {
                 continue;
             }
 
-            unset($agent['ID']);
-            unset($agent['LOGIN']);
-            unset($agent['USER_NAME']);
-            unset($agent['LAST_NAME']);
-            unset($agent['RUNNING']);
-            unset($agent['DATE_CHECK']);
             $items[] = $agent;
         }
 

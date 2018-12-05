@@ -16,16 +16,58 @@ class AgentHelper extends Helper
         return $res;
     }
 
+    public function exportAgents($filter = array()) {
+        $agents = $this->getList($filter);
+
+        $exportAgents = array();
+        foreach ($agents as $agent) {
+
+            unset($agent['ID']);
+            unset($agent['LOGIN']);
+            unset($agent['USER_NAME']);
+            unset($agent['LAST_NAME']);
+            unset($agent['RUNNING']);
+            unset($agent['DATE_CHECK']);
+
+            $exportAgents[] = $agent;
+        }
+
+        return $exportAgents;
+    }
+
+    public function exportAgent($filter = array()) {
+        $agent = $this->getAgent($filter);
+
+        if (empty($agent)) {
+            return false;
+        }
+
+        unset($agent['ID']);
+        unset($agent['LOGIN']);
+        unset($agent['USER_NAME']);
+        unset($agent['LAST_NAME']);
+        unset($agent['RUNNING']);
+        unset($agent['DATE_CHECK']);
+
+        return $agent;
+    }
+
     public function getAgent($filter = array()) {
         return \CAgent::GetList(array(
             "MODULE_ID" => "ASC"
         ), $filter)->Fetch();
     }
 
-    public function deleteAgentIfExists($moduleName, $name) {
+    public function deleteAgent($moduleId, $name) {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        \CAgent::RemoveAgent($name, $moduleId);
+        return true;
+    }
+
+    public function deleteAgentIfExists($moduleId, $name) {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $item = \CAgent::GetList(array("ID" => "DESC"), array(
-            'MODULE_ID' => $moduleName,
+            'MODULE_ID' => $moduleId,
             'NAME' => $name
         ))->Fetch();
 
@@ -34,14 +76,14 @@ class AgentHelper extends Helper
         }
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        \CAgent::RemoveAgent($name, $moduleName);
+        \CAgent::RemoveAgent($name, $moduleId);
         return true;
     }
 
     /** @deprecated */
-    public function replaceAgent($moduleName, $name, $interval, $nextExec) {
+    public function replaceAgent($moduleId, $name, $interval, $nextExec) {
         return $this->saveAgent(array(
-            'MODULE_ID' => $moduleName,
+            'MODULE_ID' => $moduleId,
             'NAME' => $name,
             'AGENT_INTERVAL' => $interval,
             'NEXT_EXEC' => $nextExec,
@@ -49,9 +91,9 @@ class AgentHelper extends Helper
     }
 
     /** @deprecated */
-    public function addAgentIfNotExists($moduleName, $name, $interval, $nextExec) {
+    public function addAgentIfNotExists($moduleId, $name, $interval, $nextExec) {
         return $this->saveAgent(array(
-            'MODULE_ID' => $moduleName,
+            'MODULE_ID' => $moduleId,
             'NAME' => $name,
             'AGENT_INTERVAL' => $interval,
             'NEXT_EXEC' => $nextExec,

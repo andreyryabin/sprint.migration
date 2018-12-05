@@ -19,10 +19,7 @@ class IblockSchema extends AbstractSchema
             'items' => array()
         ));
 
-        $this->out('[b]Типы инфоблоков:[/] %d', count($schemaTypes['items']));
-        foreach ($schemaTypes['items'] as $item) {
-            $this->out('[%s] %s', $item['ID'], $item['LANG']['ru']['NAME']);
-        }
+        $this->out('Типы инфоблоков: %d', count($schemaTypes['items']));
 
         $schemaIblocks = $this->loadSchemas('iblocks/', array(
             'iblock' => array(),
@@ -31,30 +28,24 @@ class IblockSchema extends AbstractSchema
             'element_form' => array()
         ));
 
-        $this->out('[b]Инфоблоков:[/] %d', count($schemaIblocks));
-        foreach ($schemaIblocks as $schemaIblock) {
-            $iblock = $schemaIblock['iblock'];
-            $this->out('[%s] %s', $iblock['CODE'], $iblock['NAME']);
+        $this->out('Инфоблоков: %d', count($schemaIblocks));
 
-            if (!empty($schemaIblock['fields'])) {
-                $this->out('[t]Поля инфоблока');
-            }
+        $cntProps = 0;
+        $cntForms = 0;
+        foreach ($schemaIblocks as $schemaIblock) {
+            $cntProps += count($schemaIblock['props']);
 
             if (!empty($schemaIblock['element_form'])) {
-                $this->out('[t]Форма редактирования');
-            }
-
-            $props = $schemaIblock['props'];
-            $this->out('[t]Свойств: %d', count($props));
-            foreach ($props as $prop) {
-                $this->out('[t][t]%s', $this->getTitleProp($prop));
+                $cntForms++;
             }
         }
+
+        $this->out('Свойств инфоблоков: %d', $cntProps);
+        $this->out('Форм редактирования: %d', $cntForms);
     }
 
     public function export() {
-        $this->deleteSchema('iblock_types');
-        $this->deleteSchemas('iblocks/');
+        $this->deleteSchemas(array('iblock_types', 'iblocks/'));
 
         $types = $this->helper->Iblock()->getIblockTypes();
         $exportTypes = array();
@@ -79,10 +70,7 @@ class IblockSchema extends AbstractSchema
         }
 
         $this->outSuccess('%s сохранена в:', $this->getTitle());
-        $names = $this->getSchemas(array('iblock_types', 'iblocks/'));
-        foreach ($names as $name) {
-            $this->out($this->getSchemaFile($name, true));
-        }
+        $this->outSchemas(array('iblock_types', 'iblocks/'));
     }
 
     public function import() {
