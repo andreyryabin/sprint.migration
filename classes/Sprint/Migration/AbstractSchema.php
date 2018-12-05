@@ -15,6 +15,10 @@ abstract class AbstractSchema
 
     protected $testMode = 0;
 
+    private $info = array(
+        'title' => '',
+    );
+
     abstract public function export();
 
     abstract public function import();
@@ -37,6 +41,14 @@ abstract class AbstractSchema
 
     public function getName() {
         return $this->name;
+    }
+
+    protected function setTitle($title = '') {
+        $this->info['title'] = $title;
+    }
+
+    public function getTitle() {
+        return $this->info['title'];
     }
 
     protected function getSchemaDir($relative = false) {
@@ -95,17 +107,27 @@ abstract class AbstractSchema
         }
     }
 
-    protected function getSchemas($path) {
-        $path = rtrim($path, '/') . '/';
+    protected function getSchemas($paths) {
+        $paths = is_array($paths) ? $paths : array($paths);
 
         $result = array();
-        $dir = $this->getSchemaDirname($path);
 
-        /* @var $item \SplFileInfo */
-        $items = new \DirectoryIterator($dir);
-        foreach ($items as $item) {
-            if ($item->isFile() && $item->getExtension() == 'json') {
-                $result[] = $path . $item->getBasename('.json');
+        foreach ($paths as $path){
+            $dir = $this->getSchemaDirname($path);
+            $file = $this->getSchemaFile($path);
+
+            if (is_dir($dir)){
+                /* @var $item \SplFileInfo */
+                $items = new \DirectoryIterator($dir);
+                foreach ($items as $item) {
+                    if ($item->isFile() && $item->getExtension() == 'json') {
+                        $result[] = $path . $item->getBasename('.json');
+                    }
+                }
+            }
+
+            if (is_file($file)){
+                $result[] = $path;
             }
         }
 
@@ -149,6 +171,11 @@ abstract class AbstractSchema
     public function outError($msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'outErrorText'), $args);
+    }
+
+    public function outSuccess($msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        call_user_func_array(array('Sprint\Migration\Out', 'outSuccessText'), $args);
     }
 
     protected function getVersionConfig() {

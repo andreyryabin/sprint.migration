@@ -99,7 +99,7 @@ class SchemaManager
         $schema->setTestMode($this->testMode);
 
         if (!isset($this->params['index'])) {
-            $this->outSuccess('%s (test import) start', $name);
+            $this->outSuccess('%s (test import) start', $schema->getTitle());
 
             $this->params['index'] = 0;
             $schema->import();
@@ -119,7 +119,7 @@ class SchemaManager
         }
 
         //$this->removeQueue($schema);
-        $this->out('%s (test import) success', $name);
+        $this->out('%s (test import) success', $schema->getTitle());
     }
 
     protected function getVersionConfig() {

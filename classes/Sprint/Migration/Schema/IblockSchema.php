@@ -15,10 +15,12 @@ class IblockSchema extends AbstractSchema
 
     protected function initialize() {
         $this->helper = new HelperManager();
+
+        $this->setTitle('Схема инфоблоков');
     }
 
     public function outDescription() {
-        $this->out('[b]%s[/]', 'Схема инфоблоков');
+        $this->out('[b]%s[/]', $this->getTitle());
 
         $schemaTypes = $this->loadSchema('iblock_types', array(
             'items' => array()
@@ -41,18 +43,18 @@ class IblockSchema extends AbstractSchema
             $iblock = $schemaIblock['iblock'];
             $this->out('[%s] %s', $iblock['CODE'], $iblock['NAME']);
 
-            if (!empty($schemaIblock['fields'])){
-                $this->out('[t]Настройка полей инфоблока');
+            if (!empty($schemaIblock['fields'])) {
+                $this->out('[t]Поля инфоблока');
             }
 
-            if (!empty($schemaIblock['element_form'])){
-                $this->out('[t]Настройка формы редактирования');
+            if (!empty($schemaIblock['element_form'])) {
+                $this->out('[t]Форма редактирования');
             }
 
             $props = $schemaIblock['props'];
             $this->out('[t]Свойств: %d', count($props));
             foreach ($props as $prop) {
-                $this->out('[t][t][%s] %s', $prop['CODE'], $prop['NAME']);
+                $this->out('[t][t]%s', $this->getTitleProp($prop));
             }
         }
 
@@ -84,7 +86,11 @@ class IblockSchema extends AbstractSchema
             }
         }
 
-        $this->out('schema saved to %s', $this->getSchemaDir(true));
+        $this->outSuccess('%s сохранена в:', $this->getTitle());
+        $names = $this->getSchemas(array('iblock_types', 'iblocks/'));
+        foreach ($names as $name) {
+            $this->out($this->getSchemaFile($name, true));
+        }
     }
 
     public function import() {
@@ -156,9 +162,9 @@ class IblockSchema extends AbstractSchema
                 $this->helper->Iblock()->saveIblockType($type);
             }
 
-            $this->out('iblock type %s saved', $type['ID']);
+            $this->outSuccess('Тип инфоблока %s: сохранен', $type['ID']);
         } else {
-            $this->out('iblock type %s equal', $type['ID']);
+            $this->out('Тип инфоблока %s: совпадает', $type['ID']);
         }
     }
 
@@ -169,9 +175,9 @@ class IblockSchema extends AbstractSchema
                 $this->helper->Iblock()->saveIblock($iblock);
             }
 
-            $this->out('iblock %s saved', $iblockId);
+            $this->outSuccess('Инфоблок %s: сохранен', $iblockId);
         } else {
-            $this->out('iblock %s is equal', $iblockId);
+            $this->out('Инфоблок %s: совпадает', $iblockId);
         }
     }
 
@@ -183,9 +189,9 @@ class IblockSchema extends AbstractSchema
                 $this->helper->Iblock()->saveIblockFields($iblockId, $fields);
             }
 
-            $this->out('iblock %s fields saved', $iblockId);
+            $this->outSuccess('Инфоблок %s: поля %сохранены', $iblockId);
         } else {
-            $this->out('iblock %s fields equal', $iblockId);
+            $this->out('Инфоблок %s: поля совпадают', $iblockId);
         }
     }
 
@@ -195,9 +201,9 @@ class IblockSchema extends AbstractSchema
             if (!$this->testMode) {
                 $this->helper->AdminIblock()->saveElementForm($iblockId, $elementForm);
             }
-            $this->out('iblock %s admin form saved', $iblockId);
+            $this->outSuccess('Инфоблок %s: форма редактирования сохранена', $iblockId);
         } else {
-            $this->out('iblock %s admin form equal', $iblockId);
+            $this->out('Инфоблок %s: форма редактирования cовпадает', $iblockId);
         }
     }
 
@@ -207,9 +213,9 @@ class IblockSchema extends AbstractSchema
             if (!$this->testMode) {
                 $this->helper->Iblock()->saveProperty($iblockId, $property);
             }
-            $this->out('iblock %s property %s saved', $iblockId, $property['CODE']);
+            $this->outSuccess('Инфоблок %s: свойство %s сохранено', $iblockId, $this->getTitleProp($property));
         } else {
-            $this->out('iblock %s property %s equal', $iblockId, $property['CODE']);
+            $this->out('Инфоблок %s: свойство %s совпадает', $iblockId, $this->getTitleProp($property));
         }
     }
 
@@ -221,7 +227,7 @@ class IblockSchema extends AbstractSchema
                 if (!$this->testMode) {
                     $this->helper->Iblock()->deletePropertyById($old['ID']);
                 }
-                $this->out('iblock %s property %s deleted', $iblockId, $old['ID']);
+                $this->outError('Инфоблок %s: свойство %s удалено', $iblockId, $this->getTitleProp($old));
             }
         }
     }
@@ -234,7 +240,7 @@ class IblockSchema extends AbstractSchema
                 if (!$this->testMode) {
                     $this->helper->Iblock()->deleteIblockType($old['ID']);
                 }
-                $this->out('iblock type %s deleted', $old['ID']);
+                $this->outError('Тип инфоблока %s: удален', $old['ID']);
             }
         }
     }
@@ -247,11 +253,15 @@ class IblockSchema extends AbstractSchema
                 if (!$this->testMode) {
                     $this->helper->Iblock()->deleteIblock($old['ID']);
                 }
-                $this->out('iblock %s deleted', $old['ID']);
+                $this->outError('Инфоблок %s: удален', $old['ID']);
             }
         }
     }
 
+
+    protected function getTitleProp($prop) {
+        return empty($prop['CODE']) ? $prop['ID'] : $prop['CODE'];
+    }
 
     protected function getUniqProp($prop) {
         return $prop['CODE'];

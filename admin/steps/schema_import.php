@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
 
         ?>
         <script>
-            schemaExecuteStep('schema_import', <?=$json?>);
+            schemaExecuteStep('<?=$_POST["step_code"]?>', <?=$json?>);
         </script>
         <?
     }
