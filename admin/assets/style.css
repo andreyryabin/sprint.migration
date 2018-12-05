@@ -202,6 +202,10 @@ a.sp-item-unknown:visited {
     border-radius: 10px;
 }
 
+.sp-out-rarr {
+    color: #555;
+}
+
 .sp-optgroup {
     margin-bottom: 20px;
 }

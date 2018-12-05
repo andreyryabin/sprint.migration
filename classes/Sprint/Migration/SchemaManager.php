@@ -75,6 +75,7 @@ class SchemaManager
             $this->restart();
         }
 
+        unset($this->params['schema']);
     }
 
     public function getProgress() {
@@ -117,6 +118,8 @@ class SchemaManager
             $this->params['index']++;
             $this->restart();
         }
+
+        unset($this->params['index']);
 
         //$this->removeQueue($schema);
         $this->out('%s (test import) success', $schema->getTitle());

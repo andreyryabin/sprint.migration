@@ -58,6 +58,7 @@ class IblockSchema extends AbstractSchema
             }
         }
 
+        $this->out(PHP_EOL);
     }
 
     public function export() {

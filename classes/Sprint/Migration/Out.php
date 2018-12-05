@@ -145,11 +145,11 @@ class Out
     public static function prepareToHtml($msg) {
         $msg = nl2br($msg);
 
+        $msg = str_replace('[t]', '&rarr;', $msg);
+
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
-
-        $msg = str_replace('[t]', '&rarr;', $msg);
 
         $msg = Locale::convertToWin1251IfNeed($msg);
         return $msg;
@@ -159,12 +159,13 @@ class Out
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', '', $msg);
         }
+
         return $msg;
     }
 
     protected static function outToHtml($msg) {
         $msg = self::prepareToHtml($msg);
-        echo '<div class="sp-out">' . "$msg" . '</div>';
+        echo '<div class="sp-out">' . $msg . '</div>';
     }
 
     protected static function outToConsole($msg) {
