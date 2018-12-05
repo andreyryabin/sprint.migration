@@ -149,6 +149,8 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
 
+        $msg = str_replace('[t]', '&rarr;', $msg);
+
         $msg = Locale::convertToWin1251IfNeed($msg);
         return $msg;
     }

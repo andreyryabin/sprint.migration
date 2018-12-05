@@ -81,39 +81,33 @@ abstract class AbstractSchema
         return $merge;
     }
 
-    protected function deleteSchemas($path) {
-        $names = $this->getSchemas($path);
-
-        foreach ($names as $name) {
-            $file = $this->getSchemaFile($name);
+    protected function deleteSchema($name) {
+        $file = $this->getSchemaFile($name);
+        if (is_file($file)) {
             unlink($file);
         }
     }
 
-    protected function getSchemas($paths = array()) {
-        $paths = is_array($paths) ? $paths : array($paths);
+    protected function deleteSchemas($path) {
+        $names = $this->getSchemas($path);
+        foreach ($names as $name) {
+            $this->deleteSchema($name);
+        }
+    }
+
+    protected function getSchemas($path) {
+        $path = rtrim($path, '/') . '/';
 
         $result = array();
-        foreach ($paths as $path) {
+        $dir = $this->getSchemaDirname($path);
 
-            $dir = $this->getSchemaDirname($path);
-            $file = $this->getSchemaFile($path);
-
-            if (is_dir($dir)) {
-                /* @var $item \SplFileInfo */
-                $items = new \DirectoryIterator($dir);
-                foreach ($items as $item) {
-                    if ($item->isFile() && $item->getExtension() == 'json') {
-                        $result[] = $path . $item->getBasename('.json');
-                    }
-                }
-            }
-
-            if (is_file($file)) {
-                $result[] = $path;
+        /* @var $item \SplFileInfo */
+        $items = new \DirectoryIterator($dir);
+        foreach ($items as $item) {
+            if ($item->isFile() && $item->getExtension() == 'json') {
+                $result[] = $path . $item->getBasename('.json');
             }
         }
-
 
         return $result;
     }

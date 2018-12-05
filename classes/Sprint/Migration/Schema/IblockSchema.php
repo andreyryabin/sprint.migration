@@ -18,17 +18,49 @@ class IblockSchema extends AbstractSchema
     }
 
     public function outDescription() {
+        $this->out('[b]%s[/]', 'Схема инфоблоков');
 
-        $this->out('[b]%s[/]', $this->getName());
+        $schemaTypes = $this->loadSchema('iblock_types', array(
+            'items' => array()
+        ));
 
-        $schemas = $this->getSchemas(array('iblock_types', 'iblocks/'));
-        foreach ($schemas as $name) {
-            $this->out($this->getSchemaFile($name, true));
+        $this->out('[b]Типы инфоблоков:[/] %d', count($schemaTypes['items']));
+        foreach ($schemaTypes['items'] as $item) {
+            $this->out('[%s] %s', $item['ID'], $item['LANG']['ru']['NAME']);
         }
+
+        $schemaIblocks = $this->loadSchemas('iblocks/', array(
+            'iblock' => array(),
+            'fields' => array(),
+            'props' => array(),
+            'element_form' => array()
+        ));
+
+        $this->out('[b]Инфоблоков:[/] %d', count($schemaIblocks));
+        foreach ($schemaIblocks as $schemaIblock) {
+            $iblock = $schemaIblock['iblock'];
+            $this->out('[%s] %s', $iblock['CODE'], $iblock['NAME']);
+
+            if (!empty($schemaIblock['fields'])){
+                $this->out('[t]Настройка полей инфоблока');
+            }
+
+            if (!empty($schemaIblock['element_form'])){
+                $this->out('[t]Настройка формы редактирования');
+            }
+
+            $props = $schemaIblock['props'];
+            $this->out('[t]Свойств: %d', count($props));
+            foreach ($props as $prop) {
+                $this->out('[t][t][%s] %s', $prop['CODE'], $prop['NAME']);
+            }
+        }
+
     }
 
     public function export() {
-        $this->deleteSchemas(array('iblock_types', 'iblocks/'));
+        $this->deleteSchema('iblock_types');
+        $this->deleteSchemas('iblocks/');
 
         $types = $this->helper->Iblock()->getIblockTypes();
         $exportTypes = array();
