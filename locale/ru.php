@@ -165,7 +165,7 @@
     "SPRINT_MIGRATION_MODIFIED_INFO" => "Код миграции был изменен после установки",
     "SPRINT_MIGRATION_MODIFIED_LABEL" => "M",
 
-    "SPRINT_MIGRATION_MENU_SCHEMA" => "Cхема сущностей",
+    "SPRINT_MIGRATION_MENU_SCHEMA" => "Cхема данных",
     "SPRINT_MIGRATION_SCHEMA_TEST" => "Тестовый импорт",
     "SPRINT_MIGRATION_SCHEMA_IMPORT" => "Импорт",
     "SPRINT_MIGRATION_SCHEMA_EXPORT" => "Экспорт",

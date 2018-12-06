@@ -808,17 +808,7 @@ class IblockHelper extends Helper
     }
 
 
-    public function exportProperty($iblockId, $code = false) {
-        if (is_array($iblockId) && empty($code)) {
-            $prop = $iblockId;
-        } else {
-            $prop = $this->getProperty($iblockId, $code);
-        }
-
-        if (empty($prop)) {
-            return false;
-        }
-
+    protected function prepareExportProperty($prop) {
         unset($prop['ID']);
         unset($prop['IBLOCK_ID']);
         unset($prop['TIMESTAMP_X']);
@@ -840,6 +830,15 @@ class IblockHelper extends Helper
         return $prop;
     }
 
+    public function exportProperty($iblockId, $code = false) {
+        $prop = $this->getProperty($iblockId, $code);
+        if (empty($prop)) {
+            return false;
+        }
+
+        return $this->prepareExportProperty($prop);
+    }
+
     public function exportProperties($iblockId, $propertyIds = array()) {
         $filter = array();
 
@@ -853,7 +852,7 @@ class IblockHelper extends Helper
 
         $props = $this->getProperties($iblockId, $filter);
         foreach ($props as $prop) {
-            $exportProps[] = $this->exportProperty($prop);
+            $exportProps[] = $this->prepareExportProperty($prop);
         }
         return $exportProps;
     }

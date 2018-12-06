@@ -27,7 +27,7 @@ class UserTypeEntityHelper extends Helper
         return $this->addUserTypeEntity($entityId, $fieldName, $fields);
     }
 
-    public function addUserTypeEntity($entityId, $fieldName, $fields){
+    public function addUserTypeEntity($entityId, $fieldName, $fields) {
         $default = array(
             "ENTITY_ID" => '',
             "FIELD_NAME" => '',
@@ -112,18 +112,52 @@ class UserTypeEntityHelper extends Helper
             return false;
         }
 
-        return $this->updateUserTypeEntity($item['ID'],$fields);
+        return $this->updateUserTypeEntity($item['ID'], $fields);
 
     }
 
-    public function getUserTypeEntities($entityId) {
+    public function getUserTypeEntities($entityId = false) {
+        $filter = array();
+
+        if ($entityId) {
+            $filter = is_array($entityId) ? $entityId : array(
+                'ENTITY_ID' => $entityId
+            );
+        }
+
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbres = \CUserTypeEntity::GetList(array(), array('ENTITY_ID' => $entityId));
+        $dbres = \CUserTypeEntity::GetList(array(), $filter);
         $result = array();
         while ($item = $dbres->Fetch()) {
             $result[] = $this->getUserTypeEntityById($item['ID']);
         }
         return $result;
+    }
+
+    public function exportUserTypeEntities() {
+        $items = $this->getUserTypeEntities();
+
+        $exportItems = array();
+        foreach ($items as $item) {
+            $exportItems[] = $this->prepareExportUserTypeEntity($item);
+        }
+
+        return $exportItems;
+    }
+
+    public function exportUserTypeEntity($entityId, $fieldName) {
+        $item = $this->getUserTypeEntity($entityId, $fieldName);
+        if (empty($item)) {
+            return false;
+        }
+
+        return $this->prepareExportUserTypeEntity($item);
+    }
+
+    protected function prepareExportUserTypeEntity($item) {
+        unset($item['ID']);
+
+        return $item;
     }
 
     public function getUserTypeEntity($entityId, $fieldName) {
@@ -181,12 +215,11 @@ class UserTypeEntityHelper extends Helper
         $this->throwException(__METHOD__, 'UserType not deleted');
     }
 
-    /* @deprecated */
     public function deleteUserTypeEntity($entityId, $fieldName) {
         return $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
     }
 
-    protected function getUserTypeEntityById($fieldId) {
+    public function getUserTypeEntityById($fieldId) {
         $item = \CUserTypeEntity::GetByID($fieldId);
 
         if ($item && $item['USER_TYPE_ID'] == 'enumeration') {
@@ -232,7 +265,7 @@ class UserTypeEntityHelper extends Helper
     public function saveUserTypeEntity($entityId, $fieldName, $fields) {
         $item = $this->getUserTypeEntity($entityId, $fieldName);
         if ($item) {
-            return $this->updateUserTypeEntity($item['ID'],$fields);
+            return $this->updateUserTypeEntity($item['ID'], $fields);
         } else {
             return $this->addUserTypeEntity($entityId, $fieldName, $fields);
         }

@@ -21,38 +21,40 @@ class AgentHelper extends Helper
 
         $exportAgents = array();
         foreach ($agents as $agent) {
-
-            unset($agent['ID']);
-            unset($agent['LOGIN']);
-            unset($agent['USER_NAME']);
-            unset($agent['LAST_NAME']);
-            unset($agent['RUNNING']);
-            unset($agent['DATE_CHECK']);
-
-            $exportAgents[] = $agent;
+            $exportAgents[] = $this->prepareExportAgent($agent);
         }
 
         return $exportAgents;
     }
 
-    public function exportAgent($filter = array()) {
-        $agent = $this->getAgent($filter);
-
-        if (empty($agent)) {
-            return false;
-        }
-
+    protected function prepareExportAgent($agent) {
         unset($agent['ID']);
         unset($agent['LOGIN']);
         unset($agent['USER_NAME']);
         unset($agent['LAST_NAME']);
         unset($agent['RUNNING']);
         unset($agent['DATE_CHECK']);
-
         return $agent;
     }
 
-    public function getAgent($filter = array()) {
+    public function exportAgent($moduleId, $name = '') {
+        $agent = $this->getAgent($moduleId, $name);
+        if (empty($agent)) {
+            return false;
+        }
+
+        return $this->prepareExportAgent($agent);
+    }
+
+    public function getAgent($moduleId, $name = '') {
+        $filter = is_array($moduleId) ? $moduleId : array(
+            'MODULE_ID' => $moduleId
+        );
+
+        if (!empty($name)) {
+            $filter['NAME'] = $name;
+        }
+
         return \CAgent::GetList(array(
             "MODULE_ID" => "ASC"
         ), $filter)->Fetch();
