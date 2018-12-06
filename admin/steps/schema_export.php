@@ -31,6 +31,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
             schemaExecuteStep('schema_export', <?=$json?>);
         </script>
         <?
+    } catch (\Exception $e) {
+        \Sprint\Migration\Out::outErrorText($e->getMessage());
+
+    } catch (\Throwable $e) {
+        \Sprint\Migration\Out::outErrorText($e->getMessage());
     }
 
     $progress = $schemaManager->getProgress();

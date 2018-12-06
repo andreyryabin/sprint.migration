@@ -19,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     }
 
     $ok = false;
+    $error = false;
 
     try {
         $schemaManager->import();
@@ -36,6 +37,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
             schemaExecuteStep('<?=$_POST["step_code"]?>', <?=$json?>);
         </script>
         <?
+    } catch (\Exception $e) {
+        \Sprint\Migration\Out::outErrorText($e->getMessage());
+        $error = true;
+
+    } catch (\Throwable $e) {
+        \Sprint\Migration\Out::outErrorText($e->getMessage());
+        $error = true;
     }
 
     $progress = $schemaManager->getProgress();
@@ -51,6 +59,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
         ?>
         <script>
             schemaProgressReset();
+            schemaRefresh();
+        </script>
+        <?
+    }
+
+    if ($error) {
+        ?>
+        <script>
             schemaRefresh();
         </script>
         <?
