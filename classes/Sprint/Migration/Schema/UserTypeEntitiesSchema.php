@@ -52,6 +52,12 @@ class UserTypeEntitiesSchema extends AbstractSchema
 
     protected function saveUserTypeEntity($item) {
         $exists = $this->helper->UserTypeEntity()->exportUserTypeEntity($item['ENTITY_ID'], $item['FIELD_NAME']);
+
+        if ($exists){
+            unset($exists['MULTIPLE']);
+            unset($item['MULTIPLE']);
+        }
+
         if ($exists != $item) {
             if (!$this->testMode) {
                 $this->helper->UserTypeEntity()->saveUserTypeEntity($item['ENTITY_ID'], $item['FIELD_NAME'], $item);
