@@ -732,12 +732,14 @@ class IblockHelper extends Helper
     public function saveIblockType($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
 
-        $iblockType = $this->getIblockType($fields['ID']);
-        if ($iblockType) {
-            return $this->updateIblockType($iblockType['ID'], $fields);
-        } else {
+        $fields = $this->prepareExportIblockType($fields);
+        $exists = $this->getIblockType($fields['ID']);
+
+        if (empty($exists)) {
             return $this->addIblockType($fields);
         }
+
+        return $this->updateIblockType($fields['ID'], $fields);
     }
 
     public function saveIblock($fields = array()) {
@@ -748,43 +750,92 @@ class IblockHelper extends Helper
             $typeId = $fields['IBLOCK_TYPE_ID'];
         }
 
-        $iblock = $this->getIblock($fields['CODE'], $typeId);
-        if ($iblock) {
-            return $this->updateIblock($iblock['ID'], $fields);
-        } else {
+        $fields = $this->prepareExportIblock($fields);
+        $exists = $this->getIblock($fields['CODE'], $typeId);
+
+        if (empty($exists)) {
             return $this->addIblock($fields);
         }
+
+        return $this->updateIblock($exists['ID'], $fields);
+
     }
 
     public function saveIblockFields($iblockId, $fields = array()) {
-        $default = \CIBlock::GetFields($iblockId);
-        $fields = array_replace_recursive($default, $fields);
-        \CIBlock::SetFields($iblockId, $fields);
-        return true;
+        if (empty($iblockId) || empty($exists)) {
+            return false;
+        }
+
+        $exists = \CIBlock::GetFields($iblockId);
+
+        $fields = array_replace_recursive($exists, $fields);
+        $fields = $this->prepareExportIblockFields($fields);
+
+        return $this->updateIblockFields($iblockId, $fields);
     }
 
     public function saveProperty($iblockId, $fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
-        $property = $this->getProperty($iblockId, $fields['CODE']);
-        if ($property) {
-            return $this->updatePropertyById($property['ID'], $fields);
-        } else {
+        $exists = $this->getProperty($iblockId, $fields['CODE']);
+        $fields = $this->prepareExportProperty($fields);
+
+        if (empty($exists)) {
             return $this->addProperty($iblockId, $fields);
         }
+
+        return $this->updatePropertyById($exists['ID'], $fields);
     }
 
 
     //exports
 
     public function exportIblockType($typeId) {
-        return $this->getIblockType($typeId);
+        return $this->prepareExportIblockType(
+            $this->getIblockType($typeId)
+        );
+    }
+
+    public function prepareExportIblockType($item) {
+        if (empty($item)) {
+            return $item;
+        }
+
+        return $item;
     }
 
     public function exportIblock($iblockId) {
-        $iblock = $this->getIblock(array('ID' => $iblockId));
-        if (!$iblock) {
-            return false;
+        return $this->prepareExportIblock(
+            $this->getIblock(array('ID' => $iblockId))
+        );
+    }
+
+
+    public function prepareExportIblockFields($fields) {
+        if (empty($fields)) {
+            return $fields;
+        }
+
+        $exportFields = array();
+        foreach ($fields as $code => $field) {
+            if ($field["VISIBLE"] == "N" || preg_match("/^(SECTION_|LOG_)/", $code)) {
+                continue;
+            }
+            $exportFields[$code] = $field;
+        }
+
+        return $exportFields;
+    }
+
+    public function exportIblockFields($iblockId) {
+        return $this->prepareExportIblockFields(
+            $this->getIblockFields($iblockId)
+        );
+    }
+
+    public function prepareExportIblock($iblock) {
+        if (empty($iblock)) {
+            return $iblock;
         }
 
         unset($iblock['ID']);
@@ -794,21 +845,11 @@ class IblockHelper extends Helper
         return $iblock;
     }
 
-    public function exportIblockFields($iblockId) {
-        $iblockFields = array();
-        $allFields = $this->getIblockFields($iblockId);
-        foreach ($allFields as $fieldId => $iblockField) {
-            if ($iblockField["VISIBLE"] == "N" || preg_match("/^(SECTION_|LOG_)/", $fieldId)) {
-                continue;
-            }
-            $iblockFields[$fieldId] = $iblockField;
+    public function prepareExportProperty($prop) {
+        if (empty($prop)) {
+            return $prop;
         }
 
-        return $iblockFields;
-    }
-
-
-    protected function prepareExportProperty($prop) {
         unset($prop['ID']);
         unset($prop['IBLOCK_ID']);
         unset($prop['TIMESTAMP_X']);
@@ -831,23 +872,12 @@ class IblockHelper extends Helper
     }
 
     public function exportProperty($iblockId, $code = false) {
-        $prop = $this->getProperty($iblockId, $code);
-        if (empty($prop)) {
-            return false;
-        }
-
-        return $this->prepareExportProperty($prop);
+        return $this->prepareExportProperty(
+            $this->getProperty($iblockId, $code)
+        );
     }
 
-    public function exportProperties($iblockId, $propertyIds = array()) {
-        $filter = array();
-
-        if (!empty($propertyIds)) {
-            $filter = array(
-                'ID' => $propertyIds
-            );
-        }
-
+    public function exportProperties($iblockId, $filter = array()) {
         $exportProps = array();
 
         $props = $this->getProperties($iblockId, $filter);
@@ -872,9 +902,13 @@ class IblockHelper extends Helper
         $this->saveIblockFields($iblockId, $fields);
     }
 
-    /** @deprecated */
+
     public function updateIblockFields($iblockId, $fields) {
-        $this->saveIblockFields($iblockId, $fields);
+        if ($iblockId && !empty($fields)) {
+            \CIBlock::SetFields($iblockId, $fields);
+            return true;
+        }
+        return false;
     }
 
     /** @deprecated */

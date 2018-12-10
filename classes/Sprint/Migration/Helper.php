@@ -21,7 +21,7 @@ class Helper
         return $this->lastError;
     }
 
-    protected function throwException($method, $msg, $var1 = null, $var2 = null) {
+    public function throwException($method, $msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         $method = array_shift($args);
         $msg = call_user_func_array('sprintf', $args);
@@ -33,11 +33,10 @@ class Helper
         Throw new HelperException($msg);
     }
 
-    protected function checkRequiredKeys($method, $fields, $reqKeys = array()) {
+    public function checkRequiredKeys($method, $fields, $reqKeys = array()) {
         foreach ($reqKeys as $name) {
             if (empty($fields[$name])) {
-                $msg = sprintf('%s: requred key "%s" empty', $this->getMethod($method), $name);
-                Throw new HelperException($msg);
+                $this->throwException($method, 'requred key "%s" empty', $name);
             }
         }
     }
@@ -75,4 +74,5 @@ class Helper
         $short = array_pop($path);
         return $short;
     }
+
 }

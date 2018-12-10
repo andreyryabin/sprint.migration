@@ -120,7 +120,9 @@ class IblockExport extends VersionBuilder
                 $this->rebuildField('property_ids');
             }
 
-            $iblockProperties = $helper->Iblock()->exportProperties($iblockId, $propertyIds);
+            $iblockProperties = $helper->Iblock()->exportProperties($iblockId, array(
+                'ID' => $propertyIds
+            ));
         }
 
 

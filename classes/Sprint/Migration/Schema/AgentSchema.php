@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Schema;
 
 use \Sprint\Migration\AbstractSchema;
+use Sprint\Migration\Helpers\AgentHelper;
 
 class AgentSchema extends AbstractSchema
 {
@@ -20,9 +21,11 @@ class AgentSchema extends AbstractSchema
     }
 
     public function export() {
+        $agentHelper = new AgentHelper();
+        
         $this->deleteSchemas('agents');
 
-        $exportAgents = $this->helper->Agent()->exportAgents();
+        $exportAgents = $agentHelper->exportAgents();
 
         $this->saveSchema('agents', array(
             'items' => $exportAgents
@@ -51,7 +54,9 @@ class AgentSchema extends AbstractSchema
 
 
     protected function saveAgent($agent) {
-        $exists = $this->helper->Agent()->exportAgent(array(
+        $agentHelper = new AgentHelper();
+        
+        $exists = $agentHelper->exportAgent(array(
             'MODULE_ID' => $agent['MODULE_ID'],
             'NAME' => $agent['NAME']
         ));
@@ -59,7 +64,7 @@ class AgentSchema extends AbstractSchema
         if ($exists != $agent) {
 
             if (!$this->testMode) {
-                $this->helper->Agent()->saveAgent($agent);
+                $agentHelper->saveAgent($agent);
             }
 
             $this->outSuccess('Агент %s: сохранен', $agent['NAME']);
@@ -69,12 +74,14 @@ class AgentSchema extends AbstractSchema
     }
 
     protected function cleanAgents($skip = array()) {
-        $olds = $this->helper->Agent()->getList();
+        $agentHelper = new AgentHelper();
+        
+        $olds = $agentHelper->getList();
         foreach ($olds as $old) {
             $uniq = $this->getUniqAgent($old);
             if (!in_array($uniq, $skip)) {
                 if (!$this->testMode) {
-                    $this->helper->Agent()->deleteAgent($old['MODULE_ID'], $old['NAME']);
+                    $agentHelper->deleteAgent($old['MODULE_ID'], $old['NAME']);
                 }
                 $this->outError('Агент %s: удален', $old['NAME']);
             }

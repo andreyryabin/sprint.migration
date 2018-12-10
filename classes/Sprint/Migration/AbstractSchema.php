@@ -19,10 +19,6 @@ abstract class AbstractSchema
         'title' => '',
     );
 
-    /**@var HelperManager */
-    protected $helper;
-
-
     abstract public function export();
 
     abstract public function import();
@@ -35,8 +31,6 @@ abstract class AbstractSchema
         $this->versionConfig = $versionConfig;
         $this->name = $name;
         $this->params = $params;
-
-        $this->helper = new HelperManager();
 
         $this->initialize();
     }
@@ -176,14 +170,41 @@ abstract class AbstractSchema
         call_user_func_array(array('Sprint\Migration\Out', 'out'), $args);
     }
 
-    public function outError($msg, $var1 = null, $var2 = null) {
+    protected function outError($msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'outErrorText'), $args);
     }
 
-    public function outSuccess($msg, $var1 = null, $var2 = null) {
+    protected function outSuccess($msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         call_user_func_array(array('Sprint\Migration\Out', 'outSuccessText'), $args);
+    }
+
+
+
+    protected function outIf($cond, $msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        $cond = array_shift($args);
+        if ($cond) {
+            call_user_func_array(array('Sprint\Migration\Out', 'out'), $args);
+        }
+
+    }
+
+    protected function outErrorIf($cond, $msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        $cond = array_shift($args);
+        if ($cond) {
+            call_user_func_array(array('Sprint\Migration\Out', 'outErrorText'), $args);
+        }
+    }
+
+    protected function outSuccessIf($cond, $msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        $cond = array_shift($args);
+        if ($cond) {
+            call_user_func_array(array('Sprint\Migration\Out', 'outSuccessText'), $args);
+        }
     }
 
     protected function getVersionConfig() {
