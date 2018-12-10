@@ -767,7 +767,6 @@ class IblockHelper extends Helper
         }
 
         $exists = \CIBlock::GetFields($iblockId);
-
         $fields = array_replace_recursive($exists, $fields);
         $fields = $this->prepareExportIblockFields($fields);
 
