@@ -50,22 +50,34 @@ class UserTypeEntitiesSchema extends AbstractSchema
     }
 
 
-    protected function saveUserTypeEntity($item) {
-        $exists = $this->helper->UserTypeEntity()->exportUserTypeEntity($item['ENTITY_ID'], $item['FIELD_NAME']);
+    protected function saveUserTypeEntity($fields) {
+        $this->helper->UserTypeEntity()->checkRequiredKeys(__METHOD__, $fields, array('ENTITY_ID', 'FIELD_NAME'));
 
-        if ($exists){
-            unset($exists['MULTIPLE']);
-            unset($item['MULTIPLE']);
+        $exists = $this->helper->UserTypeEntity()->getUserTypeEntity($fields['ENTITY_ID'], $fields['FIELD_NAME']);
+        $exportExists = $this->helper->UserTypeEntity()->prepareExportUserTypeEntity($exists);
+        $fields = $this->helper->UserTypeEntity()->prepareExportUserTypeEntity($fields);
+
+
+        if (empty($exists)) {
+            $ok = ($this->testMode) ? true : $this->helper->UserTypeEntity()->addUserTypeEntity($fields['ENTITY_ID'], $fields['FIELD_NAME'], $fields);
+            $this->outSuccessIf($ok, 'Пользовательское поле %s: добавлено', $fields['FIELD_NAME']);
+            return $ok;
         }
 
-        if ($exists != $item) {
-            if (!$this->testMode) {
-                $this->helper->UserTypeEntity()->saveUserTypeEntity($item['ENTITY_ID'], $item['FIELD_NAME'], $item);
-            }
-            $this->outSuccess('Пользовательское поле %s: сохранено', $item['FIELD_NAME']);
-        } else {
-            $this->out('Пользовательское поле %s: совпадает', $item['FIELD_NAME']);
+        unset($exportExists['MULTIPLE']);
+        unset($fields['MULTIPLE']);
+
+        if ($exportExists != $fields) {
+            $ok = ($this->testMode) ? true : $this->helper->UserTypeEntity()->updateUserTypeEntity($exists['ID'], $fields);
+            $this->outSuccessIf($ok, 'Пользовательское поле %s: обновлено', $fields['FIELD_NAME']);
+            return $ok;
         }
+
+        $ok = ($this->testMode) ? true : $exists['ID'];
+        $this->outIf($ok, 'Пользовательское поле %s: совпадает', $fields['FIELD_NAME']);
+
+        return $ok;
+
     }
 
     protected function clearUserTypeEntities($skip = array()) {
@@ -73,10 +85,8 @@ class UserTypeEntitiesSchema extends AbstractSchema
         foreach ($olds as $old) {
             $uniq = $this->getUniqEntity($old);
             if (!in_array($uniq, $skip)) {
-                if (!$this->testMode) {
-                    $this->helper->UserTypeEntity()->deleteUserTypeEntity($old['ENTITY_ID'], $old['FIELD_NAME']);
-                }
-                $this->outError('Пользовательское поле %s: удалено', $old['FIELD_NAME']);
+                $ok = ($this->testMode) ? true : $this->helper->UserTypeEntity()->deleteUserTypeEntity($old['ENTITY_ID'], $old['FIELD_NAME']);
+                $this->outErrorIf($ok, 'Пользовательское поле %s: удалено', $old['FIELD_NAME']);
             }
         }
     }

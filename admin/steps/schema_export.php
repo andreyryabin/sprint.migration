@@ -19,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
         $schemaManager->export();
 
         $ok = true;
+        $error = false;
 
     } catch (\Sprint\Migration\Exceptions\RestartException $e) {
 
@@ -33,9 +34,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
         <?
     } catch (\Exception $e) {
         \Sprint\Migration\Out::outErrorText($e->getMessage());
+        $error = true;
 
     } catch (\Throwable $e) {
         \Sprint\Migration\Out::outErrorText($e->getMessage());
+        $error = true;
     }
 
     $progress = $schemaManager->getProgress();
@@ -56,6 +59,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
         <?
     }
 
+    if ($error) {
+        ?>
+        <script>
+            schemaRefresh();
+        </script>
+        <?
+    }
 
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");

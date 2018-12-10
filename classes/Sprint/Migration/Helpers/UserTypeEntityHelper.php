@@ -154,7 +154,7 @@ class UserTypeEntityHelper extends Helper
         return $this->prepareExportUserTypeEntity($item);
     }
 
-    protected function prepareExportUserTypeEntity($item) {
+    public function prepareExportUserTypeEntity($item) {
         unset($item['ID']);
 
         return $item;

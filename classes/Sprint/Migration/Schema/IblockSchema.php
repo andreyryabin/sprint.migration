@@ -147,7 +147,7 @@ class IblockSchema extends AbstractSchema
 
 
         if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->helper->Iblock()->updateIblockType($fields['ID'], $fields);
+            $ok = ($this->testMode) ? true : $this->helper->Iblock()->updateIblockType($exists['ID'], $fields);
             $this->outSuccessIf($ok, 'Тип инфоблока %s: обновлен', $fields['ID']);
             return $ok;
         }
