@@ -21,11 +21,9 @@ class AgentSchema extends AbstractSchema
     }
 
     public function export() {
-        $agentHelper = new AgentHelper();
-        
         $this->deleteSchemas('agents');
 
-        $exportAgents = $agentHelper->exportAgents();
+        $exportAgents = $this->helper->Agent()->exportAgents();
 
         $this->saveSchema('agents', array(
             'items' => $exportAgents
@@ -54,9 +52,7 @@ class AgentSchema extends AbstractSchema
 
 
     protected function saveAgent($agent) {
-        $agentHelper = new AgentHelper();
-        
-        $exists = $agentHelper->exportAgent(array(
+        $exists = $this->helper->Agent()->exportAgent(array(
             'MODULE_ID' => $agent['MODULE_ID'],
             'NAME' => $agent['NAME']
         ));
@@ -64,7 +60,7 @@ class AgentSchema extends AbstractSchema
         if ($exists != $agent) {
 
             if (!$this->testMode) {
-                $agentHelper->saveAgent($agent);
+                $this->helper->Agent()->saveAgent($agent);
             }
 
             $this->outSuccess('Агент %s: сохранен', $agent['NAME']);
@@ -74,14 +70,12 @@ class AgentSchema extends AbstractSchema
     }
 
     protected function cleanAgents($skip = array()) {
-        $agentHelper = new AgentHelper();
-        
-        $olds = $agentHelper->getList();
+        $olds = $this->helper->Agent()->getList();
         foreach ($olds as $old) {
             $uniq = $this->getUniqAgent($old);
             if (!in_array($uniq, $skip)) {
                 if (!$this->testMode) {
-                    $agentHelper->deleteAgent($old['MODULE_ID'], $old['NAME']);
+                    $this->helper->Agent()->deleteAgent($old['MODULE_ID'], $old['NAME']);
                 }
                 $this->outError('Агент %s: удален', $old['NAME']);
             }
