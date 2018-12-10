@@ -41,7 +41,6 @@ class AgentSchema extends AbstractSchema
             $this->addToQueue('saveAgent', $agent);
         }
 
-
         $skip = array();
         foreach ($schemaAgents['items'] as $agent) {
             $skip[] = $this->getUniqAgent($agent);
@@ -58,12 +57,8 @@ class AgentSchema extends AbstractSchema
         ));
 
         if ($exists != $agent) {
-
-            if (!$this->testMode) {
-                $this->helper->Agent()->saveAgent($agent);
-            }
-
-            $this->outSuccess('Агент %s: сохранен', $agent['NAME']);
+            $ok = ($this->testMode) ? true : $this->helper->Agent()->saveAgent($agent);
+            $this->outSuccessIf($ok, 'Агент %s: сохранен', $agent['NAME']);
         } else {
             $this->out('Агент %s: совпадает', $agent['NAME']);
         }
@@ -74,10 +69,8 @@ class AgentSchema extends AbstractSchema
         foreach ($olds as $old) {
             $uniq = $this->getUniqAgent($old);
             if (!in_array($uniq, $skip)) {
-                if (!$this->testMode) {
-                    $this->helper->Agent()->deleteAgent($old['MODULE_ID'], $old['NAME']);
-                }
-                $this->outError('Агент %s: удален', $old['NAME']);
+                $ok = ($this->testMode) ? true : $this->helper->Agent()->deleteAgent($old['MODULE_ID'], $old['NAME']);
+                $this->outErrorIf($ok, 'Агент %s: удален', $old['NAME']);
             }
         }
     }
