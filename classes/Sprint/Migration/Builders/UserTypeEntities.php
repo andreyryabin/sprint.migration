@@ -53,11 +53,9 @@ class UserTypeEntities extends VersionBuilder
 
         $entities = array();
 
-        foreach ($typeCodes as $typeCode) {
+        foreach ($typeCodes as $fieldId) {
 
-            list($entityId, $fieldName) = explode(':', $typeCode);
-
-            $entity = $helper->UserTypeEntity()->getUserTypeEntity($entityId, $fieldName);
+            $entity = $helper->UserTypeEntity()->getUserTypeEntityById($fieldId);
             if (empty($entity)) {
                 continue;
             }
@@ -101,7 +99,7 @@ class UserTypeEntities extends VersionBuilder
 
             $structure[$entId]['items'][] = array(
                 'title' => $item['FIELD_NAME'],
-                'value' => $entId . ':' . $item['FIELD_NAME']
+                'value' => $item['ID']
             );
         }
 
