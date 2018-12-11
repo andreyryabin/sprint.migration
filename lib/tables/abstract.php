@@ -1,6 +1,9 @@
 <?php
 
-namespace Sprint\Migration;
+namespace Sprint\Migration\Tables;
+
+use Sprint\Migration\Module;
+use Sprint\Migration\Locale;
 
 abstract class AbstractTable
 {

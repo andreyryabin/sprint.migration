@@ -11,6 +11,11 @@ class AdminIblockHelper extends Helper
     private $props = array();
     private $iblock = array();
 
+    public function __construct() {
+        $this->checkModules(array('iblock'));
+    }
+
+
     public function extractElementForm($iblockId, $params = array()) {
         $result = $this->exportElementForm($iblockId, $params);
 

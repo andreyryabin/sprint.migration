@@ -33,6 +33,15 @@ class Helper
         Throw new HelperException($msg);
     }
 
+    public function checkModules($names = array()) {
+        $names = is_array($names) ? $names : array($names);
+        foreach ($names as $name) {
+            if (!\CModule::IncludeModule($name)) {
+                $this->throwException(__METHOD__, "module %s not installed", $name);
+            }
+        }
+    }
+
     public function checkRequiredKeys($method, $fields, $reqKeys = array()) {
         foreach ($reqKeys as $name) {
             if (empty($fields[$name])) {

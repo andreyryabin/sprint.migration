@@ -132,7 +132,7 @@ class Console
             );
         }
 
-        $table = new ConsoleTable(-1, array(
+        $table = new Outgrid(-1, array(
             'horizontal' => '=',
             'vertical' => '',
             'intersection' => ''
@@ -161,7 +161,7 @@ class Console
 
         Out::out($table->getTable());
 
-        $table = new ConsoleTable(-1, '', 1, 'UTF-8');
+        $table = new Outgrid(-1, '', 1, 'UTF-8');
         foreach ($summary as $k => $v) {
             $table->addRow(array(
                 GetMessage('SPRINT_MIGRATION_META_' . strtoupper($k)) . ':',
@@ -270,7 +270,7 @@ class Console
             $configTitle
         );
 
-        $table = new ConsoleTable(-1, array(
+        $table = new Outgrid(-1, array(
             'horizontal' => '=',
             'vertical' => '',
             'intersection' => ''

@@ -21,7 +21,6 @@ Class sprint_migration extends CModule
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
 
-        include(__DIR__ . '/../loader.php');
         include(__DIR__ . '/../locale/ru.php');
 
         $this->MODULE_NAME = GetMessage("SPRINT_MIGRATION_MODULE_NAME");

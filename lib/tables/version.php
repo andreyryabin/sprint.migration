@@ -1,6 +1,6 @@
 <?php
 
-namespace Sprint\Migration;
+namespace Sprint\Migration\Tables;
 
 class VersionTable extends AbstractTable
 {

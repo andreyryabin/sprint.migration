@@ -11,7 +11,8 @@ class FormHelper extends Helper
     private $db;
 
     public function __construct() {
-        \CModule::IncludeModule('form');
+        $this->checkModules(array('form'));
+
         global $DB;
         $this->db = $DB;
     }

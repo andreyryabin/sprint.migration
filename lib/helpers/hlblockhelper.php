@@ -4,7 +4,6 @@ namespace Sprint\Migration\Helpers;
 
 use Sprint\Migration\Helper;
 
-use Bitrix\Main\Loader;
 use Bitrix\Highloadblock as HL;
 
 
@@ -12,7 +11,7 @@ class HlblockHelper extends Helper
 {
 
     public function __construct() {
-        Loader::includeModule('highloadblock');
+        $this->checkModules(array('highloadblock'));
     }
 
     public function getHlblocks($filter = array()) {

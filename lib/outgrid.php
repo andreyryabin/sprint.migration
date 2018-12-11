@@ -58,13 +58,13 @@
  * Помолился богам опенсорса
  *
  * @category Sprint\Migration
- * @package  ConsoleTable
+ * @package  Outgrid
  * @author   Andrey Ryabin <andreyryabin@yandex.ru>
  */
 
 namespace Sprint\Migration;
 
-class ConsoleTable
+class Outgrid
 {
 
     const CONSOLE_TABLE_HORIZONTAL_RULE = 1;
@@ -213,34 +213,6 @@ class ConsoleTable
         }
     }
 
-    /**
-     * Converts an array to a table.
-     *
-     * @param array $headers Headers for the table.
-     * @param array $data A two dimensional array with the table
-     *                              data.
-     * @param boolean $returnObject Whether to return the Console_Table object
-     *                              instead of the rendered table.
-     *
-     * @static
-     *
-     * @return Console_Table|string  A Console_Table object or the generated
-     *                               table.
-     */
-    function fromArray($headers, $data, $returnObject = false) {
-        if (!is_array($headers) || !is_array($data)) {
-            return false;
-        }
-
-        $table = new Console_Table();
-        $table->setHeaders($headers);
-
-        foreach ($data as $row) {
-            $table->addRow($row);
-        }
-
-        return $returnObject ? $table : $table->getTable();
-    }
 
     /**
      * Adds a filter to a column.

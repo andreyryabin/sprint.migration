@@ -7,6 +7,9 @@ use Sprint\Migration\Helper;
 class IblockHelper extends Helper
 {
 
+    public function __construct() {
+        $this->checkModules(array('iblock'));
+    }
 
     public function getIblockTypeIfExists($typeId) {
         $item = $this->getIblockType($typeId);

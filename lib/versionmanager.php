@@ -5,6 +5,8 @@ namespace Sprint\Migration;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exceptions\MigrationException;
 
+use Sprint\Migration\Tables\VersionTable;
+
 class VersionManager
 {
 
