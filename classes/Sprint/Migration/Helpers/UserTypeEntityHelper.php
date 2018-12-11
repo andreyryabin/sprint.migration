@@ -6,6 +6,10 @@ use Sprint\Migration\Helper;
 
 class UserTypeEntityHelper extends Helper
 {
+
+    private $transf = [];
+    private $revert = [];
+
     public function addUserTypeEntitiesIfNotExists($entityId, array $fields) {
         foreach ($fields as $field) {
             $this->addUserTypeEntityIfNotExists($entityId, $field["FIELD_NAME"], $field);
@@ -267,8 +271,27 @@ class UserTypeEntityHelper extends Helper
         return false;
     }
 
-
     public function revertEntityId($entityId) {
+        if (!isset($this->revert[$entityId])) {
+            $newval = $this->doRevertEntityId($entityId);
+            $this->revert[$entityId] = $newval;
+            $this->transf[$newval] = $entityId;
+        }
+
+        return $this->revert[$entityId];
+    }
+
+    public function transformEntityId($entityId) {
+        if (!isset($this->transf[$entityId])) {
+            $newval = $this->doTransformEntityId($entityId);
+            $this->transf[$entityId] = $newval;
+            $this->revert[$newval] = $entityId;
+        }
+
+        return $this->transf[$entityId];
+    }
+
+    protected function doRevertEntityId($entityId) {
         if (0 === strpos($entityId, 'HLBLOCK_')) {
             $hlblockName = substr($entityId, 8);
 
@@ -279,11 +302,10 @@ class UserTypeEntityHelper extends Helper
                 $entityId = 'HLBLOCK_' . $hlblock['ID'];
             }
         }
-
         return $entityId;
     }
 
-    public function transformEntityId($entityId) {
+    protected function doTransformEntityId($entityId) {
         if (0 === strpos($entityId, 'HLBLOCK_')) {
             $hlblockId = intval(substr($entityId, 8));
 
@@ -294,7 +316,6 @@ class UserTypeEntityHelper extends Helper
                 $entityId = 'HLBLOCK_' . $hlblock['NAME'];
             }
         }
-
         return $entityId;
     }
 

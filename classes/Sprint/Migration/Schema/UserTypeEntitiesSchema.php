@@ -2,14 +2,22 @@
 
 namespace Sprint\Migration\Schema;
 
-use \Sprint\Migration\AbstractSchema;
+use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\HelperManager;
 
 class UserTypeEntitiesSchema extends AbstractSchema
 {
 
+    /** @var HelperManager */
+    private $helper;
+
     protected function initialize() {
         $this->setTitle('Схема пользовательских полей');
+        $this->helper = new HelperManager();
+    }
+
+    protected function UserTypeEntity() {
+        return $this->helper->UserTypeEntity();
     }
 
     public function outDescription() {
@@ -21,11 +29,9 @@ class UserTypeEntitiesSchema extends AbstractSchema
     }
 
     public function export() {
-        $helper = new HelperManager();
-
         $this->deleteSchemas('user_type_entities');
 
-        $exportItems = $helper->UserTypeEntity()->exportUserTypeEntities(true);
+        $exportItems = $this->UserTypeEntity()->exportUserTypeEntities(true);
 
         $this->saveSchema('user_type_entities', array(
             'items' => $exportItems
@@ -54,24 +60,22 @@ class UserTypeEntitiesSchema extends AbstractSchema
 
 
     protected function saveUserTypeEntity($fields) {
-        $helper = new HelperManager();
+        $this->UserTypeEntity()->checkRequiredKeys(__METHOD__, $fields, array('ENTITY_ID', 'FIELD_NAME'));
 
-        $helper->UserTypeEntity()->checkRequiredKeys(__METHOD__, $fields, array('ENTITY_ID', 'FIELD_NAME'));
-
-        $fields['ENTITY_ID'] = $helper->UserTypeEntity()->revertEntityId(
+        $fields['ENTITY_ID'] = $this->UserTypeEntity()->revertEntityId(
             $fields['ENTITY_ID']
         );
 
-        $exists = $helper->UserTypeEntity()->getUserTypeEntity(
+        $exists = $this->UserTypeEntity()->getUserTypeEntity(
             $fields['ENTITY_ID'],
             $fields['FIELD_NAME']
         );
 
-        $exportExists = $helper->UserTypeEntity()->prepareExportUserTypeEntity($exists, false);
-        $fields = $helper->UserTypeEntity()->prepareExportUserTypeEntity($fields, false);
+        $exportExists = $this->UserTypeEntity()->prepareExportUserTypeEntity($exists, false);
+        $fields = $this->UserTypeEntity()->prepareExportUserTypeEntity($fields, false);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $helper->UserTypeEntity()->addUserTypeEntity(
+            $ok = ($this->testMode) ? true : $this->UserTypeEntity()->addUserTypeEntity(
                 $fields['ENTITY_ID'],
                 $fields['FIELD_NAME'],
                 $fields
@@ -85,7 +89,7 @@ class UserTypeEntitiesSchema extends AbstractSchema
         unset($fields['MULTIPLE']);
 
         if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $helper->UserTypeEntity()->updateUserTypeEntity($exists['ID'], $fields);
+            $ok = ($this->testMode) ? true : $this->UserTypeEntity()->updateUserTypeEntity($exists['ID'], $fields);
             $this->outSuccessIf($ok, 'Пользовательское поле %s: обновлено', $fields['FIELD_NAME']);
             return $ok;
         }
@@ -98,21 +102,20 @@ class UserTypeEntitiesSchema extends AbstractSchema
     }
 
     protected function clearUserTypeEntities($skip = array()) {
-        $helper = new HelperManager();
-
-        $olds = $helper->UserTypeEntity()->exportUserTypeEntities(true);
+        $olds = $this->UserTypeEntity()->exportUserTypeEntities(true);
 
         foreach ($olds as $old) {
             $uniq = $this->getUniqEntity($old);
             if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $helper->UserTypeEntity()->deleteUserTypeEntity($old['ENTITY_ID'], $old['FIELD_NAME']);
+                $ok = ($this->testMode) ? true : $this->UserTypeEntity()->deleteUserTypeEntity($old['ENTITY_ID'], $old['FIELD_NAME']);
                 $this->outErrorIf($ok, 'Пользовательское поле %s: удалено', $old['FIELD_NAME']);
             }
         }
     }
 
     protected function getUniqEntity($item) {
-        return $item['ENTITY_ID'] . $item['FIELD_NAME'];
+        return $this->UserTypeEntity()->transformEntityId($item['ENTITY_ID']) . $item['FIELD_NAME'];
     }
+
 
 }
