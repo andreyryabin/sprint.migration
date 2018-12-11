@@ -9,6 +9,10 @@ use Sprint\Migration\HelperManager;
 class GroupSchema extends AbstractSchema
 {
 
+    protected function isBuilderEnabled() {
+        return true;
+    }
+
     protected function initialize() {
         $this->setTitle('Схема групп пользователей');
     }

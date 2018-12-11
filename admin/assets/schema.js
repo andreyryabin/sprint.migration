@@ -127,7 +127,6 @@ jQuery(document).ready(function ($) {
             schemaProgressReset();
             schemaExecuteStep('schema_import');
         }
-
     });
 
 });

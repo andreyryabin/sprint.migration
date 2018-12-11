@@ -19,6 +19,8 @@ abstract class AbstractSchema
         'title' => '',
     );
 
+    private $enabled = false;
+
     abstract public function export();
 
     abstract public function import();
@@ -31,8 +33,15 @@ abstract class AbstractSchema
         $this->versionConfig = $versionConfig;
         $this->name = $name;
         $this->params = $params;
+        $this->enabled = $this->isBuilderEnabled();
 
         $this->initialize();
+    }
+
+    protected function isBuilderEnabled() {
+        //your code
+
+        return false;
     }
 
     public function setTestMode($testMode = 1) {
@@ -41,6 +50,10 @@ abstract class AbstractSchema
 
     public function getName() {
         return $this->name;
+    }
+
+    public function isEnabled() {
+        return $this->enabled;
     }
 
     protected function setTitle($title = '') {

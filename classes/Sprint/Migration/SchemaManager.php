@@ -31,8 +31,10 @@ class SchemaManager
 
         foreach ($schemas as $name) {
             $schema = $this->createSchema($name);
-            $this->outSuccess($schema->getTitle());
-            $schema->outDescription();
+            if ($schema->isEnabled()) {
+                $this->outSuccess($schema->getTitle());
+                $schema->outDescription();
+            }
         }
     }
 
@@ -94,11 +96,18 @@ class SchemaManager
 
     protected function exportSchema($name) {
         $schema = $this->createSchema($name);
-        $schema->export();
+        if ($schema->isEnabled()) {
+            $schema->export();
+        }
+
     }
 
     protected function importSchema($name) {
         $schema = $this->createSchema($name);
+        if (!$schema->isEnabled()) {
+            return false;
+        }
+
         $schema->setTestMode($this->testMode);
 
         if (!isset($this->params['index'])) {

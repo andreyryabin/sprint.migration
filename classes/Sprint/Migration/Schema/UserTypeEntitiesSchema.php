@@ -16,6 +16,10 @@ class UserTypeEntitiesSchema extends AbstractSchema
         $this->helper = new HelperManager();
     }
 
+    protected function isBuilderEnabled() {
+        return true;
+    }
+
     protected function UserTypeEntity() {
         return $this->helper->UserTypeEntity();
     }

@@ -10,6 +10,10 @@ class IblockSchema extends AbstractSchema
 
     private $cache = array();
 
+    protected function isBuilderEnabled() {
+        return (\CModule::IncludeModule('iblock'));
+    }
+
     protected function initialize() {
         $this->setTitle('Схема инфоблоков');
     }
