@@ -146,7 +146,7 @@ class AdminIblockHelper extends Helper
                     $ftitle = $fieldValue;
                 }
 
-                $fcode = $this->prepareCode($fcode);
+                $fcode = $this->transformCode($fcode);
                 $ftitle = $this->prepareTitle($fcode, $ftitle);
 
                 $tabVals[$tabIndex][] = '--' . $fcode . '--#--' . $ftitle . '--';
@@ -185,7 +185,7 @@ class AdminIblockHelper extends Helper
 
         $opts = array();
         foreach ($columns as $columnCode) {
-            $opts[] = $this->prepareCode($columnCode);
+            $opts[] = $this->transformCode($columnCode);
         }
         $opts = implode(',', $opts);
 
@@ -276,7 +276,7 @@ class AdminIblockHelper extends Helper
         return $fieldCode;
     }
 
-    protected function prepareCode($fieldCode) {
+    protected function transformCode($fieldCode) {
         if (0 === strpos($fieldCode, 'PROPERTY_')) {
             $fieldCode = substr($fieldCode, 9);
             foreach ($this->props as $prop) {

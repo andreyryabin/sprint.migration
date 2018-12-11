@@ -19,9 +19,6 @@ abstract class AbstractSchema
         'title' => '',
     );
 
-    /**@var HelperManager */
-    protected $helper;
-
     abstract public function export();
 
     abstract public function import();
@@ -31,8 +28,6 @@ abstract class AbstractSchema
     abstract public function outDescription();
 
     public function __construct(VersionConfig $versionConfig, $name, $params = array()) {
-        $this->helper = new HelperManager();
-
         $this->versionConfig = $versionConfig;
         $this->name = $name;
         $this->params = $params;
@@ -215,4 +210,5 @@ abstract class AbstractSchema
     protected function getVersionConfig() {
         return $this->versionConfig;
     }
+
 }

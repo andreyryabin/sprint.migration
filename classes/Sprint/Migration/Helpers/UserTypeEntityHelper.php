@@ -28,6 +28,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     public function addUserTypeEntity($entityId, $fieldName, $fields) {
+
         $default = array(
             "ENTITY_ID" => '',
             "FIELD_NAME" => '',
@@ -79,30 +80,34 @@ class UserTypeEntityHelper extends Helper
         }
     }
 
-    public function updateUserTypeEntity($id, $fields) {
+    public function updateUserTypeEntity($fieldId, $fields) {
         $enums = array();
         if (isset($fields['ENUM_VALUES'])) {
             $enums = $fields['ENUM_VALUES'];
             unset($fields['ENUM_VALUES']);
         }
 
+        unset($fields["ENTITY_ID"]);
+        unset($fields["FIELD_NAME"]);
+        unset($fields["MULTIPLE"]);
+
         $entity = new \CUserTypeEntity;
-        $userFieldUpdated = $entity->Update($id, $fields);
+        $userFieldUpdated = $entity->Update($fieldId, $fields);
 
         $enumsCreated = true;
         if ($userFieldUpdated && $fields['USER_TYPE_ID'] == 'enumeration') {
-            $enumsCreated = $this->setUserTypeEntityEnumValues($id, $enums);
+            $enumsCreated = $this->setUserTypeEntityEnumValues($fieldId, $enums);
         }
 
         if ($userFieldUpdated && $enumsCreated) {
-            return $id;
+            return $fieldId;
         }
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
         if ($APPLICATION->GetException()) {
             $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
         } else {
-            $this->throwException(__METHOD__, 'UserType %s not updated', $id);
+            $this->throwException(__METHOD__, 'UserType %s not updated', $fieldId);
         }
     }
 
@@ -117,46 +122,46 @@ class UserTypeEntityHelper extends Helper
     }
 
     public function getUserTypeEntities($entityId = false) {
-        $filter = array();
-
-        if ($entityId) {
+        if (!empty($entityId)) {
             $filter = is_array($entityId) ? $entityId : array(
                 'ENTITY_ID' => $entityId
             );
+        } else {
+            $filter = array();
         }
+
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbres = \CUserTypeEntity::GetList(array(), $filter);
         $result = array();
         while ($item = $dbres->Fetch()) {
             $result[] = $this->getUserTypeEntityById($item['ID']);
+
         }
         return $result;
     }
 
-    public function exportUserTypeEntities() {
+    public function exportUserTypeEntities($transformEntityId = false) {
         $items = $this->getUserTypeEntities();
-
-        $exportItems = array();
+        $export = array();
         foreach ($items as $item) {
-            $exportItems[] = $this->prepareExportUserTypeEntity($item);
+            $export[] = $this->prepareExportUserTypeEntity($item, $transformEntityId);
         }
-
-        return $exportItems;
+        return $export;
     }
 
-    public function exportUserTypeEntity($entityId, $fieldName) {
-        $item = $this->getUserTypeEntity($entityId, $fieldName);
+    public function prepareExportUserTypeEntity($item, $transformEntityId = false) {
         if (empty($item)) {
-            return false;
+            return $item;
         }
 
-        return $this->prepareExportUserTypeEntity($item);
-    }
+        if ($transformEntityId) {
+            $item['ENTITY_ID'] = $this->transformEntityId(
+                $item['ENTITY_ID']
+            );
+        }
 
-    public function prepareExportUserTypeEntity($item) {
         unset($item['ID']);
-
         return $item;
     }
 
@@ -168,6 +173,19 @@ class UserTypeEntityHelper extends Helper
         ))->Fetch();
 
         return (!empty($item)) ? $this->getUserTypeEntityById($item['ID']) : false;
+    }
+
+    public function getUserTypeEntityById($fieldId) {
+        $item = \CUserTypeEntity::GetByID($fieldId);
+        if (empty($item)) {
+            return false;
+        }
+
+        if ($item['USER_TYPE_ID'] == 'enumeration') {
+            $item['ENUM_VALUES'] = $this->getEnumValues($fieldId, false);
+        }
+
+        return $item;
     }
 
     public function setUserTypeEntityEnumValues($fieldId, $newenums) {
@@ -219,16 +237,6 @@ class UserTypeEntityHelper extends Helper
         return $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
     }
 
-    public function getUserTypeEntityById($fieldId) {
-        $item = \CUserTypeEntity::GetByID($fieldId);
-
-        if ($item && $item['USER_TYPE_ID'] == 'enumeration') {
-            $item['ENUM_VALUES'] = $this->getEnumValues($fieldId, false);
-        }
-
-        return $item;
-    }
-
     protected function getEnumValues($fieldId, $full = false) {
         $obEnum = new \CUserFieldEnum;
         $dbres = $obEnum->GetList(array(), array("USER_FIELD_ID" => $fieldId));
@@ -260,15 +268,47 @@ class UserTypeEntityHelper extends Helper
     }
 
 
+    public function revertEntityId($entityId) {
+        if (0 === strpos($entityId, 'HLBLOCK_')) {
+            $hlblockName = substr($entityId, 8);
+
+            $hlhelper = new HlblockHelper();
+            $hlblock = $hlhelper->getHlblock($hlblockName);
+
+            if ($hlblock) {
+                $entityId = 'HLBLOCK_' . $hlblock['ID'];
+            }
+        }
+
+        return $entityId;
+    }
+
+    public function transformEntityId($entityId) {
+        if (0 === strpos($entityId, 'HLBLOCK_')) {
+            $hlblockId = intval(substr($entityId, 8));
+
+            $hlhelper = new HlblockHelper();
+            $hlblock = $hlhelper->getHlblock($hlblockId);
+
+            if ($hlblock) {
+                $entityId = 'HLBLOCK_' . $hlblock['NAME'];
+            }
+        }
+
+        return $entityId;
+    }
+
     //version 2
 
-    public function saveUserTypeEntity($entityId, $fieldName, $fields) {
+    public function saveUserTypeEntity($entityId, $fieldName, $fields = array()) {
+        $entityId = $this->revertEntityId($entityId);
+
         $item = $this->getUserTypeEntity($entityId, $fieldName);
         if ($item) {
             return $this->updateUserTypeEntity($item['ID'], $fields);
         } else {
             return $this->addUserTypeEntity($entityId, $fieldName, $fields);
         }
-
     }
+
 }

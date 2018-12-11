@@ -2,7 +2,8 @@
 
 namespace Sprint\Migration\Schema;
 
-use \Sprint\Migration\AbstractSchema;
+use Sprint\Migration\AbstractSchema;
+use Sprint\Migration\HelperManager;
 
 class IblockSchema extends AbstractSchema
 {
@@ -44,26 +45,28 @@ class IblockSchema extends AbstractSchema
     }
 
     public function export() {
+        $helper = new HelperManager();
+
         $this->deleteSchemas(array('iblock_types', 'iblocks/'));
 
-        $types = $this->helper->Iblock()->getIblockTypes();
+        $types = $helper->Iblock()->getIblockTypes();
         $exportTypes = array();
         foreach ($types as $type) {
-            $exportTypes[] = $this->helper->Iblock()->exportIblockType($type['ID']);
+            $exportTypes[] = $helper->Iblock()->exportIblockType($type['ID']);
         }
 
         $this->saveSchema('iblock_types', array(
             'items' => $exportTypes
         ));
 
-        $iblocks = $this->helper->Iblock()->getIblocks();
+        $iblocks = $helper->Iblock()->getIblocks();
         foreach ($iblocks as $iblock) {
             if (!empty($iblock['CODE'])) {
                 $this->saveSchema('iblocks/' . $iblock['IBLOCK_TYPE_ID'] . '-' . $iblock['CODE'], array(
-                    'iblock' => $this->helper->Iblock()->exportIblock($iblock['ID']),
-                    'fields' => $this->helper->Iblock()->exportIblockFields($iblock['ID']),
-                    'props' => $this->helper->Iblock()->exportProperties($iblock['ID']),
-                    'element_form' => $this->helper->AdminIblock()->exportElementForm($iblock['ID'])
+                    'iblock' => $helper->Iblock()->exportIblock($iblock['ID']),
+                    'fields' => $helper->Iblock()->exportIblockFields($iblock['ID']),
+                    'props' => $helper->Iblock()->exportProperties($iblock['ID']),
+                    'element_form' => $helper->AdminIblock()->exportElementForm($iblock['ID'])
                 ));
             }
         }
@@ -133,21 +136,23 @@ class IblockSchema extends AbstractSchema
 
 
     protected function saveIblockType($fields = array()) {
-        $this->helper->Iblock()->checkRequiredKeys(__METHOD__, $fields, array('ID'));
+        $helper = new HelperManager();
 
-        $exists = $this->helper->Iblock()->getIblockType($fields['ID']);
-        $exportExists = $this->helper->Iblock()->prepareExportIblockType($exists);
-        $fields = $this->helper->Iblock()->prepareExportIblockType($fields);
+        $helper->Iblock()->checkRequiredKeys(__METHOD__, $fields, array('ID'));
+
+        $exists = $helper->Iblock()->getIblockType($fields['ID']);
+        $exportExists = $helper->Iblock()->prepareExportIblockType($exists);
+        $fields = $helper->Iblock()->prepareExportIblockType($fields);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->helper->Iblock()->addIblockType($fields);
+            $ok = ($this->testMode) ? true : $helper->Iblock()->addIblockType($fields);
             $this->outSuccessIf($ok, 'Тип инфоблока %s: добавлен', $fields['ID']);
             return $ok;
         }
 
 
         if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->helper->Iblock()->updateIblockType($exists['ID'], $fields);
+            $ok = ($this->testMode) ? true : $helper->Iblock()->updateIblockType($exists['ID'], $fields);
             $this->outSuccessIf($ok, 'Тип инфоблока %s: обновлен', $fields['ID']);
             return $ok;
         }
@@ -159,20 +164,22 @@ class IblockSchema extends AbstractSchema
     }
 
     protected function saveIblock($iblockId, $fields) {
-        $this->helper->Iblock()->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID'));
+        $helper = new HelperManager();
 
-        $exists = $this->helper->Iblock()->getIblock($fields['CODE'], $fields['IBLOCK_TYPE_ID']);
-        $exportExists = $this->helper->Iblock()->prepareExportIblock($exists);
-        $fields = $this->helper->Iblock()->prepareExportIblock($fields);
+        $helper->Iblock()->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID'));
+
+        $exists = $helper->Iblock()->getIblock($fields['CODE'], $fields['IBLOCK_TYPE_ID']);
+        $exportExists = $helper->Iblock()->prepareExportIblock($exists);
+        $fields = $helper->Iblock()->prepareExportIblock($fields);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->helper->Iblock()->addIblock($fields);
+            $ok = ($this->testMode) ? true : $helper->Iblock()->addIblock($fields);
             $this->outSuccessIf($ok, 'Инфоблок %s: добавлен', $fields['CODE']);
             return $ok;
         }
 
         if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->helper->Iblock()->updateIblock($exists['ID'], $fields);
+            $ok = ($this->testMode) ? true : $helper->Iblock()->updateIblock($exists['ID'], $fields);
             $this->outSuccessIf($ok, 'Инфоблок %s: обновлен', $fields['CODE']);
             return $ok;
         }
@@ -183,21 +190,23 @@ class IblockSchema extends AbstractSchema
     }
 
     protected function saveIblockFields($iblockId, $fields) {
+        $helper = new HelperManager();
+
         $exists = \CIBlock::GetFields($iblockId);
 
-        $exportExists = $this->helper->Iblock()->prepareExportIblockFields($exists);
-        $fields = $this->helper->Iblock()->prepareExportIblockFields($fields);
+        $exportExists = $helper->Iblock()->prepareExportIblockFields($exists);
+        $fields = $helper->Iblock()->prepareExportIblockFields($fields);
 
         $fields = array_replace_recursive($exportExists, $fields);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->helper->Iblock()->updateIblockFields($iblockId, $fields);
+            $ok = ($this->testMode) ? true : $helper->Iblock()->updateIblockFields($iblockId, $fields);
             $this->outSuccessIf($ok, 'Инфоблок %s: поля добавлены', $iblockId);
             return $ok;
         }
 
         if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->helper->Iblock()->updateIblockFields($iblockId, $fields);
+            $ok = ($this->testMode) ? true : $helper->Iblock()->updateIblockFields($iblockId, $fields);
             $this->outSuccessIf($ok, 'Инфоблок %s: поля обновлены', $iblockId);
             return $ok;
         }
@@ -207,21 +216,23 @@ class IblockSchema extends AbstractSchema
     }
 
     protected function saveProperty($iblockId, $fields) {
-        $this->helper->Iblock()->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
+        $helper = new HelperManager();
 
-        $exists = $this->helper->Iblock()->getProperty($iblockId, $fields['CODE']);
-        $exportExists = $this->helper->Iblock()->prepareExportProperty($exists);
-        $fields = $this->helper->Iblock()->prepareExportProperty($fields);
+        $helper->Iblock()->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
+
+        $exists = $helper->Iblock()->getProperty($iblockId, $fields['CODE']);
+        $exportExists = $helper->Iblock()->prepareExportProperty($exists);
+        $fields = $helper->Iblock()->prepareExportProperty($fields);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->helper->Iblock()->addProperty($iblockId, $fields);
+            $ok = ($this->testMode) ? true : $helper->Iblock()->addProperty($iblockId, $fields);
             $this->outSuccessIf($ok, 'Инфоблок %s: свойство %s добавлено', $iblockId, $fields['CODE']);
             return $ok;
         }
 
 
         if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->helper->Iblock()->updatePropertyById($exists['ID'], $fields);
+            $ok = ($this->testMode) ? true : $helper->Iblock()->updatePropertyById($exists['ID'], $fields);
             $this->outSuccessIf($ok, 'Инфоблок %s: свойство %s обновлено', $iblockId, $fields['CODE']);
             return $ok;
         }
@@ -232,9 +243,11 @@ class IblockSchema extends AbstractSchema
     }
 
     protected function saveElementForm($iblockId, $elementForm) {
-        $exists = $this->helper->AdminIblock()->exportElementForm($iblockId);
+        $helper = new HelperManager();
+
+        $exists = $helper->AdminIblock()->exportElementForm($iblockId);
         if ($exists != $elementForm) {
-            $ok = ($this->testMode) ? true : $this->helper->AdminIblock()->saveElementForm($iblockId, $elementForm);
+            $ok = ($this->testMode) ? true : $helper->AdminIblock()->saveElementForm($iblockId, $elementForm);
             $this->outSuccessIf($ok, 'Инфоблок %s: форма редактирования сохранена', $iblockId);
         } else {
             $this->out('Инфоблок %s: форма редактирования cовпадает', $iblockId);
@@ -243,33 +256,39 @@ class IblockSchema extends AbstractSchema
 
 
     protected function cleanProperties($iblockId, $skip = array()) {
-        $olds = $this->helper->Iblock()->getProperties($iblockId);
+        $helper = new HelperManager();
+
+        $olds = $helper->Iblock()->getProperties($iblockId);
         foreach ($olds as $old) {
             $uniq = $this->getUniqProp($old);
             if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $this->helper->Iblock()->deletePropertyById($old['ID']);
+                $ok = ($this->testMode) ? true : $helper->Iblock()->deletePropertyById($old['ID']);
                 $this->outErrorIf($ok, 'Инфоблок %s: свойство %s удалено', $iblockId, $this->getTitleProp($old));
             }
         }
     }
 
     protected function cleanIblockTypes($skip = array()) {
-        $olds = $this->helper->Iblock()->getIblockTypes();
+        $helper = new HelperManager();
+
+        $olds = $helper->Iblock()->getIblockTypes();
         foreach ($olds as $old) {
             $uniq = $this->getUniqIblockType($old);
             if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $this->helper->Iblock()->deleteIblockType($old['ID']);
+                $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblockType($old['ID']);
                 $this->outErrorIf($ok, 'Тип инфоблока %s: удален', $old['ID']);
             }
         }
     }
 
     protected function cleanIblocks($skip = array()) {
-        $olds = $this->helper->Iblock()->getIblocks();
+        $helper = new HelperManager();
+
+        $olds = $helper->Iblock()->getIblocks();
         foreach ($olds as $old) {
             $uniq = $this->getUniqIblock($old);
             if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $this->helper->Iblock()->deleteIblock($old['ID']);
+                $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblock($old['ID']);
                 $this->outError($ok, 'Инфоблок %s: удален', $old['ID']);
             }
         }
@@ -293,9 +312,11 @@ class IblockSchema extends AbstractSchema
     }
 
     protected function getIblockId($iblock) {
+        $helper = new HelperManager();
+
         $uniq = $this->getUniqIblock($iblock);
         if (!isset($this->cache[$uniq])) {
-            $this->cache[$uniq] = $this->helper->Iblock()->getIblockId(
+            $this->cache[$uniq] = $helper->Iblock()->getIblockId(
                 $iblock['CODE'],
                 $iblock['IBLOCK_TYPE_ID']
             );

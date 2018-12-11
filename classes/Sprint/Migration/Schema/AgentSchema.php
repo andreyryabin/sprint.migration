@@ -4,6 +4,7 @@ namespace Sprint\Migration\Schema;
 
 use \Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Helpers\AgentHelper;
+use Sprint\Migration\HelperManager;
 
 class AgentSchema extends AbstractSchema
 {
@@ -21,9 +22,11 @@ class AgentSchema extends AbstractSchema
     }
 
     public function export() {
+        $helper = new HelperManager();
+        
         $this->deleteSchemas('agents');
 
-        $exportAgents = $this->helper->Agent()->exportAgents();
+        $exportAgents = $helper->Agent()->exportAgents();
 
         $this->saveSchema('agents', array(
             'items' => $exportAgents
@@ -51,13 +54,15 @@ class AgentSchema extends AbstractSchema
 
 
     protected function saveAgent($agent) {
-        $exists = $this->helper->Agent()->exportAgent(array(
+        $helper = new HelperManager();
+
+        $exists = $helper->Agent()->exportAgent(array(
             'MODULE_ID' => $agent['MODULE_ID'],
             'NAME' => $agent['NAME']
         ));
 
         if ($exists != $agent) {
-            $ok = ($this->testMode) ? true : $this->helper->Agent()->saveAgent($agent);
+            $ok = ($this->testMode) ? true : $helper->Agent()->saveAgent($agent);
             $this->outSuccessIf($ok, 'Агент %s: сохранен', $agent['NAME']);
         } else {
             $this->out('Агент %s: совпадает', $agent['NAME']);
@@ -65,11 +70,13 @@ class AgentSchema extends AbstractSchema
     }
 
     protected function cleanAgents($skip = array()) {
-        $olds = $this->helper->Agent()->getList();
+        $helper = new HelperManager();
+
+        $olds = $helper->Agent()->getList();
         foreach ($olds as $old) {
             $uniq = $this->getUniqAgent($old);
             if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $this->helper->Agent()->deleteAgent($old['MODULE_ID'], $old['NAME']);
+                $ok = ($this->testMode) ? true : $helper->Agent()->deleteAgent($old['MODULE_ID'], $old['NAME']);
                 $this->outErrorIf($ok, 'Агент %s: удален', $old['NAME']);
             }
         }
