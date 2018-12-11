@@ -8,7 +8,7 @@ class UserGroupHelper extends Helper
 {
 
 
-    public function getGroupsByFilter($filter = array()) {
+    public function getGroups($filter = array()) {
         $by = 'c_sort';
         $order = 'asc';
 
@@ -21,6 +21,27 @@ class UserGroupHelper extends Helper
         }
 
         return $res;
+
+    }
+
+    public function exportGroups($filter = array()) {
+        $items = $this->getGroups($filter);
+        $exportItems = array();
+        foreach ($items as $item) {
+            $exportItems[] = $this->prepareExportGroup($item);
+        }
+        return $exportItems;
+    }
+
+    public function prepareExportGroup($item) {
+        if (empty($item)) {
+            return $item;
+        }
+
+        unset($item['ID']);
+        unset($item['TIMESTAMP_X']);
+
+        return $item;
     }
 
     public function getGroupCode($id) {
@@ -58,6 +79,12 @@ class UserGroupHelper extends Helper
 
         return $item;
 
+    }
+
+    public function exportGroup($code) {
+        return $this->prepareExportGroup(
+            $this->getGroup($code)
+        );
     }
 
     public function saveGroup($code, $fields = array()) {
@@ -115,11 +142,27 @@ class UserGroupHelper extends Helper
         $this->throwException(__METHOD__, $group->LAST_ERROR);
     }
 
+    public function deleteGroup($code) {
+        $groupId = $this->getGroupId($code);
+        if (empty($groupId)) {
+            return false;
+        }
+
+        $group = new \CGroup;
+        $group->Delete($groupId);
+        return true;
+    }
+
     protected function prepareFields($fields) {
         if (!empty($fields['SECURITY_POLICY']) && is_array($fields['SECURITY_POLICY'])) {
             $fields['SECURITY_POLICY'] = serialize($fields['SECURITY_POLICY']);
         }
 
         return $fields;
+    }
+
+    /** @deprecated */
+    public function getGroupsByFilter($filter = array()) {
+        return $this->getGroups($filter);
     }
 }

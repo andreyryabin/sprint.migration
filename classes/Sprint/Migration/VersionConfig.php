@@ -300,6 +300,7 @@ class VersionConfig
             'IblockSchema' => '\Sprint\Migration\Schema\IblockSchema',
             'UserTypeEntitiesSchema' => '\Sprint\Migration\Schema\UserTypeEntitiesSchema',
             'AgentSchema' => '\Sprint\Migration\Schema\AgentSchema',
+            'GroupSchema' => '\Sprint\Migration\Schema\GroupSchema',
         );
 
     }

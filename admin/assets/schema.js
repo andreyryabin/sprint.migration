@@ -122,9 +122,12 @@ jQuery(document).ready(function ($) {
     $container.on('click', '.sp-schema-import', function (e) {
         e.preventDefault();
 
-        $('#schema_log').empty();
-        schemaProgressReset();
-        schemaExecuteStep('schema_import');
+        if (confirm('Confirm action')) {
+            $('#schema_log').empty();
+            schemaProgressReset();
+            schemaExecuteStep('schema_import');
+        }
+
     });
 
 });

@@ -53,14 +53,9 @@ class UserGroupExport extends VersionBuilder
 
         $items = array();
         foreach ($userGroups as $groupId) {
-            if ($item = $helper->UserGroup()->getGroup($groupId)) {
-
+            if ($item = $helper->UserGroup()->exportGroup($groupId)) {
                 $fields = $item;
-
-                unset($fields['ID']);
                 unset($fields['STRING_ID']);
-                unset($fields['TIMESTAMP_X']);
-
                 $items[] = array(
                     'STRING_ID' => $item['STRING_ID'],
                     'FIELDS' => $fields
@@ -82,7 +77,7 @@ class UserGroupExport extends VersionBuilder
     protected function getUserGroups() {
         $helper = new HelperManager();
 
-        $groups = $helper->UserGroup()->getGroupsByFilter(array());
+        $groups = $helper->UserGroup()->getGroups();
 
         $result = [];
         foreach ($groups as $group) {
