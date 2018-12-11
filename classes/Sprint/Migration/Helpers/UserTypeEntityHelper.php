@@ -145,6 +145,11 @@ class UserTypeEntityHelper extends Helper
         return $result;
     }
 
+    public function exportUserTypeEntity($fieldId, $transformEntityId = false) {
+        $item = $this->getUserTypeEntityById($fieldId);
+        return $this->prepareExportUserTypeEntity($item, $transformEntityId);
+    }
+
     public function exportUserTypeEntities($transformEntityId = false) {
         $items = $this->getUserTypeEntities();
         $export = array();
