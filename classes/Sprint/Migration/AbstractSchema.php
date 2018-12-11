@@ -210,5 +210,4 @@ abstract class AbstractSchema
     protected function getVersionConfig() {
         return $this->versionConfig;
     }
-
 }

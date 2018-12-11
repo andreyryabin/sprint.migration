@@ -1,9 +1,3 @@
-<?php
-/** @var $versionManager \Sprint\Migration\VersionManager */
-
-$schemaManager = new \Sprint\Migration\SchemaManager();
-
-?>
 <div id="schema-container" data-sessid="<?= bitrix_sessid() ?>">
     <div class="sp-group">
         <div class="sp-group-row2">
@@ -34,6 +28,4 @@ $schemaManager = new \Sprint\Migration\SchemaManager();
 
     <div class="sp-separator"></div>
 </div>
-
-
 <? include __DIR__ . '/../assets/schema.php'; ?>

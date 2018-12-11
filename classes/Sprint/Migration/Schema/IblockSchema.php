@@ -211,7 +211,7 @@ class IblockSchema extends AbstractSchema
             return $ok;
         }
 
-        $this->outIf(true, 'Инфоблок %s: поля совпадают', $iblockId);
+        $this->out('Инфоблок %s: поля совпадают', $iblockId);
         return true;
     }
 
@@ -289,7 +289,7 @@ class IblockSchema extends AbstractSchema
             $uniq = $this->getUniqIblock($old);
             if (!in_array($uniq, $skip)) {
                 $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblock($old['ID']);
-                $this->outError($ok, 'Инфоблок %s: удален', $old['ID']);
+                $this->outErrorIf($ok, 'Инфоблок %s: удален', $old['ID']);
             }
         }
     }
