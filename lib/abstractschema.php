@@ -67,11 +67,10 @@ abstract class AbstractSchema
     }
 
     protected function getSchemaDir($relative = false) {
-        $dir = $this->getVersionConfig()->getVal('migration_dir') . '/schema/';
-        return ($relative) ? Module::getRelativeDir($dir) : $dir;
+        return $this->getVersionConfig()->getSiblingDir('schema', $relative);
     }
 
-    protected function getSchemaDirname($name, $relative = false) {
+    protected function getSchemaSubDir($name, $relative = false) {
         $dir = $this->getSchemaDir() . $name;
         return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
@@ -122,7 +121,7 @@ abstract class AbstractSchema
         $result = array();
 
         foreach ($paths as $path) {
-            $dir = $this->getSchemaDirname($path);
+            $dir = $this->getSchemaSubDir($path);
             $file = $this->getSchemaFile($path);
 
             if (is_dir($dir)) {

@@ -47,7 +47,8 @@ class SchemaManager
     }
 
     protected function getVersionSchemas() {
-        return $this->getVersionConfig()->getVal('version_schemas');
+        $schemas = $this->getVersionConfig()->getVal('version_schemas');
+        return is_array($schemas) ? $schemas : array();
     }
 
     public function export() {

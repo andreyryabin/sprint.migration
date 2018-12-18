@@ -32,7 +32,7 @@ class VersionConfig
         if (!isset($this->configList['archive'])) {
             $this->configList['archive'] = $this->prepare('archive', array(
                 'title' => GetMessage('SPRINT_MIGRATION_CONFIG_archive'),
-                'migration_dir' => $this->getSubDir('archive'),
+                'migration_dir' => $this->getSiblingDir('archive', true),
                 'migration_table' => 'sprint_migration_archive',
             ));
         }
@@ -46,8 +46,6 @@ class VersionConfig
         } else {
             $this->configCurrent = $this->configList['cfg'];
         }
-
-        $this->createMigrationDir();
     }
 
     public function isExists($configName) {
@@ -144,6 +142,13 @@ class VersionConfig
             $values['migration_dir'] = Module::getDocRoot() . $values['migration_dir'];
         }
 
+        if (!is_dir($values['migration_dir'])) {
+            mkdir($values['migration_dir'], BX_DIR_PERMISSIONS, true);
+            $values['migration_dir'] = realpath($values['migration_dir']);
+        } else {
+            $values['migration_dir'] = realpath($values['migration_dir']);
+        }
+
         if (empty($values['version_prefix'])) {
             $values['version_prefix'] = 'Version';
         }
@@ -227,7 +232,7 @@ class VersionConfig
             );
         } else {
             $configValues = array(
-                'migration_dir' => $this->getSubDir($configName),
+                'migration_dir' => $this->getSiblingDir($configName, true),
                 'migration_table' => 'sprint_migration_' . $configName,
             );
         }
@@ -258,22 +263,12 @@ class VersionConfig
         return true;
     }
 
-    protected function getSubDir($dirname) {
+    public function getSiblingDir($dirname, $relative = false) {
         $def = $this->configList['cfg'];
+        $dir = rtrim($def['values']['migration_dir'], '/');
+        $dir = $dir . '.' . trim($dirname, '/') . '/';
 
-        return Module::getRelativeDir(
-            $def['values']['migration_dir'] . '/' . $dirname
-        );
-    }
-
-    protected function createMigrationDir() {
-        $dir = $this->getVal('migration_dir');
-
-        if (!is_dir($dir)) {
-            mkdir($dir, BX_DIR_PERMISSIONS, true);
-        }
-
-        $this->setVal('migration_dir', realpath($dir));
+        return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
 
     protected function getSort($configName) {
