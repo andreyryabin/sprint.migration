@@ -65,8 +65,12 @@ class Module
             Throw new \Exception('mssql not supported');
         }
 
-        if (!function_exists('json_encode')){
+        if (!function_exists('json_encode')) {
             Throw new \Exception('json functions not found');
+        }
+
+        if (version_compare(PHP_VERSION, '5.4', '<')) {
+            Throw new \Exception(PHP_VERSION . 'not supported');
         }
     }
 }
