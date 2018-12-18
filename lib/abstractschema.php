@@ -4,6 +4,8 @@ namespace Sprint\Migration;
 
 abstract class AbstractSchema
 {
+    use OutTrait;
+
     private $name;
 
     /** @var VersionConfig */
@@ -45,7 +47,7 @@ abstract class AbstractSchema
     }
 
     public function setTestMode($testMode = 1) {
-        $this->testMode = $testMode;
+        $this->testMode = ($testMode) ? 1 : 0;
     }
 
     public function getName() {
@@ -119,11 +121,11 @@ abstract class AbstractSchema
 
         $result = array();
 
-        foreach ($paths as $path){
+        foreach ($paths as $path) {
             $dir = $this->getSchemaDirname($path);
             $file = $this->getSchemaFile($path);
 
-            if (is_dir($dir)){
+            if (is_dir($dir)) {
                 /* @var $item \SplFileInfo */
                 $items = new \DirectoryIterator($dir);
                 foreach ($items as $item) {
@@ -133,7 +135,7 @@ abstract class AbstractSchema
                 }
             }
 
-            if (is_file($file)){
+            if (is_file($file)) {
                 $result[] = $path;
             }
         }
@@ -141,7 +143,7 @@ abstract class AbstractSchema
         return $result;
     }
 
-    protected function outSchemas($paths){
+    protected function outSchemas($paths) {
         $this->outSuccess('%s сохранена', $this->getTitle());
         $names = $this->getSchemas($paths);
         foreach ($names as $name) {
@@ -175,48 +177,6 @@ abstract class AbstractSchema
             call_user_func_array(array($this, $item[0]), $item[1]);
         } else {
             $this->outError('method %s not found', $item[0]);
-        }
-    }
-
-    protected function out($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'out'), $args);
-    }
-
-    protected function outError($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outErrorText'), $args);
-    }
-
-    protected function outSuccess($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outSuccessText'), $args);
-    }
-
-
-
-    protected function outIf($cond, $msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        $cond = array_shift($args);
-        if ($cond) {
-            call_user_func_array(array('Sprint\Migration\Out', 'out'), $args);
-        }
-
-    }
-
-    protected function outErrorIf($cond, $msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        $cond = array_shift($args);
-        if ($cond) {
-            call_user_func_array(array('Sprint\Migration\Out', 'outErrorText'), $args);
-        }
-    }
-
-    protected function outSuccessIf($cond, $msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        $cond = array_shift($args);
-        if ($cond) {
-            call_user_func_array(array('Sprint\Migration\Out', 'outSuccessText'), $args);
         }
     }
 

@@ -83,98 +83,16 @@ class AdminIblockHelper extends Helper
 
     }
 
-    public function saveElementForm($iblockId, $tabs = array(), $params = array()) {
-        $this->initializeVars($iblockId);
-
-        $params = array_merge(array(
-            'name_prefix' => 'form_element_',
-            'category' => 'form',
-        ), $params);
-
-        $params['name'] = $params['name_prefix'] . $iblockId;
-
-        if (empty($tabs)) {
-            \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
+    public function saveElementForm($iblockId, $elementForm = array(), $params = array()) {
+        $exists = $this->exportElementForm($iblockId, $params);
+        if ($exists != $elementForm) {
+            $ok = ($this->testMode) ? true : $this->buildElementForm($iblockId, $elementForm, $params);
+            $this->outSuccessIf($ok, 'Инфоблок %s: форма редактирования сохранена', $iblockId);
+            return $ok;
+        } else {
+            $this->out('Инфоблок %s: форма редактирования cовпадает', $iblockId);
             return true;
         }
-
-        /** @example *//*
-        $tabs = array(
-            'Tab1' => array(
-                'ACTIVE' => 'Активность',
-                'ACTIVE_FROM' => '',
-                'ACTIVE_TO' => '',
-                'NAME' => 'Название',
-                'CODE' => Символьный код',
-                'SORT' => '',
-            ),
-            'Tab2' => array(
-                'PREVIEW_TEXT' => '',
-                'PROPERTY_LINK' => '',
-            )
-        );  */
-
-        /** @compability *//*
-        $tabs = array(
-            'Tab1' => array(
-                'ACTIVE|Активность',
-                'ACTIVE_FROM',
-                'ACTIVE_TO',
-                'NAME|Название',
-                'CODE|Символьный код',
-                'SORT',
-            ),
-            'Tab2' => array(
-                'PREVIEW_TEXT',
-                'PROPERTY_LINK',
-            )
-        );  */
-
-        $tabIndex = 0;
-        $tabVals = array();
-        foreach ($tabs as $tabTitle => $fields) {
-
-            if ($tabTitle == 'SEO' && empty($fields)) {
-                $fields = $this->getSeoTab();
-            }
-
-            $tabCode = ($tabIndex == 0) ? 'edit' . ($tabIndex + 1) : '--edit' . ($tabIndex + 1);
-            $tabVals[$tabIndex][] = $tabCode . '--#--' . $tabTitle . '--';
-
-            foreach ($fields as $fieldKey => $fieldValue) {
-
-                if (is_numeric($fieldKey)) {
-                    /** @compability */
-                    list($fcode, $ftitle) = explode('|', $fieldValue);
-                } else {
-                    $fcode = $fieldKey;
-                    $ftitle = $fieldValue;
-                }
-
-                $fcode = $this->transformCode($fcode);
-                $ftitle = $this->prepareTitle($fcode, $ftitle);
-
-                $tabVals[$tabIndex][] = '--' . $fcode . '--#--' . $ftitle . '--';
-            }
-
-            $tabIndex++;
-        }
-
-        $opts = array();
-        foreach ($tabVals as $fields) {
-            $opts[] = implode(',', $fields);
-        }
-
-        $opts = implode(';', $opts) . ';--';
-
-        $value = array(
-            'tabs' => $opts
-        );
-
-        \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
-        \CUserOptions::SetOption($params['category'], $params['name'], $value, true);
-
-        return true;
     }
 
     public function saveElementList($iblockId, $columns = array(), $params = array()) {
@@ -309,9 +227,99 @@ class AdminIblockHelper extends Helper
         return $fieldCode;
     }
 
-    /** @deprecated use saveElementForm */
+
     public function buildElementForm($iblockId, $tabs = array(), $params = array()) {
-        $this->saveElementForm($iblockId, $tabs, $params);
+        $this->initializeVars($iblockId);
+
+        $params = array_merge(array(
+            'name_prefix' => 'form_element_',
+            'category' => 'form',
+        ), $params);
+
+        $params['name'] = $params['name_prefix'] . $iblockId;
+
+        if (empty($tabs)) {
+            \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
+            return true;
+        }
+
+        /** @example *//*
+        $tabs = array(
+            'Tab1' => array(
+                'ACTIVE' => 'Активность',
+                'ACTIVE_FROM' => '',
+                'ACTIVE_TO' => '',
+                'NAME' => 'Название',
+                'CODE' => Символьный код',
+                'SORT' => '',
+            ),
+            'Tab2' => array(
+                'PREVIEW_TEXT' => '',
+                'PROPERTY_LINK' => '',
+            )
+        );  */
+
+        /** @compability *//*
+        $tabs = array(
+            'Tab1' => array(
+                'ACTIVE|Активность',
+                'ACTIVE_FROM',
+                'ACTIVE_TO',
+                'NAME|Название',
+                'CODE|Символьный код',
+                'SORT',
+            ),
+            'Tab2' => array(
+                'PREVIEW_TEXT',
+                'PROPERTY_LINK',
+            )
+        );  */
+
+        $tabIndex = 0;
+        $tabVals = array();
+        foreach ($tabs as $tabTitle => $fields) {
+
+            if ($tabTitle == 'SEO' && empty($fields)) {
+                $fields = $this->getSeoTab();
+            }
+
+            $tabCode = ($tabIndex == 0) ? 'edit' . ($tabIndex + 1) : '--edit' . ($tabIndex + 1);
+            $tabVals[$tabIndex][] = $tabCode . '--#--' . $tabTitle . '--';
+
+            foreach ($fields as $fieldKey => $fieldValue) {
+
+                if (is_numeric($fieldKey)) {
+                    /** @compability */
+                    list($fcode, $ftitle) = explode('|', $fieldValue);
+                } else {
+                    $fcode = $fieldKey;
+                    $ftitle = $fieldValue;
+                }
+
+                $fcode = $this->transformCode($fcode);
+                $ftitle = $this->prepareTitle($fcode, $ftitle);
+
+                $tabVals[$tabIndex][] = '--' . $fcode . '--#--' . $ftitle . '--';
+            }
+
+            $tabIndex++;
+        }
+
+        $opts = array();
+        foreach ($tabVals as $fields) {
+            $opts[] = implode(',', $fields);
+        }
+
+        $opts = implode(';', $opts) . ';--';
+
+        $value = array(
+            'tabs' => $opts
+        );
+
+        \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
+        \CUserOptions::SetOption($params['category'], $params['name'], $value, true);
+
+        return true;
     }
 
     /** @deprecated use saveElementList */

@@ -8,6 +8,7 @@ class Console
     private $script = 'migrate.php';
 
     private $arguments = array();
+
     private $argoptions = array();
 
     public function executeConsoleCommand($args) {
@@ -132,13 +133,13 @@ class Console
             );
         }
 
-        $table = new Outgrid(-1, array(
+        $grid = new ConsoleGrid(-1, array(
             'horizontal' => '=',
             'vertical' => '',
             'intersection' => ''
         ), 1, 'UTF-8');
 
-        $table->setHeaders(array(
+        $grid->setHeaders(array(
             'Version',
             'Status',
             'Description',
@@ -149,7 +150,7 @@ class Console
                 $item['version'] .= ' (' . GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL') . ')';
             }
 
-            $table->addRow(array(
+            $grid->addRow(array(
                 $item['version'],
                 GetMessage('SPRINT_MIGRATION_META_' . strtoupper($item['status'])),
                 $item['description'],
@@ -159,17 +160,17 @@ class Console
             $summary[$stval]++;
         }
 
-        Out::out($table->getTable());
+        Out::out($grid->build());
 
-        $table = new Outgrid(-1, '', 1, 'UTF-8');
+        $grid = new ConsoleGrid(-1, '', 1, 'UTF-8');
         foreach ($summary as $k => $v) {
-            $table->addRow(array(
+            $grid->addRow(array(
                 GetMessage('SPRINT_MIGRATION_META_' . strtoupper($k)) . ':',
                 $v
             ));
         }
 
-        Out::out($table->getTable());
+        Out::out($grid->build());
 
     }
 
@@ -270,13 +271,13 @@ class Console
             $configTitle
         );
 
-        $table = new Outgrid(-1, array(
+        $grid = new ConsoleGrid(-1, array(
             'horizontal' => '=',
             'vertical' => '',
             'intersection' => ''
         ), 1, 'UTF-8');
 
-        $table->setBorderVisibility(array('bottom' => false));
+        $grid->setBorderVisibility(array('bottom' => false));
 
         foreach ($configValues as $key => $val) {
             if ($val === true || $val === false) {
@@ -290,10 +291,10 @@ class Console
                 $val = implode(PHP_EOL, $fres);
             }
 
-            $table->addRow(array($key, $val));
+            $grid->addRow(array($key, $val));
         }
 
-        Out::out($table->getTable());
+        Out::out($grid->build());
 
 
     }
@@ -340,6 +341,70 @@ class Console
         /** @compability */
         $this->addArg('--force');
         $this->commandExecute();
+    }
+
+    public function commandSchema() {
+        $action = $this->getArg(0);
+
+        if ($action == 'import' || $action == 'test') {
+            $params = array();
+
+            do {
+
+                $schemaManager = new SchemaManager($params);
+
+                if ($action == 'test') {
+                    $schemaManager->setTestMode(1);
+                }
+
+                $restart = 0;
+
+                try {
+                    $schemaManager->import();
+
+                } catch (Exceptions\RestartException $e) {
+                    $params = $schemaManager->getRestartParams();
+                    $restart = 1;
+
+                } catch (\Exception $e) {
+                    Out::outError($e->getMessage());
+
+                } catch (\Throwable $e) {
+                    Out::outError($e->getMessage());
+                }
+
+            } while ($restart == 1);
+
+        } elseif ($action == 'export') {
+            $params = array();
+
+            do {
+
+                $schemaManager = new SchemaManager($params);
+
+                $restart = 0;
+
+                try {
+                    $schemaManager->export();
+
+                } catch (Exceptions\RestartException $e) {
+                    $params = $schemaManager->getRestartParams();
+                    $restart = 1;
+
+                } catch (\Exception $e) {
+                    Out::outError($e->getMessage());
+
+                } catch (\Throwable $e) {
+                    Out::outError($e->getMessage());
+                }
+
+
+            } while ($restart == 1);
+
+        } else {
+            $schemaManager = new SchemaManager();
+            $schemaManager->outDescriptions();
+        }
     }
 
     protected function executeAll($filter, $force = false) {

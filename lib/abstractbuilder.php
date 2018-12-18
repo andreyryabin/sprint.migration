@@ -6,8 +6,12 @@ use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 
+
+
 abstract class AbstractBuilder
 {
+
+    use OutTrait;
 
     private $name;
 
@@ -271,26 +275,6 @@ abstract class AbstractBuilder
 
     public function getFields() {
         return $this->fields;
-    }
-
-    public function out($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'out'), $args);
-    }
-
-    public function outProgress($msg, $val, $total) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outProgress'), $args);
-    }
-
-    public function outSuccess($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outSuccess'), $args);
-    }
-
-    public function outError($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outError'), $args);
     }
 
     protected function redirect($url) {

@@ -33,11 +33,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
         </script>
         <?
     } catch (\Exception $e) {
-        \Sprint\Migration\Out::outErrorText($e->getMessage());
+        \Sprint\Migration\Out::outError($e->getMessage());
         $error = true;
 
     } catch (\Throwable $e) {
-        \Sprint\Migration\Out::outErrorText($e->getMessage());
+        \Sprint\Migration\Out::outError($e->getMessage());
         $error = true;
     }
 

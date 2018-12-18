@@ -731,64 +731,103 @@ class IblockHelper extends Helper
 
     //version 2
 
-
     public function saveIblockType($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
 
-        $fields = $this->prepareExportIblockType($fields);
         $exists = $this->getIblockType($fields['ID']);
+        $exportExists = $this->prepareExportIblockType($exists);
+        $fields = $this->prepareExportIblockType($fields);
 
         if (empty($exists)) {
-            return $this->addIblockType($fields);
+            $ok = ($this->testMode) ? true : $this->addIblockType($fields);
+            $this->outSuccessIf($ok, 'Тип инфоблока %s: добавлен', $fields['ID']);
+            return $ok;
         }
 
-        return $this->updateIblockType($fields['ID'], $fields);
+
+        if ($exportExists != $fields) {
+            $ok = ($this->testMode) ? true : $this->updateIblockType($exists['ID'], $fields);
+            $this->outSuccessIf($ok, 'Тип инфоблока %s: обновлен', $fields['ID']);
+            return $ok;
+        }
+
+        $ok = ($this->testMode) ? true : $fields['ID'];
+        $this->outIf($ok, 'Тип инфоблока %s: совпадает', $fields['ID']);
+
+        return $ok;
     }
-
+    
     public function saveIblock($fields = array()) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
+        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID'));
 
-        $typeId = false;
-        if (!empty($fields['IBLOCK_TYPE_ID'])) {
-            $typeId = $fields['IBLOCK_TYPE_ID'];
-        }
-
+        $exists = $this->getIblock($fields['CODE'], $fields['IBLOCK_TYPE_ID']);
+        $exportExists = $this->prepareExportIblock($exists);
         $fields = $this->prepareExportIblock($fields);
-        $exists = $this->getIblock($fields['CODE'], $typeId);
 
         if (empty($exists)) {
-            return $this->addIblock($fields);
+            $ok = ($this->testMode) ? true : $this->addIblock($fields);
+            $this->outSuccessIf($ok, 'Инфоблок %s: добавлен', $fields['CODE']);
+            return $ok;
         }
 
-        return $this->updateIblock($exists['ID'], $fields);
+        if ($exportExists != $fields) {
+            $ok = ($this->testMode) ? true : $this->updateIblock($exists['ID'], $fields);
+            $this->outSuccessIf($ok, 'Инфоблок %s: обновлен', $fields['CODE']);
+            return $ok;
+        }
 
+        $ok = ($this->testMode) ? true : $exists['ID'];
+        $this->outIf($ok, 'Инфоблок %s: совпадает', $fields['CODE']);
+        return $ok;
     }
 
     public function saveIblockFields($iblockId, $fields = array()) {
-        if (empty($iblockId) || empty($exists)) {
-            return false;
-        }
-
         $exists = \CIBlock::GetFields($iblockId);
-        $fields = array_replace_recursive($exists, $fields);
+
+        $exportExists = $this->prepareExportIblockFields($exists);
         $fields = $this->prepareExportIblockFields($fields);
 
-        return $this->updateIblockFields($iblockId, $fields);
+        $fields = array_replace_recursive($exportExists, $fields);
+
+        if (empty($exists)) {
+            $ok = ($this->testMode) ? true : $this->updateIblockFields($iblockId, $fields);
+            $this->outSuccessIf($ok, 'Инфоблок %s: поля добавлены', $iblockId);
+            return $ok;
+        }
+
+        if ($exportExists != $fields) {
+            $ok = ($this->testMode) ? true : $this->updateIblockFields($iblockId, $fields);
+            $this->outSuccessIf($ok, 'Инфоблок %s: поля обновлены', $iblockId);
+            return $ok;
+        }
+
+        $this->out('Инфоблок %s: поля совпадают', $iblockId);
+        return true;
     }
 
     public function saveProperty($iblockId, $fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
         $exists = $this->getProperty($iblockId, $fields['CODE']);
+        $exportExists = $this->prepareExportProperty($exists);
         $fields = $this->prepareExportProperty($fields);
 
         if (empty($exists)) {
-            return $this->addProperty($iblockId, $fields);
+            $ok = ($this->testMode) ? true : $this->addProperty($iblockId, $fields);
+            $this->outSuccessIf($ok, 'Инфоблок %s: свойство %s добавлено', $iblockId, $fields['CODE']);
+            return $ok;
         }
 
-        return $this->updatePropertyById($exists['ID'], $fields);
-    }
+        if ($exportExists != $fields) {
+            $ok = ($this->testMode) ? true : $this->updatePropertyById($exists['ID'], $fields);
+            $this->outSuccessIf($ok, 'Инфоблок %s: свойство %s обновлено', $iblockId, $fields['CODE']);
+            return $ok;
+        }
 
+        $ok = ($this->testMode) ? true : $exists['ID'];
+        $this->outIf($ok, 'Инфоблок %s: свойство %s совпадает', $iblockId, $fields['CODE']);
+        return $exists['ID'];
+    }
 
     //exports
 

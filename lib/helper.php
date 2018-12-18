@@ -7,11 +7,15 @@ use Sprint\Migration\Exceptions\HelperException;
 class Helper
 {
 
+    use OutTrait;
+
     /**
      * @deprecated
      * @var string
      */
     public $lastError = '';
+
+    protected $testMode = 0;
 
     /**
      * @deprecated
@@ -19,6 +23,10 @@ class Helper
      */
     public function getLastError() {
         return $this->lastError;
+    }
+
+    public function setTestMode($testMode = 1) {
+        $this->testMode = ($testMode) ? 1 : 0;
     }
 
     public function throwException($method, $msg, $var1 = null, $var2 = null) {
@@ -49,7 +57,6 @@ class Helper
             }
         }
     }
-
 
     /**
      * @param \CDBResult $dbres

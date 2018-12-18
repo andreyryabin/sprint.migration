@@ -58,13 +58,13 @@
  * Помолился богам опенсорса
  *
  * @category Sprint\Migration
- * @package  Outgrid
+ * @package  ConsoleGrid
  * @author   Andrey Ryabin <andreyryabin@yandex.ru>
  */
 
 namespace Sprint\Migration;
 
-class Outgrid
+class ConsoleGrid
 {
 
     const CONSOLE_TABLE_HORIZONTAL_RULE = 1;
@@ -121,13 +121,6 @@ class Outgrid
      * @var integer
      */
     var $_padding = 1;
-
-    /**
-     * Column filters.
-     *
-     * @var array
-     */
-    var $_filters = array();
 
     /**
      * Columns to calculate totals for.
@@ -211,24 +204,6 @@ class Outgrid
         if (!empty($charset)) {
             $this->setCharset($charset);
         }
-    }
-
-
-    /**
-     * Adds a filter to a column.
-     *
-     * Filters are standard PHP callbacks which are run on the data before
-     * table generation is performed. Filters are applied in the order they
-     * are added. The callback function must accept a single argument, which
-     * is a single table cell.
-     *
-     * @param integer $col Column to apply filter to.
-     * @param mixed &$callback PHP callback to apply.
-     *
-     * @return void
-     */
-    function addFilter($col, &$callback) {
-        $this->_filters[] = array($col, &$callback);
     }
 
     /**
@@ -444,8 +419,7 @@ class Outgrid
      *
      * @return string  The generated table.
      */
-    function getTable() {
-        $this->_applyFilters();
+    function build() {
         $this->_calculateTotals();
         $this->_validateTable();
 
@@ -475,29 +449,6 @@ class Outgrid
 
         $this->_data[] = $totals;
         $this->_updateRowsCols();
-    }
-
-    /**
-     * Applies any column filters to the data.
-     *
-     * @return void
-     */
-    function _applyFilters() {
-        if (empty($this->_filters)) {
-            return;
-        }
-
-        foreach ($this->_filters as $filter) {
-            $column = $filter[0];
-            $callback = $filter[1];
-
-            foreach ($this->_data as $row_id => $row_data) {
-                if ($row_data !== self::CONSOLE_TABLE_HORIZONTAL_RULE) {
-                    $this->_data[$row_id][$column] =
-                        call_user_func($callback, $row_data[$column]);
-                }
-            }
-        }
     }
 
     /**

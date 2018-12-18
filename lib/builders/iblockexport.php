@@ -132,11 +132,7 @@ class IblockExport extends VersionBuilder
 
 
         if (in_array('iblockAdminTabs', $what)) {
-            try {
-                $iblockAdminTabs = $helper->AdminIblock()->extractElementForm($iblockId);
-            } catch (HelperException $e) {
-                $iblockAdminTabs = !empty($iblockAdminTabs) ? $iblockAdminTabs : array();
-            }
+            $iblockAdminTabs = $helper->AdminIblock()->exportElementForm($iblockId);
         }
 
         $this->createVersionFile(

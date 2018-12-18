@@ -8,7 +8,6 @@ class UserTypeEntityHelper extends Helper
 {
 
     private $transf = [];
-    private $revert = [];
 
     public function addUserTypeEntitiesIfNotExists($entityId, array $fields) {
         foreach ($fields as $field) {
@@ -277,64 +276,92 @@ class UserTypeEntityHelper extends Helper
     }
 
     public function revertEntityId($entityId) {
-        if (!isset($this->revert[$entityId])) {
-            $newval = $this->doRevertEntityId($entityId);
-            $this->revert[$entityId] = $newval;
-            $this->transf[$newval] = $entityId;
+        if (isset($this->transf[$entityId])) {
+            return $this->transf[$entityId];
         }
 
-        return $this->revert[$entityId];
-    }
+        $newval = $entityId;
 
-    public function transformEntityId($entityId) {
-        if (!isset($this->transf[$entityId])) {
-            $newval = $this->doTransformEntityId($entityId);
-            $this->transf[$entityId] = $newval;
-            $this->revert[$newval] = $entityId;
+        if (0 === strpos($entityId, 'HLBLOCK_')) {
+            $hlblockName = substr($entityId, 8);
+            $hlhelper = new HlblockHelper();
+            $hlblock = $hlhelper->getHlblock($hlblockName);
+            if ($hlblock) {
+                $newval = 'HLBLOCK_' . $hlblock['ID'];
+            }
         }
 
+        $this->transf[$entityId] = $newval;
         return $this->transf[$entityId];
     }
 
-    protected function doRevertEntityId($entityId) {
-        if (0 === strpos($entityId, 'HLBLOCK_')) {
-            $hlblockName = substr($entityId, 8);
-
-            $hlhelper = new HlblockHelper();
-            $hlblock = $hlhelper->getHlblock($hlblockName);
-
-            if ($hlblock) {
-                $entityId = 'HLBLOCK_' . $hlblock['ID'];
-            }
+    public function transformEntityId($entityId) {
+        if (isset($this->transf[$entityId])) {
+            return $this->transf[$entityId];
         }
-        return $entityId;
-    }
 
-    protected function doTransformEntityId($entityId) {
+        $newval = $entityId;
+
         if (0 === strpos($entityId, 'HLBLOCK_')) {
             $hlblockId = intval(substr($entityId, 8));
-
             $hlhelper = new HlblockHelper();
             $hlblock = $hlhelper->getHlblock($hlblockId);
-
             if ($hlblock) {
-                $entityId = 'HLBLOCK_' . $hlblock['NAME'];
+                $newval = 'HLBLOCK_' . $hlblock['NAME'];
             }
         }
-        return $entityId;
+
+        $this->transf[$entityId] = $newval;
+        return $this->transf[$entityId];
     }
 
     //version 2
 
     public function saveUserTypeEntity($entityId, $fieldName, $fields = array()) {
-        $entityId = $this->revertEntityId($entityId);
+        $fields['ENTITY_ID'] = $entityId;
+        $fields['FIELD_NAME'] = $fieldName;
+       
 
-        $item = $this->getUserTypeEntity($entityId, $fieldName);
-        if ($item) {
-            return $this->updateUserTypeEntity($item['ID'], $fields);
-        } else {
-            return $this->addUserTypeEntity($entityId, $fieldName, $fields);
+        $this->checkRequiredKeys(__METHOD__, $fields, array('ENTITY_ID', 'FIELD_NAME'));
+
+        $fields['ENTITY_ID'] = $this->revertEntityId(
+            $fields['ENTITY_ID']
+        );
+
+        $exists = $this->getUserTypeEntity(
+            $fields['ENTITY_ID'],
+            $fields['FIELD_NAME']
+        );
+
+        $exportExists = $this->prepareExportUserTypeEntity($exists, false);
+        $fields = $this->prepareExportUserTypeEntity($fields, false);
+
+        if (empty($exists)) {
+            echo "<pre>";print_r($fields);/*debug*/echo "</pre>";
+
+            $ok = ($this->testMode) ? true : $this->addUserTypeEntity(
+                $fields['ENTITY_ID'],
+                $fields['FIELD_NAME'],
+                $fields
+            );
+
+            $this->outSuccessIf($ok, 'Пользовательское поле %s: добавлено', $fields['FIELD_NAME']);
+            return $ok;
         }
-    }
 
+        unset($exportExists['MULTIPLE']);
+        unset($fields['MULTIPLE']);
+
+        if ($exportExists != $fields) {
+            $ok = ($this->testMode) ? true : $this->updateUserTypeEntity($exists['ID'], $fields);
+            $this->outSuccessIf($ok, 'Пользовательское поле %s: обновлено', $fields['FIELD_NAME']);
+            return $ok;
+        }
+
+        $ok = ($this->testMode) ? true : $exists['ID'];
+        $this->outIf($ok, 'Пользовательское поле %s: совпадает', $fields['FIELD_NAME']);
+
+        return $ok;
+
+    }
 }

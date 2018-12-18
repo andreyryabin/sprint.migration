@@ -8,6 +8,8 @@ use Sprint\Migration\Exceptions\MigrationException;
 class Version
 {
 
+    use OutTrait;
+
     protected $description = "";
     protected $versionFilter = array();
 
@@ -56,26 +58,6 @@ class Version
         $storage->deleteSavedData($this->getVersionName(), $name);
     }
 
-    public function out($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'out'), $args);
-    }
-
-    public function outProgress($msg, $val, $total) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outProgress'), $args);
-    }
-
-    public function outSuccess($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outSuccess'), $args);
-    }
-
-    public function outError($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outError'), $args);
-    }
-
     public function restart() {
         Throw new RestartException();
     }
@@ -101,6 +83,7 @@ class Version
             Throw new MigrationException($msg);
         }
     }
+
 }
 
 

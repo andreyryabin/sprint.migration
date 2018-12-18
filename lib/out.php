@@ -66,50 +66,22 @@ class Out
 
     }
 
-    public static function outSuccessText($msg, $var1 = null, $var2 = null) {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-
-        if (self::canOutAsHtml()) {
-            self::outToHtml('[green]' . $msg . '[/]');
-
-        } else {
-            self::outToConsole($msg);
-        }
-    }
-
-    public static function outErrorText($msg, $var1 = null, $var2 = null) {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-
-        if (self::canOutAsHtml()) {
-            self::outToHtml('[red]' . $msg . '[/]');
-        } else {
-            self::outToConsole($msg);
-        }
-    }
-
-
     public static function outSuccess($msg, $var1 = null, $var2 = null) {
         if (func_num_args() > 1) {
             $params = func_get_args();
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        if (self::canOutAsAdminMessage()) {
-            $msg = self::prepareToHtml($msg);
-            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-            \CAdminMessage::ShowMessage(array(
-                "MESSAGE" => $msg,
-                'HTML' => true,
-                'TYPE' => 'OK'
-            ));
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $msg = call_user_func_array('sprintf', $params);
+        }
+
+        $msg = '[green]' . $msg . '[/]';
+        if (self::canOutAsHtml()) {
+            self::outToHtml($msg);
         } else {
-            self::outSuccessText($msg);
+            self::outToConsole($msg);
         }
     }
 
@@ -119,16 +91,42 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        if (self::canOutAsAdminMessage()) {
-            $msg = self::prepareToHtml($msg);
-            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-            \CAdminMessage::ShowMessage(array(
-                "MESSAGE" => $msg,
-                'HTML' => true,
-                'TYPE' => 'ERROR'
-            ));
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $msg = call_user_func_array('sprintf', $params);
+        }
+
+        $msg = '[red]' . $msg . '[/]';
+        if (self::canOutAsHtml()) {
+            self::outToHtml($msg);
         } else {
-            self::outErrorText($msg);
+            self::outToConsole($msg);
+        }
+
+    }
+
+    public static function outIf($cond, $msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        $cond = array_shift($args);
+        if ($cond) {
+            call_user_func_array(array(__CLASS__, 'out'), $args);
+        }
+
+    }
+
+    public static function outErrorIf($cond, $msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        $cond = array_shift($args);
+        if ($cond) {
+            call_user_func_array(array(__CLASS__, 'outError'), $args);
+        }
+    }
+
+    public static function outSuccessIf($cond, $msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        $cond = array_shift($args);
+        if ($cond) {
+            call_user_func_array(array(__CLASS__, 'outSuccess'), $args);
         }
     }
 
@@ -141,7 +139,6 @@ class Out
         return $msg;
     }
 
-
     public static function prepareToHtml($msg) {
         $msg = nl2br($msg);
 
@@ -152,14 +149,6 @@ class Out
         }
 
         $msg = Locale::convertToWin1251IfNeed($msg);
-        return $msg;
-    }
-
-    protected function cleanColors($msg) {
-        foreach (self::$colors as $key => $val) {
-            $msg = str_replace('[' . $key . ']', '', $msg);
-        }
-
         return $msg;
     }
 

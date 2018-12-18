@@ -32,7 +32,7 @@ class SchemaManager
         foreach ($schemas as $name) {
             $schema = $this->createSchema($name);
             if ($schema->isEnabled()) {
-                $this->outSuccess($schema->getTitle());
+                $this->out('[blue]' . $schema->getTitle() . '[/]');
                 $schema->outDescription();
             }
         }
@@ -82,8 +82,8 @@ class SchemaManager
         unset($this->params['schema']);
     }
 
-    public function getProgress() {
-        return $this->progress;
+    public function getProgress($type = false) {
+        return ($type) ? $this->progress[$type] : $this->progress;
     }
 
     protected function setProgress($type, $index, $cnt) {
@@ -111,7 +111,7 @@ class SchemaManager
         $schema->setTestMode($this->testMode);
 
         if (!isset($this->params['index'])) {
-            $this->outSuccess('%s (test import) start', $schema->getTitle());
+            $this->out('[blue]%s (test import) start[/]', $schema->getTitle());
 
             $this->params['index'] = 0;
             $schema->import();
@@ -155,12 +155,12 @@ class SchemaManager
 
     protected function outError($msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outErrorText'), $args);
+        call_user_func_array(array('Sprint\Migration\Out', 'outError'), $args);
     }
 
     protected function outSuccess($msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outSuccessText'), $args);
+        call_user_func_array(array('Sprint\Migration\Out', 'outSuccess'), $args);
     }
 
     protected function removeQueue(AbstractSchema $schema) {
