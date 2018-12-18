@@ -18,7 +18,14 @@ class SchemaManager
     protected $testMode = 0;
 
     public function __construct($configName = '', $params = array()) {
-        $this->versionConfig = new VersionConfig($configName);
+        if ($configName instanceof VersionConfig) {
+            $this->versionConfig = $configName;
+        } else {
+            $this->versionConfig = new VersionConfig(
+                $configName
+            );
+        }
+
         $this->params = $params;
     }
 

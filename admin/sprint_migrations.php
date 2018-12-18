@@ -39,12 +39,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
 }
 
+
 $configName = isset($_REQUEST['config']) ? $_REQUEST['config'] : '';
 $viewName = isset($_REQUEST['view']) ? $_REQUEST['view'] : '';
 
-$versionManager = new Sprint\Migration\VersionManager($configName);
+$versionConfig = new Sprint\Migration\VersionConfig($configName);
 
-if ($versionManager->getVersionConfig()->getVal('show_admin_interface')) {
+
+if ($versionConfig->getVal('show_admin_interface')) {
     if ($viewName == 'schema') {
         include __DIR__ . '/steps/schema_list.php';
         include __DIR__ . '/steps/schema_export.php';
@@ -61,7 +63,7 @@ if ($versionManager->getVersionConfig()->getVal('show_admin_interface')) {
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 \CUtil::InitJSCore(Array("jquery"));
 
-if ($versionManager->getVersionConfig()->getVal('show_admin_interface')) {
+if ($versionConfig->getVal('show_admin_interface')) {
     if ($viewName == 'schema') {
         include __DIR__ . '/includes/schema.php';
         include __DIR__ . '/assets/schema.php';
@@ -72,7 +74,7 @@ if ($versionManager->getVersionConfig()->getVal('show_admin_interface')) {
 }
 
 $sperrors = array();
-if (!$versionManager->getVersionConfig()->getVal('show_admin_interface')) {
+if (!$versionConfig->getVal('show_admin_interface')) {
     $sperrors[] = GetMessage('SPRINT_MIGRATION_ADMIN_INTERFACE_HIDDEN');
 }
 

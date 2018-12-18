@@ -46,6 +46,8 @@ class VersionConfig
         } else {
             $this->configCurrent = $this->configList['cfg'];
         }
+
+        $this->createMigrationDir();
     }
 
     public function isExists($configName) {
@@ -61,7 +63,7 @@ class VersionConfig
     }
 
     public function getName() {
-        return $this->getCurrent('name');
+        return $this->configCurrent['name'];
     }
 
     protected function searchConfigs() {
@@ -142,13 +144,6 @@ class VersionConfig
             $values['migration_dir'] = Module::getDocRoot() . $values['migration_dir'];
         }
 
-        if (!is_dir($values['migration_dir'])) {
-            mkdir($values['migration_dir'], BX_DIR_PERMISSIONS, true);
-            $values['migration_dir'] = realpath($values['migration_dir']);
-        } else {
-            $values['migration_dir'] = realpath($values['migration_dir']);
-        }
-
         if (empty($values['version_prefix'])) {
             $values['version_prefix'] = 'Version';
         }
@@ -196,7 +191,7 @@ class VersionConfig
     }
 
     public function getVal($name, $default = '') {
-        $values = $this->getCurrent('values');
+        $values = $this->configCurrent['values'];
 
         if (isset($values[$name])) {
             if (is_bool($values[$name])) {
@@ -207,6 +202,10 @@ class VersionConfig
         }
 
         return $default;
+    }
+
+    protected function setVal($name, $value) {
+        $this->configCurrent['values'][$name] = $value;
     }
 
     public function createConfig($configName) {
@@ -265,6 +264,16 @@ class VersionConfig
         return Module::getRelativeDir(
             $def['values']['migration_dir'] . '/' . $dirname
         );
+    }
+
+    protected function createMigrationDir() {
+        $dir = $this->getVal('migration_dir');
+
+        if (!is_dir($dir)) {
+            mkdir($dir, BX_DIR_PERMISSIONS, true);
+        }
+
+        $this->setVal('migration_dir', realpath($dir));
     }
 
     protected function getSort($configName) {

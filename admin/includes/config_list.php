@@ -1,6 +1,6 @@
 <?php
-/** @var $versionManager \Sprint\Migration\VersionManager */
-$configValues = $versionManager->getVersionConfig()->getCurrent('values');
+/** @var $versionConfig \Sprint\Migration\VersionConfig */
+$configValues = $versionConfig->getCurrent('values');
 ?>
 <table class="sp-config">
     <tbody>

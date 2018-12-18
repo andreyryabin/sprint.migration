@@ -1,6 +1,5 @@
 <?php
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
-/** @var $versionManager \Sprint\Migration\VersionManager */
 
 $hasSteps = (
     ($_POST["step_code"] == "migration_create") ||
@@ -11,12 +10,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     /** @noinspection PhpIncludeInspection */
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
-    $name = !empty($_POST['builder_name']) ? trim($_POST['builder_name']) : '';
+    /** @var $versionConfig \Sprint\Migration\VersionConfig */
+    $versionManager = new \Sprint\Migration\VersionManager($versionConfig);
+
+    $builderName = !empty($_POST['builder_name']) ? trim($_POST['builder_name']) : '';
 
     if ($_POST["step_code"] == "migration_create") {
-        $builder = $versionManager->createBuilder($name, $_POST);
+        $builder = $versionManager->createBuilder($builderName, $_POST);
     } else {
-        $builder = $versionManager->createBuilder($name, array());
+        $builder = $versionManager->createBuilder($builderName, array());
     }
 
     if (!$builder) {

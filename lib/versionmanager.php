@@ -22,9 +22,13 @@ class VersionManager
     private $lastException = null;
 
     public function __construct($configName = '') {
-        $this->versionConfig = new VersionConfig(
-            $configName
-        );
+        if ($configName instanceof VersionConfig) {
+            $this->versionConfig = $configName;
+        } else {
+            $this->versionConfig = new VersionConfig(
+                $configName
+            );
+        }
 
         $this->versionTable = new VersionTable(
             $this->getVersionConfig()->getVal('migration_table')

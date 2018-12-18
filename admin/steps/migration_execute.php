@@ -1,10 +1,13 @@
 <?php
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
-/** @var $versionManager \Sprint\Migration\VersionManager */
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sessid')) {
     /** @noinspection PhpIncludeInspection */
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
+
+    /** @var $versionConfig \Sprint\Migration\VersionConfig */
+    $versionManager = new \Sprint\Migration\VersionManager($versionConfig);
 
     $params = !empty($_POST['params']) ? $_POST['params'] : array();
     $restart = !empty($_POST['restart']) ? 1 : 0;
@@ -57,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
                 $versionManager->getLastException()->getMessage()
             );
 
-            if ($versionManager->getVersionConfig()->getVal('stop_on_errors')) {
+            if ($versionConfig->getVal('stop_on_errors')) {
                 $nextAction = false;
             } else {
                 $skipVersions[] = $version;

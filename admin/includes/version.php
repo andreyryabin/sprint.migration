@@ -1,6 +1,3 @@
-<?php
-/** @var $versionManager \Sprint\Migration\VersionManager */
-?>
 <div id="migration-container" data-sessid="<?= bitrix_sessid() ?>">
     <div class="sp-group">
         <div class="sp-group-row2">
@@ -48,7 +45,7 @@
     <div class="sp-group">
         <div class="sp-block">
             <div class="sp-noblock_title">
-                <?= GetMessage('SPRINT_MIGRATION_CONFIG') ?>: <?= $versionManager->getVersionConfig()->getCurrent('title') ?>
+                <?= GetMessage('SPRINT_MIGRATION_CONFIG') ?>: <?= $versionConfig->getCurrent('title') ?>
             </div>
             <div class="sp-noblock_body">
                 <? include __DIR__ . '/config_list.php' ?>
