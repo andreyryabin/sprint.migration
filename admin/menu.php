@@ -5,7 +5,7 @@ if ($APPLICATION->GetGroupRight("sprint.migration") == "D") {
     return false;
 }
 
-if (!\CModule::IncludeModule('sprint.migration')){
+if (!\CModule::IncludeModule('sprint.migration')) {
     return false;
 }
 
@@ -17,9 +17,14 @@ $items = array();
 foreach ($configList as $item) {
     $items[] = array(
         "text" => $item['title'],
-        "url" => "sprint_migrations.php?config=" . $item['name'] . "&lang=" . LANGUAGE_ID,
+        "url" => "sprint_migrations.php?config=" . $item['name'] . "&view=migrations&lang=" . LANGUAGE_ID,
     );
 }
+
+$items[] = array(
+    "text" => GetMessage('SPRINT_MIGRATION_MENU_SCHEMA'),
+    "url" => "sprint_migrations.php?config=cfg&view=schema&lang=" . LANGUAGE_ID,
+);
 
 $aMenu = array(
     "parent_menu" => "global_menu_settings",
