@@ -1,7 +1,7 @@
 <?php
 global $APPLICATION;
 
-if ($APPLICATION->GetGroupRight("sprint.migration") == "D") {
+if ($APPLICATION->GetGroupRight('sprint.migration') == 'D') {
     return false;
 }
 
@@ -14,27 +14,33 @@ $configList = $versionConfig->getList();
 
 $items = array();
 
+$items[] = array(
+    'text' => GetMessage('SPRINT_MIGRATION_MENU_SCHEMA'),
+    'url' => 'sprint_migrations.php?' . http_build_query(array(
+            'view' => 'schema',
+            'lang' => LANGUAGE_ID,
+        ))
+);
+
 foreach ($configList as $item) {
     $items[] = array(
-        "text" => $item['title'],
-        "url" => "sprint_migrations.php?config=" . $item['name'] . "&view=migrations&lang=" . LANGUAGE_ID,
+        'text' => $item['title'],
+        'url' => 'sprint_migrations.php?' . http_build_query(array(
+                'config' => $item['name'],
+                'lang' => LANGUAGE_ID,
+            ))
     );
 }
 
-$items[] = array(
-    "text" => GetMessage('SPRINT_MIGRATION_MENU_SCHEMA'),
-    "url" => "sprint_migrations.php?config=cfg&view=schema&lang=" . LANGUAGE_ID,
-);
-
 $aMenu = array(
-    "parent_menu" => "global_menu_settings",
-    "section" => "Sprint",
-    "sort" => 50,
-    "text" => GetMessage('SPRINT_MIGRATION_MENU_SPRINT'),
-    "icon" => "sys_menu_icon",
-    "page_icon" => "sys_page_icon",
-    "items_id" => "sprint_migrations",
-    "items" => $items
+    'parent_menu' => 'global_menu_settings',
+    'section' => 'Sprint',
+    'sort' => 50,
+    'text' => GetMessage('SPRINT_MIGRATION_MENU_SPRINT'),
+    'icon' => 'sys_menu_icon',
+    'page_icon' => 'sys_page_icon',
+    'items_id' => 'sprint_migrations',
+    'items' => $items
 );
 
 return $aMenu;
