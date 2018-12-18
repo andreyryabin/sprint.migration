@@ -8,7 +8,7 @@ use Sprint\Migration\HelperManager;
 class IblockSchema extends AbstractSchema
 {
 
-    private $cache = array();
+    private $iblockids = array();
 
     protected function isBuilderEnabled() {
         return (\CModule::IncludeModule('iblock'));
@@ -229,14 +229,14 @@ class IblockSchema extends AbstractSchema
         $helper = new HelperManager();
 
         $uniq = $this->getUniqIblock($iblock);
-        if (!isset($this->cache[$uniq])) {
-            $this->cache[$uniq] = $helper->Iblock()->getIblockId(
+        if (!isset($this->iblockids[$uniq])) {
+            $this->iblockids[$uniq] = $helper->Iblock()->getIblockId(
                 $iblock['CODE'],
                 $iblock['IBLOCK_TYPE_ID']
             );
         }
 
-        return $this->cache[$uniq];
+        return $this->iblockids[$uniq];
 
     }
 

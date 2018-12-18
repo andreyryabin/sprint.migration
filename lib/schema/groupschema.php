@@ -18,11 +18,11 @@ class GroupSchema extends AbstractSchema
     }
 
     public function outDescription() {
-        $schemaGroups = $this->loadSchema('user_groups', array(
+        $schemaItems = $this->loadSchema('user_groups', array(
             'items' => array()
         ));
 
-        $this->out('Группы пользователей: %d', count($schemaGroups['items']));
+        $this->out('Группы пользователей: %d', count($schemaItems['items']));
     }
 
     public function export() {
@@ -30,26 +30,26 @@ class GroupSchema extends AbstractSchema
 
         $this->deleteSchemas('user_groups');
 
-        $exportAgents = $helper->UserGroup()->exportGroups();
+        $exportItems = $helper->UserGroup()->exportGroups();
 
         $this->saveSchema('user_groups', array(
-            'items' => $exportAgents
+            'items' => $exportItems
         ));
 
         $this->outSchemas(array('user_groups'));
     }
 
     public function import() {
-        $schemaGroups = $this->loadSchema('user_groups', array(
+        $schemaItems = $this->loadSchema('user_groups', array(
             'items' => array()
         ));
 
-        foreach ($schemaGroups['items'] as $item) {
+        foreach ($schemaItems['items'] as $item) {
             $this->addToQueue('saveGroup', $item);
         }
 
         $skip = array();
-        foreach ($schemaGroups['items'] as $item) {
+        foreach ($schemaItems['items'] as $item) {
             $skip[] = $this->getUniqGroup($item);
         }
 

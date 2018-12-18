@@ -18,11 +18,11 @@ class AgentSchema extends AbstractSchema
     }
 
     public function outDescription() {
-        $schemaAgents = $this->loadSchema('agents', array(
+        $schemaItems = $this->loadSchema('agents', array(
             'items' => array()
         ));
 
-        $this->out('Агенты: %d', count($schemaAgents['items']));
+        $this->out('Агенты: %d', count($schemaItems['items']));
     }
 
     public function export() {
@@ -30,26 +30,26 @@ class AgentSchema extends AbstractSchema
 
         $this->deleteSchemas('agents');
 
-        $exportAgents = $helper->Agent()->exportAgents();
+        $exportItems = $helper->Agent()->exportAgents();
 
         $this->saveSchema('agents', array(
-            'items' => $exportAgents
+            'items' => $exportItems
         ));
 
         $this->outSchemas(array('agents'));
     }
 
     public function import() {
-        $schemaAgents = $this->loadSchema('agents', array(
+        $schemaItems = $this->loadSchema('agents', array(
             'items' => array()
         ));
 
-        foreach ($schemaAgents['items'] as $item) {
+        foreach ($schemaItems['items'] as $item) {
             $this->addToQueue('saveAgent', $item);
         }
 
         $skip = array();
-        foreach ($schemaAgents['items'] as $item) {
+        foreach ($schemaItems['items'] as $item) {
             $skip[] = $this->getUniqAgent($item);
         }
 

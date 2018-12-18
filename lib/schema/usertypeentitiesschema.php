@@ -9,6 +9,8 @@ use Sprint\Migration\HelperManager;
 class UserTypeEntitiesSchema extends AbstractSchema
 {
 
+    private $transforms = array();
+
     protected function initialize() {
         $this->setTitle('Схема пользовательских полей');
     }
@@ -18,11 +20,11 @@ class UserTypeEntitiesSchema extends AbstractSchema
     }
 
     public function outDescription() {
-        $schemaAgents = $this->loadSchema('user_type_entities', array(
+        $schemaItems = $this->loadSchema('user_type_entities', array(
             'items' => array()
         ));
 
-        $this->out('Полей: %d', count($schemaAgents['items']));
+        $this->out('Полей: %d', count($schemaItems['items']));
     }
 
     public function export() {
@@ -39,17 +41,17 @@ class UserTypeEntitiesSchema extends AbstractSchema
     }
 
     public function import() {
-        $schemaAgents = $this->loadSchema('user_type_entities', array(
+        $schemaItems = $this->loadSchema('user_type_entities', array(
             'items' => array()
         ));
 
-        foreach ($schemaAgents['items'] as $item) {
+        foreach ($schemaItems['items'] as $item) {
             $this->addToQueue('saveUserTypeEntity', $item);
         }
 
 
         $skip = array();
-        foreach ($schemaAgents['items'] as $item) {
+        foreach ($schemaItems['items'] as $item) {
             $skip[] = $this->getUniqEntity($item);
         }
 
@@ -77,8 +79,14 @@ class UserTypeEntitiesSchema extends AbstractSchema
     }
 
     protected function getUniqEntity($item) {
-        $helper = new HelperManager();
-        return $helper->UserTypeEntity()->transformEntityId($item['ENTITY_ID']) . $item['FIELD_NAME'];
+        $entityId = $item['ENTITY_ID'];
+
+        if (!isset($this->transforms[$entityId])) {
+            $helper = new HelperManager();
+            $this->transforms[$entityId] = $helper->UserTypeEntity()->transformEntityId($entityId);
+        }
+
+        return $this->transforms[$entityId] . $item['FIELD_NAME'];
     }
 
 

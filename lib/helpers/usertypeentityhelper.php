@@ -276,43 +276,27 @@ class UserTypeEntityHelper extends Helper
     }
 
     public function revertEntityId($entityId) {
-        if (isset($this->transf[$entityId])) {
-            return $this->transf[$entityId];
-        }
-
-        $newval = $entityId;
-
         if (0 === strpos($entityId, 'HLBLOCK_')) {
             $hlblockName = substr($entityId, 8);
             $hlhelper = new HlblockHelper();
             $hlblock = $hlhelper->getHlblock($hlblockName);
             if ($hlblock) {
-                $newval = 'HLBLOCK_' . $hlblock['ID'];
+                $entityId = 'HLBLOCK_' . $hlblock['ID'];
             }
         }
-
-        $this->transf[$entityId] = $newval;
-        return $this->transf[$entityId];
+        return $entityId;
     }
 
     public function transformEntityId($entityId) {
-        if (isset($this->transf[$entityId])) {
-            return $this->transf[$entityId];
-        }
-
-        $newval = $entityId;
-
         if (0 === strpos($entityId, 'HLBLOCK_')) {
             $hlblockId = intval(substr($entityId, 8));
             $hlhelper = new HlblockHelper();
             $hlblock = $hlhelper->getHlblock($hlblockId);
             if ($hlblock) {
-                $newval = 'HLBLOCK_' . $hlblock['NAME'];
+                $entityId = 'HLBLOCK_' . $hlblock['NAME'];
             }
         }
-
-        $this->transf[$entityId] = $newval;
-        return $this->transf[$entityId];
+        return $entityId;
     }
 
     //version 2
@@ -320,7 +304,7 @@ class UserTypeEntityHelper extends Helper
     public function saveUserTypeEntity($entityId, $fieldName, $fields = array()) {
         $fields['ENTITY_ID'] = $entityId;
         $fields['FIELD_NAME'] = $fieldName;
-       
+
 
         $this->checkRequiredKeys(__METHOD__, $fields, array('ENTITY_ID', 'FIELD_NAME'));
 
@@ -337,7 +321,9 @@ class UserTypeEntityHelper extends Helper
         $fields = $this->prepareExportUserTypeEntity($fields, false);
 
         if (empty($exists)) {
-            echo "<pre>";print_r($fields);/*debug*/echo "</pre>";
+            echo "<pre>";
+            print_r($fields);/*debug*/
+            echo "</pre>";
 
             $ok = ($this->testMode) ? true : $this->addUserTypeEntity(
                 $fields['ENTITY_ID'],
