@@ -67,7 +67,7 @@ abstract class AbstractSchema
     }
 
     protected function getSchemaDir($relative = false) {
-        $dir = Module::getPhpInterfaceDir() . '/migrations.schema/';
+        $dir = $this->getVersionConfig()->getVal('migration_dir') . '/schema/';
         return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
 

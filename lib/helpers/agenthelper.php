@@ -67,39 +67,12 @@ class AgentHelper extends Helper
     }
 
     public function deleteAgentIfExists($moduleId, $name) {
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $item = \CAgent::GetList(array("ID" => "DESC"), array(
-            'MODULE_ID' => $moduleId,
-            'NAME' => $name
-        ))->Fetch();
-
-        if (!$item) {
+        $item = $this->getAgent($moduleId, $name);
+        if (empty($item)) {
             return false;
         }
 
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        \CAgent::RemoveAgent($name, $moduleId);
-        return true;
-    }
-
-    /** @deprecated */
-    public function replaceAgent($moduleId, $name, $interval, $nextExec) {
-        return $this->saveAgent(array(
-            'MODULE_ID' => $moduleId,
-            'NAME' => $name,
-            'AGENT_INTERVAL' => $interval,
-            'NEXT_EXEC' => $nextExec,
-        ));
-    }
-
-    /** @deprecated */
-    public function addAgentIfNotExists($moduleId, $name, $interval, $nextExec) {
-        return $this->saveAgent(array(
-            'MODULE_ID' => $moduleId,
-            'NAME' => $name,
-            'AGENT_INTERVAL' => $interval,
-            'NEXT_EXEC' => $nextExec,
-        ));
+        return $this->deleteAgent($moduleId, $name);
     }
 
     //version 2
@@ -107,17 +80,41 @@ class AgentHelper extends Helper
     public function saveAgent($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('MODULE_ID', 'NAME'));
 
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-
-        $item = \CAgent::GetList(array("ID" => "DESC"), array(
+        $exists = $this->getAgent(array(
             'MODULE_ID' => $fields['MODULE_ID'],
             'NAME' => $fields['NAME']
-        ))->Fetch();
+        ));
 
-        if ($item) {
-            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-            \CAgent::RemoveAgent($fields['NAME'], $fields['MODULE_ID']);
+        $exportExists = $this->prepareExportAgent($exists);
+        $fields = $this->prepareExportAgent($fields);
+
+        if (empty($exists)) {
+            $ok = ($this->testMode) ? true : $this->addAgent($fields);
+            $this->outSuccessIf($ok, 'Агент %s: добавлен', $fields['NAME']);
+            return $ok;
         }
+
+        if ($exportExists != $fields) {
+            $ok = ($this->testMode) ? true : $this->updateAgent($fields);
+            $this->outSuccessIf($ok, 'Агент %s: обновлен', $fields['NAME']);
+            return $ok;
+        }
+
+        $this->out('Агент %s: совпадает', $fields['NAME']);
+        $ok = ($this->testMode) ? true : $exists['ID'];
+        return $ok;
+    }
+
+
+    public function updateAgent($fields) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('MODULE_ID', 'NAME'));
+        $this->deleteAgent($fields['MODULE_ID'], $fields['NAME']);
+        return $this->addAgent($fields);
+    }
+
+    public function addAgent($fields) {
+
+        $this->checkRequiredKeys(__METHOD__, $fields, array('MODULE_ID', 'NAME'));
 
         global $DB;
 
@@ -150,6 +147,25 @@ class AgentHelper extends Helper
         } else {
             $this->throwException(__METHOD__, 'Agent %s not added', $fields['NAME']);
         }
+    }
 
+    /** @deprecated */
+    public function replaceAgent($moduleId, $name, $interval, $nextExec) {
+        return $this->saveAgent(array(
+            'MODULE_ID' => $moduleId,
+            'NAME' => $name,
+            'AGENT_INTERVAL' => $interval,
+            'NEXT_EXEC' => $nextExec,
+        ));
+    }
+
+    /** @deprecated */
+    public function addAgentIfNotExists($moduleId, $name, $interval, $nextExec) {
+        return $this->saveAgent(array(
+            'MODULE_ID' => $moduleId,
+            'NAME' => $name,
+            'AGENT_INTERVAL' => $interval,
+            'NEXT_EXEC' => $nextExec,
+        ));
     }
 }

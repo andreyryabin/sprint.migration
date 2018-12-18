@@ -40,22 +40,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 $config = isset($_REQUEST['config']) ? $_REQUEST['config'] : '';
-$view = isset($_REQUEST['view']) ? $_REQUEST['view'] : '';
 
 $versionManager = new Sprint\Migration\VersionManager($config);
 
 if ($versionManager->getVersionConfig()->getVal('show_admin_interface')) {
-    if ($view == 'schema') {
-        include __DIR__ . '/steps/schema_list.php';
-        include __DIR__ . '/steps/schema_export.php';
-        include __DIR__ . '/steps/schema_import.php';
-    } else {
-        include __DIR__ . '/steps/migration_execute.php';
-        include __DIR__ . '/steps/migration_list.php';
-        include __DIR__ . '/steps/migration_status.php';
-        include __DIR__ . '/steps/migration_create.php';
-    }
-
+    include __DIR__ . '/steps/schema_list.php';
+    include __DIR__ . '/steps/schema_export.php';
+    include __DIR__ . '/steps/schema_import.php';
+    include __DIR__ . '/steps/migration_execute.php';
+    include __DIR__ . '/steps/migration_list.php';
+    include __DIR__ . '/steps/migration_status.php';
+    include __DIR__ . '/steps/migration_create.php';
 }
 
 /** @noinspection PhpIncludeInspection */
@@ -63,11 +58,10 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 \CUtil::InitJSCore(Array("jquery"));
 
 if ($versionManager->getVersionConfig()->getVal('show_admin_interface')) {
-    if ($view == 'schema') {
-        include __DIR__ . '/includes/schema.php';
-    } else {
-        include __DIR__ . '/includes/version.php';
-    }
+    include __DIR__ . '/includes/schema.php';
+    include __DIR__ . '/includes/version.php';
+    include __DIR__ . '/assets/schema.php';
+    include __DIR__ . '/assets/version.php';
 }
 
 $sperrors = array();

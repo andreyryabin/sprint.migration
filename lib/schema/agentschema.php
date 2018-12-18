@@ -27,7 +27,7 @@ class AgentSchema extends AbstractSchema
 
     public function export() {
         $helper = new HelperManager();
-        
+
         $this->deleteSchemas('agents');
 
         $exportAgents = $helper->Agent()->exportAgents();
@@ -44,33 +44,23 @@ class AgentSchema extends AbstractSchema
             'items' => array()
         ));
 
-        foreach ($schemaAgents['items'] as $agent) {
-            $this->addToQueue('saveAgent', $agent);
+        foreach ($schemaAgents['items'] as $item) {
+            $this->addToQueue('saveAgent', $item);
         }
 
         $skip = array();
-        foreach ($schemaAgents['items'] as $agent) {
-            $skip[] = $this->getUniqAgent($agent);
+        foreach ($schemaAgents['items'] as $item) {
+            $skip[] = $this->getUniqAgent($item);
         }
 
         $this->addToQueue('cleanAgents', $skip);
     }
 
 
-    protected function saveAgent($agent) {
+    protected function saveAgent($item) {
         $helper = new HelperManager();
-
-        $exists = $helper->Agent()->exportAgent(array(
-            'MODULE_ID' => $agent['MODULE_ID'],
-            'NAME' => $agent['NAME']
-        ));
-
-        if ($exists != $agent) {
-            $ok = ($this->testMode) ? true : $helper->Agent()->saveAgent($agent);
-            $this->outSuccessIf($ok, 'Агент %s: сохранен', $agent['NAME']);
-        } else {
-            $this->out('Агент %s: совпадает', $agent['NAME']);
-        }
+        $helper->Agent()->setTestMode($this->testMode);
+        $helper->Agent()->saveAgent($item);
     }
 
     protected function cleanAgents($skip = array()) {

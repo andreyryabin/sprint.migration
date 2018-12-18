@@ -9,7 +9,6 @@
             </div>
         </div>
     </div>
-
     <div class="sp-group">
         <div class="sp-group-row2">
             <div class="sp-block">
@@ -25,7 +24,5 @@
             </div>
         </div>
     </div>
-
     <div class="sp-separator"></div>
 </div>
-<? include __DIR__ . '/../assets/schema.php'; ?>

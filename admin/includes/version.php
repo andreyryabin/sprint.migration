@@ -12,7 +12,6 @@
             </div>
         </div>
     </div>
-
     <div class="sp-group">
         <div class="sp-group-row2">
             <div class="sp-block">
@@ -41,14 +40,11 @@
             </div>
         </div>
     </div>
-
     <div class="sp-separator"></div>
-
     <? foreach (array('default', 'configurator') as $builderGroup): ?>
         <? include __DIR__ . '/builder_group.php' ?>
         <div class="sp-separator"></div>
     <? endforeach ?>
-
     <div class="sp-group">
         <div class="sp-block">
             <div class="sp-noblock_title">
@@ -59,7 +55,4 @@
             </div>
         </div>
     </div>
-
 </div>
-
-<? include __DIR__ . '/../assets/version.php'; ?>

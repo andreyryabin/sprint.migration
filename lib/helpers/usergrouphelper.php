@@ -88,12 +88,30 @@ class UserGroupHelper extends Helper
     }
 
     public function saveGroup($code, $fields = array()) {
-        $groupId = $this->getGroupId($code);
-        if ($groupId) {
-            return $this->updateGroup($groupId, $fields);
-        } else {
-            return $this->addGroup($code, $fields);
+        $fields['STRING_ID'] = $code;
+
+        $this->checkRequiredKeys(__METHOD__, $fields, array('STRING_ID', 'NAME'));
+
+        $exists = $this->getGroup($fields['STRING_ID']);
+        $exportExists = $this->prepareExportGroup($exists);
+        $fields = $this->prepareExportGroup($fields);
+
+        if (empty($exists)) {
+            $ok = ($this->testMode) ? true : $this->addGroup($fields['STRING_ID'], $fields);
+            $this->outSuccessIf($ok, 'Группа %s: добавлена', $fields['NAME']);
+            return $ok;
         }
+
+        if ($exportExists != $fields) {
+            $ok = ($this->testMode) ? true : $this->updateGroup($exists['ID'], $fields);
+            $this->outSuccessIf($ok, 'Группа %s: обновлена', $fields['NAME']);
+            return $ok;
+        }
+
+
+        $ok = ($this->testMode) ? true : $exists['ID'];
+        $this->outIf($ok, 'Группа %s: совпадает', $fields['NAME']);
+        return $exists['ID'];
     }
 
     public function addGroupIfNotExists($code, $fields = array()) {

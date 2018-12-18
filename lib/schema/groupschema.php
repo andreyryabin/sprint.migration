@@ -44,13 +44,13 @@ class GroupSchema extends AbstractSchema
             'items' => array()
         ));
 
-        foreach ($schemaGroups['items'] as $agent) {
-            $this->addToQueue('saveGroup', $agent);
+        foreach ($schemaGroups['items'] as $item) {
+            $this->addToQueue('saveGroup', $item);
         }
 
         $skip = array();
-        foreach ($schemaGroups['items'] as $agent) {
-            $skip[] = $this->getUniqGroup($agent);
+        foreach ($schemaGroups['items'] as $item) {
+            $skip[] = $this->getUniqGroup($item);
         }
 
         $this->addToQueue('cleanGroups', $skip);
@@ -59,28 +59,7 @@ class GroupSchema extends AbstractSchema
 
     protected function saveGroup($fields) {
         $helper = new HelperManager();
-        $helper->UserGroup()->checkRequiredKeys(__METHOD__, $fields, array('STRING_ID', 'NAME'));
-
-
-        $exists = $helper->UserGroup()->getGroup($fields['STRING_ID']);
-        $exportExists = $helper->UserGroup()->prepareExportGroup($exists);
-
-        if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $helper->UserGroup()->addGroup($fields['STRING_ID'], $fields);
-            $this->outSuccessIf($ok, 'Группа %s: добавлена', $fields['NAME']);
-            return $ok;
-        }
-
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $helper->UserGroup()->updateGroup($exists['ID'], $fields);
-            $this->outSuccessIf($ok, 'Группа %s: обновлена', $fields['NAME']);
-            return $ok;
-        }
-
-
-        $ok = ($this->testMode) ? true : $exists['ID'];
-        $this->outIf($ok, 'Группа %s: совпадает', $fields['NAME']);
-        return $exists['ID'];
+        $helper->UserGroup()->saveGroup($fields['STRING_ID'], $fields);
     }
 
     protected function cleanGroups($skip = array()) {
