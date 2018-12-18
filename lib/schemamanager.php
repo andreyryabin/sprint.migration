@@ -6,6 +6,8 @@ use Sprint\Migration\Exceptions\RestartException;
 
 class SchemaManager
 {
+    use OutTrait;
+
     /** @var VersionConfig */
     private $versionConfig = null;
 
@@ -15,9 +17,8 @@ class SchemaManager
 
     protected $testMode = 0;
 
-    public function __construct($params = array()) {
-        $this->versionConfig = new VersionConfig('cfg');
-
+    public function __construct($configName = '', $params = array()) {
+        $this->versionConfig = new VersionConfig($configName);
         $this->params = $params;
     }
 
@@ -146,21 +147,6 @@ class SchemaManager
         $class = $schemas[$name];
 
         return new $class($this->getVersionConfig(), $name);
-    }
-
-    protected function out($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'out'), $args);
-    }
-
-    protected function outError($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outError'), $args);
-    }
-
-    protected function outSuccess($msg, $var1 = null, $var2 = null) {
-        $args = func_get_args();
-        call_user_func_array(array('Sprint\Migration\Out', 'outSuccess'), $args);
     }
 
     protected function removeQueue(AbstractSchema $schema) {

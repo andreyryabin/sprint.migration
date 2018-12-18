@@ -1,5 +1,6 @@
 <?php
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+/** @var $versionManager \Sprint\Migration\VersionManager */
 
 $hasSteps = (
     ($_POST["step_code"] == "schema_import") ||
@@ -12,7 +13,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
 
     $params = !empty($_POST['params']) ? $_POST['params'] : array();
 
-    $schemaManager = new \Sprint\Migration\SchemaManager($params);
+    $schemaManager = new \Sprint\Migration\SchemaManager(
+        $versionManager->getVersionConfig()->getName(),
+        $params
+    );
 
     if ($_POST["step_code"] == "schema_test") {
         $schemaManager->setTestMode(1);

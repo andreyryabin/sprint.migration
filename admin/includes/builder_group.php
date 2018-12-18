@@ -1,8 +1,6 @@
 <?php
-/**
- * @var $versionManager
- * @var $builderGroup
- */
+/** @var $versionManager \Sprint\Migration\VersionManager */
+/** @var $builderGroup */
 ?>
 <div class="sp-group"><?
     $colIndex = 0;

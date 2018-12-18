@@ -1,5 +1,6 @@
 <?php
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+/** @var $versionManager \Sprint\Migration\VersionManager */
 
 $listView = (
     ($_POST["step_code"] == "migration_new") ||

@@ -59,8 +59,9 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 
 if ($versionManager->getVersionConfig()->getVal('show_admin_interface')) {
     include __DIR__ . '/includes/schema.php';
-    include __DIR__ . '/includes/version.php';
     include __DIR__ . '/assets/schema.php';
+
+    include __DIR__ . '/includes/version.php';
     include __DIR__ . '/assets/version.php';
 }
 

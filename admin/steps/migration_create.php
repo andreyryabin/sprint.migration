@@ -1,5 +1,6 @@
 <?php
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+/** @var $versionManager \Sprint\Migration\VersionManager */
 
 $hasSteps = (
     ($_POST["step_code"] == "migration_create") ||
@@ -31,21 +32,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
 
         if ($builder->isRestart()) {
             $json = json_encode($builder->getRestartParams());
-            ?><script>migrationBuilder(<?=$json?>);</script><?
+            ?>
+            <script>migrationBuilder(<?=$json?>);</script><?
 
-        } elseif ($builder->isRebuild()){
-            ?><script>migrationEnableButtons(1);</script><?
+        } elseif ($builder->isRebuild()) {
+            ?>
+            <script>migrationEnableButtons(1);</script><?
 
-        } elseif ($builder->hasActions()){
+        } elseif ($builder->hasActions()) {
             $actions = $builder->getActions();
             foreach ($actions as $action) {
                 if ($action['type'] == 'redirect') {
-                    ?><script>window.location.replace("<?=$action['url']?>");</script><?
+                    ?>
+                    <script>window.location.replace("<?=$action['url']?>");</script><?
                 }
             }
 
         } else {
-            ?><script>
+            ?>
+            <script>
                 migrationMigrationRefresh(function () {
                     migrationScrollList();
                     migrationEnableButtons(1);
@@ -57,7 +62,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
 
     if ($_POST["step_code"] == "migration_reset") {
         $builder->renderHtml();
-        ?><script>migrationMigrationRefresh();</script><?
+        ?>
+        <script>migrationMigrationRefresh();</script><?
     }
 
     /** @noinspection PhpIncludeInspection */
