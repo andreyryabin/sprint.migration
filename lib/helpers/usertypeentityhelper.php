@@ -158,7 +158,7 @@ class UserTypeEntityHelper extends Helper
         return $export;
     }
 
-    public function prepareExportUserTypeEntity($item, $transformEntityId = false) {
+    protected function prepareExportUserTypeEntity($item, $transformEntityId = false) {
         if (empty($item)) {
             return $item;
         }

@@ -837,7 +837,7 @@ class IblockHelper extends Helper
         );
     }
 
-    public function prepareExportIblockType($item) {
+    protected function prepareExportIblockType($item) {
         if (empty($item)) {
             return $item;
         }
@@ -852,7 +852,7 @@ class IblockHelper extends Helper
     }
 
 
-    public function prepareExportIblockFields($fields) {
+    protected function prepareExportIblockFields($fields) {
         if (empty($fields)) {
             return $fields;
         }
@@ -874,7 +874,7 @@ class IblockHelper extends Helper
         );
     }
 
-    public function prepareExportIblock($iblock) {
+    protected function prepareExportIblock($iblock) {
         if (empty($iblock)) {
             return $iblock;
         }
@@ -886,7 +886,7 @@ class IblockHelper extends Helper
         return $iblock;
     }
 
-    public function prepareExportProperty($prop) {
+    protected function prepareExportProperty($prop) {
         if (empty($prop)) {
             return $prop;
         }

@@ -33,7 +33,7 @@ class UserGroupHelper extends Helper
         return $exportItems;
     }
 
-    public function prepareExportGroup($item) {
+    protected function prepareExportGroup($item) {
         if (empty($item)) {
             return $item;
         }
