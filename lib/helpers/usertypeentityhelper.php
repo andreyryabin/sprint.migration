@@ -321,10 +321,6 @@ class UserTypeEntityHelper extends Helper
         $fields = $this->prepareExportUserTypeEntity($fields, false);
 
         if (empty($exists)) {
-            echo "<pre>";
-            print_r($fields);/*debug*/
-            echo "</pre>";
-
             $ok = ($this->testMode) ? true : $this->addUserTypeEntity(
                 $fields['ENTITY_ID'],
                 $fields['FIELD_NAME'],
