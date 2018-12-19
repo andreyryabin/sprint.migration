@@ -274,6 +274,8 @@ class Console
         $configValues = $this->versionConfig->getCurrent('values');
         $configTitle = $this->versionConfig->getCurrent('title');
 
+        $configValues = $this->versionConfig->humanValues($configValues);
+
         Out::out('%s: %s',
             GetMessage('SPRINT_MIGRATION_CONFIG'),
             $configTitle
@@ -288,17 +290,6 @@ class Console
         $grid->setBorderVisibility(array('bottom' => false));
 
         foreach ($configValues as $key => $val) {
-            if ($val === true || $val === false) {
-                $val = ($val) ? 'yes' : 'no';
-                $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
-            } elseif (is_array($val)) {
-                $fres = [];
-                foreach ($val as $fkey => $fval) {
-                    $fres[] = '[' . $fkey . '] => ' . $fval;
-                }
-                $val = implode(PHP_EOL, $fres);
-            }
-
             $grid->addRow(array($key, $val));
         }
 

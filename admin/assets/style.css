@@ -108,18 +108,9 @@
 
 table.sp-config {
     border-collapse: collapse;
-    /*background: #f5f9f9;*/
-    margin-bottom: 20px !important;
-}
-
-table.sp-config thead td {
-    /*text-align: center;*/
-
 }
 
 table.sp-config td {
-    /*border-bottom: 1px solid #c4ced2;*/
-
     padding: 5px;
 }
 

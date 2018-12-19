@@ -42,14 +42,4 @@
         <? include __DIR__ . '/builder_group.php' ?>
         <div class="sp-separator"></div>
     <? endforeach ?>
-    <div class="sp-group">
-        <div class="sp-block">
-            <div class="sp-noblock_title">
-                <?= GetMessage('SPRINT_MIGRATION_CONFIG') ?>: <?= $versionConfig->getCurrent('title') ?>
-            </div>
-            <div class="sp-noblock_body">
-                <? include __DIR__ . '/config_list.php' ?>
-            </div>
-        </div>
-    </div>
 </div>

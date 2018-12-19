@@ -195,6 +195,24 @@ class VersionConfig
         return $values;
     }
 
+    public function humanValues($values = array()) {
+        foreach ($values as $key => $val) {
+            if ($val === true || $val === false) {
+                $val = ($val) ? 'yes' : 'no';
+                $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
+            } elseif (is_array($val)) {
+                $fres = [];
+                foreach ($val as $fkey => $fval) {
+                    $fres[] = '[' . $fkey . '] => ' . $fval;
+                }
+                $val = implode(PHP_EOL, $fres);
+            }
+            $values[$key] = $val;
+        }
+
+        return $values;
+    }
+
     public function getVal($name, $default = '') {
         $values = $this->configCurrent['values'];
 

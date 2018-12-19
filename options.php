@@ -16,6 +16,7 @@ try {
 
 
     include __DIR__ . '/admin/includes/options.php';
+    include __DIR__ . '/admin/assets/style.php';
 
 } catch (\Exception $e) {
 
