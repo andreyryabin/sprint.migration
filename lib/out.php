@@ -66,12 +66,7 @@ class Out
 
     }
 
-    public static function outSuccess($msg, $var1 = null, $var2 = null) {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-
+    public static function outNotice($msg, $var1 = null, $var2 = null) {
         if (func_num_args() > 1) {
             $params = func_get_args();
             $msg = call_user_func_array('sprintf', $params);
@@ -85,12 +80,7 @@ class Out
         }
     }
 
-    public static function outError($msg, $var1 = null, $var2 = null) {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-
+    public static function outWarning($msg, $var1 = null, $var2 = null) {
         if (func_num_args() > 1) {
             $params = func_get_args();
             $msg = call_user_func_array('sprintf', $params);
@@ -102,7 +92,57 @@ class Out
         } else {
             self::outToConsole($msg);
         }
+    }
 
+    public static function outInfo($msg, $var1 = null, $var2 = null) {
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $msg = call_user_func_array('sprintf', $params);
+        }
+
+        $msg = '[blue]' . $msg . '[/]';
+        if (self::canOutAsHtml()) {
+            self::outToHtml($msg);
+        } else {
+            self::outToConsole($msg);
+        }
+    }
+
+    public static function outError($msg, $var1 = null, $var2 = null) {
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $msg = call_user_func_array('sprintf', $params);
+        }
+
+        if (self::canOutAsAdminMessage()) {
+            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+            \CAdminMessage::ShowMessage(array(
+                "MESSAGE" => self::prepareToHtml($msg),
+                'HTML' => true,
+                'TYPE' => 'ERROR'
+            ));
+
+        } else {
+            self::outWarning($msg);
+        }
+    }
+
+    public static function outSuccess($msg, $var1 = null, $var2 = null) {
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $msg = call_user_func_array('sprintf', $params);
+        }
+
+        if (self::canOutAsAdminMessage()) {
+            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+            \CAdminMessage::ShowMessage(array(
+                "MESSAGE" => self::prepareToHtml($msg),
+                'HTML' => true,
+                'TYPE' => 'OK'
+            ));
+        } else {
+            self::outNotice($msg);
+        }
     }
 
     public static function outIf($cond, $msg, $var1 = null, $var2 = null) {
@@ -114,11 +154,35 @@ class Out
 
     }
 
+    public static function outInfoIf($cond, $msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        $cond = array_shift($args);
+        if ($cond) {
+            call_user_func_array(array(__CLASS__, 'outInfo'), $args);
+        }
+    }
+
+    public static function outWarningIf($cond, $msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        $cond = array_shift($args);
+        if ($cond) {
+            call_user_func_array(array(__CLASS__, 'outWarning'), $args);
+        }
+    }
+
     public static function outErrorIf($cond, $msg, $var1 = null, $var2 = null) {
         $args = func_get_args();
         $cond = array_shift($args);
         if ($cond) {
             call_user_func_array(array(__CLASS__, 'outError'), $args);
+        }
+    }
+
+    public static function outNoticeIf($cond, $msg, $var1 = null, $var2 = null) {
+        $args = func_get_args();
+        $cond = array_shift($args);
+        if ($cond) {
+            call_user_func_array(array(__CLASS__, 'outNotice'), $args);
         }
     }
 

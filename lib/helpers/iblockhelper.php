@@ -740,14 +740,14 @@ class IblockHelper extends Helper
 
         if (empty($exists)) {
             $ok = ($this->testMode) ? true : $this->addIblockType($fields);
-            $this->outSuccessIf($ok, 'Тип инфоблока %s: добавлен', $fields['ID']);
+            $this->outNoticeIf($ok, 'Тип инфоблока %s: добавлен', $fields['ID']);
             return $ok;
         }
 
 
         if ($exportExists != $fields) {
             $ok = ($this->testMode) ? true : $this->updateIblockType($exists['ID'], $fields);
-            $this->outSuccessIf($ok, 'Тип инфоблока %s: обновлен', $fields['ID']);
+            $this->outNoticeIf($ok, 'Тип инфоблока %s: обновлен', $fields['ID']);
             return $ok;
         }
 
@@ -766,13 +766,13 @@ class IblockHelper extends Helper
 
         if (empty($exists)) {
             $ok = ($this->testMode) ? true : $this->addIblock($fields);
-            $this->outSuccessIf($ok, 'Инфоблок %s: добавлен', $fields['CODE']);
+            $this->outNoticeIf($ok, 'Инфоблок %s: добавлен', $fields['CODE']);
             return $ok;
         }
 
         if ($exportExists != $fields) {
             $ok = ($this->testMode) ? true : $this->updateIblock($exists['ID'], $fields);
-            $this->outSuccessIf($ok, 'Инфоблок %s: обновлен', $fields['CODE']);
+            $this->outNoticeIf($ok, 'Инфоблок %s: обновлен', $fields['CODE']);
             return $ok;
         }
 
@@ -791,13 +791,13 @@ class IblockHelper extends Helper
 
         if (empty($exists)) {
             $ok = ($this->testMode) ? true : $this->updateIblockFields($iblockId, $fields);
-            $this->outSuccessIf($ok, 'Инфоблок %s: поля добавлены', $iblockId);
+            $this->outNoticeIf($ok, 'Инфоблок %s: поля добавлены', $iblockId);
             return $ok;
         }
 
         if ($exportExists != $fields) {
             $ok = ($this->testMode) ? true : $this->updateIblockFields($iblockId, $fields);
-            $this->outSuccessIf($ok, 'Инфоблок %s: поля обновлены', $iblockId);
+            $this->outNoticeIf($ok, 'Инфоблок %s: поля обновлены', $iblockId);
             return $ok;
         }
 
@@ -814,13 +814,13 @@ class IblockHelper extends Helper
 
         if (empty($exists)) {
             $ok = ($this->testMode) ? true : $this->addProperty($iblockId, $fields);
-            $this->outSuccessIf($ok, 'Инфоблок %s: свойство %s добавлено', $iblockId, $fields['CODE']);
+            $this->outNoticeIf($ok, 'Инфоблок %s: свойство %s добавлено', $iblockId, $fields['CODE']);
             return $ok;
         }
 
         if ($exportExists != $fields) {
             $ok = ($this->testMode) ? true : $this->updatePropertyById($exists['ID'], $fields);
-            $this->outSuccessIf($ok, 'Инфоблок %s: свойство %s обновлено', $iblockId, $fields['CODE']);
+            $this->outNoticeIf($ok, 'Инфоблок %s: свойство %s обновлено', $iblockId, $fields['CODE']);
             return $ok;
         }
 

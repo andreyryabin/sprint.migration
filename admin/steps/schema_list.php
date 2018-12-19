@@ -15,25 +15,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     $schemas = $schemaManager->getEnabledSchemas();
 
     $defaultSchemas = array();
-    foreach ($schemas as $schema) {
-        $defaultSchemas[] = $schema->getName();
-    }
+//    foreach ($schemas as $schema) {
+//        $defaultSchemas[] = $schema->getName();
+//    }
 
     $schemaChecked = isset($_POST['schema_checked']) ? (array)$_POST['schema_checked'] : $defaultSchemas;
 
     ?>
+
+    <table class="sp-list">
     <? foreach ($schemas as $schema): ?>
-        <label>
-            <input <? if (in_array($schema->getName(), $schemaChecked)): ?>checked="checked"<? endif ?>
-                   id="sp-schema<?= $schema->getName() ?>"
-                   value="<?= $schema->getName() ?>"
-                   class="sp-schema"
-                   type="checkbox"/>
-            <?= \Sprint\Migration\Out::prepareToHtml('[blue]' . $schema->getTitle() . '[/]') ?>
-            <br/>
-            <? $schema->outDescription() ?>
-        </label>
+        <tr>
+            <td class="sp-list-l" style="vertical-align: top">
+                <input data-id="<?= $schema->getName() ?>"
+                       class="sp-schema adm-btn <? if (in_array($schema->getName(), $schemaChecked)): ?>adm-btn-active<? endif ?>"
+                       type="button"
+                       value="Выбрать"
+                />
+            </td>
+            <td class="sp-list-r">
+                <?= \Sprint\Migration\Out::prepareToHtml('[blue]' . $schema->getTitle() . '[/]') ?>
+                <? $schema->outDescription() ?>
+            </td>
+        </tr>
     <? endforeach; ?>
+    </table>
     <?
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");

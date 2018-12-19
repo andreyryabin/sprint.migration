@@ -143,7 +143,7 @@ abstract class AbstractSchema
     }
 
     protected function outSchemas($paths) {
-        $this->outSuccess('%s сохранена', $this->getTitle());
+        $this->outNotice('%s сохранена', $this->getTitle());
         $names = $this->getSchemas($paths);
         foreach ($names as $name) {
             $this->out($this->getSchemaFile($name, true));
@@ -151,7 +151,7 @@ abstract class AbstractSchema
     }
 
     public function outTitle() {
-        $this->out('[blue]' . $this->getTitle() . '[/]');
+        $this->outInfo($this->getTitle());
     }
 
     protected function loadSchemas($path, $merge = array()) {

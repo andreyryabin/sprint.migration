@@ -331,7 +331,7 @@ class UserTypeEntityHelper extends Helper
                 $fields
             );
 
-            $this->outSuccessIf($ok, 'Пользовательское поле %s: добавлено', $fields['FIELD_NAME']);
+            $this->outNoticeIf($ok, 'Пользовательское поле %s: добавлено', $fields['FIELD_NAME']);
             return $ok;
         }
 
@@ -340,7 +340,7 @@ class UserTypeEntityHelper extends Helper
 
         if ($exportExists != $fields) {
             $ok = ($this->testMode) ? true : $this->updateUserTypeEntity($exists['ID'], $fields);
-            $this->outSuccessIf($ok, 'Пользовательское поле %s: обновлено', $fields['FIELD_NAME']);
+            $this->outNoticeIf($ok, 'Пользовательское поле %s: обновлено', $fields['FIELD_NAME']);
             return $ok;
         }
 

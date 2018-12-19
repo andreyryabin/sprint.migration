@@ -141,7 +141,7 @@ class SchemaManager
         $schema->setTestMode($this->testMode);
 
         if (!isset($this->params['index'])) {
-            $this->out('[blue]%s (test import) start[/]', $schema->getTitle());
+            $this->outInfo('%s (test import) start', $schema->getTitle());
 
             $this->params['index'] = 0;
             $schema->import();

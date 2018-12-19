@@ -73,7 +73,7 @@ class UserTypeEntitiesSchema extends AbstractSchema
             $uniq = $this->getUniqEntity($old);
             if (!in_array($uniq, $skip)) {
                 $ok = ($this->testMode) ? true : $helper->UserTypeEntity()->deleteUserTypeEntity($old['ENTITY_ID'], $old['FIELD_NAME']);
-                $this->outErrorIf($ok, 'Пользовательское поле %s: удалено', $old['FIELD_NAME']);
+                $this->outWarningIf($ok, 'Пользовательское поле %s: удалено', $old['FIELD_NAME']);
             }
         }
     }

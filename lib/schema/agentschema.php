@@ -71,7 +71,7 @@ class AgentSchema extends AbstractSchema
             $uniq = $this->getUniqAgent($old);
             if (!in_array($uniq, $skip)) {
                 $ok = ($this->testMode) ? true : $helper->Agent()->deleteAgent($old['MODULE_ID'], $old['NAME']);
-                $this->outErrorIf($ok, 'Агент %s: удален', $old['NAME']);
+                $this->outWarningIf($ok, 'Агент %s: удален', $old['NAME']);
             }
         }
     }

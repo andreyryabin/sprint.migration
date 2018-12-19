@@ -13,8 +13,24 @@ trait OutTrait
         call_user_func_array(array('Sprint\Migration\Out', 'outProgress'), func_get_args());
     }
 
+    public function outNotice($msg, $var1 = null, $var2 = null) {
+        call_user_func_array(array('Sprint\Migration\Out', 'outNotice'), func_get_args());
+    }
+
+    public function outInfo($msg, $var1 = null, $var2 = null) {
+        call_user_func_array(array('Sprint\Migration\Out', 'outInfo'), func_get_args());
+    }
+
+    public function outInfoIf($msg, $var1 = null, $var2 = null) {
+        call_user_func_array(array('Sprint\Migration\Out', 'outInfoIf'), func_get_args());
+    }
+
     public function outSuccess($msg, $var1 = null, $var2 = null) {
         call_user_func_array(array('Sprint\Migration\Out', 'outSuccess'), func_get_args());
+    }
+
+    public function outWarning($msg, $var1 = null, $var2 = null) {
+        call_user_func_array(array('Sprint\Migration\Out', 'outWarning'), func_get_args());
     }
 
     public function outError($msg, $var1 = null, $var2 = null) {
@@ -25,12 +41,12 @@ trait OutTrait
         call_user_func_array(array('Sprint\Migration\Out', 'outIf'), func_get_args());
     }
 
-    public function outErrorIf($cond, $msg, $var1 = null, $var2 = null) {
-        call_user_func_array(array('Sprint\Migration\Out', 'outErrorIf'), func_get_args());
+    public function outWarningIf($cond, $msg, $var1 = null, $var2 = null) {
+        call_user_func_array(array('Sprint\Migration\Out', 'outWarningIf'), func_get_args());
     }
 
-    public function outSuccessIf($cond, $msg, $var1 = null, $var2 = null) {
-        call_user_func_array(array('Sprint\Migration\Out', 'outSuccessIf'), func_get_args());
+    public function outNoticeIf($cond, $msg, $var1 = null, $var2 = null) {
+        call_user_func_array(array('Sprint\Migration\Out', 'outNoticeIf'), func_get_args());
     }
 
 

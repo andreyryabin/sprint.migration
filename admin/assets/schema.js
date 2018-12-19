@@ -56,8 +56,8 @@ function schemaExecuteStep(step_code, postData, succesCallback) {
     postData = postData || {};
     postData['step_code'] = step_code;
     postData['send_sessid'] = $el.data('sessid');
-    postData['schema_checked'] = $el.find(".sp-schema:checked").map(function(){
-        return $(this).val();
+    postData['schema_checked'] = $el.find(".sp-schema.adm-btn-active").map(function () {
+        return $(this).data('id');
     }).get();
 
     schemaEnableButtons(0);
@@ -129,6 +129,21 @@ jQuery(document).ready(function ($) {
             $('#schema_log').empty();
             schemaProgressReset();
             schemaExecuteStep('schema_import');
+        }
+    });
+
+    $container.on('click', '.sp-schema', function (e) {
+        $(this).toggleClass('adm-btn-active');
+    });
+
+    $container.on('click', '.sp-schema-check', function (e) {
+        e.preventDefault();
+
+        var checkboxes = $container.find(".sp-schema");
+        if (checkboxes.hasClass('adm-btn-active')) {
+            checkboxes.removeClass('adm-btn-active');
+        } else {
+            checkboxes.addClass('adm-btn-active');
         }
     });
 

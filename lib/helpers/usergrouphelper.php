@@ -98,13 +98,13 @@ class UserGroupHelper extends Helper
 
         if (empty($exists)) {
             $ok = ($this->testMode) ? true : $this->addGroup($fields['STRING_ID'], $fields);
-            $this->outSuccessIf($ok, 'Группа %s: добавлена', $fields['NAME']);
+            $this->outNoticeIf($ok, 'Группа %s: добавлена', $fields['NAME']);
             return $ok;
         }
 
         if ($exportExists != $fields) {
             $ok = ($this->testMode) ? true : $this->updateGroup($exists['ID'], $fields);
-            $this->outSuccessIf($ok, 'Группа %s: обновлена', $fields['NAME']);
+            $this->outNoticeIf($ok, 'Группа %s: обновлена', $fields['NAME']);
             return $ok;
         }
 

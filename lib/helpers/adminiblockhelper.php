@@ -87,7 +87,7 @@ class AdminIblockHelper extends Helper
         $exists = $this->exportElementForm($iblockId, $params);
         if ($exists != $elementForm) {
             $ok = ($this->testMode) ? true : $this->buildElementForm($iblockId, $elementForm, $params);
-            $this->outSuccessIf($ok, 'Инфоблок %s: форма редактирования сохранена', $iblockId);
+            $this->outNoticeIf($ok, 'Инфоблок %s: форма редактирования сохранена', $iblockId);
             return $ok;
         } else {
             $this->out('Инфоблок %s: форма редактирования cовпадает', $iblockId);

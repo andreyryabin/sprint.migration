@@ -367,10 +367,10 @@ class Console
                     $restart = 1;
 
                 } catch (\Exception $e) {
-                    Out::outError($e->getMessage());
+                    Out::outWarning($e->getMessage());
 
                 } catch (\Throwable $e) {
-                    Out::outError($e->getMessage());
+                    Out::outWarning($e->getMessage());
                 }
 
             } while ($restart == 1);
@@ -392,10 +392,10 @@ class Console
                     $restart = 1;
 
                 } catch (\Exception $e) {
-                    Out::outError($e->getMessage());
+                    Out::outWarning($e->getMessage());
 
                 } catch (\Throwable $e) {
-                    Out::outError($e->getMessage());
+                    Out::outWarning($e->getMessage());
                 }
 
 

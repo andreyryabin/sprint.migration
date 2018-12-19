@@ -177,7 +177,7 @@ class IblockSchema extends AbstractSchema
             $uniq = $this->getUniqProp($old);
             if (!in_array($uniq, $skip)) {
                 $ok = ($this->testMode) ? true : $helper->Iblock()->deletePropertyById($old['ID']);
-                $this->outErrorIf($ok, 'Инфоблок %s: свойство %s удалено', $iblockId, $this->getTitleProp($old));
+                $this->outWarningIf($ok, 'Инфоблок %s: свойство %s удалено', $iblockId, $this->getTitleProp($old));
             }
         }
     }
@@ -190,7 +190,7 @@ class IblockSchema extends AbstractSchema
             $uniq = $this->getUniqIblockType($old);
             if (!in_array($uniq, $skip)) {
                 $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblockType($old['ID']);
-                $this->outErrorIf($ok, 'Тип инфоблока %s: удален', $old['ID']);
+                $this->outWarningIf($ok, 'Тип инфоблока %s: удален', $old['ID']);
             }
         }
     }
@@ -203,7 +203,7 @@ class IblockSchema extends AbstractSchema
             $uniq = $this->getUniqIblock($old);
             if (!in_array($uniq, $skip)) {
                 $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblock($old['ID']);
-                $this->outErrorIf($ok, 'Инфоблок %s: удален', $old['ID']);
+                $this->outWarningIf($ok, 'Инфоблок %s: удален', $old['ID']);
             }
         }
     }

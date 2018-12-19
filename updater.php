@@ -10,7 +10,7 @@ if (!function_exists('sprint_migration_rmdir')) {
         rmdir($dir);
     }
 
-    //sprint_migration_rmdir(__DIR__ . '/classes/');
+    sprint_migration_rmdir(__DIR__ . '/classes/');
 }
 
 

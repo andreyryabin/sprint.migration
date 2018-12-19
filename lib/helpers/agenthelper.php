@@ -90,13 +90,13 @@ class AgentHelper extends Helper
 
         if (empty($exists)) {
             $ok = ($this->testMode) ? true : $this->addAgent($fields);
-            $this->outSuccessIf($ok, 'Агент %s: добавлен', $fields['NAME']);
+            $this->outNoticeIf($ok, 'Агент %s: добавлен', $fields['NAME']);
             return $ok;
         }
 
         if ($exportExists != $fields) {
             $ok = ($this->testMode) ? true : $this->updateAgent($fields);
-            $this->outSuccessIf($ok, 'Агент %s: обновлен', $fields['NAME']);
+            $this->outNoticeIf($ok, 'Агент %s: обновлен', $fields['NAME']);
             return $ok;
         }
 
