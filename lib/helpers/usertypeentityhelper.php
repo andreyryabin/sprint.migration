@@ -292,7 +292,7 @@ class UserTypeEntityHelper extends Helper
 
     public function transformEntityId($entityId) {
         if (0 === strpos($entityId, 'HLBLOCK_')) {
-            $hlblockId = intval(substr($entityId, 8));
+            $hlblockId = substr($entityId, 8);
             $hlhelper = new HlblockHelper();
             $hlblock = $hlhelper->getHlblock($hlblockId);
             if (empty($hlblock)) {

@@ -17,8 +17,7 @@ foreach ($configList as $item) {
     $schemas[] = array(
         'text' => GetMessage('SPRINT_MIGRATION_MENU_SCHEMA') . ' (' . $item['name'] . ')',
         'url' => 'sprint_migrations.php?' . http_build_query(array(
-                'config' => $item['name'],
-                'view' => 'schema',
+                'schema' => $item['name'],
                 'lang' => LANGUAGE_ID,
             ))
     );
@@ -30,7 +29,6 @@ foreach ($configList as $item) {
         'text' => $item['title'],
         'url' => 'sprint_migrations.php?' . http_build_query(array(
                 'config' => $item['name'],
-                'view' => 'migration',
                 'lang' => LANGUAGE_ID,
             ))
     );

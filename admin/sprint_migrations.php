@@ -39,15 +39,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
 }
 
-
-$configName = isset($_REQUEST['config']) ? $_REQUEST['config'] : '';
-$viewName = isset($_REQUEST['view']) ? $_REQUEST['view'] : '';
-
-$versionConfig = new Sprint\Migration\VersionConfig($configName);
+if (isset($_REQUEST['schema'])) {
+    $versionConfig = new Sprint\Migration\VersionConfig($_REQUEST['schema']);
+} elseif (isset($_REQUEST['config'])) {
+    $versionConfig = new Sprint\Migration\VersionConfig($_REQUEST['config']);
+} else {
+    $versionConfig = new Sprint\Migration\VersionConfig();
+}
 
 
 if ($versionConfig->getVal('show_admin_interface')) {
-    if ($viewName == 'schema') {
+    if (isset($_REQUEST['schema'])) {
         include __DIR__ . '/steps/schema_list.php';
         include __DIR__ . '/steps/schema_export.php';
         include __DIR__ . '/steps/schema_import.php';
@@ -64,7 +66,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 \CUtil::InitJSCore(Array("jquery"));
 
 if ($versionConfig->getVal('show_admin_interface')) {
-    if ($viewName == 'schema') {
+    if (isset($_REQUEST['schema'])) {
         include __DIR__ . '/includes/schema.php';
         include __DIR__ . '/assets/schema.php';
     } else {
