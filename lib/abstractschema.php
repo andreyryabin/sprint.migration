@@ -67,7 +67,7 @@ abstract class AbstractSchema
     }
 
     protected function getSchemaDir($relative = false) {
-        return $this->getVersionConfig()->getSiblingDir('schema', $relative);
+        return $this->getVersionConfig()->getSiblingDir('schema', $relative, $this->getVersionConfig()->getName());
     }
 
     protected function getSchemaSubDir($name, $relative = false) {

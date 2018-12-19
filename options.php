@@ -1,33 +1,30 @@
 <?php
-$module_id = "sprint.migration";
 
 global $APPLICATION;
-$MODULE_RIGHT = $APPLICATION->GetGroupRight($module_id);
-if (!($MODULE_RIGHT >= "R")){
-    $APPLICATION->AuthForm("ACCESS_DENIED");
-}
 
-CModule::IncludeModule($module_id);
+try {
 
-if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()){
-    if (!empty($_REQUEST["remove_options"])){
-        \Sprint\Migration\Module::removeDbOptions();
+    if (!\CModule::IncludeModule('sprint.migration')) {
+        Throw new \Exception('need to install module sprint.migration');
     }
+
+    if (!$APPLICATION->GetGroupRight("sprint.migration") >= "R") {
+        Throw new \Exception(GetMessage("ACCESS_DENIED"));
+    }
+
+    \Sprint\Migration\Module::checkHealth();
+
+
+    include __DIR__ . '/admin/includes/options.php';
+
+} catch (\Exception $e) {
+
+
+    $sperrors = array();
+    $sperrors[] = $e->getMessage();
+
+    include __DIR__ . '/admin/includes/errors.php';
+    include __DIR__ . '/admin/includes/help.php';
+    include __DIR__ . '/admin/assets/style.php';
+
 }
-?>
-
-<p>
-    <a href="/bitrix/admin/sprint_migrations.php?config=cfg&lang=<?=LANGUAGE_ID?>"><?= GetMessage('SPRINT_MIGRATION_GOTO_MIGRATION') ?></a>
-</p>
-<p>
-    <a href="https://github.com/andreyryabin/sprint.migration" target="_blank"><?= GetMessage('SPRINT_MIGRATION_HELP_DOC') ?></a>
-</p>
-
-
-<br/>
-
-<form method="post" action="">
-    <p></p>
-    <p><input type="submit" name="remove_options" value="<?=GetMessage('SPRINT_MIGRATION_REMOVE_OPTIONS')?>"></p>
-    <?=bitrix_sessid_post();?>
-</form>

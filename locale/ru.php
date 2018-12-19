@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../lib/locale.php';
+
 \Sprint\Migration\Locale::loadLocale(array(
     "SPRINT_MIGRATION_MIGRATION_DIR" => "Директория для миграций",
     "SPRINT_MIGRATION_MODULE_NAME" => "Миграции для разработчиков",
@@ -8,6 +10,7 @@
     "SPRINT_MIGRATION_PARTNER_URI" => "https://dev.1c-bitrix.ru/community/webdev/user/39653/blog/",
     "SPRINT_MIGRATION_MENU_SPRINT" => "Миграции для разработчиков",
     "SPRINT_MIGRATION_MENU_MIGRATIONS" => "Миграции",
+    "SPRINT_MIGRATION_MENU_SCHEMAS" => "Схемы данных",
     "SPRINT_MIGRATION_TITLE" => "Миграции",
     "SPRINT_MIGRATION_FORM_DESCR" => "Описание",
     "SPRINT_MIGRATION_FORM_PREFIX" => "Заголовок",
@@ -63,6 +66,7 @@
     "SPRINT_MIGRATION_CONFIG_console_user" => "Пользователь, от которого запускаются миграции в консоли",
     "SPRINT_MIGRATION_CONFIG_config_file" => "Файл конфигурации",
     "SPRINT_MIGRATION_CONFIG_title" => "Название конфигурации",
+    "SPRINT_MIGRATION_CONFIG_version_schemas" => "Схемы данных",
 
     "SPRINT_MIGRATION_CONFIG_yes" => "да",
     "SPRINT_MIGRATION_CONFIG_no" => "нет",
@@ -92,11 +96,6 @@
 
     "SPRINT_MIGRATION_BUILDER_Version1" => "Создать простую миграцию",
     "SPRINT_MIGRATION_BUILDER_Version2" => "",
-
-    "SPRINT_MIGRATION_BUILDER_Configurator" => "Создать конфигурацию",
-    "SPRINT_MIGRATION_BUILDER_Configurator_config_name" => "Название (лат буквы и цифры)",
-    "SPRINT_MIGRATION_BUILDER_Configurator_config_created" => "Конфигурация создана",
-    "SPRINT_MIGRATION_BUILDER_Configurator_config_error" => "Ошибка создания конфигурации",
 
     "SPRINT_MIGRATION_BUILDER_UserGroupExport1" => "Создать миграцию для групп пользователей",
     "SPRINT_MIGRATION_BUILDER_UserGroupExport2" => "",
@@ -132,16 +131,27 @@
     "SPRINT_MIGRATION_BUILDER_CacheCleaner1" => "Очистка кеша",
     "SPRINT_MIGRATION_BUILDER_CacheCleaner2" => "Выполнить BXClearCache(true)",
 
+    "SPRINT_MIGRATION_BUILDER_Configurator" => "Создать конфигурацию",
+    "SPRINT_MIGRATION_BUILDER_Configurator_config_name" => "Название (лат буквы и цифры)",
+    "SPRINT_MIGRATION_BUILDER_Configurator_config_created" => "Конфигурация создана",
+    "SPRINT_MIGRATION_BUILDER_Configurator_error" => "Ошибка создания конфигурации",
+    "SPRINT_MIGRATION_BUILDER_Configurator_success" => "Конфигурация создана",
+
     "SPRINT_MIGRATION_BUILDER_Cleaner" => "Удалить конфигурацию",
     "SPRINT_MIGRATION_BUILDER_Cleaner_desc" => "Удаление файла конфигурации, файлов миграций и записей в таблице миграций",
-    "SPRINT_MIGRATION_BUILDER_Cleaner_config_name" => "Выберите конфигурацию",
-    "SPRINT_MIGRATION_BUILDER_Cleaner_config_error" => "Ошибка удаления конфигурации",
+    "SPRINT_MIGRATION_BUILDER_Cleaner_config_name" => "Название (лат буквы и цифры)",
+    "SPRINT_MIGRATION_BUILDER_Cleaner_error" => "Ошибка удаления конфигурации",
+    "SPRINT_MIGRATION_BUILDER_Cleaner_success" => "Конфигурация удалена",
 
     "SPRINT_MIGRATION_BUILDER_SchemaImport" => "Импорт схемы",
     "SPRINT_MIGRATION_BUILDER_SchemaExport" => "Экспорт схемы",
 
-    "SPRINT_MIGRATION_GOTO_MIGRATION" => "Перейти в админку миграций",
-    "SPRINT_MIGRATION_REMOVE_OPTIONS" => "Сбросить настройки модуля",
+    "SPRINT_MIGRATION_GOTO_MIGRATION" => "Админка миграций",
+    "SPRINT_MIGRATION_GOTO_OPTIONS" => "Настройки модуля",
+
+    "SPRINT_MIGRATION_OPTIONS_REMOVE" => "Сбросить настройки модуля",
+    "SPRINT_MIGRATION_OPTIONS_REMOVE_success" => "Настройки сброшены",
+
 
     "SPRINT_MIGRATION_MARK" => "Отметить миграцию",
     "SPRINT_MIGRATION_MARK_FIELD1" => "Выбрать миграцию",

@@ -88,6 +88,8 @@ class SchemaManager
             $this->params['schema']++;
             $this->restart();
         }
+
+        unset($this->params['schema']);
     }
 
     public function import($filter = array()) {

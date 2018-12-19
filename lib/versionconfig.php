@@ -263,8 +263,8 @@ class VersionConfig
         return true;
     }
 
-    public function getSiblingDir($dirname, $relative = false) {
-        $def = $this->configList['cfg'];
+    public function getSiblingDir($dirname, $relative = false, $configName = 'cfg') {
+        $def = $this->configList[$configName];
         $dir = rtrim($def['values']['migration_dir'], '/');
         $dir = $dir . '.' . trim($dirname, '/') . '/';
 
@@ -294,8 +294,6 @@ class VersionConfig
             'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
             'Marker' => '\Sprint\Migration\Builders\Marker',
             'Transfer' => '\Sprint\Migration\Builders\Transfer',
-            'Configurator' => '\Sprint\Migration\Builders\Configurator',
-            'Cleaner' => '\Sprint\Migration\Builders\Cleaner',
         );
     }
 

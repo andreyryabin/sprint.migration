@@ -66,11 +66,18 @@ class Module
         }
 
         if (!function_exists('json_encode')) {
-            Throw new \Exception('json functions not found');
+            Throw new \Exception('json functions not supported');
         }
 
         if (version_compare(PHP_VERSION, '5.4', '<')) {
             Throw new \Exception(PHP_VERSION . 'not supported');
+        }
+
+        if (
+            is_file($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/include.php') &&
+            is_file($_SERVER['DOCUMENT_ROOT'] . '/local/modules/sprint.migration/include.php')
+        ){
+            Throw new \Exception('module installed to bitrix and local folder');
         }
     }
 }

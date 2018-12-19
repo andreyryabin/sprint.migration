@@ -35,8 +35,8 @@ try {
 
     Sprint\Migration\Module::checkHealth();
 
-    $console = new Sprint\Migration\Console();
-    $console->executeConsoleCommand($argv);
+    $console = new Sprint\Migration\Console($argv);
+    $console->executeConsoleCommand();
 
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php");
 
