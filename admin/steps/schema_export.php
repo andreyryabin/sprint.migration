@@ -10,6 +10,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
     $params = !empty($_POST['params']) ? $_POST['params'] : array();
+    $checked = !empty($_POST['schema_checked']) ? $_POST['schema_checked'] : array();
+
 
     /** @var $versionConfig \Sprint\Migration\VersionConfig */
     $schemaManager = new \Sprint\Migration\SchemaManager($versionConfig, $params);
@@ -17,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     $ok = false;
 
     try {
-        $schemaManager->export();
+        $schemaManager->export(array('name' => $checked));
 
         $ok = true;
         $error = false;

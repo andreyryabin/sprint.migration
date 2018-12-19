@@ -56,6 +56,9 @@ function schemaExecuteStep(step_code, postData, succesCallback) {
     postData = postData || {};
     postData['step_code'] = step_code;
     postData['send_sessid'] = $el.data('sessid');
+    postData['schema_checked'] = $el.find(".sp-schema:checked").map(function(){
+        return $(this).val();
+    }).get();
 
     schemaEnableButtons(0);
 

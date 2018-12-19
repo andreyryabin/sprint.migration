@@ -9,7 +9,7 @@ class SchemaManager
     use OutTrait;
 
     /** @var VersionConfig */
-    private $versionConfig = null;
+    protected $versionConfig = null;
 
     protected $params = array();
 
@@ -33,26 +33,47 @@ class SchemaManager
         $this->testMode = $testMode;
     }
 
-    public function outDescriptions() {
+    /**
+     * @return AbstractSchema[]
+     */
+    public function getEnabledSchemas() {
+        $result = array();
         $schemas = $this->getVersionSchemas();
         $schemas = array_keys($schemas);
-
         foreach ($schemas as $name) {
             $schema = $this->createSchema($name);
             if ($schema->isEnabled()) {
-                $this->out('[blue]' . $schema->getTitle() . '[/]');
-                $schema->outDescription();
+                $result[] = $schema;
             }
         }
+        return $result;
     }
 
-    protected function getVersionSchemas() {
+    protected function getVersionSchemas($filter = array()) {
         $schemas = $this->getVersionConfig()->getVal('version_schemas');
-        return is_array($schemas) ? $schemas : array();
+        $schemas = is_array($schemas) ? $schemas : array();
+
+        if (!isset($filter['name'])) {
+            return $schemas;
+        }
+
+        if (!is_array($filter['name'])) {
+            $filter['name'] = array($filter['name']);
+        }
+
+        $filtered = array();
+        foreach ($schemas as $name => $class) {
+            if (in_array($name, $filter['name'])) {
+                $filtered[$name] = $class;
+            }
+        }
+
+        return $filtered;
+
     }
 
-    public function export() {
-        $schemas = $this->getVersionSchemas();
+    public function export($filter = array()) {
+        $schemas = $this->getVersionSchemas($filter);
         $schemas = array_keys($schemas);
 
         if (!isset($this->params['schema'])) {
@@ -69,10 +90,10 @@ class SchemaManager
         }
     }
 
-    public function import() {
+    public function import($filter = array()) {
         $this->progress = array();
 
-        $schemas = $this->getVersionSchemas();
+        $schemas = $this->getVersionSchemas($filter);
         $schemas = array_keys($schemas);
 
         if (!isset($this->params['schema'])) {

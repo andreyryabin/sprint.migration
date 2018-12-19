@@ -150,6 +150,10 @@ abstract class AbstractSchema
         }
     }
 
+    public function outTitle() {
+        $this->out('[blue]' . $this->getTitle() . '[/]');
+    }
+
     protected function loadSchemas($path, $merge = array()) {
         $names = $this->getSchemas($path);
 

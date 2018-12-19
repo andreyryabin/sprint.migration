@@ -403,7 +403,11 @@ class Console
 
         } else {
             $schemaManager = new SchemaManager();
-            $schemaManager->outDescriptions();
+            $schemas = $schemaManager->getEnabledSchemas();
+            foreach ($schemas as $schema){
+                $schema->outTitle();
+                $schema->outDescription();
+            }
         }
     }
 

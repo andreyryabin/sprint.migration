@@ -12,8 +12,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     /** @var $versionConfig \Sprint\Migration\VersionConfig */
     $schemaManager = new \Sprint\Migration\SchemaManager($versionConfig);
 
-    $schemaManager->outDescriptions();
+    $schemas = $schemaManager->getEnabledSchemas();
 
+    $defaultSchemas = array();
+    foreach ($schemas as $schema) {
+        $defaultSchemas[] = $schema->getName();
+    }
+
+    $schemaChecked = isset($_POST['schema_checked']) ? (array)$_POST['schema_checked'] : $defaultSchemas;
+
+    ?>
+    <? foreach ($schemas as $schema): ?>
+        <label>
+            <input <? if (in_array($schema->getName(), $schemaChecked)): ?>checked="checked"<? endif ?>
+                   id="sp-schema<?= $schema->getName() ?>"
+                   value="<?= $schema->getName() ?>"
+                   class="sp-schema"
+                   type="checkbox"/>
+            <?= \Sprint\Migration\Out::prepareToHtml('[blue]' . $schema->getTitle() . '[/]') ?>
+            <br/>
+            <? $schema->outDescription() ?>
+        </label>
+    <? endforeach; ?>
+    <?
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
     die();
