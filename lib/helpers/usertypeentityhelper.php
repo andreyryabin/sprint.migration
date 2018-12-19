@@ -280,10 +280,13 @@ class UserTypeEntityHelper extends Helper
             $hlblockName = substr($entityId, 8);
             $hlhelper = new HlblockHelper();
             $hlblock = $hlhelper->getHlblock($hlblockName);
-            if ($hlblock) {
-                $entityId = 'HLBLOCK_' . $hlblock['ID'];
+            if (empty($hlblock)) {
+                $this->throwException(__METHOD__, '%s not found', $entityId);
             }
+
+            $entityId = 'HLBLOCK_' . $hlblock['ID'];
         }
+
         return $entityId;
     }
 
@@ -292,9 +295,10 @@ class UserTypeEntityHelper extends Helper
             $hlblockId = intval(substr($entityId, 8));
             $hlhelper = new HlblockHelper();
             $hlblock = $hlhelper->getHlblock($hlblockId);
-            if ($hlblock) {
-                $entityId = 'HLBLOCK_' . $hlblock['NAME'];
+            if (empty($hlblock)) {
+                $this->throwException(__METHOD__, '%s not found', $entityId);
             }
+            $entityId = 'HLBLOCK_' . $hlblock['NAME'];
         }
         return $entityId;
     }
