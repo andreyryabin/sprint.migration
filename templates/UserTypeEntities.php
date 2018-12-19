@@ -5,6 +5,7 @@
  * @var $description
  * @var $extendUse
  * @var $extendClass
+ * @var $entities
  */
 
 ?><?php echo "<?php\n" ?>
@@ -23,7 +24,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper = new HelperManager();
 
     <?php foreach ($entities as $entity): ?>
-        $helper->UserTypeEntity()->saveUserTypeEntity('<?php echo $entity['ENTITY_ID'] ?>', '<?php echo $entity['FIELD_NAME'] ?>', <?php echo var_export($entity['FIELDS'], 1) ?>);
+        $helper->UserTypeEntity()->saveUserTypeEntity(<?php echo var_export($entity, 1) ?>);
     <? endforeach; ?>
     }
 

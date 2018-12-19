@@ -24,11 +24,10 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
         <?foreach ($items as $item):?>
 
-        $hlblockId = $helper->Hlblock()->saveHlblock(<?php echo var_export($item['hlblock'], 1) ?>);
-        $entityId = 'HLBLOCK_' . $hlblockId;
+        $helper->Hlblock()->saveHlblock(<?php echo var_export($item['hlblock'], 1) ?>);
 
         <?php foreach ($item['hlblockEntities'] as $entity): ?>
-        $helper->UserTypeEntity()->saveUserTypeEntity($entityId, '<?php echo $entity['FIELD_NAME'] ?>', <?php echo var_export($entity, 1) ?>);
+        $helper->UserTypeEntity()->saveUserTypeEntity(<?php echo var_export($entity, 1) ?>);
         <? endforeach; ?>
 
         <? endforeach; ?>

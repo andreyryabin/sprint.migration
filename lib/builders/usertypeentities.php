@@ -54,22 +54,10 @@ class UserTypeEntities extends VersionBuilder
         $entities = array();
 
         foreach ($typeCodes as $fieldId) {
-            $entity = $helper->UserTypeEntity()->exportUserTypeEntity($fieldId, true);
-            if (empty($entity)) {
-                continue;
+            $entity = $helper->UserTypeEntity()->exportUserTypeEntity($fieldId);
+            if (!empty($entity)) {
+                $entities[] = $entity;
             }
-
-            $fields = $entity;
-
-            unset($fields['ID']);
-            unset($fields['ENTITY_ID']);
-            unset($fields['FIELD_NAME']);
-
-            $entities[] = array(
-                'ENTITY_ID' => $entity['ENTITY_ID'],
-                'FIELD_NAME' => $entity['FIELD_NAME'],
-                'FIELDS' => $fields
-            );
         }
 
         $this->createVersionFile(Module::getModuleDir() . '/templates/UserTypeEntities.php', array(

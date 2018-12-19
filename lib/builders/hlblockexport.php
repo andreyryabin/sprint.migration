@@ -51,29 +51,19 @@ class HlblockExport extends VersionBuilder
             $this->rebuildField('hlblock_id');
         }
 
-
         $items = array();
-
         foreach ($hlblockIds as $hlblockId) {
             $hlblock = $helper->Hlblock()->getHlblock($hlblockId);
-            if (empty($hlblock['ID'])) {
-                continue;
+            if (!empty($hlblock['ID'])) {
+
+                $hlblockEntities = $helper->UserTypeEntity()->exportUserTypeEntities('HLBLOCK_' . $hlblock['ID']);
+                unset($hlblock['ID']);
+
+                $items[] = array(
+                    'hlblock' => $hlblock,
+                    'hlblockEntities' => $hlblockEntities
+                );
             }
-
-            $hlblockEntities = $helper->UserTypeEntity()->getUserTypeEntities('HLBLOCK_' . $hlblock['ID']);
-            foreach ($hlblockEntities as $index => $entity) {
-                unset($entity['ID']);
-                unset($entity['ENTITY_ID']);
-                $hlblockEntities[$index] = $entity;
-            }
-
-            unset($hlblock['ID']);
-
-            $items[] = array(
-                'hlblock' => $hlblock,
-                'hlblockEntities' => $hlblockEntities
-            );
-
         }
 
 

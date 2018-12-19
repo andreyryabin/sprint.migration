@@ -144,16 +144,16 @@ class UserTypeEntityHelper extends Helper
         return $result;
     }
 
-    public function exportUserTypeEntity($fieldId, $transformEntityId = false) {
+    public function exportUserTypeEntity($fieldId) {
         $item = $this->getUserTypeEntityById($fieldId);
-        return $this->prepareExportUserTypeEntity($item, $transformEntityId);
+        return $this->prepareExportUserTypeEntity($item, true);
     }
 
-    public function exportUserTypeEntities($transformEntityId = false) {
-        $items = $this->getUserTypeEntities();
+    public function exportUserTypeEntities($entityId = false) {
+        $items = $this->getUserTypeEntities($entityId);
         $export = array();
         foreach ($items as $item) {
-            $export[] = $this->prepareExportUserTypeEntity($item, $transformEntityId);
+            $export[] = $this->prepareExportUserTypeEntity($item, true);
         }
         return $export;
     }
@@ -305,10 +305,14 @@ class UserTypeEntityHelper extends Helper
 
     //version 2
 
-    public function saveUserTypeEntity($entityId, $fieldName, $fields = array()) {
-        $fields['ENTITY_ID'] = $entityId;
-        $fields['FIELD_NAME'] = $fieldName;
+    public function saveUserTypeEntity($fields = array()) {
 
+        if (func_num_args() > 1) {
+            /** @compability */
+            list($entityId, $fieldName, $fields) = func_get_args();
+            $fields['ENTITY_ID'] = $entityId;
+            $fields['FIELD_NAME'] = $fieldName;
+        }
 
         $this->checkRequiredKeys(__METHOD__, $fields, array('ENTITY_ID', 'FIELD_NAME'));
 
