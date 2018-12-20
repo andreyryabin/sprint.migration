@@ -19,6 +19,10 @@ class HlblockSchema extends AbstractSchema
         $this->setTitle('Схема highload-блоков');
     }
 
+    public function getMap() {
+        return array('hlblocks/');
+    }
+
     public function outDescription() {
         $schemas = $this->loadSchemas('hlblocks/', array(
             'hlblock' => array(),
@@ -37,8 +41,6 @@ class HlblockSchema extends AbstractSchema
     public function export() {
         $helper = new HelperManager();
 
-        $this->deleteSchemas('hlblocks/');
-
         $exportItems = $helper->Hlblock()->exportHlblocks();
 
         foreach ($exportItems as $item) {
@@ -47,8 +49,6 @@ class HlblockSchema extends AbstractSchema
                 'fields' => $helper->Hlblock()->exportFields($item['NAME'])
             ));
         }
-
-        $this->outSchemas(array('hlblocks/'));
     }
 
     public function import() {

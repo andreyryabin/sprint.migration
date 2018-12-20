@@ -13,8 +13,9 @@
     <div class="sp-group">
         <div class="sp-group-row2">
             <div class="sp-block">
-                <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_TEST') ?>" class="sp-schema-test adm-btn-green"/>
                 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SELECT_ALL') ?>" class="sp-schema-check"/>
+                <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_TEST') ?>" class="sp-schema-test adm-btn-green"/>
+
             </div>
             <div class="sp-block">
                 <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SCHEMA_IMPORT') ?>" class="sp-schema-import"/>

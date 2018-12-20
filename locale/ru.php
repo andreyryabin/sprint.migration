@@ -172,7 +172,8 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_RIGHT_D" => "Доступ запрещен",
     "SPRINT_MIGRATION_RIGHT_W" => "Доступ разрешен",
 
-    "SPRINT_MIGRATION_MODIFIED_INFO" => "Код миграции был изменен после установки",
+    "SPRINT_MIGRATION_MODIFIED_VERSION" => "Код миграции был изменен после установки",
+    "SPRINT_MIGRATION_MODIFIED_SCHEMA" => "Содержимое схемы было изменено после импорта",
     "SPRINT_MIGRATION_MODIFIED_LABEL" => "M",
 
     "SPRINT_MIGRATION_MENU_SCHEMA" => "Cхемы данных",

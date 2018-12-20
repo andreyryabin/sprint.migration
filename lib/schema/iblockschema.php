@@ -18,6 +18,10 @@ class IblockSchema extends AbstractSchema
         $this->setTitle('Схема инфоблоков');
     }
 
+    public function getMap(){
+        return array('iblock_types', 'iblocks/');
+    }
+
     public function outDescription() {
         $schemaTypes = $this->loadSchema('iblock_types', array(
             'items' => array()
@@ -51,8 +55,6 @@ class IblockSchema extends AbstractSchema
     public function export() {
         $helper = new HelperManager();
 
-        $this->deleteSchemas(array('iblock_types', 'iblocks/'));
-
         $types = $helper->Iblock()->getIblockTypes();
         $exportTypes = array();
         foreach ($types as $type) {
@@ -75,7 +77,6 @@ class IblockSchema extends AbstractSchema
             }
         }
 
-        $this->outSchemas(array('iblock_types', 'iblocks/'));
     }
 
     public function import() {

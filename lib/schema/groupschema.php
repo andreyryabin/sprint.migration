@@ -17,6 +17,10 @@ class GroupSchema extends AbstractSchema
         $this->setTitle('Схема групп пользователей');
     }
 
+    public function getMap() {
+        return array('user_groups');
+    }
+
     public function outDescription() {
         $schemaItems = $this->loadSchema('user_groups', array(
             'items' => array()
@@ -28,15 +32,11 @@ class GroupSchema extends AbstractSchema
     public function export() {
         $helper = new HelperManager();
 
-        $this->deleteSchemas('user_groups');
-
         $exportItems = $helper->UserGroup()->exportGroups();
 
         $this->saveSchema('user_groups', array(
             'items' => $exportItems
         ));
-
-        $this->outSchemas(array('user_groups'));
     }
 
     public function import() {

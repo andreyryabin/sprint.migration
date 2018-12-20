@@ -12,7 +12,7 @@ class Console
 
     private $versionConfig;
     private $versionManager;
-    
+
     private $argoptions = array();
 
     public function __construct($args) {
@@ -22,7 +22,7 @@ class Console
 
         $this->versionConfig = new VersionConfig($this->getArg('--config='));
         $this->versionManager = new VersionManager($this->versionConfig);
-        
+
         $userlogin = $this->versionConfig->getVal('console_user');
         if ($userlogin == 'admin') {
             $this->authorizeAsAdmin();
@@ -380,7 +380,6 @@ class Console
             do {
 
                 $schemaManager = new SchemaManager($this->versionConfig, $params);
-
                 $restart = 0;
 
                 try {
@@ -404,7 +403,12 @@ class Console
             $schemaManager = new SchemaManager($this->versionConfig);
             $schemas = $schemaManager->getEnabledSchemas();
             foreach ($schemas as $schema) {
-                $schema->outTitle();
+                $title = $schema->getTitle();
+                if ($schema->isModified()) {
+                    $title .= ' (' . GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL') . ')';
+                }
+
+                $schema->outInfo($title);
                 $schema->outDescription();
             }
         }

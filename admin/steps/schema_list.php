@@ -35,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
             </td>
             <td class="sp-list-r">
                 <?= \Sprint\Migration\Out::prepareToHtml('[blue]' . $schema->getTitle() . '[/]') ?>
+                <?if ($schema->isModified()):?><span class="sp-modified" title="<?=GetMessage('SPRINT_MIGRATION_MODIFIED_SCHEMA')?>"><?=GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL')?></span><?endif;?>
                 <? $schema->outDescription() ?>
             </td>
         </tr>

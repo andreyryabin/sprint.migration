@@ -129,7 +129,12 @@ class SchemaManager
     protected function exportSchema($name) {
         $schema = $this->createSchema($name);
         if ($schema->isEnabled()) {
+
+            $schema->beforeExport();
+
             $schema->export();
+
+            $schema->afterExport();
         }
 
     }

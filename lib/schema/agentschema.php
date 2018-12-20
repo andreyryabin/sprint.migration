@@ -17,6 +17,10 @@ class AgentSchema extends AbstractSchema
         $this->setTitle('Схема агентов');
     }
 
+    public function getMap() {
+        return array('agents');
+    }
+
     public function outDescription() {
         $schemaItems = $this->loadSchema('agents', array(
             'items' => array()
@@ -28,15 +32,11 @@ class AgentSchema extends AbstractSchema
     public function export() {
         $helper = new HelperManager();
 
-        $this->deleteSchemas('agents');
-
         $exportItems = $helper->Agent()->exportAgents();
 
         $this->saveSchema('agents', array(
             'items' => $exportItems
         ));
-
-        $this->outSchemas(array('agents'));
     }
 
     public function import() {

@@ -15,6 +15,10 @@ class UserTypeEntitiesSchema extends AbstractSchema
         $this->setTitle('Схема пользовательских полей');
     }
 
+    public function getMap(){
+        return array('user_type_entities');
+    }
+
     protected function isBuilderEnabled() {
         return true;
     }
@@ -29,7 +33,6 @@ class UserTypeEntitiesSchema extends AbstractSchema
 
     public function export() {
         $helper = new HelperManager();
-        $this->deleteSchemas('user_type_entities');
 
         $exportItems = $helper->UserTypeEntity()->exportUserTypeEntities();
         $exportItems = $this->filterEntities($exportItems);
@@ -38,7 +41,6 @@ class UserTypeEntitiesSchema extends AbstractSchema
             'items' => $exportItems
         ));
 
-        $this->outSchemas(array('user_type_entities'));
     }
 
     public function import() {

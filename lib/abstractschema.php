@@ -31,6 +31,8 @@ abstract class AbstractSchema
 
     abstract public function outDescription();
 
+    abstract public function getMap();
+
     public function __construct(VersionConfig $versionConfig, $name, $params = array()) {
         $this->versionConfig = $versionConfig;
         $this->name = $name;
@@ -56,6 +58,10 @@ abstract class AbstractSchema
 
     public function isEnabled() {
         return $this->enabled;
+    }
+
+    public function isModified() {
+        return true;
     }
 
     protected function setTitle($title = '') {
@@ -94,33 +100,28 @@ abstract class AbstractSchema
         );
     }
 
-    protected function loadSchema($name, $merge = array()) {
-        $file = $this->getSchemaFile($name);
-
-        if (is_file($file)) {
-            $json = file_get_contents($file);
-            $json = json_decode($json, true);
-            if (json_last_error() == JSON_ERROR_NONE) {
-                return array_merge($merge, $json);
-            }
-        }
-        return $merge;
-    }
-
-    protected function deleteSchemas($paths) {
-        $names = $this->getSchemas($paths);
+    public function beforeExport() {
+        $names = $this->getSchemaFiles($this->getMap());
         foreach ($names as $name) {
             $file = $this->getSchemaFile($name);
             unlink($file);
         }
     }
 
-    protected function getSchemas($paths) {
-        $paths = is_array($paths) ? $paths : array($paths);
+    public function afterExport() {
+        $this->outNotice('%s сохранена', $this->getTitle());
+        $names = $this->getSchemaFiles($this->getMap());
+        foreach ($names as $name) {
+            $this->out($this->getSchemaFile($name, true));
+        }
+    }
+
+    protected function getSchemaFiles($map) {
+        $map = is_array($map) ? $map : array($map);
 
         $result = array();
 
-        foreach ($paths as $path) {
+        foreach ($map as $path) {
             $dir = $this->getSchemaSubDir($path);
             $file = $this->getSchemaFile($path);
 
@@ -142,20 +143,21 @@ abstract class AbstractSchema
         return $result;
     }
 
-    protected function outSchemas($paths) {
-        $this->outNotice('%s сохранена', $this->getTitle());
-        $names = $this->getSchemas($paths);
-        foreach ($names as $name) {
-            $this->out($this->getSchemaFile($name, true));
-        }
-    }
+    protected function loadSchema($name, $merge = array()) {
+        $file = $this->getSchemaFile($name);
 
-    public function outTitle() {
-        $this->outInfo($this->getTitle());
+        if (is_file($file)) {
+            $json = file_get_contents($file);
+            $json = json_decode($json, true);
+            if (json_last_error() == JSON_ERROR_NONE) {
+                return array_merge($merge, $json);
+            }
+        }
+        return $merge;
     }
 
     protected function loadSchemas($path, $merge = array()) {
-        $names = $this->getSchemas($path);
+        $names = $this->getSchemaFiles($path);
 
         $schemas = array();
         foreach ($names as $name) {
