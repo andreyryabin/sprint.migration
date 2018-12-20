@@ -12,18 +12,22 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
             <? endif; ?>
         </div>
         <div class="sp-block">
-            <?= GetMessage('SPRINT_MIGRATION_LINK_DOC') ?>:
-            <a href="https://github.com/andreyryabin/sprint.migration" target="_blank">https://github.com/andreyryabin/sprint.migration</a>
-            <br/>
-
-            <?= GetMessage('SPRINT_MIGRATION_LINK_ARTICLES') ?>:
-            <a href="https://dev.1c-bitrix.ru/search/?tags=sprint.migration" target="_blank">https://dev.1c-bitrix.ru/search/?tags=sprint.migration</a>
-            <br/>
-
-            <?= GetMessage('SPRINT_MIGRATION_LINK_COMPOSER') ?>:
-            <a href="https://packagist.org/packages/andreyryabin/sprint.migration" target="_blank">https://packagist.org/packages/andreyryabin/sprint.migration</a>
-            <br/>
-
+            <div style="margin-bottom: 10px;">
+                <?= GetMessage('SPRINT_MIGRATION_LINK_COMPOSER') ?>
+                <br/>
+                <a href="https://packagist.org/packages/andreyryabin/sprint.migration" target="_blank">https://packagist.org/packages/andreyryabin/sprint.migration</a>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <?= GetMessage('SPRINT_MIGRATION_LINK_TASKS') ?> <br/>
+                <a href="https://bitbucket.org/andrey_ryabin/sprint.migration/issues" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration/issues</a>
+                <br/>
+                <a href="https://github.com/andreyryabin/sprint.migration/issues" target="_blank">https://github.com/andreyryabin/sprint.migration/issues</a>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <?= GetMessage('SPRINT_MIGRATION_LINK_ARTICLES') ?>
+                <br/>
+                <a href="https://dev.1c-bitrix.ru/search/?tags=sprint.migration" target="_blank">https://dev.1c-bitrix.ru/search/?tags=sprint.migration</a>
+            </div>
         </div>
     </div>
 </div>

@@ -31,7 +31,8 @@ require_once __DIR__ . '/../lib/locale.php';
 
     "SPRINT_MIGRATION_LINK_DOC" => "Документация",
     "SPRINT_MIGRATION_LINK_ARTICLES" => "Статьи",
-    "SPRINT_MIGRATION_LINK_COMPOSER" => "Composer пакет",
+    "SPRINT_MIGRATION_LINK_COMPOSER" => "Composer",
+    "SPRINT_MIGRATION_LINK_TASKS" => "Задачи",
 
     "SPRINT_MIGRATION_TAB1" => "Миграции",
     "SPRINT_MIGRATION_TAB1_TITLE" => "Список миграций",
