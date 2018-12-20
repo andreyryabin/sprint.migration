@@ -36,6 +36,7 @@ function schemaRefresh(callbackAfterRefresh) {
             callbackAfterRefresh()
         } else {
             schemaEnableButtons(1);
+            schemaScrollList();
         }
     });
 }
@@ -99,10 +100,7 @@ jQuery(document).ready(function ($) {
         return o;
     };
 
-    schemaRefresh(function () {
-        schemaEnableButtons(1);
-        schemaScrollList();
-    });
+    schemaRefresh();
 
 
     $container.on('click', '.sp-schema-export', function (e) {
@@ -146,6 +144,7 @@ jQuery(document).ready(function ($) {
         } else {
             checkboxes.addClass('adm-btn-active');
         }
+
     });
 
 });
