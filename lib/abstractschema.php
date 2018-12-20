@@ -23,6 +23,8 @@ abstract class AbstractSchema
 
     private $enabled = false;
 
+    private $filecache = array();
+
     abstract public function export();
 
     abstract public function import();
@@ -61,7 +63,18 @@ abstract class AbstractSchema
     }
 
     public function isModified() {
-        return true;
+        $data = $this->loadSchemas($this->getMap());
+        $newhash = md5(serialize($data));
+        $opt = strtolower('schema_' . $this->getName());
+        $oldhash = Module::getDbOption($opt);
+        return ($newhash != $oldhash);
+    }
+
+    public function setModified() {
+        $data = $this->loadSchemas($this->getMap());
+        $newhash = md5(serialize($data));
+        $opt = strtolower('schema_' . $this->getName());
+        Module::setDbOption($opt, $newhash);
     }
 
     protected function setTitle($title = '') {
@@ -144,20 +157,38 @@ abstract class AbstractSchema
     }
 
     protected function loadSchema($name, $merge = array()) {
-        $file = $this->getSchemaFile($name);
-
-        if (is_file($file)) {
-            $json = file_get_contents($file);
-            $json = json_decode($json, true);
-            if (json_last_error() == JSON_ERROR_NONE) {
-                return array_merge($merge, $json);
-            }
+        if (!isset($this->filecache[$name])) {
+            $this->filecache[$name] = $this->loadSchemaFile($name);
         }
-        return $merge;
+
+        return array_merge($merge, $this->filecache[$name]);
     }
 
-    protected function loadSchemas($path, $merge = array()) {
-        $names = $this->getSchemaFiles($path);
+
+    private function loadSchemaFile($name) {
+        $file = $this->getSchemaFile($name);
+
+        if (!is_file($file)) {
+            return array();
+        }
+
+        $json = file_get_contents($file);
+        $json = json_decode($json, true);
+
+        if (json_last_error() != JSON_ERROR_NONE) {
+            return array();
+        }
+
+        if (!is_array($json)) {
+            return array();
+        }
+
+        return $json;
+    }
+
+
+    protected function loadSchemas($map, $merge = array()) {
+        $names = $this->getSchemaFiles($map);
 
         $schemas = array();
         foreach ($names as $name) {
