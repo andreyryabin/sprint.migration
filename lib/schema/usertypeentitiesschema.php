@@ -32,6 +32,7 @@ class UserTypeEntitiesSchema extends AbstractSchema
         $this->deleteSchemas('user_type_entities');
 
         $exportItems = $helper->UserTypeEntity()->exportUserTypeEntities();
+        $exportItems = $helper->filterEntities($exportItems);
 
         $this->saveSchema('user_type_entities', array(
             'items' => $exportItems
@@ -67,7 +68,9 @@ class UserTypeEntitiesSchema extends AbstractSchema
 
     protected function clearUserTypeEntities($skip = array()) {
         $helper = new HelperManager();
+
         $olds = $helper->UserTypeEntity()->exportUserTypeEntities();
+        $olds = $this->filterEntities($olds);
 
         foreach ($olds as $old) {
             $uniq = $this->getUniqEntity($old);
@@ -89,5 +92,14 @@ class UserTypeEntitiesSchema extends AbstractSchema
         return $this->transforms[$entityId] . $item['FIELD_NAME'];
     }
 
+    protected function filterEntities($items = array()) {
+        $filtered = array();
+        foreach ($items as $item) {
+            if (strpos($item['ENTITY_ID'], 'HLBLOCK_') === false) {
+                $filtered[] = $item;
+            }
+        }
+        return $filtered;
+    }
 
 }
