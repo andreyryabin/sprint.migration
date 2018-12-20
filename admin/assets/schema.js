@@ -107,10 +107,11 @@ jQuery(document).ready(function ($) {
 
     $container.on('click', '.sp-schema-export', function (e) {
         e.preventDefault();
-
-        $('#schema_log').empty();
-        schemaProgressReset();
-        schemaExecuteStep('schema_export');
+        if (confirm('Confirm export')) {
+            $('#schema_log').empty();
+            schemaProgressReset();
+            schemaExecuteStep('schema_export');
+        }
     });
 
 
@@ -125,7 +126,7 @@ jQuery(document).ready(function ($) {
     $container.on('click', '.sp-schema-import', function (e) {
         e.preventDefault();
 
-        if (confirm('Confirm action')) {
+        if (confirm('Confirm import')) {
             $('#schema_log').empty();
             schemaProgressReset();
             schemaExecuteStep('schema_import');

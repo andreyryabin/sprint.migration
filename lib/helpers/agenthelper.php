@@ -27,14 +27,19 @@ class AgentHelper extends Helper
         return $exportAgents;
     }
 
-    protected function prepareExportAgent($agent) {
-        unset($agent['ID']);
-        unset($agent['LOGIN']);
-        unset($agent['USER_NAME']);
-        unset($agent['LAST_NAME']);
-        unset($agent['RUNNING']);
-        unset($agent['DATE_CHECK']);
-        return $agent;
+    protected function prepareExportAgent($item) {
+        if (empty($item)) {
+            return $item;
+        }
+
+        unset($item['ID']);
+        unset($item['LOGIN']);
+        unset($item['USER_NAME']);
+        unset($item['LAST_NAME']);
+        unset($item['RUNNING']);
+        unset($item['DATE_CHECK']);
+
+        return $item;
     }
 
     public function exportAgent($moduleId, $name = '') {

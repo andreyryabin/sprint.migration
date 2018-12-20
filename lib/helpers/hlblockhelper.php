@@ -31,6 +31,33 @@ class HlblockHelper extends Helper
         return $result;
     }
 
+    public function exportHlblocks($filter = array()) {
+        $items = $this->getHlblocks($filter);
+
+        $export = array();
+        foreach ($items as $item) {
+            $export[] = $this->prepareExportHlblock($item);
+        }
+
+        return $export;
+    }
+
+    public function exportHlblock($name) {
+        return $this->prepareExportHlblock(
+            $this->getHlblock($name)
+        );
+    }
+
+    protected function prepareExportHlblock($item) {
+        if (empty($item)) {
+            return $item;
+        }
+
+        unset($item['ID']);
+
+        return $item;
+    }
+
     public function getHlblock($name) {
         if (is_array($name)) {
             $filter = $name;
@@ -211,12 +238,26 @@ class HlblockHelper extends Helper
     public function saveHlblock($fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
 
-        $item = $this->getHlblock($fields['NAME']);
-        if ($item) {
-            return $this->updateHlblock($item['ID'], $fields);
-        } else {
-            return $this->addHlblock($fields);
+        $exists = $this->getHlblock($fields['NAME']);
+        $exportExists = $this->prepareExportHlblock($exists);
+        $fields = $this->prepareExportHlblock($fields);
+
+        if (empty($exists)) {
+            $ok = ($this->testMode) ? true : $this->addHlblock($fields);
+            $this->outNoticeIf($ok, 'Highload-блок %s: добавлен', $fields['NAME']);
+            return $ok;
         }
+
+        if ($exportExists != $fields) {
+            $ok = ($this->testMode) ? true : $this->updateHlblock($exists['ID'], $fields);
+            $this->outNoticeIf($ok, 'Highload-блок %s: обновлен', $fields['NAME']);
+            return $ok;
+        }
+
+
+        $ok = ($this->testMode) ? true : $exists['ID'];
+        $this->outIf($ok, 'Highload-блок %s: совпадает', $fields['NAME']);
+        return $exists['ID'];
     }
 
 }
