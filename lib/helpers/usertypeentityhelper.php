@@ -229,7 +229,7 @@ class UserTypeEntityHelper extends Helper
 
     public function deleteUserTypeEntityIfExists($entityId, $fieldName) {
         $item = $this->getUserTypeEntity($entityId, $fieldName);
-        if (!$item) {
+        if (empty($item)) {
             return false;
         }
 

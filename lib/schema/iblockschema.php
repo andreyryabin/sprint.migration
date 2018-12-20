@@ -8,7 +8,7 @@ use Sprint\Migration\HelperManager;
 class IblockSchema extends AbstractSchema
 {
 
-    private $iblockids = array();
+    private $uniqs = array();
 
     protected function isBuilderEnabled() {
         return (\CModule::IncludeModule('iblock'));
@@ -66,7 +66,7 @@ class IblockSchema extends AbstractSchema
         $iblocks = $helper->Iblock()->getIblocks();
         foreach ($iblocks as $iblock) {
             if (!empty($iblock['CODE'])) {
-                $this->saveSchema('iblocks/' . $iblock['IBLOCK_TYPE_ID'] . '-' . $iblock['CODE'], array(
+                $this->saveSchema('iblocks/' . strtolower($iblock['IBLOCK_TYPE_ID'] . '-' . $iblock['CODE']), array(
                     'iblock' => $helper->Iblock()->exportIblock($iblock['ID']),
                     'fields' => $helper->Iblock()->exportIblockFields($iblock['ID']),
                     'props' => $helper->Iblock()->exportProperties($iblock['ID']),
@@ -229,14 +229,15 @@ class IblockSchema extends AbstractSchema
         $helper = new HelperManager();
 
         $uniq = $this->getUniqIblock($iblock);
-        if (!isset($this->iblockids[$uniq])) {
-            $this->iblockids[$uniq] = $helper->Iblock()->getIblockId(
-                $iblock['CODE'],
-                $iblock['IBLOCK_TYPE_ID']
-            );
+        if (isset($this->uniqs[$uniq])) {
+            return $this->uniqs[$uniq];
         }
 
-        return $this->iblockids[$uniq];
+        $this->uniqs[$uniq] = $helper->Iblock()->getIblockId(
+            $iblock['CODE'],
+            $iblock['IBLOCK_TYPE_ID']
+        );
+        return $this->uniqs[$uniq];
 
     }
 

@@ -42,10 +42,56 @@ class HlblockHelper extends Helper
         return $export;
     }
 
-    public function exportHlblock($name) {
+    public function getFields($hlblockName) {
+        $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
+
+        $entityHelper = new UserTypeEntityHelper();
+        $entityHelper->setTestMode($this->testMode);
+        return $entityHelper->getUserTypeEntities('HLBLOCK_' . $hlblockId);
+    }
+
+    public function saveField($hlblockName, $field = array()) {
+        $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
+        $field['ENTITY_ID'] = 'HLBLOCK_' . $hlblockId;
+
+        $entityHelper = new UserTypeEntityHelper();
+        $entityHelper->setTestMode($this->testMode);
+        return $entityHelper->saveUserTypeEntity($field);
+    }
+
+    public function deleteField($hlblockName, $fieldName) {
+        $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
+
+        $entityHelper = new UserTypeEntityHelper();
+        $entityHelper->setTestMode($this->testMode);
+        return $entityHelper->deleteUserTypeEntity('HLBLOCK_' . $hlblockId, $fieldName);
+    }
+
+    public function exportFields($hlblockName) {
+        $fields = $this->getFields($hlblockName);
+        $export = array();
+        foreach ($fields as $field) {
+            $export[] = $this->prepareExportHlblockField($field);
+        }
+
+        return $export;
+    }
+
+    public function exportHlblock($hlblockName) {
         return $this->prepareExportHlblock(
-            $this->getHlblock($name)
+            $this->getHlblock($hlblockName)
         );
+    }
+
+    protected function prepareExportHlblockField($item) {
+        if (empty($item)) {
+            return $item;
+        }
+
+        unset($item['ID']);
+        unset($item['ENTITY_ID']);
+
+        return $item;
     }
 
     protected function prepareExportHlblock($item) {
@@ -58,13 +104,13 @@ class HlblockHelper extends Helper
         return $item;
     }
 
-    public function getHlblock($name) {
-        if (is_array($name)) {
-            $filter = $name;
-        } elseif (is_numeric($name)) {
-            $filter = array('ID' => $name);
+    public function getHlblock($hlblockName) {
+        if (is_array($hlblockName)) {
+            $filter = $hlblockName;
+        } elseif (is_numeric($hlblockName)) {
+            $filter = array('ID' => $hlblockName);
         } else {
-            $filter = array('NAME' => $name);
+            $filter = array('NAME' => $hlblockName);
         }
 
         $result = HL\HighloadBlockTable::getList(
@@ -82,8 +128,26 @@ class HlblockHelper extends Helper
         return $hlblock;
     }
 
-    public function getHlblockId($name) {
-        $item = $this->getHlblock($name);
+    public function getHlblockIfExists($hlblockName) {
+        $item = $this->getHlblock($hlblockName);
+        if ($item && isset($item['ID'])) {
+            return $item;
+        }
+
+        $this->throwException(__METHOD__, "hlblock not found");
+    }
+
+    public function getHlblockIdIfExists($hlblockName) {
+        $item = $this->getHlblock($hlblockName);
+        if ($item && isset($item['ID'])) {
+            return $item['ID'];
+        }
+
+        $this->throwException(__METHOD__, "hlblock id not found");
+    }
+
+    public function getHlblockId($hlblockName) {
+        $item = $this->getHlblock($hlblockName);
         return ($item && isset($item['ID'])) ? $item['ID'] : 0;
     }
 
@@ -134,8 +198,8 @@ class HlblockHelper extends Helper
         $this->throwException(__METHOD__, implode(', ', $result->getErrors()));
     }
 
-    public function updateHlblockIfExists($name, $fields) {
-        $item = $this->getHlblock($name);
+    public function updateHlblockIfExists($hlblockName, $fields) {
+        $item = $this->getHlblock($hlblockName);
         if (!$item) {
             return false;
         }
@@ -152,8 +216,8 @@ class HlblockHelper extends Helper
         $this->throwException(__METHOD__, implode(', ', $result->getErrors()));
     }
 
-    public function deleteHlblockIfExists($name) {
-        $item = $this->getHlblock($name);
+    public function deleteHlblockIfExists($hlblockName) {
+        $item = $this->getHlblock($hlblockName);
         if (!$item) {
             return false;
         }
