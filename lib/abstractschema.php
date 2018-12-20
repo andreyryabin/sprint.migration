@@ -131,7 +131,6 @@ abstract class AbstractSchema
 
     protected function getSchemaFiles($map) {
         $map = is_array($map) ? $map : array($map);
-
         $result = array();
 
         foreach ($map as $path) {
@@ -189,12 +188,10 @@ abstract class AbstractSchema
 
     protected function loadSchemas($map, $merge = array()) {
         $names = $this->getSchemaFiles($map);
-
         $schemas = array();
         foreach ($names as $name) {
             $schemas[$name] = $this->loadSchema($name, $merge);
         }
-
         return $schemas;
     }
 
