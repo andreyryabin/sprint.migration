@@ -59,6 +59,7 @@ class GroupSchema extends AbstractSchema
 
     protected function saveGroup($fields) {
         $helper = new HelperManager();
+        $helper->UserGroup()->setTestMode($this->testMode);
         $helper->UserGroup()->saveGroup($fields['STRING_ID'], $fields);
     }
 
