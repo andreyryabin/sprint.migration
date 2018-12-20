@@ -28,7 +28,11 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_TOGGLE_STATUS" => "Суммарно",
     "SPRINT_MIGRATION_TOGGLE_INSTALLED" => "Установленные",
     "SPRINT_MIGRATION_TOGGLE_UNKNOWN" => "Неизвестные",
-    "SPRINT_MIGRATION_HELP_DOC" => "Документация",
+
+    "SPRINT_MIGRATION_LINK_DOC" => "Документация",
+    "SPRINT_MIGRATION_LINK_ARTICLES" => "Статьи",
+    "SPRINT_MIGRATION_LINK_COMPOSER" => "Composer пакет",
+
     "SPRINT_MIGRATION_TAB1" => "Миграции",
     "SPRINT_MIGRATION_TAB1_TITLE" => "Список миграций",
     "SPRINT_MIGRATION_TAB2" => "Создать",
