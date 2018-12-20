@@ -32,7 +32,7 @@ class UserTypeEntitiesSchema extends AbstractSchema
         $this->deleteSchemas('user_type_entities');
 
         $exportItems = $helper->UserTypeEntity()->exportUserTypeEntities();
-        $exportItems = $helper->filterEntities($exportItems);
+        $exportItems = $this->filterEntities($exportItems);
 
         $this->saveSchema('user_type_entities', array(
             'items' => $exportItems
