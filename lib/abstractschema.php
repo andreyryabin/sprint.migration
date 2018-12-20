@@ -63,16 +63,18 @@ abstract class AbstractSchema
     }
 
     public function isModified() {
-        $data = $this->loadSchemas($this->getMap());
-        $newhash = md5(serialize($data));
         $opt = strtolower('schema_' . $this->getName());
         $oldhash = Module::getDbOption($opt);
+
+        $data = $this->loadSchemas($this->getMap());
+        $newhash = md5(serialize($data));
         return ($newhash != $oldhash);
     }
 
     public function setModified() {
         $data = $this->loadSchemas($this->getMap());
         $newhash = md5(serialize($data));
+
         $opt = strtolower('schema_' . $this->getName());
         Module::setDbOption($opt, $newhash);
     }
