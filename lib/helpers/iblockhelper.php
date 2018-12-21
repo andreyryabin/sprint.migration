@@ -935,6 +935,7 @@ class IblockHelper extends Helper
 
             foreach ($prop['VALUES'] as $item) {
                 unset($item['ID']);
+                unset($item['TMP_ID']);
                 unset($item['PROPERTY_ID']);
                 unset($item['EXTERNAL_ID']);
                 unset($item['PROPERTY_NAME']);
