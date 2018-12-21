@@ -283,21 +283,29 @@ class IblockHelper extends Helper
 
     protected function prepareProperty($property) {
         if ($property && $property['PROPERTY_TYPE'] == 'L' && $property['IBLOCK_ID'] && $property['ID']) {
-            $property['VALUES'] = $this->getPropertyEnumValues($property['IBLOCK_ID'], $property['ID']);
+            $property['VALUES'] = $this->getPropertyEnums(array(
+                'IBLOCK_ID' => $property['IBLOCK_ID'],
+                'PROPERTY_ID' => $property['ID'],
+            ));
         }
         return $property;
     }
 
-    public function getPropertyEnumValues($iblockId, $propertyId) {
+    public function getPropertyEnums($filter = array()) {
         $result = array();
-        $dbres = \CIBlockPropertyEnum::GetList(array("SORT" => "ASC", "VALUE" => "ASC"), array(
-            'IBLOCK_ID' => $iblockId,
-            'PROPERTY_ID' => $propertyId
-        ));
+
+        $dbres = \CIBlockPropertyEnum::GetList(array("SORT" => "ASC", "VALUE" => "ASC"), $filter);
         while ($item = $dbres->Fetch()) {
             $result[] = $item;
         }
         return $result;
+    }
+
+    public function getPropertyEnumValues($iblockId, $propertyId) {
+        return $this->getPropertyEnums(array(
+            'IBLOCK_ID' => $iblockId,
+            'PROPERTY_ID' => $propertyId,
+        ));
     }
 
     public function getPropertyId($iblockId, $code) {
@@ -440,6 +448,32 @@ class IblockHelper extends Helper
             list($ibtype, $ibcode) = explode(':', $fields['LINK_IBLOCK_ID']);
             $fields['LINK_IBLOCK_ID'] = $this->getIblockId($ibcode, $ibtype);
         }
+
+        if (isset($fields['VALUES']) && is_array($fields['VALUES'])) {
+            $existsEnums = $this->getPropertyEnums(array(
+                'PROPERTY_ID' => $propertyId,
+            ));
+
+            $newValues = array();
+            foreach ($fields['VALUES'] as $index => $item) {
+                foreach ($existsEnums as $existsEnum) {
+                    if ($existsEnum['XML_ID'] == $item['XML_ID']) {
+                        $item['ID'] = $existsEnum['ID'];
+                        break;
+                    }
+                }
+
+                if (!empty($item['ID'])) {
+                    $newValues[$item['ID']] = $item;
+                } else {
+                    $newValues['n' . $index] = $item;
+                }
+
+            }
+
+            $fields['VALUES'] = $newValues;
+        }
+
 
         $ib = new \CIBlockProperty();
         if ($ib->Update($propertyId, $fields)) {
@@ -756,7 +790,7 @@ class IblockHelper extends Helper
 
         return $ok;
     }
-    
+
     public function saveIblock($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID'));
 
@@ -896,19 +930,32 @@ class IblockHelper extends Helper
         unset($prop['TIMESTAMP_X']);
         unset($prop['TMP_ID']);
 
-        if (empty($prop['LINK_IBLOCK_ID'])) {
-            return $prop;
+        if (!empty($prop['VALUES']) && is_array($prop['VALUES'])) {
+            $exportValues = array();
+
+            foreach ($prop['VALUES'] as $item) {
+                unset($item['ID']);
+                unset($item['PROPERTY_ID']);
+                unset($item['EXTERNAL_ID']);
+                unset($item['PROPERTY_NAME']);
+                unset($item['PROPERTY_CODE']);
+                unset($item['PROPERTY_SORT']);
+                $exportValues[] = $item;
+            }
+
+            $prop['VALUES'] = $exportValues;
         }
 
-        $linked = $this->getIblock([
-            'ID' => $prop['LINK_IBLOCK_ID']
-        ]);
+        if (!empty($prop['LINK_IBLOCK_ID'])) {
+            $linked = $this->getIblock(array(
+                'ID' => $prop['LINK_IBLOCK_ID']
+            ));
 
-        if (empty($linked['CODE'])) {
-            return $prop;
+            if (!empty($linked['CODE'])) {
+                $prop['LINK_IBLOCK_ID'] = $linked['IBLOCK_TYPE_ID'] . ':' . $linked['CODE'];
+            }
         }
 
-        $prop['LINK_IBLOCK_ID'] = $linked['IBLOCK_TYPE_ID'] . ':' . $linked['CODE'];
         return $prop;
     }
 
