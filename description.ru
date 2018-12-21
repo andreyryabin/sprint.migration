@@ -1,1 +1,1 @@
-1)
+1) ќбновление вариантов дл€ типов полей "список" CIBlockPropertyEnum (автор Alexandr Kuznetsov) <br/>

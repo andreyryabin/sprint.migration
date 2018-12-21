@@ -135,6 +135,22 @@ class IblockExport extends VersionBuilder
                 unset($prop['IBLOCK_ID']);
                 unset($prop['TIMESTAMP_X']);
 
+                if (!empty($prop['VALUES']) && is_array($prop['VALUES'])) {
+                    $exportValues = array();
+
+                    foreach ($prop['VALUES'] as $item) {
+                        unset($item['ID']);
+                        unset($item['PROPERTY_ID']);
+                        unset($item['EXTERNAL_ID']);
+                        unset($item['PROPERTY_NAME']);
+                        unset($item['PROPERTY_CODE']);
+                        unset($item['PROPERTY_SORT']);
+                        $exportValues[] = $item;
+                    }
+
+                    $prop['VALUES'] = $exportValues;
+                }
+
                 if (!empty($prop['LINK_IBLOCK_ID'])) {
                     $linked = $helper->Iblock()->getIblock([
                         'ID' => $prop['LINK_IBLOCK_ID']

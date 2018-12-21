@@ -280,21 +280,28 @@ class IblockHelper extends Helper
 
     protected function prepareProperty($property) {
         if ($property && $property['PROPERTY_TYPE'] == 'L' && $property['IBLOCK_ID'] && $property['ID']) {
-            $property['VALUES'] = $this->getPropertyEnumValues($property['IBLOCK_ID'], $property['ID']);
+            $property['VALUES'] = $this->getPropertyEnums(array(
+                'IBLOCK_ID' => $property['IBLOCK_ID'],
+                'PROPERTY_ID' => $property['ID']
+            ));
         }
         return $property;
     }
 
-    public function getPropertyEnumValues($iblockId, $propertyId) {
+    public function getPropertyEnums($filter = array()) {
         $result = array();
-        $dbres = \CIBlockPropertyEnum::GetList(array("SORT" => "ASC", "VALUE" => "ASC"), array(
-            'IBLOCK_ID' => $iblockId,
-            'PROPERTY_ID' => $propertyId
-        ));
+        $dbres = \CIBlockPropertyEnum::GetList(array("SORT" => "ASC", "VALUE" => "ASC"), $filter);
         while ($item = $dbres->Fetch()) {
             $result[] = $item;
         }
         return $result;
+    }
+
+    public function getPropertyEnumValues($iblockId, $propertyId) {
+        return $this->getPropertyEnums(array(
+            'IBLOCK_ID' => $iblockId,
+            'PROPERTY_ID' => $propertyId
+        ));
     }
 
     public function getPropertyId($iblockId, $code) {
@@ -423,6 +430,32 @@ class IblockHelper extends Helper
         if (false !== strpos($fields['LINK_IBLOCK_ID'], ':')) {
             list($ibtype, $ibcode) = explode(':', $fields['LINK_IBLOCK_ID']);
             $fields['LINK_IBLOCK_ID'] = $this->getIblockId($ibcode, $ibtype);
+        }
+
+
+        if (isset($fields['VALUES']) && is_array($fields['VALUES'])) {
+            $existsEnums = $this->getPropertyEnums(array(
+                'PROPERTY_ID' => $propertyId,
+            ));
+
+            $newValues = array();
+            foreach ($fields['VALUES'] as $index => $item) {
+                foreach ($existsEnums as $existsEnum) {
+                    if ($existsEnum['XML_ID'] == $item['XML_ID']) {
+                        $item['ID'] = $existsEnum['ID'];
+                        break;
+                    }
+                }
+
+                if (!empty($item['ID'])) {
+                    $newValues[$item['ID']] = $item;
+                } else {
+                    $newValues['n' . $index] = $item;
+                }
+
+            }
+
+            $fields['VALUES'] = $newValues;
         }
 
         $ib = new \CIBlockProperty();
