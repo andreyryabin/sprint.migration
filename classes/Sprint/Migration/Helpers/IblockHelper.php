@@ -405,7 +405,7 @@ class IblockHelper extends Helper
         return $this->updatePropertyById($property['ID'], $fields);
     }
 
-    public function updatePropertyById($propertyId, $fields) {
+    public function updatePropertyById($propertyId, $fields, $property = array()) {
         if (!empty($fields['VALUES']) && !isset($fields['PROPERTY_TYPE'])) {
             $fields['PROPERTY_TYPE'] = 'L';
         }
@@ -423,6 +423,49 @@ class IblockHelper extends Helper
         if (false !== strpos($fields['LINK_IBLOCK_ID'], ':')) {
             list($ibtype, $ibcode) = explode(':', $fields['LINK_IBLOCK_ID']);
             $fields['LINK_IBLOCK_ID'] = $this->getIblockId($ibcode, $ibtype);
+        }
+
+        if ($fields['PROPERTY_TYPE'] == 'L') {
+            // Если варианты списка есть и в миграции, и в БД,
+            // то запускаем расширенную обработку вариантов списка
+            if (!empty($fields['VALUES']) && !empty($property['VALUES'])) {
+                $ibEnum = new \CIBlockPropertyEnum;
+
+                // собираем айдишники для вариантов списка,
+                // которые уже есть в БД
+                $propertyValuesAssoc = array();
+                foreach ($property['VALUES'] as $value) {
+                    $propertyValuesAssoc[$value['XML_ID']] = $value['ID'];
+                }
+
+                foreach ($fields['VALUES'] as $value) {
+                    unset($value['ID']);
+                    $value['PROPERTY_ID'] = $propertyId;
+
+                    if (array_key_exists($value['XML_ID'], $propertyValuesAssoc)) {
+                        // те варианты, которые можно обновить, обновляем
+
+                        $ibEnum->Update(
+                            $propertyValuesAssoc[$value['XML_ID']],
+                            $value
+                        );
+
+                        unset($propertyValuesAssoc[$value['XML_ID']]);
+                    } else {
+                        // те варианты, которые отсутствуют в БД, но есть в миграции, добавляем
+                        $ibEnum->Add($value);
+                    }
+
+                    unset($propertyValuesAssoc[$value['XML_ID']]);
+                }
+
+                // если в БД остались варианты, которых не было в миграции, удаляем их
+                foreach ($propertyValuesAssoc as $id) {
+                    \CIBlockPropertyEnum::Delete($id);
+                }
+
+                unset($fields['VALUES']);
+            }
         }
 
         $ib = new \CIBlockProperty();
@@ -755,7 +798,7 @@ class IblockHelper extends Helper
 
         $property = $this->getProperty($iblockId, $fields['CODE']);
         if ($property) {
-            return $this->updatePropertyById($property['ID'], $fields);
+            return $this->updatePropertyById($property['ID'], $fields, $property);
         } else {
             return $this->addProperty($iblockId, $fields);
         }
