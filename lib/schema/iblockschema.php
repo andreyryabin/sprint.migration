@@ -185,10 +185,12 @@ class IblockSchema extends AbstractSchema
             $helper = new HelperManager();
             $olds = $helper->Iblock()->getProperties($iblockId);
             foreach ($olds as $old) {
-                $uniq = $this->getUniqProp($old);
-                if (!in_array($uniq, $skip)) {
-                    $ok = ($this->testMode) ? true : $helper->Iblock()->deletePropertyById($old['ID']);
-                    $this->outWarningIf($ok, 'Инфоблок %s: свойство %s удалено', $iblockId, $this->getTitleProp($old));
+                if (!empty($old['CODE'])) {
+                    $uniq = $this->getUniqProp($old);
+                    if (!in_array($uniq, $skip)) {
+                        $ok = ($this->testMode) ? true : $helper->Iblock()->deletePropertyById($old['ID']);
+                        $this->outWarningIf($ok, 'Инфоблок %s: свойство %s удалено', $iblockId, $this->getTitleProp($old));
+                    }
                 }
             }
         }
@@ -212,7 +214,7 @@ class IblockSchema extends AbstractSchema
 
         $olds = $helper->Iblock()->getIblocks();
         foreach ($olds as $old) {
-            if (!empty($iblock['CODE'])) {
+            if (!empty($old['CODE'])) {
                 $uniq = $this->getUniqIblock($old);
                 if (!in_array($uniq, $skip)) {
                     $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblock($old['ID']);

@@ -24,13 +24,28 @@ class UserGroupHelper extends Helper
 
     }
 
+    public function exportGroup($code) {
+        $item = $this->prepareExportGroup(
+            $this->getGroup($code)
+        );
+
+        if (!empty($item['STRING_ID'])) {
+            return $item;
+        }
+
+        $this->throwException(__METHOD__, 'code not found');
+    }
+
     public function exportGroups($filter = array()) {
         $items = $this->getGroups($filter);
-        $exportItems = array();
+        $exports = array();
         foreach ($items as $item) {
-            $exportItems[] = $this->prepareExportGroup($item);
+            if (!empty($item['STRING_ID'])) {
+                $exports[] = $this->prepareExportGroup($item);
+            }
+
         }
-        return $exportItems;
+        return $exports;
     }
 
     protected function prepareExportGroup($item) {
@@ -79,12 +94,6 @@ class UserGroupHelper extends Helper
 
         return $item;
 
-    }
-
-    public function exportGroup($code) {
-        return $this->prepareExportGroup(
-            $this->getGroup($code)
-        );
     }
 
     public function saveGroup($code, $fields = array()) {

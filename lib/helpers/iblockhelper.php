@@ -880,16 +880,24 @@ class IblockHelper extends Helper
     }
 
     public function exportIblock($iblockId) {
-        return $this->prepareExportIblock(
+        $export = $this->prepareExportIblock(
             $this->getIblock(array('ID' => $iblockId))
         );
+
+        if (!empty($export['CODE'])) {
+            return $export;
+        }
+
+        $this->throwException(__METHOD__, 'code not found');
     }
 
     public function exportIblocks($filter = array()) {
         $exports = array();
         $items = $this->getIblocks($filter);
         foreach ($items as $item) {
-            $exports[] = $this->prepareExportIblock($item);
+            if (!empty($item['CODE'])) {
+                $exports[] = $this->prepareExportIblock($item);
+            }
         }
         return $exports;
     }
@@ -969,16 +977,24 @@ class IblockHelper extends Helper
     }
 
     public function exportProperty($iblockId, $code = false) {
-        return $this->prepareExportProperty(
+        $export = $this->prepareExportProperty(
             $this->getProperty($iblockId, $code)
         );
+
+        if (!empty($export['CODE'])) {
+            return $export;
+        }
+
+        $this->throwException(__METHOD__, 'code not found');
     }
 
     public function exportProperties($iblockId, $filter = array()) {
         $exports = array();
         $items = $this->getProperties($iblockId, $filter);
         foreach ($items as $item) {
-            $exports[] = $this->prepareExportProperty($item);
+            if (!empty($item['CODE'])) {
+                $exports[] = $this->prepareExportProperty($item);
+            }
         }
         return $exports;
     }

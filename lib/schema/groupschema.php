@@ -68,10 +68,12 @@ class GroupSchema extends AbstractSchema
 
         $olds = $helper->UserGroup()->getGroups();
         foreach ($olds as $old) {
-            $uniq = $this->getUniqGroup($old);
-            if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $helper->UserGroup()->deleteGroup($old['STRING_ID']);
-                $this->outWarningIf($ok, 'Группа %s: удалена', $old['NAME']);
+            if (!empty($old['STRING_ID'])) {
+                $uniq = $this->getUniqGroup($old);
+                if (!in_array($uniq, $skip)) {
+                    $ok = ($this->testMode) ? true : $helper->UserGroup()->deleteGroup($old['STRING_ID']);
+                    $this->outWarningIf($ok, 'Группа %s: удалена', $old['NAME']);
+                }
             }
         }
     }
