@@ -212,10 +212,12 @@ class IblockSchema extends AbstractSchema
 
         $olds = $helper->Iblock()->getIblocks();
         foreach ($olds as $old) {
-            $uniq = $this->getUniqIblock($old);
-            if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblock($old['ID']);
-                $this->outWarningIf($ok, 'Инфоблок %s: удален', $old['ID']);
+            if (!empty($iblock['CODE'])) {
+                $uniq = $this->getUniqIblock($old);
+                if (!in_array($uniq, $skip)) {
+                    $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblock($old['ID']);
+                    $this->outWarningIf($ok, 'Инфоблок %s: удален', $old['ID']);
+                }
             }
         }
     }

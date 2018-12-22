@@ -860,7 +860,7 @@ class IblockHelper extends Helper
 
         $ok = ($this->testMode) ? true : $exists['ID'];
         //$this->outIf($ok, 'Инфоблок %s: свойство %s совпадает', $iblockId, $fields['CODE']);
-        return$ok;
+        return $ok;
     }
 
     //exports
@@ -885,6 +885,14 @@ class IblockHelper extends Helper
         );
     }
 
+    public function exportIblocks($filter = array()) {
+        $exports = array();
+        $items = $this->getIblocks($filter);
+        foreach ($items as $item) {
+            $exports[] = $this->prepareExportIblock($item);
+        }
+        return $exports;
+    }
 
     protected function prepareExportIblockFields($fields) {
         if (empty($fields)) {
@@ -967,13 +975,12 @@ class IblockHelper extends Helper
     }
 
     public function exportProperties($iblockId, $filter = array()) {
-        $exportProps = array();
-
-        $props = $this->getProperties($iblockId, $filter);
-        foreach ($props as $prop) {
-            $exportProps[] = $this->prepareExportProperty($prop);
+        $exports = array();
+        $items = $this->getProperties($iblockId, $filter);
+        foreach ($items as $item) {
+            $exports[] = $this->prepareExportProperty($item);
         }
-        return $exportProps;
+        return $exports;
     }
 
     /* @deprecated */
