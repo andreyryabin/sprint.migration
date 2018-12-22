@@ -38,6 +38,7 @@ class AgentHelper extends Helper
         unset($item['LAST_NAME']);
         unset($item['RUNNING']);
         unset($item['DATE_CHECK']);
+        unset($item['LAST_EXEC']);
 
         return $item;
     }
