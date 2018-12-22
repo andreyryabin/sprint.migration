@@ -786,7 +786,7 @@ class IblockHelper extends Helper
         }
 
         $ok = ($this->testMode) ? true : $fields['ID'];
-        $this->outIf($ok, 'Тип инфоблока %s: совпадает', $fields['ID']);
+        //$this->outIf($ok, 'Тип инфоблока %s: совпадает', $fields['ID']);
 
         return $ok;
     }
@@ -811,7 +811,7 @@ class IblockHelper extends Helper
         }
 
         $ok = ($this->testMode) ? true : $exists['ID'];
-        $this->outIf($ok, 'Инфоблок %s: совпадает', $fields['CODE']);
+        //$this->outIf($ok, 'Инфоблок %s: совпадает', $fields['CODE']);
         return $ok;
     }
 
@@ -835,7 +835,7 @@ class IblockHelper extends Helper
             return $ok;
         }
 
-        $this->out('Инфоблок %s: поля совпадают', $iblockId);
+        //$this->out('Инфоблок %s: поля совпадают', $iblockId);
         return true;
     }
 
@@ -859,8 +859,8 @@ class IblockHelper extends Helper
         }
 
         $ok = ($this->testMode) ? true : $exists['ID'];
-        $this->outIf($ok, 'Инфоблок %s: свойство %s совпадает', $iblockId, $fields['CODE']);
-        return $exists['ID'];
+        //$this->outIf($ok, 'Инфоблок %s: свойство %s совпадает', $iblockId, $fields['CODE']);
+        return$ok;
     }
 
     //exports

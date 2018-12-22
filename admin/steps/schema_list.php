@@ -24,22 +24,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     ?>
 
     <table class="sp-list">
-    <? foreach ($schemas as $schema): ?>
-        <tr>
-            <td class="sp-list-l" style="vertical-align: top">
-                <input data-id="<?= $schema->getName() ?>"
-                       class="sp-schema adm-btn <? if (in_array($schema->getName(), $schemaChecked)): ?>adm-btn-active<? endif ?>"
-                       type="button"
-                       value="Выбрать"
-                />
-            </td>
-            <td class="sp-list-r">
-                <?= \Sprint\Migration\Out::prepareToHtml('[blue]' . $schema->getTitle() . '[/]') ?>
-                <?if ($schema->isModified()):?><span class="sp-modified" title="<?=GetMessage('SPRINT_MIGRATION_MODIFIED_SCHEMA')?>"><?=GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL')?></span><?endif;?>
-                <? $schema->outDescription() ?>
-            </td>
-        </tr>
-    <? endforeach; ?>
+        <? foreach ($schemas as $schema): ?>
+            <tr>
+                <td class="sp-list-l" style="vertical-align: top">
+                    <input data-id="<?= $schema->getName() ?>"
+                           class="sp-schema adm-btn <? if (in_array($schema->getName(), $schemaChecked)): ?>adm-btn-active<? endif ?>"
+                           type="button"
+                           value="Выбрать"
+                    />
+                </td>
+                <td class="sp-list-r">
+                    <? $schema->outTitle()?>
+                    <? $schema->outDescription() ?>
+                </td>
+            </tr>
+        <? endforeach; ?>
     </table>
     <?
     /** @noinspection PhpIncludeInspection */

@@ -90,7 +90,7 @@ class AdminIblockHelper extends Helper
             $this->outNoticeIf($ok, 'Инфоблок %s: форма редактирования сохранена', $iblockId);
             return $ok;
         } else {
-            $this->out('Инфоблок %s: форма редактирования cовпадает', $iblockId);
+            //$this->out('Инфоблок %s: форма редактирования совпадает', $iblockId);
             return true;
         }
     }

@@ -169,7 +169,9 @@ class SchemaManager
 
         unset($this->params['index']);
 
-        $schema->setModified();
+        if (!$this->testMode) {
+            $schema->setModified();
+        }
 
         $this->removeQueue($schema);
         $this->out('%s (test import) success', $schema->getTitle());

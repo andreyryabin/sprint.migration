@@ -105,8 +105,9 @@ class AgentHelper extends Helper
             return $ok;
         }
 
-        $this->out('Агент %s: совпадает', $fields['NAME']);
+
         $ok = ($this->testMode) ? true : $exists['ID'];
+        //$this->outIf($ok, 'Агент %s: совпадает', $fields['NAME']);
         return $ok;
     }
 

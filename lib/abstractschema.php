@@ -87,6 +87,14 @@ abstract class AbstractSchema
         return $this->info['title'];
     }
 
+    public function outTitle() {
+        if ($this->isModified()) {
+            $this->out('[new]' . $this->getTitle() . '[/]');
+        } else {
+            $this->out('[installed]' . $this->getTitle() . '[/]');
+        }
+    }
+
     protected function getSchemaDir($relative = false) {
         return $this->getVersionConfig()->getSiblingDir('schema', $relative, $this->getVersionConfig()->getName());
     }

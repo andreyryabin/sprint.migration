@@ -403,12 +403,7 @@ class Console
             $schemaManager = new SchemaManager($this->versionConfig);
             $schemas = $schemaManager->getEnabledSchemas();
             foreach ($schemas as $schema) {
-                $title = $schema->getTitle();
-                if ($schema->isModified()) {
-                    $title .= ' (' . GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL') . ')';
-                }
-
-                $schema->outInfo($title);
+                $schema->outTitle();
                 $schema->outDescription();
             }
         }
