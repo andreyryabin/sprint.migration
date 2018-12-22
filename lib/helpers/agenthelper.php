@@ -100,6 +100,11 @@ class AgentHelper extends Helper
             return $ok;
         }
 
+        if (strtotime($fields['NEXT_EXEC']) <= strtotime($exportExists['NEXT_EXEC'])){
+            unset($fields['NEXT_EXEC']);
+            unset($exportExists['NEXT_EXEC']);
+        }
+
         if ($exportExists != $fields) {
             $ok = ($this->testMode) ? true : $this->updateAgent($fields);
             $this->outNoticeIf($ok, 'Агент %s: обновлен', $fields['NAME']);
