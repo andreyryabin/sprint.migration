@@ -34,7 +34,7 @@ class IblockExport extends VersionBuilder
     }
 
     protected function execute() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $this->addField('iblock_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_IblockId'),

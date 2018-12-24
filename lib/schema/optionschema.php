@@ -6,21 +6,22 @@ use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Helper;
 use Sprint\Migration\HelperManager;
 
-class UserTypeEntitiesSchema extends AbstractSchema
+class OptionSchema extends AbstractSchema
 {
 
     private $transforms = array();
 
     protected function initialize() {
-        $this->setTitle('Схема пользовательских полей');
+        $this->setTitle('Схема настроек модулей');
     }
 
     public function getMap(){
-        return array('user_type_entities');
+        return array('options/');
     }
 
     protected function isBuilderEnabled() {
-        return true;
+        $helper = HelperManager::getInstance();
+        return $helper->Option()->isEnabled();
     }
 
     public function outDescription() {

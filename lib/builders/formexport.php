@@ -31,7 +31,7 @@ class FormExport extends VersionBuilder
     }
 
     protected function execute() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
         $formHelper = $helper->Form();
 
         $forms = $formHelper->getList();

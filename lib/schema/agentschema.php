@@ -30,7 +30,7 @@ class AgentSchema extends AbstractSchema
     }
 
     public function export() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $exportItems = $helper->Agent()->exportAgents();
 
@@ -58,13 +58,13 @@ class AgentSchema extends AbstractSchema
 
 
     protected function saveAgent($item) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
         $helper->Agent()->setTestMode($this->testMode);
         $helper->Agent()->saveAgent($item);
     }
 
     protected function cleanAgents($skip = array()) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $olds = $helper->Agent()->getList();
         foreach ($olds as $old) {

@@ -9,6 +9,14 @@ use Sprint\Migration\Tables\OptionTable;
 class OptionHelper extends Helper
 {
 
+    public function isEnabled() {
+        return (
+            class_exists('\Bitrix\Main\ModuleManager') &&
+            class_exists('\Bitrix\Main\Entity\DataManager') &&
+            class_exists('\Bitrix\Main\Config\Option')
+        );
+    }
+
     public function getModules() {
         return ModuleManager::getInstalledModules();
     }

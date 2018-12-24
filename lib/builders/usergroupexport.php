@@ -33,7 +33,7 @@ class UserGroupExport extends VersionBuilder
 
 
     protected function execute() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $this->addField('user_group', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport_user_group'),
@@ -75,7 +75,7 @@ class UserGroupExport extends VersionBuilder
     }
 
     protected function getUserGroups() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $groups = $helper->UserGroup()->getGroups();
 

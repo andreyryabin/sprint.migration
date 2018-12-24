@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration;
 
+use Bitrix\Main\Application;
 use Sprint\Migration\Exceptions\HelperException;
 
 use Sprint\Migration\Helpers\FormHelper;
@@ -34,7 +35,19 @@ use Sprint\Migration\Helpers\UserGroupHelper;
 class HelperManager
 {
 
-    protected $cache = array();
+    private $cache = array();
+
+    private static $instance = null;
+
+    /**
+     * @return HelperManager
+     */
+    public static function getInstance() {
+        if (!isset(static::$instance)) {
+            static::$instance = new static();
+        }
+        return static::$instance;
+    }
 
     public function __call($name, $arguments) {
         return $this->callHelper($name);

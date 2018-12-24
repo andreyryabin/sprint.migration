@@ -33,7 +33,7 @@ class UserTypeEntities extends VersionBuilder
 
 
     protected function execute() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $this->addField('type_codes', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId'),

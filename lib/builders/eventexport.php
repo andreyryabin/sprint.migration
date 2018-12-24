@@ -33,7 +33,7 @@ class EventExport extends VersionBuilder
 
 
     protected function execute() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $this->addField('event_types', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_EventExport_event_types'),
@@ -86,7 +86,7 @@ class EventExport extends VersionBuilder
 
 
     protected function getEventTypesStructure() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
         $eventTypes = $helper->Event()->getEventTypes(array(
             'LID' => LANGUAGE_ID
         ));

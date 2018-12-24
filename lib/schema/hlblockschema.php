@@ -39,7 +39,7 @@ class HlblockSchema extends AbstractSchema
     }
 
     public function export() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $exportItems = $helper->Hlblock()->exportHlblocks();
 
@@ -88,7 +88,7 @@ class HlblockSchema extends AbstractSchema
 
 
     protected function saveHlblock($item) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
         $helper->Hlblock()->setTestMode($this->testMode);
         $helper->Hlblock()->saveHlblock($item);
     }
@@ -96,14 +96,14 @@ class HlblockSchema extends AbstractSchema
     protected function saveField($hlblockUid, $field) {
         $hlblockId = $this->getHlblockId($hlblockUid);
         if (!empty($hlblockId)) {
-            $helper = new HelperManager();
+            $helper = HelperManager::getInstance();
             $helper->Hlblock()->setTestMode($this->testMode);
             $helper->Hlblock()->saveField($hlblockId, $field);
         }
     }
 
     protected function cleanHlblocks($skip = array()) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $olds = $helper->Hlblock()->getHlblocks();
         foreach ($olds as $old) {
@@ -118,7 +118,7 @@ class HlblockSchema extends AbstractSchema
     protected function cleanFields($hlblockUid, $skip = array()) {
         $hlblockId = $this->getHlblockId($hlblockUid);
         if (!empty($hlblockId)) {
-            $helper = new HelperManager();
+            $helper = HelperManager::getInstance();
             $olds = $helper->Hlblock()->getFields($hlblockId);
             foreach ($olds as $old) {
                 $uniq = $this->getUniqField($old);
@@ -131,7 +131,7 @@ class HlblockSchema extends AbstractSchema
     }
 
     protected function getHlblockId($hlblockUid) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         if (isset($this->uniqs[$hlblockUid])) {
             return $this->uniqs[$hlblockUid];

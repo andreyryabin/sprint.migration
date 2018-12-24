@@ -41,6 +41,10 @@ class Helper
         Throw new HelperException($msg);
     }
 
+    public function isEnabled(){
+        return true;
+    }
+
     public function checkModules($names = array()) {
         $names = is_array($names) ? $names : array($names);
         foreach ($names as $name) {

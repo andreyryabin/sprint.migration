@@ -33,7 +33,7 @@ class AgentExport extends VersionBuilder
 
 
     protected function execute() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $this->addField('agent_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_AgentExport_agent_id'),
@@ -74,7 +74,7 @@ class AgentExport extends VersionBuilder
     }
 
     protected function getAgents() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $agents = $helper->Agent()->getList(array());
 

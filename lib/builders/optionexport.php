@@ -11,11 +11,8 @@ class OptionExport extends VersionBuilder
 {
 
     protected function isBuilderEnabled() {
-        return (
-            class_exists('\Bitrix\Main\ModuleManager') &&
-            class_exists('\Bitrix\Main\Entity\DataManager') &&
-            class_exists('\Bitrix\Main\Config\Option')
-        );
+        $helper = HelperManager::getInstance();
+        return $helper->Option()->isEnabled();
     }
 
     protected function initialize() {
@@ -37,7 +34,7 @@ class OptionExport extends VersionBuilder
 
 
     protected function execute() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $this->addField('module_id', array(
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_OptionExport_module_id'),
@@ -78,7 +75,7 @@ class OptionExport extends VersionBuilder
     }
 
     protected function getModules() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $items = $helper->Option()->getModules();
 

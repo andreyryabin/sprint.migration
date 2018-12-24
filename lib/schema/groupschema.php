@@ -30,7 +30,7 @@ class GroupSchema extends AbstractSchema
     }
 
     public function export() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $exportItems = $helper->UserGroup()->exportGroups();
 
@@ -58,13 +58,13 @@ class GroupSchema extends AbstractSchema
 
 
     protected function saveGroup($fields) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
         $helper->UserGroup()->setTestMode($this->testMode);
         $helper->UserGroup()->saveGroup($fields['STRING_ID'], $fields);
     }
 
     protected function cleanGroups($skip = array()) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $olds = $helper->UserGroup()->getGroups();
         foreach ($olds as $old) {

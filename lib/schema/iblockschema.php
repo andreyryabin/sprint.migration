@@ -53,7 +53,7 @@ class IblockSchema extends AbstractSchema
     }
 
     public function export() {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $types = $helper->Iblock()->getIblockTypes();
         $exportTypes = array();
@@ -141,13 +141,13 @@ class IblockSchema extends AbstractSchema
 
 
     protected function saveIblockType($fields = array()) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
         $helper->Iblock()->setTestMode($this->testMode);
         $helper->Iblock()->saveIblockType($fields);
     }
 
     protected function saveIblock($fields) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
         $helper->Iblock()->setTestMode($this->testMode);
         $helper->Iblock()->saveIblock($fields);
     }
@@ -155,7 +155,7 @@ class IblockSchema extends AbstractSchema
     protected function saveIblockFields($iblockUid, $fields) {
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = new HelperManager();
+            $helper = HelperManager::getInstance();
             $helper->Iblock()->setTestMode($this->testMode);
             $helper->Iblock()->saveIblockFields($iblockId, $fields);
         }
@@ -164,7 +164,7 @@ class IblockSchema extends AbstractSchema
     protected function saveProperty($iblockUid, $fields) {
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = new HelperManager();
+            $helper = HelperManager::getInstance();
             $helper->Iblock()->setTestMode($this->testMode);
             $helper->Iblock()->saveProperty($iblockId, $fields);
         }
@@ -173,7 +173,7 @@ class IblockSchema extends AbstractSchema
     protected function saveElementForm($iblockUid, $elementForm) {
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = new HelperManager();
+            $helper = HelperManager::getInstance();
             $helper->AdminIblock()->setTestMode($this->testMode);
             $helper->AdminIblock()->saveElementForm($iblockId, $elementForm);
         }
@@ -182,7 +182,7 @@ class IblockSchema extends AbstractSchema
     protected function cleanProperties($iblockUid, $skip = array()) {
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = new HelperManager();
+            $helper = HelperManager::getInstance();
             $olds = $helper->Iblock()->getProperties($iblockId);
             foreach ($olds as $old) {
                 if (!empty($old['CODE'])) {
@@ -197,7 +197,7 @@ class IblockSchema extends AbstractSchema
     }
 
     protected function cleanIblockTypes($skip = array()) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $olds = $helper->Iblock()->getIblockTypes();
         foreach ($olds as $old) {
@@ -210,7 +210,7 @@ class IblockSchema extends AbstractSchema
     }
 
     protected function cleanIblocks($skip = array()) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         $olds = $helper->Iblock()->getIblocks();
         foreach ($olds as $old) {
@@ -242,7 +242,7 @@ class IblockSchema extends AbstractSchema
     }
 
     protected function getIblockId($iblockUid) {
-        $helper = new HelperManager();
+        $helper = HelperManager::getInstance();
 
         if (isset($this->iblockIds[$iblockUid])) {
             return $this->iblockIds[$iblockUid];
