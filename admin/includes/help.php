@@ -13,15 +13,18 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
         </div>
         <div class="sp-block">
             <div style="margin-bottom: 10px;">
+                <?= GetMessage('SPRINT_MIGRATION_LINK_MP') ?> <br/>
+                <a href="http://marketplace.1c-bitrix.ru/solutions/sprint.migration/" target="_blank">http://marketplace.1c-bitrix.ru/solutions/sprint.migration/</a>
+            </div>
+            <div style="margin-bottom: 10px;">
                 <?= GetMessage('SPRINT_MIGRATION_LINK_COMPOSER') ?>
                 <br/>
                 <a href="https://packagist.org/packages/andreyryabin/sprint.migration" target="_blank">https://packagist.org/packages/andreyryabin/sprint.migration</a>
             </div>
             <div style="margin-bottom: 10px;">
-                <?= GetMessage('SPRINT_MIGRATION_LINK_TASKS') ?> <br/>
-                <a href="https://bitbucket.org/andrey_ryabin/sprint.migration/issues" target="_blank">https://bitbucket.org/andrey_ryabin/sprint.migration/issues</a>
+                <?= GetMessage('SPRINT_MIGRATION_LINK_DOC') ?>
                 <br/>
-                <a href="https://github.com/andreyryabin/sprint.migration/issues" target="_blank">https://github.com/andreyryabin/sprint.migration/issues</a>
+                <a href="https://github.com/andreyryabin/sprint.migration/wiki" target="_blank">https://github.com/andreyryabin/sprint.migration/wiki</a>
             </div>
             <div style="margin-bottom: 10px;">
                 <?= GetMessage('SPRINT_MIGRATION_LINK_ARTICLES') ?>

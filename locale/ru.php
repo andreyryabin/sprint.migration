@@ -29,6 +29,7 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_TOGGLE_INSTALLED" => "Установленные",
     "SPRINT_MIGRATION_TOGGLE_UNKNOWN" => "Неизвестные",
 
+    "SPRINT_MIGRATION_LINK_MP" => "Маркетплейс",
     "SPRINT_MIGRATION_LINK_DOC" => "Документация",
     "SPRINT_MIGRATION_LINK_ARTICLES" => "Статьи",
     "SPRINT_MIGRATION_LINK_COMPOSER" => "Composer",
