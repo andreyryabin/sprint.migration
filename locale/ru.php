@@ -133,6 +133,10 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_BUILDER_FormExport_Fields" => "Поля формы",
     "SPRINT_MIGRATION_BUILDER_FormExport_Statuses" => "Статусы",
 
+    "SPRINT_MIGRATION_BUILDER_OptionExport1" => "Создать миграцию для настроек модулей",
+    "SPRINT_MIGRATION_BUILDER_OptionExport2" => "",
+    "SPRINT_MIGRATION_BUILDER_OptionExport_module_id" => "Выберите модули",
+
     "SPRINT_MIGRATION_BUILDER_CacheCleaner1" => "Очистка кеша",
     "SPRINT_MIGRATION_BUILDER_CacheCleaner2" => "Выполнить BXClearCache(true)",
 

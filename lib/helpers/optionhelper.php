@@ -70,8 +70,8 @@ class OptionHelper extends Helper
         return true;
     }
 
-    public function deleteOption($filter = array()) {
-        $this->checkRequiredKeys(__METHOD__, $filter, array('MODULE_ID', 'NAME'));
+    public function deleteOptions($filter = array()) {
+        $this->checkRequiredKeys(__METHOD__, $filter, array('MODULE_ID'));
 
         $params = array();
 
