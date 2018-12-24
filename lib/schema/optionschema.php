@@ -15,7 +15,7 @@ class OptionSchema extends AbstractSchema
         $this->setTitle('Схема настроек модулей');
     }
 
-    public function getMap(){
+    public function getMap() {
         return array('options/');
     }
 
@@ -25,84 +25,53 @@ class OptionSchema extends AbstractSchema
     }
 
     public function outDescription() {
-        $schemaItems = $this->loadSchema('user_type_entities', array(
+        $schemas = $this->loadSchemas('options/', array(
             'items' => array()
         ));
 
-        $this->out('Полей: %d', count($schemaItems['items']));
+        $cnt = 0;
+
+        foreach ($schemas as $schema) {
+            $cnt += count($schema['items']);
+        }
+
+        $this->out('Настроек: %d', $cnt);
     }
 
     public function export() {
         $helper = HelperManager::getInstance();
 
-        $exportItems = $helper->UserTypeEntity()->exportUserTypeEntities();
-        $exportItems = $this->filterEntities($exportItems);
+        $modules = $helper->Option()->getModules();
 
-        $this->saveSchema('user_type_entities', array(
-            'items' => $exportItems
-        ));
+        foreach ($modules as $module) {
+            $exportItems = $helper->Option()->getOptions(array(
+                'MODULE_ID' => $module['ID']
+            ));
 
+            $this->saveSchema('options/' . $module['ID'], array(
+                'items' => $exportItems
+            ));
+        }
     }
 
     public function import() {
-        $schemaItems = $this->loadSchema('user_type_entities', array(
+        $schemas = $this->loadSchemas('options/', array(
             'items' => array()
         ));
 
-        foreach ($schemaItems['items'] as $item) {
-            $this->addToQueue('saveUserTypeEntity', $item);
+        foreach ($schemas as $schema) {
+            $this->addToQueue('saveOptions', $schema['items']);
         }
-
-
-        $skip = array();
-        foreach ($schemaItems['items'] as $item) {
-            $skip[] = $this->getUniqEntity($item);
-        }
-
-        $this->addToQueue('clearUserTypeEntities', $skip);
     }
 
 
-    protected function saveUserTypeEntity($fields) {
+    protected function saveOptions($items) {
         $helper = HelperManager::getInstance();
-        $helper->UserTypeEntity()->setTestMode($this->testMode);
-        $helper->UserTypeEntity()->saveUserTypeEntity($fields);
-    }
+        $helper->Option()->setTestMode($this->testMode);
 
-    protected function clearUserTypeEntities($skip = array()) {
-        $helper = HelperManager::getInstance();
-
-        $olds = $helper->UserTypeEntity()->exportUserTypeEntities();
-        $olds = $this->filterEntities($olds);
-
-        foreach ($olds as $old) {
-            $uniq = $this->getUniqEntity($old);
-            if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $helper->UserTypeEntity()->deleteUserTypeEntity($old['ENTITY_ID'], $old['FIELD_NAME']);
-                $this->outWarningIf($ok, 'Пользовательское поле %s: удалено', $old['FIELD_NAME']);
-            }
-        }
-    }
-
-    protected function getUniqEntity($item) {
-        $entityId = $item['ENTITY_ID'];
-
-        if (!isset($this->transforms[$entityId])) {
-            $helper = HelperManager::getInstance();
-            $this->transforms[$entityId] = $helper->UserTypeEntity()->transformEntityId($entityId);
-        }
-
-        return $this->transforms[$entityId] . $item['FIELD_NAME'];
-    }
-
-    protected function filterEntities($items = array()) {
-        $filtered = array();
         foreach ($items as $item) {
-            if (strpos($item['ENTITY_ID'], 'HLBLOCK_') === false) {
-                $filtered[] = $item;
-            }
+            $helper->Option()->saveOption($item);
         }
-        return $filtered;
     }
 
 }
