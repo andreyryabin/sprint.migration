@@ -119,7 +119,7 @@ class UserGroupHelper extends Helper
 
 
         $ok = ($this->testMode) ? true : $exists['ID'];
-        //$this->outIf($ok, 'Группа %s: совпадает', $fields['NAME']);
+        $this->outIf($ok, 'Группа %s: совпадает', $fields['NAME']);
         return $ok;
     }
 

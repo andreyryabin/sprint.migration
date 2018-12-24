@@ -307,6 +307,7 @@ class VersionConfig
             'UserTypeEntities' => '\Sprint\Migration\Builders\UserTypeEntities',
             'UserGroupExport' => '\Sprint\Migration\Builders\UserGroupExport',
             'AgentExport' => '\Sprint\Migration\Builders\AgentExport',
+            'OptionExport' => '\Sprint\Migration\Builders\OptionExport',
             'FormExport' => '\Sprint\Migration\Builders\FormExport',
             'EventExport' => '\Sprint\Migration\Builders\EventExport',
             'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
@@ -322,6 +323,7 @@ class VersionConfig
             'UserTypeEntitiesSchema' => '\Sprint\Migration\Schema\UserTypeEntitiesSchema',
             'AgentSchema' => '\Sprint\Migration\Schema\AgentSchema',
             'GroupSchema' => '\Sprint\Migration\Schema\GroupSchema',
+            'OptionSchema' => '\Sprint\Migration\Schema\OptionSchema',
         );
 
     }

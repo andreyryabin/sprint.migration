@@ -349,8 +349,7 @@ class UserTypeEntityHelper extends Helper
         }
 
         $ok = ($this->testMode) ? true : $exists['ID'];
-        //$this->outIf($ok, 'Пользовательское поле %s: совпадает', $fields['FIELD_NAME']);
-
+        $this->outIf($ok, 'Пользовательское поле %s: совпадает', $fields['FIELD_NAME']);
         return $ok;
 
     }

@@ -23,7 +23,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper = new HelperManager();
 
         <?foreach ($items as $item):?>
-        $helper->UserGroup()->saveGroup('<?php echo $item['STRING_ID'] ?>',<?php echo var_export($item['FIELDS'], 1) ?>);
+        $helper->Option()->saveOption(<?php echo var_export($item, 1) ?>);
         <? endforeach; ?>
     }
 

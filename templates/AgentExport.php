@@ -23,7 +23,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper = new HelperManager();
 
         <?foreach ($items as $item):?>
-            $helper->Agent()->saveAgent(<?php echo var_export($item, 1) ?>);
+        $helper->Agent()->saveAgent(<?php echo var_export($item, 1) ?>);
         <? endforeach; ?>
     }
 

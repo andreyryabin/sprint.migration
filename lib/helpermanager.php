@@ -13,6 +13,7 @@ use Sprint\Migration\Helpers\AgentHelper;
 use Sprint\Migration\Helpers\EventHelper;
 use Sprint\Migration\Helpers\LangHelper;
 use Sprint\Migration\Helpers\SiteHelper;
+use Sprint\Migration\Helpers\OptionHelper;
 
 use Sprint\Migration\Helpers\UserTypeEntityHelper;
 use Sprint\Migration\Helpers\UserGroupHelper;
@@ -27,6 +28,7 @@ use Sprint\Migration\Helpers\UserGroupHelper;
  * @method SiteHelper               Site()
  * @method UserTypeEntityHelper     UserTypeEntity()
  * @method UserGroupHelper          UserGroup()
+ * @method OptionHelper             Option()
  * @method FormHelper               Form()
  */
 class HelperManager
