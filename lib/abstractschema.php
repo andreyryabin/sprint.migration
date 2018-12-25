@@ -123,23 +123,26 @@ abstract class AbstractSchema
         );
     }
 
-    public function beforeExport() {
-        $names = $this->getSchemaFiles($this->getMap());
+    public function deleteSchemaFiles() {
+        $names = $this->getSchemas($this->getMap());
         foreach ($names as $name) {
             $file = $this->getSchemaFile($name);
             unlink($file);
         }
     }
 
-    public function afterExport() {
-        $this->outNotice('%s сохранена', $this->getTitle());
-        $names = $this->getSchemaFiles($this->getMap());
+    public function getSchemaFiles() {
+        $result = array();
+
+        $names = $this->getSchemas($this->getMap());
         foreach ($names as $name) {
-            $this->out($this->getSchemaFile($name, true));
+            $result[] = $this->getSchemaFile($name, true);
         }
+
+        return $result;
     }
 
-    protected function getSchemaFiles($map) {
+    protected function getSchemas($map) {
         $map = is_array($map) ? $map : array($map);
         $result = array();
 
@@ -197,7 +200,7 @@ abstract class AbstractSchema
 
 
     protected function loadSchemas($map, $merge = array()) {
-        $names = $this->getSchemaFiles($map);
+        $names = $this->getSchemas($map);
         $schemas = array();
         foreach ($names as $name) {
             $schemas[$name] = $this->loadSchema($name, $merge);

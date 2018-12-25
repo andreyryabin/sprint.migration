@@ -128,15 +128,29 @@ class SchemaManager
 
     protected function exportSchema($name) {
         $schema = $this->createSchema($name);
-        if ($schema->isEnabled()) {
-
-            $schema->beforeExport();
-
-            $schema->export();
-
-            $schema->afterExport();
+        if (!$schema->isEnabled()) {
+            return false;
         }
 
+        $schema->deleteSchemaFiles();
+
+        $schema->export();
+
+        $files = $schema->getSchemaFiles();
+        if (!empty($files)) {
+            $this->outNotice('%s сохранена', $schema->getTitle());
+            foreach ($files as $file) {
+                $this->out($file);
+            }
+        } else {
+            $this->outWarning('%s не содержит данных', $schema->getTitle());
+        }
+
+        if (!$this->testMode) {
+            $schema->setModified();
+        }
+
+        return true;
     }
 
     protected function importSchema($name) {
@@ -175,6 +189,8 @@ class SchemaManager
 
         $this->removeQueue($schema);
         $this->out('%s (test import) success', $schema->getTitle());
+
+        return true;
     }
 
     protected function getVersionConfig() {
