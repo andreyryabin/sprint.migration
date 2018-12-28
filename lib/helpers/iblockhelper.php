@@ -164,7 +164,22 @@ class IblockHelper extends Helper
         $filter['CHECK_PERMISSIONS'] = 'N';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        return \CIBlock::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
+
+        $item = \CIBlock::GetList(array('SORT' => 'ASC'), $filter)->Fetch();
+        return $this->prepareIblock($item);
+    }
+
+    protected function prepareIblock($item) {
+        if (empty($item['ID'])) {
+            return $item;
+        }
+        $item['LID'] = $this->getIblockSites($item['ID']);
+        return $item;
+    }
+
+    public function getIblockSites($iblockId) {
+        $dbres = \CIBlock::GetSite($iblockId);
+        return $this->fetchAll($dbres,false,'LID');
     }
 
     public function getIblockId($code, $typeId = '') {
@@ -179,13 +194,13 @@ class IblockHelper extends Helper
         $dbres = \CIBlock::GetList(array('SORT' => 'ASC'), $filter);
         $list = array();
         while ($item = $dbres->Fetch()) {
-            $list[] = $item;
+            $list[] = $this->prepareIblock($item);
         }
         return $list;
     }
 
     public function addIblockIfNotExists($fields = array()) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
+        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID', 'LID'));
 
         $typeId = false;
         if (!empty($fields['IBLOCK_TYPE_ID'])) {
@@ -201,6 +216,7 @@ class IblockHelper extends Helper
     }
 
     public function addIblock($fields) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID', 'LID'));
 
         $default = array(
             'ACTIVE' => 'Y',
@@ -791,7 +807,7 @@ class IblockHelper extends Helper
     }
 
     public function saveIblock($fields = array()) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID'));
+        $this->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID', 'LID'));
 
         $exists = $this->getIblock($fields['CODE'], $fields['IBLOCK_TYPE_ID']);
         $exportExists = $this->prepareExportIblock($exists);
