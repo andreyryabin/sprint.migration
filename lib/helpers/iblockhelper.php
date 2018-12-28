@@ -210,7 +210,7 @@ class IblockHelper extends Helper
             'DETAIL_PAGE_URL' => '',
             'SECTION_PAGE_URL' => '',
             'IBLOCK_TYPE_ID' => 'main',
-            'SITE_ID' => array('s1'),
+            'LID' => array('s1'),
             'SORT' => 500,
             'GROUP_ID' => array('2' => 'R'),
             'VERSION' => 2,
