@@ -45,7 +45,7 @@ class Helper
         return true;
     }
 
-    public function checkModules($names = array()) {
+    protected function checkModules($names = array()) {
         $names = is_array($names) ? $names : array($names);
         foreach ($names as $name) {
             if (!\CModule::IncludeModule($name)) {
@@ -54,7 +54,7 @@ class Helper
         }
     }
 
-    public function checkRequiredKeys($method, $fields, $reqKeys = array()) {
+    protected function checkRequiredKeys($method, $fields, $reqKeys = array()) {
         foreach ($reqKeys as $name) {
             if (empty($fields[$name])) {
                 $this->throwException($method, 'requred key "%s" empty', $name);

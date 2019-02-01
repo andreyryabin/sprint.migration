@@ -191,6 +191,7 @@ class VersionConfig
             $values['version_schemas'] = $this->getDefaultSchemas();
         }
 
+
         ksort($values);
         return $values;
     }
@@ -326,7 +327,22 @@ class VersionConfig
             'OptionSchema' => '\Sprint\Migration\Schema\OptionSchema',
             'EventSchema' => '\Sprint\Migration\Schema\EventSchema',
         );
+    }
 
+    protected function getDefaultHelpers() {
+        return array(
+            'AdminIblockHelper' => '\Sprint\Migration\Helpers\AdminIblockHelper',
+            'AgentHelper' => '\Sprint\Migration\Helpers\AgentHelper',
+            'EventHelper' => '\Sprint\Migration\Helpers\EventHelper',
+            'FormHelper' => '\Sprint\Migration\Helpers\FormHelper',
+            'HlblockHelper' => '\Sprint\Migration\Helpers\HlblockHelper',
+            'IblockHelper' => '\Sprint\Migration\Helpers\IblockHelper',
+            'LangHelper' => '\Sprint\Migration\Helpers\LangHelper',
+            'OptionHelper' => '\Sprint\Migration\Helpers\OptionHelper',
+            'SiteHelper' => '\Sprint\Migration\Helpers\SiteHelper',
+            'UserGroupHelper' => '\Sprint\Migration\Helpers\UserGroupHelper',
+            'UserTypeEntityHelper' => '\Sprint\Migration\Helpers\UserTypeEntityHelper',
+        );
     }
 
 }

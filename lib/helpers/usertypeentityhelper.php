@@ -7,8 +7,6 @@ use Sprint\Migration\Helper;
 class UserTypeEntityHelper extends Helper
 {
 
-    private $transf = [];
-
     public function addUserTypeEntitiesIfNotExists($entityId, array $fields) {
         foreach ($fields as $field) {
             $this->addUserTypeEntityIfNotExists($entityId, $field["FIELD_NAME"], $field);
