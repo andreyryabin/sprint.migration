@@ -52,25 +52,8 @@ class EventExport extends VersionBuilder
         $result = array();
         foreach ($eventTypes as $eventName) {
 
-            $types = $helper->Event()->getEventTypes($eventName);
-            foreach ($types as $indexType => $type){
-                unset($type['ID']);
-                unset($type['EVENT_NAME']);
-                $types[$indexType] = $type;
-            }
-
-            $messages = $helper->Event()->getEventMessages($eventName);
-            foreach ($messages as $indexMessage => $message){
-                unset($message['ID']);
-                unset($message['SITE_ID']);
-                unset($message['TIMESTAMP_X']);
-                unset($message['MESSAGE_PHP']);
-                unset($message['EVENT_NAME']);
-                unset($message['EVENT_MESSAGE_TYPE_ID']);
-                unset($message['EVENT_MESSAGE_TYPE_NAME']);
-                unset($message['EVENT_MESSAGE_TYPE_EVENT_NAME']);
-                $messages[$indexMessage] = $message;
-            }
+            $types = $helper->Event()->exportEventTypes($eventName);
+            $messages = $helper->Event()->exportEventMessages($eventName);
 
             $result[$eventName] = array(
                 'types' => $types,

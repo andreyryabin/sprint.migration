@@ -324,6 +324,7 @@ class VersionConfig
             'AgentSchema' => '\Sprint\Migration\Schema\AgentSchema',
             'GroupSchema' => '\Sprint\Migration\Schema\GroupSchema',
             'OptionSchema' => '\Sprint\Migration\Schema\OptionSchema',
+            'EventSchema' => '\Sprint\Migration\Schema\EventSchema',
         );
 
     }
