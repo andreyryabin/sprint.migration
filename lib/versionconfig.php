@@ -13,6 +13,7 @@ class VersionConfig
         'migration_extend_class',
         'stop_on_errors',
         'migration_dir',
+        'migration_dir_absolute',
         'tracker_task_url',
         'version_prefix',
         'version_filter',
@@ -138,7 +139,7 @@ class VersionConfig
 
         if (empty($values['migration_dir'])) {
             $values['migration_dir'] = Module::getPhpInterfaceDir() . '/migrations';
-        } else {
+        } elseif (empty($values['migration_dir_absolute'])) {
             $values['migration_dir'] = Module::getDocRoot() . $values['migration_dir'];
         }
 
@@ -232,7 +233,7 @@ class VersionConfig
         $this->configCurrent['values'][$name] = $value;
     }
 
-    public function createConfig($configName) {
+    public function createConfig($configName, $configValues = array()) {
         $fileName = 'migrations.' . $configName . '.php';
         if (!$this->getConfigName($fileName)) {
             return false;
@@ -245,16 +246,18 @@ class VersionConfig
 
         if (isset($this->configList[$configName])) {
             $curValues = $this->configList[$configName]['values'];
-            $configValues = array(
+            $configDefaults = array(
                 'migration_dir' => Module::getRelativeDir($curValues['migration_dir']),
                 'migration_table' => $curValues['migration_table'],
             );
         } else {
-            $configValues = array(
+            $configDefaults = array(
                 'migration_dir' => $this->getSiblingDir($configName, true),
                 'migration_table' => 'sprint_migration_' . $configName,
             );
         }
+
+        $configValues = array_merge($configDefaults, $configValues);
 
         file_put_contents($configPath, '<?php return ' . var_export($configValues, 1) . ';');
         return is_file($configPath);
