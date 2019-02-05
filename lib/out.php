@@ -221,13 +221,13 @@ class Out
         echo '<div class="sp-out">' . $msg . '</div>';
     }
 
-    protected static function outToConsole($msg) {
+    protected static function outToConsole($msg, $rightEol = PHP_EOL) {
         $msg = self::prepareToConsole($msg);
         if (self::$needEol) {
             self::$needEol = false;
-            fwrite(STDOUT, PHP_EOL . $msg . PHP_EOL);
+            fwrite(STDOUT, PHP_EOL . $msg . $rightEol);
         } else {
-            fwrite(STDOUT, $msg . PHP_EOL);
+            fwrite(STDOUT, $msg . $rightEol);
         }
     }
 
@@ -243,4 +243,50 @@ class Out
         return (php_sapi_name() == 'cli') ? 0 : 1;
     }
 
+    public static function input($field) {
+        if (self::canOutAsHtml()) {
+            return false;
+        }
+
+        if (!empty($field['items'])) {
+            self::inputStructure($field);
+        } elseif (!empty($field['select'])) {
+            self::inputSelect($field);
+        } else {
+            self::inputText($field);
+        }
+
+        $val = fgets(STDIN);
+        $val = trim($val);
+
+        if ($field['multiple']) {
+            $val = explode(' ', $val);
+            $val = array_filter($val, function ($a) {
+                return !empty($a);
+            });
+        }
+
+        return $val;
+    }
+
+    protected static function inputText($field) {
+        self::outToConsole($field['title'] . ':', '');
+    }
+
+    protected static function inputSelect($field) {
+        foreach ($field['select'] as $item) {
+            self::outToConsole(' > ' . $item['value'] . ' (' . $item['title'] . ')');
+        }
+        self::outToConsole($field['title'] . ':', '');
+    }
+
+    protected static function inputStructure($field) {
+        foreach ($field['items'] as $group) {
+            self::outToConsole('---' . $group['title']);
+            foreach ($group['items'] as $item) {
+                self::outToConsole(' > ' . $item['value'] . ' (' . $item['title'] . ')');
+            }
+        }
+        self::outToConsole($field['title'] . ':', '');
+    }
 }

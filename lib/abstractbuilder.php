@@ -152,37 +152,9 @@ abstract class AbstractBuilder
         $fields = $this->getFields();
         foreach ($fields as $code => $field) {
             if (empty($field['bind'])) {
-                $this->renderConsoleField($field);
-                $val = fgets(STDIN);
-                $val = trim($val);
+                $val = Out::input($field);
                 $this->bindField($code, $val);
             }
-        }
-    }
-
-    protected function renderConsoleField($field) {
-        if (!empty($field['items'])) {
-            fwrite(STDOUT, $field['title'] . PHP_EOL);
-
-            foreach ($field['items'] as $group) {
-                fwrite(STDOUT, '---' . $group['title'] . PHP_EOL);
-
-                foreach ($group['items'] as $item) {
-                    fwrite(STDOUT, ' > ' . $item['value'] . ' (' . $item['title'] . ')' . PHP_EOL);
-                }
-            }
-
-            fwrite(STDOUT, 'input value' . ':');
-
-        } elseif (!empty($field['select'])) {
-            fwrite(STDOUT, $field['title'] . PHP_EOL);
-            foreach ($field['select'] as $item) {
-                fwrite(STDOUT, ' > ' . $item['value'] . ' (' . $item['title'] . ')' . PHP_EOL);
-            }
-            fwrite(STDOUT, 'input value' . ':');
-
-        } else {
-            fwrite(STDOUT, $field['title'] . ':');
         }
     }
 

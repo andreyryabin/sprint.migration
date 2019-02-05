@@ -87,11 +87,12 @@ abstract class AbstractSchema
         return $this->info['title'];
     }
 
-    public function outTitle() {
+    public function outTitle($fullname = true) {
+        $title = ($fullname) ? $this->getName() . ' (' . $this->getTitle() . ')' : $this->getTitle();
         if ($this->isModified()) {
-            $this->out('[new]' . $this->getTitle() . '[/]');
+            $this->out('[new]' . $title . '[/]');
         } else {
-            $this->out('[installed]' . $this->getTitle() . '[/]');
+            $this->out('[installed]' . $title . '[/]');
         }
     }
 

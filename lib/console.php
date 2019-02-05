@@ -345,68 +345,76 @@ class Console
     public function commandSchema() {
         $action = $this->getArg(0);
 
-        if ($action == 'import' || $action == 'test') {
-            $params = array();
+        $schemaManager = new SchemaManager($this->versionConfig);
+        $enabledSchemas = $schemaManager->getEnabledSchemas();
 
-            do {
+        $selectValues = array();
+        foreach ($enabledSchemas as $schema) {
+            $selectValues[] = array(
+                'value' => $schema->getName(),
+                'title' => $schema->getTitle()
+            );
+        }
 
-                $schemaManager = new SchemaManager($this->versionConfig, $params);
+        if (empty($action)) {
+            foreach ($enabledSchemas as $schema) {
+                $schema->outTitle(true);
+                $schema->outDescription();
+            }
+
+            return true;
+        }
+
+        $select = $this->getArg(1);
+        if (!empty($select)) {
+            $select = explode(' ', $select);
+            $select = array_filter($select, function ($a) {
+                return !empty($a);
+            });
+        } else {
+            $select = Out::input(array(
+                'title' => 'select schemas',
+                'select' => $selectValues,
+                'multiple' => 1,
+            ));
+        }
+
+
+        $params = array();
+
+        do {
+
+            $schemaManager = new SchemaManager($this->versionConfig, $params);
+            $restart = 0;
+
+            try {
 
                 if ($action == 'test') {
                     $schemaManager->setTestMode(1);
-                }
+                    $schemaManager->import(array('name' => $select));
 
-                $restart = 0;
+                } elseif ($action == 'import') {
+                    $schemaManager->import(array('name' => $select));
 
-                try {
-                    $schemaManager->import();
-
-                } catch (Exceptions\RestartException $e) {
-                    $params = $schemaManager->getRestartParams();
-                    $restart = 1;
-
-                } catch (\Exception $e) {
-                    Out::outWarning($e->getMessage());
-
-                } catch (\Throwable $e) {
-                    Out::outWarning($e->getMessage());
-                }
-
-            } while ($restart == 1);
-
-        } elseif ($action == 'export') {
-            $params = array();
-
-            do {
-
-                $schemaManager = new SchemaManager($this->versionConfig, $params);
-                $restart = 0;
-
-                try {
-                    $schemaManager->export();
-
-                } catch (Exceptions\RestartException $e) {
-                    $params = $schemaManager->getRestartParams();
-                    $restart = 1;
-
-                } catch (\Exception $e) {
-                    Out::outWarning($e->getMessage());
-
-                } catch (\Throwable $e) {
-                    Out::outWarning($e->getMessage());
+                } elseif ($action == 'export') {
+                    $schemaManager->export(array('name' => $select));
                 }
 
 
-            } while ($restart == 1);
+            } catch (Exceptions\RestartException $e) {
+                $params = $schemaManager->getRestartParams();
+                $restart = 1;
 
-        } else {
-            $schemaManager = new SchemaManager($this->versionConfig);
-            $schemas = $schemaManager->getEnabledSchemas();
-            foreach ($schemas as $schema) {
-                $schema->outTitle();
-                $schema->outDescription();
+            } catch (\Exception $e) {
+                Out::outWarning($e->getMessage());
+
+            } catch (\Throwable $e) {
+                Out::outWarning($e->getMessage());
             }
-        }
+
+        } while ($restart == 1);
+
+        return true;
     }
 
     protected function executeAll($filter, $force = false) {

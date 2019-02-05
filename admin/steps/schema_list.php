@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
                     />
                 </td>
                 <td class="sp-list-r">
-                    <? $schema->outTitle()?>
+                    <? $schema->outTitle(false)?>
                     <? $schema->outDescription() ?>
                 </td>
             </tr>
