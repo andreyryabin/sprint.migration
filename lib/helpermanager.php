@@ -2,22 +2,20 @@
 
 namespace Sprint\Migration;
 
-use Bitrix\Main\Application;
 use Sprint\Migration\Exceptions\HelperException;
-
-use Sprint\Migration\Helpers\FormHelper;
-use Sprint\Migration\Helpers\IblockHelper;
-use Sprint\Migration\Helpers\HlblockHelper;
 use Sprint\Migration\Helpers\AdminIblockHelper;
-
 use Sprint\Migration\Helpers\AgentHelper;
+use Sprint\Migration\helpers\DeliveryServiceHelper;
 use Sprint\Migration\Helpers\EventHelper;
+use Sprint\Migration\Helpers\FormHelper;
+use Sprint\Migration\Helpers\HlblockHelper;
+use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Helpers\LangHelper;
-use Sprint\Migration\Helpers\SiteHelper;
 use Sprint\Migration\Helpers\OptionHelper;
-
-use Sprint\Migration\Helpers\UserTypeEntityHelper;
+use Sprint\Migration\Helpers\SiteHelper;
 use Sprint\Migration\Helpers\UserGroupHelper;
+use Sprint\Migration\helpers\UserOptionsHelper;
+use Sprint\Migration\Helpers\UserTypeEntityHelper;
 
 /**
  * @method IblockHelper             Iblock()
@@ -31,6 +29,8 @@ use Sprint\Migration\Helpers\UserGroupHelper;
  * @method UserGroupHelper          UserGroup()
  * @method OptionHelper             Option()
  * @method FormHelper               Form()
+ * @method UserOptionsHelper        UserOptions()
+ * @method DeliveryServiceHelper    DeliveryService()
  */
 class HelperManager
 {
