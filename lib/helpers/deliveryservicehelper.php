@@ -11,18 +11,21 @@ use Bitrix\Sale\Delivery\Services\Manager;
 use Bitrix\Sale\Delivery\Services\Table;
 use Exception;
 use InvalidArgumentException;
-use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
 class DeliveryServiceHelper extends Helper
 {
+    public function __construct() {
+        $this->checkModules(array('sale'));
+    }
+
     /**
      * @param array $fields
      *
      * @return Base|null
      */
-    public static function createObject(array $fields)
-    {
+    public static function createObject(array $fields) {
         $service = Manager::createObject($fields);
         if (!($service instanceof Base)) {
             throw new InvalidArgumentException(
@@ -70,20 +73,18 @@ class DeliveryServiceHelper extends Helper
      *
      * @return int
      * @throws Exception
-     * @throws MigrationException
+     * @throws HelperException
      * @throws SystemException
      */
-    public function add(array $fields)
-    {
+    public function add(array $fields) {
         $fields = self::createObject($fields)->prepareFieldsForSaving($fields);
 
         $addResult = Manager::add($fields);
         if (!$addResult->isSuccess()) {
-            throw new MigrationException(
-                sprintf(
-                    'Error adding delivery service: %s',
-                    implode('; ', $addResult->getErrorMessages())
-                )
+            $this->throwException(
+                __METHOD__,
+                'Error adding delivery service: %s',
+                implode('; ', $addResult->getErrorMessages())
             );
         }
 
@@ -106,11 +107,10 @@ class DeliveryServiceHelper extends Helper
                 ['CODE' => trim($fields['CODE'])]
             );
             if (!$updateResult->isSuccess()) {
-                throw new MigrationException(
-                    sprintf(
-                        'Error setting CODE while adding delivery service: %s',
-                        implode('; ', $updateResult->getErrorMessages())
-                    )
+                $this->throwException(
+                    __METHOD__,
+                    'Error setting CODE while adding delivery service: %s',
+                    implode('; ', $updateResult->getErrorMessages())
                 );
             }
         }
@@ -124,21 +124,19 @@ class DeliveryServiceHelper extends Helper
      * @param string $code
      *
      * @return Base
-     * @throws MigrationException
+     * @throws HelperException
      */
-    public function get($code)
-    {
+    public function get($code) {
         $fields = Table::query()->setSelect(['*'])
-                       ->setFilter(['CODE' => trim($code)])
-                       ->exec()
-                       ->fetch();
+            ->setFilter(['CODE' => trim($code)])
+            ->exec()
+            ->fetch();
 
         if (false === $fields) {
-            throw new MigrationException(
-                sprintf(
-                    'Delivery service [%s] not found. ',
-                    $code
-                )
+            $this->throwException(
+                __METHOD__,
+                'Delivery service [%s] not found.',
+                $code
             );
         }
 
@@ -151,22 +149,20 @@ class DeliveryServiceHelper extends Helper
      *
      * @return int
      * @throws Exception
-     * @throws MigrationException
+     * @throws HelperException
      * @throws SystemException
      */
-    public function update($code, array $fields)
-    {
+    public function update($code, array $fields) {
         $service = self::get($code);
 
         $updateResult = Manager::update($service->getId(), $fields);
 
         if (!$updateResult->isSuccess()) {
-            throw new MigrationException(
-                sprintf(
-                    'Error updating delivery service [%s]: %s',
-                    $code,
-                    implode('; ', $updateResult->getErrorMessages())
-                )
+            $this->throwException(
+                __METHOD__,
+                'Error updating delivery service [%s]: %s',
+                $code,
+                implode('; ', $updateResult->getErrorMessages())
             );
         }
 
@@ -179,23 +175,21 @@ class DeliveryServiceHelper extends Helper
      * @param string $code
      *
      * @throws Exception
-     * @throws MigrationException
+     * @throws HelperException
      * @throws SystemException
      * @throws ArgumentException
      * @throws ArgumentNullException
      */
-    public function delete($code)
-    {
+    public function delete($code) {
         $service = self::get($code);
 
         $deleteResult = Manager::delete($service->getId());
         if (!$deleteResult->isSuccess()) {
-            throw new MigrationException(
-                sprintf(
-                    'Error deleting delivery service [%s]: %s',
-                    $code,
-                    implode('; ', $deleteResult->getErrorMessages())
-                )
+            $this->throwException(
+                __METHOD__,
+                'Error deleting delivery service [%s]: %s',
+                $code,
+                implode('; ', $deleteResult->getErrorMessages())
             );
         }
     }
@@ -204,11 +198,10 @@ class DeliveryServiceHelper extends Helper
      * @param $deliveryId
      *
      * @return void
-     * @throws MigrationException
+     * @throws HelperException
      * @throws Exception
      */
-    private function initEmptyExtraServices($deliveryId)
-    {
+    private function initEmptyExtraServices($deliveryId) {
         /**
          * Вероятно, инициализация пустой записи в таблице 'b_sale_delivery_es'
          * для дополнительных услуг службы доставки.
@@ -216,11 +209,10 @@ class DeliveryServiceHelper extends Helper
          */
         $unActiveResult = ExtraServicesManager::setStoresUnActive($deliveryId);
         if (!$unActiveResult->isSuccess()) {
-            throw new MigrationException(
-                sprintf(
-                    'Error initializing empty extra services: %s',
-                    implode('; ', $unActiveResult->getErrorMessages())
-                )
+            $this->throwException(
+                __METHOD__,
+                'Error initializing empty extra services: %s',
+                implode('; ', $unActiveResult->getErrorMessages())
             );
         }
     }
