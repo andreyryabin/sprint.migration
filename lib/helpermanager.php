@@ -14,7 +14,6 @@ use Sprint\Migration\Helpers\LangHelper;
 use Sprint\Migration\Helpers\OptionHelper;
 use Sprint\Migration\Helpers\SiteHelper;
 use Sprint\Migration\Helpers\UserGroupHelper;
-use Sprint\Migration\helpers\UserOptionsHelper;
 use Sprint\Migration\Helpers\UserTypeEntityHelper;
 
 /**
@@ -29,7 +28,6 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  * @method UserGroupHelper          UserGroup()
  * @method OptionHelper             Option()
  * @method FormHelper               Form()
- * @method UserOptionsHelper        UserOptions()
  * @method DeliveryServiceHelper    DeliveryService()
  */
 class HelperManager
