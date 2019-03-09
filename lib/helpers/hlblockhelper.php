@@ -16,7 +16,6 @@ class HlblockHelper extends Helper
 
     /**
      * Получает список highload-блоков
-     *
      * @param array $filter
      * @return array
      * @throws \Bitrix\Main\ArgumentException
@@ -41,7 +40,6 @@ class HlblockHelper extends Helper
     /**
      * Получает список highload-блоков
      * Данные подготовлены для экспорта в миграцию или схему
-     *
      * @param array $filter
      * @return array
      * @throws \Bitrix\Main\ArgumentException
@@ -59,7 +57,6 @@ class HlblockHelper extends Helper
 
     /**
      * Получает список полей highload-блока
-     *
      * @param $hlblockName int|string|array - id, имя или фильтр
      * @return array
      * @throws \Bitrix\Main\ArgumentException
@@ -75,7 +72,6 @@ class HlblockHelper extends Helper
     /**
      * Сохраняет поле highload-блока
      * Создаст если не было, обновит если существует и отличается
-     *
      * @param $hlblockName int|string|array - id, имя или фильтр
      * @param array $field
      * @return bool|int|mixed
@@ -94,8 +90,7 @@ class HlblockHelper extends Helper
     /**
      * Сохраняет highload-блок
      * Создаст если не было, обновит если существует и отличается
-     *
-     * @param $fields
+     * @param $fields , обязательные параметры - название сущности
      * @return bool|int|mixed
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Bitrix\Main\SystemException
@@ -129,7 +124,6 @@ class HlblockHelper extends Helper
 
     /**
      * Удаляет поле highload-блока
-     *
      * @param $hlblockName
      * @param $fieldName
      * @return bool
@@ -147,7 +141,6 @@ class HlblockHelper extends Helper
     /**
      * Получает список полей highload-блока
      * Данные подготовлены для экспорта в миграцию или схему
-     *
      * @param $hlblockName
      * @return array
      * @throws \Bitrix\Main\ArgumentException
@@ -165,7 +158,6 @@ class HlblockHelper extends Helper
     /**
      * Получает highload-блок
      * Данные подготовлены для экспорта в миграцию или схему
-     *
      * @param $hlblockName
      * @return mixed
      * @throws \Bitrix\Main\ArgumentException
@@ -178,7 +170,6 @@ class HlblockHelper extends Helper
 
     /**
      * Получает highload-блок
-     *
      * @param $hlblockName - id, имя или фильтр
      * @return array|false
      * @throws \Bitrix\Main\ArgumentException
@@ -224,7 +215,6 @@ class HlblockHelper extends Helper
 
     /**
      * Получает highload-блок, бросает исключение если его не существует
-     *
      * @param $hlblockName - id, имя или фильтр
      * @return mixed
      * @throws \Bitrix\Main\ArgumentException
@@ -241,7 +231,6 @@ class HlblockHelper extends Helper
 
     /**
      * Получает id highload-блока
-     *
      * @param $hlblockName - id, имя или фильтр
      * @return int|mixed
      * @throws \Bitrix\Main\ArgumentException
@@ -253,8 +242,7 @@ class HlblockHelper extends Helper
 
     /**
      * Добавляет highload-блок
-     *
-     * @param $fields
+     * @param $fields , обязательные параметры - название сущности, название таблицы в БД
      * @return int
      * @throws \Bitrix\Main\SystemException
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -281,8 +269,7 @@ class HlblockHelper extends Helper
 
     /**
      * Добавляет highload-блок, если его не существует
-     *
-     * @param $fields
+     * @param $fields , обязательные параметры - название сущности
      * @return int|mixed
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Bitrix\Main\SystemException
@@ -301,7 +288,6 @@ class HlblockHelper extends Helper
 
     /**
      * Обновляет highload-блок
-     *
      * @param $hlblockId
      * @param $fields
      * @return mixed
@@ -325,7 +311,6 @@ class HlblockHelper extends Helper
 
     /**
      * Обновляет highload-блок, если существует
-     *
      * @param $hlblockName
      * @param $fields
      * @return bool|mixed
@@ -343,7 +328,6 @@ class HlblockHelper extends Helper
 
     /**
      * Удаляет highload-блок
-     *
      * @param $hlblockId
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -359,7 +343,6 @@ class HlblockHelper extends Helper
 
     /**
      * Удаляет highload-блок, если существует
-     *
      * @param $hlblockName
      * @return bool
      * @throws \Bitrix\Main\ArgumentException

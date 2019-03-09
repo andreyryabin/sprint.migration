@@ -8,6 +8,7 @@ class UserGroupHelper extends Helper
 {
 
     /**
+     * Получает список групп пользователей
      * @param array $filter
      * @return array
      */
@@ -28,6 +29,8 @@ class UserGroupHelper extends Helper
     }
 
     /**
+     * Получает группу пользователей
+     * Данные подготовлены для экспорта в миграцию или схему
      * @param $code
      * @return mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -45,6 +48,8 @@ class UserGroupHelper extends Helper
     }
 
     /**
+     * Получает список групп пользователей
+     * Данные подготовлены для экспорта в миграцию или схему
      * @param array $filter
      * @return array
      */
@@ -61,6 +66,7 @@ class UserGroupHelper extends Helper
     }
 
     /**
+     * Получает код группы пользователей по id
      * @param $id
      * @return bool
      */
@@ -70,6 +76,7 @@ class UserGroupHelper extends Helper
     }
 
     /**
+     * Получает id группы пользователей по id
      * @param $code
      * @return bool
      */
@@ -79,7 +86,8 @@ class UserGroupHelper extends Helper
     }
 
     /**
-     * @param $code
+     * Получает группу пользователей
+     * @param $code int|string - id или код группы
      * @return array|bool
      */
     public function getGroup($code) {
@@ -111,14 +119,15 @@ class UserGroupHelper extends Helper
 
 
     /**
+     * Сохраняет группу
+     * Создаст если не было, обновит если существует и отличается
      * @param $code
-     * @param array $fields
+     * @param array $fields , обязательные параметры - название групы
      * @return bool|int|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
     public function saveGroup($code, $fields = array()) {
         $fields['STRING_ID'] = $code;
-
         $this->checkRequiredKeys(__METHOD__, $fields, array('STRING_ID', 'NAME'));
 
         $exists = $this->getGroup($fields['STRING_ID']);
@@ -144,6 +153,7 @@ class UserGroupHelper extends Helper
     }
 
     /**
+     * Добаляет группу пользователей если она не существует
      * @param $code
      * @param array $fields
      * @return int
@@ -159,6 +169,7 @@ class UserGroupHelper extends Helper
     }
 
     /**
+     * Обновляет группу пользователей если она существует
      * @param $code
      * @param array $fields
      * @return bool|int
@@ -174,15 +185,15 @@ class UserGroupHelper extends Helper
     }
 
     /**
+     * Добавляет группу пользователей
      * @param $code
-     * @param array $fields
+     * @param array $fields , , обязательные параметры - название групы
      * @return int
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
     public function addGroup($code, $fields = array()) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
-
         $fields['STRING_ID'] = $code;
+        $this->checkRequiredKeys(__METHOD__, $fields, array('STRING_ID', 'NAME'));
 
         $group = new \CGroup;
         $groupId = $group->Add($this->prepareFields($fields));
@@ -195,6 +206,7 @@ class UserGroupHelper extends Helper
     }
 
     /**
+     * Обновляет группу пользователей
      * @param $groupId
      * @param array $fields
      * @return int
@@ -214,6 +226,7 @@ class UserGroupHelper extends Helper
     }
 
     /**
+     * Удаляет группу пользователей
      * @param $code
      * @return bool
      */

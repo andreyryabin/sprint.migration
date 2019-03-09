@@ -75,6 +75,7 @@ class SiteHelper extends Helper
     }
 
     /**
+     * Устанавливает шаблоны сайта
      * @param $siteId
      * @param array $templates
      * @return bool

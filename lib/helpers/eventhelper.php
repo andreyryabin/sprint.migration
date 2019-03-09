@@ -9,7 +9,6 @@ class EventHelper extends Helper
 
     /**
      * Получает тип почтового события по фильтру или типу почтового события
-     *
      * @param $eventName
      * @return array
      */
@@ -117,7 +116,7 @@ class EventHelper extends Helper
     /**
      * Добавляет тип почтового события если его не существует
      * @param $eventName
-     * @param $fields
+     * @param $fields , обязательные параметры - id сайта
      * @return bool|int|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -139,7 +138,7 @@ class EventHelper extends Helper
     /**
      * Добавляет почтовый шаблон если его не существует
      * @param $eventName
-     * @param $fields
+     * @param $fields , обязательные параметры - тема сообщения, id сайта
      * @return bool|int
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -210,9 +209,8 @@ class EventHelper extends Helper
     /**
      * Сохраняет почтовый шаблон
      * Создаст если не было, обновит если существует и отличается
-     *
      * @param $eventName
-     * @param $fields
+     * @param $fields , обязательные параметры - тема сообщения, id сайта
      * @return bool|int|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -247,9 +245,8 @@ class EventHelper extends Helper
     /**
      * Сохраняет тип почтового события
      * Создаст если не было, обновит если существует и отличается
-     *
      * @param $eventName
-     * @param $fields
+     * @param $fields , обязательные параметры - id языка
      * @return bool|int|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -283,8 +280,7 @@ class EventHelper extends Helper
 
     /**
      * Удаляет тип почтового события
-     *
-     * @param $fields
+     * @param $fields , обязательные параметры - id языка, тип события
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -309,8 +305,7 @@ class EventHelper extends Helper
 
     /**
      * Удаляет почтовый шаблон
-     *
-     * @param $fields
+     * @param $fields , обязательные параметры - тема сообщения языка, тип события
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -335,9 +330,8 @@ class EventHelper extends Helper
 
     /**
      * Добавляет тип почтового события
-     *
      * @param $eventName
-     * @param $fields
+     * @param $fields , обязательные параметры - id языка, название события
      * @return bool|int
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -357,9 +351,8 @@ class EventHelper extends Helper
 
     /**
      * Добавляет почтовый шаблон
-     *
      * @param $eventName
-     * @param $fields
+     * @param $fields , обязательные параметры - id сайта, тема сообщения
      * @return bool|int
      * @throws \Sprint\Migration\Exceptions\HelperException
      */

@@ -8,6 +8,7 @@ class UserTypeEntityHelper extends Helper
 {
 
     /**
+     * Добавляет пользовательские поля к объекту
      * @param $entityId
      * @param array $fields
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -19,6 +20,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Удаляет пользовательские поля у объекта
      * @param $entityId
      * @param array $fields
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -30,6 +32,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Добавляет пользовательское поле к объекту если его не существует
      * @param $entityId
      * @param $fieldName
      * @param $fields
@@ -46,6 +49,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Добавляет пользовательское поле к объекту
      * @param $entityId
      * @param $fieldName
      * @param $fields
@@ -106,6 +110,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Обновление пользовательского поля у объекта
      * @param $fieldId
      * @param $fields
      * @return mixed
@@ -143,6 +148,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Обновление пользовательского поля у объекта если оно существует
      * @param $entityId
      * @param $fieldName
      * @param $fields
@@ -160,6 +166,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Получает пользовательские поля у объекта
      * @param bool $entityId
      * @return array
      */
@@ -184,6 +191,8 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Получает пользовательское поле у объекта
+     * Данные подготовлены для экспорта в миграцию или схему
      * @param $fieldId
      * @return mixed
      */
@@ -193,6 +202,8 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Получает пользовательские поля у объекта
+     * Данные подготовлены для экспорта в миграцию или схему
      * @param bool $entityId
      * @return array
      */
@@ -206,6 +217,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Получает пользовательское поле у объекта
      * @param $entityId
      * @param $fieldName
      * @return array|bool
@@ -221,6 +233,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Получает пользовательское поле у объекта
      * @param $fieldId
      * @return array|bool
      */
@@ -238,6 +251,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Сохраняет значения списков для пользовательского поля
      * @param $fieldId
      * @param $newenums
      * @return bool
@@ -274,6 +288,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Удаляет пользовательское поле у объекта если оно существует
      * @param $entityId
      * @param $fieldName
      * @return bool
@@ -294,6 +309,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Удаляет пользовательское поле у объекта
      * @param $entityId
      * @param $fieldName
      * @return bool
@@ -304,6 +320,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Декодирует название объекта в оригинальный вид
      * @param $entityId
      * @return string
      * @throws \Bitrix\Main\ArgumentException
@@ -325,6 +342,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * Кодирует название объекта в вид удобный для экспорта в миграцию или схему
      * @param $entityId
      * @return string
      * @throws \Bitrix\Main\ArgumentException
@@ -344,7 +362,9 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
-     * @param array $fields
+     * Сохраняет пользовательское поле
+     * Создаст если не было, обновит если существует и отличается
+     * @param array $fields , обязательные параметры - название объекта, название поля
      * @return bool|int|mixed
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Sprint\Migration\Exceptions\HelperException

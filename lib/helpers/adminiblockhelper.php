@@ -18,7 +18,6 @@ class AdminIblockHelper extends Helper
 
     /**
      * Извлекает настройки формы инфоблока в массив, бросает исключение если их не существует
-     *
      * @param $iblockId
      * @param array $params
      * @return array
@@ -36,7 +35,6 @@ class AdminIblockHelper extends Helper
 
     /**
      * Извлекает настройки формы инфоблока в массив
-     *
      * @param $iblockId
      * @param array $params
      * @return array
@@ -100,7 +98,6 @@ class AdminIblockHelper extends Helper
 
     /**
      * Сохраняет настройки формы инфоблока, если они отличаются
-     *
      * @param $iblockId
      * @param array $elementForm массив вида:
      * [
@@ -134,7 +131,6 @@ class AdminIblockHelper extends Helper
 
     /**
      * Сохраняет настройки списка инфоблока
-     *
      * @param $iblockId
      * @param array $columns массив вида:
      * [
@@ -143,7 +139,7 @@ class AdminIblockHelper extends Helper
      *     'ID',
      *     'PROPERTY_LINK',
      * ];
-     * 
+     *
      * @param array $params
      */
     public function saveElementList($iblockId, $columns = array(), $params = array()) {
@@ -177,7 +173,6 @@ class AdminIblockHelper extends Helper
 
     /**
      * Сохраняет настройки формы инфоблока
-     *
      * @param $iblockId
      * @param array $elementForm массив типа
      * [
@@ -194,7 +189,7 @@ class AdminIblockHelper extends Helper
      *         'PROPERTY_LINK' => '',
      *     ]
      * ]
-     * 
+     *
      * @param array $params
      * @return bool
      */

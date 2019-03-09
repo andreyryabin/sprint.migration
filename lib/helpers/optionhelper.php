@@ -43,7 +43,7 @@ class OptionHelper extends Helper
     }
 
     /**
-     * @param array $filter
+     * @param array $filter , обязательные параметры - id модуля, функция агента
      * @return mixed
      * @throws \Bitrix\Main\ArgumentException
      */
@@ -58,7 +58,7 @@ class OptionHelper extends Helper
     }
 
     /**
-     * @param $fields
+     * @param $fields , обязательные параметры - id модуля, функция агента
      * @return bool
      * @throws \Bitrix\Main\ArgumentException
      */
@@ -91,7 +91,7 @@ class OptionHelper extends Helper
     }
 
     /**
-     * @param array $filter
+     * @param array $filter , обязательные параметры - id модуля
      * @return bool
      * @throws \Bitrix\Main\ArgumentNullException
      */

@@ -13,7 +13,6 @@ class IblockHelper extends Helper
 
     /**
      * Получает тип инфоблока, бросает исключение если его не существует
-     *
      * @param $typeId
      * @return array
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -29,7 +28,6 @@ class IblockHelper extends Helper
 
     /**
      * Получает id типа инфоблока, бросает исключение если его не существует
-     *
      * @param $typeId
      * @return mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -45,7 +43,6 @@ class IblockHelper extends Helper
 
     /**
      * Получает инфоблок, бросает исключение если его не существует
-     *
      * @param $code string|array - код или фильтр
      * @param string $typeId
      * @return mixed
@@ -62,7 +59,6 @@ class IblockHelper extends Helper
 
     /**
      * Получает id инфоблока, бросает исключение если его не существует
-     *
      * @param $code string|array - код или фильтр
      * @param string $typeId
      * @return mixed
@@ -79,7 +75,6 @@ class IblockHelper extends Helper
 
     /**
      * Получает тип инфоблока
-     *
      * @param $typeId
      * @return array
      */
@@ -101,7 +96,6 @@ class IblockHelper extends Helper
 
     /**
      * Получает id типа инфоблока
-     *
      * @param $typeId
      * @return int|mixed
      */
@@ -112,7 +106,6 @@ class IblockHelper extends Helper
 
     /**
      * Получает типы инфоблоков
-     *
      * @param array $filter
      * @return array
      */
@@ -130,8 +123,7 @@ class IblockHelper extends Helper
 
     /**
      * Добавляет тип инфоблока, если его не существует
-     *
-     * @param array $fields
+     * @param array $fields , обязательные параметры - id типа инфоблока
      * @return mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -148,7 +140,6 @@ class IblockHelper extends Helper
 
     /**
      * Добавляет тип инфоблока
-     *
      * @param array $fields
      * @return mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -185,7 +176,6 @@ class IblockHelper extends Helper
 
     /**
      * Обновляет тип инфоблока
-     *
      * @param $iblockTypeId
      * @param array $fields
      * @return mixed
@@ -202,7 +192,6 @@ class IblockHelper extends Helper
 
     /**
      * Удаляет тип инфоблока, если существует
-     *
      * @param $typeId
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -219,7 +208,6 @@ class IblockHelper extends Helper
 
     /**
      * Удаляет тип инфоблока
-     *
      * @param $typeId
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -234,7 +222,6 @@ class IblockHelper extends Helper
 
     /**
      * Получает инфоблок
-     *
      * @param $code string|array - код или фильтр
      * @param string $typeId
      * @return mixed
@@ -258,16 +245,18 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает список сайтов для инфоблока
      * @param $iblockId
      * @return array
      */
     public function getIblockSites($iblockId) {
         $dbres = \CIBlock::GetSite($iblockId);
-        return $this->fetchAll($dbres,false,'LID');
+        return $this->fetchAll($dbres, false, 'LID');
     }
 
     /**
-     * @param $code
+     * Получает id инфоблока
+     * @param $code string|array - код или фильтр
      * @param string $typeId
      * @return int
      */
@@ -277,6 +266,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает список инфоблоков
      * @param array $filter
      * @return array
      */
@@ -293,7 +283,8 @@ class IblockHelper extends Helper
     }
 
     /**
-     * @param array $fields
+     * Добавляет инфоблок если его не существует
+     * @param array $fields , обязательные параметры - код, тип инфоблока, id сайта
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -314,7 +305,8 @@ class IblockHelper extends Helper
     }
 
     /**
-     * @param $fields
+     * Добавляет инфоблок
+     * @param $fields , обязательные параметры - код, тип инфоблока, id сайта
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -351,6 +343,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Обновляет инфоблок
      * @param $iblockId
      * @param array $fields
      * @return mixed
@@ -367,6 +360,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Обновляет инфоблок если он существует
      * @param $code
      * @param array $fields
      * @return bool|mixed
@@ -381,6 +375,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Удаляет инфоблок если он существует
      * @param $code
      * @param string $typeId
      * @return bool
@@ -395,6 +390,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Удаляет инфоблок
      * @param $iblockId
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -407,6 +403,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает список полей инфоблока
      * @param $iblockId
      * @return array|bool
      */
@@ -415,8 +412,9 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает свойство инфоблока
      * @param $iblockId
-     * @param $code
+     * @param $code int|array - код или фильтр
      * @return mixed
      */
     public function getProperty($iblockId, $code) {
@@ -433,6 +431,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает значения списков для свойств инфоблоков
      * @param array $filter
      * @return array
      */
@@ -447,6 +446,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает значения списков для свойства инфоблока
      * @param $iblockId
      * @param $propertyId
      * @return array
@@ -459,8 +459,9 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает свойство инфоблока
      * @param $iblockId
-     * @param $code
+     * @param $code int|array - код или фильтр
      * @return int
      */
     public function getPropertyId($iblockId, $code) {
@@ -469,6 +470,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает свойства инфоблока
      * @param $iblockId
      * @param array $filter
      * @return array
@@ -500,8 +502,9 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Добавляет свойство инфоблока если его не существует
      * @param $iblockId
-     * @param $fields
+     * @param $fields , обязательные параметры - код свойства
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -518,6 +521,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Добавляет свойство инфоблока
      * @param $iblockId
      * @param $fields
      * @return bool
@@ -575,6 +579,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Удаляет свойство инфоблока если оно существует
      * @param $iblockId
      * @param $code
      * @return bool
@@ -591,6 +596,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Удаляет свойство инфоблока
      * @param $propertyId
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -605,6 +611,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Обновляет свойство инфоблока если оно существует
      * @param $iblockId
      * @param $code
      * @param $fields
@@ -620,6 +627,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Обновляет свойство инфоблока
      * @param $propertyId
      * @param $fields
      * @return mixed
@@ -680,11 +688,13 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает элемент инфоблока
      * @param $iblockId
      * @param $code
+     * @param array $select
      * @return array
      */
-    public function getElement($iblockId, $code) {
+    public function getElement($iblockId, $code, $select = array()) {
         /** @compatibility filter or code */
         $filter = is_array($code) ? $code : array(
             '=CODE' => $code
@@ -693,20 +703,23 @@ class IblockHelper extends Helper
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
 
+        $select = array_merge(array(
+            'ID',
+            'IBLOCK_ID',
+            'NAME',
+            'CODE',
+        ), $select);
+
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return \CIBlockElement::GetList(array(
             'SORT' => 'ASC'
         ), $filter, false, array(
             'nTopCount' => 1
-        ), array(
-            'ID',
-            'IBLOCK_ID',
-            'NAME',
-            'CODE',
-        ))->Fetch();
+        ), $select)->Fetch();
     }
 
     /**
+     * Получает id элемента инфоблока
      * @param $iblockId
      * @param $code
      * @return int|mixed
@@ -717,6 +730,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает элементы инфоблока
      * @param $iblockId
      * @param array $filter
      * @param array $select
@@ -746,8 +760,9 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Добавляет элемент инфоблока если он не существует
      * @param $iblockId
-     * @param $fields
+     * @param $fields , обязательные параметры - код элемента
      * @param array $props
      * @return bool|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -764,9 +779,10 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Добавляет элемент инфоблока
      * @param $iblockId
-     * @param array $fields
-     * @param array $props
+     * @param array $fields - поля
+     * @param array $props - свойства
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -797,8 +813,9 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Обновляет элемент инфоблока если он существует
      * @param $iblockId
-     * @param array $fields
+     * @param array $fields , обязательные параметры - код элемента
      * @param array $props
      * @return bool|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -818,6 +835,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Обновляет элемент инфоблока
      * @param $elementId
      * @param array $fields
      * @param array $props
@@ -843,6 +861,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Удаляет элемент инфоблока если он существует
      * @param $iblockId
      * @param $code
      * @return bool
@@ -859,6 +878,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Удаляет элемент инфоблока
      * @param $elementId
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -873,8 +893,9 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает секцию инфоблока
      * @param $iblockId
-     * @param $code
+     * @param $code string|array - код или фильтр
      * @return array
      */
     public function getSection($iblockId, $code) {
@@ -898,8 +919,9 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает id секции инфоблока
      * @param $iblockId
-     * @param $code
+     * @param $code string|array - код или фильтр
      * @return int|mixed
      */
     public function getSectionId($iblockId, $code) {
@@ -908,6 +930,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает секции инфоблока
      * @param $iblockId
      * @param array $filter
      * @return array
@@ -934,8 +957,9 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Добавляет секцию инфоблока если она не существует
      * @param $iblockId
-     * @param $fields
+     * @param $fields , обязательные параметры - код сеции
      * @return bool|int|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -952,6 +976,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Добавляет секцию инфоблока
      * @param $iblockId
      * @param array $fields
      * @return bool|int
@@ -983,8 +1008,9 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Обновляет секцию инфоблока если она существует
      * @param $iblockId
-     * @param $fields
+     * @param $fields , обязательные параметры - код секции
      * @return bool|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -1003,6 +1029,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Обновляет секцию инфоблока
      * @param $sectionId
      * @param $fields
      * @return mixed
@@ -1018,6 +1045,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Удаляет секцию инфоблока если она существует
      * @param $iblockId
      * @param $code
      * @return bool
@@ -1034,6 +1062,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Удаляет секцию инфоблока
      * @param $sectionId
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
@@ -1048,6 +1077,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает языковые названия для типа инфоблока
      * @param $typeId
      * @return array
      */
@@ -1068,7 +1098,9 @@ class IblockHelper extends Helper
     }
 
     /**
-     * @param array $fields
+     * Сохраняет тип инфоблока
+     * Создаст если не было, обновит если существует и отличается
+     * @param array $fields , обязательные параметры - тип инфоблока
      * @return bool|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -1098,7 +1130,9 @@ class IblockHelper extends Helper
     }
 
     /**
-     * @param array $fields
+     * Сохраняет инфоблок
+     * Создаст если не было, обновит если существует и отличается
+     * @param array $fields , обязательные параметры - код, тип инфоблока, id сайта
      * @return bool|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -1127,6 +1161,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Сохраняет поля инфоблока
      * @param $iblockId
      * @param array $fields
      * @return bool
@@ -1156,8 +1191,10 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Сохраняет свойство инфоблока
+     * Создаст если не было, обновит если существует и отличается
      * @param $iblockId
-     * @param $fields
+     * @param $fields , обязательные параметры - код свойства
      * @return bool|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -1186,6 +1223,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает тип инфоблока
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $typeId
      * @return mixed
@@ -1197,6 +1235,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает инфоблок
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $iblockId
      * @return mixed
@@ -1215,6 +1254,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает список инфоблоков
      * Данные подготовлены для экспорта в миграцию или схему
      * @param array $filter
      * @return array
@@ -1231,6 +1271,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает список полей инфоблока
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $iblockId
      * @return array
@@ -1242,6 +1283,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает свойство инфоблока
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $iblockId
      * @param bool $code
@@ -1261,6 +1303,7 @@ class IblockHelper extends Helper
     }
 
     /**
+     * Получает свойства инфоблока
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $iblockId
      * @param array $filter
@@ -1275,6 +1318,20 @@ class IblockHelper extends Helper
             }
         }
         return $exports;
+    }
+
+    /**
+     * Обновляет поля инфоблока
+     * @param $iblockId
+     * @param $fields
+     * @return bool
+     */
+    public function updateIblockFields($iblockId, $fields) {
+        if ($iblockId && !empty($fields)) {
+            \CIBlock::SetFields($iblockId, $fields);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -1307,19 +1364,6 @@ class IblockHelper extends Helper
      */
     public function mergeIblockFields($iblockId, $fields) {
         $this->saveIblockFields($iblockId, $fields);
-    }
-
-    /**
-     * @param $iblockId
-     * @param $fields
-     * @return bool
-     */
-    public function updateIblockFields($iblockId, $fields) {
-        if ($iblockId && !empty($fields)) {
-            \CIBlock::SetFields($iblockId, $fields);
-            return true;
-        }
-        return false;
     }
 
     /**

@@ -9,7 +9,6 @@ class AgentHelper extends Helper
 
     /**
      * Получает список агентов по фильтру
-     *
      * @param array $filter
      * @return array
      */
@@ -42,7 +41,6 @@ class AgentHelper extends Helper
     /**
      * Получает агента
      * Данные подготовлены для экспорта в миграцию или схему
-     *
      * @param $moduleId
      * @param string $name
      * @return bool
@@ -58,7 +56,6 @@ class AgentHelper extends Helper
 
     /**
      * Получает агента
-     *
      * @param $moduleId
      * @param string $name
      * @return array
@@ -79,7 +76,6 @@ class AgentHelper extends Helper
 
     /**
      * Удаляет агента
-     *
      * @param $moduleId
      * @param $name
      * @return bool
@@ -92,7 +88,6 @@ class AgentHelper extends Helper
 
     /**
      * Удаляет агента если существует
-     *
      * @param $moduleId
      * @param $name
      * @return bool
@@ -109,9 +104,7 @@ class AgentHelper extends Helper
     /**
      * Сохраняет агента
      * Создаст если не было, обновит если существует и отличается
-     *
-     *
-     * @param array $fields
+     * @param array $fields , обязательные параметры - id модуля, функция агента
      * @return bool|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -152,8 +145,7 @@ class AgentHelper extends Helper
 
     /**
      * Обновление агента, бросает исключение в случае неудачи
-     *
-     * @param $fields
+     * @param $fields , обязательные параметры - id модуля, функция агента
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -165,8 +157,7 @@ class AgentHelper extends Helper
 
     /**
      * Создание агента, бросает исключение в случае неудачи
-     *
-     * @param $fields
+     * @param $fields , обязательные параметры - id модуля, функция агента
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
@@ -206,7 +197,15 @@ class AgentHelper extends Helper
         }
     }
 
-    /** @deprecated */
+    /**
+     * @deprecated
+     * @param $moduleId
+     * @param $name
+     * @param $interval
+     * @param $nextExec
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function replaceAgent($moduleId, $name, $interval, $nextExec) {
         return $this->saveAgent(array(
             'MODULE_ID' => $moduleId,
@@ -216,7 +215,15 @@ class AgentHelper extends Helper
         ));
     }
 
-    /** @deprecated */
+    /**
+     * @deprecated
+     * @param $moduleId
+     * @param $name
+     * @param $interval
+     * @param $nextExec
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addAgentIfNotExists($moduleId, $name, $interval, $nextExec) {
         return $this->saveAgent(array(
             'MODULE_ID' => $moduleId,
