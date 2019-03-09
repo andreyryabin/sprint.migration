@@ -1,6 +1,6 @@
 <?php
 
-namespace Sprint\Migration\helpers;
+namespace Sprint\Migration\Helpers;
 
 use Bitrix\Main\ArgumentException;
 use Bitrix\Main\ArgumentNullException;
