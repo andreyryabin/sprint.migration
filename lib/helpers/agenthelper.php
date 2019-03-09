@@ -7,6 +7,12 @@ use Sprint\Migration\Helper;
 class AgentHelper extends Helper
 {
 
+    /**
+     * Получает список агентов по фильтру
+     *
+     * @param array $filter
+     * @return array
+     */
     public function getList($filter = array()) {
         $res = array();
         $dbres = \CAgent::GetList(array("MODULE_ID" => "ASC"), $filter);
@@ -16,6 +22,12 @@ class AgentHelper extends Helper
         return $res;
     }
 
+    /**
+     * Получает список агентов по фильтру
+     * Данные подготовлены для экспорта в миграцию или схему
+     * @param array $filter
+     * @return array
+     */
     public function exportAgents($filter = array()) {
         $agents = $this->getList($filter);
 
@@ -27,22 +39,14 @@ class AgentHelper extends Helper
         return $exportAgents;
     }
 
-    protected function prepareExportAgent($item) {
-        if (empty($item)) {
-            return $item;
-        }
-
-        unset($item['ID']);
-        unset($item['LOGIN']);
-        unset($item['USER_NAME']);
-        unset($item['LAST_NAME']);
-        unset($item['RUNNING']);
-        unset($item['DATE_CHECK']);
-        unset($item['LAST_EXEC']);
-
-        return $item;
-    }
-
+    /**
+     * Получает агента
+     * Данные подготовлены для экспорта в миграцию или схему
+     *
+     * @param $moduleId
+     * @param string $name
+     * @return bool
+     */
     public function exportAgent($moduleId, $name = '') {
         $agent = $this->getAgent($moduleId, $name);
         if (empty($agent)) {
@@ -52,6 +56,13 @@ class AgentHelper extends Helper
         return $this->prepareExportAgent($agent);
     }
 
+    /**
+     * Получает агента
+     *
+     * @param $moduleId
+     * @param string $name
+     * @return array
+     */
     public function getAgent($moduleId, $name = '') {
         $filter = is_array($moduleId) ? $moduleId : array(
             'MODULE_ID' => $moduleId
@@ -66,12 +77,26 @@ class AgentHelper extends Helper
         ), $filter)->Fetch();
     }
 
+    /**
+     * Удаляет агента
+     *
+     * @param $moduleId
+     * @param $name
+     * @return bool
+     */
     public function deleteAgent($moduleId, $name) {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         \CAgent::RemoveAgent($name, $moduleId);
         return true;
     }
 
+    /**
+     * Удаляет агента если существует
+     *
+     * @param $moduleId
+     * @param $name
+     * @return bool
+     */
     public function deleteAgentIfExists($moduleId, $name) {
         $item = $this->getAgent($moduleId, $name);
         if (empty($item)) {
@@ -81,8 +106,15 @@ class AgentHelper extends Helper
         return $this->deleteAgent($moduleId, $name);
     }
 
-    //version 2
-
+    /**
+     * Сохраняет агента
+     * Создаст если не было, обновит если существует и отличается
+     *
+     *
+     * @param array $fields
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function saveAgent($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('MODULE_ID', 'NAME'));
 
@@ -100,7 +132,7 @@ class AgentHelper extends Helper
             return $ok;
         }
 
-        if (strtotime($fields['NEXT_EXEC']) <= strtotime($exportExists['NEXT_EXEC'])){
+        if (strtotime($fields['NEXT_EXEC']) <= strtotime($exportExists['NEXT_EXEC'])) {
             unset($fields['NEXT_EXEC']);
             unset($exportExists['NEXT_EXEC']);
         }
@@ -118,14 +150,27 @@ class AgentHelper extends Helper
     }
 
 
+    /**
+     * Обновление агента, бросает исключение в случае неудачи
+     *
+     * @param $fields
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateAgent($fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('MODULE_ID', 'NAME'));
         $this->deleteAgent($fields['MODULE_ID'], $fields['NAME']);
         return $this->addAgent($fields);
     }
 
+    /**
+     * Создание агента, бросает исключение в случае неудачи
+     *
+     * @param $fields
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addAgent($fields) {
-
         $this->checkRequiredKeys(__METHOD__, $fields, array('MODULE_ID', 'NAME'));
 
         global $DB;
@@ -179,5 +224,21 @@ class AgentHelper extends Helper
             'AGENT_INTERVAL' => $interval,
             'NEXT_EXEC' => $nextExec,
         ));
+    }
+
+    protected function prepareExportAgent($item) {
+        if (empty($item)) {
+            return $item;
+        }
+
+        unset($item['ID']);
+        unset($item['LOGIN']);
+        unset($item['USER_NAME']);
+        unset($item['LAST_NAME']);
+        unset($item['RUNNING']);
+        unset($item['DATE_CHECK']);
+        unset($item['LAST_EXEC']);
+
+        return $item;
     }
 }

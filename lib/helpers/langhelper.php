@@ -7,6 +7,10 @@ use Sprint\Migration\Helper;
 class LangHelper extends Helper
 {
 
+    /**
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function getDefaultLangIdIfExists() {
         $by = 'def';
         $order = 'desc';
@@ -21,6 +25,10 @@ class LangHelper extends Helper
         $this->throwException(__METHOD__, 'Default language not found');
     }
 
+    /**
+     * @param array $filter
+     * @return array
+     */
     public function getLangs($filter = array()) {
         $by = 'def';
         $order = 'desc';
@@ -35,6 +43,10 @@ class LangHelper extends Helper
         return $lids;
     }
 
+    /**
+     * @return array
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function getLangsIfExists() {
         $items = $this->getLangs(array('ACTIVE' => 'Y'));
         if (!empty($items)) {

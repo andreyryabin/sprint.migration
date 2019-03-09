@@ -14,6 +14,13 @@ class HlblockHelper extends Helper
         $this->checkModules(array('highloadblock'));
     }
 
+    /**
+     * Получает список highload-блоков
+     *
+     * @param array $filter
+     * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function getHlblocks($filter = array()) {
         $dbres = HL\HighloadBlockTable::getList(
             array(
@@ -31,6 +38,14 @@ class HlblockHelper extends Helper
         return $result;
     }
 
+    /**
+     * Получает список highload-блоков
+     * Данные подготовлены для экспорта в миграцию или схему
+     *
+     * @param array $filter
+     * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function exportHlblocks($filter = array()) {
         $items = $this->getHlblocks($filter);
 
@@ -42,6 +57,13 @@ class HlblockHelper extends Helper
         return $export;
     }
 
+    /**
+     * Получает список полей highload-блока
+     *
+     * @param $hlblockName int|string|array - id, имя или фильтр
+     * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function getFields($hlblockName) {
         $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
 
@@ -50,6 +72,16 @@ class HlblockHelper extends Helper
         return $entityHelper->getUserTypeEntities('HLBLOCK_' . $hlblockId);
     }
 
+    /**
+     * Сохраняет поле highload-блока
+     * Создаст если не было, обновит если существует и отличается
+     *
+     * @param $hlblockName int|string|array - id, имя или фильтр
+     * @param array $field
+     * @return bool|int|mixed
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function saveField($hlblockName, $field = array()) {
         $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
         $field['ENTITY_ID'] = 'HLBLOCK_' . $hlblockId;
@@ -59,6 +91,51 @@ class HlblockHelper extends Helper
         return $entityHelper->saveUserTypeEntity($field);
     }
 
+    /**
+     * Сохраняет highload-блок
+     * Создаст если не было, обновит если существует и отличается
+     *
+     * @param $fields
+     * @return bool|int|mixed
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\SystemException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
+    public function saveHlblock($fields) {
+        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
+
+        $exists = $this->getHlblock($fields['NAME']);
+        $exportExists = $this->prepareExportHlblock($exists);
+        $fields = $this->prepareExportHlblock($fields);
+
+        if (empty($exists)) {
+            $ok = ($this->testMode) ? true : $this->addHlblock($fields);
+            $this->outNoticeIf($ok, 'Highload-блок %s: добавлен', $fields['NAME']);
+            return $ok;
+        }
+
+        if ($exportExists != $fields) {
+            $ok = ($this->testMode) ? true : $this->updateHlblock($exists['ID'], $fields);
+            $this->outNoticeIf($ok, 'Highload-блок %s: обновлен', $fields['NAME']);
+            return $ok;
+        }
+
+
+        $ok = ($this->testMode) ? true : $exists['ID'];
+        $this->outIf($ok, 'Highload-блок %s: совпадает', $fields['NAME']);
+        return $ok;
+    }
+
+
+    /**
+     * Удаляет поле highload-блока
+     *
+     * @param $hlblockName
+     * @param $fieldName
+     * @return bool
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteField($hlblockName, $fieldName) {
         $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
 
@@ -67,6 +144,14 @@ class HlblockHelper extends Helper
         return $entityHelper->deleteUserTypeEntity('HLBLOCK_' . $hlblockId, $fieldName);
     }
 
+    /**
+     * Получает список полей highload-блока
+     * Данные подготовлены для экспорта в миграцию или схему
+     *
+     * @param $hlblockName
+     * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function exportFields($hlblockName) {
         $fields = $this->getFields($hlblockName);
         $export = array();
@@ -77,33 +162,27 @@ class HlblockHelper extends Helper
         return $export;
     }
 
+    /**
+     * Получает highload-блок
+     * Данные подготовлены для экспорта в миграцию или схему
+     *
+     * @param $hlblockName
+     * @return mixed
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function exportHlblock($hlblockName) {
         return $this->prepareExportHlblock(
             $this->getHlblock($hlblockName)
         );
     }
 
-    protected function prepareExportHlblockField($item) {
-        if (empty($item)) {
-            return $item;
-        }
-
-        unset($item['ID']);
-        unset($item['ENTITY_ID']);
-
-        return $item;
-    }
-
-    protected function prepareExportHlblock($item) {
-        if (empty($item)) {
-            return $item;
-        }
-
-        unset($item['ID']);
-
-        return $item;
-    }
-
+    /**
+     * Получает highload-блок
+     *
+     * @param $hlblockName - id, имя или фильтр
+     * @return array|false
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function getHlblock($hlblockName) {
         if (is_array($hlblockName)) {
             $filter = $hlblockName;
@@ -128,6 +207,12 @@ class HlblockHelper extends Helper
         return $hlblock;
     }
 
+    /**
+     * @param $hlblockName
+     * @return array|false
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function getHlblockIfExists($hlblockName) {
         $item = $this->getHlblock($hlblockName);
         if ($item && isset($item['ID'])) {
@@ -137,6 +222,14 @@ class HlblockHelper extends Helper
         $this->throwException(__METHOD__, "hlblock not found");
     }
 
+    /**
+     * Получает highload-блок, бросает исключение если его не существует
+     *
+     * @param $hlblockName - id, имя или фильтр
+     * @return mixed
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function getHlblockIdIfExists($hlblockName) {
         $item = $this->getHlblock($hlblockName);
         if ($item && isset($item['ID'])) {
@@ -146,11 +239,26 @@ class HlblockHelper extends Helper
         $this->throwException(__METHOD__, "hlblock id not found");
     }
 
+    /**
+     * Получает id highload-блока
+     *
+     * @param $hlblockName - id, имя или фильтр
+     * @return int|mixed
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function getHlblockId($hlblockName) {
         $item = $this->getHlblock($hlblockName);
         return ($item && isset($item['ID'])) ? $item['ID'] : 0;
     }
 
+    /**
+     * Добавляет highload-блок
+     *
+     * @param $fields
+     * @return int
+     * @throws \Bitrix\Main\SystemException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addHlblock($fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('NAME', 'TABLE_NAME'));
 
@@ -171,6 +279,15 @@ class HlblockHelper extends Helper
         $this->throwException(__METHOD__, implode(', ', $result->getErrors()));
     }
 
+    /**
+     * Добавляет highload-блок, если его не существует
+     *
+     * @param $fields
+     * @return int|mixed
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\SystemException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addHlblockIfNotExists($fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
 
@@ -182,6 +299,14 @@ class HlblockHelper extends Helper
         return $this->addHlblock($fields);
     }
 
+    /**
+     * Обновляет highload-блок
+     *
+     * @param $hlblockId
+     * @param $fields
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateHlblock($hlblockId, $fields) {
         $lang = array();
         if (isset($fields['LANG'])) {
@@ -198,6 +323,15 @@ class HlblockHelper extends Helper
         $this->throwException(__METHOD__, implode(', ', $result->getErrors()));
     }
 
+    /**
+     * Обновляет highload-блок, если существует
+     *
+     * @param $hlblockName
+     * @param $fields
+     * @return bool|mixed
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateHlblockIfExists($hlblockName, $fields) {
         $item = $this->getHlblock($hlblockName);
         if (!$item) {
@@ -207,6 +341,13 @@ class HlblockHelper extends Helper
         return $this->updateHlblock($item['ID'], $fields);
     }
 
+    /**
+     * Удаляет highload-блок
+     *
+     * @param $hlblockId
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteHlblock($hlblockId) {
         $result = HL\HighloadBlockTable::delete($hlblockId);
         if ($result->isSuccess()) {
@@ -216,6 +357,14 @@ class HlblockHelper extends Helper
         $this->throwException(__METHOD__, implode(', ', $result->getErrors()));
     }
 
+    /**
+     * Удаляет highload-блок, если существует
+     *
+     * @param $hlblockName
+     * @return bool
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteHlblockIfExists($hlblockName) {
         $item = $this->getHlblock($hlblockName);
         if (!$item) {
@@ -223,6 +372,27 @@ class HlblockHelper extends Helper
         }
 
         return $this->deleteHlblock($item['ID']);
+    }
+
+    protected function prepareExportHlblockField($item) {
+        if (empty($item)) {
+            return $item;
+        }
+
+        unset($item['ID']);
+        unset($item['ENTITY_ID']);
+
+        return $item;
+    }
+
+    protected function prepareExportHlblock($item) {
+        if (empty($item)) {
+            return $item;
+        }
+
+        unset($item['ID']);
+
+        return $item;
     }
 
     protected function getHblockLangs($hlblockId) {
@@ -293,35 +463,6 @@ class HlblockHelper extends Helper
             $this->deleteHblockLangs($hlblockId);
             $this->addHblockLangs($hlblockId, $lang);
         }
-    }
-
-
-    //version 2
-
-
-    public function saveHlblock($fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
-
-        $exists = $this->getHlblock($fields['NAME']);
-        $exportExists = $this->prepareExportHlblock($exists);
-        $fields = $this->prepareExportHlblock($fields);
-
-        if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->addHlblock($fields);
-            $this->outNoticeIf($ok, 'Highload-блок %s: добавлен', $fields['NAME']);
-            return $ok;
-        }
-
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->updateHlblock($exists['ID'], $fields);
-            $this->outNoticeIf($ok, 'Highload-блок %s: обновлен', $fields['NAME']);
-            return $ok;
-        }
-
-
-        $ok = ($this->testMode) ? true : $exists['ID'];
-        $this->outIf($ok, 'Highload-блок %s: совпадает', $fields['NAME']);
-        return $ok;
     }
 
 }

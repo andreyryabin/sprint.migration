@@ -7,16 +7,15 @@ use Sprint\Migration\Helper;
 
 class FormHelper extends Helper
 {
-    /** @var \CDatabase $DB */
-    private $db;
 
     public function __construct() {
         $this->checkModules(array('form'));
-
-        global $DB;
-        $this->db = $DB;
     }
 
+    /**
+     * @param array $filter
+     * @return array
+     */
     public function getList($filter = array()) {
         $by = 's_name';
         $order = 'asc';
@@ -28,8 +27,7 @@ class FormHelper extends Helper
 
     /**
      * @param $formId
-     * @param $what
-     * @return array|null
+     * @return array|bool
      */
     public function getFormById($formId) {
         $formId = (int)$formId;
@@ -51,8 +49,8 @@ class FormHelper extends Helper
     }
 
     /**
-     * @param string $sid
-     * @return mixed
+     * @param $sid
+     * @return bool|int
      */
     public function getFormId($sid) {
         $form = \CForm::GetBySID($sid)->Fetch();
@@ -60,6 +58,11 @@ class FormHelper extends Helper
 
     }
 
+    /**
+     * @param $sid
+     * @return bool|int
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function getFormIdIfExists($sid) {
         $formId = $this->getFormId($sid);
         if ($formId) {
@@ -71,49 +74,9 @@ class FormHelper extends Helper
     }
 
     /**
-     * @param int $formId
-     * @return array
-     */
-    protected function exportRights($formId) {
-        $userGroupHelper = new UserGroupHelper();
-
-        $rights = [];
-        $dbGroup = $this->db->Query("SELECT GROUP_ID, PERMISSION FROM b_form_2_group WHERE FORM_ID = {$formId}");
-        while ($group = $dbGroup->Fetch()) {
-            $groupCode = $userGroupHelper->getGroupCode($group['GROUP_ID']);
-            if ($groupCode) {
-                $rights[$groupCode] = $group["PERMISSION"];
-            }
-        }
-        return $rights;
-    }
-
-    protected function exportSites($formId) {
-        return \CForm::GetSiteArray($formId);
-    }
-
-    /**
-     * @param int $formId
-     * @return array
-     */
-    protected function exportMailTemplates($formId) {
-        return \CForm::GetMailTemplateArray($formId);
-    }
-
-    protected function exportMenus($formId) {
-        $res = array();
-        $dbres = \CForm::GetMenuList(array('FORM_ID' => $formId), 'N');
-        while ($menuItem = $dbres->Fetch()) {
-            $res[$menuItem["LID"]] = $menuItem["MENU"];
-        }
-        return $res;
-    }
-
-    /**
      * @param $form
-     * @param $sid
      * @return bool|int
-     * @throws \Exception
+     * @throws \Sprint\Migration\Exceptions\HelperException
      */
     public function saveForm($form) {
         $this->checkRequiredKeys(__METHOD__, $form, array('SID'));
@@ -141,6 +104,11 @@ class FormHelper extends Helper
         $this->throwException(__METHOD__, $GLOBALS['strError']);
     }
 
+    /**
+     * @param $formId
+     * @param $fields
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function saveFields($formId, $fields) {
 
         $currentFields = $this->getFormFields($formId);
@@ -196,7 +164,6 @@ class FormHelper extends Helper
         }
     }
 
-
     /**
      * @param $formId
      * @param $statuses
@@ -236,6 +203,113 @@ class FormHelper extends Helper
 
     }
 
+    /**
+     * @return array
+     */
+    public function getFormStatuses($formId) {
+        $dbres = \CFormStatus::GetList($formId, $by = 's_sort', $order = 'asc', [], $f);
+        return $this->fetchAll($dbres);
+    }
+
+    /**
+     * @return array
+     */
+    public function getFormFields($formId) {
+        $dbres = \CFormField::GetList($formId, 'ALL', $by = 's_sort', $order = 'asc', [], $f);
+        $fields = $this->fetchAll($dbres);
+        foreach ($fields as $index => $field) {
+            $fields[$index]['ANSWERS'] = $this->getFieldAnswers($field['ID']);
+            $fields[$index]['VALIDATORS'] = $this->getFieldValidators($field['ID']);
+        }
+        return $fields;
+    }
+
+    /**
+     * @param $sid
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
+    public function deleteFormIfExists($sid) {
+        $formId = $this->getFormId($sid);
+
+        if (!$formId) {
+            return false;
+        }
+
+        if (\CForm::Delete($formId)) {
+            return true;
+        }
+
+        $this->throwException(__METHOD__, 'Cannot delete form "%s"', $sid);
+    }
+
+    /**
+     * @param $fieldId
+     * @return array
+     */
+    protected function getFieldAnswers($fieldId) {
+        $dbres = \CFormAnswer::GetList($fieldId, $by = 's_sort', $order = 'asc', [], $f);
+        return $this->fetchAll($dbres);
+    }
+
+    /**
+     * @param $fieldId
+     * @return array
+     */
+    protected function getFieldValidators($fieldId) {
+        $dbres = \CFormValidator::GetList($fieldId, array(), $by = 's_sort', $order = 'asc');
+        return $this->fetchAll($dbres);
+    }
+
+    /**
+     * @param int $formId
+     * @return array
+     */
+    protected function exportRights($formId) {
+        /** @var \CDatabase $DB */
+        global $DB;
+
+        $userGroupHelper = new UserGroupHelper();
+
+        $rights = [];
+        $dbGroup = $DB->Query("SELECT GROUP_ID, PERMISSION FROM b_form_2_group WHERE FORM_ID = {$formId}");
+        while ($group = $dbGroup->Fetch()) {
+            $groupCode = $userGroupHelper->getGroupCode($group['GROUP_ID']);
+            if ($groupCode) {
+                $rights[$groupCode] = $group["PERMISSION"];
+            }
+        }
+        return $rights;
+    }
+
+    /**
+     * @param $formId
+     * @return array|bool
+     */
+    protected function exportSites($formId) {
+        return \CForm::GetSiteArray($formId);
+    }
+
+    /**
+     * @param int $formId
+     * @return array
+     */
+    protected function exportMailTemplates($formId) {
+        return \CForm::GetMailTemplateArray($formId);
+    }
+
+    /**
+     * @param $formId
+     * @return array
+     */
+    protected function exportMenus($formId) {
+        $res = array();
+        $dbres = \CForm::GetMenuList(array('FORM_ID' => $formId), 'N');
+        while ($menuItem = $dbres->Fetch()) {
+            $res[$menuItem["LID"]] = $menuItem["MENU"];
+        }
+        return $res;
+    }
 
     protected function saveFieldAnswers($formId, $fieldId, $answers) {
         $currentAnswers = $this->getFieldAnswers($fieldId);
@@ -275,7 +349,6 @@ class FormHelper extends Helper
         }
     }
 
-
     protected function saveFieldValidators($formId, $fieldId, $validators) {
 
         \CFormValidator::Clear($fieldId);
@@ -296,64 +369,4 @@ class FormHelper extends Helper
         }
 
     }
-
-
-    /**
-     * @return array
-     */
-    public function getFormStatuses($formId) {
-        $dbres = \CFormStatus::GetList($formId, $by = 's_sort', $order = 'asc', [], $f);
-        return $this->fetchAll($dbres);
-    }
-
-    /**
-     * @return array
-     */
-    public function getFormFields($formId) {
-        $dbres = \CFormField::GetList($formId, 'ALL', $by = 's_sort', $order = 'asc', [], $f);
-        $fields = $this->fetchAll($dbres);
-        foreach ($fields as $index => $field) {
-            $fields[$index]['ANSWERS'] = $this->getFieldAnswers($field['ID']);
-            $fields[$index]['VALIDATORS'] = $this->getFieldValidators($field['ID']);
-        }
-        return $fields;
-    }
-
-    /**
-     * @param $fieldId
-     * @return array
-     */
-    protected function getFieldAnswers($fieldId) {
-        $dbres = \CFormAnswer::GetList($fieldId, $by = 's_sort', $order = 'asc', [], $f);
-        return $this->fetchAll($dbres);
-    }
-
-    /**
-     * @param $fieldId
-     * @return array
-     */
-    protected function getFieldValidators($fieldId) {
-        $dbres = \CFormValidator::GetList($fieldId, array(), $by = 's_sort', $order = 'asc');
-        return $this->fetchAll($dbres);
-    }
-
-
-    /**
-     * @param string $sid
-     * @throws \Exception
-     */
-    public function deleteFormIfExists($sid) {
-        $formId = $this->getFormId($sid);
-
-        if (!$formId) {
-            return false;
-        }
-
-        if (\CForm::Delete($formId)) {
-            return true;
-        }
-
-        $this->throwException(__METHOD__, 'Cannot delete form "%s"', $sid);
-    }
-
 }

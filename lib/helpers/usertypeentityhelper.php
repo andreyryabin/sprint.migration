@@ -7,18 +7,35 @@ use Sprint\Migration\Helper;
 class UserTypeEntityHelper extends Helper
 {
 
+    /**
+     * @param $entityId
+     * @param array $fields
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addUserTypeEntitiesIfNotExists($entityId, array $fields) {
         foreach ($fields as $field) {
             $this->addUserTypeEntityIfNotExists($entityId, $field["FIELD_NAME"], $field);
         }
     }
 
+    /**
+     * @param $entityId
+     * @param array $fields
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteUserTypeEntitiesIfExists($entityId, array $fields) {
         foreach ($fields as $fieldName) {
             $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
         }
     }
 
+    /**
+     * @param $entityId
+     * @param $fieldName
+     * @param $fields
+     * @return int
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addUserTypeEntityIfNotExists($entityId, $fieldName, $fields) {
         $item = $this->getUserTypeEntity($entityId, $fieldName);
         if ($item) {
@@ -28,6 +45,13 @@ class UserTypeEntityHelper extends Helper
         return $this->addUserTypeEntity($entityId, $fieldName, $fields);
     }
 
+    /**
+     * @param $entityId
+     * @param $fieldName
+     * @param $fields
+     * @return int
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addUserTypeEntity($entityId, $fieldName, $fields) {
 
         $default = array(
@@ -81,6 +105,12 @@ class UserTypeEntityHelper extends Helper
         }
     }
 
+    /**
+     * @param $fieldId
+     * @param $fields
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateUserTypeEntity($fieldId, $fields) {
         $enums = array();
         if (isset($fields['ENUM_VALUES'])) {
@@ -112,6 +142,13 @@ class UserTypeEntityHelper extends Helper
         }
     }
 
+    /**
+     * @param $entityId
+     * @param $fieldName
+     * @param $fields
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateUserTypeEntityIfExists($entityId, $fieldName, $fields) {
         $item = $this->getUserTypeEntity($entityId, $fieldName);
         if (!$item) {
@@ -122,6 +159,10 @@ class UserTypeEntityHelper extends Helper
 
     }
 
+    /**
+     * @param bool $entityId
+     * @return array
+     */
     public function getUserTypeEntities($entityId = false) {
         if (!empty($entityId)) {
             $filter = is_array($entityId) ? $entityId : array(
@@ -142,11 +183,19 @@ class UserTypeEntityHelper extends Helper
         return $result;
     }
 
+    /**
+     * @param $fieldId
+     * @return mixed
+     */
     public function exportUserTypeEntity($fieldId) {
         $item = $this->getUserTypeEntityById($fieldId);
         return $this->prepareExportUserTypeEntity($item, true);
     }
 
+    /**
+     * @param bool $entityId
+     * @return array
+     */
     public function exportUserTypeEntities($entityId = false) {
         $items = $this->getUserTypeEntities($entityId);
         $export = array();
@@ -156,21 +205,11 @@ class UserTypeEntityHelper extends Helper
         return $export;
     }
 
-    protected function prepareExportUserTypeEntity($item, $transformEntityId = false) {
-        if (empty($item)) {
-            return $item;
-        }
-
-        if ($transformEntityId) {
-            $item['ENTITY_ID'] = $this->transformEntityId(
-                $item['ENTITY_ID']
-            );
-        }
-
-        unset($item['ID']);
-        return $item;
-    }
-
+    /**
+     * @param $entityId
+     * @param $fieldName
+     * @return array|bool
+     */
     public function getUserTypeEntity($entityId, $fieldName) {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $item = \CUserTypeEntity::GetList(array(), array(
@@ -181,6 +220,10 @@ class UserTypeEntityHelper extends Helper
         return (!empty($item)) ? $this->getUserTypeEntityById($item['ID']) : false;
     }
 
+    /**
+     * @param $fieldId
+     * @return array|bool
+     */
     public function getUserTypeEntityById($fieldId) {
         $item = \CUserTypeEntity::GetByID($fieldId);
         if (empty($item)) {
@@ -194,6 +237,11 @@ class UserTypeEntityHelper extends Helper
         return $item;
     }
 
+    /**
+     * @param $fieldId
+     * @param $newenums
+     * @return bool
+     */
     public function setUserTypeEntityEnumValues($fieldId, $newenums) {
         $newenums = is_array($newenums) ? $newenums : array();
         $oldenums = $this->getEnumValues($fieldId, true);
@@ -225,6 +273,12 @@ class UserTypeEntityHelper extends Helper
 
     }
 
+    /**
+     * @param $entityId
+     * @param $fieldName
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteUserTypeEntityIfExists($entityId, $fieldName) {
         $item = $this->getUserTypeEntity($entityId, $fieldName);
         if (empty($item)) {
@@ -239,40 +293,22 @@ class UserTypeEntityHelper extends Helper
         $this->throwException(__METHOD__, 'UserType not deleted');
     }
 
+    /**
+     * @param $entityId
+     * @param $fieldName
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteUserTypeEntity($entityId, $fieldName) {
         return $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
     }
 
-    protected function getEnumValues($fieldId, $full = false) {
-        $obEnum = new \CUserFieldEnum;
-        $dbres = $obEnum->GetList(array(), array("USER_FIELD_ID" => $fieldId));
-
-        $result = array();
-        while ($enum = $dbres->Fetch()) {
-            if ($full) {
-                $result[] = $enum;
-            } else {
-                $result[] = array(
-                    'VALUE' => $enum['VALUE'],
-                    'DEF' => $enum['DEF'],
-                    'SORT' => $enum['SORT'],
-                    'XML_ID' => $enum['XML_ID'],
-                );
-            }
-        }
-
-        return $result;
-    }
-
-    protected function searchEnum($enum, $haystack = array()) {
-        foreach ($haystack as $item) {
-            if (!empty($item['XML_ID']) && $item['XML_ID'] == $enum['XML_ID']) {
-                return $item;
-            }
-        }
-        return false;
-    }
-
+    /**
+     * @param $entityId
+     * @return string
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function revertEntityId($entityId) {
         if (0 === strpos($entityId, 'HLBLOCK_')) {
             $hlblockName = substr($entityId, 8);
@@ -288,6 +324,12 @@ class UserTypeEntityHelper extends Helper
         return $entityId;
     }
 
+    /**
+     * @param $entityId
+     * @return string
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function transformEntityId($entityId) {
         if (0 === strpos($entityId, 'HLBLOCK_')) {
             $hlblockId = substr($entityId, 8);
@@ -301,8 +343,12 @@ class UserTypeEntityHelper extends Helper
         return $entityId;
     }
 
-    //version 2
-
+    /**
+     * @param array $fields
+     * @return bool|int|mixed
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function saveUserTypeEntity($fields = array()) {
 
         if (func_num_args() > 1) {
@@ -351,4 +397,50 @@ class UserTypeEntityHelper extends Helper
         return $ok;
 
     }
+
+    protected function prepareExportUserTypeEntity($item, $transformEntityId = false) {
+        if (empty($item)) {
+            return $item;
+        }
+
+        if ($transformEntityId) {
+            $item['ENTITY_ID'] = $this->transformEntityId(
+                $item['ENTITY_ID']
+            );
+        }
+
+        unset($item['ID']);
+        return $item;
+    }
+
+    protected function getEnumValues($fieldId, $full = false) {
+        $obEnum = new \CUserFieldEnum;
+        $dbres = $obEnum->GetList(array(), array("USER_FIELD_ID" => $fieldId));
+
+        $result = array();
+        while ($enum = $dbres->Fetch()) {
+            if ($full) {
+                $result[] = $enum;
+            } else {
+                $result[] = array(
+                    'VALUE' => $enum['VALUE'],
+                    'DEF' => $enum['DEF'],
+                    'SORT' => $enum['SORT'],
+                    'XML_ID' => $enum['XML_ID'],
+                );
+            }
+        }
+
+        return $result;
+    }
+
+    protected function searchEnum($enum, $haystack = array()) {
+        foreach ($haystack as $item) {
+            if (!empty($item['XML_ID']) && $item['XML_ID'] == $enum['XML_ID']) {
+                return $item;
+            }
+        }
+        return false;
+    }
+
 }

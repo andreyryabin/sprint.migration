@@ -16,6 +16,14 @@ class AdminIblockHelper extends Helper
     }
 
 
+    /**
+     * Извлекает настройки формы инфоблока в массив, бросает исключение если их не существует
+     *
+     * @param $iblockId
+     * @param array $params
+     * @return array
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function extractElementForm($iblockId, $params = array()) {
         $result = $this->exportElementForm($iblockId, $params);
 
@@ -26,6 +34,13 @@ class AdminIblockHelper extends Helper
         $this->throwException(__METHOD__, 'Iblock form options not found');
     }
 
+    /**
+     * Извлекает настройки формы инфоблока в массив
+     *
+     * @param $iblockId
+     * @param array $params
+     * @return array
+     */
     public function exportElementForm($iblockId, $params = array()) {
         $this->initializeVars($iblockId);
 
@@ -83,6 +98,28 @@ class AdminIblockHelper extends Helper
 
     }
 
+    /**
+     * Сохраняет настройки формы инфоблока, если они отличаются
+     *
+     * @param $iblockId
+     * @param array $elementForm массив вида:
+     * [
+     *     'Tab1' => [
+     *         'ACTIVE' => 'Активность',
+     *         'ACTIVE_FROM' => '',
+     *         'ACTIVE_TO' => '',
+     *         'NAME' => 'Название',
+     *         'CODE' => Символьный код',
+     *         'SORT' => '',
+     *     ],
+     *     'Tab2' => [
+     *         'PREVIEW_TEXT' => '',
+     *         'PROPERTY_LINK' => '',
+     *     ]
+     * ]
+     * @param array $params
+     * @return bool
+     */
     public function saveElementForm($iblockId, $elementForm = array(), $params = array()) {
         $exists = $this->exportElementForm($iblockId, $params);
         if ($exists != $elementForm) {
@@ -95,16 +132,22 @@ class AdminIblockHelper extends Helper
         }
     }
 
+    /**
+     * Сохраняет настройки списка инфоблока
+     *
+     * @param $iblockId
+     * @param array $columns массив вида:
+     * [
+     *     'NAME',
+     *     'SORT',
+     *     'ID',
+     *     'PROPERTY_LINK',
+     * ];
+     * 
+     * @param array $params
+     */
     public function saveElementList($iblockId, $columns = array(), $params = array()) {
         $this->initializeVars($iblockId);
-
-        /** @example *//*
-        $columns = array(
-            'NAME',
-            'SORT',
-            'ID',
-            'PROPERTY_LINK',
-        );  */
 
         $opts = array();
         foreach ($columns as $columnCode) {
@@ -130,6 +173,101 @@ class AdminIblockHelper extends Helper
 
         \CUserOptions::DeleteOptionsByName($params['category'], $name);
         \CUserOptions::SetOption($params['category'], $name, $value, true);
+    }
+
+    /**
+     * Сохраняет настройки формы инфоблока
+     *
+     * @param $iblockId
+     * @param array $elementForm массив типа
+     * [
+     *     'Tab1' => [
+     *         'ACTIVE' => 'Активность',
+     *         'ACTIVE_FROM' => '',
+     *         'ACTIVE_TO' => '',
+     *         'NAME' => 'Название',
+     *         'CODE' => Символьный код',
+     *         'SORT' => '',
+     *     ],
+     *     'Tab2' => [
+     *         'PREVIEW_TEXT' => '',
+     *         'PROPERTY_LINK' => '',
+     *     ]
+     * ]
+     * 
+     * @param array $params
+     * @return bool
+     */
+    public function buildElementForm($iblockId, $elementForm = array(), $params = array()) {
+        $this->initializeVars($iblockId);
+
+        $params = array_merge(array(
+            'name_prefix' => 'form_element_',
+            'category' => 'form',
+        ), $params);
+
+        $params['name'] = $params['name_prefix'] . $iblockId;
+
+        if (empty($elementForm)) {
+            \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
+            return true;
+        }
+
+        $tabIndex = 0;
+        $tabVals = array();
+        foreach ($elementForm as $tabTitle => $fields) {
+
+            if ($tabTitle == 'SEO' && empty($fields)) {
+                $fields = $this->getSeoTab();
+            }
+
+            $tabCode = ($tabIndex == 0) ? 'edit' . ($tabIndex + 1) : '--edit' . ($tabIndex + 1);
+            $tabVals[$tabIndex][] = $tabCode . '--#--' . $tabTitle . '--';
+
+            foreach ($fields as $fieldKey => $fieldValue) {
+
+                if (is_numeric($fieldKey)) {
+                    /** @compability */
+                    list($fcode, $ftitle) = explode('|', $fieldValue);
+                } else {
+                    $fcode = $fieldKey;
+                    $ftitle = $fieldValue;
+                }
+
+                $fcode = $this->transformCode($fcode);
+                $ftitle = $this->prepareTitle($fcode, $ftitle);
+
+                $tabVals[$tabIndex][] = '--' . $fcode . '--#--' . $ftitle . '--';
+            }
+
+            $tabIndex++;
+        }
+
+        $opts = array();
+        foreach ($tabVals as $fields) {
+            $opts[] = implode(',', $fields);
+        }
+
+        $opts = implode(';', $opts) . ';--';
+
+        $value = array(
+            'tabs' => $opts
+        );
+
+        \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
+        \CUserOptions::SetOption($params['category'], $params['name'], $value, true);
+
+        return true;
+    }
+
+    /**
+     * @param $iblockId
+     * @param array $columns
+     * @param array $params
+     * @deprecated use saveElementList
+     */
+    public function buildElementList($iblockId, $columns = array(), $params = array()) {
+        $this->saveElementList($iblockId, $columns, $params);
     }
 
     protected function initializeVars($iblockId) {
@@ -228,102 +366,4 @@ class AdminIblockHelper extends Helper
     }
 
 
-    public function buildElementForm($iblockId, $tabs = array(), $params = array()) {
-        $this->initializeVars($iblockId);
-
-        $params = array_merge(array(
-            'name_prefix' => 'form_element_',
-            'category' => 'form',
-        ), $params);
-
-        $params['name'] = $params['name_prefix'] . $iblockId;
-
-        if (empty($tabs)) {
-            \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
-            return true;
-        }
-
-        /** @example *//*
-        $tabs = array(
-            'Tab1' => array(
-                'ACTIVE' => 'Активность',
-                'ACTIVE_FROM' => '',
-                'ACTIVE_TO' => '',
-                'NAME' => 'Название',
-                'CODE' => Символьный код',
-                'SORT' => '',
-            ),
-            'Tab2' => array(
-                'PREVIEW_TEXT' => '',
-                'PROPERTY_LINK' => '',
-            )
-        );  */
-
-        /** @compability *//*
-        $tabs = array(
-            'Tab1' => array(
-                'ACTIVE|Активность',
-                'ACTIVE_FROM',
-                'ACTIVE_TO',
-                'NAME|Название',
-                'CODE|Символьный код',
-                'SORT',
-            ),
-            'Tab2' => array(
-                'PREVIEW_TEXT',
-                'PROPERTY_LINK',
-            )
-        );  */
-
-        $tabIndex = 0;
-        $tabVals = array();
-        foreach ($tabs as $tabTitle => $fields) {
-
-            if ($tabTitle == 'SEO' && empty($fields)) {
-                $fields = $this->getSeoTab();
-            }
-
-            $tabCode = ($tabIndex == 0) ? 'edit' . ($tabIndex + 1) : '--edit' . ($tabIndex + 1);
-            $tabVals[$tabIndex][] = $tabCode . '--#--' . $tabTitle . '--';
-
-            foreach ($fields as $fieldKey => $fieldValue) {
-
-                if (is_numeric($fieldKey)) {
-                    /** @compability */
-                    list($fcode, $ftitle) = explode('|', $fieldValue);
-                } else {
-                    $fcode = $fieldKey;
-                    $ftitle = $fieldValue;
-                }
-
-                $fcode = $this->transformCode($fcode);
-                $ftitle = $this->prepareTitle($fcode, $ftitle);
-
-                $tabVals[$tabIndex][] = '--' . $fcode . '--#--' . $ftitle . '--';
-            }
-
-            $tabIndex++;
-        }
-
-        $opts = array();
-        foreach ($tabVals as $fields) {
-            $opts[] = implode(',', $fields);
-        }
-
-        $opts = implode(';', $opts) . ';--';
-
-        $value = array(
-            'tabs' => $opts
-        );
-
-        \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
-        \CUserOptions::SetOption($params['category'], $params['name'], $value, true);
-
-        return true;
-    }
-
-    /** @deprecated use saveElementList */
-    public function buildElementList($iblockId, $columns = array(), $params = array()) {
-        $this->saveElementList($iblockId, $columns, $params);
-    }
 }

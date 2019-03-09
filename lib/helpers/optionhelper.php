@@ -17,10 +17,18 @@ class OptionHelper extends Helper
         );
     }
 
+    /**
+     * @return array|mixed
+     */
     public function getModules() {
         return ModuleManager::getInstalledModules();
     }
 
+    /**
+     * @param array $filter
+     * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function getOptions($filter = array()) {
         $dbres = OptionTable::getList(array(
             'filter' => $filter
@@ -34,6 +42,11 @@ class OptionHelper extends Helper
         return $result;
     }
 
+    /**
+     * @param array $filter
+     * @return mixed
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function getOption($filter = array()) {
         $this->checkRequiredKeys(__METHOD__, $filter, array('MODULE_ID', 'NAME'));
 
@@ -44,6 +57,11 @@ class OptionHelper extends Helper
         return $this->prepareOption($item);
     }
 
+    /**
+     * @param $fields
+     * @return bool
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function saveOption($fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('MODULE_ID', 'NAME'));
 
@@ -72,12 +90,11 @@ class OptionHelper extends Helper
 
     }
 
-    protected function setOption($fields) {
-        $fields = $this->revertOption($fields);
-        \Bitrix\Main\Config\Option::set($fields['MODULE_ID'], $fields['NAME'], $fields['VALUE'], $fields['SITE_ID']);
-        return true;
-    }
-
+    /**
+     * @param array $filter
+     * @return bool
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
     public function deleteOptions($filter = array()) {
         $this->checkRequiredKeys(__METHOD__, $filter, array('MODULE_ID'));
 
@@ -95,6 +112,11 @@ class OptionHelper extends Helper
         return true;
     }
 
+    /**
+     * @param array $filter
+     * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function exportOptions($filter = array()) {
         $agents = $this->getOptions($filter);
 
@@ -106,13 +128,11 @@ class OptionHelper extends Helper
         return $exportAgents;
     }
 
-    protected function prepareExportOption($item) {
-        if (empty($item)) {
-            return $item;
-        }
-        return $item;
-    }
-
+    /**
+     * @param array $filter
+     * @return bool
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public function exportOption($filter = array()) {
         $item = $this->getOption($filter);
         if (empty($item)) {
@@ -120,6 +140,24 @@ class OptionHelper extends Helper
         }
 
         return $this->prepareExportOption($item);
+    }
+
+    /**
+     * @param $fields
+     * @return bool
+     * @throws \Bitrix\Main\ArgumentOutOfRangeException
+     */
+    protected function setOption($fields) {
+        $fields = $this->revertOption($fields);
+        \Bitrix\Main\Config\Option::set($fields['MODULE_ID'], $fields['NAME'], $fields['VALUE'], $fields['SITE_ID']);
+        return true;
+    }
+
+    protected function prepareExportOption($item) {
+        if (empty($item)) {
+            return $item;
+        }
+        return $item;
     }
 
     protected function prepareOption($item) {

@@ -7,7 +7,10 @@ use Sprint\Migration\Helper;
 class UserGroupHelper extends Helper
 {
 
-
+    /**
+     * @param array $filter
+     * @return array
+     */
     public function getGroups($filter = array()) {
         $by = 'c_sort';
         $order = 'asc';
@@ -24,6 +27,11 @@ class UserGroupHelper extends Helper
 
     }
 
+    /**
+     * @param $code
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function exportGroup($code) {
         $item = $this->prepareExportGroup(
             $this->getGroup($code)
@@ -36,6 +44,10 @@ class UserGroupHelper extends Helper
         $this->throwException(__METHOD__, 'code not found');
     }
 
+    /**
+     * @param array $filter
+     * @return array
+     */
     public function exportGroups($filter = array()) {
         $items = $this->getGroups($filter);
         $exports = array();
@@ -48,27 +60,28 @@ class UserGroupHelper extends Helper
         return $exports;
     }
 
-    protected function prepareExportGroup($item) {
-        if (empty($item)) {
-            return $item;
-        }
-
-        unset($item['ID']);
-        unset($item['TIMESTAMP_X']);
-
-        return $item;
-    }
-
+    /**
+     * @param $id
+     * @return bool
+     */
     public function getGroupCode($id) {
         $group = $this->getGroup($id);
         return ($group) ? $group['STRING_ID'] : false;
     }
 
+    /**
+     * @param $code
+     * @return bool
+     */
     public function getGroupId($code) {
         $group = $this->getGroup($code);
         return ($group) ? $group['ID'] : false;
     }
 
+    /**
+     * @param $code
+     * @return array|bool
+     */
     public function getGroup($code) {
         $groupId = is_numeric($code) ? $code : \CGroup::GetIDByCode($code);
 
@@ -96,6 +109,13 @@ class UserGroupHelper extends Helper
 
     }
 
+
+    /**
+     * @param $code
+     * @param array $fields
+     * @return bool|int|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function saveGroup($code, $fields = array()) {
         $fields['STRING_ID'] = $code;
 
@@ -123,6 +143,12 @@ class UserGroupHelper extends Helper
         return $ok;
     }
 
+    /**
+     * @param $code
+     * @param array $fields
+     * @return int
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addGroupIfNotExists($code, $fields = array()) {
         $groupId = $this->getGroupId($code);
         if ($groupId) {
@@ -132,6 +158,12 @@ class UserGroupHelper extends Helper
         return $this->addGroup($code, $fields);
     }
 
+    /**
+     * @param $code
+     * @param array $fields
+     * @return bool|int
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateGroupIfExists($code, $fields = array()) {
         $groupId = $this->getGroupId($code);
         if (!$groupId) {
@@ -141,6 +173,12 @@ class UserGroupHelper extends Helper
         return $this->updateGroup($groupId, $fields);
     }
 
+    /**
+     * @param $code
+     * @param array $fields
+     * @return int
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addGroup($code, $fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
 
@@ -156,6 +194,12 @@ class UserGroupHelper extends Helper
         $this->throwException(__METHOD__, $group->LAST_ERROR);
     }
 
+    /**
+     * @param $groupId
+     * @param array $fields
+     * @return int
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateGroup($groupId, $fields = array()) {
         if (empty($fields)) {
             $this->throwException(__METHOD__, 'Set fields for group');
@@ -169,6 +213,10 @@ class UserGroupHelper extends Helper
         $this->throwException(__METHOD__, $group->LAST_ERROR);
     }
 
+    /**
+     * @param $code
+     * @return bool
+     */
     public function deleteGroup($code) {
         $groupId = $this->getGroupId($code);
         if (empty($groupId)) {
@@ -180,6 +228,26 @@ class UserGroupHelper extends Helper
         return true;
     }
 
+    /**
+     * @deprecated
+     * @param array $filter
+     * @return array
+     */
+    public function getGroupsByFilter($filter = array()) {
+        return $this->getGroups($filter);
+    }
+
+    protected function prepareExportGroup($item) {
+        if (empty($item)) {
+            return $item;
+        }
+
+        unset($item['ID']);
+        unset($item['TIMESTAMP_X']);
+
+        return $item;
+    }
+
     protected function prepareFields($fields) {
         if (!empty($fields['SECURITY_POLICY']) && is_array($fields['SECURITY_POLICY'])) {
             $fields['SECURITY_POLICY'] = serialize($fields['SECURITY_POLICY']);
@@ -188,8 +256,5 @@ class UserGroupHelper extends Helper
         return $fields;
     }
 
-    /** @deprecated */
-    public function getGroupsByFilter($filter = array()) {
-        return $this->getGroups($filter);
-    }
+
 }

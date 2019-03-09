@@ -11,6 +11,13 @@ class IblockHelper extends Helper
         $this->checkModules(array('iblock'));
     }
 
+    /**
+     * Получает тип инфоблока, бросает исключение если его не существует
+     *
+     * @param $typeId
+     * @return array
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function getIblockTypeIfExists($typeId) {
         $item = $this->getIblockType($typeId);
         if ($item && isset($item['ID'])) {
@@ -20,7 +27,13 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, "iblock type not found");
     }
 
-
+    /**
+     * Получает id типа инфоблока, бросает исключение если его не существует
+     *
+     * @param $typeId
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function getIblockTypeIdIfExists($typeId) {
         $item = $this->getIblockType($typeId);
         if ($item && isset($item['ID'])) {
@@ -30,7 +43,14 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, "iblock type id not found");
     }
 
-
+    /**
+     * Получает инфоблок, бросает исключение если его не существует
+     *
+     * @param $code string|array - код или фильтр
+     * @param string $typeId
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function getIblockIfExists($code, $typeId = '') {
         $item = $this->getIblock($code, $typeId);
         if ($item && isset($item['ID'])) {
@@ -40,6 +60,14 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, "iblock not found");
     }
 
+    /**
+     * Получает id инфоблока, бросает исключение если его не существует
+     *
+     * @param $code string|array - код или фильтр
+     * @param string $typeId
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function getIblockIdIfExists($code, $typeId = '') {
         $item = $this->getIblock($code, $typeId);
         if ($item && isset($item['ID'])) {
@@ -49,6 +77,12 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, "iblock id not found");
     }
 
+    /**
+     * Получает тип инфоблока
+     *
+     * @param $typeId
+     * @return array
+     */
     public function getIblockType($typeId) {
         /** @compatibility filter or $typeId */
         $filter = is_array($typeId) ? $typeId : array(
@@ -65,11 +99,23 @@ class IblockHelper extends Helper
         return $item;
     }
 
+    /**
+     * Получает id типа инфоблока
+     *
+     * @param $typeId
+     * @return int|mixed
+     */
     public function getIblockTypeId($typeId) {
         $iblockType = $this->getIblockType($typeId);
         return ($iblockType && isset($iblockType['ID'])) ? $iblockType['ID'] : 0;
     }
 
+    /**
+     * Получает типы инфоблоков
+     *
+     * @param array $filter
+     * @return array
+     */
     public function getIblockTypes($filter = array()) {
         $filter['CHECK_PERMISSIONS'] = 'N';
         $dbres = \CIBlockType::GetList(array('SORT' => 'ASC'), $filter);
@@ -82,6 +128,13 @@ class IblockHelper extends Helper
         return $list;
     }
 
+    /**
+     * Добавляет тип инфоблока, если его не существует
+     *
+     * @param array $fields
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addIblockTypeIfNotExists($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
 
@@ -93,6 +146,13 @@ class IblockHelper extends Helper
         return $this->addIblockType($fields);
     }
 
+    /**
+     * Добавляет тип инфоблока
+     *
+     * @param array $fields
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addIblockType($fields = array()) {
         $default = Array(
             'ID' => '',
@@ -123,6 +183,14 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * Обновляет тип инфоблока
+     *
+     * @param $iblockTypeId
+     * @param array $fields
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateIblockType($iblockTypeId, $fields = array()) {
         $ib = new \CIBlockType;
         if ($ib->Update($iblockTypeId, $fields)) {
@@ -132,6 +200,13 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * Удаляет тип инфоблока, если существует
+     *
+     * @param $typeId
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteIblockTypeIfExists($typeId) {
         $iblockType = $this->getIblockType($typeId);
         if (!$iblockType) {
@@ -142,8 +217,14 @@ class IblockHelper extends Helper
 
     }
 
+    /**
+     * Удаляет тип инфоблока
+     *
+     * @param $typeId
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteIblockType($typeId) {
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         if (\CIBlockType::Delete($typeId)) {
             return true;
         }
@@ -151,6 +232,13 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, 'Could not delete iblock type %s', $typeId);
     }
 
+    /**
+     * Получает инфоблок
+     *
+     * @param $code string|array - код или фильтр
+     * @param string $typeId
+     * @return mixed
+     */
     public function getIblock($code, $typeId = '') {
         /** @compatibility filter or code */
         $filter = is_array($code) ? $code : array(
@@ -169,24 +257,29 @@ class IblockHelper extends Helper
         return $this->prepareIblock($item);
     }
 
-    protected function prepareIblock($item) {
-        if (empty($item['ID'])) {
-            return $item;
-        }
-        $item['LID'] = $this->getIblockSites($item['ID']);
-        return $item;
-    }
-
+    /**
+     * @param $iblockId
+     * @return array
+     */
     public function getIblockSites($iblockId) {
         $dbres = \CIBlock::GetSite($iblockId);
         return $this->fetchAll($dbres,false,'LID');
     }
 
+    /**
+     * @param $code
+     * @param string $typeId
+     * @return int
+     */
     public function getIblockId($code, $typeId = '') {
         $iblock = $this->getIblock($code, $typeId);
         return ($iblock && isset($iblock['ID'])) ? $iblock['ID'] : 0;
     }
 
+    /**
+     * @param array $filter
+     * @return array
+     */
     public function getIblocks($filter = array()) {
         $filter['CHECK_PERMISSIONS'] = 'N';
 
@@ -199,6 +292,11 @@ class IblockHelper extends Helper
         return $list;
     }
 
+    /**
+     * @param array $fields
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addIblockIfNotExists($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID', 'LID'));
 
@@ -215,6 +313,11 @@ class IblockHelper extends Helper
         return $this->addIblock($fields);
     }
 
+    /**
+     * @param $fields
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addIblock($fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID', 'LID'));
 
@@ -247,6 +350,12 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $fields
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateIblock($iblockId, $fields = array()) {
         $ib = new \CIBlock;
         if ($ib->Update($iblockId, $fields)) {
@@ -257,6 +366,12 @@ class IblockHelper extends Helper
 
     }
 
+    /**
+     * @param $code
+     * @param array $fields
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateIblockIfExists($code, $fields = array()) {
         $iblock = $this->getIblock($code);
         if (!$iblock) {
@@ -265,6 +380,12 @@ class IblockHelper extends Helper
         return $this->updateIblock($iblock['ID'], $fields);
     }
 
+    /**
+     * @param $code
+     * @param string $typeId
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteIblockIfExists($code, $typeId = '') {
         $iblock = $this->getIblock($code, $typeId);
         if (!$iblock) {
@@ -273,6 +394,11 @@ class IblockHelper extends Helper
         return $this->deleteIblock($iblock['ID']);
     }
 
+    /**
+     * @param $iblockId
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteIblock($iblockId) {
         if (\CIBlock::Delete($iblockId)) {
             return true;
@@ -280,10 +406,19 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, 'Could not delete iblock %s', $iblockId);
     }
 
+    /**
+     * @param $iblockId
+     * @return array|bool
+     */
     public function getIblockFields($iblockId) {
         return \CIBlock::GetFields($iblockId);
     }
 
+    /**
+     * @param $iblockId
+     * @param $code
+     * @return mixed
+     */
     public function getProperty($iblockId, $code) {
         /** @compatibility filter or code */
         $filter = is_array($code) ? $code : array(
@@ -297,16 +432,10 @@ class IblockHelper extends Helper
         return $this->prepareProperty($property);
     }
 
-    protected function prepareProperty($property) {
-        if ($property && $property['PROPERTY_TYPE'] == 'L' && $property['IBLOCK_ID'] && $property['ID']) {
-            $property['VALUES'] = $this->getPropertyEnums(array(
-                'IBLOCK_ID' => $property['IBLOCK_ID'],
-                'PROPERTY_ID' => $property['ID'],
-            ));
-        }
-        return $property;
-    }
-
+    /**
+     * @param array $filter
+     * @return array
+     */
     public function getPropertyEnums($filter = array()) {
         $result = array();
 
@@ -317,6 +446,11 @@ class IblockHelper extends Helper
         return $result;
     }
 
+    /**
+     * @param $iblockId
+     * @param $propertyId
+     * @return array
+     */
     public function getPropertyEnumValues($iblockId, $propertyId) {
         return $this->getPropertyEnums(array(
             'IBLOCK_ID' => $iblockId,
@@ -324,11 +458,21 @@ class IblockHelper extends Helper
         ));
     }
 
+    /**
+     * @param $iblockId
+     * @param $code
+     * @return int
+     */
     public function getPropertyId($iblockId, $code) {
         $item = $this->getProperty($iblockId, $code);
         return ($item && isset($item['ID'])) ? $item['ID'] : 0;
     }
 
+    /**
+     * @param $iblockId
+     * @param array $filter
+     * @return array
+     */
     public function getProperties($iblockId, $filter = array()) {
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
@@ -355,6 +499,12 @@ class IblockHelper extends Helper
         return $result;
     }
 
+    /**
+     * @param $iblockId
+     * @param $fields
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addPropertyIfNotExists($iblockId, $fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
@@ -367,6 +517,12 @@ class IblockHelper extends Helper
 
     }
 
+    /**
+     * @param $iblockId
+     * @param $fields
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addProperty($iblockId, $fields) {
 
         $default = array(
@@ -418,6 +574,12 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * @param $iblockId
+     * @param $code
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deletePropertyIfExists($iblockId, $code) {
         $property = $this->getProperty($iblockId, $code);
         if (!$property) {
@@ -428,6 +590,11 @@ class IblockHelper extends Helper
 
     }
 
+    /**
+     * @param $propertyId
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deletePropertyById($propertyId) {
         $ib = new \CIBlockProperty;
         if ($ib->Delete($propertyId)) {
@@ -437,6 +604,13 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * @param $iblockId
+     * @param $code
+     * @param $fields
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updatePropertyIfExists($iblockId, $code, $fields) {
         $property = $this->getProperty($iblockId, $code);
         if (!$property) {
@@ -445,6 +619,12 @@ class IblockHelper extends Helper
         return $this->updatePropertyById($property['ID'], $fields);
     }
 
+    /**
+     * @param $propertyId
+     * @param $fields
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updatePropertyById($propertyId, $fields) {
         if (!empty($fields['VALUES']) && !isset($fields['PROPERTY_TYPE'])) {
             $fields['PROPERTY_TYPE'] = 'L';
@@ -499,6 +679,11 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * @param $iblockId
+     * @param $code
+     * @return array
+     */
     public function getElement($iblockId, $code) {
         /** @compatibility filter or code */
         $filter = is_array($code) ? $code : array(
@@ -521,11 +706,22 @@ class IblockHelper extends Helper
         ))->Fetch();
     }
 
+    /**
+     * @param $iblockId
+     * @param $code
+     * @return int|mixed
+     */
     public function getElementId($iblockId, $code) {
         $item = $this->getElement($iblockId, $code);
         return ($item && isset($item['ID'])) ? $item['ID'] : 0;
     }
 
+    /**
+     * @param $iblockId
+     * @param array $filter
+     * @param array $select
+     * @return array
+     */
     public function getElements($iblockId, $filter = array(), $select = array()) {
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
@@ -549,6 +745,13 @@ class IblockHelper extends Helper
         return $list;
     }
 
+    /**
+     * @param $iblockId
+     * @param $fields
+     * @param array $props
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addElementIfNotExists($iblockId, $fields, $props = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
@@ -560,6 +763,13 @@ class IblockHelper extends Helper
         return $this->addElement($iblockId, $fields, $props);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $fields
+     * @param array $props
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addElement($iblockId, $fields = array(), $props = array()) {
         $default = array(
             "NAME" => "element",
@@ -586,6 +796,13 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $fields
+     * @param array $props
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateElementIfExists($iblockId, $fields = array(), $props = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
@@ -600,6 +817,13 @@ class IblockHelper extends Helper
         return $this->updateElement($item['ID'], $fields, $props);
     }
 
+    /**
+     * @param $elementId
+     * @param array $fields
+     * @param array $props
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateElement($elementId, $fields = array(), $props = array()) {
         $iblockId = !empty($fields['IBLOCK_ID']) ? $fields['IBLOCK_ID'] : false;
         unset($fields['IBLOCK_ID']);
@@ -618,6 +842,12 @@ class IblockHelper extends Helper
         return $elementId;
     }
 
+    /**
+     * @param $iblockId
+     * @param $code
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteElementIfExists($iblockId, $code) {
         $item = $this->getElement($iblockId, $code);
 
@@ -628,6 +858,11 @@ class IblockHelper extends Helper
         return $this->deleteElement($item['ID']);
     }
 
+    /**
+     * @param $elementId
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteElement($elementId) {
         $ib = new \CIBlockElement;
         if ($ib->Delete($elementId)) {
@@ -637,6 +872,11 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * @param $iblockId
+     * @param $code
+     * @return array
+     */
     public function getSection($iblockId, $code) {
         /** @compatibility filter or code */
         $filter = is_array($code) ? $code : array(
@@ -657,11 +897,21 @@ class IblockHelper extends Helper
         ))->Fetch();
     }
 
+    /**
+     * @param $iblockId
+     * @param $code
+     * @return int|mixed
+     */
     public function getSectionId($iblockId, $code) {
         $item = $this->getSection($iblockId, $code);
         return ($item && isset($item['ID'])) ? $item['ID'] : 0;
     }
 
+    /**
+     * @param $iblockId
+     * @param array $filter
+     * @return array
+     */
     public function getSections($iblockId, $filter = array()) {
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
@@ -683,6 +933,12 @@ class IblockHelper extends Helper
         return $list;
     }
 
+    /**
+     * @param $iblockId
+     * @param $fields
+     * @return bool|int|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addSectionIfNotExists($iblockId, $fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
@@ -695,6 +951,12 @@ class IblockHelper extends Helper
 
     }
 
+    /**
+     * @param $iblockId
+     * @param array $fields
+     * @return bool|int
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function addSection($iblockId, $fields = array()) {
         $default = array(
             "ACTIVE" => "Y",
@@ -720,6 +982,12 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * @param $iblockId
+     * @param $fields
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateSectionIfExists($iblockId, $fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
@@ -734,6 +1002,12 @@ class IblockHelper extends Helper
 
     }
 
+    /**
+     * @param $sectionId
+     * @param $fields
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function updateSection($sectionId, $fields) {
         $ib = new \CIBlockSection;
         if ($ib->Update($sectionId, $fields)) {
@@ -743,6 +1017,12 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * @param $iblockId
+     * @param $code
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteSectionIfExists($iblockId, $code) {
         $item = $this->getSection($iblockId, $code);
         if (!$item) {
@@ -753,6 +1033,11 @@ class IblockHelper extends Helper
 
     }
 
+    /**
+     * @param $sectionId
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function deleteSection($sectionId) {
         $ib = new \CIBlockSection;
         if ($ib->Delete($sectionId)) {
@@ -762,6 +1047,10 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * @param $typeId
+     * @return array
+     */
     public function getIblockTypeLangs($typeId) {
         $result = array();
         $dbres = \CLanguage::GetList($lby = "sort", $lorder = "asc");
@@ -778,9 +1067,11 @@ class IblockHelper extends Helper
         return $result;
     }
 
-
-    //version 2
-
+    /**
+     * @param array $fields
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function saveIblockType($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
 
@@ -806,6 +1097,11 @@ class IblockHelper extends Helper
         return $ok;
     }
 
+    /**
+     * @param array $fields
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function saveIblock($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID', 'LID'));
 
@@ -830,6 +1126,11 @@ class IblockHelper extends Helper
         return $ok;
     }
 
+    /**
+     * @param $iblockId
+     * @param array $fields
+     * @return bool
+     */
     public function saveIblockFields($iblockId, $fields = array()) {
         $exists = \CIBlock::GetFields($iblockId);
 
@@ -854,6 +1155,12 @@ class IblockHelper extends Helper
         return true;
     }
 
+    /**
+     * @param $iblockId
+     * @param $fields
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function saveProperty($iblockId, $fields) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE'));
 
@@ -878,22 +1185,23 @@ class IblockHelper extends Helper
         return $ok;
     }
 
-    //exports
-
+    /**
+     * Данные подготовлены для экспорта в миграцию или схему
+     * @param $typeId
+     * @return mixed
+     */
     public function exportIblockType($typeId) {
         return $this->prepareExportIblockType(
             $this->getIblockType($typeId)
         );
     }
 
-    protected function prepareExportIblockType($item) {
-        if (empty($item)) {
-            return $item;
-        }
-
-        return $item;
-    }
-
+    /**
+     * Данные подготовлены для экспорта в миграцию или схему
+     * @param $iblockId
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function exportIblock($iblockId) {
         $export = $this->prepareExportIblock(
             $this->getIblock(array('ID' => $iblockId))
@@ -906,6 +1214,11 @@ class IblockHelper extends Helper
         $this->throwException(__METHOD__, 'code not found');
     }
 
+    /**
+     * Данные подготовлены для экспорта в миграцию или схему
+     * @param array $filter
+     * @return array
+     */
     public function exportIblocks($filter = array()) {
         $exports = array();
         $items = $this->getIblocks($filter);
@@ -915,6 +1228,166 @@ class IblockHelper extends Helper
             }
         }
         return $exports;
+    }
+
+    /**
+     * Данные подготовлены для экспорта в миграцию или схему
+     * @param $iblockId
+     * @return array
+     */
+    public function exportIblockFields($iblockId) {
+        return $this->prepareExportIblockFields(
+            $this->getIblockFields($iblockId)
+        );
+    }
+
+    /**
+     * Данные подготовлены для экспорта в миграцию или схему
+     * @param $iblockId
+     * @param bool $code
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
+    public function exportProperty($iblockId, $code = false) {
+        $export = $this->prepareExportProperty(
+            $this->getProperty($iblockId, $code)
+        );
+
+        if (!empty($export['CODE'])) {
+            return $export;
+        }
+
+        $this->throwException(__METHOD__, 'code not found');
+    }
+
+    /**
+     * Данные подготовлены для экспорта в миграцию или схему
+     * @param $iblockId
+     * @param array $filter
+     * @return array
+     */
+    public function exportProperties($iblockId, $filter = array()) {
+        $exports = array();
+        $items = $this->getProperties($iblockId, $filter);
+        foreach ($items as $item) {
+            if (!empty($item['CODE'])) {
+                $exports[] = $this->prepareExportProperty($item);
+            }
+        }
+        return $exports;
+    }
+
+    /**
+     * @deprecated
+     * @param $iblockId
+     * @param $code
+     * @return bool
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
+    public function deleteProperty($iblockId, $code) {
+        return $this->deletePropertyIfExists($iblockId, $code);
+    }
+
+    /**
+     * @deprecated
+     * @param $iblockId
+     * @param $code
+     * @param $fields
+     * @return bool|mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
+    public function updateProperty($iblockId, $code, $fields) {
+        return $this->updatePropertyIfExists($iblockId, $code, $fields);
+    }
+
+    /**
+     * @deprecated
+     * @param $iblockId
+     * @param $fields
+     */
+    public function mergeIblockFields($iblockId, $fields) {
+        $this->saveIblockFields($iblockId, $fields);
+    }
+
+    /**
+     * @param $iblockId
+     * @param $fields
+     * @return bool
+     */
+    public function updateIblockFields($iblockId, $fields) {
+        if ($iblockId && !empty($fields)) {
+            \CIBlock::SetFields($iblockId, $fields);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @deprecated
+     * @param $typeId
+     * @return array
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
+    public function findIblockType($typeId) {
+        return $this->getIblockTypeIfExists($typeId);
+    }
+
+    /**
+     * @deprecated
+     * @param $code
+     * @param string $typeId
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
+    public function findIblockId($code, $typeId = '') {
+        return $this->getIblockIdIfExists($code, $typeId);
+    }
+
+    /**
+     * @deprecated
+     * @param $code
+     * @param string $typeId
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
+    public function findIblock($code, $typeId = '') {
+        return $this->getIblockIfExists($code, $typeId);
+    }
+
+    /**
+     * @deprecated
+     * @param $typeId
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
+    public function findIblockTypeId($typeId) {
+        return $this->getIblockTypeIdIfExists($typeId);
+    }
+
+    protected function prepareIblock($item) {
+        if (empty($item['ID'])) {
+            return $item;
+        }
+        $item['LID'] = $this->getIblockSites($item['ID']);
+        return $item;
+    }
+
+    protected function prepareProperty($property) {
+        if ($property && $property['PROPERTY_TYPE'] == 'L' && $property['IBLOCK_ID'] && $property['ID']) {
+            $property['VALUES'] = $this->getPropertyEnums(array(
+                'IBLOCK_ID' => $property['IBLOCK_ID'],
+                'PROPERTY_ID' => $property['ID'],
+            ));
+        }
+        return $property;
+    }
+
+    protected function prepareExportIblockType($item) {
+        if (empty($item)) {
+            return $item;
+        }
+
+        return $item;
     }
 
     protected function prepareExportIblockFields($fields) {
@@ -931,12 +1404,6 @@ class IblockHelper extends Helper
         }
 
         return $exportFields;
-    }
-
-    public function exportIblockFields($iblockId) {
-        return $this->prepareExportIblockFields(
-            $this->getIblockFields($iblockId)
-        );
     }
 
     protected function prepareExportIblock($iblock) {
@@ -989,72 +1456,5 @@ class IblockHelper extends Helper
         }
 
         return $prop;
-    }
-
-    public function exportProperty($iblockId, $code = false) {
-        $export = $this->prepareExportProperty(
-            $this->getProperty($iblockId, $code)
-        );
-
-        if (!empty($export['CODE'])) {
-            return $export;
-        }
-
-        $this->throwException(__METHOD__, 'code not found');
-    }
-
-    public function exportProperties($iblockId, $filter = array()) {
-        $exports = array();
-        $items = $this->getProperties($iblockId, $filter);
-        foreach ($items as $item) {
-            if (!empty($item['CODE'])) {
-                $exports[] = $this->prepareExportProperty($item);
-            }
-        }
-        return $exports;
-    }
-
-    /* @deprecated */
-    public function deleteProperty($iblockId, $code) {
-        return $this->deletePropertyIfExists($iblockId, $code);
-    }
-
-    /* @deprecated */
-    public function updateProperty($iblockId, $code, $fields) {
-        return $this->updatePropertyIfExists($iblockId, $code, $fields);
-    }
-
-    /** @deprecated */
-    public function mergeIblockFields($iblockId, $fields) {
-        $this->saveIblockFields($iblockId, $fields);
-    }
-
-
-    public function updateIblockFields($iblockId, $fields) {
-        if ($iblockId && !empty($fields)) {
-            \CIBlock::SetFields($iblockId, $fields);
-            return true;
-        }
-        return false;
-    }
-
-    /** @deprecated */
-    public function findIblockType($typeId) {
-        return $this->getIblockTypeIfExists($typeId);
-    }
-
-    /** @deprecated */
-    public function findIblockId($code, $typeId = '') {
-        return $this->getIblockIdIfExists($code, $typeId);
-    }
-
-    /** @deprecated */
-    public function findIblock($code, $typeId = '') {
-        return $this->getIblockIfExists($code, $typeId);
-    }
-
-    /** @deprecated */
-    public function findIblockTypeId($typeId) {
-        return $this->getIblockTypeIdIfExists($typeId);
     }
 }

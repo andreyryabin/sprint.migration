@@ -7,6 +7,10 @@ use Sprint\Migration\Helper;
 class SiteHelper extends Helper
 {
 
+    /**
+     * @return mixed
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function getDefaultSiteIdIfExists() {
         $by = 'def';
         $order = 'desc';
@@ -21,6 +25,10 @@ class SiteHelper extends Helper
         $this->throwException(__METHOD__, 'Default site not found');
     }
 
+    /**
+     * @param array $filter
+     * @return array
+     */
     public function getSites($filter = array()) {
         $by = 'def';
         $order = 'desc';
@@ -35,6 +43,10 @@ class SiteHelper extends Helper
         return $sids;
     }
 
+    /**
+     * @return array
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     public function getSitesIfExists() {
         $items = $this->getSites(array('ACTIVE' => 'Y'));
         if (!empty($items)) {
@@ -43,6 +55,10 @@ class SiteHelper extends Helper
         $this->throwException(__METHOD__, 'Active sites not found');
     }
 
+    /**
+     * @param $siteId
+     * @return array
+     */
     public function getSiteTemplates($siteId) {
         $templates = array();
 
@@ -58,6 +74,11 @@ class SiteHelper extends Helper
         return $templates;
     }
 
+    /**
+     * @param $siteId
+     * @param array $templates
+     * @return bool
+     */
     public function setSiteTemplates($siteId, $templates = array()) {
         $sort = 150;
 
