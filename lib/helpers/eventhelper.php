@@ -226,19 +226,22 @@ class EventHelper extends Helper
         $fields = $this->prepareExportEventMessage($fields);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->addEventMessage($eventName, $fields);
+            $ok = $this->getMode('test') ? true : $this->addEventMessage($eventName, $fields);
             $this->outNoticeIf($ok, 'Почтовый шаблон %s:%s: добавлен', $eventName, $fields['SUBJECT']);
             return $ok;
         }
 
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->updateEventMessageById($exists['ID'], $fields);
+        if ($this->hasDiff($exportExists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->updateEventMessageById($exists['ID'], $fields);
             $this->outNoticeIf($ok, 'Почтовый шаблон %s:%s: обновлен', $eventName, $fields['SUBJECT']);
+            $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
-        $ok = ($this->testMode) ? true : $eventName;
-        $this->outIf($ok, 'Почтовый шаблон %s:%s: совпадает', $eventName, $fields['SUBJECT']);
+        $ok = $this->getMode('test') ? true : $eventName;
+        if ($this->getMode('out_equal')) {
+            $this->outIf($ok, 'Почтовый шаблон %s:%s: совпадает', $eventName, $fields['SUBJECT']);
+        }
         return $ok;
     }
 
@@ -262,19 +265,22 @@ class EventHelper extends Helper
         $fields = $this->prepareExportEventType($fields);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->addEventType($eventName, $fields);
+            $ok = $this->getMode('test') ? true : $this->addEventType($eventName, $fields);
             $this->outNoticeIf($ok, 'Тип почтового события %s:%s: добавлен', $eventName, $fields['LID']);
             return $ok;
         }
 
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->updateEventTypeById($exists['ID'], $fields);
+        if ($this->hasDiff($exportExists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->updateEventTypeById($exists['ID'], $fields);
             $this->outNoticeIf($ok, 'Тип почтового события %s:%s: обновлен', $eventName, $fields['LID']);
+            $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
-        $ok = ($this->testMode) ? true : $eventName;
-        $this->outIf($ok, 'Тип почтового события %s:%s: совпадает', $eventName, $fields['LID']);
+        $ok = $this->getMode('test') ? true : $eventName;
+        if ($this->getMode('out_equal')) {
+            $this->outIf($ok, 'Тип почтового события %s:%s: совпадает', $eventName, $fields['LID']);
+        }
         return $ok;
     }
 

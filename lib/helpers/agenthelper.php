@@ -120,7 +120,7 @@ class AgentHelper extends Helper
         $fields = $this->prepareExportAgent($fields);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->addAgent($fields);
+            $ok = $this->getMode('test') ? true : $this->addAgent($fields);
             $this->outNoticeIf($ok, 'Агент %s: добавлен', $fields['NAME']);
             return $ok;
         }
@@ -130,15 +130,18 @@ class AgentHelper extends Helper
             unset($exportExists['NEXT_EXEC']);
         }
 
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->updateAgent($fields);
+        if ($this->hasDiff($exportExists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->updateAgent($fields);
             $this->outNoticeIf($ok, 'Агент %s: обновлен', $fields['NAME']);
+            $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
 
-        $ok = ($this->testMode) ? true : $exists['ID'];
-        $this->outIf($ok, 'Агент %s: совпадает', $fields['NAME']);
+        $ok = $this->getMode('test') ? true : $exists['ID'];
+        if ($this->getMode('out_equal')) {
+            $this->outIf($ok, 'Агент %s: совпадает', $fields['NAME']);
+        }
         return $ok;
     }
 

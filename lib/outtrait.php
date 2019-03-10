@@ -49,5 +49,12 @@ trait OutTrait
         call_user_func_array(array('Sprint\Migration\Out', 'outNoticeIf'), func_get_args());
     }
 
+    public function outDiff($arr1, $arr2) {
+        call_user_func_array(array('Sprint\Migration\Out', 'outDiff'), func_get_args());
+    }
+
+    public function outDiffIf($cond, $arr1, $arr2) {
+        call_user_func_array(array('Sprint\Migration\Out', 'outDiffIf'), func_get_args());
+    }
 
 }

@@ -119,12 +119,15 @@ class AdminIblockHelper extends Helper
      */
     public function saveElementForm($iblockId, $elementForm = array(), $params = array()) {
         $exists = $this->exportElementForm($iblockId, $params);
-        if ($exists != $elementForm) {
-            $ok = ($this->testMode) ? true : $this->buildElementForm($iblockId, $elementForm, $params);
+        if ($this->hasDiff($exists, $elementForm)) {
+            $ok = $this->getMode('test') ? true : $this->buildElementForm($iblockId, $elementForm, $params);
             $this->outNoticeIf($ok, 'Инфоблок %s: форма редактирования сохранена', $iblockId);
+            $this->outDiffIf($ok, $exists, $elementForm);
             return $ok;
         } else {
-            $this->out('Инфоблок %s: форма редактирования совпадает', $iblockId);
+            if ($this->getMode('out_equal')) {
+                $this->out('Инфоблок %s: форма редактирования совпадает', $iblockId);
+            }
             return true;
         }
     }

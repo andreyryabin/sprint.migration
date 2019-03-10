@@ -15,7 +15,10 @@ class Helper
      */
     public $lastError = '';
 
-    protected $testMode = 0;
+    private $mode = array(
+        'test' => 0,
+        'out_equal' => 0,
+    );
 
     /**
      * @deprecated
@@ -25,8 +28,25 @@ class Helper
         return $this->lastError;
     }
 
-    public function setTestMode($testMode = 1) {
-        $this->testMode = ($testMode) ? 1 : 0;
+    public function getMode($key = false) {
+        if ($key) {
+            return isset($this->mode[$key]) ? $this->mode[$key] : 0;
+        } else {
+            return $this->mode;
+        }
+    }
+
+    public function setMode($key, $val = 1) {
+        if ($key instanceof Helper) {
+            $this->mode = $key->getMode();
+        } else {
+            $val = ($val) ? 1 : 0;
+            $this->mode[$key] = $val;
+        }
+    }
+
+    public function setTestMode($val = 1) {
+        $this->setMode('test', $val);
     }
 
     public function throwException($method, $msg, $var1 = null, $var2 = null) {
@@ -41,8 +61,12 @@ class Helper
         Throw new HelperException($msg);
     }
 
-    public function isEnabled(){
+    public function isEnabled() {
         return true;
+    }
+
+    protected function hasDiff($exists, $fields) {
+        return ($exists != $fields);
     }
 
     protected function checkModules($names = array()) {

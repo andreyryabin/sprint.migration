@@ -65,7 +65,7 @@ class HlblockHelper extends Helper
         $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
 
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setTestMode($this->testMode);
+        $entityHelper->setMode($this);
         return $entityHelper->getUserTypeEntities('HLBLOCK_' . $hlblockId);
     }
 
@@ -83,7 +83,7 @@ class HlblockHelper extends Helper
         $field['ENTITY_ID'] = 'HLBLOCK_' . $hlblockId;
 
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setTestMode($this->testMode);
+        $entityHelper->setMode($this);
         return $entityHelper->saveUserTypeEntity($field);
     }
 
@@ -104,20 +104,23 @@ class HlblockHelper extends Helper
         $fields = $this->prepareExportHlblock($fields);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->addHlblock($fields);
+            $ok = $this->getMode('test') ? true : $this->addHlblock($fields);
             $this->outNoticeIf($ok, 'Highload-блок %s: добавлен', $fields['NAME']);
             return $ok;
         }
 
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->updateHlblock($exists['ID'], $fields);
+        if ($this->hasDiff($exportExists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->updateHlblock($exists['ID'], $fields);
             $this->outNoticeIf($ok, 'Highload-блок %s: обновлен', $fields['NAME']);
+            $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
 
-        $ok = ($this->testMode) ? true : $exists['ID'];
-        $this->outIf($ok, 'Highload-блок %s: совпадает', $fields['NAME']);
+        $ok = $this->getMode('test') ? true : $exists['ID'];
+        if ($this->getMode('out_equal')) {
+            $this->outIf($ok, 'Highload-блок %s: совпадает', $fields['NAME']);
+        }
         return $ok;
     }
 
@@ -134,7 +137,7 @@ class HlblockHelper extends Helper
         $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
 
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setTestMode($this->testMode);
+        $entityHelper->setMode($this);
         return $entityHelper->deleteUserTypeEntity('HLBLOCK_' . $hlblockId, $fieldName);
     }
 

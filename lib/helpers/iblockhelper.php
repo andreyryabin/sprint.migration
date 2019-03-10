@@ -1107,25 +1107,29 @@ class IblockHelper extends Helper
     public function saveIblockType($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('ID'));
 
-        $exists = $this->getIblockType($fields['ID']);
-        $exportExists = $this->prepareExportIblockType($exists);
+        $item = $this->getIblockType($fields['ID']);
+        $exists = $this->prepareExportIblockType($item);
         $fields = $this->prepareExportIblockType($fields);
 
-        if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->addIblockType($fields);
+        if (empty($item)) {
+            $ok = $this->getMode('test') ? true : $this->addIblockType($fields);
             $this->outNoticeIf($ok, 'Тип инфоблока %s: добавлен', $fields['ID']);
             return $ok;
         }
 
 
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->updateIblockType($exists['ID'], $fields);
+        if ($this->hasDiff($exists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->updateIblockType($item['ID'], $fields);
             $this->outNoticeIf($ok, 'Тип инфоблока %s: обновлен', $fields['ID']);
+            $this->outDiffIf($ok, $exists, $fields);
+
             return $ok;
         }
 
-        $ok = ($this->testMode) ? true : $fields['ID'];
-        $this->outIf($ok, 'Тип инфоблока %s: совпадает', $fields['ID']);
+        $ok = $this->getMode('test') ? true : $fields['ID'];
+        if ($this->getMode('out_equal')){
+            $this->outIf($ok, 'Тип инфоблока %s: совпадает', $fields['ID']);
+        }
         return $ok;
     }
 
@@ -1139,24 +1143,27 @@ class IblockHelper extends Helper
     public function saveIblock($fields = array()) {
         $this->checkRequiredKeys(__METHOD__, $fields, array('CODE', 'IBLOCK_TYPE_ID', 'LID'));
 
-        $exists = $this->getIblock($fields['CODE'], $fields['IBLOCK_TYPE_ID']);
-        $exportExists = $this->prepareExportIblock($exists);
+        $item = $this->getIblock($fields['CODE'], $fields['IBLOCK_TYPE_ID']);
+        $exists = $this->prepareExportIblock($item);
         $fields = $this->prepareExportIblock($fields);
 
-        if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->addIblock($fields);
+        if (empty($item)) {
+            $ok = $this->getMode('test') ? true : $this->addIblock($fields);
             $this->outNoticeIf($ok, 'Инфоблок %s: добавлен', $fields['CODE']);
             return $ok;
         }
 
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->updateIblock($exists['ID'], $fields);
+        if ($this->hasDiff($exists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->updateIblock($item['ID'], $fields);
             $this->outNoticeIf($ok, 'Инфоблок %s: обновлен', $fields['CODE']);
+            $this->outDiffIf($ok, $exists, $fields);
             return $ok;
         }
 
-        $ok = ($this->testMode) ? true : $exists['ID'];
-        $this->outIf($ok, 'Инфоблок %s: совпадает', $fields['CODE']);
+        $ok = $this->getMode('test') ? true : $item['ID'];
+        if ($this->getMode('out_equal')){
+            $this->outIf($ok, 'Инфоблок %s: совпадает', $fields['CODE']);
+        }
         return $ok;
     }
 
@@ -1175,18 +1182,22 @@ class IblockHelper extends Helper
         $fields = array_replace_recursive($exportExists, $fields);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->updateIblockFields($iblockId, $fields);
+            $ok = $this->getMode('test') ? true : $this->updateIblockFields($iblockId, $fields);
             $this->outNoticeIf($ok, 'Инфоблок %s: поля добавлены', $iblockId);
             return $ok;
         }
 
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->updateIblockFields($iblockId, $fields);
+        if ($this->hasDiff($exportExists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->updateIblockFields($iblockId, $fields);
             $this->outNoticeIf($ok, 'Инфоблок %s: поля обновлены', $iblockId);
+            $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
-        $this->out('Инфоблок %s: поля совпадают', $iblockId);
+        if ($this->getMode('out_equal')) {
+            $this->out('Инфоблок %s: поля совпадают', $iblockId);
+        }
+
         return true;
     }
 
@@ -1206,19 +1217,22 @@ class IblockHelper extends Helper
         $fields = $this->prepareExportProperty($fields);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->addProperty($iblockId, $fields);
+            $ok = $this->getMode('test') ? true : $this->addProperty($iblockId, $fields);
             $this->outNoticeIf($ok, 'Инфоблок %s: свойство %s добавлено', $iblockId, $fields['CODE']);
             return $ok;
         }
 
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->updatePropertyById($exists['ID'], $fields);
+        if ($this->hasDiff($exportExists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->updatePropertyById($exists['ID'], $fields);
             $this->outNoticeIf($ok, 'Инфоблок %s: свойство %s обновлено', $iblockId, $fields['CODE']);
+            $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
-        $ok = ($this->testMode) ? true : $exists['ID'];
-        $this->outIf($ok, 'Инфоблок %s: свойство %s совпадает', $iblockId, $fields['CODE']);
+        $ok = $this->getMode('test') ? true : $exists['ID'];
+        if ($this->getMode('out_equal')) {
+            $this->outIf($ok, 'Инфоблок %s: свойство %s совпадает', $iblockId, $fields['CODE']);
+        }
         return $ok;
     }
 

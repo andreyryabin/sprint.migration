@@ -135,20 +135,23 @@ class UserGroupHelper extends Helper
         $fields = $this->prepareExportGroup($fields);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->addGroup($fields['STRING_ID'], $fields);
+            $ok = $this->getMode('test') ? true : $this->addGroup($fields['STRING_ID'], $fields);
             $this->outNoticeIf($ok, 'Группа %s: добавлена', $fields['NAME']);
             return $ok;
         }
 
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->updateGroup($exists['ID'], $fields);
+        if ($this->hasDiff($exportExists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->updateGroup($exists['ID'], $fields);
             $this->outNoticeIf($ok, 'Группа %s: обновлена', $fields['NAME']);
+            $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
 
-        $ok = ($this->testMode) ? true : $exists['ID'];
-        $this->outIf($ok, 'Группа %s: совпадает', $fields['NAME']);
+        $ok = $this->getMode('test') ? true : $exists['ID'];
+        if ($this->getMode('out_equal')) {
+            $this->outIf($ok, 'Группа %s: совпадает', $fields['NAME']);
+        }
         return $ok;
     }
 

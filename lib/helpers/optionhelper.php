@@ -72,20 +72,23 @@ class OptionHelper extends Helper
         ));
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->setOption($fields);
+            $ok = $this->getMode('test') ? true : $this->setOption($fields);
             $this->outNoticeIf($ok, 'Настройка %s:%s: добавлена', $fields['MODULE_ID'], $fields['NAME']);
             return $ok;
         }
 
-        if ($exists != $fields) {
-            $ok = ($this->testMode) ? true : $this->setOption($fields);
+        if ($this->hasDiff($exists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->setOption($fields);
             $this->outNoticeIf($ok, 'Настройка %s:%s: обновлена', $fields['MODULE_ID'], $fields['NAME']);
+            $this->outDiffIf($ok, $exists, $fields);
             return $ok;
         }
 
 
         $ok = true;
-        $this->outIf($ok, 'Настройка %s:%s: совпадает', $fields['MODULE_ID'], $fields['NAME']);
+        if ($this->getMode('out_equal')) {
+            $this->outIf($ok, 'Настройка %s:%s: совпадает', $fields['MODULE_ID'], $fields['NAME']);
+        }
         return $ok;
 
     }

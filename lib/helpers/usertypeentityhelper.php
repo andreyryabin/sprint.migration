@@ -393,7 +393,7 @@ class UserTypeEntityHelper extends Helper
         $fields = $this->prepareExportUserTypeEntity($fields, false);
 
         if (empty($exists)) {
-            $ok = ($this->testMode) ? true : $this->addUserTypeEntity(
+            $ok = $this->getMode('test') ? true : $this->addUserTypeEntity(
                 $fields['ENTITY_ID'],
                 $fields['FIELD_NAME'],
                 $fields
@@ -406,18 +406,28 @@ class UserTypeEntityHelper extends Helper
         unset($exportExists['MULTIPLE']);
         unset($fields['MULTIPLE']);
 
-        if ($exportExists != $fields) {
-            $ok = ($this->testMode) ? true : $this->updateUserTypeEntity($exists['ID'], $fields);
+        if ($this->hasDiff($exportExists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->updateUserTypeEntity($exists['ID'], $fields);
             $this->outNoticeIf($ok, 'Пользовательское поле %s: обновлено', $fields['FIELD_NAME']);
+            $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
-        $ok = ($this->testMode) ? true : $exists['ID'];
-        $this->outIf($ok, 'Пользовательское поле %s: совпадает', $fields['FIELD_NAME']);
+        $ok = $this->getMode('test') ? true : $exists['ID'];
+        if ($this->getMode('out_equal')) {
+            $this->outIf($ok, 'Пользовательское поле %s: совпадает', $fields['FIELD_NAME']);
+        }
         return $ok;
 
     }
 
+    /**
+     * @param $item
+     * @param bool $transformEntityId
+     * @return mixed
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Sprint\Migration\Exceptions\HelperException
+     */
     protected function prepareExportUserTypeEntity($item, $transformEntityId = false) {
         if (empty($item)) {
             return $item;
@@ -433,6 +443,11 @@ class UserTypeEntityHelper extends Helper
         return $item;
     }
 
+    /**
+     * @param $fieldId
+     * @param bool $full
+     * @return array
+     */
     protected function getEnumValues($fieldId, $full = false) {
         $obEnum = new \CUserFieldEnum;
         $dbres = $obEnum->GetList(array(), array("USER_FIELD_ID" => $fieldId));
@@ -454,6 +469,11 @@ class UserTypeEntityHelper extends Helper
         return $result;
     }
 
+    /**
+     * @param $enum
+     * @param array $haystack
+     * @return bool|mixed
+     */
     protected function searchEnum($enum, $haystack = array()) {
         foreach ($haystack as $item) {
             if (!empty($item['XML_ID']) && $item['XML_ID'] == $enum['XML_ID']) {

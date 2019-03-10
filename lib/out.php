@@ -22,7 +22,7 @@ class Out
         'b' => array("\x1b[1m", '<span style="font-weight:bold;color:#000">'),
     );
 
-    private static $needEol = false;
+    protected static $needEol = false;
 
     public static function out($msg, $var1 = null, $var2 = null) {
         if (func_num_args() > 1) {
@@ -216,6 +216,60 @@ class Out
         return $msg;
     }
 
+    public static function input($field) {
+        if (self::canOutAsHtml()) {
+            return false;
+        }
+
+        if (!empty($field['items'])) {
+            self::inputStructure($field);
+        } elseif (!empty($field['select'])) {
+            self::inputSelect($field);
+        } else {
+            self::inputText($field);
+        }
+
+        $val = fgets(STDIN);
+        $val = trim($val);
+
+        if ($field['multiple']) {
+            $val = explode(' ', $val);
+            $val = array_filter($val, function ($a) {
+                return !empty($a);
+            });
+        }
+
+        return $val;
+    }
+
+    public static function outDiffIf($cond, $arr1, $arr2){
+        if ($cond){
+            self::outDiff($arr1, $arr2);
+        }
+    }
+
+    public static function outDiff($arr1, $arr2) {
+        $diff1 = self::getArrayFlat(
+            self::getArrayDiff($arr2, $arr1)
+        );
+
+        $diff2 = self::getArrayFlat(
+            self::getArrayDiff($arr1, $arr2)
+        );
+
+        $diff = array_merge($diff1, $diff2);
+
+        foreach ($diff as $k => $v) {
+            if (isset($diff1[$k]) && isset($diff2[$k])) {
+                self::out($k . ': [red]' . $diff2[$k] . '[/] -> [green]' . $diff1[$k] . '[/]');
+            } elseif (isset($diff1[$k])) {
+                self::out($k . ': [green]' . $diff1[$k] . '[/]');
+            } else {
+                self::out($k . ': [red]' . $diff2[$k] . '[/]');
+            }
+        }
+    }
+
     protected static function outToHtml($msg) {
         $msg = self::prepareToHtml($msg);
         echo '<div class="sp-out">' . $msg . '</div>';
@@ -243,32 +297,6 @@ class Out
         return (php_sapi_name() == 'cli') ? 0 : 1;
     }
 
-    public static function input($field) {
-        if (self::canOutAsHtml()) {
-            return false;
-        }
-
-        if (!empty($field['items'])) {
-            self::inputStructure($field);
-        } elseif (!empty($field['select'])) {
-            self::inputSelect($field);
-        } else {
-            self::inputText($field);
-        }
-
-        $val = fgets(STDIN);
-        $val = trim($val);
-
-        if ($field['multiple']) {
-            $val = explode(' ', $val);
-            $val = array_filter($val, function ($a) {
-                return !empty($a);
-            });
-        }
-
-        return $val;
-    }
-
     protected static function inputText($field) {
         self::outToConsole($field['title'] . ':', '');
     }
@@ -289,4 +317,44 @@ class Out
         }
         self::outToConsole($field['title'] . ':', '');
     }
+
+    protected static function getArrayFlat($arr) {
+        $out = array();
+        self::makeArrayFlatRecursive($out, '', $arr);
+        return $out;
+    }
+
+    protected static function getArrayDiff($array1, $array2) {
+        return self::makeArrayDiffRecursive($array1, $array2);
+    }
+
+    protected static function makeArrayFlatRecursive(array &$out, $key, array $in) {
+        foreach ($in as $k => $v) {
+            if (is_array($v)) {
+                self::makeArrayFlatRecursive($out, $key . $k . '.', $v);
+            } else {
+                $out[$key . $k] = $v;
+            }
+        }
+    }
+
+    protected static function makeArrayDiffRecursive(array $array1, array $array2) {
+        $diff = array();
+        foreach ($array1 as $key => $value) {
+            if (is_array($value)) {
+                if (!array_key_exists($key, $array2) || !is_array($array2[$key])) {
+                    $diff[$key] = $value;
+                } else {
+                    $newDiff = self::makeArrayDiffRecursive($value, $array2[$key]);
+                    if (!empty($newDiff)) {
+                        $diff[$key] = $newDiff;
+                    }
+                }
+            } elseif (!array_key_exists($key, $array2) || $array2[$key] !== $value) {
+                $diff[$key] = $value;
+            }
+        }
+        return $diff;
+    }
+
 }
