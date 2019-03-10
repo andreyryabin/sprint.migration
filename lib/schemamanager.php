@@ -161,8 +161,10 @@ class SchemaManager
 
         $schema->setTestMode($this->testMode);
 
+        $title = $this->testMode ? 'test import' : 'import';
+
         if (!isset($this->params['index'])) {
-            $this->outInfo('%s (test import) start', $schema->getTitle());
+            $this->outInfo('%s (%s) start', $schema->getTitle(), $title);
 
             $this->params['index'] = 0;
             $schema->import();
@@ -188,7 +190,7 @@ class SchemaManager
         }
 
         $this->removeQueue($schema);
-        $this->out('%s (test import) success', $schema->getTitle());
+        $this->out('%s (%s) success', $schema->getTitle(), $title);
 
         return true;
     }
