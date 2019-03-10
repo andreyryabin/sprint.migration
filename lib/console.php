@@ -394,6 +394,7 @@ class Console
                     $schemaManager->import(array('name' => $select));
 
                 } elseif ($action == 'import') {
+                    $schemaManager->setTestMode(0);
                     $schemaManager->import(array('name' => $select));
 
                 } elseif ($action == 'export') {

@@ -18,6 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
 
     if ($_POST["step_code"] == "schema_test") {
         $schemaManager->setTestMode(1);
+    } else {
+        $schemaManager->setTestMode(0);
     }
 
     $ok = false;
