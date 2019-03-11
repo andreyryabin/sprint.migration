@@ -104,11 +104,7 @@ class IblockSchema extends AbstractSchema
 
         foreach ($schemaIblocks as $schemaIblock) {
             $iblockUid = $this->getUniqIblock($schemaIblock['iblock']);
-
-            foreach ($schemaIblock['props'] as $prop) {
-                $this->addToQueue('saveProperty', $iblockUid, $prop);
-            }
-
+            $this->addToQueue('saveProperties', $iblockUid, $schemaIblock['props']);
             $this->addToQueue('saveElementForm', $iblockUid, $schemaIblock['element_form']);
         }
 
@@ -161,12 +157,14 @@ class IblockSchema extends AbstractSchema
         }
     }
 
-    protected function saveProperty($iblockUid, $fields) {
+    protected function saveProperties($iblockUid, $properties) {
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
             $helper = HelperManager::getInstance();
             $helper->Iblock()->setTestMode($this->testMode);
-            $helper->Iblock()->saveProperty($iblockId, $fields);
+            foreach ($properties as $property) {
+                $helper->Iblock()->saveProperty($iblockId, $property);
+            }
         }
     }
 
