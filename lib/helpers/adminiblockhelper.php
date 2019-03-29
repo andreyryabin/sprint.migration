@@ -270,6 +270,8 @@ class AdminIblockHelper extends Helper
 
     protected function initializeVars($iblockId) {
         $this->props = array();
+        $this->titles = array();
+
         $this->iblock = \CIBlock::GetList(array('SORT' => 'ASC'), array(
             'ID' => $iblockId,
             'CHECK_PERMISSIONS' => 'N',
