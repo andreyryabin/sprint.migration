@@ -1455,7 +1455,7 @@ class IblockHelper extends Helper
 
         $exportFields = array();
         foreach ($fields as $code => $field) {
-            if ($field["VISIBLE"] == "N" || preg_match("/^(SECTION_|LOG_)/", $code)) {
+            if ($field["VISIBLE"] == "N" || preg_match("/^(LOG_)/", $code)) {
                 continue;
             }
             $exportFields[$code] = $field;
