@@ -176,6 +176,9 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_MARK_ERROR3" => "Миграция #VERSION# не изменена",
     "SPRINT_MIGRATION_MARK_ERROR4" => "Не найдено миграций для изменения",
 
+    "SPRINT_MIGRATION_DELETE_OK" => "Миграция #VERSION# удалена",
+    "SPRINT_MIGRATION_DELETE_ERROR1" => "Миграций для удаления не найдено",
+    "SPRINT_MIGRATION_DELETE_ERROR2" => "Миграция #VERSION# не найдена",
 
     "SPRINT_MIGRATION_CREATE" => "Создать миграцию",
     "SPRINT_MIGRATION_VERSION_NOT_FOUND" => "Миграция не найдена",

@@ -15,7 +15,8 @@ class Console
 
     private $argoptions = array();
 
-    public function __construct($args) {
+    public function __construct($args)
+    {
         $this->script = array_shift($args);
 
         $this->command = $this->initializeArgs($args);
@@ -33,7 +34,8 @@ class Console
 
     }
 
-    public function executeConsoleCommand() {
+    public function executeConsoleCommand()
+    {
         if (empty($this->command)) {
             $this->commandHelp();
             die(1);
@@ -47,7 +49,8 @@ class Console
         }
     }
 
-    public function authorizeAsLogin($login) {
+    public function authorizeAsLogin($login)
+    {
         global $USER;
         $dbres = \CUser::GetByLogin($login);
         $useritem = $dbres->Fetch();
@@ -56,7 +59,8 @@ class Console
         }
     }
 
-    public function authorizeAsAdmin() {
+    public function authorizeAsAdmin()
+    {
         global $USER;
 
         $groupitem = \CGroup::GetList($by, $order, array(
@@ -82,11 +86,13 @@ class Console
 
     }
 
-    public function commandRun() {
+    public function commandRun()
+    {
         $this->executeBuilder($this->getArg(0));
     }
 
-    public function commandCreate() {
+    public function commandCreate()
+    {
         /** @compability */
         $descr = $this->getArg(0);
         /** @compability */
@@ -104,7 +110,8 @@ class Console
         ));
     }
 
-    public function commandMark() {
+    public function commandMark()
+    {
         $search = $this->getArg(0);
         $status = $this->getArg('--as=');
 
@@ -119,7 +126,26 @@ class Console
         }
     }
 
-    public function commandList() {
+    public function commandDelete()
+    {
+        $results = $this->versionManager->deleteMigration($this->getArg(0));
+
+        foreach ($results as $result) {
+            if ($result['success']) {
+                Out::outSuccess($result['message']);
+            } else {
+                Out::outError($result['message']);
+            }
+        }
+    }
+
+    public function commandDel()
+    {
+        $this->commandDelete();
+    }
+
+    public function commandList()
+    {
         $search = $this->getArg('--search=');
 
         if ($this->getArg('--new')) {
@@ -187,7 +213,8 @@ class Console
 
     }
 
-    public function commandUp() {
+    public function commandUp()
+    {
         $versionName = $this->getArg(0);
 
         if (is_numeric($versionName)) {
@@ -206,7 +233,8 @@ class Console
         }
     }
 
-    public function commandDown() {
+    public function commandDown()
+    {
         $versionName = $this->getArg(0);
 
         if (is_numeric($versionName)) {
@@ -225,7 +253,8 @@ class Console
         }
     }
 
-    public function commandRedo() {
+    public function commandRedo()
+    {
         $version = $this->getArg(0);
         $force = $this->getArg('--force');
         if ($version) {
@@ -237,7 +266,8 @@ class Console
         }
     }
 
-    public function commandHelp() {
+    public function commandHelp()
+    {
         global $USER;
 
         Out::out(GetMessage('SPRINT_MIGRATION_MODULE_NAME'));
@@ -270,7 +300,8 @@ class Console
         Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
     }
 
-    public function commandConfig() {
+    public function commandConfig()
+    {
         $configValues = $this->versionConfig->getCurrent('values');
         $configTitle = $this->versionConfig->getCurrent('title');
 
@@ -298,15 +329,18 @@ class Console
 
     }
 
-    public function commandLs() {
+    public function commandLs()
+    {
         $this->commandList();
     }
 
-    public function commandAdd() {
+    public function commandAdd()
+    {
         $this->commandCreate();
     }
 
-    public function commandMigrate() {
+    public function commandMigrate()
+    {
         /** @compability */
         $status = $this->getArg('--down') ? 'installed' : 'new';
         $this->executeAll(array(
@@ -315,12 +349,14 @@ class Console
         ), $this->getArg('--force'));
     }
 
-    public function commandMi() {
+    public function commandMi()
+    {
         /** @compability */
         $this->commandMigrate();
     }
 
-    public function commandExecute() {
+    public function commandExecute()
+    {
         /** @compability */
         $version = $this->getArg(0);
         $force = $this->getArg('--force');
@@ -336,13 +372,15 @@ class Console
         }
     }
 
-    public function commandForce() {
+    public function commandForce()
+    {
         /** @compability */
         $this->addArg('--force');
         $this->commandExecute();
     }
 
-    public function commandSchema() {
+    public function commandSchema()
+    {
         $action = $this->getArg(0);
 
         $schemaManager = new SchemaManager($this->versionConfig);
@@ -418,7 +456,8 @@ class Console
         return true;
     }
 
-    protected function executeAll($filter, $force = false) {
+    protected function executeAll($filter, $force = false)
+    {
         $success = 0;
         $fails = 0;
 
@@ -449,7 +488,8 @@ class Console
         }
     }
 
-    protected function executeOnce($version, $action = 'up', $force = false) {
+    protected function executeOnce($version, $action = 'up', $force = false)
+    {
         $ok = $this->executeVersion($version, $action, $force);
 
         if (!$ok) {
@@ -457,7 +497,8 @@ class Console
         }
     }
 
-    protected function executeVersion($version, $action = 'up', $force = false) {
+    protected function executeVersion($version, $action = 'up', $force = false)
+    {
         $params = array();
 
         Out::out('%s (%s) start', $version, $action);
@@ -490,7 +531,8 @@ class Console
         return $success;
     }
 
-    protected function executeBuilder($from, $postvars = array()) {
+    protected function executeBuilder($from, $postvars = array())
+    {
         do {
 
             $builder = $this->versionManager->createBuilder($from, $postvars);
@@ -512,7 +554,8 @@ class Console
     }
 
 
-    protected function initializeArgs($args) {
+    protected function initializeArgs($args)
+    {
         foreach ($args as $val) {
             $this->addArg($val);
         }
@@ -536,7 +579,8 @@ class Console
         return $command;
     }
 
-    protected function addArg($arg) {
+    protected function addArg($arg)
+    {
         list($name, $val) = explode('=', $arg);
         $isoption = (0 === strpos($name, '--')) ? 1 : 0;
         if ($isoption) {
@@ -550,7 +594,8 @@ class Console
         }
     }
 
-    protected function getArg($name, $default = '') {
+    protected function getArg($name, $default = '')
+    {
         if (is_numeric($name)) {
             return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
         } else {
