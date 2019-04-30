@@ -43,9 +43,9 @@ require_once __DIR__ . '/../../bitrix/modules/sprint.migration/tools/migrate.php
 * php migrate.php add (создать новую миграцию)
 * php migrate.php ls  (показать список миграций )
 * php migrate.php up (накатить все миграции) 
-* php migrate.php up <version> (накатить выбранную миграцию)
+* php migrate.php up [version] (накатить выбранную миграцию)
 * php migrate.php down (откатить все миграции)
-* php migrate.php down <version> (откатить выбранную миграцию)
+* php migrate.php down [version] (откатить выбранную миграцию)
 
 Все команды: https://github.com/andreyryabin/sprint.migration/blob/master/commands.txt
 
