@@ -36,9 +36,14 @@ class VersionTable extends AbstractTable
      */
     public function addRecord($meta)
     {
-        $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `hash`) VALUES ("%s", "%s")',
-            $this->forSql($meta['version']),
-            $this->forSql($meta['hash'])
+
+        $version = $this->forSql($meta['version']);
+        $hash = $this->forSql($meta['hash']);
+        $tag = $this->forSql($meta['tag']);
+
+        $this->query('INSERT INTO `#TABLE1#` (`version`, `hash`, `tag`) VALUES ("%s", "%s", "%s") 
+                    ON DUPLICATE KEY UPDATE `hash` = "%s", `tag` = "%s"',
+            $version, $hash, $tag, $hash, $tag
         );
     }
 

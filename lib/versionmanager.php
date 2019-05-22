@@ -53,11 +53,8 @@ class VersionManager
         return $this->versionTable;
     }
 
-    public function startMigration($versionName, $action = 'up', $params = [], $force = false)
+    public function startMigration($versionName, $action = 'up', $params = [], $force = false, $tag = '')
     {
-        /* @global $APPLICATION CMain */
-        global $APPLICATION;
-
         if (isset($this->restarts[$versionName])) {
             unset($this->restarts[$versionName]);
         }
@@ -66,45 +63,25 @@ class VersionManager
 
         try {
 
-            $action = ($action == 'up') ? 'up' : 'down';
-
             $meta = $this->getVersionByName($versionName);
 
-            if (!$meta || empty($meta['class'])) {
-                throw new MigrationException('failed to initialize migration');
-            }
+            $this->checkStatusBeforeStart($force, $action, $meta);
 
-            if (!$force) {
-                if ($action == 'up' && $meta['status'] != 'new') {
-                    throw new MigrationException('migration already up');
-                }
+            $versionInstance = $this->getVersionInstance($meta);
 
-                if ($action == 'down' && $meta['status'] != 'installed') {
-                    throw new MigrationException('migration already down');
-                }
-            }
-
-            /** @var $versionInstance Version */
-            $versionInstance = new $meta['class'];
             $versionInstance->setParams($params);
 
             if ($action == 'up') {
-                $ok = $versionInstance->up();
-            } else {
-                $ok = $versionInstance->down();
-            }
 
-            if ($APPLICATION->GetException()) {
-                throw new MigrationException($APPLICATION->GetException()->GetString());
-            }
+                $this->checkResultAfterStart($versionInstance->up());
 
-            if ($ok === false) {
-                throw new MigrationException('migration returns false');
-            }
+                $meta['tag'] = $tag;
 
-            if ($action == 'up') {
                 $this->getVersionTable()->addRecord($meta);
             } else {
+
+                $this->checkResultAfterStart($versionInstance->down());
+
                 $this->getVersionTable()->removeRecord($meta);
             }
 
@@ -120,8 +97,51 @@ class VersionManager
             $this->lastException = $e;
         }
 
-
         return false;
+    }
+
+    /**
+     * @param $meta
+     * @throws MigrationException
+     * @return Version
+     */
+    protected function getVersionInstance($meta)
+    {
+        if (!$meta || empty($meta['class'])) {
+            throw new MigrationException('failed to initialize migration');
+        }
+
+        /** @var $versionInstance Version */
+        $versionInstance = new $meta['class'];
+
+        return $versionInstance;
+    }
+
+    protected function checkResultAfterStart($ok)
+    {
+        /* @global $APPLICATION CMain */
+        global $APPLICATION;
+
+        if ($APPLICATION->GetException()) {
+            throw new MigrationException($APPLICATION->GetException()->GetString());
+        }
+
+        if ($ok === false) {
+            throw new MigrationException('migration returns false');
+        }
+    }
+
+    protected function checkStatusBeforeStart($force, $action, $meta)
+    {
+        if (!$force) {
+            if ($action == 'up' && $meta['status'] != 'new') {
+                throw new MigrationException('migration already up');
+            }
+
+            if ($action == 'down' && $meta['status'] != 'installed') {
+                throw new MigrationException('migration already down');
+            }
+        }
     }
 
 
@@ -269,7 +289,7 @@ class VersionManager
         /** @var  $versionFilter array */
         $versionFilter = $this->getVersionConfig()->getVal('version_filter', []);
 
-        $filter = array_merge($versionFilter, ['status' => '', 'search' => ''], $filter);
+        $filter = array_merge($versionFilter, ['status' => '', 'search' => '', 'tag' => ''], $filter);
 
         $merge = [];
 
@@ -301,6 +321,7 @@ class VersionManager
                 $this->isVersionEnabled($meta) &&
                 $this->containsFilterStatus($meta, $filter) &&
                 $this->containsFilterSearch($meta, $filter) &&
+                $this->containsFilterTag($meta, $filter) &&
                 $this->containsFilterVersion($meta, $filter)
             ) {
                 $result[] = $meta;
@@ -319,14 +340,24 @@ class VersionManager
     {
         unset($filter['status']);
         unset($filter['search']);
+        unset($filter['tag']);
 
         foreach ($filter as $k => $v) {
-            if (empty($meta['versionfilter'][$k]) || $meta['versionfilter'][$k] != $v) {
+            if (empty($meta['version_filter'][$k]) || $meta['version_filter'][$k] != $v) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    protected function containsFilterTag($meta, $filter)
+    {
+        if (empty($filter['tag'])) {
+            return true;
+        }
+
+        return ($meta['tag'] == $filter['tag']);
     }
 
     protected function containsFilterSearch($meta, $filter)
@@ -335,7 +366,7 @@ class VersionManager
             return true;
         }
 
-        $textindex = $meta['version'] . $meta['description'];
+        $textindex = $meta['version'] . $meta['description'] . $meta['tag'];
         $searchword = $filter['search'];
 
         $textindex = Locale::convertToUtf8IfNeed($textindex);
@@ -376,6 +407,7 @@ class VersionManager
             'enabled' => true,
             'modified' => false,
             'hash' => '',
+            'tag' => '',
         ];
 
         if ($isRecord && $isFile) {
@@ -386,6 +418,10 @@ class VersionManager
             $meta['status'] = 'unknown';
         } else {
             return false;
+        }
+
+        if ($isRecord) {
+            $meta['tag'] = $record['tag'];
         }
 
         if (!$isFile) {
@@ -417,12 +453,12 @@ class VersionManager
             $reflect = new ReflectionClass($class);
             $props = $reflect->getDefaultProperties();
             $descr = $props['description'];
-            $filter = $props['versionfilter'];
+            $filter = $props['version_filter'];
         }
 
         $meta['class'] = $class;
         $meta['description'] = $this->purifyDescriptionForMeta($descr);
-        $meta['versionfilter'] = $filter;
+        $meta['version_filter'] = $filter;
         $meta['enabled'] = $enabled;
         $meta['hash'] = md5(file_get_contents($meta['location']));
 

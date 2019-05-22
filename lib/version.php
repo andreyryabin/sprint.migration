@@ -11,6 +11,8 @@ class Version
     use OutTrait;
 
     protected $description = "";
+
+    /** @deprecated */
     protected $versionFilter = [];
 
     protected $params = [];
@@ -44,6 +46,7 @@ class Version
         return $this->description;
     }
 
+    /** @deprecated  */
     public function getVersionFilter()
     {
         return $this->versionFilter;

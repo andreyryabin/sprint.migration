@@ -151,8 +151,6 @@ class Console
 
     public function commandList()
     {
-        $search = $this->getArg('--search=');
-
         if ($this->getArg('--new')) {
             $status = 'new';
         } elseif ($this->getArg('--installed')) {
@@ -163,7 +161,8 @@ class Console
 
         $versions = $this->versionManager->getVersions([
             'status' => $status,
-            'search' => $search,
+            'search' => $this->getArg('--search='),
+            'tag' => $this->getArg('--tag='),
         ]);
 
         if ($status) {
@@ -186,6 +185,7 @@ class Console
         $grid->setHeaders([
             'Version',
             'Status',
+            'Tag',
             'Description',
         ]);
 
@@ -197,6 +197,7 @@ class Console
             $grid->addRow([
                 $item['version'],
                 GetMessage('SPRINT_MIGRATION_META_' . strtoupper($item['status'])),
+                $item['tag'],
                 $item['description'],
             ]);
 
@@ -234,6 +235,7 @@ class Console
             $this->executeAll([
                 'search' => $this->getArg('--search='),
                 'status' => 'new',
+                'tag' => $this->getArg('--tag='),
             ], $this->getArg('--force'));
         }
     }
@@ -254,6 +256,7 @@ class Console
             $this->executeAll([
                 'search' => $this->getArg('--search='),
                 'status' => 'installed',
+                'tag' => $this->getArg('--tag='),
             ], $this->getArg('--force'));
         }
     }
@@ -261,10 +264,9 @@ class Console
     public function commandRedo()
     {
         $version = $this->getArg(0);
-        $force = $this->getArg('--force');
         if ($version) {
-            $this->executeVersion($version, 'down', $force);
-            $this->executeVersion($version, 'up', $force);
+            $this->executeVersion($version, 'down');
+            $this->executeVersion($version, 'up');
         } else {
             Out::out('Version not found!');
             die(1);
@@ -351,6 +353,7 @@ class Console
         $this->executeAll([
             'search' => $this->getArg('--search='),
             'status' => $status,
+            'tag' => $this->getArg('--tag='),
         ], $this->getArg('--force'));
     }
 
@@ -364,12 +367,11 @@ class Console
     {
         /** @compability */
         $version = $this->getArg(0);
-        $force = $this->getArg('--force');
         if ($version) {
             if ($this->getArg('--down')) {
-                $this->executeOnce($version, 'down', $force);
+                $this->executeOnce($version, 'down');
             } else {
-                $this->executeOnce($version, 'up', $force);
+                $this->executeOnce($version, 'up');
             }
         } else {
             Out::out('Version not found!');
@@ -461,7 +463,7 @@ class Console
         return true;
     }
 
-    protected function executeAll($filter, $force = false)
+    protected function executeAll($filter)
     {
         $success = 0;
         $fails = 0;
@@ -472,7 +474,7 @@ class Console
 
         foreach ($versions as $item) {
 
-            $ok = $this->executeVersion($item['version'], $action, $force);
+            $ok = $this->executeVersion($item['version'], $action);
 
             if ($ok) {
                 $success++;
@@ -493,17 +495,21 @@ class Console
         }
     }
 
-    protected function executeOnce($version, $action = 'up', $force = false)
+    protected function executeOnce($version, $action = 'up')
     {
-        $ok = $this->executeVersion($version, $action, $force);
+        $ok = $this->executeVersion($version, $action);
 
         if (!$ok) {
             die(1);
         }
     }
 
-    protected function executeVersion($version, $action = 'up', $force = false)
+    protected function executeVersion($version, $action = 'up')
     {
+
+        $tag = $this->getArg('--tag=', '');
+        $force = $this->getArg('--force');
+
         $params = [];
 
         Out::out('%s (%s) start', $version, $action);
@@ -511,7 +517,14 @@ class Console
         do {
             $exec = 0;
 
-            $success = $this->versionManager->startMigration($version, $action, $params, $force);
+            $success = $this->versionManager->startMigration(
+                $version,
+                $action,
+                $params,
+                $force,
+                $tag
+            );
+
             $restart = $this->versionManager->needRestart($version);
 
             if ($restart) {
