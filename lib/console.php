@@ -162,7 +162,6 @@ class Console
         $versions = $this->versionManager->getVersions([
             'status' => $status,
             'search' => $this->getArg('--search='),
-            'tag' => $this->getArg('--tag='),
         ]);
 
         if ($status) {
@@ -235,7 +234,6 @@ class Console
             $this->executeAll([
                 'search' => $this->getArg('--search='),
                 'status' => 'new',
-                'tag' => $this->getArg('--tag='),
             ], $this->getArg('--force'));
         }
     }
@@ -256,7 +254,6 @@ class Console
             $this->executeAll([
                 'search' => $this->getArg('--search='),
                 'status' => 'installed',
-                'tag' => $this->getArg('--tag='),
             ], $this->getArg('--force'));
         }
     }
@@ -353,7 +350,6 @@ class Console
         $this->executeAll([
             'search' => $this->getArg('--search='),
             'status' => $status,
-            'tag' => $this->getArg('--tag='),
         ], $this->getArg('--force'));
     }
 
