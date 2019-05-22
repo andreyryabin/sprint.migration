@@ -5,6 +5,7 @@ namespace Sprint\Migration;
 use CGroup;
 use CUser;
 use Exception;
+use Sprint\Migration\Exceptions\MigrationException;
 use Throwable;
 
 class Console
@@ -43,14 +44,12 @@ class Console
     {
         if (empty($this->command)) {
             $this->commandHelp();
-            die(1);
-        }
 
-        if (method_exists($this, $this->command)) {
+        } elseif (method_exists($this, $this->command)) {
             call_user_func([$this, $this->command]);
+
         } else {
-            Out::out('Command "%s" not found, see help', $this->command);
-            die(1);
+            $this->exitWithMessage(sprintf('Command "%s" not found, see help', $this->command));
         }
     }
 
@@ -126,8 +125,7 @@ class Console
                 Out::out($val['message']);
             }
         } else {
-            Out::out('Invalid arguments, see help');
-            die(1);
+            $this->exitWithMessage('Invalid arguments, see help');
         }
     }
 
@@ -224,8 +222,7 @@ class Console
 
         if (is_numeric($versionName)) {
             /** @deprecated */
-            Out::out('limit is no longer supported');
-            die(1);
+            $this->exitWithMessage('limit is no longer supported');
         }
 
         if ($this->versionManager->checkVersionName($versionName)) {
@@ -244,8 +241,7 @@ class Console
 
         if (is_numeric($versionName)) {
             /** @deprecated */
-            Out::out('limit is no longer supported');
-            die(1);
+            $this->exitWithMessage('limit is no longer supported');
         }
 
         if ($this->versionManager->checkVersionName($versionName)) {
@@ -265,8 +261,7 @@ class Console
             $this->executeVersion($version, 'down');
             $this->executeVersion($version, 'up');
         } else {
-            Out::out('Version not found!');
-            die(1);
+            $this->exitWithMessage('Version not found!');
         }
     }
 
@@ -370,8 +365,7 @@ class Console
                 $this->executeOnce($version, 'up');
             }
         } else {
-            Out::out('Version not found!');
-            die(1);
+            $this->exitWithMessage('Version not found!');
         }
     }
 
@@ -487,7 +481,7 @@ class Console
         Out::out('migrations (%s): %d', $action, $success);
 
         if ($fails) {
-            die(1);
+            $this->exitWithMessage('some migrations fails');
         }
     }
 
@@ -496,7 +490,7 @@ class Console
         $ok = $this->executeVersion($version, $action);
 
         if (!$ok) {
-            die(1);
+            $this->exitWithMessage('migration fail');
         }
     }
 
@@ -552,8 +546,7 @@ class Console
             $builder = $this->versionManager->createBuilder($from, $postvars);
 
             if (!$builder) {
-                Out::out('Builder not found');
-                die(1);
+                $this->exitWithMessage('Builder not found');
             }
 
             $builder->renderConsole();
@@ -615,6 +608,13 @@ class Console
         } else {
             return isset($this->argoptions[$name]) ? $this->argoptions[$name] : $default;
         }
+    }
+
+    protected function exitWithMessage($msg)
+    {
+        Out::outError($msg);
+
+        Throw new MigrationException();
     }
 
 }
