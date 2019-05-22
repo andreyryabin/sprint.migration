@@ -11,8 +11,8 @@ class SiteHelper extends Helper
 {
 
     /**
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function getDefaultSiteIdIfExists()
     {
@@ -49,8 +49,8 @@ class SiteHelper extends Helper
     }
 
     /**
-     * @return array
      * @throws HelperException
+     * @return array
      */
     public function getSitesIfExists()
     {

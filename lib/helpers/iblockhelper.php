@@ -23,8 +23,8 @@ class IblockHelper extends Helper
     /**
      * Получает тип инфоблока, бросает исключение если его не существует
      * @param $typeId
-     * @return array
      * @throws HelperException
+     * @return array
      */
     public function getIblockTypeIfExists($typeId)
     {
@@ -39,8 +39,8 @@ class IblockHelper extends Helper
     /**
      * Получает id типа инфоблока, бросает исключение если его не существует
      * @param $typeId
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function getIblockTypeIdIfExists($typeId)
     {
@@ -56,8 +56,8 @@ class IblockHelper extends Helper
      * Получает инфоблок, бросает исключение если его не существует
      * @param $code string|array - код или фильтр
      * @param string $typeId
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function getIblockIfExists($code, $typeId = '')
     {
@@ -73,8 +73,8 @@ class IblockHelper extends Helper
      * Получает id инфоблока, бросает исключение если его не существует
      * @param $code string|array - код или фильтр
      * @param string $typeId
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function getIblockIdIfExists($code, $typeId = '')
     {
@@ -140,8 +140,8 @@ class IblockHelper extends Helper
     /**
      * Добавляет тип инфоблока, если его не существует
      * @param array $fields , обязательные параметры - id типа инфоблока
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function addIblockTypeIfNotExists($fields = [])
     {
@@ -158,8 +158,8 @@ class IblockHelper extends Helper
     /**
      * Добавляет тип инфоблока
      * @param array $fields
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function addIblockType($fields = [])
     {
@@ -196,8 +196,8 @@ class IblockHelper extends Helper
      * Обновляет тип инфоблока
      * @param $iblockTypeId
      * @param array $fields
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function updateIblockType($iblockTypeId, $fields = [])
     {
@@ -212,8 +212,8 @@ class IblockHelper extends Helper
     /**
      * Удаляет тип инфоблока, если существует
      * @param $typeId
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteIblockTypeIfExists($typeId)
     {
@@ -229,8 +229,8 @@ class IblockHelper extends Helper
     /**
      * Удаляет тип инфоблока
      * @param $typeId
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteIblockType($typeId)
     {
@@ -310,8 +310,8 @@ class IblockHelper extends Helper
     /**
      * Добавляет инфоблок если его не существует
      * @param array $fields , обязательные параметры - код, тип инфоблока, id сайта
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function addIblockIfNotExists($fields = [])
     {
@@ -333,8 +333,8 @@ class IblockHelper extends Helper
     /**
      * Добавляет инфоблок
      * @param $fields , обязательные параметры - код, тип инфоблока, id сайта
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function addIblock($fields)
     {
@@ -373,8 +373,8 @@ class IblockHelper extends Helper
      * Обновляет инфоблок
      * @param $iblockId
      * @param array $fields
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function updateIblock($iblockId, $fields = [])
     {
@@ -391,8 +391,8 @@ class IblockHelper extends Helper
      * Обновляет инфоблок если он существует
      * @param $code
      * @param array $fields
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      */
     public function updateIblockIfExists($code, $fields = [])
     {
@@ -407,8 +407,8 @@ class IblockHelper extends Helper
      * Удаляет инфоблок если он существует
      * @param $code
      * @param string $typeId
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteIblockIfExists($code, $typeId = '')
     {
@@ -422,8 +422,8 @@ class IblockHelper extends Helper
     /**
      * Удаляет инфоблок
      * @param $iblockId
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteIblock($iblockId)
     {
@@ -542,8 +542,8 @@ class IblockHelper extends Helper
      * Добавляет свойство инфоблока если его не существует
      * @param $iblockId
      * @param $fields , обязательные параметры - код свойства
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function addPropertyIfNotExists($iblockId, $fields)
     {
@@ -562,8 +562,8 @@ class IblockHelper extends Helper
      * Добавляет свойство инфоблока
      * @param $iblockId
      * @param $fields
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function addProperty($iblockId, $fields)
     {
@@ -621,8 +621,8 @@ class IblockHelper extends Helper
      * Удаляет свойство инфоблока если оно существует
      * @param $iblockId
      * @param $code
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deletePropertyIfExists($iblockId, $code)
     {
@@ -638,8 +638,8 @@ class IblockHelper extends Helper
     /**
      * Удаляет свойство инфоблока
      * @param $propertyId
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deletePropertyById($propertyId)
     {
@@ -656,8 +656,8 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $code
      * @param $fields
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      */
     public function updatePropertyIfExists($iblockId, $code, $fields)
     {
@@ -672,8 +672,8 @@ class IblockHelper extends Helper
      * Обновляет свойство инфоблока
      * @param $propertyId
      * @param $fields
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function updatePropertyById($propertyId, $fields)
     {
@@ -810,8 +810,8 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $fields , обязательные параметры - код элемента
      * @param array $props
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      */
     public function addElementIfNotExists($iblockId, $fields, $props = [])
     {
@@ -830,8 +830,8 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param array $fields - поля
      * @param array $props - свойства
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function addElement($iblockId, $fields = [], $props = [])
     {
@@ -865,8 +865,8 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param array $fields , обязательные параметры - код элемента
      * @param array $props
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      */
     public function updateElementIfExists($iblockId, $fields = [], $props = [])
     {
@@ -888,8 +888,8 @@ class IblockHelper extends Helper
      * @param $elementId
      * @param array $fields
      * @param array $props
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function updateElement($elementId, $fields = [], $props = [])
     {
@@ -914,8 +914,8 @@ class IblockHelper extends Helper
      * Удаляет элемент инфоблока если он существует
      * @param $iblockId
      * @param $code
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteElementIfExists($iblockId, $code)
     {
@@ -931,8 +931,8 @@ class IblockHelper extends Helper
     /**
      * Удаляет элемент инфоблока
      * @param $elementId
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteElement($elementId)
     {
@@ -1015,8 +1015,8 @@ class IblockHelper extends Helper
      * Добавляет секцию инфоблока если она не существует
      * @param $iblockId
      * @param $fields , обязательные параметры - код сеции
-     * @return bool|int|mixed
      * @throws HelperException
+     * @return bool|int|mixed
      */
     public function addSectionIfNotExists($iblockId, $fields)
     {
@@ -1035,8 +1035,8 @@ class IblockHelper extends Helper
      * Добавляет секцию инфоблока
      * @param $iblockId
      * @param array $fields
-     * @return bool|int
      * @throws HelperException
+     * @return bool|int
      */
     public function addSection($iblockId, $fields = [])
     {
@@ -1068,8 +1068,8 @@ class IblockHelper extends Helper
      * Обновляет секцию инфоблока если она существует
      * @param $iblockId
      * @param $fields , обязательные параметры - код секции
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      */
     public function updateSectionIfExists($iblockId, $fields)
     {
@@ -1090,8 +1090,8 @@ class IblockHelper extends Helper
      * Обновляет секцию инфоблока
      * @param $sectionId
      * @param $fields
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function updateSection($sectionId, $fields)
     {
@@ -1107,8 +1107,8 @@ class IblockHelper extends Helper
      * Удаляет секцию инфоблока если она существует
      * @param $iblockId
      * @param $code
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteSectionIfExists($iblockId, $code)
     {
@@ -1124,8 +1124,8 @@ class IblockHelper extends Helper
     /**
      * Удаляет секцию инфоблока
      * @param $sectionId
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteSection($sectionId)
     {
@@ -1163,8 +1163,8 @@ class IblockHelper extends Helper
      * Сохраняет тип инфоблока
      * Создаст если не было, обновит если существует и отличается
      * @param array $fields , обязательные параметры - тип инфоблока
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      */
     public function saveIblockType($fields = [])
     {
@@ -1200,8 +1200,8 @@ class IblockHelper extends Helper
      * Сохраняет инфоблок
      * Создаст если не было, обновит если существует и отличается
      * @param array $fields , обязательные параметры - код, тип инфоблока, id сайта
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      */
     public function saveIblock($fields = [])
     {
@@ -1271,8 +1271,8 @@ class IblockHelper extends Helper
      * Создаст если не было, обновит если существует и отличается
      * @param $iblockId
      * @param $fields , обязательные параметры - код свойства
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      */
     public function saveProperty($iblockId, $fields)
     {
@@ -1319,8 +1319,8 @@ class IblockHelper extends Helper
      * Получает инфоблок
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $iblockId
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function exportIblock($iblockId)
     {
@@ -1371,8 +1371,8 @@ class IblockHelper extends Helper
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $iblockId
      * @param bool $code
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function exportProperty($iblockId, $code = false)
     {
@@ -1424,8 +1424,8 @@ class IblockHelper extends Helper
     /**
      * @param $iblockId
      * @param $code
-     * @return bool
      * @throws HelperException
+     * @return bool
      * @deprecated
      */
     public function deleteProperty($iblockId, $code)
@@ -1437,8 +1437,8 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $code
      * @param $fields
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      * @deprecated
      */
     public function updateProperty($iblockId, $code, $fields)
@@ -1458,8 +1458,8 @@ class IblockHelper extends Helper
 
     /**
      * @param $typeId
-     * @return array
      * @throws HelperException
+     * @return array
      * @deprecated
      */
     public function findIblockType($typeId)
@@ -1470,8 +1470,8 @@ class IblockHelper extends Helper
     /**
      * @param $code
      * @param string $typeId
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      * @deprecated
      */
     public function findIblockId($code, $typeId = '')
@@ -1482,8 +1482,8 @@ class IblockHelper extends Helper
     /**
      * @param $code
      * @param string $typeId
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      * @deprecated
      */
     public function findIblock($code, $typeId = '')
@@ -1493,8 +1493,8 @@ class IblockHelper extends Helper
 
     /**
      * @param $typeId
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      * @deprecated
      */
     public function findIblockTypeId($typeId)

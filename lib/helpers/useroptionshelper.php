@@ -5,9 +5,9 @@ namespace Sprint\Migration\Helpers;
 use CIBlock;
 use CIBlockProperty;
 use CUserOptions;
-use function IncludeModuleLangFile;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
+use function IncludeModuleLangFile;
 
 class UserOptionsHelper extends Helper
 {
@@ -26,8 +26,8 @@ class UserOptionsHelper extends Helper
      * Извлекает настройки формы инфоблока в массив, бросает исключение если их не существует
      * @param $iblockId
      * @param array $params
-     * @return array
      * @throws HelperException
+     * @return array
      */
     public function extractElementForm($iblockId, $params = [])
     {

@@ -127,8 +127,8 @@ class EventHelper extends Helper
      * Добавляет тип почтового события если его не существует
      * @param $eventName
      * @param $fields , обязательные параметры - id сайта
-     * @return bool|int|mixed
      * @throws HelperException
+     * @return bool|int|mixed
      */
     public function addEventTypeIfNotExists($eventName, $fields)
     {
@@ -150,8 +150,8 @@ class EventHelper extends Helper
      * Добавляет почтовый шаблон если его не существует
      * @param $eventName
      * @param $fields , обязательные параметры - тема сообщения, id сайта
-     * @return bool|int
      * @throws HelperException
+     * @return bool|int
      */
     public function addEventMessageIfNotExists($eventName, $fields)
     {
@@ -173,8 +173,8 @@ class EventHelper extends Helper
      * Обновляет почтовые шаблоны по типу почтового события или фильтру
      * @param $eventName
      * @param $fields
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function updateEventMessage($eventName, $fields)
     {
@@ -191,8 +191,8 @@ class EventHelper extends Helper
      * Обновляет почтовый шаблон по id
      * @param $id
      * @param $fields
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function updateEventMessageById($id, $fields)
     {
@@ -208,8 +208,8 @@ class EventHelper extends Helper
      * Обновляет тип почтового события по id
      * @param $id
      * @param $fields
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function updateEventTypeById($id, $fields)
     {
@@ -226,8 +226,8 @@ class EventHelper extends Helper
      * Создаст если не было, обновит если существует и отличается
      * @param $eventName
      * @param $fields , обязательные параметры - тема сообщения, id сайта
-     * @return bool|int|mixed
      * @throws HelperException
+     * @return bool|int|mixed
      */
     public function saveEventMessage($eventName, $fields)
     {
@@ -266,8 +266,8 @@ class EventHelper extends Helper
      * Создаст если не было, обновит если существует и отличается
      * @param $eventName
      * @param $fields , обязательные параметры - id языка
-     * @return bool|int|mixed
      * @throws HelperException
+     * @return bool|int|mixed
      */
     public function saveEventType($eventName, $fields)
     {
@@ -304,8 +304,8 @@ class EventHelper extends Helper
     /**
      * Удаляет тип почтового события
      * @param $fields , обязательные параметры - id языка, тип события
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteEventType($fields)
     {
@@ -330,8 +330,8 @@ class EventHelper extends Helper
     /**
      * Удаляет почтовый шаблон
      * @param $fields , обязательные параметры - тема сообщения языка, тип события
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteEventMessage($fields)
     {
@@ -358,8 +358,8 @@ class EventHelper extends Helper
      * Добавляет тип почтового события
      * @param $eventName
      * @param $fields , обязательные параметры - id языка, название события
-     * @return bool|int
      * @throws HelperException
+     * @return bool|int
      */
     public function addEventType($eventName, $fields)
     {
@@ -380,8 +380,8 @@ class EventHelper extends Helper
      * Добавляет почтовый шаблон
      * @param $eventName
      * @param $fields , обязательные параметры - id сайта, тема сообщения
-     * @return bool|int
      * @throws HelperException
+     * @return bool|int
      */
     public function addEventMessage($eventName, $fields)
     {
@@ -412,8 +412,8 @@ class EventHelper extends Helper
     /**
      * @param $filter
      * @param $fields
-     * @return bool
      * @throws HelperException
+     * @return bool
      * @deprecated use updateEventMessage
      */
     public function updateEventMessageByFilter($filter, $fields)

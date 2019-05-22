@@ -66,8 +66,8 @@ class HelperManager
 
     /**
      * @param $name
-     * @return Helper
      * @throws HelperException
+     * @return Helper
      */
     protected function callHelper($name)
     {

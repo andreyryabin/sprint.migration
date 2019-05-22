@@ -53,8 +53,8 @@ abstract class AbstractTable
      * @param $query
      * @param null $var1
      * @param null $var2
-     * @return Result|bool
      * @throws SqlQueryException
+     * @return Result|bool
      */
     protected function query($query, $var1 = null, $var2 = null)
     {

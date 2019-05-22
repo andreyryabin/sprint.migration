@@ -71,8 +71,8 @@ class FormHelper extends Helper
 
     /**
      * @param $sid
-     * @return bool|int
      * @throws HelperException
+     * @return bool|int
      */
     public function getFormIdIfExists($sid)
     {
@@ -87,8 +87,8 @@ class FormHelper extends Helper
 
     /**
      * @param $form
-     * @return bool|int
      * @throws HelperException
+     * @return bool|int
      */
     public function saveForm($form)
     {
@@ -243,8 +243,8 @@ class FormHelper extends Helper
 
     /**
      * @param $sid
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteFormIfExists($sid)
     {

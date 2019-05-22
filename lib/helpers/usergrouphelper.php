@@ -35,8 +35,8 @@ class UserGroupHelper extends Helper
      * Получает группу пользователей
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $code
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function exportGroup($code)
     {
@@ -131,8 +131,8 @@ class UserGroupHelper extends Helper
      * Создаст если не было, обновит если существует и отличается
      * @param $code
      * @param array $fields , обязательные параметры - название групы
-     * @return bool|int|mixed
      * @throws HelperException
+     * @return bool|int|mixed
      */
     public function saveGroup($code, $fields = [])
     {
@@ -168,8 +168,8 @@ class UserGroupHelper extends Helper
      * Добаляет группу пользователей если она не существует
      * @param $code
      * @param array $fields
-     * @return int
      * @throws HelperException
+     * @return int
      */
     public function addGroupIfNotExists($code, $fields = [])
     {
@@ -185,8 +185,8 @@ class UserGroupHelper extends Helper
      * Обновляет группу пользователей если она существует
      * @param $code
      * @param array $fields
-     * @return bool|int
      * @throws HelperException
+     * @return bool|int
      */
     public function updateGroupIfExists($code, $fields = [])
     {
@@ -202,8 +202,8 @@ class UserGroupHelper extends Helper
      * Добавляет группу пользователей
      * @param $code
      * @param array $fields , , обязательные параметры - название групы
-     * @return int
      * @throws HelperException
+     * @return int
      */
     public function addGroup($code, $fields = [])
     {
@@ -224,8 +224,8 @@ class UserGroupHelper extends Helper
      * Обновляет группу пользователей
      * @param $groupId
      * @param array $fields
-     * @return int
      * @throws HelperException
+     * @return int
      */
     public function updateGroup($groupId, $fields = [])
     {

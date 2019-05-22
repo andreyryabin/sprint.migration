@@ -114,8 +114,8 @@ class AgentHelper extends Helper
      * Сохраняет агента
      * Создаст если не было, обновит если существует и отличается
      * @param array $fields , обязательные параметры - id модуля, функция агента
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      */
     public function saveAgent($fields = [])
     {
@@ -159,8 +159,8 @@ class AgentHelper extends Helper
     /**
      * Обновление агента, бросает исключение в случае неудачи
      * @param $fields , обязательные параметры - id модуля, функция агента
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function updateAgent($fields)
     {
@@ -172,8 +172,8 @@ class AgentHelper extends Helper
     /**
      * Создание агента, бросает исключение в случае неудачи
      * @param $fields , обязательные параметры - id модуля, функция агента
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function addAgent($fields)
     {
@@ -217,8 +217,8 @@ class AgentHelper extends Helper
      * @param $name
      * @param $interval
      * @param $nextExec
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      * @deprecated
      */
     public function replaceAgent($moduleId, $name, $interval, $nextExec)
@@ -236,8 +236,8 @@ class AgentHelper extends Helper
      * @param $name
      * @param $interval
      * @param $nextExec
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      * @deprecated
      */
     public function addAgentIfNotExists($moduleId, $name, $interval, $nextExec)

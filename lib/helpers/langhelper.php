@@ -10,8 +10,8 @@ class LangHelper extends Helper
 {
 
     /**
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function getDefaultLangIdIfExists()
     {
@@ -48,8 +48,8 @@ class LangHelper extends Helper
     }
 
     /**
-     * @return array
      * @throws HelperException
+     * @return array
      */
     public function getLangsIfExists()
     {

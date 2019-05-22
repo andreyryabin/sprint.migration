@@ -43,8 +43,8 @@ class UserTypeEntityHelper extends Helper
      * @param $entityId
      * @param $fieldName
      * @param $fields
-     * @return int
      * @throws HelperException
+     * @return int
      */
     public function addUserTypeEntityIfNotExists($entityId, $fieldName, $fields)
     {
@@ -61,8 +61,8 @@ class UserTypeEntityHelper extends Helper
      * @param $entityId
      * @param $fieldName
      * @param $fields
-     * @return int
      * @throws HelperException
+     * @return int
      */
     public function addUserTypeEntity($entityId, $fieldName, $fields)
     {
@@ -122,8 +122,8 @@ class UserTypeEntityHelper extends Helper
      * Обновление пользовательского поля у объекта
      * @param $fieldId
      * @param $fields
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function updateUserTypeEntity($fieldId, $fields)
     {
@@ -162,8 +162,8 @@ class UserTypeEntityHelper extends Helper
      * @param $entityId
      * @param $fieldName
      * @param $fields
-     * @return bool|mixed
      * @throws HelperException
+     * @return bool|mixed
      */
     public function updateUserTypeEntityIfExists($entityId, $fieldName, $fields)
     {
@@ -308,8 +308,8 @@ class UserTypeEntityHelper extends Helper
      * Удаляет пользовательское поле у объекта если оно существует
      * @param $entityId
      * @param $fieldName
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteUserTypeEntityIfExists($entityId, $fieldName)
     {
@@ -330,8 +330,8 @@ class UserTypeEntityHelper extends Helper
      * Удаляет пользовательское поле у объекта
      * @param $entityId
      * @param $fieldName
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteUserTypeEntity($entityId, $fieldName)
     {
@@ -341,9 +341,9 @@ class UserTypeEntityHelper extends Helper
     /**
      * Декодирует название объекта в оригинальный вид
      * @param $entityId
-     * @return string
      * @throws ArgumentException
      * @throws HelperException
+     * @return string
      */
     public function revertEntityId($entityId)
     {
@@ -364,9 +364,9 @@ class UserTypeEntityHelper extends Helper
     /**
      * Кодирует название объекта в вид удобный для экспорта в миграцию или схему
      * @param $entityId
-     * @return string
      * @throws ArgumentException
      * @throws HelperException
+     * @return string
      */
     public function transformEntityId($entityId)
     {
@@ -386,9 +386,9 @@ class UserTypeEntityHelper extends Helper
      * Сохраняет пользовательское поле
      * Создаст если не было, обновит если существует и отличается
      * @param array $fields , обязательные параметры - название объекта, название поля
-     * @return bool|int|mixed
      * @throws ArgumentException
      * @throws HelperException
+     * @return bool|int|mixed
      */
     public function saveUserTypeEntity($fields = [])
     {
@@ -446,9 +446,9 @@ class UserTypeEntityHelper extends Helper
     /**
      * @param $item
      * @param bool $transformEntityId
-     * @return mixed
      * @throws ArgumentException
      * @throws HelperException
+     * @return mixed
      */
     protected function prepareExportUserTypeEntity($item, $transformEntityId = false)
     {

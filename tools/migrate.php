@@ -1,4 +1,7 @@
 <?php
+
+use Bitrix\Main\Loader;
+
 if (php_sapi_name() != 'cli') {
     die('Can not run in this mode. Bye!');
 }
@@ -22,15 +25,15 @@ try {
 
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
-    if (!\Bitrix\Main\Loader::includeModule('sprint.migration')) {
+    if (!Loader::includeModule('sprint.migration')) {
         /** @var sprint_migration $ob */
-        if ($ob = \CModule::CreateModuleObject('sprint.migration')) {
+        if ($ob = CModule::CreateModuleObject('sprint.migration')) {
             $ob->DoInstall();
         }
     }
 
-    if (!\Bitrix\Main\Loader::includeModule('sprint.migration')) {
-        Throw new \Exception('need to install module sprint.migration');
+    if (!Loader::includeModule('sprint.migration')) {
+        Throw new Exception('need to install module sprint.migration');
     }
 
     Sprint\Migration\Module::checkHealth();

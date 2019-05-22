@@ -32,8 +32,8 @@ class OptionHelper extends Helper
 
     /**
      * @param array $filter
-     * @return array
      * @throws ArgumentException
+     * @return array
      */
     public function getOptions($filter = [])
     {
@@ -51,8 +51,8 @@ class OptionHelper extends Helper
 
     /**
      * @param array $filter , обязательные параметры - id модуля, функция агента
-     * @return mixed
      * @throws ArgumentException
+     * @return mixed
      */
     public function getOption($filter = [])
     {
@@ -67,8 +67,8 @@ class OptionHelper extends Helper
 
     /**
      * @param $fields , обязательные параметры - id модуля, функция агента
-     * @return bool
      * @throws ArgumentException
+     * @return bool
      */
     public function saveOption($fields)
     {
@@ -104,8 +104,8 @@ class OptionHelper extends Helper
 
     /**
      * @param array $filter , обязательные параметры - id модуля
-     * @return bool
      * @throws ArgumentNullException
+     * @return bool
      */
     public function deleteOptions($filter = [])
     {
@@ -127,8 +127,8 @@ class OptionHelper extends Helper
 
     /**
      * @param array $filter
-     * @return array
      * @throws ArgumentException
+     * @return array
      */
     public function exportOptions($filter = [])
     {
@@ -144,8 +144,8 @@ class OptionHelper extends Helper
 
     /**
      * @param array $filter
-     * @return bool
      * @throws ArgumentException
+     * @return bool
      */
     public function exportOption($filter = [])
     {
@@ -159,8 +159,8 @@ class OptionHelper extends Helper
 
     /**
      * @param $fields
-     * @return bool
      * @throws ArgumentOutOfRangeException
+     * @return bool
      */
     protected function setOption($fields)
     {

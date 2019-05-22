@@ -17,8 +17,8 @@ class SqlHelper extends Helper
     /**
      * @param $query
      *
-     * @return Result
      * @throws SqlQueryException
+     * @return Result
      */
     public function query($query)
     {
@@ -40,8 +40,8 @@ class SqlHelper extends Helper
      * @param $table
      * @param $name
      *
-     * @return array|false
      * @throws SqlQueryException
+     * @return array|false
      */
     public function getColumn($table, $name)
     {
@@ -82,8 +82,8 @@ class SqlHelper extends Helper
      * @param string $table
      * @param string $name
      *
-     * @return array|false
      * @throws SqlQueryException
+     * @return array|false
      */
     public function getIndex($table, $name)
     {

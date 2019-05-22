@@ -10,8 +10,8 @@ class VersionTable extends AbstractTable
     protected $tableVersion = 3;
 
     /**
-     * @return array
      * @throws SqlQueryException
+     * @return array
      */
     public function getRecords()
     {
@@ -20,8 +20,8 @@ class VersionTable extends AbstractTable
 
     /**
      * @param $versionName
-     * @return array|false
      * @throws SqlQueryException
+     * @return array|false
      */
     public function getRecord($versionName)
     {

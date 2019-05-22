@@ -20,8 +20,8 @@ class HlblockHelper extends Helper
     /**
      * Получает список highload-блоков
      * @param array $filter
-     * @return array
      * @throws ArgumentException
+     * @return array
      */
     public function getHlblocks($filter = [])
     {
@@ -45,8 +45,8 @@ class HlblockHelper extends Helper
      * Получает список highload-блоков
      * Данные подготовлены для экспорта в миграцию или схему
      * @param array $filter
-     * @return array
      * @throws ArgumentException
+     * @return array
      */
     public function exportHlblocks($filter = [])
     {
@@ -63,8 +63,8 @@ class HlblockHelper extends Helper
     /**
      * Получает список полей highload-блока
      * @param $hlblockName int|string|array - id, имя или фильтр
-     * @return array
      * @throws ArgumentException
+     * @return array
      */
     public function getFields($hlblockName)
     {
@@ -80,9 +80,9 @@ class HlblockHelper extends Helper
      * Создаст если не было, обновит если существует и отличается
      * @param $hlblockName int|string|array - id, имя или фильтр
      * @param array $field
-     * @return bool|int|mixed
      * @throws ArgumentException
      * @throws HelperException
+     * @return bool|int|mixed
      */
     public function saveField($hlblockName, $field = [])
     {
@@ -98,10 +98,10 @@ class HlblockHelper extends Helper
      * Сохраняет highload-блок
      * Создаст если не было, обновит если существует и отличается
      * @param $fields , обязательные параметры - название сущности
-     * @return bool|int|mixed
      * @throws ArgumentException
      * @throws SystemException
      * @throws HelperException
+     * @return bool|int|mixed
      */
     public function saveHlblock($fields)
     {
@@ -137,9 +137,9 @@ class HlblockHelper extends Helper
      * Удаляет поле highload-блока
      * @param $hlblockName
      * @param $fieldName
-     * @return bool
      * @throws ArgumentException
      * @throws HelperException
+     * @return bool
      */
     public function deleteField($hlblockName, $fieldName)
     {
@@ -154,8 +154,8 @@ class HlblockHelper extends Helper
      * Получает список полей highload-блока
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $hlblockName
-     * @return array
      * @throws ArgumentException
+     * @return array
      */
     public function exportFields($hlblockName)
     {
@@ -172,8 +172,8 @@ class HlblockHelper extends Helper
      * Получает highload-блок
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $hlblockName
-     * @return mixed
      * @throws ArgumentException
+     * @return mixed
      */
     public function exportHlblock($hlblockName)
     {
@@ -185,8 +185,8 @@ class HlblockHelper extends Helper
     /**
      * Получает highload-блок
      * @param $hlblockName - id, имя или фильтр
-     * @return array|false
      * @throws ArgumentException
+     * @return array|false
      */
     public function getHlblock($hlblockName)
     {
@@ -215,9 +215,9 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockName
-     * @return array|false
      * @throws ArgumentException
      * @throws HelperException
+     * @return array|false
      */
     public function getHlblockIfExists($hlblockName)
     {
@@ -232,9 +232,9 @@ class HlblockHelper extends Helper
     /**
      * Получает highload-блок, бросает исключение если его не существует
      * @param $hlblockName - id, имя или фильтр
-     * @return mixed
      * @throws ArgumentException
      * @throws HelperException
+     * @return mixed
      */
     public function getHlblockIdIfExists($hlblockName)
     {
@@ -249,8 +249,8 @@ class HlblockHelper extends Helper
     /**
      * Получает id highload-блока
      * @param $hlblockName - id, имя или фильтр
-     * @return int|mixed
      * @throws ArgumentException
+     * @return int|mixed
      */
     public function getHlblockId($hlblockName)
     {
@@ -261,9 +261,9 @@ class HlblockHelper extends Helper
     /**
      * Добавляет highload-блок
      * @param $fields , обязательные параметры - название сущности, название таблицы в БД
-     * @return int
      * @throws SystemException
      * @throws HelperException
+     * @return int
      */
     public function addHlblock($fields)
     {
@@ -289,10 +289,10 @@ class HlblockHelper extends Helper
     /**
      * Добавляет highload-блок, если его не существует
      * @param $fields , обязательные параметры - название сущности
-     * @return int|mixed
      * @throws ArgumentException
      * @throws SystemException
      * @throws HelperException
+     * @return int|mixed
      */
     public function addHlblockIfNotExists($fields)
     {
@@ -310,8 +310,8 @@ class HlblockHelper extends Helper
      * Обновляет highload-блок
      * @param $hlblockId
      * @param $fields
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function updateHlblock($hlblockId, $fields)
     {
@@ -334,9 +334,9 @@ class HlblockHelper extends Helper
      * Обновляет highload-блок, если существует
      * @param $hlblockName
      * @param $fields
-     * @return bool|mixed
      * @throws ArgumentException
      * @throws HelperException
+     * @return bool|mixed
      */
     public function updateHlblockIfExists($hlblockName, $fields)
     {
@@ -351,8 +351,8 @@ class HlblockHelper extends Helper
     /**
      * Удаляет highload-блок
      * @param $hlblockId
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function deleteHlblock($hlblockId)
     {
@@ -367,9 +367,9 @@ class HlblockHelper extends Helper
     /**
      * Удаляет highload-блок, если существует
      * @param $hlblockName
-     * @return bool
      * @throws ArgumentException
      * @throws HelperException
+     * @return bool
      */
     public function deleteHlblockIfExists($hlblockName)
     {

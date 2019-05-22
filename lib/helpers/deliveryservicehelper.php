@@ -72,10 +72,10 @@ class DeliveryServiceHelper extends Helper
      *        'ALLOW_EDIT_SHIPMENT' => 'Y',
      *    ]
      *
-     * @return int
      * @throws Exception
      * @throws HelperException
      * @throws SystemException
+     * @return int
      */
     public function add(array $fields)
     {
@@ -125,8 +125,8 @@ class DeliveryServiceHelper extends Helper
     /**
      * @param string $code
      *
-     * @return Base
      * @throws HelperException
+     * @return Base
      */
     public function get($code)
     {
@@ -150,10 +150,10 @@ class DeliveryServiceHelper extends Helper
      * @param $code
      * @param array $fields
      *
-     * @return int
      * @throws Exception
      * @throws HelperException
      * @throws SystemException
+     * @return int
      */
     public function update($code, array $fields)
     {
@@ -202,9 +202,9 @@ class DeliveryServiceHelper extends Helper
     /**
      * @param $deliveryId
      *
-     * @return void
      * @throws HelperException
      * @throws Exception
+     * @return void
      */
     private function initEmptyExtraServices($deliveryId)
     {
