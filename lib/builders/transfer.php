@@ -2,9 +2,7 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\Module;
 use Sprint\Migration\AbstractBuilder;
-use Sprint\Migration\HelperManager;
 use Sprint\Migration\VersionManager;
 
 class Transfer extends AbstractBuilder

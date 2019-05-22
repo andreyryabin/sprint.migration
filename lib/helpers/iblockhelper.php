@@ -2,6 +2,14 @@
 
 namespace Sprint\Migration\Helpers;
 
+use CIBlock;
+use CIBlockElement;
+use CIBlockProperty;
+use CIBlockPropertyEnum;
+use CIBlockSection;
+use CIBlockType;
+use CLanguage;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
 class IblockHelper extends Helper
@@ -16,7 +24,7 @@ class IblockHelper extends Helper
      * Получает тип инфоблока, бросает исключение если его не существует
      * @param $typeId
      * @return array
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function getIblockTypeIfExists($typeId)
     {
@@ -32,7 +40,7 @@ class IblockHelper extends Helper
      * Получает id типа инфоблока, бросает исключение если его не существует
      * @param $typeId
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function getIblockTypeIdIfExists($typeId)
     {
@@ -49,7 +57,7 @@ class IblockHelper extends Helper
      * @param $code string|array - код или фильтр
      * @param string $typeId
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function getIblockIfExists($code, $typeId = '')
     {
@@ -66,7 +74,7 @@ class IblockHelper extends Helper
      * @param $code string|array - код или фильтр
      * @param string $typeId
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function getIblockIdIfExists($code, $typeId = '')
     {
@@ -91,7 +99,7 @@ class IblockHelper extends Helper
         ];
 
         $filter['CHECK_PERMISSIONS'] = 'N';
-        $item = \CIBlockType::GetList(['SORT' => 'ASC'], $filter)->Fetch();
+        $item = CIBlockType::GetList(['SORT' => 'ASC'], $filter)->Fetch();
 
         if ($item) {
             $item['LANG'] = $this->getIblockTypeLangs($item['ID']);
@@ -119,7 +127,7 @@ class IblockHelper extends Helper
     public function getIblockTypes($filter = [])
     {
         $filter['CHECK_PERMISSIONS'] = 'N';
-        $dbres = \CIBlockType::GetList(['SORT' => 'ASC'], $filter);
+        $dbres = CIBlockType::GetList(['SORT' => 'ASC'], $filter);
 
         $list = [];
         while ($item = $dbres->Fetch()) {
@@ -133,7 +141,7 @@ class IblockHelper extends Helper
      * Добавляет тип инфоблока, если его не существует
      * @param array $fields , обязательные параметры - id типа инфоблока
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addIblockTypeIfNotExists($fields = [])
     {
@@ -151,7 +159,7 @@ class IblockHelper extends Helper
      * Добавляет тип инфоблока
      * @param array $fields
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addIblockType($fields = [])
     {
@@ -176,7 +184,7 @@ class IblockHelper extends Helper
 
         $fields = array_replace_recursive($default, $fields);
 
-        $ib = new \CIBlockType;
+        $ib = new CIBlockType;
         if ($ib->Add($fields)) {
             return $fields['ID'];
         }
@@ -189,11 +197,11 @@ class IblockHelper extends Helper
      * @param $iblockTypeId
      * @param array $fields
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateIblockType($iblockTypeId, $fields = [])
     {
-        $ib = new \CIBlockType;
+        $ib = new CIBlockType;
         if ($ib->Update($iblockTypeId, $fields)) {
             return $iblockTypeId;
         }
@@ -205,7 +213,7 @@ class IblockHelper extends Helper
      * Удаляет тип инфоблока, если существует
      * @param $typeId
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteIblockTypeIfExists($typeId)
     {
@@ -222,11 +230,11 @@ class IblockHelper extends Helper
      * Удаляет тип инфоблока
      * @param $typeId
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteIblockType($typeId)
     {
-        if (\CIBlockType::Delete($typeId)) {
+        if (CIBlockType::Delete($typeId)) {
             return true;
         }
 
@@ -254,7 +262,7 @@ class IblockHelper extends Helper
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
 
-        $item = \CIBlock::GetList(['SORT' => 'ASC'], $filter)->Fetch();
+        $item = CIBlock::GetList(['SORT' => 'ASC'], $filter)->Fetch();
         return $this->prepareIblock($item);
     }
 
@@ -265,7 +273,7 @@ class IblockHelper extends Helper
      */
     public function getIblockSites($iblockId)
     {
-        $dbres = \CIBlock::GetSite($iblockId);
+        $dbres = CIBlock::GetSite($iblockId);
         return $this->fetchAll($dbres, false, 'LID');
     }
 
@@ -291,7 +299,7 @@ class IblockHelper extends Helper
         $filter['CHECK_PERMISSIONS'] = 'N';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbres = \CIBlock::GetList(['SORT' => 'ASC'], $filter);
+        $dbres = CIBlock::GetList(['SORT' => 'ASC'], $filter);
         $list = [];
         while ($item = $dbres->Fetch()) {
             $list[] = $this->prepareIblock($item);
@@ -303,7 +311,7 @@ class IblockHelper extends Helper
      * Добавляет инфоблок если его не существует
      * @param array $fields , обязательные параметры - код, тип инфоблока, id сайта
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addIblockIfNotExists($fields = [])
     {
@@ -326,7 +334,7 @@ class IblockHelper extends Helper
      * Добавляет инфоблок
      * @param $fields , обязательные параметры - код, тип инфоблока, id сайта
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addIblock($fields)
     {
@@ -352,7 +360,7 @@ class IblockHelper extends Helper
 
         $fields = array_replace_recursive($default, $fields);
 
-        $ib = new \CIBlock;
+        $ib = new CIBlock;
         $iblockId = $ib->Add($fields);
 
         if ($iblockId) {
@@ -366,11 +374,11 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param array $fields
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateIblock($iblockId, $fields = [])
     {
-        $ib = new \CIBlock;
+        $ib = new CIBlock;
         if ($ib->Update($iblockId, $fields)) {
             return $iblockId;
         }
@@ -384,7 +392,7 @@ class IblockHelper extends Helper
      * @param $code
      * @param array $fields
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateIblockIfExists($code, $fields = [])
     {
@@ -400,7 +408,7 @@ class IblockHelper extends Helper
      * @param $code
      * @param string $typeId
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteIblockIfExists($code, $typeId = '')
     {
@@ -415,11 +423,11 @@ class IblockHelper extends Helper
      * Удаляет инфоблок
      * @param $iblockId
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteIblock($iblockId)
     {
-        if (\CIBlock::Delete($iblockId)) {
+        if (CIBlock::Delete($iblockId)) {
             return true;
         }
         $this->throwException(__METHOD__, 'Could not delete iblock %s', $iblockId);
@@ -432,7 +440,7 @@ class IblockHelper extends Helper
      */
     public function getIblockFields($iblockId)
     {
-        return \CIBlock::GetFields($iblockId);
+        return CIBlock::GetFields($iblockId);
     }
 
     /**
@@ -451,7 +459,7 @@ class IblockHelper extends Helper
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
         /* do not use =CODE in filter */
-        $property = \CIBlockProperty::GetList(['SORT' => 'ASC'], $filter)->Fetch();
+        $property = CIBlockProperty::GetList(['SORT' => 'ASC'], $filter)->Fetch();
         return $this->prepareProperty($property);
     }
 
@@ -464,7 +472,7 @@ class IblockHelper extends Helper
     {
         $result = [];
 
-        $dbres = \CIBlockPropertyEnum::GetList(["SORT" => "ASC", "VALUE" => "ASC"], $filter);
+        $dbres = CIBlockPropertyEnum::GetList(["SORT" => "ASC", "VALUE" => "ASC"], $filter);
         while ($item = $dbres->Fetch()) {
             $result[] = $item;
         }
@@ -514,7 +522,7 @@ class IblockHelper extends Helper
             unset($filter['ID']);
         }
 
-        $dbres = \CIBlockProperty::GetList(['SORT' => 'ASC'], $filter);
+        $dbres = CIBlockProperty::GetList(['SORT' => 'ASC'], $filter);
 
         $result = [];
 
@@ -535,7 +543,7 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $fields , обязательные параметры - код свойства
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addPropertyIfNotExists($iblockId, $fields)
     {
@@ -555,7 +563,7 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $fields
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addProperty($iblockId, $fields)
     {
@@ -599,7 +607,7 @@ class IblockHelper extends Helper
 
         $fields['IBLOCK_ID'] = $iblockId;
 
-        $ib = new \CIBlockProperty;
+        $ib = new CIBlockProperty;
         $propertyId = $ib->Add($fields);
 
         if ($propertyId) {
@@ -614,7 +622,7 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $code
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deletePropertyIfExists($iblockId, $code)
     {
@@ -631,11 +639,11 @@ class IblockHelper extends Helper
      * Удаляет свойство инфоблока
      * @param $propertyId
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deletePropertyById($propertyId)
     {
-        $ib = new \CIBlockProperty;
+        $ib = new CIBlockProperty;
         if ($ib->Delete($propertyId)) {
             return true;
         }
@@ -649,7 +657,7 @@ class IblockHelper extends Helper
      * @param $code
      * @param $fields
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updatePropertyIfExists($iblockId, $code, $fields)
     {
@@ -665,7 +673,7 @@ class IblockHelper extends Helper
      * @param $propertyId
      * @param $fields
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updatePropertyById($propertyId, $fields)
     {
@@ -714,7 +722,7 @@ class IblockHelper extends Helper
         }
 
 
-        $ib = new \CIBlockProperty();
+        $ib = new CIBlockProperty();
         if ($ib->Update($propertyId, $fields)) {
             return $propertyId;
         }
@@ -747,7 +755,7 @@ class IblockHelper extends Helper
         ], $select);
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        return \CIBlockElement::GetList([
+        return CIBlockElement::GetList([
             'SORT' => 'ASC',
         ], $filter, false, [
             'nTopCount' => 1,
@@ -786,7 +794,7 @@ class IblockHelper extends Helper
         ], $select);
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbres = \CIBlockElement::GetList([
+        $dbres = CIBlockElement::GetList([
             'ID' => 'ASC',
         ], $filter, false, false, $select);
 
@@ -803,7 +811,7 @@ class IblockHelper extends Helper
      * @param $fields , обязательные параметры - код элемента
      * @param array $props
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addElementIfNotExists($iblockId, $fields, $props = [])
     {
@@ -823,7 +831,7 @@ class IblockHelper extends Helper
      * @param array $fields - поля
      * @param array $props - свойства
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addElement($iblockId, $fields = [], $props = [])
     {
@@ -842,7 +850,7 @@ class IblockHelper extends Helper
             $fields['PROPERTY_VALUES'] = $props;
         }
 
-        $ib = new \CIBlockElement;
+        $ib = new CIBlockElement;
         $id = $ib->Add($fields);
 
         if ($id) {
@@ -858,7 +866,7 @@ class IblockHelper extends Helper
      * @param array $fields , обязательные параметры - код элемента
      * @param array $props
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateElementIfExists($iblockId, $fields = [], $props = [])
     {
@@ -881,7 +889,7 @@ class IblockHelper extends Helper
      * @param array $fields
      * @param array $props
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateElement($elementId, $fields = [], $props = [])
     {
@@ -889,14 +897,14 @@ class IblockHelper extends Helper
         unset($fields['IBLOCK_ID']);
 
         if (!empty($fields)) {
-            $ib = new \CIBlockElement;
+            $ib = new CIBlockElement;
             if (!$ib->Update($elementId, $fields)) {
                 $this->throwException(__METHOD__, $ib->LAST_ERROR);
             }
         }
 
         if (!empty($props)) {
-            \CIBlockElement::SetPropertyValuesEx($elementId, $iblockId, $props);
+            CIBlockElement::SetPropertyValuesEx($elementId, $iblockId, $props);
         }
 
         return $elementId;
@@ -907,7 +915,7 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $code
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteElementIfExists($iblockId, $code)
     {
@@ -924,11 +932,11 @@ class IblockHelper extends Helper
      * Удаляет элемент инфоблока
      * @param $elementId
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteElement($elementId)
     {
-        $ib = new \CIBlockElement;
+        $ib = new CIBlockElement;
         if ($ib->Delete($elementId)) {
             return true;
         }
@@ -953,7 +961,7 @@ class IblockHelper extends Helper
         $filter['CHECK_PERMISSIONS'] = 'N';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        return \CIBlockSection::GetList([
+        return CIBlockSection::GetList([
             'ID' => 'ASC',
         ], $filter, false, [
             'ID',
@@ -987,7 +995,7 @@ class IblockHelper extends Helper
         $filter['CHECK_PERMISSIONS'] = 'N';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbres = \CIBlockSection::GetList([
+        $dbres = CIBlockSection::GetList([
             'SORT' => 'ASC',
         ], $filter, false, [
             'ID',
@@ -1008,7 +1016,7 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $fields , обязательные параметры - код сеции
      * @return bool|int|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addSectionIfNotExists($iblockId, $fields)
     {
@@ -1028,7 +1036,7 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param array $fields
      * @return bool|int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addSection($iblockId, $fields = [])
     {
@@ -1046,7 +1054,7 @@ class IblockHelper extends Helper
         $fields = array_replace_recursive($default, $fields);
         $fields["IBLOCK_ID"] = $iblockId;
 
-        $ib = new \CIBlockSection;
+        $ib = new CIBlockSection;
         $id = $ib->Add($fields);
 
         if ($id) {
@@ -1061,7 +1069,7 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $fields , обязательные параметры - код секции
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateSectionIfExists($iblockId, $fields)
     {
@@ -1083,11 +1091,11 @@ class IblockHelper extends Helper
      * @param $sectionId
      * @param $fields
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateSection($sectionId, $fields)
     {
-        $ib = new \CIBlockSection;
+        $ib = new CIBlockSection;
         if ($ib->Update($sectionId, $fields)) {
             return $sectionId;
         }
@@ -1100,7 +1108,7 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $code
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteSectionIfExists($iblockId, $code)
     {
@@ -1117,11 +1125,11 @@ class IblockHelper extends Helper
      * Удаляет секцию инфоблока
      * @param $sectionId
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteSection($sectionId)
     {
-        $ib = new \CIBlockSection;
+        $ib = new CIBlockSection;
         if ($ib->Delete($sectionId)) {
             return true;
         }
@@ -1137,9 +1145,9 @@ class IblockHelper extends Helper
     public function getIblockTypeLangs($typeId)
     {
         $result = [];
-        $dbres = \CLanguage::GetList($lby = "sort", $lorder = "asc");
+        $dbres = CLanguage::GetList($lby = "sort", $lorder = "asc");
         while ($item = $dbres->GetNext()) {
-            $values = \CIBlockType::GetByIDLang($typeId, $item['LID'], false);
+            $values = CIBlockType::GetByIDLang($typeId, $item['LID'], false);
             if (!empty($values)) {
                 $result[$item['LID']] = [
                     'NAME' => $values['NAME'],
@@ -1156,7 +1164,7 @@ class IblockHelper extends Helper
      * Создаст если не было, обновит если существует и отличается
      * @param array $fields , обязательные параметры - тип инфоблока
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function saveIblockType($fields = [])
     {
@@ -1193,7 +1201,7 @@ class IblockHelper extends Helper
      * Создаст если не было, обновит если существует и отличается
      * @param array $fields , обязательные параметры - код, тип инфоблока, id сайта
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function saveIblock($fields = [])
     {
@@ -1231,7 +1239,7 @@ class IblockHelper extends Helper
      */
     public function saveIblockFields($iblockId, $fields = [])
     {
-        $exists = \CIBlock::GetFields($iblockId);
+        $exists = CIBlock::GetFields($iblockId);
 
         $exportExists = $this->prepareExportIblockFields($exists);
         $fields = $this->prepareExportIblockFields($fields);
@@ -1264,7 +1272,7 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $fields , обязательные параметры - код свойства
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function saveProperty($iblockId, $fields)
     {
@@ -1312,7 +1320,7 @@ class IblockHelper extends Helper
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $iblockId
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function exportIblock($iblockId)
     {
@@ -1364,7 +1372,7 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param bool $code
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function exportProperty($iblockId, $code = false)
     {
@@ -1407,7 +1415,7 @@ class IblockHelper extends Helper
     public function updateIblockFields($iblockId, $fields)
     {
         if ($iblockId && !empty($fields)) {
-            \CIBlock::SetFields($iblockId, $fields);
+            CIBlock::SetFields($iblockId, $fields);
             return true;
         }
         return false;
@@ -1417,7 +1425,7 @@ class IblockHelper extends Helper
      * @param $iblockId
      * @param $code
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      * @deprecated
      */
     public function deleteProperty($iblockId, $code)
@@ -1430,7 +1438,7 @@ class IblockHelper extends Helper
      * @param $code
      * @param $fields
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      * @deprecated
      */
     public function updateProperty($iblockId, $code, $fields)
@@ -1451,7 +1459,7 @@ class IblockHelper extends Helper
     /**
      * @param $typeId
      * @return array
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      * @deprecated
      */
     public function findIblockType($typeId)
@@ -1463,7 +1471,7 @@ class IblockHelper extends Helper
      * @param $code
      * @param string $typeId
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      * @deprecated
      */
     public function findIblockId($code, $typeId = '')
@@ -1475,7 +1483,7 @@ class IblockHelper extends Helper
      * @param $code
      * @param string $typeId
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      * @deprecated
      */
     public function findIblock($code, $typeId = '')
@@ -1486,7 +1494,7 @@ class IblockHelper extends Helper
     /**
      * @param $typeId
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      * @deprecated
      */
     public function findIblockTypeId($typeId)

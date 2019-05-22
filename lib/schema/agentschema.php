@@ -2,8 +2,7 @@
 
 namespace Sprint\Migration\Schema;
 
-use \Sprint\Migration\AbstractSchema;
-use Sprint\Migration\Helpers\AgentHelper;
+use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\HelperManager;
 
 class AgentSchema extends AbstractSchema

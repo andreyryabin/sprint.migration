@@ -2,6 +2,9 @@
 
 namespace Sprint\Migration\Helpers;
 
+use CLang;
+use CSite;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
 class SiteHelper extends Helper
@@ -9,7 +12,7 @@ class SiteHelper extends Helper
 
     /**
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function getDefaultSiteIdIfExists()
     {
@@ -17,7 +20,7 @@ class SiteHelper extends Helper
         $order = 'desc';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $item = \CSite::GetList($by, $order, ['ACTIVE' => 'Y'])->Fetch();
+        $item = CSite::GetList($by, $order, ['ACTIVE' => 'Y'])->Fetch();
 
         if ($item) {
             return $item['LID'];
@@ -37,7 +40,7 @@ class SiteHelper extends Helper
 
         $sids = [];
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbres = \CSite::GetList($by, $order, $filter);
+        $dbres = CSite::GetList($by, $order, $filter);
         while ($item = $dbres->Fetch()) {
             $sids[] = $item;
         }
@@ -47,7 +50,7 @@ class SiteHelper extends Helper
 
     /**
      * @return array
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function getSitesIfExists()
     {
@@ -66,7 +69,7 @@ class SiteHelper extends Helper
     {
         $templates = [];
 
-        $dbres = \CSite::GetTemplateList($siteId);
+        $dbres = CSite::GetTemplateList($siteId);
         while ($item = $dbres->Fetch()) {
             $templates[] = [
                 "TEMPLATE" => $item['TEMPLATE'],
@@ -132,7 +135,7 @@ class SiteHelper extends Helper
             $sort++;
         }
 
-        $langs = new \CLang;
+        $langs = new CLang;
         $ok = $langs->Update($siteId, [
             'TEMPLATE' => $validTemplates,
         ]);

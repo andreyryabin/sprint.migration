@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Schema;
 
+use Bitrix\Main\Loader;
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\HelperManager;
 
@@ -12,7 +13,7 @@ class IblockSchema extends AbstractSchema
 
     protected function isBuilderEnabled()
     {
-        return (\Bitrix\Main\Loader::includeModule('iblock'));
+        return (Loader::includeModule('iblock'));
     }
 
     protected function initialize()

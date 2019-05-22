@@ -13,10 +13,10 @@ use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Helpers\LangHelper;
 use Sprint\Migration\Helpers\OptionHelper;
 use Sprint\Migration\Helpers\SiteHelper;
+use Sprint\Migration\Helpers\SqlHelper;
 use Sprint\Migration\Helpers\UserGroupHelper;
 use Sprint\Migration\Helpers\UserOptionsHelper;
 use Sprint\Migration\Helpers\UserTypeEntityHelper;
-use Sprint\Migration\Helpers\SqlHelper;
 
 /**
  * @method IblockHelper             Iblock()

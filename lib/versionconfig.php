@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration;
 
+use DirectoryIterator;
+
 class VersionConfig
 {
     private $configCurrent = [];
@@ -73,7 +75,7 @@ class VersionConfig
     protected function searchConfigs()
     {
         $result = [];
-        $directory = new \DirectoryIterator(Module::getPhpInterfaceDir());
+        $directory = new DirectoryIterator(Module::getPhpInterfaceDir());
         foreach ($directory as $item) {
             if (!$item->isFile()) {
                 continue;

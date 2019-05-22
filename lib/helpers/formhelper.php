@@ -2,7 +2,14 @@
 
 namespace Sprint\Migration\Helpers;
 
-use CDBResult;
+use CDatabase;
+use CForm;
+use CFormAnswer;
+use CFormField;
+use CFormStatus;
+use CFormValidator;
+use Exception;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
 class FormHelper extends Helper
@@ -23,7 +30,7 @@ class FormHelper extends Helper
         $order = 'asc';
         $isFiltered = null;
 
-        $dbres = \CForm::GetList($by, $order, $filter, $isFiltered);
+        $dbres = CForm::GetList($by, $order, $filter, $isFiltered);
         return $this->fetchAll($dbres);
     }
 
@@ -35,7 +42,7 @@ class FormHelper extends Helper
     {
         $formId = (int)$formId;
 
-        $form = \CForm::GetByID($formId)->Fetch();
+        $form = CForm::GetByID($formId)->Fetch();
         if (empty($form)) {
             return false;
         }
@@ -57,7 +64,7 @@ class FormHelper extends Helper
      */
     public function getFormId($sid)
     {
-        $form = \CForm::GetBySID($sid)->Fetch();
+        $form = CForm::GetBySID($sid)->Fetch();
         return ($form && isset($form['ID'])) ? $form['ID'] : false;
 
     }
@@ -65,7 +72,7 @@ class FormHelper extends Helper
     /**
      * @param $sid
      * @return bool|int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function getFormIdIfExists($sid)
     {
@@ -81,7 +88,7 @@ class FormHelper extends Helper
     /**
      * @param $form
      * @return bool|int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function saveForm($form)
     {
@@ -101,7 +108,7 @@ class FormHelper extends Helper
 
 
         $formId = $this->getFormId($form['SID']);
-        $formId = \CForm::Set($form, $formId, 'N');
+        $formId = CForm::Set($form, $formId, 'N');
 
         if ($formId) {
             return $formId;
@@ -113,7 +120,7 @@ class FormHelper extends Helper
     /**
      * @param $formId
      * @param $fields
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function saveFields($formId, $fields)
     {
@@ -154,7 +161,7 @@ class FormHelper extends Helper
                 }
             }
 
-            $fieldId = \CFormField::Set($field, $fieldId, 'N');
+            $fieldId = CFormField::Set($field, $fieldId, 'N');
             if (empty($fieldId)) {
                 $this->throwException(__METHOD__, $GLOBALS['strError']);
             }
@@ -166,7 +173,7 @@ class FormHelper extends Helper
 
         foreach ($currentFields as $currentField) {
             if (!in_array($currentField['ID'], $updatedIds)) {
-                \CFormField::Delete($currentField['ID'], 'N');
+                CFormField::Delete($currentField['ID'], 'N');
             }
         }
     }
@@ -174,7 +181,7 @@ class FormHelper extends Helper
     /**
      * @param $formId
      * @param $statuses
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveStatuses($formId, $statuses)
     {
@@ -197,7 +204,7 @@ class FormHelper extends Helper
                 }
             }
 
-            $statusId = \CFormStatus::Set($status, $statusId, 'N');
+            $statusId = CFormStatus::Set($status, $statusId, 'N');
             if (empty($statusId)) {
                 $this->throwException(__METHOD__, $GLOBALS['strError']);
             }
@@ -205,7 +212,7 @@ class FormHelper extends Helper
 
         foreach ($currentStatuses as $currentStatus) {
             if (!in_array($currentStatus['ID'], $updatedIds)) {
-                \CFormStatus::Delete($currentStatus['ID'], 'N');
+                CFormStatus::Delete($currentStatus['ID'], 'N');
             }
         }
 
@@ -216,7 +223,7 @@ class FormHelper extends Helper
      */
     public function getFormStatuses($formId)
     {
-        $dbres = \CFormStatus::GetList($formId, $by = 's_sort', $order = 'asc', [], $f);
+        $dbres = CFormStatus::GetList($formId, $by = 's_sort', $order = 'asc', [], $f);
         return $this->fetchAll($dbres);
     }
 
@@ -225,7 +232,7 @@ class FormHelper extends Helper
      */
     public function getFormFields($formId)
     {
-        $dbres = \CFormField::GetList($formId, 'ALL', $by = 's_sort', $order = 'asc', [], $f);
+        $dbres = CFormField::GetList($formId, 'ALL', $by = 's_sort', $order = 'asc', [], $f);
         $fields = $this->fetchAll($dbres);
         foreach ($fields as $index => $field) {
             $fields[$index]['ANSWERS'] = $this->getFieldAnswers($field['ID']);
@@ -237,7 +244,7 @@ class FormHelper extends Helper
     /**
      * @param $sid
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteFormIfExists($sid)
     {
@@ -247,7 +254,7 @@ class FormHelper extends Helper
             return false;
         }
 
-        if (\CForm::Delete($formId)) {
+        if (CForm::Delete($formId)) {
             return true;
         }
 
@@ -260,7 +267,7 @@ class FormHelper extends Helper
      */
     protected function getFieldAnswers($fieldId)
     {
-        $dbres = \CFormAnswer::GetList($fieldId, $by = 's_sort', $order = 'asc', [], $f);
+        $dbres = CFormAnswer::GetList($fieldId, $by = 's_sort', $order = 'asc', [], $f);
         return $this->fetchAll($dbres);
     }
 
@@ -270,7 +277,7 @@ class FormHelper extends Helper
      */
     protected function getFieldValidators($fieldId)
     {
-        $dbres = \CFormValidator::GetList($fieldId, [], $by = 's_sort', $order = 'asc');
+        $dbres = CFormValidator::GetList($fieldId, [], $by = 's_sort', $order = 'asc');
         return $this->fetchAll($dbres);
     }
 
@@ -280,7 +287,7 @@ class FormHelper extends Helper
      */
     protected function exportRights($formId)
     {
-        /** @var \CDatabase $DB */
+        /** @var CDatabase $DB */
         global $DB;
 
         $userGroupHelper = new UserGroupHelper();
@@ -302,7 +309,7 @@ class FormHelper extends Helper
      */
     protected function exportSites($formId)
     {
-        return \CForm::GetSiteArray($formId);
+        return CForm::GetSiteArray($formId);
     }
 
     /**
@@ -311,7 +318,7 @@ class FormHelper extends Helper
      */
     protected function exportMailTemplates($formId)
     {
-        return \CForm::GetMailTemplateArray($formId);
+        return CForm::GetMailTemplateArray($formId);
     }
 
     /**
@@ -321,7 +328,7 @@ class FormHelper extends Helper
     protected function exportMenus($formId)
     {
         $res = [];
-        $dbres = \CForm::GetMenuList(['FORM_ID' => $formId], 'N');
+        $dbres = CForm::GetMenuList(['FORM_ID' => $formId], 'N');
         while ($menuItem = $dbres->Fetch()) {
             $res[$menuItem["LID"]] = $menuItem["MENU"];
         }
@@ -350,7 +357,7 @@ class FormHelper extends Helper
 
             $answer['FIELD_ID'] = $fieldId;
 
-            $answerId = \CFormAnswer::Set(
+            $answerId = CFormAnswer::Set(
                 $answer,
                 $answerId
             );
@@ -362,7 +369,7 @@ class FormHelper extends Helper
 
         foreach ($currentAnswers as $currentAnswer) {
             if (!in_array($currentAnswer['ID'], $updatedIds)) {
-                \CFormAnswer::Delete($currentAnswer['ID'], $fieldId);
+                CFormAnswer::Delete($currentAnswer['ID'], $fieldId);
             }
         }
     }
@@ -370,11 +377,11 @@ class FormHelper extends Helper
     protected function saveFieldValidators($formId, $fieldId, $validators)
     {
 
-        \CFormValidator::Clear($fieldId);
+        CFormValidator::Clear($fieldId);
 
         foreach ($validators as $index => $validator) {
 
-            $validatorId = \CFormValidator::Set(
+            $validatorId = CFormValidator::Set(
                 $formId,
                 $fieldId,
                 $validator['NAME'],

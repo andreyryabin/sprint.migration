@@ -4,7 +4,6 @@ namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
-use Sprint\Migration\HelperManager;
 
 class Version extends VersionBuilder
 {

@@ -2,6 +2,10 @@
 
 namespace Sprint\Migration\Helpers;
 
+use Bitrix\Main\ArgumentException;
+use Bitrix\Main\ArgumentNullException;
+use Bitrix\Main\ArgumentOutOfRangeException;
+use Bitrix\Main\Config\Option;
 use Bitrix\Main\ModuleManager;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Tables\OptionTable;
@@ -29,7 +33,7 @@ class OptionHelper extends Helper
     /**
      * @param array $filter
      * @return array
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function getOptions($filter = [])
     {
@@ -48,7 +52,7 @@ class OptionHelper extends Helper
     /**
      * @param array $filter , обязательные параметры - id модуля, функция агента
      * @return mixed
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function getOption($filter = [])
     {
@@ -64,7 +68,7 @@ class OptionHelper extends Helper
     /**
      * @param $fields , обязательные параметры - id модуля, функция агента
      * @return bool
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function saveOption($fields)
     {
@@ -101,7 +105,7 @@ class OptionHelper extends Helper
     /**
      * @param array $filter , обязательные параметры - id модуля
      * @return bool
-     * @throws \Bitrix\Main\ArgumentNullException
+     * @throws ArgumentNullException
      */
     public function deleteOptions($filter = [])
     {
@@ -117,14 +121,14 @@ class OptionHelper extends Helper
             $params['site_id'] = $filter['SITE_ID'];
         }
 
-        \Bitrix\Main\Config\Option::delete($filter['MODULE_ID'], $params);
+        Option::delete($filter['MODULE_ID'], $params);
         return true;
     }
 
     /**
      * @param array $filter
      * @return array
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function exportOptions($filter = [])
     {
@@ -141,7 +145,7 @@ class OptionHelper extends Helper
     /**
      * @param array $filter
      * @return bool
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function exportOption($filter = [])
     {
@@ -156,12 +160,12 @@ class OptionHelper extends Helper
     /**
      * @param $fields
      * @return bool
-     * @throws \Bitrix\Main\ArgumentOutOfRangeException
+     * @throws ArgumentOutOfRangeException
      */
     protected function setOption($fields)
     {
         $fields = $this->revertOption($fields);
-        \Bitrix\Main\Config\Option::set($fields['MODULE_ID'], $fields['NAME'], $fields['VALUE'], $fields['SITE_ID']);
+        Option::set($fields['MODULE_ID'], $fields['NAME'], $fields['VALUE'], $fields['SITE_ID']);
         return true;
     }
 

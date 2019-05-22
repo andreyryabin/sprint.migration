@@ -2,10 +2,10 @@
 
 namespace Sprint\Migration\Helpers;
 
-use Sprint\Migration\Helper;
 use Bitrix\Main\Application;
-use Bitrix\Main\Db\SqlQueryException;
 use Bitrix\Main\DB\Result;
+use Bitrix\Main\Db\SqlQueryException;
+use Sprint\Migration\Helper;
 
 /**
  * Class SqlHelper

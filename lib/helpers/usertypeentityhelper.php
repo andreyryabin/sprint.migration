@@ -2,6 +2,11 @@
 
 namespace Sprint\Migration\Helpers;
 
+use Bitrix\Main\ArgumentException;
+use CMain;
+use CUserFieldEnum;
+use CUserTypeEntity;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
 class UserTypeEntityHelper extends Helper
@@ -11,7 +16,7 @@ class UserTypeEntityHelper extends Helper
      * Добавляет пользовательские поля к объекту
      * @param $entityId
      * @param array $fields
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addUserTypeEntitiesIfNotExists($entityId, array $fields)
     {
@@ -24,7 +29,7 @@ class UserTypeEntityHelper extends Helper
      * Удаляет пользовательские поля у объекта
      * @param $entityId
      * @param array $fields
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteUserTypeEntitiesIfExists($entityId, array $fields)
     {
@@ -39,7 +44,7 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldName
      * @param $fields
      * @return int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addUserTypeEntityIfNotExists($entityId, $fieldName, $fields)
     {
@@ -57,7 +62,7 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldName
      * @param $fields
      * @return int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addUserTypeEntity($entityId, $fieldName, $fields)
     {
@@ -92,7 +97,7 @@ class UserTypeEntityHelper extends Helper
             unset($fields['ENUM_VALUES']);
         }
 
-        $obUserField = new \CUserTypeEntity;
+        $obUserField = new CUserTypeEntity;
         $userFieldId = $obUserField->Add($fields);
 
         $enumsCreated = true;
@@ -104,7 +109,7 @@ class UserTypeEntityHelper extends Helper
             return $userFieldId;
         }
 
-        /* @global $APPLICATION \CMain */
+        /* @global $APPLICATION CMain */
         global $APPLICATION;
         if ($APPLICATION->GetException()) {
             $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
@@ -118,7 +123,7 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldId
      * @param $fields
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateUserTypeEntity($fieldId, $fields)
     {
@@ -132,7 +137,7 @@ class UserTypeEntityHelper extends Helper
         unset($fields["FIELD_NAME"]);
         unset($fields["MULTIPLE"]);
 
-        $entity = new \CUserTypeEntity;
+        $entity = new CUserTypeEntity;
         $userFieldUpdated = $entity->Update($fieldId, $fields);
 
         $enumsCreated = true;
@@ -143,7 +148,7 @@ class UserTypeEntityHelper extends Helper
         if ($userFieldUpdated && $enumsCreated) {
             return $fieldId;
         }
-        /* @global $APPLICATION \CMain */
+        /* @global $APPLICATION CMain */
         global $APPLICATION;
         if ($APPLICATION->GetException()) {
             $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
@@ -158,7 +163,7 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldName
      * @param $fields
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateUserTypeEntityIfExists($entityId, $fieldName, $fields)
     {
@@ -188,7 +193,7 @@ class UserTypeEntityHelper extends Helper
 
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbres = \CUserTypeEntity::GetList([], $filter);
+        $dbres = CUserTypeEntity::GetList([], $filter);
         $result = [];
         while ($item = $dbres->Fetch()) {
             $result[] = $this->getUserTypeEntityById($item['ID']);
@@ -234,7 +239,7 @@ class UserTypeEntityHelper extends Helper
     public function getUserTypeEntity($entityId, $fieldName)
     {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $item = \CUserTypeEntity::GetList([], [
+        $item = CUserTypeEntity::GetList([], [
             'ENTITY_ID' => $entityId,
             'FIELD_NAME' => $fieldName,
         ])->Fetch();
@@ -249,7 +254,7 @@ class UserTypeEntityHelper extends Helper
      */
     public function getUserTypeEntityById($fieldId)
     {
-        $item = \CUserTypeEntity::GetByID($fieldId);
+        $item = CUserTypeEntity::GetByID($fieldId);
         if (empty($item)) {
             return false;
         }
@@ -294,7 +299,7 @@ class UserTypeEntityHelper extends Helper
             }
         }
 
-        $obEnum = new \CUserFieldEnum();
+        $obEnum = new CUserFieldEnum();
         return $obEnum->SetEnumValues($fieldId, $updates);
 
     }
@@ -304,7 +309,7 @@ class UserTypeEntityHelper extends Helper
      * @param $entityId
      * @param $fieldName
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteUserTypeEntityIfExists($entityId, $fieldName)
     {
@@ -313,7 +318,7 @@ class UserTypeEntityHelper extends Helper
             return false;
         }
 
-        $entity = new \CUserTypeEntity();
+        $entity = new CUserTypeEntity();
         if ($entity->Delete($item['ID'])) {
             return true;
         }
@@ -326,7 +331,7 @@ class UserTypeEntityHelper extends Helper
      * @param $entityId
      * @param $fieldName
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteUserTypeEntity($entityId, $fieldName)
     {
@@ -337,8 +342,8 @@ class UserTypeEntityHelper extends Helper
      * Декодирует название объекта в оригинальный вид
      * @param $entityId
      * @return string
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws HelperException
      */
     public function revertEntityId($entityId)
     {
@@ -360,8 +365,8 @@ class UserTypeEntityHelper extends Helper
      * Кодирует название объекта в вид удобный для экспорта в миграцию или схему
      * @param $entityId
      * @return string
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws HelperException
      */
     public function transformEntityId($entityId)
     {
@@ -382,8 +387,8 @@ class UserTypeEntityHelper extends Helper
      * Создаст если не было, обновит если существует и отличается
      * @param array $fields , обязательные параметры - название объекта, название поля
      * @return bool|int|mixed
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws HelperException
      */
     public function saveUserTypeEntity($fields = [])
     {
@@ -442,8 +447,8 @@ class UserTypeEntityHelper extends Helper
      * @param $item
      * @param bool $transformEntityId
      * @return mixed
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws HelperException
      */
     protected function prepareExportUserTypeEntity($item, $transformEntityId = false)
     {
@@ -468,7 +473,7 @@ class UserTypeEntityHelper extends Helper
      */
     protected function getEnumValues($fieldId, $full = false)
     {
-        $obEnum = new \CUserFieldEnum;
+        $obEnum = new CUserFieldEnum;
         $dbres = $obEnum->GetList([], ["USER_FIELD_ID" => $fieldId]);
 
         $result = [];

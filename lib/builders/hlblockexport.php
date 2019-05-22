@@ -2,17 +2,17 @@
 
 namespace Sprint\Migration\Builders;
 
+use Bitrix\Main\Loader;
+use Sprint\Migration\HelperManager;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
-use Sprint\Migration\HelperManager;
-use Sprint\Migration\Exceptions\HelperException;
 
 class HlblockExport extends VersionBuilder
 {
 
     protected function isBuilderEnabled()
     {
-        return (\Bitrix\Main\Loader::includeModule('highloadblock'));
+        return (Loader::includeModule('highloadblock'));
     }
 
     protected function initialize()

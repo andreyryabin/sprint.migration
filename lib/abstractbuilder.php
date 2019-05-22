@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration;
 
+use Exception;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
@@ -203,7 +204,7 @@ abstract class AbstractBuilder
             $this->execStatus = 'rebuild';
             return false;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->execStatus = 'error';
             $this->outError('%s: %s', GetMessage('SPRINT_MIGRATION_BUILDER_ERROR'), $e->getMessage());
             return false;

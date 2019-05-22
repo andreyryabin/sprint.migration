@@ -2,7 +2,9 @@
 
 namespace Sprint\Migration\Exceptions;
 
-class RebuildException extends \Exception
+use Exception;
+
+class RebuildException extends Exception
 {
 
 }

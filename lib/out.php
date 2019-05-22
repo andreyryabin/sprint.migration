@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration;
 
+use CAdminMessage;
+
 class Out
 {
 
@@ -54,7 +56,7 @@ class Out
                 "PROGRESS_VALUE" => $val,
             ];
 
-            $m = new \CAdminMessage($mess);
+            $m = new CAdminMessage($mess);
             echo '<div class="sp-progress">' . $m->Show() . '</div>';
 
         } elseif (self::canOutAsHtml()) {
@@ -122,7 +124,7 @@ class Out
 
         if (self::canOutAsAdminMessage()) {
             /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-            \CAdminMessage::ShowMessage([
+            CAdminMessage::ShowMessage([
                 "MESSAGE" => self::prepareToHtml($msg),
                 'HTML' => true,
                 'TYPE' => 'ERROR',
@@ -142,7 +144,7 @@ class Out
 
         if (self::canOutAsAdminMessage()) {
             /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-            \CAdminMessage::ShowMessage([
+            CAdminMessage::ShowMessage([
                 "MESSAGE" => self::prepareToHtml($msg),
                 'HTML' => true,
                 'TYPE' => 'OK',

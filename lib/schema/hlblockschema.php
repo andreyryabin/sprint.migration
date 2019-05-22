@@ -2,8 +2,8 @@
 
 namespace Sprint\Migration\Schema;
 
-use \Sprint\Migration\AbstractSchema;
-use Sprint\Migration\Helpers\AgentHelper;
+use Bitrix\Main\Loader;
+use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\HelperManager;
 
 class HlblockSchema extends AbstractSchema
@@ -13,7 +13,7 @@ class HlblockSchema extends AbstractSchema
 
     protected function isBuilderEnabled()
     {
-        return (\Bitrix\Main\Loader::includeModule('highloadblock'));
+        return (Loader::includeModule('highloadblock'));
     }
 
     protected function initialize()

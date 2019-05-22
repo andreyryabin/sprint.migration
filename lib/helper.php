@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration;
 
+use Bitrix\Main\Loader;
+use CDBResult;
 use Sprint\Migration\Exceptions\HelperException;
 
 class Helper
@@ -80,7 +82,7 @@ class Helper
     {
         $names = is_array($names) ? $names : [$names];
         foreach ($names as $name) {
-            if (!\Bitrix\Main\Loader::includeModule($name)) {
+            if (!Loader::includeModule($name)) {
                 $this->throwException(__METHOD__, "module %s not installed", $name);
             }
         }
@@ -96,12 +98,12 @@ class Helper
     }
 
     /**
-     * @param \CDBResult $dbres
+     * @param CDBResult $dbres
      * @param bool $indexKey
      * @param bool $valueKey
      * @return array
      */
-    protected function fetchAll(\CDBResult $dbres, $indexKey = false, $valueKey = false)
+    protected function fetchAll(CDBResult $dbres, $indexKey = false, $valueKey = false)
     {
         $res = [];
 

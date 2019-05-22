@@ -2,29 +2,32 @@
 
 namespace Sprint\Migration;
 
+use COption;
+use Exception;
+
 class Module
 {
 
     public static function getDbOption($name, $default = '')
     {
-        return \COption::GetOptionString('sprint.migration', $name, $default);
+        return COption::GetOptionString('sprint.migration', $name, $default);
     }
 
     public static function setDbOption($name, $value)
     {
-        if ($value != \COption::GetOptionString('sprint.migration', $name, '')) {
-            \COption::SetOptionString('sprint.migration', $name, $value);
+        if ($value != COption::GetOptionString('sprint.migration', $name, '')) {
+            COption::SetOptionString('sprint.migration', $name, $value);
         }
     }
 
     public static function removeDbOption($name)
     {
-        \COption::RemoveOption('sprint.migration', $name);
+        COption::RemoveOption('sprint.migration', $name);
     }
 
     public static function removeDbOptions()
     {
-        \COption::RemoveOption('sprint.migration');
+        COption::RemoveOption('sprint.migration');
     }
 
     public static function getDocRoot()
@@ -72,22 +75,22 @@ class Module
     public static function checkHealth()
     {
         if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql') {
-            Throw new \Exception('mssql not supported');
+            Throw new Exception('mssql not supported');
         }
 
         if (!function_exists('json_encode')) {
-            Throw new \Exception('json functions not supported');
+            Throw new Exception('json functions not supported');
         }
 
         if (version_compare(PHP_VERSION, '5.4', '<')) {
-            Throw new \Exception(PHP_VERSION . 'not supported');
+            Throw new Exception(PHP_VERSION . 'not supported');
         }
 
         if (
             is_file($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/include.php') &&
             is_file($_SERVER['DOCUMENT_ROOT'] . '/local/modules/sprint.migration/include.php')
         ) {
-            Throw new \Exception('module installed to bitrix and local folder');
+            Throw new Exception('module installed to bitrix and local folder');
         }
     }
 }

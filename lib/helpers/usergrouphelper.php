@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration\Helpers;
 
+use CGroup;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
 class UserGroupHelper extends Helper
@@ -20,7 +22,7 @@ class UserGroupHelper extends Helper
         $res = [];
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbres = \CGroup::GetList($by, $order, $filter);
+        $dbres = CGroup::GetList($by, $order, $filter);
         while ($item = $dbres->Fetch()) {
             $res[] = $this->getGroup($item['ID']);
         }
@@ -34,7 +36,7 @@ class UserGroupHelper extends Helper
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $code
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function exportGroup($code)
     {
@@ -97,14 +99,14 @@ class UserGroupHelper extends Helper
      */
     public function getGroup($code)
     {
-        $groupId = is_numeric($code) ? $code : \CGroup::GetIDByCode($code);
+        $groupId = is_numeric($code) ? $code : CGroup::GetIDByCode($code);
 
         if (empty($groupId)) {
             return false;
         }
 
         /* extract SECURITY_POLICY */
-        $item = \CGroup::GetByID($groupId)->Fetch();
+        $item = CGroup::GetByID($groupId)->Fetch();
         if (empty($item)) {
             return false;
         }
@@ -130,7 +132,7 @@ class UserGroupHelper extends Helper
      * @param $code
      * @param array $fields , обязательные параметры - название групы
      * @return bool|int|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function saveGroup($code, $fields = [])
     {
@@ -167,7 +169,7 @@ class UserGroupHelper extends Helper
      * @param $code
      * @param array $fields
      * @return int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addGroupIfNotExists($code, $fields = [])
     {
@@ -184,7 +186,7 @@ class UserGroupHelper extends Helper
      * @param $code
      * @param array $fields
      * @return bool|int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateGroupIfExists($code, $fields = [])
     {
@@ -201,14 +203,14 @@ class UserGroupHelper extends Helper
      * @param $code
      * @param array $fields , , обязательные параметры - название групы
      * @return int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addGroup($code, $fields = [])
     {
         $fields['STRING_ID'] = $code;
         $this->checkRequiredKeys(__METHOD__, $fields, ['STRING_ID', 'NAME']);
 
-        $group = new \CGroup;
+        $group = new CGroup;
         $groupId = $group->Add($this->prepareFields($fields));
 
         if ($groupId) {
@@ -223,7 +225,7 @@ class UserGroupHelper extends Helper
      * @param $groupId
      * @param array $fields
      * @return int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateGroup($groupId, $fields = [])
     {
@@ -231,7 +233,7 @@ class UserGroupHelper extends Helper
             $this->throwException(__METHOD__, 'Set fields for group');
         }
 
-        $group = new \CGroup;
+        $group = new CGroup;
         if ($group->Update($groupId, $this->prepareFields($fields))) {
             return intval($groupId);
         }
@@ -251,7 +253,7 @@ class UserGroupHelper extends Helper
             return false;
         }
 
-        $group = new \CGroup;
+        $group = new CGroup;
         $group->Delete($groupId);
         return true;
     }

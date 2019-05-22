@@ -2,6 +2,9 @@
 
 namespace Sprint\Migration\Helpers;
 
+use CEventMessage;
+use CEventType;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
 class EventHelper extends Helper
@@ -18,7 +21,7 @@ class EventHelper extends Helper
             'EVENT_NAME' => $eventName,
         ];
 
-        $dbres = \CEventType::GetList($filter);
+        $dbres = CEventType::GetList($filter);
         return $dbres->Fetch();
     }
 
@@ -33,7 +36,7 @@ class EventHelper extends Helper
             'EVENT_NAME' => $eventName,
         ];
 
-        $dbres = \CEventType::GetList($filter);
+        $dbres = CEventType::GetList($filter);
         return $this->fetchAll($dbres);
     }
 
@@ -51,7 +54,7 @@ class EventHelper extends Helper
         $by = 'id';
         $order = 'asc';
 
-        $item = \CEventMessage::GetList($by, $order, $filter)->Fetch();
+        $item = CEventMessage::GetList($by, $order, $filter)->Fetch();
         return $this->prepareEventMessage($item);
     }
 
@@ -70,7 +73,7 @@ class EventHelper extends Helper
         $order = 'asc';
 
         $result = [];
-        $dbres = \CEventMessage::GetList($by, $order, $filter);
+        $dbres = CEventMessage::GetList($by, $order, $filter);
         while ($item = $dbres->Fetch()) {
             $result[] = $this->prepareEventMessage($item);
         }
@@ -84,7 +87,7 @@ class EventHelper extends Helper
      */
     public function getEventMessageSites($messageId)
     {
-        $dbres = \CEventMessage::GetLang($messageId);
+        $dbres = CEventMessage::GetLang($messageId);
         return $this->fetchAll($dbres, false, 'LID');
     }
 
@@ -125,7 +128,7 @@ class EventHelper extends Helper
      * @param $eventName
      * @param $fields , обязательные параметры - id сайта
      * @return bool|int|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addEventTypeIfNotExists($eventName, $fields)
     {
@@ -148,7 +151,7 @@ class EventHelper extends Helper
      * @param $eventName
      * @param $fields , обязательные параметры - тема сообщения, id сайта
      * @return bool|int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addEventMessageIfNotExists($eventName, $fields)
     {
@@ -171,7 +174,7 @@ class EventHelper extends Helper
      * @param $eventName
      * @param $fields
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateEventMessage($eventName, $fields)
     {
@@ -189,11 +192,11 @@ class EventHelper extends Helper
      * @param $id
      * @param $fields
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateEventMessageById($id, $fields)
     {
-        $event = new \CEventMessage;
+        $event = new CEventMessage;
         if ($event->Update($id, $fields)) {
             return $id;
         }
@@ -206,11 +209,11 @@ class EventHelper extends Helper
      * @param $id
      * @param $fields
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateEventTypeById($id, $fields)
     {
-        $event = new \CEventType();
+        $event = new CEventType();
         if ($event->Update(['ID' => $id], $fields)) {
             return $id;
         }
@@ -224,7 +227,7 @@ class EventHelper extends Helper
      * @param $eventName
      * @param $fields , обязательные параметры - тема сообщения, id сайта
      * @return bool|int|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function saveEventMessage($eventName, $fields)
     {
@@ -264,7 +267,7 @@ class EventHelper extends Helper
      * @param $eventName
      * @param $fields , обязательные параметры - id языка
      * @return bool|int|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function saveEventType($eventName, $fields)
     {
@@ -302,7 +305,7 @@ class EventHelper extends Helper
      * Удаляет тип почтового события
      * @param $fields , обязательные параметры - id языка, тип события
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteEventType($fields)
     {
@@ -317,7 +320,7 @@ class EventHelper extends Helper
             return false;
         }
 
-        if (\CEventType::Delete(["ID" => $exists['ID']])) {
+        if (CEventType::Delete(["ID" => $exists['ID']])) {
             return true;
         }
 
@@ -328,7 +331,7 @@ class EventHelper extends Helper
      * Удаляет почтовый шаблон
      * @param $fields , обязательные параметры - тема сообщения языка, тип события
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteEventMessage($fields)
     {
@@ -343,7 +346,7 @@ class EventHelper extends Helper
             return false;
         }
 
-        if (\CEventMessage::Delete($exists['ID'])) {
+        if (CEventMessage::Delete($exists['ID'])) {
             return true;
         };
 
@@ -356,14 +359,14 @@ class EventHelper extends Helper
      * @param $eventName
      * @param $fields , обязательные параметры - id языка, название события
      * @return bool|int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addEventType($eventName, $fields)
     {
         $this->checkRequiredKeys(__METHOD__, $fields, ['LID', 'NAME']);
         $fields['EVENT_NAME'] = $eventName;
 
-        $event = new \CEventType;
+        $event = new CEventType;
         $id = $event->Add($fields);
 
         if ($id) {
@@ -378,7 +381,7 @@ class EventHelper extends Helper
      * @param $eventName
      * @param $fields , обязательные параметры - id сайта, тема сообщения
      * @return bool|int
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addEventMessage($eventName, $fields)
     {
@@ -396,7 +399,7 @@ class EventHelper extends Helper
         $fields = array_merge($default, $fields);
         $fields['EVENT_NAME'] = $eventName;
 
-        $event = new \CEventMessage;
+        $event = new CEventMessage;
         $id = $event->Add($fields);
 
         if ($id) {
@@ -410,7 +413,7 @@ class EventHelper extends Helper
      * @param $filter
      * @param $fields
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      * @deprecated use updateEventMessage
      */
     public function updateEventMessageByFilter($filter, $fields)

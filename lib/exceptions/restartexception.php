@@ -2,7 +2,9 @@
 
 namespace Sprint\Migration\Exceptions;
 
-class RestartException extends \Exception
+use Exception;
+
+class RestartException extends Exception
 {
 
 }

@@ -2,10 +2,15 @@
 
 namespace Sprint\Migration;
 
-use Sprint\Migration\Exceptions\RestartException;
+use CMain;
+use DirectoryIterator;
+use Exception;
+use ReflectionClass;
+use SplFileInfo;
 use Sprint\Migration\Exceptions\MigrationException;
-
+use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Tables\VersionTable;
+use Throwable;
 
 class VersionManager
 {
@@ -35,7 +40,7 @@ class VersionManager
             $this->getVersionConfig()->getVal('migration_table')
         );
 
-        $this->lastException = new \Exception();
+        $this->lastException = new Exception();
     }
 
     public function getVersionConfig()
@@ -50,14 +55,14 @@ class VersionManager
 
     public function startMigration($versionName, $action = 'up', $params = [], $force = false)
     {
-        /* @global $APPLICATION \CMain */
+        /* @global $APPLICATION CMain */
         global $APPLICATION;
 
         if (isset($this->restarts[$versionName])) {
             unset($this->restarts[$versionName]);
         }
 
-        $this->lastException = new \Exception();
+        $this->lastException = new Exception();
 
         try {
 
@@ -108,10 +113,10 @@ class VersionManager
         } catch (RestartException $e) {
             $this->restarts[$versionName] = isset($versionInstance) ? $versionInstance->getParams() : [];
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->lastException = $e;
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->lastException = $e;
         }
 
@@ -409,7 +414,7 @@ class VersionManager
             $filter = $versionInstance->getVersionFilter();
             $enabled = $versionInstance->isVersionEnabled();
         } elseif (class_exists('\ReflectionClass')) {
-            $reflect = new \ReflectionClass($class);
+            $reflect = new ReflectionClass($class);
             $props = $reflect->getDefaultProperties();
             $descr = $props['description'];
             $filter = $props['versionfilter'];
@@ -514,8 +519,8 @@ class VersionManager
         $dir = $this->getVersionConfig()->getVal('migration_dir');
         $files = [];
 
-        /* @var $item \SplFileInfo */
-        $items = new \DirectoryIterator($dir);
+        /* @var $item SplFileInfo */
+        $items = new DirectoryIterator($dir);
         foreach ($items as $item) {
             if (!$item->isFile()) {
                 continue;

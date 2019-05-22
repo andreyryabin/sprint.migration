@@ -2,6 +2,11 @@
 
 namespace Sprint\Migration;
 
+use CGroup;
+use CUser;
+use Exception;
+use Throwable;
+
 class Console
 {
 
@@ -52,7 +57,7 @@ class Console
     public function authorizeAsLogin($login)
     {
         global $USER;
-        $dbres = \CUser::GetByLogin($login);
+        $dbres = CUser::GetByLogin($login);
         $useritem = $dbres->Fetch();
         if ($useritem) {
             $USER->Authorize($useritem['ID']);
@@ -63,7 +68,7 @@ class Console
     {
         global $USER;
 
-        $groupitem = \CGroup::GetList($by, $order, [
+        $groupitem = CGroup::GetList($by, $order, [
             'ADMIN' => 'Y',
             'ACTIVE' => 'Y',
         ])->Fetch();
@@ -72,7 +77,7 @@ class Console
             $by = 'id';
             $order = 'asc';
 
-            $useritem = \CUser::GetList($by, $order, [
+            $useritem = CUser::GetList($by, $order, [
                 'GROUPS_ID' => [$groupitem['ID']],
                 'ACTIVE' => 'Y',
             ], [
@@ -444,10 +449,10 @@ class Console
                 $params = $schemaManager->getRestartParams();
                 $restart = 1;
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Out::outWarning($e->getMessage());
 
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Out::outWarning($e->getMessage());
             }
 

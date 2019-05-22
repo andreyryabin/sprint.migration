@@ -2,9 +2,8 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\Module;
+use function BXClearCache;
 use Sprint\Migration\AbstractBuilder;
-use Sprint\Migration\HelperManager;
 
 class CacheCleaner extends AbstractBuilder
 {
@@ -24,7 +23,7 @@ class CacheCleaner extends AbstractBuilder
 
     protected function execute()
     {
-        if (\BXClearCache(true)) {
+        if (BXClearCache(true)) {
             $this->outSuccess('Success');
         } else {
             $this->outError('Error');

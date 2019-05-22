@@ -2,13 +2,11 @@
 
 namespace Sprint\Migration\Tables;
 
-use Sprint\Migration\Module;
+use Bitrix\Main\Application;
+use Bitrix\Main\DB\Result;
+use Bitrix\Main\DB\SqlQueryException;
 use Sprint\Migration\Locale;
-
-use \Bitrix\Main\Application;
-
-use \Bitrix\Main\DB\Result;
-use \Bitrix\Main\DB\SqlQueryException;
+use Sprint\Migration\Module;
 
 abstract class AbstractTable
 {

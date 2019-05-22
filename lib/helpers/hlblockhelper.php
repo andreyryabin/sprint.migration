@@ -2,9 +2,11 @@
 
 namespace Sprint\Migration\Helpers;
 
-use Sprint\Migration\Helper;
-
 use Bitrix\Highloadblock as HL;
+use Bitrix\Main\ArgumentException;
+use Bitrix\Main\SystemException;
+use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Helper;
 
 
 class HlblockHelper extends Helper
@@ -19,7 +21,7 @@ class HlblockHelper extends Helper
      * Получает список highload-блоков
      * @param array $filter
      * @return array
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function getHlblocks($filter = [])
     {
@@ -44,7 +46,7 @@ class HlblockHelper extends Helper
      * Данные подготовлены для экспорта в миграцию или схему
      * @param array $filter
      * @return array
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function exportHlblocks($filter = [])
     {
@@ -62,7 +64,7 @@ class HlblockHelper extends Helper
      * Получает список полей highload-блока
      * @param $hlblockName int|string|array - id, имя или фильтр
      * @return array
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function getFields($hlblockName)
     {
@@ -79,8 +81,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName int|string|array - id, имя или фильтр
      * @param array $field
      * @return bool|int|mixed
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws HelperException
      */
     public function saveField($hlblockName, $field = [])
     {
@@ -97,9 +99,9 @@ class HlblockHelper extends Helper
      * Создаст если не было, обновит если существует и отличается
      * @param $fields , обязательные параметры - название сущности
      * @return bool|int|mixed
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Bitrix\Main\SystemException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws HelperException
      */
     public function saveHlblock($fields)
     {
@@ -136,8 +138,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      * @param $fieldName
      * @return bool
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws HelperException
      */
     public function deleteField($hlblockName, $fieldName)
     {
@@ -153,7 +155,7 @@ class HlblockHelper extends Helper
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $hlblockName
      * @return array
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function exportFields($hlblockName)
     {
@@ -171,7 +173,7 @@ class HlblockHelper extends Helper
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $hlblockName
      * @return mixed
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function exportHlblock($hlblockName)
     {
@@ -184,7 +186,7 @@ class HlblockHelper extends Helper
      * Получает highload-блок
      * @param $hlblockName - id, имя или фильтр
      * @return array|false
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function getHlblock($hlblockName)
     {
@@ -214,8 +216,8 @@ class HlblockHelper extends Helper
     /**
      * @param $hlblockName
      * @return array|false
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws HelperException
      */
     public function getHlblockIfExists($hlblockName)
     {
@@ -231,8 +233,8 @@ class HlblockHelper extends Helper
      * Получает highload-блок, бросает исключение если его не существует
      * @param $hlblockName - id, имя или фильтр
      * @return mixed
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws HelperException
      */
     public function getHlblockIdIfExists($hlblockName)
     {
@@ -248,7 +250,7 @@ class HlblockHelper extends Helper
      * Получает id highload-блока
      * @param $hlblockName - id, имя или фильтр
      * @return int|mixed
-     * @throws \Bitrix\Main\ArgumentException
+     * @throws ArgumentException
      */
     public function getHlblockId($hlblockName)
     {
@@ -260,8 +262,8 @@ class HlblockHelper extends Helper
      * Добавляет highload-блок
      * @param $fields , обязательные параметры - название сущности, название таблицы в БД
      * @return int
-     * @throws \Bitrix\Main\SystemException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws SystemException
+     * @throws HelperException
      */
     public function addHlblock($fields)
     {
@@ -288,9 +290,9 @@ class HlblockHelper extends Helper
      * Добавляет highload-блок, если его не существует
      * @param $fields , обязательные параметры - название сущности
      * @return int|mixed
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Bitrix\Main\SystemException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws HelperException
      */
     public function addHlblockIfNotExists($fields)
     {
@@ -309,7 +311,7 @@ class HlblockHelper extends Helper
      * @param $hlblockId
      * @param $fields
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateHlblock($hlblockId, $fields)
     {
@@ -333,8 +335,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      * @param $fields
      * @return bool|mixed
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws HelperException
      */
     public function updateHlblockIfExists($hlblockName, $fields)
     {
@@ -350,7 +352,7 @@ class HlblockHelper extends Helper
      * Удаляет highload-блок
      * @param $hlblockId
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function deleteHlblock($hlblockId)
     {
@@ -366,8 +368,8 @@ class HlblockHelper extends Helper
      * Удаляет highload-блок, если существует
      * @param $hlblockName
      * @return bool
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws HelperException
      */
     public function deleteHlblockIfExists($hlblockName)
     {

@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration\Helpers;
 
+use CLanguage;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
 class LangHelper extends Helper
@@ -9,7 +11,7 @@ class LangHelper extends Helper
 
     /**
      * @return mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function getDefaultLangIdIfExists()
     {
@@ -17,7 +19,7 @@ class LangHelper extends Helper
         $order = 'desc';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $item = \CLanguage::GetList($by, $order, ['ACTIVE' => 'Y'])->Fetch();
+        $item = CLanguage::GetList($by, $order, ['ACTIVE' => 'Y'])->Fetch();
 
         if ($item) {
             return $item['LID'];
@@ -37,7 +39,7 @@ class LangHelper extends Helper
 
         $lids = [];
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbres = \CLanguage::GetList($by, $order, $filter);
+        $dbres = CLanguage::GetList($by, $order, $filter);
         while ($item = $dbres->Fetch()) {
             $lids[] = $item;
         }
@@ -47,7 +49,7 @@ class LangHelper extends Helper
 
     /**
      * @return array
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function getLangsIfExists()
     {

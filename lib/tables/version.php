@@ -2,8 +2,7 @@
 
 namespace Sprint\Migration\Tables;
 
-use \Bitrix\Main\Db\SqlQueryException;
-use \Bitrix\Main\Db\Result;
+use Bitrix\Main\Db\SqlQueryException;
 
 class VersionTable extends AbstractTable
 {

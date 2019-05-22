@@ -2,6 +2,11 @@
 
 namespace Sprint\Migration\Helpers;
 
+use CIBlock;
+use CIBlockProperty;
+use CUserOptions;
+use function IncludeModuleLangFile;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
 class UserOptionsHelper extends Helper
@@ -22,7 +27,7 @@ class UserOptionsHelper extends Helper
      * @param $iblockId
      * @param array $params
      * @return array
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function extractElementForm($iblockId, $params = [])
     {
@@ -53,7 +58,7 @@ class UserOptionsHelper extends Helper
         $params['name'] = $params['name_prefix'] . $iblockId;
 
 
-        $option = \CUserOptions::GetOption($params['category'], $params['name'], false, false);
+        $option = CUserOptions::GetOption($params['category'], $params['name'], false, false);
 
         $extractedTabs = [];
 
@@ -181,8 +186,8 @@ class UserOptionsHelper extends Helper
             'page_size' => $params['page_size'],
         ];
 
-        \CUserOptions::DeleteOptionsByName($params['category'], $name);
-        \CUserOptions::SetOption($params['category'], $name, $value, true);
+        CUserOptions::DeleteOptionsByName($params['category'], $name);
+        CUserOptions::SetOption($params['category'], $name, $value, true);
     }
 
     public function saveSectionList($iblockId, $columns = [], $params = [])
@@ -225,7 +230,7 @@ class UserOptionsHelper extends Helper
         $params['name'] = $params['name_prefix'] . $iblockId;
 
         if (empty($elementForm)) {
-            \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
+            CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
             return true;
         }
 
@@ -270,8 +275,8 @@ class UserOptionsHelper extends Helper
             'tabs' => $opts,
         ];
 
-        \CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
-        \CUserOptions::SetOption($params['category'], $params['name'], $value, true);
+        CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
+        CUserOptions::SetOption($params['category'], $params['name'], $value, true);
 
         return true;
     }
@@ -292,7 +297,7 @@ class UserOptionsHelper extends Helper
         $this->props = [];
         $this->titles = [];
 
-        $this->iblock = \CIBlock::GetList(['SORT' => 'ASC'], [
+        $this->iblock = CIBlock::GetList(['SORT' => 'ASC'], [
             'ID' => $iblockId,
             'CHECK_PERMISSIONS' => 'N',
         ])->Fetch();
@@ -300,7 +305,7 @@ class UserOptionsHelper extends Helper
             $this->throwException(__METHOD__, 'Iblock %d not found', $iblockId);
         }
 
-        $dbResult = \CIBlockProperty::GetList(["sort" => "asc"], [
+        $dbResult = CIBlockProperty::GetList(["sort" => "asc"], [
             "IBLOCK_ID" => $iblockId,
             "CHECK_PERMISSIONS" => "N",
         ]);
@@ -312,7 +317,7 @@ class UserOptionsHelper extends Helper
             }
         }
 
-        $iblockMess = \IncludeModuleLangFile('/bitrix/modules/iblock/iblock.php', 'ru', true);
+        $iblockMess = IncludeModuleLangFile('/bitrix/modules/iblock/iblock.php', 'ru', true);
 
         $this->titles['ACTIVE_FROM'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_FROM'];
         $this->titles['ACTIVE_TO'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_TO'];
@@ -327,7 +332,7 @@ class UserOptionsHelper extends Helper
 
     protected function getSeoTab()
     {
-        $seoMess = \IncludeModuleLangFile('/bitrix/modules/iblock/admin/iblock_element_edit.php', 'ru', true);
+        $seoMess = IncludeModuleLangFile('/bitrix/modules/iblock/admin/iblock_element_edit.php', 'ru', true);
 
         return [
             'IPROPERTY_TEMPLATES_ELEMENT_META_TITLE' => $seoMess['IBEL_E_SEO_META_TITLE'],

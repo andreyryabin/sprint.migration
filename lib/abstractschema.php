@@ -2,6 +2,9 @@
 
 namespace Sprint\Migration;
 
+use DirectoryIterator;
+use SplFileInfo;
+
 abstract class AbstractSchema
 {
     use OutTrait;
@@ -169,8 +172,8 @@ abstract class AbstractSchema
             $file = $this->getSchemaFile($path);
 
             if (is_dir($dir)) {
-                /* @var $item \SplFileInfo */
-                $items = new \DirectoryIterator($dir);
+                /* @var $item SplFileInfo */
+                $items = new DirectoryIterator($dir);
                 foreach ($items as $item) {
                     if ($item->isFile() && $item->getExtension() == 'json') {
                         $result[] = $path . $item->getBasename('.json');

@@ -2,6 +2,9 @@
 
 namespace Sprint\Migration\Helpers;
 
+use CAgent;
+use CMain;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
 class AgentHelper extends Helper
@@ -15,7 +18,7 @@ class AgentHelper extends Helper
     public function getList($filter = [])
     {
         $res = [];
-        $dbres = \CAgent::GetList(["MODULE_ID" => "ASC"], $filter);
+        $dbres = CAgent::GetList(["MODULE_ID" => "ASC"], $filter);
         while ($item = $dbres->Fetch()) {
             $res[] = $item;
         }
@@ -73,7 +76,7 @@ class AgentHelper extends Helper
             $filter['NAME'] = $name;
         }
 
-        return \CAgent::GetList([
+        return CAgent::GetList([
             "MODULE_ID" => "ASC",
         ], $filter)->Fetch();
     }
@@ -87,7 +90,7 @@ class AgentHelper extends Helper
     public function deleteAgent($moduleId, $name)
     {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        \CAgent::RemoveAgent($name, $moduleId);
+        CAgent::RemoveAgent($name, $moduleId);
         return true;
     }
 
@@ -112,7 +115,7 @@ class AgentHelper extends Helper
      * Создаст если не было, обновит если существует и отличается
      * @param array $fields , обязательные параметры - id модуля, функция агента
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function saveAgent($fields = [])
     {
@@ -157,7 +160,7 @@ class AgentHelper extends Helper
      * Обновление агента, бросает исключение в случае неудачи
      * @param $fields , обязательные параметры - id модуля, функция агента
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function updateAgent($fields)
     {
@@ -170,7 +173,7 @@ class AgentHelper extends Helper
      * Создание агента, бросает исключение в случае неудачи
      * @param $fields , обязательные параметры - id модуля, функция агента
      * @return bool
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      */
     public function addAgent($fields)
     {
@@ -186,7 +189,7 @@ class AgentHelper extends Helper
         ], $fields);
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $agentId = \CAgent::AddAgent(
+        $agentId = CAgent::AddAgent(
             $fields['NAME'],
             $fields['MODULE_ID'],
             $fields['IS_PERIOD'],
@@ -200,7 +203,7 @@ class AgentHelper extends Helper
             return $agentId;
         }
 
-        /* @global $APPLICATION \CMain */
+        /* @global $APPLICATION CMain */
         global $APPLICATION;
         if ($APPLICATION->GetException()) {
             $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
@@ -215,7 +218,7 @@ class AgentHelper extends Helper
      * @param $interval
      * @param $nextExec
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      * @deprecated
      */
     public function replaceAgent($moduleId, $name, $interval, $nextExec)
@@ -234,7 +237,7 @@ class AgentHelper extends Helper
      * @param $interval
      * @param $nextExec
      * @return bool|mixed
-     * @throws \Sprint\Migration\Exceptions\HelperException
+     * @throws HelperException
      * @deprecated
      */
     public function addAgentIfNotExists($moduleId, $name, $interval, $nextExec)

@@ -2,9 +2,10 @@
 
 namespace Sprint\Migration\Builders;
 
+use CUserTypeEntity;
+use Sprint\Migration\HelperManager;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
-use Sprint\Migration\HelperManager;
 
 class UserTypeEntities extends VersionBuilder
 {
@@ -72,7 +73,7 @@ class UserTypeEntities extends VersionBuilder
     protected function getEntitiesStructure()
     {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = \CUserTypeEntity::GetList([], []);
+        $dbRes = CUserTypeEntity::GetList([], []);
 
         $structure = [];
         while ($item = $dbRes->Fetch()) {

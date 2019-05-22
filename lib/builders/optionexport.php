@@ -2,10 +2,9 @@
 
 namespace Sprint\Migration\Builders;
 
+use Sprint\Migration\HelperManager;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
-use Sprint\Migration\HelperManager;
-use Sprint\Migration\Exceptions\HelperException;
 
 class OptionExport extends VersionBuilder
 {

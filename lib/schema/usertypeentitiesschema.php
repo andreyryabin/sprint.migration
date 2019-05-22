@@ -3,7 +3,6 @@
 namespace Sprint\Migration\Schema;
 
 use Sprint\Migration\AbstractSchema;
-use Sprint\Migration\Helper;
 use Sprint\Migration\HelperManager;
 
 class UserTypeEntitiesSchema extends AbstractSchema
