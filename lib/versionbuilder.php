@@ -9,7 +9,8 @@ use Sprint\Migration\Exceptions\RestartException;
 class VersionBuilder extends AbstractBuilder
 {
 
-    protected function purifyPrefix($prefix = '') {
+    protected function purifyPrefix($prefix = '')
+    {
         $prefix = trim($prefix);
         if (empty($prefix)) {
             $prefix = $this->getVersionConfig()->getVal('version_prefix');
@@ -33,19 +34,22 @@ class VersionBuilder extends AbstractBuilder
         return $prefix;
     }
 
-    protected function purifyDescription($descr = '') {
+    protected function purifyDescription($descr = '')
+    {
         $descr = strval($descr);
-        $descr = str_replace(array("\n\r", "\r\n", "\n", "\r"), ' ', $descr);
+        $descr = str_replace(["\n\r", "\r\n", "\n", "\r"], ' ', $descr);
         $descr = strip_tags($descr);
         $descr = addslashes($descr);
         return $descr;
     }
 
-    protected function getVersionFile($versionName) {
+    protected function getVersionFile($versionName)
+    {
         return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '.php';
     }
 
-    public function createVersionFile($templateFile = '', $templateVars = array()) {
+    public function createVersionFile($templateFile = '', $templateVars = [])
+    {
         $description = $this->purifyDescription(
             $this->getFieldValue('description')
         );
@@ -67,12 +71,12 @@ class VersionBuilder extends AbstractBuilder
             $extendUse = '';
         }
 
-        $tplVars = array_merge(array(
+        $tplVars = array_merge([
             'version' => $versionName,
             'description' => $description,
             'extendUse' => $extendUse,
             'extendClass' => $extendClass,
-        ), $templateVars);
+        ], $templateVars);
 
         if (!is_file($templateFile)) {
             $templateFile = Module::getModuleDir() . '/templates/version.php';
@@ -88,14 +92,15 @@ class VersionBuilder extends AbstractBuilder
             return false;
         }
 
-        Out::outSuccess(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS', array(
-            '#VERSION#' => $versionName
-        )));
+        Out::outSuccess(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS', [
+            '#VERSION#' => $versionName,
+        ]));
 
         return $versionName;
     }
 
-    protected function getTimestamp() {
+    protected function getTimestamp()
+    {
         $originTz = date_default_timezone_get();
         date_default_timezone_set('Europe/Moscow');
         $ts = date('YmdHis');

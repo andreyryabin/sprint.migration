@@ -7,33 +7,35 @@ use Bitrix\Main\Entity\DataManager;
 class OptionTable extends DataManager
 {
 
-    public static function getTableName() {
+    public static function getTableName()
+    {
         return 'b_option';
     }
 
-    public static function getMap() {
-        return array(
-            'MODULE_ID' => array(
+    public static function getMap()
+    {
+        return [
+            'MODULE_ID' => [
                 'data_type' => 'string',
                 'primary' => true,
-            ),
-            'NAME' => array(
+            ],
+            'NAME' => [
                 'data_type' => 'string',
                 'primary' => true,
-            ),
-            'VALUE' => array(
+            ],
+            'VALUE' => [
                 'data_type' => 'string',
                 'required' => false,
-            ),
-            'DESCRIPTION' => array(
+            ],
+            'DESCRIPTION' => [
                 'data_type' => 'string',
                 'required' => false,
-            ),
-            'SITE_ID' => array(
+            ],
+            'SITE_ID' => [
                 'data_type' => 'string',
                 'required' => false,
-            ),
-        );
+            ],
+        ];
     }
 
 

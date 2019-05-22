@@ -13,7 +13,8 @@ class UserTypeEntityHelper extends Helper
      * @param array $fields
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function addUserTypeEntitiesIfNotExists($entityId, array $fields) {
+    public function addUserTypeEntitiesIfNotExists($entityId, array $fields)
+    {
         foreach ($fields as $field) {
             $this->addUserTypeEntityIfNotExists($entityId, $field["FIELD_NAME"], $field);
         }
@@ -25,7 +26,8 @@ class UserTypeEntityHelper extends Helper
      * @param array $fields
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function deleteUserTypeEntitiesIfExists($entityId, array $fields) {
+    public function deleteUserTypeEntitiesIfExists($entityId, array $fields)
+    {
         foreach ($fields as $fieldName) {
             $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
         }
@@ -39,7 +41,8 @@ class UserTypeEntityHelper extends Helper
      * @return int
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function addUserTypeEntityIfNotExists($entityId, $fieldName, $fields) {
+    public function addUserTypeEntityIfNotExists($entityId, $fieldName, $fields)
+    {
         $item = $this->getUserTypeEntity($entityId, $fieldName);
         if ($item) {
             return $item['ID'];
@@ -56,9 +59,10 @@ class UserTypeEntityHelper extends Helper
      * @return int
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function addUserTypeEntity($entityId, $fieldName, $fields) {
+    public function addUserTypeEntity($entityId, $fieldName, $fields)
+    {
 
-        $default = array(
+        $default = [
             "ENTITY_ID" => '',
             "FIELD_NAME" => '',
             "USER_TYPE_ID" => '',
@@ -70,19 +74,19 @@ class UserTypeEntityHelper extends Helper
             "SHOW_IN_LIST" => '',
             "EDIT_IN_LIST" => '',
             "IS_SEARCHABLE" => '',
-            "SETTINGS" => array(),
-            "EDIT_FORM_LABEL" => array('ru' => '', 'en' => ''),
-            "LIST_COLUMN_LABEL" => array('ru' => '', 'en' => ''),
-            "LIST_FILTER_LABEL" => array('ru' => '', 'en' => ''),
+            "SETTINGS" => [],
+            "EDIT_FORM_LABEL" => ['ru' => '', 'en' => ''],
+            "LIST_COLUMN_LABEL" => ['ru' => '', 'en' => ''],
+            "LIST_FILTER_LABEL" => ['ru' => '', 'en' => ''],
             "ERROR_MESSAGE" => '',
             "HELP_MESSAGE" => '',
-        );
+        ];
 
         $fields = array_replace_recursive($default, $fields);
         $fields['FIELD_NAME'] = $fieldName;
         $fields['ENTITY_ID'] = $entityId;
 
-        $enums = array();
+        $enums = [];
         if (isset($fields['ENUM_VALUES'])) {
             $enums = $fields['ENUM_VALUES'];
             unset($fields['ENUM_VALUES']);
@@ -116,8 +120,9 @@ class UserTypeEntityHelper extends Helper
      * @return mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function updateUserTypeEntity($fieldId, $fields) {
-        $enums = array();
+    public function updateUserTypeEntity($fieldId, $fields)
+    {
+        $enums = [];
         if (isset($fields['ENUM_VALUES'])) {
             $enums = $fields['ENUM_VALUES'];
             unset($fields['ENUM_VALUES']);
@@ -155,7 +160,8 @@ class UserTypeEntityHelper extends Helper
      * @return bool|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function updateUserTypeEntityIfExists($entityId, $fieldName, $fields) {
+    public function updateUserTypeEntityIfExists($entityId, $fieldName, $fields)
+    {
         $item = $this->getUserTypeEntity($entityId, $fieldName);
         if (!$item) {
             return false;
@@ -170,19 +176,20 @@ class UserTypeEntityHelper extends Helper
      * @param bool $entityId
      * @return array
      */
-    public function getUserTypeEntities($entityId = false) {
+    public function getUserTypeEntities($entityId = false)
+    {
         if (!empty($entityId)) {
-            $filter = is_array($entityId) ? $entityId : array(
-                'ENTITY_ID' => $entityId
-            );
+            $filter = is_array($entityId) ? $entityId : [
+                'ENTITY_ID' => $entityId,
+            ];
         } else {
-            $filter = array();
+            $filter = [];
         }
 
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbres = \CUserTypeEntity::GetList(array(), $filter);
-        $result = array();
+        $dbres = \CUserTypeEntity::GetList([], $filter);
+        $result = [];
         while ($item = $dbres->Fetch()) {
             $result[] = $this->getUserTypeEntityById($item['ID']);
 
@@ -196,7 +203,8 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldId
      * @return mixed
      */
-    public function exportUserTypeEntity($fieldId) {
+    public function exportUserTypeEntity($fieldId)
+    {
         $item = $this->getUserTypeEntityById($fieldId);
         return $this->prepareExportUserTypeEntity($item, true);
     }
@@ -207,9 +215,10 @@ class UserTypeEntityHelper extends Helper
      * @param bool $entityId
      * @return array
      */
-    public function exportUserTypeEntities($entityId = false) {
+    public function exportUserTypeEntities($entityId = false)
+    {
         $items = $this->getUserTypeEntities($entityId);
-        $export = array();
+        $export = [];
         foreach ($items as $item) {
             $export[] = $this->prepareExportUserTypeEntity($item, true);
         }
@@ -222,12 +231,13 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldName
      * @return array|bool
      */
-    public function getUserTypeEntity($entityId, $fieldName) {
+    public function getUserTypeEntity($entityId, $fieldName)
+    {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $item = \CUserTypeEntity::GetList(array(), array(
+        $item = \CUserTypeEntity::GetList([], [
             'ENTITY_ID' => $entityId,
-            'FIELD_NAME' => $fieldName
-        ))->Fetch();
+            'FIELD_NAME' => $fieldName,
+        ])->Fetch();
 
         return (!empty($item)) ? $this->getUserTypeEntityById($item['ID']) : false;
     }
@@ -237,7 +247,8 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldId
      * @return array|bool
      */
-    public function getUserTypeEntityById($fieldId) {
+    public function getUserTypeEntityById($fieldId)
+    {
         $item = \CUserTypeEntity::GetByID($fieldId);
         if (empty($item)) {
             return false;
@@ -256,13 +267,14 @@ class UserTypeEntityHelper extends Helper
      * @param $newenums
      * @return bool
      */
-    public function setUserTypeEntityEnumValues($fieldId, $newenums) {
-        $newenums = is_array($newenums) ? $newenums : array();
+    public function setUserTypeEntityEnumValues($fieldId, $newenums)
+    {
+        $newenums = is_array($newenums) ? $newenums : [];
         $oldenums = $this->getEnumValues($fieldId, true);
 
         $index = 0;
 
-        $updates = array();
+        $updates = [];
         foreach ($oldenums as $oldenum) {
             $newenum = $this->searchEnum($oldenum, $newenums);
             if ($newenum) {
@@ -294,7 +306,8 @@ class UserTypeEntityHelper extends Helper
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function deleteUserTypeEntityIfExists($entityId, $fieldName) {
+    public function deleteUserTypeEntityIfExists($entityId, $fieldName)
+    {
         $item = $this->getUserTypeEntity($entityId, $fieldName);
         if (empty($item)) {
             return false;
@@ -315,7 +328,8 @@ class UserTypeEntityHelper extends Helper
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function deleteUserTypeEntity($entityId, $fieldName) {
+    public function deleteUserTypeEntity($entityId, $fieldName)
+    {
         return $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
     }
 
@@ -326,7 +340,8 @@ class UserTypeEntityHelper extends Helper
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function revertEntityId($entityId) {
+    public function revertEntityId($entityId)
+    {
         if (0 === strpos($entityId, 'HLBLOCK_')) {
             $hlblockName = substr($entityId, 8);
             $hlhelper = new HlblockHelper();
@@ -348,7 +363,8 @@ class UserTypeEntityHelper extends Helper
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function transformEntityId($entityId) {
+    public function transformEntityId($entityId)
+    {
         if (0 === strpos($entityId, 'HLBLOCK_')) {
             $hlblockId = substr($entityId, 8);
             $hlhelper = new HlblockHelper();
@@ -369,7 +385,8 @@ class UserTypeEntityHelper extends Helper
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function saveUserTypeEntity($fields = array()) {
+    public function saveUserTypeEntity($fields = [])
+    {
 
         if (func_num_args() > 1) {
             /** @compability */
@@ -378,7 +395,7 @@ class UserTypeEntityHelper extends Helper
             $fields['FIELD_NAME'] = $fieldName;
         }
 
-        $this->checkRequiredKeys(__METHOD__, $fields, array('ENTITY_ID', 'FIELD_NAME'));
+        $this->checkRequiredKeys(__METHOD__, $fields, ['ENTITY_ID', 'FIELD_NAME']);
 
         $fields['ENTITY_ID'] = $this->revertEntityId(
             $fields['ENTITY_ID']
@@ -428,7 +445,8 @@ class UserTypeEntityHelper extends Helper
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    protected function prepareExportUserTypeEntity($item, $transformEntityId = false) {
+    protected function prepareExportUserTypeEntity($item, $transformEntityId = false)
+    {
         if (empty($item)) {
             return $item;
         }
@@ -448,21 +466,22 @@ class UserTypeEntityHelper extends Helper
      * @param bool $full
      * @return array
      */
-    protected function getEnumValues($fieldId, $full = false) {
+    protected function getEnumValues($fieldId, $full = false)
+    {
         $obEnum = new \CUserFieldEnum;
-        $dbres = $obEnum->GetList(array(), array("USER_FIELD_ID" => $fieldId));
+        $dbres = $obEnum->GetList([], ["USER_FIELD_ID" => $fieldId]);
 
-        $result = array();
+        $result = [];
         while ($enum = $dbres->Fetch()) {
             if ($full) {
                 $result[] = $enum;
             } else {
-                $result[] = array(
+                $result[] = [
                     'VALUE' => $enum['VALUE'],
                     'DEF' => $enum['DEF'],
                     'SORT' => $enum['SORT'],
                     'XML_ID' => $enum['XML_ID'],
-                );
+                ];
             }
         }
 
@@ -474,7 +493,8 @@ class UserTypeEntityHelper extends Helper
      * @param array $haystack
      * @return bool|mixed
      */
-    protected function searchEnum($enum, $haystack = array()) {
+    protected function searchEnum($enum, $haystack = [])
+    {
         foreach ($haystack as $item) {
             if (!empty($item['XML_ID']) && $item['XML_ID'] == $enum['XML_ID']) {
                 return $item;

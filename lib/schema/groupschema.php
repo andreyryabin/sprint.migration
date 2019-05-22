@@ -9,46 +9,52 @@ use Sprint\Migration\HelperManager;
 class GroupSchema extends AbstractSchema
 {
 
-    protected function isBuilderEnabled() {
+    protected function isBuilderEnabled()
+    {
         return true;
     }
 
-    protected function initialize() {
+    protected function initialize()
+    {
         $this->setTitle('Схема групп пользователей');
     }
 
-    public function getMap() {
-        return array('user_groups');
+    public function getMap()
+    {
+        return ['user_groups'];
     }
 
-    public function outDescription() {
-        $schemaItems = $this->loadSchema('user_groups', array(
-            'items' => array()
-        ));
+    public function outDescription()
+    {
+        $schemaItems = $this->loadSchema('user_groups', [
+            'items' => [],
+        ]);
 
         $this->out('Группы пользователей: %d', count($schemaItems['items']));
     }
 
-    public function export() {
+    public function export()
+    {
         $helper = HelperManager::getInstance();
 
         $exportItems = $helper->UserGroup()->exportGroups();
 
-        $this->saveSchema('user_groups', array(
-            'items' => $exportItems
-        ));
+        $this->saveSchema('user_groups', [
+            'items' => $exportItems,
+        ]);
     }
 
-    public function import() {
-        $schemaItems = $this->loadSchema('user_groups', array(
-            'items' => array()
-        ));
+    public function import()
+    {
+        $schemaItems = $this->loadSchema('user_groups', [
+            'items' => [],
+        ]);
 
         foreach ($schemaItems['items'] as $item) {
             $this->addToQueue('saveGroup', $item);
         }
 
-        $skip = array();
+        $skip = [];
         foreach ($schemaItems['items'] as $item) {
             $skip[] = $this->getUniqGroup($item);
         }
@@ -57,13 +63,15 @@ class GroupSchema extends AbstractSchema
     }
 
 
-    protected function saveGroup($fields) {
+    protected function saveGroup($fields)
+    {
         $helper = HelperManager::getInstance();
         $helper->UserGroup()->setTestMode($this->testMode);
         $helper->UserGroup()->saveGroup($fields['STRING_ID'], $fields);
     }
 
-    protected function cleanGroups($skip = array()) {
+    protected function cleanGroups($skip = [])
+    {
         $helper = HelperManager::getInstance();
 
         $olds = $helper->UserGroup()->getGroups();
@@ -78,7 +86,8 @@ class GroupSchema extends AbstractSchema
         }
     }
 
-    protected function getUniqGroup($item) {
+    protected function getUniqGroup($item)
+    {
         return $item['STRING_ID'];
     }
 

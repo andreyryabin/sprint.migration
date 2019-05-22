@@ -1,5 +1,7 @@
 <?php
-if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
+    die();
+}
 
 $hasSteps = (
     ($_POST["step_code"] == "migration_create") ||
@@ -18,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     if ($_POST["step_code"] == "migration_create") {
         $builder = $versionManager->createBuilder($builderName, $_POST);
     } else {
-        $builder = $versionManager->createBuilder($builderName, array());
+        $builder = $versionManager->createBuilder($builderName, []);
     }
 
     if (!$builder) {

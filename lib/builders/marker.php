@@ -10,40 +10,43 @@ use Sprint\Migration\VersionManager;
 class Marker extends AbstractBuilder
 {
 
-    protected function isBuilderEnabled() {
+    protected function isBuilderEnabled()
+    {
         return true;
     }
 
 
-    protected function initialize() {
+    protected function initialize()
+    {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_MARK'));
         $this->setGroup('configurator');
 
-        $this->addField('mark_version', array(
+        $this->addField('mark_version', [
             'title' => GetMessage('SPRINT_MIGRATION_MARK_FIELD1'),
             'placeholder' => GetMessage('SPRINT_MIGRATION_MARK_VERSION'),
             'width' => 250,
-        ));
+        ]);
 
-        $this->addField('mark_status', array(
+        $this->addField('mark_status', [
             'title' => GetMessage('SPRINT_MIGRATION_MARK_FIELD2'),
             'placeholder' => '',
             'width' => 250,
-            'select' => array(
-                array(
+            'select' => [
+                [
                     'title' => GetMessage('SPRINT_MIGRATION_MARK_AS_INSTALLED'),
-                    'value' => 'installed'
-                ),
-                array(
+                    'value' => 'installed',
+                ],
+                [
                     'title' => GetMessage('SPRINT_MIGRATION_MARK_AS_NEW'),
-                    'value' => 'new'
-                ),
-            )
-        ));
+                    'value' => 'new',
+                ],
+            ],
+        ]);
 
     }
 
-    protected function execute() {
+    protected function execute()
+    {
         $version = $this->getFieldValue('mark_version');
         $status = $this->getFieldValue('mark_status');
 

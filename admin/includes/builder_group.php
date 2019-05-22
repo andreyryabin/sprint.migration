@@ -5,7 +5,7 @@
     $versionManager = new \Sprint\Migration\VersionManager($versionConfig);
 
     $colIndex = 0;
-    $builders = $versionManager->createBuilders(array('group' => $builderGroup)); ?>
+    $builders = $versionManager->createBuilders(['group' => $builderGroup]); ?>
     <? foreach ($builders as $bIndex => $builder): ?>
         <? if ($colIndex == 0): ?>
             <div class="sp-group-row2">

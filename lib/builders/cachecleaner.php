@@ -9,19 +9,22 @@ use Sprint\Migration\HelperManager;
 class CacheCleaner extends AbstractBuilder
 {
 
-    protected function isBuilderEnabled() {
+    protected function isBuilderEnabled()
+    {
         return true;
     }
 
 
-    protected function initialize() {
+    protected function initialize()
+    {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_CacheCleaner1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_CacheCleaner2'));
 
     }
 
-    protected function execute() {
-        if (\BXClearCache(true)){
+    protected function execute()
+    {
+        if (\BXClearCache(true)) {
             $this->outSuccess('Success');
         } else {
             $this->outError('Error');

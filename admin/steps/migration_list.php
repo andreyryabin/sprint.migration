@@ -1,5 +1,7 @@
 <?php
-if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
+    die();
+}
 
 $listView = (
     ($_POST["step_code"] == "migration_new") ||
@@ -24,25 +26,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     if ($_POST["step_code"] == "migration_new") {
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'new');
         \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
-        $versions = $versionManager->getVersions(array(
+        $versions = $versionManager->getVersions([
             'status' => 'new',
             'search' => $search,
-        ));
+        ]);
     } elseif ($_POST["step_code"] == "migration_installed") {
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'installed');
         \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
-        $versions = $versionManager->getVersions(array(
+        $versions = $versionManager->getVersions([
             'status' => 'installed',
             'search' => $search,
-        ));
+        ]);
 
     } else {
         \Sprint\Migration\Module::setDbOption('admin_versions_view', 'list');
         \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
-        $versions = $versionManager->getVersions(array(
+        $versions = $versionManager->getVersions([
             'status' => '',
             'search' => $search,
-        ));
+        ]);
     }
 
     ?>
@@ -52,28 +54,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                 <tr>
                     <td class="sp-list-l">
                         <? if ($aItem['status'] == 'new'): ?>
-                            <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'up'});" value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
+                            <input disabled="disabled"
+                                   onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'up'});"
+                                   value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
                         <? endif ?>
                         <? if ($aItem['status'] == 'installed'): ?>
-                            <input disabled="disabled" onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'down'});" value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
+                            <input disabled="disabled"
+                                   onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'down'});"
+                                   value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
                         <? endif ?>
                     </td>
                     <td class="sp-list-r">
                         <? if ($aItem['status'] != 'unknown' && $webdir): ?>
-                            <? $href = '/bitrix/admin/fileman_file_view.php?' . http_build_query(array(
+                            <? $href = '/bitrix/admin/fileman_file_view.php?' . http_build_query([
                                     'lang' => LANGUAGE_ID,
                                     'site' => SITE_ID,
-                                    'path' => $webdir . '/' . $aItem['version'] . '.php'
-                                )) ?>
-                            <a class="sp-item-<?= $aItem['status'] ?>" href="<?= $href ?>" target="_blank" title=""><?= $aItem['version'] ?></a>
+                                    'path' => $webdir . '/' . $aItem['version'] . '.php',
+                                ]) ?>
+                            <a class="sp-item-<?= $aItem['status'] ?>" href="<?= $href ?>" target="_blank"
+                               title=""><?= $aItem['version'] ?></a>
                         <? else: ?>
                             <span class="sp-item-<?= $aItem['status'] ?>"><?= $aItem['version'] ?></span>
                         <? endif ?>
-                        <?if ($aItem['modified']):?><span class="sp-modified" title="<?=GetMessage('SPRINT_MIGRATION_MODIFIED_VERSION')?>"><?=GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL')?></span><?endif;?>
+                        <? if ($aItem['modified']): ?><span class="sp-modified"
+                                                            title="<?= GetMessage('SPRINT_MIGRATION_MODIFIED_VERSION') ?>"><?= GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL') ?></span><? endif; ?>
 
                         <? if (!empty($aItem['description'])): ?><?php
                             if ($taskUrl && false !== strpos($taskUrl, '$1')) {
-                                $aItem['description'] = preg_replace('/#(\d+)/', '<a target="_blank" href="' . $taskUrl . '">#$1</a>', $aItem['description']);
+                                $aItem['description'] = preg_replace('/#(\d+)/',
+                                    '<a target="_blank" href="' . $taskUrl . '">#$1</a>', $aItem['description']);
                             }
                             ?>
                             <?= \Sprint\Migration\Out::prepareToHtml($aItem['description']) ?>

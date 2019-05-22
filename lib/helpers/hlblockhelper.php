@@ -10,8 +10,9 @@ use Bitrix\Highloadblock as HL;
 class HlblockHelper extends Helper
 {
 
-    public function __construct() {
-        $this->checkModules(array('highloadblock'));
+    public function __construct()
+    {
+        $this->checkModules(['highloadblock']);
     }
 
     /**
@@ -20,12 +21,13 @@ class HlblockHelper extends Helper
      * @return array
      * @throws \Bitrix\Main\ArgumentException
      */
-    public function getHlblocks($filter = array()) {
+    public function getHlblocks($filter = [])
+    {
         $dbres = HL\HighloadBlockTable::getList(
-            array(
-                'select' => array('*'),
+            [
+                'select' => ['*'],
                 'filter' => $filter,
-            )
+            ]
         );
 
         $result = [];
@@ -44,10 +46,11 @@ class HlblockHelper extends Helper
      * @return array
      * @throws \Bitrix\Main\ArgumentException
      */
-    public function exportHlblocks($filter = array()) {
+    public function exportHlblocks($filter = [])
+    {
         $items = $this->getHlblocks($filter);
 
-        $export = array();
+        $export = [];
         foreach ($items as $item) {
             $export[] = $this->prepareExportHlblock($item);
         }
@@ -61,7 +64,8 @@ class HlblockHelper extends Helper
      * @return array
      * @throws \Bitrix\Main\ArgumentException
      */
-    public function getFields($hlblockName) {
+    public function getFields($hlblockName)
+    {
         $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
 
         $entityHelper = new UserTypeEntityHelper();
@@ -78,7 +82,8 @@ class HlblockHelper extends Helper
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function saveField($hlblockName, $field = array()) {
+    public function saveField($hlblockName, $field = [])
+    {
         $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
         $field['ENTITY_ID'] = 'HLBLOCK_' . $hlblockId;
 
@@ -96,8 +101,9 @@ class HlblockHelper extends Helper
      * @throws \Bitrix\Main\SystemException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function saveHlblock($fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
+    public function saveHlblock($fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME']);
 
         $exists = $this->getHlblock($fields['NAME']);
         $exportExists = $this->prepareExportHlblock($exists);
@@ -133,7 +139,8 @@ class HlblockHelper extends Helper
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function deleteField($hlblockName, $fieldName) {
+    public function deleteField($hlblockName, $fieldName)
+    {
         $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
 
         $entityHelper = new UserTypeEntityHelper();
@@ -148,9 +155,10 @@ class HlblockHelper extends Helper
      * @return array
      * @throws \Bitrix\Main\ArgumentException
      */
-    public function exportFields($hlblockName) {
+    public function exportFields($hlblockName)
+    {
         $fields = $this->getFields($hlblockName);
-        $export = array();
+        $export = [];
         foreach ($fields as $field) {
             $export[] = $this->prepareExportHlblockField($field);
         }
@@ -165,7 +173,8 @@ class HlblockHelper extends Helper
      * @return mixed
      * @throws \Bitrix\Main\ArgumentException
      */
-    public function exportHlblock($hlblockName) {
+    public function exportHlblock($hlblockName)
+    {
         return $this->prepareExportHlblock(
             $this->getHlblock($hlblockName)
         );
@@ -177,20 +186,21 @@ class HlblockHelper extends Helper
      * @return array|false
      * @throws \Bitrix\Main\ArgumentException
      */
-    public function getHlblock($hlblockName) {
+    public function getHlblock($hlblockName)
+    {
         if (is_array($hlblockName)) {
             $filter = $hlblockName;
         } elseif (is_numeric($hlblockName)) {
-            $filter = array('ID' => $hlblockName);
+            $filter = ['ID' => $hlblockName];
         } else {
-            $filter = array('NAME' => $hlblockName);
+            $filter = ['NAME' => $hlblockName];
         }
 
         $result = HL\HighloadBlockTable::getList(
-            array(
-                'select' => array('*'),
+            [
+                'select' => ['*'],
                 'filter' => $filter,
-            )
+            ]
         );
 
         $hlblock = $result->fetch();
@@ -207,7 +217,8 @@ class HlblockHelper extends Helper
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function getHlblockIfExists($hlblockName) {
+    public function getHlblockIfExists($hlblockName)
+    {
         $item = $this->getHlblock($hlblockName);
         if ($item && isset($item['ID'])) {
             return $item;
@@ -223,7 +234,8 @@ class HlblockHelper extends Helper
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function getHlblockIdIfExists($hlblockName) {
+    public function getHlblockIdIfExists($hlblockName)
+    {
         $item = $this->getHlblock($hlblockName);
         if ($item && isset($item['ID'])) {
             return $item['ID'];
@@ -238,7 +250,8 @@ class HlblockHelper extends Helper
      * @return int|mixed
      * @throws \Bitrix\Main\ArgumentException
      */
-    public function getHlblockId($hlblockName) {
+    public function getHlblockId($hlblockName)
+    {
         $item = $this->getHlblock($hlblockName);
         return ($item && isset($item['ID'])) ? $item['ID'] : 0;
     }
@@ -250,10 +263,11 @@ class HlblockHelper extends Helper
      * @throws \Bitrix\Main\SystemException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function addHlblock($fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME', 'TABLE_NAME'));
+    public function addHlblock($fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME', 'TABLE_NAME']);
 
-        $lang = array();
+        $lang = [];
         if (isset($fields['LANG'])) {
             $lang = $fields['LANG'];
             unset($fields['LANG']);
@@ -278,8 +292,9 @@ class HlblockHelper extends Helper
      * @throws \Bitrix\Main\SystemException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function addHlblockIfNotExists($fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('NAME'));
+    public function addHlblockIfNotExists($fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME']);
 
         $item = $this->getHlblock($fields['NAME']);
         if ($item) {
@@ -296,8 +311,9 @@ class HlblockHelper extends Helper
      * @return mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function updateHlblock($hlblockId, $fields) {
-        $lang = array();
+    public function updateHlblock($hlblockId, $fields)
+    {
+        $lang = [];
         if (isset($fields['LANG'])) {
             $lang = $fields['LANG'];
             unset($fields['LANG']);
@@ -320,7 +336,8 @@ class HlblockHelper extends Helper
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function updateHlblockIfExists($hlblockName, $fields) {
+    public function updateHlblockIfExists($hlblockName, $fields)
+    {
         $item = $this->getHlblock($hlblockName);
         if (!$item) {
             return false;
@@ -335,7 +352,8 @@ class HlblockHelper extends Helper
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function deleteHlblock($hlblockId) {
+    public function deleteHlblock($hlblockId)
+    {
         $result = HL\HighloadBlockTable::delete($hlblockId);
         if ($result->isSuccess()) {
             return true;
@@ -351,7 +369,8 @@ class HlblockHelper extends Helper
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function deleteHlblockIfExists($hlblockName) {
+    public function deleteHlblockIfExists($hlblockName)
+    {
         $item = $this->getHlblock($hlblockName);
         if (!$item) {
             return false;
@@ -360,7 +379,8 @@ class HlblockHelper extends Helper
         return $this->deleteHlblock($item['ID']);
     }
 
-    protected function prepareExportHlblockField($item) {
+    protected function prepareExportHlblockField($item)
+    {
         if (empty($item)) {
             return $item;
         }
@@ -371,7 +391,8 @@ class HlblockHelper extends Helper
         return $item;
     }
 
-    protected function prepareExportHlblock($item) {
+    protected function prepareExportHlblock($item)
+    {
         if (empty($item)) {
             return $item;
         }
@@ -381,37 +402,39 @@ class HlblockHelper extends Helper
         return $item;
     }
 
-    protected function getHblockLangs($hlblockId) {
-        $result = array();
+    protected function getHblockLangs($hlblockId)
+    {
+        $result = [];
 
         if (!class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')) {
             return $result;
         }
 
-        $dbres = HL\HighloadBlockLangTable::getList(array(
-            'filter' => array('ID' => $hlblockId)
-        ));
+        $dbres = HL\HighloadBlockLangTable::getList([
+            'filter' => ['ID' => $hlblockId],
+        ]);
 
 
         while ($item = $dbres->fetch()) {
-            $result[$item['LID']] = array(
-                'NAME' => $item['NAME']
-            );
+            $result[$item['LID']] = [
+                'NAME' => $item['NAME'],
+            ];
         }
 
         return $result;
     }
 
-    protected function deleteHblockLangs($hlblockId) {
+    protected function deleteHblockLangs($hlblockId)
+    {
         $del = 0;
 
         if (!class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')) {
             return $del;
         }
 
-        $res = HL\HighloadBlockLangTable::getList(array(
-            'filter' => array('ID' => $hlblockId)
-        ));
+        $res = HL\HighloadBlockLangTable::getList([
+            'filter' => ['ID' => $hlblockId],
+        ]);
 
 
         while ($row = $res->fetch()) {
@@ -422,7 +445,8 @@ class HlblockHelper extends Helper
         return $del;
     }
 
-    protected function addHblockLangs($hlblockId, $lang = array()) {
+    protected function addHblockLangs($hlblockId, $lang = [])
+    {
         $add = 0;
 
         if (!class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')) {
@@ -431,11 +455,11 @@ class HlblockHelper extends Helper
 
         foreach ($lang as $lid => $item) {
             if (!empty($item['NAME'])) {
-                HL\HighloadBlockLangTable::add(array(
+                HL\HighloadBlockLangTable::add([
                     'ID' => $hlblockId,
                     'LID' => $lid,
-                    'NAME' => $item['NAME']
-                ));
+                    'NAME' => $item['NAME'],
+                ]);
 
                 $add++;
             }
@@ -444,7 +468,8 @@ class HlblockHelper extends Helper
         return $add;
     }
 
-    protected function replaceHblockLangs($hlblockId, $lang = array()) {
+    protected function replaceHblockLangs($hlblockId, $lang = [])
+    {
         if (!empty($lang) && is_array($lang)) {
             $this->deleteHblockLangs($hlblockId);
             $this->addHblockLangs($hlblockId, $lang);

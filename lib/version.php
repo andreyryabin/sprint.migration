@@ -11,74 +11,88 @@ class Version
     use OutTrait;
 
     protected $description = "";
-    protected $versionFilter = array();
+    protected $versionFilter = [];
 
-    protected $params = array();
+    protected $params = [];
 
     protected $storageName = 'default';
 
 
-    public function up() {
+    public function up()
+    {
         return true;
     }
 
-    public function down() {
+    public function down()
+    {
         return true;
     }
 
-    public function isVersionEnabled() {
+    public function isVersionEnabled()
+    {
         return true;
     }
 
-    public function getVersionName() {
+    public function getVersionName()
+    {
         $path = explode('\\', get_class($this));
         return array_pop($path);
     }
 
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
-    public function getVersionFilter() {
+    public function getVersionFilter()
+    {
         return $this->versionFilter;
     }
 
-    public function saveData($name, $data) {
+    public function saveData($name, $data)
+    {
         $storage = new StorageManager($this->storageName);
         $storage->saveData($this->getVersionName(), $name, $data);
     }
 
-    public function getSavedData($name) {
+    public function getSavedData($name)
+    {
         $storage = new StorageManager($this->storageName);
         return $storage->getSavedData($this->getVersionName(), $name);
     }
 
-    public function deleteSavedData($name = false) {
+    public function deleteSavedData($name = false)
+    {
         $storage = new StorageManager($this->storageName);
         $storage->deleteSavedData($this->getVersionName(), $name);
     }
 
-    public function restart() {
+    public function restart()
+    {
         Throw new RestartException();
     }
 
     /* Need For Sprint\Migration\VersionManager */
-    public function getParams() {
+    public function getParams()
+    {
         return $this->params;
     }
 
     /* Need For Sprint\Migration\VersionManager */
-    public function setParams($params = array()) {
+    public function setParams($params = [])
+    {
         $this->params = $params;
     }
 
-    public function exitIf($cond, $msg) {
+    public function exitIf($cond, $msg)
+    {
         if ($cond) {
             Throw new MigrationException($msg);
         }
     }
 
-    public function exitIfEmpty($var, $msg) {
+    public function exitIfEmpty($var, $msg)
+    {
         if (empty($var)) {
             Throw new MigrationException($msg);
         }

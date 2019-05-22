@@ -7,7 +7,8 @@ class Version20150520000003 extends Version
 
     protected $description = "Примеры вывода сообщений";
 
-    public function up() {
+    public function up()
+    {
         $this->out('Примеры вывода сообщений');
         $this->out('Используется [b]sprintf[/], напишем пару чисел %d %d и строку %s', 199, 200, 'hello');
         $this->out('[blue]Но еще можно[/] [red]раскрашивать[/] и делать [b]жирным[/]');
@@ -16,7 +17,8 @@ class Version20150520000003 extends Version
         $this->outProgress('Прогресс', 10, 100);
     }
 
-    public function down() {
+    public function down()
+    {
     }
 
 }

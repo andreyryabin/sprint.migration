@@ -9,29 +9,32 @@ use Sprint\Migration\HelperManager;
 class Version extends VersionBuilder
 {
 
-    protected function isBuilderEnabled() {
+    protected function isBuilderEnabled()
+    {
         return true;
     }
 
 
-    protected function initialize() {
+    protected function initialize()
+    {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Version1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_Version2'));
 
-        $this->addField('prefix', array(
+        $this->addField('prefix', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
             'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
-        ));
+        ]);
 
-        $this->addField('description', array(
+        $this->addField('description', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
             'width' => 350,
             'height' => 40,
-        ));
+        ]);
     }
 
-    protected function execute() {
+    protected function execute()
+    {
         $template = $this->getVersionConfig()->getVal('migration_template');
         if ($template && is_file(Module::getDocRoot() . $template)) {
             $template = Module::getDocRoot() . $template;
@@ -39,6 +42,6 @@ class Version extends VersionBuilder
             $template = Module::getModuleDir() . '/templates/version.php';
         }
 
-        $this->createVersionFile($template, array());
+        $this->createVersionFile($template, []);
     }
 }

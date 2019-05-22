@@ -13,8 +13,9 @@ Class sprint_migration extends CModule
 
     var $MODULE_GROUP_RIGHTS = "Y";
 
-    function sprint_migration() {
-        $arModuleVersion = array();
+    function sprint_migration()
+    {
+        $arModuleVersion = [];
 
         include(__DIR__ . "/version.php");
 
@@ -29,24 +30,28 @@ Class sprint_migration extends CModule
         $this->PARTNER_URI = GetMessage("SPRINT_MIGRATION_PARTNER_URI");
     }
 
-    function DoInstall() {
+    function DoInstall()
+    {
         RegisterModule($this->MODULE_ID);
         CopyDirFiles(__DIR__ . "/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
     }
 
-    function DoUninstall() {
+    function DoUninstall()
+    {
         //launch upgrade when reinstalled module
         DeleteDirFiles(__DIR__ . "/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
         UnRegisterModule($this->MODULE_ID);
     }
 
-    function GetModuleRightList() {
-        $arr = array(
-            "reference_id" => array("D", "W"),
-            "reference" => array(
+    function GetModuleRightList()
+    {
+        $arr = [
+            "reference_id" => ["D", "W"],
+            "reference" => [
                 "[D] " . GetMessage("SPRINT_MIGRATION_RIGHT_D"),
-                "[W] " . GetMessage("SPRINT_MIGRATION_RIGHT_W"))
-        );
+                "[W] " . GetMessage("SPRINT_MIGRATION_RIGHT_W"),
+            ],
+        ];
         return $arr;
     }
 }

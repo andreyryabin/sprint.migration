@@ -11,26 +11,27 @@ class Version20150520000001 extends Version
 
     protected $description = "Добавляем инфоблок новости, добавляем настройки SEO";
 
-    public function up() {
+    public function up()
+    {
         $helper = new HelperManager();
 
-        $helper->Iblock()->addIblockTypeIfNotExists(array(
+        $helper->Iblock()->saveIblockType([
             'ID' => 'content',
-            'LANG' => Array(
-                'en' => Array(
+            'LANG' => [
+                'en' => [
                     'NAME' => 'Контент',
                     'SECTION_NAME' => 'Sections',
-                    'ELEMENT_NAME' => 'Elements'
-                ),
-                'ru' => Array(
+                    'ELEMENT_NAME' => 'Elements',
+                ],
+                'ru' => [
                     'NAME' => 'Контент',
                     'SECTION_NAME' => 'Разделы',
-                    'ELEMENT_NAME' => 'Элементы'
-                ),
-            ),
-        ));
+                    'ELEMENT_NAME' => 'Элементы',
+                ],
+            ],
+        ]);
 
-        $iblockId1 = $helper->Iblock()->addIblockIfNotExists(array(
+        $iblockId1 = $helper->Iblock()->saveIblock([
             'NAME' => 'Новости',
             'CODE' => 'content_news',
             'IBLOCK_TYPE_ID' => 'content',
@@ -38,7 +39,7 @@ class Version20150520000001 extends Version
             'DETAIL_PAGE_URL' => '#SITE_DIR#/news/#ELEMENT_ID#',
 
             //SEO-настройки
-            'IPROPERTY_TEMPLATES' => array(
+            'IPROPERTY_TEMPLATES' => [
                 'SECTION_META_TITLE' => '123',
                 'SECTION_META_KEYWORDS' => '123',
                 'SECTION_META_DESCRIPTION' => '',
@@ -59,28 +60,29 @@ class Version20150520000001 extends Version
                 'ELEMENT_DETAIL_PICTURE_FILE_ALT' => '',
                 'ELEMENT_DETAIL_PICTURE_FILE_TITLE' => '',
                 'ELEMENT_DETAIL_PICTURE_FILE_NAME' => '',
-            )
-        ));
+            ],
+        ]);
 
-        $helper->Iblock()->updateIblockFields($iblockId1, array(
-            'CODE' => array(
-                'DEFAULT_VALUE' => array(
+        $helper->Iblock()->saveIblockFields($iblockId1, [
+            'CODE' => [
+                'DEFAULT_VALUE' => [
                     'TRANSLITERATION' => 'Y',
                     'UNIQUE' => 'Y',
-                )
-            )
-        ));
+                ],
+            ],
+        ]);
 
-        $helper->Iblock()->addPropertyIfNotExists($iblockId1, array(
+        $helper->Iblock()->saveProperty($iblockId1, [
             'NAME' => 'Ссылка',
             'CODE' => 'LINK',
-        ));
+        ]);
 
         $this->outSuccess('Инфоблок создан');
 
     }
 
-    public function down() {
+    public function down()
+    {
         $helper = new HelperManager();
         $ok = $helper->Iblock()->deleteIblockIfExists('content_news');
 

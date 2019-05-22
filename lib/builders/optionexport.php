@@ -10,55 +10,58 @@ use Sprint\Migration\Exceptions\HelperException;
 class OptionExport extends VersionBuilder
 {
 
-    protected function isBuilderEnabled() {
+    protected function isBuilderEnabled()
+    {
         $helper = HelperManager::getInstance();
         return $helper->Option()->isEnabled();
     }
 
-    protected function initialize() {
+    protected function initialize()
+    {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_OptionExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_OptionExport2'));
 
-        $this->addField('prefix', array(
+        $this->addField('prefix', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
             'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
-        ));
+        ]);
 
-        $this->addField('description', array(
+        $this->addField('description', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
             'width' => 350,
             'height' => 40,
-        ));
+        ]);
     }
 
 
-    protected function execute() {
+    protected function execute()
+    {
         $helper = HelperManager::getInstance();
 
-        $this->addField('module_id', array(
+        $this->addField('module_id', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_OptionExport_module_id'),
             'placeholder' => '',
             'multiple' => 1,
-            'value' => array(),
+            'value' => [],
             'width' => 250,
-            'select' => $this->getModules()
-        ));
+            'select' => $this->getModules(),
+        ]);
 
         $moduleIds = $this->getFieldValue('module_id');
         if (empty($moduleIds)) {
             $this->rebuildField('module_id');
         }
 
-        $moduleIds = is_array($moduleIds) ? $moduleIds : array($moduleIds);
+        $moduleIds = is_array($moduleIds) ? $moduleIds : [$moduleIds];
 
-        $items = array();
+        $items = [];
         foreach ($moduleIds as $moduleId) {
-            $options = $helper->Option()->getOptions(array(
-                'MODULE_ID' => $moduleId
-            ));
+            $options = $helper->Option()->getOptions([
+                'MODULE_ID' => $moduleId,
+            ]);
 
-            foreach ($options as $option){
+            foreach ($options as $option) {
                 $items[] = $option;
             }
         }
@@ -68,13 +71,14 @@ class OptionExport extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/OptionExport.php', array(
+            Module::getModuleDir() . '/templates/OptionExport.php', [
             'items' => $items,
-        ));
+        ]);
 
     }
 
-    protected function getModules() {
+    protected function getModules()
+    {
         $helper = HelperManager::getInstance();
 
         $items = $helper->Option()->getModules();
@@ -83,9 +87,9 @@ class OptionExport extends VersionBuilder
         foreach ($items as $item) {
             $result[] = [
                 'title' => $item['ID'],
-                'value' => $item['ID']
+                'value' => $item['ID'],
             ];
-            
+
         }
 
         return $result;

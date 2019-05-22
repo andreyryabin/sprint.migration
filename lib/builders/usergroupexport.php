@@ -10,56 +10,59 @@ use Sprint\Migration\Exceptions\HelperException;
 class UserGroupExport extends VersionBuilder
 {
 
-    protected function isBuilderEnabled() {
+    protected function isBuilderEnabled()
+    {
         return true;
     }
 
-    protected function initialize() {
+    protected function initialize()
+    {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport2'));
 
-        $this->addField('prefix', array(
+        $this->addField('prefix', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
             'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
-        ));
+        ]);
 
-        $this->addField('description', array(
+        $this->addField('description', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
             'width' => 350,
             'height' => 40,
-        ));
+        ]);
     }
 
 
-    protected function execute() {
+    protected function execute()
+    {
         $helper = HelperManager::getInstance();
 
-        $this->addField('user_group', array(
+        $this->addField('user_group', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport_user_group'),
             'placeholder' => '',
             'multiple' => 1,
-            'value' => array(),
+            'value' => [],
             'width' => 250,
-            'select' => $this->getUserGroups()
-        ));
+            'select' => $this->getUserGroups(),
+        ]);
 
         $userGroups = $this->getFieldValue('user_group');
         if (empty($userGroups)) {
             $this->rebuildField('user_group');
         }
 
-        $userGroups = is_array($userGroups) ? $userGroups : array($userGroups);
+        $userGroups = is_array($userGroups) ? $userGroups : [$userGroups];
 
-        $items = array();
+        $items = [];
         foreach ($userGroups as $groupId) {
             if ($item = $helper->UserGroup()->exportGroup($groupId)) {
                 $fields = $item;
                 unset($fields['STRING_ID']);
-                $items[] = array(
+                $items[] = [
                     'STRING_ID' => $item['STRING_ID'],
-                    'FIELDS' => $fields
-                );
+                    'FIELDS' => $fields,
+                ];
             }
         }
 
@@ -68,13 +71,14 @@ class UserGroupExport extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/UserGroupExport.php', array(
+            Module::getModuleDir() . '/templates/UserGroupExport.php', [
             'items' => $items,
-        ));
+        ]);
 
     }
 
-    protected function getUserGroups() {
+    protected function getUserGroups()
+    {
         $helper = HelperManager::getInstance();
 
         $groups = $helper->UserGroup()->getGroups();
@@ -84,7 +88,7 @@ class UserGroupExport extends VersionBuilder
             if (!empty($group['STRING_ID'])) {
                 $result[] = [
                     'title' => '[' . $group['STRING_ID'] . '] ' . $group['NAME'],
-                    'value' => $group['ID']
+                    'value' => $group['ID'],
                 ];
             }
         }

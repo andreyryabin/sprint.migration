@@ -1,5 +1,7 @@
 <?php
-if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
+    die();
+}
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sessid')) {
@@ -9,12 +11,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     /** @var $versionConfig \Sprint\Migration\VersionConfig */
     $versionManager = new \Sprint\Migration\VersionManager($versionConfig);
 
-    $params = !empty($_POST['params']) ? $_POST['params'] : array();
+    $params = !empty($_POST['params']) ? $_POST['params'] : [];
     $restart = !empty($_POST['restart']) ? 1 : 0;
     $version = isset($_POST['version']) ? $_POST['version'] : 0;
     $action = !empty($_POST['action']) ? $_POST['action'] : 0;
     $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
-    $skipVersions = !empty($_POST['skip_versions']) ? $_POST['skip_versions'] : array();
+    $skipVersions = !empty($_POST['skip_versions']) ? $_POST['skip_versions'] : [];
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
@@ -24,10 +26,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
             $version = 0;
             $action = $nextAction;
 
-            $items = $versionManager->getVersions(array(
+            $items = $versionManager->getVersions([
                 'status' => ($action == 'up') ? 'new' : 'installed',
                 'search' => $search,
-            ));
+            ]);
 
             foreach ($items as $aItem) {
                 if (!in_array($aItem['version'], $skipVersions)) {
@@ -68,23 +70,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
         }
 
         if ($restart) {
-            $json = json_encode(array(
+            $json = json_encode([
                 'params' => $versionManager->getRestartParams($version),
                 'action' => $action,
                 'version' => $version,
                 'next_action' => $nextAction,
                 'restart' => 1,
                 'search' => $search,
-            ));
+            ]);
 
             ?>
             <script>migrationExecuteStep('migration_execute', <?=$json?>);</script><?
         } elseif ($nextAction) {
-            $json = json_encode(array(
+            $json = json_encode([
                 'next_action' => $nextAction,
                 'skip_versions' => $skipVersions,
                 'search' => $search,
-            ));
+            ]);
 
             ?>
             <script>

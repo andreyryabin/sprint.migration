@@ -12,10 +12,11 @@ class EventHelper extends Helper
      * @param $eventName
      * @return array
      */
-    public function getEventType($eventName) {
-        $filter = is_array($eventName) ? $eventName : array(
+    public function getEventType($eventName)
+    {
+        $filter = is_array($eventName) ? $eventName : [
             'EVENT_NAME' => $eventName,
-        );
+        ];
 
         $dbres = \CEventType::GetList($filter);
         return $dbres->Fetch();
@@ -26,10 +27,11 @@ class EventHelper extends Helper
      * @param $eventName
      * @return array
      */
-    public function getEventTypes($eventName) {
-        $filter = is_array($eventName) ? $eventName : array(
+    public function getEventTypes($eventName)
+    {
+        $filter = is_array($eventName) ? $eventName : [
             'EVENT_NAME' => $eventName,
-        );
+        ];
 
         $dbres = \CEventType::GetList($filter);
         return $this->fetchAll($dbres);
@@ -40,10 +42,11 @@ class EventHelper extends Helper
      * @param $eventName
      * @return mixed
      */
-    public function getEventMessage($eventName) {
-        $filter = is_array($eventName) ? $eventName : array(
+    public function getEventMessage($eventName)
+    {
+        $filter = is_array($eventName) ? $eventName : [
             'EVENT_NAME' => $eventName,
-        );
+        ];
 
         $by = 'id';
         $order = 'asc';
@@ -57,15 +60,16 @@ class EventHelper extends Helper
      * @param $eventName
      * @return array
      */
-    public function getEventMessages($eventName) {
-        $filter = is_array($eventName) ? $eventName : array(
+    public function getEventMessages($eventName)
+    {
+        $filter = is_array($eventName) ? $eventName : [
             'EVENT_NAME' => $eventName,
-        );
+        ];
 
         $by = 'id';
         $order = 'asc';
 
-        $result = array();
+        $result = [];
         $dbres = \CEventMessage::GetList($by, $order, $filter);
         while ($item = $dbres->Fetch()) {
             $result[] = $this->prepareEventMessage($item);
@@ -78,7 +82,8 @@ class EventHelper extends Helper
      * @param $messageId
      * @return array
      */
-    public function getEventMessageSites($messageId) {
+    public function getEventMessageSites($messageId)
+    {
         $dbres = \CEventMessage::GetLang($messageId);
         return $this->fetchAll($dbres, false, 'LID');
     }
@@ -89,8 +94,9 @@ class EventHelper extends Helper
      * @param $eventName
      * @return array
      */
-    public function exportEventMessages($eventName) {
-        $exports = array();
+    public function exportEventMessages($eventName)
+    {
+        $exports = [];
         $items = $this->getEventMessages($eventName);
         foreach ($items as $item) {
             $exports[] = $this->prepareExportEventMessage($item);
@@ -104,8 +110,9 @@ class EventHelper extends Helper
      * @param $eventName
      * @return array
      */
-    public function exportEventTypes($eventName) {
-        $exports = array();
+    public function exportEventTypes($eventName)
+    {
+        $exports = [];
         $items = $this->getEventTypes($eventName);
         foreach ($items as $item) {
             $exports[] = $this->prepareExportEventType($item);
@@ -120,13 +127,14 @@ class EventHelper extends Helper
      * @return bool|int|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function addEventTypeIfNotExists($eventName, $fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('LID'));
+    public function addEventTypeIfNotExists($eventName, $fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['LID']);
 
-        $item = $this->getEventType(array(
+        $item = $this->getEventType([
             'EVENT_NAME' => $eventName,
-            'LID' => $fields['LID']
-        ));
+            'LID' => $fields['LID'],
+        ]);
 
         if ($item) {
             return $item['ID'];
@@ -142,13 +150,14 @@ class EventHelper extends Helper
      * @return bool|int
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function addEventMessageIfNotExists($eventName, $fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('SUBJECT', 'LID'));
+    public function addEventMessageIfNotExists($eventName, $fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['SUBJECT', 'LID']);
 
-        $item = $this->getEventMessage(array(
+        $item = $this->getEventMessage([
             'EVENT_NAME' => $eventName,
             'SUBJECT' => $fields['SUBJECT'],
-        ));
+        ]);
 
         if ($item) {
             return $item['ID'];
@@ -164,7 +173,8 @@ class EventHelper extends Helper
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function updateEventMessage($eventName, $fields) {
+    public function updateEventMessage($eventName, $fields)
+    {
         $items = $this->getEventMessages($eventName);
 
         foreach ($items as $item) {
@@ -181,7 +191,8 @@ class EventHelper extends Helper
      * @return mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function updateEventMessageById($id, $fields) {
+    public function updateEventMessageById($id, $fields)
+    {
         $event = new \CEventMessage;
         if ($event->Update($id, $fields)) {
             return $id;
@@ -197,9 +208,10 @@ class EventHelper extends Helper
      * @return mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function updateEventTypeById($id, $fields) {
+    public function updateEventTypeById($id, $fields)
+    {
         $event = new \CEventType();
-        if ($event->Update(array('ID' => $id), $fields)) {
+        if ($event->Update(['ID' => $id], $fields)) {
             return $id;
         }
 
@@ -214,13 +226,14 @@ class EventHelper extends Helper
      * @return bool|int|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function saveEventMessage($eventName, $fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('SUBJECT', 'LID'));
+    public function saveEventMessage($eventName, $fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['SUBJECT', 'LID']);
 
-        $exists = $this->getEventMessage(array(
+        $exists = $this->getEventMessage([
             'EVENT_NAME' => $eventName,
             'SUBJECT' => $fields['SUBJECT'],
-        ));
+        ]);
 
         $exportExists = $this->prepareExportEventMessage($exists);
         $fields = $this->prepareExportEventMessage($fields);
@@ -253,13 +266,14 @@ class EventHelper extends Helper
      * @return bool|int|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function saveEventType($eventName, $fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('LID'));
+    public function saveEventType($eventName, $fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['LID']);
 
-        $exists = $this->getEventType(array(
+        $exists = $this->getEventType([
             'EVENT_NAME' => $eventName,
-            'LID' => $fields['LID']
-        ));
+            'LID' => $fields['LID'],
+        ]);
 
         $exportExists = $this->prepareExportEventType($exists);
         $fields = $this->prepareExportEventType($fields);
@@ -290,19 +304,20 @@ class EventHelper extends Helper
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function deleteEventType($fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('LID', 'EVENT_NAME'));
+    public function deleteEventType($fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['LID', 'EVENT_NAME']);
 
-        $exists = $this->getEventType(array(
+        $exists = $this->getEventType([
             'EVENT_NAME' => $fields['EVENT_NAME'],
-            'LID' => $fields['LID']
-        ));
+            'LID' => $fields['LID'],
+        ]);
 
         if (empty($exists)) {
             return false;
         }
 
-        if (\CEventType::Delete(array("ID" => $exists['ID']))) {
+        if (\CEventType::Delete(["ID" => $exists['ID']])) {
             return true;
         }
 
@@ -315,13 +330,14 @@ class EventHelper extends Helper
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function deleteEventMessage($fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('SUBJECT', 'EVENT_NAME'));
+    public function deleteEventMessage($fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['SUBJECT', 'EVENT_NAME']);
 
-        $exists = $this->getEventMessage(array(
+        $exists = $this->getEventMessage([
             'EVENT_NAME' => $fields['EVENT_NAME'],
-            'SUBJECT' => $fields['SUBJECT']
-        ));
+            'SUBJECT' => $fields['SUBJECT'],
+        ]);
 
         if (empty($exists)) {
             return false;
@@ -331,7 +347,8 @@ class EventHelper extends Helper
             return true;
         };
 
-        $this->throwException(__METHOD__, 'Could not delete event message %s:%s', $fields['EVENT_NAME'], $fields['SUBJECT']);
+        $this->throwException(__METHOD__, 'Could not delete event message %s:%s', $fields['EVENT_NAME'],
+            $fields['SUBJECT']);
     }
 
     /**
@@ -341,8 +358,9 @@ class EventHelper extends Helper
      * @return bool|int
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function addEventType($eventName, $fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('LID', 'NAME'));
+    public function addEventType($eventName, $fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['LID', 'NAME']);
         $fields['EVENT_NAME'] = $eventName;
 
         $event = new \CEventType;
@@ -362,17 +380,18 @@ class EventHelper extends Helper
      * @return bool|int
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function addEventMessage($eventName, $fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('LID', 'SUBJECT'));
+    public function addEventMessage($eventName, $fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['LID', 'SUBJECT']);
 
-        $default = array(
+        $default = [
             'ACTIVE' => 'Y',
             'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
             'EMAIL_TO' => '#EMAIL_TO#',
             'BCC' => '',
             'BODY_TYPE' => 'text',
             'MESSAGE' => '',
-        );
+        ];
 
         $fields = array_merge($default, $fields);
         $fields['EVENT_NAME'] = $eventName;
@@ -388,17 +407,19 @@ class EventHelper extends Helper
     }
 
     /**
-     * @deprecated use updateEventMessage
      * @param $filter
      * @param $fields
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
+     * @deprecated use updateEventMessage
      */
-    public function updateEventMessageByFilter($filter, $fields) {
+    public function updateEventMessageByFilter($filter, $fields)
+    {
         return $this->updateEventMessage($filter, $fields);
     }
 
-    protected function prepareEventMessage($item) {
+    protected function prepareEventMessage($item)
+    {
         if (empty($item['ID'])) {
             return $item;
         }
@@ -406,7 +427,8 @@ class EventHelper extends Helper
         return $item;
     }
 
-    protected function prepareExportEventType($item) {
+    protected function prepareExportEventType($item)
+    {
         if (empty($item)) {
             return $item;
         }
@@ -417,7 +439,8 @@ class EventHelper extends Helper
         return $item;
     }
 
-    protected function prepareExportEventMessage($item) {
+    protected function prepareExportEventMessage($item)
+    {
         if (empty($item)) {
             return $item;
         }

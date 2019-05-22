@@ -11,66 +11,69 @@ use Sprint\Migration\Exceptions\HelperException;
 class IblockExport extends VersionBuilder
 {
 
-    protected function isBuilderEnabled() {
-        return (\CModule::IncludeModule('iblock'));
+    protected function isBuilderEnabled()
+    {
+        return (\Bitrix\Main\Loader::includeModule('iblock'));
     }
 
-    protected function initialize() {
+    protected function initialize()
+    {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport2'));
 
-        $this->addField('prefix', array(
+        $this->addField('prefix', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
             'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
-        ));
+        ]);
 
-        $this->addField('description', array(
+        $this->addField('description', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
             'width' => 350,
             'height' => 40,
-        ));
+        ]);
 
     }
 
-    protected function execute() {
+    protected function execute()
+    {
         $helper = HelperManager::getInstance();
 
-        $this->addField('iblock_id', array(
+        $this->addField('iblock_id', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_IblockId'),
             'placeholder' => '',
             'width' => 250,
-            'items' => $this->getIblocksStructure()
-        ));
+            'items' => $this->getIblocksStructure(),
+        ]);
 
-        $this->addField('what', array(
+        $this->addField('what', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_What'),
             'width' => 250,
             'multiple' => 1,
-            'value' => array(),
+            'value' => [],
             'select' => [
                 [
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockType'),
-                    'value' => 'iblockType'
+                    'value' => 'iblockType',
                 ],
                 [
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblock'),
-                    'value' => 'iblock'
+                    'value' => 'iblock',
                 ],
                 [
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockFields'),
-                    'value' => 'iblockFields'
+                    'value' => 'iblockFields',
                 ],
                 [
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockProperties'),
-                    'value' => 'iblockProperties'
+                    'value' => 'iblockProperties',
                 ],
                 [
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIiblockAdminTabs'),
-                    'value' => 'iblockAdminTabs'
+                    'value' => 'iblockAdminTabs',
                 ],
-            ]
-        ));
+            ],
+        ]);
 
         $iblockId = $this->getFieldValue('iblock_id');
         if (empty($iblockId)) {
@@ -84,16 +87,16 @@ class IblockExport extends VersionBuilder
 
         $what = $this->getFieldValue('what');
         if (!empty($what)) {
-            $what = is_array($what) ? $what : array($what);
+            $what = is_array($what) ? $what : [$what];
         } else {
             $this->rebuildField('what');
         }
 
         $iblockExport = false;
-        $iblockType = array();
-        $iblockProperties = array();
-        $iblockFields = array();
-        $iblockAdminTabs = array();
+        $iblockType = [];
+        $iblockProperties = [];
+        $iblockFields = [];
+        $iblockAdminTabs = [];
 
         if (in_array('iblock', $what)) {
             $iblockExport = true;
@@ -105,24 +108,24 @@ class IblockExport extends VersionBuilder
 
         $props = $helper->Iblock()->getProperties($iblockId);
         if (in_array('iblockProperties', $what) && !empty($props)) {
-            $this->addField('property_ids', array(
+            $this->addField('property_ids', [
                 'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_PropertyIds'),
                 'width' => 250,
                 'multiple' => 1,
-                'value' => array(),
-                'items' => $this->getPropsStructure($props)
-            ));
+                'value' => [],
+                'items' => $this->getPropsStructure($props),
+            ]);
 
             $propertyIds = $this->getFieldValue('property_ids');
             if (!empty($propertyIds)) {
-                $propertyIds = is_array($propertyIds) ? $propertyIds : array($propertyIds);
+                $propertyIds = is_array($propertyIds) ? $propertyIds : [$propertyIds];
             } else {
                 $this->rebuildField('property_ids');
             }
 
-            $iblockProperties = $helper->Iblock()->exportProperties($iblockId, array(
-                'ID' => $propertyIds
-            ));
+            $iblockProperties = $helper->Iblock()->exportProperties($iblockId, [
+                'ID' => $propertyIds,
+            ]);
         }
 
 
@@ -132,19 +135,19 @@ class IblockExport extends VersionBuilder
 
 
         if (in_array('iblockAdminTabs', $what)) {
-            $iblockAdminTabs = $helper->AdminIblock()->exportElementForm($iblockId);
+            $iblockAdminTabs = $helper->UserOptions()->exportElementForm($iblockId);
         }
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockExport.php',
-            array(
+            [
                 'iblockExport' => $iblockExport,
                 'iblock' => $iblock,
                 'iblockType' => $iblockType,
                 'iblockFields' => $iblockFields,
                 'iblockProperties' => $iblockProperties,
                 'iblockAdminTabs' => $iblockAdminTabs,
-            )
+            ]
         );
     }
 
@@ -153,7 +156,8 @@ class IblockExport extends VersionBuilder
      * Структура инфоблоков для построения выпадающего списка
      * @return array
      */
-    public function getIblocksStructure() {
+    public function getIblocksStructure()
+    {
 
         $structure = [];
         $iblockHelper = new IblockHelper();
@@ -163,7 +167,7 @@ class IblockExport extends VersionBuilder
         foreach ($iblockTypes as $iblockType) {
             $structure[$iblockType['ID']] = [
                 'title' => '[' . $iblockType['ID'] . '] ' . $iblockType['LANG'][LANGUAGE_ID]['NAME'],
-                'items' => array(),
+                'items' => [],
             ];
         }
 
@@ -171,7 +175,7 @@ class IblockExport extends VersionBuilder
         foreach ($iblocks as $iblock) {
             $structure[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
                 'title' => '[' . $iblock['CODE'] . '] ' . $iblock['NAME'],
-                'value' => $iblock['ID']
+                'value' => $iblock['ID'],
             ];
         }
 
@@ -179,15 +183,16 @@ class IblockExport extends VersionBuilder
     }
 
 
-    protected function getPropsStructure($props = array()) {
+    protected function getPropsStructure($props = [])
+    {
         $structure = [
-            0 => ['items' => []]
+            0 => ['items' => []],
         ];
 
         foreach ($props as $prop) {
             $structure[0]['items'][] = [
                 'title' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
-                'value' => $prop['ID']
+                'value' => $prop['ID'],
             ];
         }
 

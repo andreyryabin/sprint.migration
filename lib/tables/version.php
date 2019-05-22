@@ -8,10 +8,11 @@ class VersionTable extends AbstractTable
     /**
      * @return array
      */
-    public function getRecords() {
+    public function getRecords()
+    {
         $dbres = $this->query('SELECT * FROM `#TABLE1#`');
-        $result = array();
-        while ($item = $dbres->Fetch()){
+        $result = [];
+        while ($item = $dbres->Fetch()) {
             $result[] = $item;
         }
 
@@ -22,7 +23,8 @@ class VersionTable extends AbstractTable
      * @param $versionName
      * @return array
      */
-    public function getRecord($versionName) {
+    public function getRecord($versionName)
+    {
         return $this->query('SELECT * FROM `#TABLE1#` WHERE `version` = "%s"',
             $this->forSql($versionName)
         )->Fetch();
@@ -32,7 +34,8 @@ class VersionTable extends AbstractTable
      * @param $meta
      * @return bool|\CDBResult
      */
-    public function addRecord($meta) {
+    public function addRecord($meta)
+    {
         return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `hash`) VALUES ("%s", "%s")',
             $this->forSql($meta['version']),
             $this->forSql($meta['hash'])
@@ -43,13 +46,15 @@ class VersionTable extends AbstractTable
      * @param $meta
      * @return bool|\CDBResult
      */
-    public function removeRecord($meta) {
+    public function removeRecord($meta)
+    {
         return $this->query('DELETE FROM `#TABLE1#` WHERE `version` = "%s"',
             $this->forSql($meta['version'])
         );
     }
 
-    protected function createTable() {
+    protected function createTable()
+    {
         //upgrade1
         $this->query('CREATE TABLE IF NOT EXISTS `#TABLE1#`(
               `id` MEDIUMINT NOT NULL AUTO_INCREMENT NOT NULL,
@@ -64,7 +69,8 @@ class VersionTable extends AbstractTable
         }
     }
 
-    protected function dropTable(){
+    protected function dropTable()
+    {
         $this->query('DROP TABLE IF EXISTS `#TABLE1#`;');
     }
 

@@ -5,29 +5,35 @@ namespace Sprint\Migration;
 class Module
 {
 
-    public static function getDbOption($name, $default = '') {
+    public static function getDbOption($name, $default = '')
+    {
         return \COption::GetOptionString('sprint.migration', $name, $default);
     }
 
-    public static function setDbOption($name, $value) {
+    public static function setDbOption($name, $value)
+    {
         if ($value != \COption::GetOptionString('sprint.migration', $name, '')) {
             \COption::SetOptionString('sprint.migration', $name, $value);
         }
     }
 
-    public static function removeDbOption($name) {
+    public static function removeDbOption($name)
+    {
         \COption::RemoveOption('sprint.migration', $name);
     }
 
-    public static function removeDbOptions() {
+    public static function removeDbOptions()
+    {
         \COption::RemoveOption('sprint.migration');
     }
 
-    public static function getDocRoot() {
+    public static function getDocRoot()
+    {
         return rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
     }
 
-    public static function getPhpInterfaceDir() {
+    public static function getPhpInterfaceDir()
+    {
         if (is_dir(self::getDocRoot() . '/local/php_interface')) {
             return self::getDocRoot() . '/local/php_interface';
         } else {
@@ -35,7 +41,8 @@ class Module
         }
     }
 
-    public static function getModuleDir() {
+    public static function getModuleDir()
+    {
         if (is_file(self::getDocRoot() . '/local/modules/sprint.migration/include.php')) {
             return self::getDocRoot() . '/local/modules/sprint.migration';
         } else {
@@ -43,7 +50,8 @@ class Module
         }
     }
 
-    public static function getRelativeDir($dir) {
+    public static function getRelativeDir($dir)
+    {
         $docroot = Module::getDocRoot();
 
         if (strpos($dir, $docroot) === 0) {
@@ -53,14 +61,16 @@ class Module
         return $dir;
     }
 
-    public static function getVersion() {
-        $arModuleVersion = array();
+    public static function getVersion()
+    {
+        $arModuleVersion = [];
         /** @noinspection PhpIncludeInspection */
         include self::getModuleDir() . '/install/version.php';
         return isset($arModuleVersion['VERSION']) ? $arModuleVersion['VERSION'] : '';
     }
 
-    public static function checkHealth() {
+    public static function checkHealth()
+    {
         if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql') {
             Throw new \Exception('mssql not supported');
         }
@@ -76,7 +86,7 @@ class Module
         if (
             is_file($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/include.php') &&
             is_file($_SERVER['DOCUMENT_ROOT'] . '/local/modules/sprint.migration/include.php')
-        ){
+        ) {
             Throw new \Exception('module installed to bitrix and local folder');
         }
     }

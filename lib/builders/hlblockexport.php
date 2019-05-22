@@ -10,48 +10,51 @@ use Sprint\Migration\Exceptions\HelperException;
 class HlblockExport extends VersionBuilder
 {
 
-    protected function isBuilderEnabled() {
-        return (\CModule::IncludeModule('highloadblock'));
+    protected function isBuilderEnabled()
+    {
+        return (\Bitrix\Main\Loader::includeModule('highloadblock'));
     }
 
-    protected function initialize() {
+    protected function initialize()
+    {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport2'));
 
-        $this->addField('prefix', array(
+        $this->addField('prefix', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
             'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
-        ));
+        ]);
 
-        $this->addField('description', array(
+        $this->addField('description', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
             'width' => 350,
             'height' => 40,
-        ));
+        ]);
     }
 
 
-    protected function execute() {
+    protected function execute()
+    {
         $helper = HelperManager::getInstance();
 
-        $this->addField('hlblock_id', array(
+        $this->addField('hlblock_id', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId'),
             'placeholder' => '',
             'multiple' => 1,
-            'value' => array(),
+            'value' => [],
             'width' => 250,
-            'items' => $this->getHlStructure()
-        ));
+            'items' => $this->getHlStructure(),
+        ]);
 
         $hlblockIds = $this->getFieldValue('hlblock_id');
         if (!empty($hlblockIds)) {
-            $hlblockIds = is_array($hlblockIds) ? $hlblockIds : array($hlblockIds);
+            $hlblockIds = is_array($hlblockIds) ? $hlblockIds : [$hlblockIds];
         } else {
             $this->rebuildField('hlblock_id');
         }
 
-        $items = array();
+        $items = [];
         foreach ($hlblockIds as $hlblockId) {
             $hlblock = $helper->Hlblock()->getHlblock($hlblockId);
             if (!empty($hlblock['ID'])) {
@@ -59,34 +62,35 @@ class HlblockExport extends VersionBuilder
                 $hlblockEntities = $helper->UserTypeEntity()->exportUserTypeEntities('HLBLOCK_' . $hlblock['ID']);
                 unset($hlblock['ID']);
 
-                $items[] = array(
+                $items[] = [
                     'hlblock' => $hlblock,
-                    'hlblockEntities' => $hlblockEntities
-                );
+                    'hlblockEntities' => $hlblockEntities,
+                ];
             }
         }
 
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/HlblockExport.php', array(
+            Module::getModuleDir() . '/templates/HlblockExport.php', [
             'items' => $items,
-        ));
+        ]);
 
     }
 
-    protected function getHlStructure() {
+    protected function getHlStructure()
+    {
         $helper = HelperManager::getInstance();
 
         $hlblocks = $helper->Hlblock()->getHlblocks();
 
         $structure = [
-            0 => ['items' => []]
+            0 => ['items' => []],
         ];
 
         foreach ($hlblocks as $hlblock) {
             $structure[0]['items'][] = [
                 'title' => $hlblock['NAME'],
-                'value' => $hlblock['ID']
+                'value' => $hlblock['ID'],
             ];
         }
 

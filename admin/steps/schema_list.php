@@ -1,5 +1,7 @@
 <?php
-if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
+    die();
+}
 
 $hasSteps = (
 ($_POST["step_code"] == "schema_list")
@@ -14,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
 
     $schemas = $schemaManager->getEnabledSchemas();
 
-    $defaultSchemas = array();
+    $defaultSchemas = [];
 //    foreach ($schemas as $schema) {
 //        $defaultSchemas[] = $schema->getName();
 //    }
@@ -28,13 +30,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
             <tr>
                 <td class="sp-list-l" style="vertical-align: top">
                     <input data-id="<?= $schema->getName() ?>"
-                           class="sp-schema adm-btn <? if (in_array($schema->getName(), $schemaChecked)): ?>adm-btn-active<? endif ?>"
+                           class="sp-schema adm-btn <? if (in_array($schema->getName(),
+                               $schemaChecked)): ?>adm-btn-active<? endif ?>"
                            type="button"
                            value="Выбрать"
                     />
                 </td>
                 <td class="sp-list-r">
-                    <? $schema->outTitle(false)?>
+                    <? $schema->outTitle(false) ?>
                     <? $schema->outDescription() ?>
                 </td>
             </tr>

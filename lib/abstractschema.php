@@ -11,19 +11,19 @@ abstract class AbstractSchema
     /** @var VersionConfig */
     private $versionConfig = null;
 
-    private $queue = array();
+    private $queue = [];
 
-    protected $params = array();
+    protected $params = [];
 
     protected $testMode = 0;
 
-    protected $info = array(
+    protected $info = [
         'title' => '',
-    );
+    ];
 
     private $enabled = false;
 
-    private $filecache = array();
+    private $filecache = [];
 
     abstract public function export();
 
@@ -35,7 +35,8 @@ abstract class AbstractSchema
 
     abstract public function getMap();
 
-    public function __construct(VersionConfig $versionConfig, $name, $params = array()) {
+    public function __construct(VersionConfig $versionConfig, $name, $params = [])
+    {
         $this->versionConfig = $versionConfig;
         $this->name = $name;
         $this->params = $params;
@@ -44,25 +45,30 @@ abstract class AbstractSchema
         $this->initialize();
     }
 
-    protected function isBuilderEnabled() {
+    protected function isBuilderEnabled()
+    {
         //your code
 
         return false;
     }
 
-    public function setTestMode($testMode = 1) {
+    public function setTestMode($testMode = 1)
+    {
         $this->testMode = ($testMode) ? 1 : 0;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function isEnabled() {
+    public function isEnabled()
+    {
         return $this->enabled;
     }
 
-    public function isModified() {
+    public function isModified()
+    {
         $opt = strtolower('schema_' . $this->getName());
         $oldhash = Module::getDbOption($opt);
 
@@ -71,7 +77,8 @@ abstract class AbstractSchema
         return ($newhash != $oldhash);
     }
 
-    public function setModified() {
+    public function setModified()
+    {
         $data = $this->loadSchemas($this->getMap());
         $newhash = md5(serialize($data));
 
@@ -79,15 +86,18 @@ abstract class AbstractSchema
         Module::setDbOption($opt, $newhash);
     }
 
-    protected function setTitle($title = '') {
+    protected function setTitle($title = '')
+    {
         $this->info['title'] = $title;
     }
 
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->info['title'];
     }
 
-    public function outTitle($fullname = true) {
+    public function outTitle($fullname = true)
+    {
         $title = ($fullname) ? $this->getName() . ' (' . $this->getTitle() . ')' : $this->getTitle();
         if ($this->isModified()) {
             $this->out('[new]' . $title . '[/]');
@@ -96,21 +106,25 @@ abstract class AbstractSchema
         }
     }
 
-    protected function getSchemaDir($relative = false) {
+    protected function getSchemaDir($relative = false)
+    {
         return $this->getVersionConfig()->getSiblingDir('schema', $relative, $this->getVersionConfig()->getName());
     }
 
-    protected function getSchemaSubDir($name, $relative = false) {
+    protected function getSchemaSubDir($name, $relative = false)
+    {
         $dir = $this->getSchemaDir() . $name;
         return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
 
-    protected function getSchemaFile($name, $relative = false) {
+    protected function getSchemaFile($name, $relative = false)
+    {
         $file = $this->getSchemaDir() . $name . '.json';
         return ($relative) ? Module::getRelativeDir($file) : $file;
     }
 
-    protected function saveSchema($name, $data) {
+    protected function saveSchema($name, $data)
+    {
         $file = $this->getSchemaFile($name);
 
         $dir = pathinfo($file, PATHINFO_DIRNAME);
@@ -124,7 +138,8 @@ abstract class AbstractSchema
         );
     }
 
-    public function deleteSchemaFiles() {
+    public function deleteSchemaFiles()
+    {
         $names = $this->getSchemas($this->getMap());
         foreach ($names as $name) {
             $file = $this->getSchemaFile($name);
@@ -132,8 +147,9 @@ abstract class AbstractSchema
         }
     }
 
-    public function getSchemaFiles() {
-        $result = array();
+    public function getSchemaFiles()
+    {
+        $result = [];
 
         $names = $this->getSchemas($this->getMap());
         foreach ($names as $name) {
@@ -143,9 +159,10 @@ abstract class AbstractSchema
         return $result;
     }
 
-    protected function getSchemas($map) {
-        $map = is_array($map) ? $map : array($map);
-        $result = array();
+    protected function getSchemas($map)
+    {
+        $map = is_array($map) ? $map : [$map];
+        $result = [];
 
         foreach ($map as $path) {
             $dir = $this->getSchemaSubDir($path);
@@ -169,7 +186,8 @@ abstract class AbstractSchema
         return $result;
     }
 
-    protected function loadSchema($name, $merge = array()) {
+    protected function loadSchema($name, $merge = [])
+    {
         if (!isset($this->filecache[$name])) {
             $this->filecache[$name] = $this->loadSchemaFile($name);
         }
@@ -178,56 +196,62 @@ abstract class AbstractSchema
     }
 
 
-    private function loadSchemaFile($name) {
+    private function loadSchemaFile($name)
+    {
         $file = $this->getSchemaFile($name);
 
         if (!is_file($file)) {
-            return array();
+            return [];
         }
 
         $json = file_get_contents($file);
         $json = json_decode($json, true);
 
         if (json_last_error() != JSON_ERROR_NONE) {
-            return array();
+            return [];
         }
 
         if (!is_array($json)) {
-            return array();
+            return [];
         }
 
         return $json;
     }
 
 
-    protected function loadSchemas($map, $merge = array()) {
+    protected function loadSchemas($map, $merge = [])
+    {
         $names = $this->getSchemas($map);
-        $schemas = array();
+        $schemas = [];
         foreach ($names as $name) {
             $schemas[$name] = $this->loadSchema($name, $merge);
         }
         return $schemas;
     }
 
-    public function getQueue() {
+    public function getQueue()
+    {
         return $this->queue;
     }
 
-    protected function addToQueue($method, $var1 = null, $var2 = null) {
+    protected function addToQueue($method, $var1 = null, $var2 = null)
+    {
         $args = func_get_args();
         $method = array_shift($args);
-        $this->queue[] = array($method, $args);
+        $this->queue[] = [$method, $args];
     }
 
-    public function executeQueue($item) {
+    public function executeQueue($item)
+    {
         if (method_exists($this, $item[0])) {
-            call_user_func_array(array($this, $item[0]), $item[1]);
+            call_user_func_array([$this, $item[0]], $item[1]);
         } else {
             $this->outError('method %s not found', $item[0]);
         }
     }
 
-    protected function getVersionConfig() {
+    protected function getVersionConfig()
+    {
         return $this->versionConfig;
     }
 }

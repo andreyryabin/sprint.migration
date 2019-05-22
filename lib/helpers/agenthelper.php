@@ -12,9 +12,10 @@ class AgentHelper extends Helper
      * @param array $filter
      * @return array
      */
-    public function getList($filter = array()) {
-        $res = array();
-        $dbres = \CAgent::GetList(array("MODULE_ID" => "ASC"), $filter);
+    public function getList($filter = [])
+    {
+        $res = [];
+        $dbres = \CAgent::GetList(["MODULE_ID" => "ASC"], $filter);
         while ($item = $dbres->Fetch()) {
             $res[] = $item;
         }
@@ -27,10 +28,11 @@ class AgentHelper extends Helper
      * @param array $filter
      * @return array
      */
-    public function exportAgents($filter = array()) {
+    public function exportAgents($filter = [])
+    {
         $agents = $this->getList($filter);
 
-        $exportAgents = array();
+        $exportAgents = [];
         foreach ($agents as $agent) {
             $exportAgents[] = $this->prepareExportAgent($agent);
         }
@@ -45,7 +47,8 @@ class AgentHelper extends Helper
      * @param string $name
      * @return bool
      */
-    public function exportAgent($moduleId, $name = '') {
+    public function exportAgent($moduleId, $name = '')
+    {
         $agent = $this->getAgent($moduleId, $name);
         if (empty($agent)) {
             return false;
@@ -60,18 +63,19 @@ class AgentHelper extends Helper
      * @param string $name
      * @return array
      */
-    public function getAgent($moduleId, $name = '') {
-        $filter = is_array($moduleId) ? $moduleId : array(
-            'MODULE_ID' => $moduleId
-        );
+    public function getAgent($moduleId, $name = '')
+    {
+        $filter = is_array($moduleId) ? $moduleId : [
+            'MODULE_ID' => $moduleId,
+        ];
 
         if (!empty($name)) {
             $filter['NAME'] = $name;
         }
 
-        return \CAgent::GetList(array(
-            "MODULE_ID" => "ASC"
-        ), $filter)->Fetch();
+        return \CAgent::GetList([
+            "MODULE_ID" => "ASC",
+        ], $filter)->Fetch();
     }
 
     /**
@@ -80,7 +84,8 @@ class AgentHelper extends Helper
      * @param $name
      * @return bool
      */
-    public function deleteAgent($moduleId, $name) {
+    public function deleteAgent($moduleId, $name)
+    {
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         \CAgent::RemoveAgent($name, $moduleId);
         return true;
@@ -92,7 +97,8 @@ class AgentHelper extends Helper
      * @param $name
      * @return bool
      */
-    public function deleteAgentIfExists($moduleId, $name) {
+    public function deleteAgentIfExists($moduleId, $name)
+    {
         $item = $this->getAgent($moduleId, $name);
         if (empty($item)) {
             return false;
@@ -108,13 +114,14 @@ class AgentHelper extends Helper
      * @return bool|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function saveAgent($fields = array()) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('MODULE_ID', 'NAME'));
+    public function saveAgent($fields = [])
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['MODULE_ID', 'NAME']);
 
-        $exists = $this->getAgent(array(
+        $exists = $this->getAgent([
             'MODULE_ID' => $fields['MODULE_ID'],
-            'NAME' => $fields['NAME']
-        ));
+            'NAME' => $fields['NAME'],
+        ]);
 
         $exportExists = $this->prepareExportAgent($exists);
         $fields = $this->prepareExportAgent($fields);
@@ -152,8 +159,9 @@ class AgentHelper extends Helper
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function updateAgent($fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('MODULE_ID', 'NAME'));
+    public function updateAgent($fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['MODULE_ID', 'NAME']);
         $this->deleteAgent($fields['MODULE_ID'], $fields['NAME']);
         return $this->addAgent($fields);
     }
@@ -164,17 +172,18 @@ class AgentHelper extends Helper
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function addAgent($fields) {
-        $this->checkRequiredKeys(__METHOD__, $fields, array('MODULE_ID', 'NAME'));
+    public function addAgent($fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['MODULE_ID', 'NAME']);
 
         global $DB;
 
-        $fields = array_merge(array(
+        $fields = array_merge([
             'AGENT_INTERVAL' => 86400,
             'ACTIVE' => 'Y',
             'IS_PERIOD' => 'N',
             'NEXT_EXEC' => $DB->GetNowDate(),
-        ), $fields);
+        ], $fields);
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $agentId = \CAgent::AddAgent(
@@ -201,42 +210,45 @@ class AgentHelper extends Helper
     }
 
     /**
-     * @deprecated
      * @param $moduleId
      * @param $name
      * @param $interval
      * @param $nextExec
      * @return bool|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
+     * @deprecated
      */
-    public function replaceAgent($moduleId, $name, $interval, $nextExec) {
-        return $this->saveAgent(array(
+    public function replaceAgent($moduleId, $name, $interval, $nextExec)
+    {
+        return $this->saveAgent([
             'MODULE_ID' => $moduleId,
             'NAME' => $name,
             'AGENT_INTERVAL' => $interval,
             'NEXT_EXEC' => $nextExec,
-        ));
+        ]);
     }
 
     /**
-     * @deprecated
      * @param $moduleId
      * @param $name
      * @param $interval
      * @param $nextExec
      * @return bool|mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
+     * @deprecated
      */
-    public function addAgentIfNotExists($moduleId, $name, $interval, $nextExec) {
-        return $this->saveAgent(array(
+    public function addAgentIfNotExists($moduleId, $name, $interval, $nextExec)
+    {
+        return $this->saveAgent([
             'MODULE_ID' => $moduleId,
             'NAME' => $name,
             'AGENT_INTERVAL' => $interval,
             'NEXT_EXEC' => $nextExec,
-        ));
+        ]);
     }
 
-    protected function prepareExportAgent($item) {
+    protected function prepareExportAgent($item)
+    {
         if (empty($item)) {
             return $item;
         }

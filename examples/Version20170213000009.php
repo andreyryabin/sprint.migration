@@ -8,23 +8,24 @@ class Version20170213000009 extends Version
 
     protected $description = "Пример работы с почтовыми шаблонами";
 
-    public function up() {
+    public function up()
+    {
         $helper = new HelperManager();
 
-        $helper->Event()->addEventTypeIfNotExists('NEW_MATERIAL', array(
+        $helper->Event()->saveEventType('NEW_MATERIAL', [
             'LID' => 'ru',
             'NAME' => 'Добавлен новый материал',
             'DESCRIPTION' => $this->getDesc(),
-        ));
+        ]);
 
-        $helper->Event()->addEventTypeIfNotExists('NEW_MATERIAL', array(
+        $helper->Event()->saveEventType('NEW_MATERIAL', [
             'LID' => 'en',
             'NAME' => 'Добавлен новый материал',
             'DESCRIPTION' => $this->getDesc(),
-        ));
+        ]);
 
 
-        $helper->Event()->addEventMessageIfNotExists('NEW_MATERIAL', array(
+        $helper->Event()->saveEventMessage('NEW_MATERIAL', [
             'ACTIVE' => 'Y',
             'LID' => 's1',
             'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
@@ -33,16 +34,18 @@ class Version20170213000009 extends Version
             'SUBJECT' => 'Добавлен новый материал',
             'BODY_TYPE' => 'text',
             'MESSAGE' => $this->getMessage(),
-        ));
+        ]);
 
     }
 
-    public function down() {
+    public function down()
+    {
         //
     }
 
 
-    private function getDesc() {
+    private function getDesc()
+    {
         return <<<TEXT1
 #NAME# - Название
 #TAG_NAME# - Тема
@@ -53,7 +56,8 @@ TEXT1;
 
     }
 
-    private function getMessage() {
+    private function getMessage()
+    {
         return <<<TEXT2
 Название
 #NAME#

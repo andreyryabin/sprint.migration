@@ -7,7 +7,7 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_ad
 global $APPLICATION;
 
 try {
-    if (!\CModule::IncludeModule('sprint.migration')) {
+    if (!\Bitrix\Main\Loader::includeModule('sprint.migration')) {
         Throw new \Exception('need to install module sprint.migration');
     }
 
@@ -21,7 +21,7 @@ try {
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 
-    $sperrors = array();
+    $sperrors = [];
     $sperrors[] = $e->getMessage();
 
     include __DIR__ . '/includes/errors.php';
@@ -63,7 +63,7 @@ if ($versionConfig->getVal('show_admin_interface')) {
 
 /** @noinspection PhpIncludeInspection */
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
-\CUtil::InitJSCore(Array("jquery"));
+\CUtil::InitJSCore(["jquery"]);
 
 if ($versionConfig->getVal('show_admin_interface')) {
     if (isset($_REQUEST['schema'])) {
@@ -75,7 +75,7 @@ if ($versionConfig->getVal('show_admin_interface')) {
     }
 }
 
-$sperrors = array();
+$sperrors = [];
 if (!$versionConfig->getVal('show_admin_interface')) {
     $sperrors[] = GetMessage('SPRINT_MIGRATION_ADMIN_INTERFACE_HIDDEN');
 }

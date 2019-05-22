@@ -10,12 +10,14 @@ use Sprint\Migration\VersionManager;
 class Transfer extends AbstractBuilder
 {
 
-    protected function isBuilderEnabled() {
+    protected function isBuilderEnabled()
+    {
         return true;
     }
 
 
-    protected function initialize() {
+    protected function initialize()
+    {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Transfer1'));
         $this->setGroup('configurator');
 
@@ -27,12 +29,12 @@ class Transfer extends AbstractBuilder
             if ($item['name'] != $configFrom) {
                 $structure[] = [
                     'title' => $item['title'],
-                    'value' => $item['name']
+                    'value' => $item['name'],
                 ];
             }
         }
 
-        $this->addField('transfer_status', array(
+        $this->addField('transfer_status', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferSelect'),
             'placeholder' => '',
             'width' => 250,
@@ -49,20 +51,21 @@ class Transfer extends AbstractBuilder
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferAll'),
                     'value' => 'all',
                 ],
-            ]
-        ));
+            ],
+        ]);
 
-        $this->addField('transfer_to', array(
+        $this->addField('transfer_to', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferTo'),
             'placeholder' => '',
             'width' => 250,
-            'select' => $structure
-        ));
+            'select' => $structure,
+        ]);
 
 
     }
 
-    protected function execute() {
+    protected function execute()
+    {
 
         $configFrom = $this->getVersionConfig()->getName();
         $configTo = $this->getFieldValue('transfer_to');
@@ -82,10 +85,10 @@ class Transfer extends AbstractBuilder
         $vmTo = new VersionManager($configTo);
 
         $status = $this->getFieldValue('transfer_status');
-        if (in_array($status, array('installed', 'new'))) {
-            $filter = array('status' => $status);
+        if (in_array($status, ['installed', 'new'])) {
+            $filter = ['status' => $status];
         } else {
-            $filter = array();
+            $filter = [];
         }
 
 
@@ -116,6 +119,6 @@ class Transfer extends AbstractBuilder
         }
 
 
-        $this->outSuccess(GetMessage('SPRINT_MIGRATION_BUILDER_TransferCnt', array('#CNT#' => $cnt)));
+        $this->outSuccess(GetMessage('SPRINT_MIGRATION_BUILDER_TransferCnt', ['#CNT#' => $cnt]));
     }
 }

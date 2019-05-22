@@ -9,46 +9,49 @@ use Sprint\Migration\Exceptions\HelperException;
 
 class FormExport extends VersionBuilder
 {
-    protected function isBuilderEnabled() {
-        return (\CModule::IncludeModule('form'));
+    protected function isBuilderEnabled()
+    {
+        return (\Bitrix\Main\Loader::includeModule('form'));
     }
 
-    protected function initialize() {
+    protected function initialize()
+    {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_FormExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_FormExport2'));
 
-        $this->addField('prefix', array(
+        $this->addField('prefix', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
             'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
-        ));
+        ]);
 
-        $this->addField('description', array(
+        $this->addField('description', [
             'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
             'width' => 350,
             'height' => 40,
-        ));
+        ]);
     }
 
-    protected function execute() {
+    protected function execute()
+    {
         $helper = HelperManager::getInstance();
         $formHelper = $helper->Form();
 
         $forms = $formHelper->getList();
 
-        $structure = array();
+        $structure = [];
         foreach ($forms as $item) {
-            $structure[] = array(
+            $structure[] = [
                 'title' => '[' . $item['ID'] . '] ' . $item['NAME'],
                 'value' => $item['ID'],
-            );
+            ];
         }
 
-        $this->addField('form_id', array(
+        $this->addField('form_id', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_FormId'),
             'width' => 250,
-            'select' => $structure
-        ));
+            'select' => $structure,
+        ]);
 
         $formId = $this->getFieldValue('form_id');
         if (empty($formId)) {
@@ -62,30 +65,30 @@ class FormExport extends VersionBuilder
         unset($form['TIMESTAMP_X']);
         unset($form['VARNAME']);
 
-        $this->addField('what_else', array(
+        $this->addField('what_else', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_What'),
             'width' => 250,
             'multiple' => 1,
-            'value' => array(),
+            'value' => [],
             'select' => [
                 [
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Form'),
-                    'value' => 'form'
+                    'value' => 'form',
                 ],
                 [
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Fields'),
-                    'value' => 'fields'
+                    'value' => 'fields',
                 ],
                 [
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Statuses'),
-                    'value' => 'statuses'
+                    'value' => 'statuses',
                 ],
-            ]
-        ));
+            ],
+        ]);
 
         $what = $this->getFieldValue('what_else');
         if (!empty($what)) {
-            $what = is_array($what) ? $what : array($what);
+            $what = is_array($what) ? $what : [$what];
         } else {
             $this->rebuildField('what_else');
         }
@@ -97,7 +100,7 @@ class FormExport extends VersionBuilder
         }
 
 
-        $statuses = array();
+        $statuses = [];
         if (in_array('statuses', $what)) {
             $statuses = $formHelper->getFormStatuses($formId);
             foreach ($statuses as $index => $status) {
@@ -110,7 +113,7 @@ class FormExport extends VersionBuilder
         }
 
 
-        $fields = array();
+        $fields = [];
         if (in_array('fields', $what)) {
             $fields = $formHelper->getFormFields($formId);
             foreach ($fields as $index => $field) {
@@ -148,11 +151,11 @@ class FormExport extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/FormExport.php', array(
+            Module::getModuleDir() . '/templates/FormExport.php', [
             'formExport' => $formExport,
             'form' => $form,
             'statuses' => $statuses,
             'fields' => $fields,
-        ));
+        ]);
     }
 }

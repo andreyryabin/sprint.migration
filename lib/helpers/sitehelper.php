@@ -11,12 +11,13 @@ class SiteHelper extends Helper
      * @return mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function getDefaultSiteIdIfExists() {
+    public function getDefaultSiteIdIfExists()
+    {
         $by = 'def';
         $order = 'desc';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $item = \CSite::GetList($by, $order, array('ACTIVE' => 'Y'))->Fetch();
+        $item = \CSite::GetList($by, $order, ['ACTIVE' => 'Y'])->Fetch();
 
         if ($item) {
             return $item['LID'];
@@ -29,11 +30,12 @@ class SiteHelper extends Helper
      * @param array $filter
      * @return array
      */
-    public function getSites($filter = array()) {
+    public function getSites($filter = [])
+    {
         $by = 'def';
         $order = 'desc';
 
-        $sids = array();
+        $sids = [];
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbres = \CSite::GetList($by, $order, $filter);
         while ($item = $dbres->Fetch()) {
@@ -47,8 +49,9 @@ class SiteHelper extends Helper
      * @return array
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function getSitesIfExists() {
-        $items = $this->getSites(array('ACTIVE' => 'Y'));
+    public function getSitesIfExists()
+    {
+        $items = $this->getSites(['ACTIVE' => 'Y']);
         if (!empty($items)) {
             return $items;
         }
@@ -59,16 +62,17 @@ class SiteHelper extends Helper
      * @param $siteId
      * @return array
      */
-    public function getSiteTemplates($siteId) {
-        $templates = array();
+    public function getSiteTemplates($siteId)
+    {
+        $templates = [];
 
         $dbres = \CSite::GetTemplateList($siteId);
         while ($item = $dbres->Fetch()) {
-            $templates[] = array(
+            $templates[] = [
                 "TEMPLATE" => $item['TEMPLATE'],
                 "SORT" => $item['SORT'],
-                "CONDITION" => $item['CONDITION']
-            );
+                "CONDITION" => $item['CONDITION'],
+            ];
         }
 
         return $templates;
@@ -80,10 +84,11 @@ class SiteHelper extends Helper
      * @param array $templates
      * @return bool
      */
-    public function setSiteTemplates($siteId, $templates = array()) {
+    public function setSiteTemplates($siteId, $templates = [])
+    {
         $sort = 150;
 
-        $validTemplates = array();
+        $validTemplates = [];
         foreach ($templates as $template) {
             if (!empty($template['IN_DIR'])) {
                 $template['CONDITION'] = sprintf('CSite::InDir(\'%s\')',
@@ -118,19 +123,19 @@ class SiteHelper extends Helper
                 continue;
             }
 
-            $validTemplates[] = array(
+            $validTemplates[] = [
                 'TEMPLATE' => $template['TEMPLATE'],
                 'CONDITION' => $template['CONDITION'],
-                'SORT' => $sort
-            );
+                'SORT' => $sort,
+            ];
 
             $sort++;
         }
 
         $langs = new \CLang;
-        $ok = $langs->Update($siteId, array(
-            'TEMPLATE' => $validTemplates
-        ));
+        $ok = $langs->Update($siteId, [
+            'TEMPLATE' => $validTemplates,
+        ]);
 
         return $ok;
     }

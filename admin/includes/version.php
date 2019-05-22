@@ -38,7 +38,7 @@
         </div>
     </div>
     <div class="sp-separator"></div>
-    <? foreach (array('default', 'configurator') as $builderGroup): ?>
+    <? foreach (['default', 'configurator'] as $builderGroup): ?>
         <? include __DIR__ . '/builder_group.php' ?>
     <? endforeach ?>
 

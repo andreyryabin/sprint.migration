@@ -16,10 +16,12 @@ abstract class AbstractTable
     private $tableName = '';
 
     abstract protected function createTable();
+
     abstract protected function dropTable();
 
 
-    public function __construct($tableName) {
+    public function __construct($tableName)
+    {
         $this->tableName = $tableName;
 
         $this->bitrixDb = $GLOBALS['DB'];
@@ -33,7 +35,8 @@ abstract class AbstractTable
 
     }
 
-    public function deleteTable(){
+    public function deleteTable()
+    {
         $this->dropTable();
 
         $opt = 'upgrade2_' . md5($this->tableName);
@@ -47,16 +50,17 @@ abstract class AbstractTable
      * @param null $var2
      * @return bool|\CDBResult
      */
-    protected function query($query, $var1 = null, $var2 = null) {
+    protected function query($query, $var1 = null, $var2 = null)
+    {
         if (func_num_args() > 1) {
             $params = func_get_args();
             $query = call_user_func_array('sprintf', $params);
         }
 
-        $search = array(
+        $search = [
             '#TABLE1#' => $this->tableName,
             '#DBNAME#' => $this->dbName,
-        );
+        ];
 
         if (Locale::isWin1251()) {
             $search['#CHARSET#'] = 'cp1251';
@@ -74,7 +78,8 @@ abstract class AbstractTable
         return $this->bitrixDb->Query($query);
     }
 
-    protected function forSql($query) {
+    protected function forSql($query)
+    {
         return $this->bitrixDb->ForSql($query);
     }
 }

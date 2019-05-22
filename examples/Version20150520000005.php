@@ -7,27 +7,28 @@ class Version20150520000005 extends Version
 
     protected $description = "Пример работы с highload-блоками";
 
-    public function up() {
+    public function up()
+    {
 
         $helper = new HelperManager();
 
-        $hlblockId = $helper->Hlblock()->addHlblockIfNotExists(array(
+        $hlblockId = $helper->Hlblock()->saveHlblock([
             'NAME' => 'Test',
             'TABLE_NAME' => 'hl_test',
-        ));
+        ]);
 
-        $helper->UserTypeEntity()->addUserTypeEntityIfNotExists('HLBLOCK_' . $hlblockId, 'UF_NAME', array(
-            'USER_TYPE_ID' => 'string'
-        ));
+        $helper->Hlblock()->saveField($hlblockId, 'UF_NAME', [
+            'USER_TYPE_ID' => 'string',
+        ]);
 
-
-        $helper->UserTypeEntity()->addUserTypeEntityIfNotExists('HLBLOCK_' . $hlblockId, 'UF_CODE', array(
-            'USER_TYPE_ID' => 'string'
-        ));
+        $helper->Hlblock()->saveField($hlblockId, 'UF_CODE', [
+            'USER_TYPE_ID' => 'string',
+        ]);
 
     }
 
-    public function down() {
+    public function down()
+    {
         //
     }
 

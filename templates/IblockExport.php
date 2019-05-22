@@ -43,7 +43,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     <? endif; ?>
 
     <? if (!empty($iblockAdminTabs)): ?>
-        $helper->AdminIblock()->saveElementForm($iblockId, <?php echo var_export($iblockAdminTabs, 1) ?>);
+        $helper->UserOptions()->saveElementForm($iblockId, <?php echo var_export($iblockAdminTabs, 1) ?>);
     <? endif; ?>
 
     }

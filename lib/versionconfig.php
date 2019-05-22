@@ -4,11 +4,11 @@ namespace Sprint\Migration;
 
 class VersionConfig
 {
-    private $configCurrent = array();
+    private $configCurrent = [];
 
-    private $configList = array();
+    private $configList = [];
 
-    private $availablekeys = array(
+    private $availablekeys = [
         'migration_table',
         'migration_extend_class',
         'stop_on_errors',
@@ -21,9 +21,10 @@ class VersionConfig
         'version_schemas',
         'show_admin_interface',
         'console_user',
-    );
+    ];
 
-    public function __construct($configName = '') {
+    public function __construct($configName = '')
+    {
         $this->configList = $this->searchConfigs();
 
         if (!isset($this->configList['cfg'])) {
@@ -31,11 +32,11 @@ class VersionConfig
         }
 
         if (!isset($this->configList['archive'])) {
-            $this->configList['archive'] = $this->prepare('archive', array(
+            $this->configList['archive'] = $this->prepare('archive', [
                 'title' => GetMessage('SPRINT_MIGRATION_CONFIG_archive'),
                 'migration_dir' => $this->getSiblingDir('archive', true),
                 'migration_table' => 'sprint_migration_archive',
-            ));
+            ]);
         }
 
         uasort($this->configList, function ($a, $b) {
@@ -49,24 +50,29 @@ class VersionConfig
         }
     }
 
-    public function isExists($configName) {
+    public function isExists($configName)
+    {
         return (isset($this->configList[$configName]));
     }
 
-    public function getCurrent($key = false) {
+    public function getCurrent($key = false)
+    {
         return ($key) ? $this->configCurrent[$key] : $this->configCurrent;
     }
 
-    public function getList() {
+    public function getList()
+    {
         return $this->configList;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->configCurrent['name'];
     }
 
-    protected function searchConfigs() {
-        $result = array();
+    protected function searchConfigs()
+    {
+        $result = [];
         $directory = new \DirectoryIterator(Module::getPhpInterfaceDir());
         foreach ($directory as $item) {
             if (!$item->isFile()) {
@@ -90,14 +96,16 @@ class VersionConfig
         return $result;
     }
 
-    protected function getConfigName($fileName) {
+    protected function getConfigName($fileName)
+    {
         if (preg_match('/^migrations\.([a-z0-9_-]*)\.php$/i', $fileName, $matches)) {
             return $matches[1];
         }
         return false;
     }
 
-    protected function isValuesValid($values) {
+    protected function isValuesValid($values)
+    {
         foreach ($this->availablekeys as $key) {
             if (isset($values[$key])) {
                 return true;
@@ -106,7 +114,8 @@ class VersionConfig
         return false;
     }
 
-    protected function prepare($configName, $configValues = array(), $file = false) {
+    protected function prepare($configName, $configValues = [], $file = false)
+    {
         $configValues = $this->prepareValues($configValues);
 
         if (!empty($configValues['title'])) {
@@ -119,16 +128,17 @@ class VersionConfig
             unset($configValues['title']);
         }
 
-        return array(
+        return [
             'name' => $configName,
             'sort' => $this->getSort($configName),
             'title' => $title,
             'file' => $file,
             'values' => $configValues,
-        );
+        ];
     }
 
-    protected function prepareValues($values = array()) {
+    protected function prepareValues($values = [])
+    {
         if (empty($values['migration_extend_class'])) {
             $values['migration_extend_class'] = 'Version';
         }
@@ -197,7 +207,8 @@ class VersionConfig
         return $values;
     }
 
-    public function humanValues($values = array()) {
+    public function humanValues($values = [])
+    {
         foreach ($values as $key => $val) {
             if ($val === true || $val === false) {
                 $val = ($val) ? 'yes' : 'no';
@@ -215,7 +226,8 @@ class VersionConfig
         return $values;
     }
 
-    public function getVal($name, $default = '') {
+    public function getVal($name, $default = '')
+    {
         $values = $this->configCurrent['values'];
 
         if (isset($values[$name])) {
@@ -229,11 +241,13 @@ class VersionConfig
         return $default;
     }
 
-    protected function setVal($name, $value) {
+    protected function setVal($name, $value)
+    {
         $this->configCurrent['values'][$name] = $value;
     }
 
-    public function createConfig($configName, $configValues = array()) {
+    public function createConfig($configName, $configValues = [])
+    {
         $fileName = 'migrations.' . $configName . '.php';
         if (!$this->getConfigName($fileName)) {
             return false;
@@ -246,15 +260,15 @@ class VersionConfig
 
         if (isset($this->configList[$configName])) {
             $curValues = $this->configList[$configName]['values'];
-            $configDefaults = array(
+            $configDefaults = [
                 'migration_dir' => Module::getRelativeDir($curValues['migration_dir']),
                 'migration_table' => $curValues['migration_table'],
-            );
+            ];
         } else {
-            $configDefaults = array(
+            $configDefaults = [
                 'migration_dir' => $this->getSiblingDir($configName, true),
                 'migration_table' => 'sprint_migration_' . $configName,
-            );
+            ];
         }
 
         $configValues = array_merge($configDefaults, $configValues);
@@ -263,7 +277,8 @@ class VersionConfig
         return is_file($configPath);
     }
 
-    public function deleteConfig($configName) {
+    public function deleteConfig($configName)
+    {
         $fileName = 'migrations.' . $configName . '.php';
         if (!$this->getConfigName($fileName)) {
             return false;
@@ -285,7 +300,8 @@ class VersionConfig
         return true;
     }
 
-    public function getSiblingDir($dirname, $relative = false, $configName = 'cfg') {
+    public function getSiblingDir($dirname, $relative = false, $configName = 'cfg')
+    {
         $def = $this->configList[$configName];
         $dir = rtrim($def['values']['migration_dir'], '/');
         $dir = $dir . '.' . trim($dirname, '/') . '/';
@@ -293,7 +309,8 @@ class VersionConfig
         return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
 
-    protected function getSort($configName) {
+    protected function getSort($configName)
+    {
         if ($configName == 'archive') {
             return 110;
         } elseif ($configName == 'cfg') {
@@ -303,8 +320,9 @@ class VersionConfig
         }
     }
 
-    protected function getDefaultBuilders() {
-        return array(
+    protected function getDefaultBuilders()
+    {
+        return [
             'Version' => '\Sprint\Migration\Builders\Version',
             'IblockExport' => '\Sprint\Migration\Builders\IblockExport',
             'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
@@ -317,11 +335,12 @@ class VersionConfig
             'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
             'Marker' => '\Sprint\Migration\Builders\Marker',
             'Transfer' => '\Sprint\Migration\Builders\Transfer',
-        );
+        ];
     }
 
-    protected function getDefaultSchemas() {
-        return array(
+    protected function getDefaultSchemas()
+    {
+        return [
             'IblockSchema' => '\Sprint\Migration\Schema\IblockSchema',
             'HlblockSchema' => '\Sprint\Migration\Schema\HlblockSchema',
             'UserTypeEntitiesSchema' => '\Sprint\Migration\Schema\UserTypeEntitiesSchema',
@@ -329,25 +348,8 @@ class VersionConfig
             'GroupSchema' => '\Sprint\Migration\Schema\GroupSchema',
             'OptionSchema' => '\Sprint\Migration\Schema\OptionSchema',
             'EventSchema' => '\Sprint\Migration\Schema\EventSchema',
-        );
+        ];
     }
-
-    protected function getDefaultHelpers() {
-        return array(
-            'AdminIblockHelper' => '\Sprint\Migration\Helpers\AdminIblockHelper',
-            'AgentHelper' => '\Sprint\Migration\Helpers\AgentHelper',
-            'EventHelper' => '\Sprint\Migration\Helpers\EventHelper',
-            'FormHelper' => '\Sprint\Migration\Helpers\FormHelper',
-            'HlblockHelper' => '\Sprint\Migration\Helpers\HlblockHelper',
-            'IblockHelper' => '\Sprint\Migration\Helpers\IblockHelper',
-            'LangHelper' => '\Sprint\Migration\Helpers\LangHelper',
-            'OptionHelper' => '\Sprint\Migration\Helpers\OptionHelper',
-            'SiteHelper' => '\Sprint\Migration\Helpers\SiteHelper',
-            'UserGroupHelper' => '\Sprint\Migration\Helpers\UserGroupHelper',
-            'UserTypeEntityHelper' => '\Sprint\Migration\Helpers\UserTypeEntityHelper',
-        );
-    }
-
 }
 
 

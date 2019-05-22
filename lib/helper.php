@@ -15,20 +15,22 @@ class Helper
      */
     public $lastError = '';
 
-    private $mode = array(
+    private $mode = [
         'test' => 0,
         'out_equal' => 0,
-    );
+    ];
 
     /**
-     * @deprecated
      * @return string
+     * @deprecated
      */
-    public function getLastError() {
+    public function getLastError()
+    {
         return $this->lastError;
     }
 
-    public function getMode($key = false) {
+    public function getMode($key = false)
+    {
         if ($key) {
             return isset($this->mode[$key]) ? $this->mode[$key] : 0;
         } else {
@@ -36,7 +38,8 @@ class Helper
         }
     }
 
-    public function setMode($key, $val = 1) {
+    public function setMode($key, $val = 1)
+    {
         if ($key instanceof Helper) {
             $this->mode = $key->getMode();
         } else {
@@ -45,11 +48,13 @@ class Helper
         }
     }
 
-    public function setTestMode($val = 1) {
+    public function setTestMode($val = 1)
+    {
         $this->setMode('test', $val);
     }
 
-    public function throwException($method, $msg, $var1 = null, $var2 = null) {
+    public function throwException($method, $msg, $var1 = null, $var2 = null)
+    {
         $args = func_get_args();
         $method = array_shift($args);
         $msg = call_user_func_array('sprintf', $args);
@@ -61,24 +66,28 @@ class Helper
         Throw new HelperException($msg);
     }
 
-    public function isEnabled() {
+    public function isEnabled()
+    {
         return true;
     }
 
-    protected function hasDiff($exists, $fields) {
+    protected function hasDiff($exists, $fields)
+    {
         return ($exists != $fields);
     }
 
-    protected function checkModules($names = array()) {
-        $names = is_array($names) ? $names : array($names);
+    protected function checkModules($names = [])
+    {
+        $names = is_array($names) ? $names : [$names];
         foreach ($names as $name) {
-            if (!\CModule::IncludeModule($name)) {
+            if (!\Bitrix\Main\Loader::includeModule($name)) {
                 $this->throwException(__METHOD__, "module %s not installed", $name);
             }
         }
     }
 
-    protected function checkRequiredKeys($method, $fields, $reqKeys = array()) {
+    protected function checkRequiredKeys($method, $fields, $reqKeys = [])
+    {
         foreach ($reqKeys as $name) {
             if (empty($fields[$name])) {
                 $this->throwException($method, 'requred key "%s" empty', $name);
@@ -92,8 +101,9 @@ class Helper
      * @param bool $valueKey
      * @return array
      */
-    protected function fetchAll(\CDBResult $dbres, $indexKey = false, $valueKey = false) {
-        $res = array();
+    protected function fetchAll(\CDBResult $dbres, $indexKey = false, $valueKey = false)
+    {
+        $res = [];
 
         while ($item = $dbres->Fetch()) {
             if ($valueKey) {
@@ -113,7 +123,8 @@ class Helper
         return $res;
     }
 
-    private function getMethod($method) {
+    private function getMethod($method)
+    {
         $path = explode('\\', $method);
         $short = array_pop($path);
         return $short;

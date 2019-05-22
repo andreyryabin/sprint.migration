@@ -7,7 +7,8 @@ use Sprint\Migration\Tables\StorageTable;
 class StorageManager extends StorageTable
 {
 
-    public function saveData($category, $name, $value = '') {
+    public function saveData($category, $name, $value = '')
+    {
         $category = $this->forSql($category);
         $name = $this->forSql($name);
 
@@ -25,7 +26,8 @@ class StorageManager extends StorageTable
         }
     }
 
-    public function getSavedData($category, $name, $default = '') {
+    public function getSavedData($category, $name, $default = '')
+    {
         $category = $this->forSql($category);
         $name = $this->forSql($name);
 
@@ -41,7 +43,8 @@ class StorageManager extends StorageTable
         return $default;
     }
 
-    public function deleteSavedData($category, $name = false) {
+    public function deleteSavedData($category, $name = false)
+    {
         $category = $this->forSql($category);
 
         if ($category && $name) {

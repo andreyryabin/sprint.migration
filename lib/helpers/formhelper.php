@@ -8,15 +8,17 @@ use Sprint\Migration\Helper;
 class FormHelper extends Helper
 {
 
-    public function __construct() {
-        $this->checkModules(array('form'));
+    public function __construct()
+    {
+        $this->checkModules(['form']);
     }
 
     /**
      * @param array $filter
      * @return array
      */
-    public function getList($filter = array()) {
+    public function getList($filter = [])
+    {
         $by = 's_name';
         $order = 'asc';
         $isFiltered = null;
@@ -29,7 +31,8 @@ class FormHelper extends Helper
      * @param $formId
      * @return array|bool
      */
-    public function getFormById($formId) {
+    public function getFormById($formId)
+    {
         $formId = (int)$formId;
 
         $form = \CForm::GetByID($formId)->Fetch();
@@ -52,7 +55,8 @@ class FormHelper extends Helper
      * @param $sid
      * @return bool|int
      */
-    public function getFormId($sid) {
+    public function getFormId($sid)
+    {
         $form = \CForm::GetBySID($sid)->Fetch();
         return ($form && isset($form['ID'])) ? $form['ID'] : false;
 
@@ -63,7 +67,8 @@ class FormHelper extends Helper
      * @return bool|int
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function getFormIdIfExists($sid) {
+    public function getFormIdIfExists($sid)
+    {
         $formId = $this->getFormId($sid);
         if ($formId) {
             return $formId;
@@ -78,14 +83,15 @@ class FormHelper extends Helper
      * @return bool|int
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function saveForm($form) {
-        $this->checkRequiredKeys(__METHOD__, $form, array('SID'));
+    public function saveForm($form)
+    {
+        $this->checkRequiredKeys(__METHOD__, $form, ['SID']);
 
         $form['VARNAME'] = $form['SID'];
 
         $userGroupHelper = new UserGroupHelper();
         if (isset($form['arGROUP']) && is_array($form['arGROUP'])) {
-            $arGroup = array();
+            $arGroup = [];
             foreach ($form['arGROUP'] as $groupCode => $permissionValue) {
                 $groupId = $userGroupHelper->getGroupId($groupCode);
                 $arGroup[$groupId] = $permissionValue;
@@ -109,16 +115,17 @@ class FormHelper extends Helper
      * @param $fields
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function saveFields($formId, $fields) {
+    public function saveFields($formId, $fields)
+    {
 
         $currentFields = $this->getFormFields($formId);
-        $updatedIds = array();
+        $updatedIds = [];
 
         foreach ($fields as $field) {
             $field['FORM_ID'] = $formId;
             $field['VARNAME'] = $field['SID'];
 
-            $answers = array();
+            $answers = [];
             if (isset($field['ANSWERS'])) {
                 if (is_array($field['ANSWERS'])) {
                     $answers = $field['ANSWERS'];
@@ -127,7 +134,7 @@ class FormHelper extends Helper
             }
 
 
-            $validators = array();
+            $validators = [];
             if (isset($field['VALIDATORS'])) {
                 if (is_array($field['VALIDATORS'])) {
                     $validators = $field['VALIDATORS'];
@@ -169,10 +176,11 @@ class FormHelper extends Helper
      * @param $statuses
      * @throws \Exception
      */
-    public function saveStatuses($formId, $statuses) {
+    public function saveStatuses($formId, $statuses)
+    {
         $currentStatuses = $this->getFormStatuses($formId);
 
-        $updatedIds = array();
+        $updatedIds = [];
 
         foreach ($statuses as $status) {
             $status['FORM_ID'] = $formId;
@@ -206,7 +214,8 @@ class FormHelper extends Helper
     /**
      * @return array
      */
-    public function getFormStatuses($formId) {
+    public function getFormStatuses($formId)
+    {
         $dbres = \CFormStatus::GetList($formId, $by = 's_sort', $order = 'asc', [], $f);
         return $this->fetchAll($dbres);
     }
@@ -214,7 +223,8 @@ class FormHelper extends Helper
     /**
      * @return array
      */
-    public function getFormFields($formId) {
+    public function getFormFields($formId)
+    {
         $dbres = \CFormField::GetList($formId, 'ALL', $by = 's_sort', $order = 'asc', [], $f);
         $fields = $this->fetchAll($dbres);
         foreach ($fields as $index => $field) {
@@ -229,7 +239,8 @@ class FormHelper extends Helper
      * @return bool
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function deleteFormIfExists($sid) {
+    public function deleteFormIfExists($sid)
+    {
         $formId = $this->getFormId($sid);
 
         if (!$formId) {
@@ -247,7 +258,8 @@ class FormHelper extends Helper
      * @param $fieldId
      * @return array
      */
-    protected function getFieldAnswers($fieldId) {
+    protected function getFieldAnswers($fieldId)
+    {
         $dbres = \CFormAnswer::GetList($fieldId, $by = 's_sort', $order = 'asc', [], $f);
         return $this->fetchAll($dbres);
     }
@@ -256,8 +268,9 @@ class FormHelper extends Helper
      * @param $fieldId
      * @return array
      */
-    protected function getFieldValidators($fieldId) {
-        $dbres = \CFormValidator::GetList($fieldId, array(), $by = 's_sort', $order = 'asc');
+    protected function getFieldValidators($fieldId)
+    {
+        $dbres = \CFormValidator::GetList($fieldId, [], $by = 's_sort', $order = 'asc');
         return $this->fetchAll($dbres);
     }
 
@@ -265,7 +278,8 @@ class FormHelper extends Helper
      * @param int $formId
      * @return array
      */
-    protected function exportRights($formId) {
+    protected function exportRights($formId)
+    {
         /** @var \CDatabase $DB */
         global $DB;
 
@@ -286,7 +300,8 @@ class FormHelper extends Helper
      * @param $formId
      * @return array|bool
      */
-    protected function exportSites($formId) {
+    protected function exportSites($formId)
+    {
         return \CForm::GetSiteArray($formId);
     }
 
@@ -294,7 +309,8 @@ class FormHelper extends Helper
      * @param int $formId
      * @return array
      */
-    protected function exportMailTemplates($formId) {
+    protected function exportMailTemplates($formId)
+    {
         return \CForm::GetMailTemplateArray($formId);
     }
 
@@ -302,19 +318,21 @@ class FormHelper extends Helper
      * @param $formId
      * @return array
      */
-    protected function exportMenus($formId) {
-        $res = array();
-        $dbres = \CForm::GetMenuList(array('FORM_ID' => $formId), 'N');
+    protected function exportMenus($formId)
+    {
+        $res = [];
+        $dbres = \CForm::GetMenuList(['FORM_ID' => $formId], 'N');
         while ($menuItem = $dbres->Fetch()) {
             $res[$menuItem["LID"]] = $menuItem["MENU"];
         }
         return $res;
     }
 
-    protected function saveFieldAnswers($formId, $fieldId, $answers) {
+    protected function saveFieldAnswers($formId, $fieldId, $answers)
+    {
         $currentAnswers = $this->getFieldAnswers($fieldId);
 
-        $updatedIds = array();
+        $updatedIds = [];
 
         foreach ($answers as $index => $answer) {
             $answerId = false;
@@ -349,7 +367,8 @@ class FormHelper extends Helper
         }
     }
 
-    protected function saveFieldValidators($formId, $fieldId, $validators) {
+    protected function saveFieldValidators($formId, $fieldId, $validators)
+    {
 
         \CFormValidator::Clear($fieldId);
 

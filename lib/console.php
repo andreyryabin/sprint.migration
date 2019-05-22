@@ -8,12 +8,12 @@ class Console
     private $script = 'migrate.php';
     private $command = '';
 
-    private $arguments = array();
+    private $arguments = [];
 
     private $versionConfig;
     private $versionManager;
 
-    private $argoptions = array();
+    private $argoptions = [];
 
     public function __construct($args)
     {
@@ -42,7 +42,7 @@ class Console
         }
 
         if (method_exists($this, $this->command)) {
-            call_user_func(array($this, $this->command));
+            call_user_func([$this, $this->command]);
         } else {
             Out::out('Command "%s" not found, see help', $this->command);
             die(1);
@@ -63,21 +63,21 @@ class Console
     {
         global $USER;
 
-        $groupitem = \CGroup::GetList($by, $order, array(
+        $groupitem = \CGroup::GetList($by, $order, [
             'ADMIN' => 'Y',
-            'ACTIVE' => 'Y'
-        ))->Fetch();
+            'ACTIVE' => 'Y',
+        ])->Fetch();
 
         if (!empty($groupitem)) {
             $by = 'id';
             $order = 'asc';
 
-            $useritem = \CUser::GetList($by, $order, array(
-                'GROUPS_ID' => array($groupitem['ID']),
-                'ACTIVE' => 'Y'
-            ), array(
-                'NAV_PARAMS' => array('nTopCount' => 1)
-            ))->Fetch();
+            $useritem = \CUser::GetList($by, $order, [
+                'GROUPS_ID' => [$groupitem['ID']],
+                'ACTIVE' => 'Y',
+            ], [
+                'NAV_PARAMS' => ['nTopCount' => 1],
+            ])->Fetch();
 
             if (!empty($useritem)) {
                 $USER->Authorize($useritem['ID']);
@@ -104,10 +104,10 @@ class Console
         $prefix = $this->getArg('--prefix=', $prefix);
         $from = $this->getArg('--from=', 'Version');
 
-        $this->executeBuilder($from, array(
+        $this->executeBuilder($from, [
             'description' => $descr,
             'prefix' => $prefix,
-        ));
+        ]);
     }
 
     public function commandMark()
@@ -156,44 +156,44 @@ class Console
             $status = '';
         }
 
-        $versions = $this->versionManager->getVersions(array(
+        $versions = $this->versionManager->getVersions([
             'status' => $status,
-            'search' => $search
-        ));
+            'search' => $search,
+        ]);
 
         if ($status) {
-            $summary = array();
+            $summary = [];
             $summary[$status] = 0;
         } else {
-            $summary = array(
+            $summary = [
                 'new' => 0,
                 'installed' => 0,
-                'unknown' => 0
-            );
+                'unknown' => 0,
+            ];
         }
 
-        $grid = new ConsoleGrid(-1, array(
+        $grid = new ConsoleGrid(-1, [
             'horizontal' => '=',
             'vertical' => '',
-            'intersection' => ''
-        ), 1, 'UTF-8');
+            'intersection' => '',
+        ], 1, 'UTF-8');
 
-        $grid->setHeaders(array(
+        $grid->setHeaders([
             'Version',
             'Status',
             'Description',
-        ));
+        ]);
 
         foreach ($versions as $index => $item) {
             if ($item['modified']) {
                 $item['version'] .= ' (' . GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL') . ')';
             }
 
-            $grid->addRow(array(
+            $grid->addRow([
                 $item['version'],
                 GetMessage('SPRINT_MIGRATION_META_' . strtoupper($item['status'])),
                 $item['description'],
-            ));
+            ]);
 
             $stval = $item['status'];
             $summary[$stval]++;
@@ -203,10 +203,10 @@ class Console
 
         $grid = new ConsoleGrid(-1, '', 1, 'UTF-8');
         foreach ($summary as $k => $v) {
-            $grid->addRow(array(
+            $grid->addRow([
                 GetMessage('SPRINT_MIGRATION_META_' . strtoupper($k)) . ':',
-                $v
-            ));
+                $v,
+            ]);
         }
 
         Out::out($grid->build());
@@ -226,10 +226,10 @@ class Console
         if ($this->versionManager->checkVersionName($versionName)) {
             $this->executeOnce($versionName, 'up', $this->getArg('--force'));
         } else {
-            $this->executeAll(array(
+            $this->executeAll([
                 'search' => $this->getArg('--search='),
                 'status' => 'new',
-            ), $this->getArg('--force'));
+            ], $this->getArg('--force'));
         }
     }
 
@@ -246,10 +246,10 @@ class Console
         if ($this->versionManager->checkVersionName($versionName)) {
             $this->executeOnce($versionName, 'down', $this->getArg('--force'));
         } else {
-            $this->executeAll(array(
+            $this->executeAll([
                 'search' => $this->getArg('--search='),
                 'status' => 'installed',
-            ), $this->getArg('--force'));
+            ], $this->getArg('--force'));
         }
     }
 
@@ -312,16 +312,16 @@ class Console
             $configTitle
         );
 
-        $grid = new ConsoleGrid(-1, array(
+        $grid = new ConsoleGrid(-1, [
             'horizontal' => '=',
             'vertical' => '',
-            'intersection' => ''
-        ), 1, 'UTF-8');
+            'intersection' => '',
+        ], 1, 'UTF-8');
 
-        $grid->setBorderVisibility(array('bottom' => false));
+        $grid->setBorderVisibility(['bottom' => false]);
 
         foreach ($configValues as $key => $val) {
-            $grid->addRow(array($key, $val));
+            $grid->addRow([$key, $val]);
         }
 
         Out::out($grid->build());
@@ -343,10 +343,10 @@ class Console
     {
         /** @compability */
         $status = $this->getArg('--down') ? 'installed' : 'new';
-        $this->executeAll(array(
+        $this->executeAll([
             'search' => $this->getArg('--search='),
             'status' => $status,
-        ), $this->getArg('--force'));
+        ], $this->getArg('--force'));
     }
 
     public function commandMi()
@@ -386,12 +386,12 @@ class Console
         $schemaManager = new SchemaManager($this->versionConfig);
         $enabledSchemas = $schemaManager->getEnabledSchemas();
 
-        $selectValues = array();
+        $selectValues = [];
         foreach ($enabledSchemas as $schema) {
-            $selectValues[] = array(
+            $selectValues[] = [
                 'value' => $schema->getName(),
-                'title' => $schema->getTitle()
-            );
+                'title' => $schema->getTitle(),
+            ];
         }
 
         if (empty($action)) {
@@ -410,15 +410,15 @@ class Console
                 return !empty($a);
             });
         } else {
-            $select = Out::input(array(
+            $select = Out::input([
                 'title' => 'select schemas',
                 'select' => $selectValues,
                 'multiple' => 1,
-            ));
+            ]);
         }
 
 
-        $params = array();
+        $params = [];
 
         do {
 
@@ -429,14 +429,14 @@ class Console
 
                 if ($action == 'test') {
                     $schemaManager->setTestMode(1);
-                    $schemaManager->import(array('name' => $select));
+                    $schemaManager->import(['name' => $select]);
 
                 } elseif ($action == 'import') {
                     $schemaManager->setTestMode(0);
-                    $schemaManager->import(array('name' => $select));
+                    $schemaManager->import(['name' => $select]);
 
                 } elseif ($action == 'export') {
-                    $schemaManager->export(array('name' => $select));
+                    $schemaManager->export(['name' => $select]);
                 }
 
 
@@ -499,7 +499,7 @@ class Console
 
     protected function executeVersion($version, $action = 'up', $force = false)
     {
-        $params = array();
+        $params = [];
 
         Out::out('%s (%s) start', $version, $action);
 
@@ -531,7 +531,7 @@ class Console
         return $success;
     }
 
-    protected function executeBuilder($from, $postvars = array())
+    protected function executeBuilder($from, $postvars = [])
     {
         do {
 
@@ -565,9 +565,9 @@ class Console
         if (isset($this->arguments[0])) {
             $command = array_shift($this->arguments);
 
-            $command = str_replace(array('_', '-', ' '), '*', $command);
+            $command = str_replace(['_', '-', ' '], '*', $command);
             $command = explode('*', $command);
-            $tmp = array();
+            $tmp = [];
             foreach ($command as $val) {
                 $tmp[] = ucfirst(strtolower($val));
             }

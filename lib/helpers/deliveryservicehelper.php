@@ -16,8 +16,9 @@ use Sprint\Migration\Helper;
 
 class DeliveryServiceHelper extends Helper
 {
-    public function __construct() {
-        $this->checkModules(array('sale'));
+    public function __construct()
+    {
+        $this->checkModules(['sale']);
     }
 
     /**
@@ -25,7 +26,8 @@ class DeliveryServiceHelper extends Helper
      *
      * @return Base|null
      */
-    public static function createObject(array $fields) {
+    public static function createObject(array $fields)
+    {
         $service = Manager::createObject($fields);
         if (!($service instanceof Base)) {
             throw new InvalidArgumentException(
@@ -75,7 +77,8 @@ class DeliveryServiceHelper extends Helper
      * @throws HelperException
      * @throws SystemException
      */
-    public function add(array $fields) {
+    public function add(array $fields)
+    {
         $fields = self::createObject($fields)->prepareFieldsForSaving($fields);
 
         $addResult = Manager::add($fields);
@@ -125,7 +128,8 @@ class DeliveryServiceHelper extends Helper
      * @return Base
      * @throws HelperException
      */
-    public function get($code) {
+    public function get($code)
+    {
         $fields = Table::query()->setSelect(['*'])
             ->setFilter(['CODE' => trim($code)])
             ->exec()
@@ -151,7 +155,8 @@ class DeliveryServiceHelper extends Helper
      * @throws HelperException
      * @throws SystemException
      */
-    public function update($code, array $fields) {
+    public function update($code, array $fields)
+    {
         $service = self::get($code);
 
         $updateResult = Manager::update($service->getId(), $fields);
@@ -179,7 +184,8 @@ class DeliveryServiceHelper extends Helper
      * @throws ArgumentException
      * @throws ArgumentNullException
      */
-    public function delete($code) {
+    public function delete($code)
+    {
         $service = self::get($code);
 
         $deleteResult = Manager::delete($service->getId());
@@ -200,7 +206,8 @@ class DeliveryServiceHelper extends Helper
      * @throws HelperException
      * @throws Exception
      */
-    private function initEmptyExtraServices($deliveryId) {
+    private function initEmptyExtraServices($deliveryId)
+    {
         /**
          * Вероятно, инициализация пустой записи в таблице 'b_sale_delivery_es'
          * для дополнительных услуг службы доставки.

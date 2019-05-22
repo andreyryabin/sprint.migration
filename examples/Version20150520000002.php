@@ -2,13 +2,16 @@
 
 namespace Sprint\Migration;
 
+use CIBlockElement;
+
 class Version20150520000002 extends Version
 {
 
     protected $description = "Пошаговая миграция";
 
 
-    public function up() {
+    public function up()
+    {
         //Добавляем 100 элементов
 
         $helper = new HelperManager();
@@ -23,7 +26,7 @@ class Version20150520000002 extends Version
         if ($this->params['add'] <= $cnt) {
             $this->outProgress('Прогресс добавления', $this->params['add'], $cnt);
 
-            $helper->Iblock()->addElement($iblockId1, array('NAME' => 'name' . microtime()));
+            $helper->Iblock()->addElement($iblockId1, ['NAME' => 'name' . microtime()]);
 
             $this->params['add']++;
 
@@ -32,14 +35,15 @@ class Version20150520000002 extends Version
 
     }
 
-    public function down() {
+    public function down()
+    {
         //Удаляем все элементы по 10 штук за раз
 
         $helper = new HelperManager();
         $iblockId1 = $helper->Iblock()->getIblockIdIfExists('content_news');
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = \CIBlockElement::GetList(array(), array('IBLOCK_ID' => $iblockId1), false, array('nTopCount' => 10));
+        $dbRes = CIBlockElement::GetList([], ['IBLOCK_ID' => $iblockId1], false, ['nTopCount' => 10]);
 
         $bFound = 0;
 

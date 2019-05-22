@@ -78,14 +78,14 @@ class ConsoleGrid
      *
      * @var array
      */
-    var $_headers = array();
+    var $_headers = [];
 
     /**
      * The data of the table.
      *
      * @var array
      */
-    var $_data = array();
+    var $_data = [];
 
     /**
      * The maximum number of columns in a row.
@@ -106,14 +106,14 @@ class ConsoleGrid
      *
      * @var array
      */
-    var $_cell_lengths = array();
+    var $_cell_lengths = [];
 
     /**
      * Heights of the rows.
      *
      * @var array
      */
-    var $_row_heights = array();
+    var $_row_heights = [];
 
     /**
      * How many spaces to use to pad the table.
@@ -134,7 +134,7 @@ class ConsoleGrid
      *
      * @var array
      */
-    var $_col_align = array();
+    var $_col_align = [];
 
     /**
      * Default alignment of columns.
@@ -159,11 +159,11 @@ class ConsoleGrid
      *
      * @var array
      */
-    var $_border = array(
+    var $_border = [
         'intersection' => '+',
         'horizontal' => '-',
         'vertical' => '|',
-    );
+    ];
 
     /**
      * If borders are shown or not
@@ -171,13 +171,13 @@ class ConsoleGrid
      *
      * @var array
      */
-    var $_borderVisibility = array(
+    var $_borderVisibility = [
         'top' => true,
         'right' => true,
         'bottom' => true,
         'left' => true,
-        'inner' => true
-    );
+        'inner' => true,
+    ];
 
     /**
      * Constructor.
@@ -214,7 +214,8 @@ class ConsoleGrid
      *
      * @return void
      */
-    function setCharset($charset) {
+    function setCharset($charset)
+    {
         $locale = setlocale(LC_CTYPE, 0);
         setlocale(LC_CTYPE, 'en_US');
         $this->_charset = strtolower($charset);
@@ -234,7 +235,8 @@ class ConsoleGrid
      * @return void
      * @see $_border
      */
-    function setBorder($border) {
+    function setBorder($border)
+    {
         if ($border === self::CONSOLE_TABLE_BORDER_ASCII) {
             $intersection = '+';
             $horizontal = '-';
@@ -251,11 +253,11 @@ class ConsoleGrid
             }
         }
 
-        $this->_border = array(
+        $this->_border = [
             'intersection' => $intersection,
             'horizontal' => $horizontal,
             'vertical' => $vertical,
-        );
+        ];
     }
 
     /**
@@ -267,7 +269,8 @@ class ConsoleGrid
      * @return void
      * @see    $_borderVisibility
      */
-    function setBorderVisibility($visibility) {
+    function setBorderVisibility($visibility)
+    {
         $this->_borderVisibility = array_merge(
             $this->_borderVisibility,
             array_intersect_key(
@@ -288,7 +291,8 @@ class ConsoleGrid
      *
      * @return void
      */
-    function setAlign($col_id, $align = self::CONSOLE_TABLE_ALIGN_LEFT) {
+    function setAlign($col_id, $align = self::CONSOLE_TABLE_ALIGN_LEFT)
+    {
         switch ($align) {
             case self::CONSOLE_TABLE_ALIGN_CENTER:
                 $pad = STR_PAD_BOTH;
@@ -311,7 +315,8 @@ class ConsoleGrid
      *
      * @return void
      */
-    function calculateTotalsFor($cols) {
+    function calculateTotalsFor($cols)
+    {
         $this->_calculateTotals = $cols;
     }
 
@@ -322,8 +327,9 @@ class ConsoleGrid
      *
      * @return void
      */
-    function setHeaders($headers) {
-        $this->_headers = array(array_values($headers));
+    function setHeaders($headers)
+    {
+        $this->_headers = [array_values($headers)];
         $this->_updateRowsCols($headers);
     }
 
@@ -335,7 +341,8 @@ class ConsoleGrid
      *
      * @return void
      */
-    function addRow($row, $append = true) {
+    function addRow($row, $append = true)
+    {
         if ($append) {
             $this->_data[] = array_values($row);
         } else {
@@ -355,8 +362,9 @@ class ConsoleGrid
      *
      * @return void
      */
-    function insertRow($row, $row_id = 0) {
-        array_splice($this->_data, $row_id, 0, array($row));
+    function insertRow($row, $row_id = 0)
+    {
+        array_splice($this->_data, $row_id, 0, [$row]);
 
         $this->_updateRowsCols($row);
     }
@@ -370,7 +378,8 @@ class ConsoleGrid
      *
      * @return void
      */
-    function addCol($col_data, $col_id = 0, $row_id = 0) {
+    function addCol($col_data, $col_id = 0, $row_id = 0)
+    {
         foreach ($col_data as $col_cell) {
             $this->_data[$row_id++][$col_id] = $col_cell;
         }
@@ -388,7 +397,8 @@ class ConsoleGrid
      *
      * @return void
      */
-    function addData($data, $col_id = 0, $row_id = 0) {
+    function addData($data, $col_id = 0, $row_id = 0)
+    {
         foreach ($data as $row) {
             if ($row === self::CONSOLE_TABLE_HORIZONTAL_RULE) {
                 $this->_data[$row_id] = self::CONSOLE_TABLE_HORIZONTAL_RULE;
@@ -410,7 +420,8 @@ class ConsoleGrid
      *
      * @return void
      */
-    function addSeparator() {
+    function addSeparator()
+    {
         $this->_data[] = self::CONSOLE_TABLE_HORIZONTAL_RULE;
     }
 
@@ -419,7 +430,8 @@ class ConsoleGrid
      *
      * @return string  The generated table.
      */
-    function build() {
+    function build()
+    {
         $this->_calculateTotals();
         $this->_validateTable();
 
@@ -431,14 +443,15 @@ class ConsoleGrid
      *
      * @return void
      */
-    function _calculateTotals() {
+    function _calculateTotals()
+    {
         if (empty($this->_calculateTotals)) {
             return;
         }
 
         $this->addSeparator();
 
-        $totals = array();
+        $totals = [];
         foreach ($this->_data as $row) {
             if (is_array($row)) {
                 foreach ($this->_calculateTotals as $columnID) {
@@ -456,7 +469,8 @@ class ConsoleGrid
      *
      * @return void
      */
-    function _validateTable() {
+    function _validateTable()
+    {
         if (!empty($this->_headers)) {
             $this->_calculateRowHeight(-1, $this->_headers[0]);
         }
@@ -497,11 +511,12 @@ class ConsoleGrid
      *
      * @return void
      */
-    function _splitMultilineRows() {
+    function _splitMultilineRows()
+    {
         ksort($this->_data);
-        $sections = array(&$this->_headers, &$this->_data);
-        $max_rows = array(count($this->_headers), $this->_max_rows);
-        $row_height_offset = array(-1, 0);
+        $sections = [&$this->_headers, &$this->_data];
+        $max_rows = [count($this->_headers), $this->_max_rows];
+        $row_height_offset = [-1, 0];
 
         for ($s = 0; $s <= 1; $s++) {
             $inserted = 0;
@@ -512,13 +527,13 @@ class ConsoleGrid
                 $height = $this->_row_heights[$i + $row_height_offset[$s]];
                 if ($height > 1) {
                     // Split column data into one-liners.
-                    $split = array();
+                    $split = [];
                     for ($j = 0; $j < $this->_max_cols; $j++) {
                         $split[$j] = preg_split('/\r?\n|\r/',
                             $sections[$s][$i][$j]);
                     }
 
-                    $new_rows = array();
+                    $new_rows = [];
                     // Construct new 'virtual' rows - insert empty strings for
                     // columns that have less lines that the highest one.
                     for ($i2 = 0; $i2 < $height; $i2++) {
@@ -550,7 +565,8 @@ class ConsoleGrid
      *
      * @return string  The generated table string.
      */
-    function _buildTable() {
+    function _buildTable()
+    {
         if (!count($this->_data)) {
             return '';
         }
@@ -558,7 +574,7 @@ class ConsoleGrid
         $vertical = $this->_border['vertical'];
         $separator = $this->_getSeparator();
 
-        $return = array();
+        $return = [];
         for ($i = 0; $i < count($this->_data); $i++) {
             for ($j = 0; $j < count($this->_data[$i]); $j++) {
                 if ($this->_data[$i] !== self::CONSOLE_TABLE_HORIZONTAL_RULE &&
@@ -613,7 +629,8 @@ class ConsoleGrid
      *
      * @return string  The horizontal separator.
      */
-    function _getSeparator() {
+    function _getSeparator()
+    {
         if (!$this->_border) {
             return;
         }
@@ -621,7 +638,7 @@ class ConsoleGrid
         $horizontal = $this->_border['horizontal'];
         $intersection = $this->_border['intersection'];
 
-        $return = array();
+        $return = [];
         foreach ($this->_cell_lengths as $cl) {
             $return[] = str_repeat($horizontal, $cl);
         }
@@ -643,7 +660,8 @@ class ConsoleGrid
      *
      * @return string  The header line of the table.
      */
-    function _getHeaderLine() {
+    function _getHeaderLine()
+    {
         // Make sure column count is correct
         for ($j = 0; $j < count($this->_headers); $j++) {
             for ($i = 0; $i < $this->_max_cols; $i++) {
@@ -696,7 +714,8 @@ class ConsoleGrid
      *
      * @return void
      */
-    function _updateRowsCols($rowdata = null) {
+    function _updateRowsCols($rowdata = null)
+    {
         // Update maximum columns.
         $this->_max_cols = max($this->_max_cols, count($rowdata));
 
@@ -732,7 +751,8 @@ class ConsoleGrid
      *
      * @return void
      */
-    function _calculateCellLengths($row) {
+    function _calculateCellLengths($row)
+    {
         for ($i = 0; $i < count($row); $i++) {
             if (!isset($this->_cell_lengths[$i])) {
                 $this->_cell_lengths[$i] = 0;
@@ -750,7 +770,8 @@ class ConsoleGrid
      *
      * @return void
      */
-    function _calculateRowHeight($row_number, $row) {
+    function _calculateRowHeight($row_number, $row)
+    {
         if (!isset($this->_row_heights[$row_number])) {
             $this->_row_heights[$row_number] = 1;
         }
@@ -774,7 +795,8 @@ class ConsoleGrid
      *
      * @return integer  The string length.
      */
-    function _strlen($str) {
+    function _strlen($str)
+    {
         static $mbstring;
 
         // Cache expensive function_exists() calls.
@@ -798,7 +820,8 @@ class ConsoleGrid
      *
      * @return string  The string's part.
      */
-    function _substr($string, $start, $length = null) {
+    function _substr($string, $start, $length = null)
+    {
         static $mbstring;
 
         // Cache expensive function_exists() calls.
@@ -832,7 +855,8 @@ class ConsoleGrid
      *
      * @return string  The padded string.
      */
-    function _strpad($input, $length, $pad = ' ', $type = STR_PAD_RIGHT) {
+    function _strpad($input, $length, $pad = ' ', $type = STR_PAD_RIGHT)
+    {
         $mb_length = $this->_strlen($input);
         $sb_length = strlen($input);
         $pad_length = $this->_strlen($pad);

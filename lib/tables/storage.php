@@ -5,11 +5,13 @@ namespace Sprint\Migration\Tables;
 class StorageTable extends AbstractTable
 {
 
-    public function __construct($name = 'default') {
+    public function __construct($name = 'default')
+    {
         parent::__construct('sprint_storage_' . $name);
     }
 
-    protected function createTable() {
+    protected function createTable()
+    {
         $this->query('CREATE TABLE IF NOT EXISTS `#TABLE1#`(
               `id` INT NOT NULL AUTO_INCREMENT NOT NULL,
               `category` varchar(255) COLLATE #COLLATE# NOT NULL,
@@ -20,7 +22,8 @@ class StorageTable extends AbstractTable
         );
     }
 
-    protected function dropTable() {
+    protected function dropTable()
+    {
         $this->query('DROP TABLE IF EXISTS `#TABLE1#`;');
     }
 

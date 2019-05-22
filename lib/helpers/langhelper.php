@@ -11,12 +11,13 @@ class LangHelper extends Helper
      * @return mixed
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function getDefaultLangIdIfExists() {
+    public function getDefaultLangIdIfExists()
+    {
         $by = 'def';
         $order = 'desc';
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $item = \CLanguage::GetList($by, $order, array('ACTIVE' => 'Y'))->Fetch();
+        $item = \CLanguage::GetList($by, $order, ['ACTIVE' => 'Y'])->Fetch();
 
         if ($item) {
             return $item['LID'];
@@ -29,11 +30,12 @@ class LangHelper extends Helper
      * @param array $filter
      * @return array
      */
-    public function getLangs($filter = array()) {
+    public function getLangs($filter = [])
+    {
         $by = 'def';
         $order = 'desc';
 
-        $lids = array();
+        $lids = [];
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbres = \CLanguage::GetList($by, $order, $filter);
         while ($item = $dbres->Fetch()) {
@@ -47,8 +49,9 @@ class LangHelper extends Helper
      * @return array
      * @throws \Sprint\Migration\Exceptions\HelperException
      */
-    public function getLangsIfExists() {
-        $items = $this->getLangs(array('ACTIVE' => 'Y'));
+    public function getLangsIfExists()
+    {
+        $items = $this->getLangs(['ACTIVE' => 'Y']);
         if (!empty($items)) {
             return $items;
         }

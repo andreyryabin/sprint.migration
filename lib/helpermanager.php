@@ -14,46 +14,53 @@ use Sprint\Migration\Helpers\LangHelper;
 use Sprint\Migration\Helpers\OptionHelper;
 use Sprint\Migration\Helpers\SiteHelper;
 use Sprint\Migration\Helpers\UserGroupHelper;
+use Sprint\Migration\Helpers\UserOptionsHelper;
 use Sprint\Migration\Helpers\UserTypeEntityHelper;
+use Sprint\Migration\Helpers\SqlHelper;
 
 /**
  * @method IblockHelper             Iblock()
  * @method HlblockHelper            Hlblock()
- * @method AdminIblockHelper        AdminIblock()
  * @method AgentHelper              Agent()
  * @method EventHelper              Event()
  * @method LangHelper               Lang()
  * @method SiteHelper               Site()
+ * @method UserOptionsHelper        UserOptions()
  * @method UserTypeEntityHelper     UserTypeEntity()
  * @method UserGroupHelper          UserGroup()
  * @method OptionHelper             Option()
  * @method FormHelper               Form()
  * @method DeliveryServiceHelper    DeliveryService()
+ * @method SqlHelper                Sql()
+ * @method AdminIblockHelper        AdminIblock()
  */
 class HelperManager
 {
 
-    private $cache = array();
+    private $cache = [];
 
     private static $instance = null;
 
-    private $registered = array();
+    private $registered = [];
 
     /**
      * @return HelperManager
      */
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (!isset(static::$instance)) {
             static::$instance = new static();
         }
         return static::$instance;
     }
 
-    public function __call($name, $arguments) {
+    public function __call($name, $arguments)
+    {
         return $this->callHelper($name);
     }
 
-    public function registerHelper($name, $class) {
+    public function registerHelper($name, $class)
+    {
         $this->registered[$name] = $class;
     }
 
@@ -62,7 +69,8 @@ class HelperManager
      * @return Helper
      * @throws HelperException
      */
-    protected function callHelper($name) {
+    protected function callHelper($name)
+    {
         if (isset($this->cache[$name])) {
             return $this->cache[$name];
         }

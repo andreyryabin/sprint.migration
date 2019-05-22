@@ -35,16 +35,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
             <div class="sp-block">
                 <form method="post" action="">
                     <p><?= GetMessage('SPRINT_MIGRATION_BUILDER_Configurator') ?></p>
-                    <p><input size="30" type="text" name="configuration_name" value="" placeholder="<?= GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_config_name') ?>"></p>
-                    <p><input type="submit" name="configuration_create" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"></p>
+                    <p><input size="30" type="text" name="configuration_name" value=""
+                              placeholder="<?= GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_config_name') ?>"></p>
+                    <p><input type="submit" name="configuration_create"
+                              value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"></p>
                     <?= bitrix_sessid_post(); ?>
                 </form>
             </div>
             <div class="sp-block">
                 <form method="post" action="">
                     <p><?= GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_desc') ?></p>
-                    <p><input size="30" type="text" name="configuration_name" value="" placeholder="<?= GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_config_name') ?>"></p>
-                    <p><input type="submit" name="configuration_remove" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"></p>
+                    <p><input size="30" type="text" name="configuration_name" value=""
+                              placeholder="<?= GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_config_name') ?>"></p>
+                    <p><input type="submit" name="configuration_remove"
+                              value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"></p>
                     <?= bitrix_sessid_post(); ?>
                 </form>
             </div>
@@ -56,7 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
             <div class="sp-block">
                 <form method="post" action="">
                     <p><?= GetMessage('SPRINT_MIGRATION_OPTIONS_REMOVE') ?></p>
-                    <p><input type="submit" name="options_remove" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"></p>
+                    <p><input type="submit" name="options_remove"
+                              value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"></p>
                     <?= bitrix_sessid_post(); ?>
                 </form>
             </div>

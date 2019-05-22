@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../lib/locale.php';
 
-\Sprint\Migration\Locale::loadLocale(array(
+\Sprint\Migration\Locale::loadLocale([
     "SPRINT_MIGRATION_MIGRATION_DIR" => "Директория для миграций",
     "SPRINT_MIGRATION_MODULE_NAME" => "Миграции для разработчиков",
     "SPRINT_MIGRATION_MODULE_DESCRIPTION" => "Модуль для управления миграциями бд, создание, установка, откат миграций",
@@ -194,4 +194,4 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_SCHEMA_IMPORT" => "Импорт",
     "SPRINT_MIGRATION_SCHEMA_EXPORT" => "Экспорт",
 
-));
+]);

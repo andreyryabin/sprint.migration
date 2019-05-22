@@ -17,7 +17,7 @@ class VersionManager
     /** @var VersionTable */
     private $versionTable = null;
 
-    private $restarts = array();
+    private $restarts = [];
 
     private $lastException = null;
 
@@ -48,7 +48,7 @@ class VersionManager
         return $this->versionTable;
     }
 
-    public function startMigration($versionName, $action = 'up', $params = array(), $force = false)
+    public function startMigration($versionName, $action = 'up', $params = [], $force = false)
     {
         /* @global $APPLICATION \CMain */
         global $APPLICATION;
@@ -110,7 +110,7 @@ class VersionManager
             return true;
 
         } catch (RestartException $e) {
-            $this->restarts[$versionName] = isset($versionInstance) ? $versionInstance->getParams() : array();
+            $this->restarts[$versionName] = isset($versionInstance) ? $versionInstance->getParams() : [];
 
         } catch (\Exception $e) {
             $this->lastException = $e;
@@ -144,9 +144,9 @@ class VersionManager
      * @param $params
      * @return bool|AbstractBuilder
      */
-    public function createBuilder($name, $params = array())
+    public function createBuilder($name, $params = [])
     {
-        $builders = $this->getVersionConfig()->getVal('version_builders', array());
+        $builders = $this->getVersionConfig()->getVal('version_builders', []);
 
         if (empty($builders[$name])) {
             return false;
@@ -173,12 +173,12 @@ class VersionManager
      * @param array $filter
      * @return AbstractBuilder[]
      */
-    public function createBuilders($filter = array())
+    public function createBuilders($filter = [])
     {
         $group = !empty($filter['group']) ? $filter['group'] : 'default';
 
-        $res = array();
-        $builders = $this->getVersionConfig()->getVal('version_builders', array());
+        $res = [];
+        $builders = $this->getVersionConfig()->getVal('version_builders', []);
         foreach ($builders as $builderName => $builderClass) {
             if ($builder = $this->createBuilder($builderName)) {
                 if ($builder->getGroup() == $group) {
@@ -197,15 +197,15 @@ class VersionManager
         $search = trim($search);
         $status = trim($status);
 
-        $result = array();
-        if (in_array($status, array('new', 'installed'))) {
+        $result = [];
+        if (in_array($status, ['new', 'installed'])) {
             if ($this->checkVersionName($search)) {
                 $meta = $this->getVersionByName($search);
-                $meta = !empty($meta) ? $meta : array('version' => $search);
+                $meta = !empty($meta) ? $meta : ['version' => $search];
                 $result[] = $this->markMigrationByMeta($meta, $status);
 
-            } elseif (in_array($search, array('new', 'installed', 'unknown'))) {
-                $metas = $this->getVersions(array('status' => $search));
+            } elseif (in_array($search, ['new', 'installed', 'unknown'])) {
+                $metas = $this->getVersions(['status' => $search]);
                 foreach ($metas as $meta) {
                     $result[] = $this->markMigrationByMeta($meta, $status);
                 }
@@ -213,10 +213,10 @@ class VersionManager
         }
 
         if (empty($result)) {
-            $result[] = array(
+            $result[] = [
                 'message' => GetMessage('SPRINT_MIGRATION_MARK_ERROR4'),
                 'success' => false,
-            );
+            ];
         }
 
         return $result;
@@ -245,10 +245,10 @@ class VersionManager
             }
         }
 
-        return array(
-            'message' => GetMessage($msg, array('#VERSION#' => $meta['version'])),
+        return [
+            'message' => GetMessage($msg, ['#VERSION#' => $meta['version']]),
             'success' => $success,
-        );
+        ];
     }
 
     public function getVersionByName($versionName)
@@ -263,14 +263,14 @@ class VersionManager
         return false;
     }
 
-    public function getVersions($filter = array())
+    public function getVersions($filter = [])
     {
         /** @var  $versionFilter array */
         $versionFilter = $this->getVersionConfig()->getVal('version_filter', []);
 
-        $filter = array_merge($versionFilter, array('status' => '', 'search' => ''), $filter);
+        $filter = array_merge($versionFilter, ['status' => '', 'search' => ''], $filter);
 
-        $merge = array();
+        $merge = [];
 
         $records = $this->getRecords();
         $files = $this->getFiles();
@@ -289,7 +289,7 @@ class VersionManager
             asort($merge);
         }
 
-        $result = array();
+        $result = [];
         foreach ($merge as $version => $ts) {
             $record = isset($records[$version]) ? $records[$version] : 0;
             $file = isset($files[$version]) ? $files[$version] : 0;
@@ -368,14 +368,14 @@ class VersionManager
         $isFile = ($file) ? 1 : 0;
         $isRecord = ($record) ? 1 : 0;
 
-        $meta = array(
+        $meta = [
             'is_file' => $isFile,
             'is_record' => $isRecord,
             'version' => $versionName,
             'enabled' => true,
             'modified' => false,
-            'hash' => ''
-        );
+            'hash' => '',
+        ];
 
         if ($isRecord && $isFile) {
             $meta['status'] = 'installed';
@@ -443,10 +443,10 @@ class VersionManager
     protected function getFileIfExists($versionName)
     {
         $file = $this->getVersionFile($versionName);
-        return file_exists($file) ? array(
+        return file_exists($file) ? [
             'version' => $versionName,
             'location' => $file,
-        ) : 0;
+        ] : 0;
     }
 
     protected function getRecordIfExists($versionName)
@@ -463,7 +463,7 @@ class VersionManager
 
     public function getVersionTimestamp($versionName)
     {
-        $matches = array();
+        $matches = [];
         if (preg_match('/[0-9]{14}$/', $versionName, $matches)) {
             return $matches[0];
         } else {
@@ -474,7 +474,7 @@ class VersionManager
     protected function purifyDescriptionForMeta($descr = '')
     {
         $descr = strval($descr);
-        $descr = str_replace(array("\n\r", "\r\n", "\n", "\r"), ' ', $descr);
+        $descr = str_replace(["\n\r", "\r\n", "\n", "\r"], ' ', $descr);
         $descr = strip_tags($descr);
         $descr = stripslashes($descr);
         return $descr;
@@ -492,7 +492,7 @@ class VersionManager
 
     public function getRecords()
     {
-        $result = array();
+        $result = [];
 
         $records = $this->getVersionTable()->getRecords();
         foreach ($records as $item) {
@@ -516,7 +516,7 @@ class VersionManager
     public function getFiles()
     {
         $dir = $this->getVersionConfig()->getVal('migration_dir');
-        $files = array();
+        $files = [];
 
         /* @var $item \SplFileInfo */
         $items = new \DirectoryIterator($dir);
@@ -531,11 +531,11 @@ class VersionManager
                 continue;
             }
 
-            $files[$filename] = array(
+            $files[$filename] = [
                 'version' => $filename,
                 'location' => $item->getPathname(),
-                'ts' => $timestamp
-            );
+                'ts' => $timestamp,
+            ];
         }
 
         return $files;
@@ -564,10 +564,10 @@ class VersionManager
     {
         $result = [];
 
-        if (in_array($versionName, array('new', 'installed', 'unknown'))) {
-            $metas = $this->getVersions(array('status' => $versionName));
+        if (in_array($versionName, ['new', 'installed', 'unknown'])) {
+            $metas = $this->getVersions(['status' => $versionName]);
         } elseif ($meta = $this->getVersionByName($versionName)) {
-            $metas = array($meta);
+            $metas = [$meta];
         }
 
         if (!empty($metas)) {
@@ -575,10 +575,10 @@ class VersionManager
                 $result[] = $this->deleteMigratioByMeta($meta);
             }
         } else {
-            $result[] = array(
+            $result[] = [
                 'message' => GetMessage('SPRINT_MIGRATION_DELETE_ERROR1'),
                 'success' => 0,
-            );
+            ];
         }
 
         return $result;
@@ -600,9 +600,9 @@ class VersionManager
 
         $msg = $success ? 'SPRINT_MIGRATION_DELETE_OK' : 'SPRINT_MIGRATION_DELETE_ERROR2';
 
-        return array(
-            'message' => GetMessage($msg, array('#VERSION#' => $meta['version'])),
+        return [
+            'message' => GetMessage($msg, ['#VERSION#' => $meta['version']]),
             'success' => $success,
-        );
+        ];
     }
 }

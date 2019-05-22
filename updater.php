@@ -4,8 +4,9 @@
 if ($updater && $updater instanceof \CUpdater) {
 
     if (!function_exists('sprint_migration_rmdir')) {
-        function sprint_migration_rmdir($dir) {
-            $files = array_diff(scandir($dir), array('.', '..'));
+        function sprint_migration_rmdir($dir)
+        {
+            $files = array_diff(scandir($dir), ['.', '..']);
             foreach ($files as $file) {
                 (is_dir("$dir/$file")) ? sprint_migration_rmdir("$dir/$file") : unlink("$dir/$file");
             }

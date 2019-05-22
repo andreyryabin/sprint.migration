@@ -10,7 +10,8 @@
         <? else: ?>
             <div class="sp-field">
                 <? if (!empty($fieldItem['title'])): ?><?= $fieldItem['title'] ?><br/><? endif; ?>
-                <? if (!empty($fieldItem['note'])): ?><div class="sp-field-note"><?= $fieldItem['note'] ?></div><? endif; ?>
+                <? if (!empty($fieldItem['note'])): ?>
+                    <div class="sp-field-note"><?= $fieldItem['note'] ?></div><? endif; ?>
                 <? if (!empty($fieldItem['height'])): ?>
                     <textarea name="<?= $fieldCode ?>"
                         <? if (!empty($fieldItem['width'])): ?>
@@ -33,21 +34,21 @@
                         <? endforeach; ?>
                     </select>
                 <? elseif (isset($fieldItem['select']) && $fieldItem['multiple']): ?>
-                <div class="sp-optgroup">
-                    <div style="padding: 5px 0;">
-                        <a href="#" class="sp-optgroup-check"><?= GetMessage('SPRINT_MIGRATION_SELECT_ALL') ?></a>
+                    <div class="sp-optgroup">
+                        <div style="padding: 5px 0;">
+                            <a href="#" class="sp-optgroup-check"><?= GetMessage('SPRINT_MIGRATION_SELECT_ALL') ?></a>
+                        </div>
+                        <? foreach ($fieldItem['select'] as $item): ?>
+                            <label>
+                                <input name="<?= $fieldCode ?>[]"
+                                       value="<?= $item['value'] ?>"
+                                    <? if (in_array($item['value'], $fieldItem['value'])): ?>
+                                        checked="checked"
+                                    <? endif; ?>
+                                       type="checkbox"
+                                ><?= $item['title'] ?></label> <br/>
+                        <? endforeach; ?>
                     </div>
-                    <? foreach ($fieldItem['select'] as $item): ?>
-                        <label>
-                            <input name="<?= $fieldCode ?>[]"
-                                   value="<?= $item['value'] ?>"
-                                <? if (in_array($item['value'], $fieldItem['value'])): ?>
-                                    checked="checked"
-                                <? endif; ?>
-                                   type="checkbox"
-                            ><?= $item['title'] ?></label> <br/>
-                    <? endforeach; ?>
-                </div>
                 <? elseif (isset($fieldItem['items']) && !$fieldItem['multiple']): ?>
                     <select name="<?= $fieldCode ?>"
                         <? if (!empty($fieldItem['width'])): ?>
@@ -73,7 +74,8 @@
                             <? if (!empty($group['title'])): ?><?= $group['title'] ?><br/><? endif; ?>
                             <? if (isset($group['items'])): ?>
                                 <div style="padding: 5px 0;">
-                                    <a href="#" class="sp-optgroup-check"><?= GetMessage('SPRINT_MIGRATION_SELECT_ALL') ?></a>
+                                    <a href="#"
+                                       class="sp-optgroup-check"><?= GetMessage('SPRINT_MIGRATION_SELECT_ALL') ?></a>
                                 </div>
                                 <? foreach ($group['items'] as $item): ?>
                                     <label>

@@ -10,25 +10,29 @@ class EventSchema extends AbstractSchema
 {
 
 
-    protected function initialize() {
+    protected function initialize()
+    {
         $this->setTitle('Схема почтовых событий');
     }
 
-    public function getMap() {
-        return array('events/');
+    public function getMap()
+    {
+        return ['events/'];
     }
 
-    protected function isBuilderEnabled() {
+    protected function isBuilderEnabled()
+    {
         $helper = HelperManager::getInstance();
         return $helper->Event()->isEnabled();
     }
 
-    public function outDescription() {
-        $schemas = $this->loadSchemas('events/', array(
+    public function outDescription()
+    {
+        $schemas = $this->loadSchemas('events/', [
             'event' => '',
-            'type' => array(),
-            'messages' => array(),
-        ));
+            'type' => [],
+            'messages' => [],
+        ]);
 
         $ctnTypes = 0;
         $cnt = 0;
@@ -42,9 +46,10 @@ class EventSchema extends AbstractSchema
         $this->out('Почтовые шаблоны: %d', $cnt);
     }
 
-    public function export() {
+    public function export()
+    {
         $helper = HelperManager::getInstance();
-        $eventTypes = $helper->Event()->getEventTypes(array());
+        $eventTypes = $helper->Event()->getEventTypes([]);
         foreach ($eventTypes as $eventType) {
             $eventName = $eventType['EVENT_NAME'];
             $eventUid = strtolower($eventType['EVENT_NAME'] . '_' . $eventType['LID']);
@@ -59,20 +64,21 @@ class EventSchema extends AbstractSchema
                 $messages[$index] = $message;
             }
 
-            $this->saveSchema('events/' . $eventUid, array(
+            $this->saveSchema('events/' . $eventUid, [
                 'event' => $eventName,
                 'type' => $eventType,
-                'messages' => $messages
-            ));
+                'messages' => $messages,
+            ]);
         }
     }
 
-    public function import() {
-        $schemas = $this->loadSchemas('events/', array(
+    public function import()
+    {
+        $schemas = $this->loadSchemas('events/', [
             'event' => '',
-            'type' => array(),
-            'messages' => array(),
-        ));
+            'type' => [],
+            'messages' => [],
+        ]);
 
 
         foreach ($schemas as $schema) {
@@ -84,7 +90,7 @@ class EventSchema extends AbstractSchema
 
 
         foreach ($schemas as $schema) {
-            $skip = array();
+            $skip = [];
             foreach ($schema['messages'] as $message) {
                 $skip[] = $this->getUniqMessage($schema['event'], $message);
             }
@@ -92,7 +98,7 @@ class EventSchema extends AbstractSchema
             $this->addToQueue('cleanEventMessages', $schema['event'], $skip);
         }
 
-        $skip = array();
+        $skip = [];
         foreach ($schemas as $schema) {
             $skip[] = $this->getUniqType($schema['event'], $schema['type']);
         }
@@ -101,7 +107,8 @@ class EventSchema extends AbstractSchema
 
     }
 
-    protected function saveEventType($eventName, $fields) {
+    protected function saveEventType($eventName, $fields)
+    {
         $helper = HelperManager::getInstance();
         $helper->Event()->setTestMode($this->testMode);
 
@@ -112,7 +119,8 @@ class EventSchema extends AbstractSchema
         $helper->Event()->saveEventType($eventName, $fields);
     }
 
-    protected function saveEventMessage($eventName, $fields) {
+    protected function saveEventMessage($eventName, $fields)
+    {
         $helper = HelperManager::getInstance();
         $helper->Event()->setTestMode($this->testMode);
 
@@ -123,10 +131,11 @@ class EventSchema extends AbstractSchema
         $helper->Event()->saveEventMessage($eventName, $fields);
     }
 
-    protected function cleanEventTypes($skip = array()) {
+    protected function cleanEventTypes($skip = [])
+    {
         $helper = HelperManager::getInstance();
 
-        $olds = $helper->Event()->getEventTypes(array());
+        $olds = $helper->Event()->getEventTypes([]);
         foreach ($olds as $old) {
             $uniq = $this->getUniqType($old['EVENT_NAME'], $old);
             if (!in_array($uniq, $skip)) {
@@ -136,7 +145,8 @@ class EventSchema extends AbstractSchema
         }
     }
 
-    protected function cleanEventMessages($eventName, $skip = array()) {
+    protected function cleanEventMessages($eventName, $skip = [])
+    {
         $helper = HelperManager::getInstance();
 
         $olds = $helper->Event()->getEventMessages($eventName);
@@ -149,16 +159,19 @@ class EventSchema extends AbstractSchema
         }
     }
 
-    protected function getUniqType($eventName, $item) {
+    protected function getUniqType($eventName, $item)
+    {
         return $eventName . $item['LID'];
     }
 
-    protected function getUniqMessage($eventName, $item) {
+    protected function getUniqMessage($eventName, $item)
+    {
         return $eventName . $item['SUBJECT'];
     }
 
-    protected function explodeText($string) {
-        $res = array();
+    protected function explodeText($string)
+    {
+        $res = [];
         $string = explode(PHP_EOL, $string);
         foreach ($string as $value) {
             $res[] = trim($value);
@@ -166,7 +179,8 @@ class EventSchema extends AbstractSchema
         return $res;
     }
 
-    protected function implodeText($strings) {
+    protected function implodeText($strings)
+    {
         return implode(PHP_EOL, $strings);
     }
 }

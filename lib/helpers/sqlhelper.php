@@ -1,0 +1,135 @@
+<?php
+
+namespace Sprint\Migration\Helpers;
+
+use Sprint\Migration\Helper;
+use Bitrix\Main\Application;
+use Bitrix\Main\Db\SqlQueryException;
+use Bitrix\Main\DB\Result;
+
+/**
+ * Class SqlHelper
+ *
+ * @package Sprint\Migration\Helpers
+ */
+class SqlHelper extends Helper
+{
+    /**
+     * @param $query
+     *
+     * @return Result
+     * @throws SqlQueryException
+     */
+    public function query($query)
+    {
+        return Application::getConnection()->query($query);
+    }
+
+    /**
+     * @param     $value
+     * @param int $maxLength
+     *
+     * @return string
+     */
+    public function forSql($value, $maxLength = 0)
+    {
+        return Application::getConnection()->getSqlHelper()->forSql($value, $maxLength);
+    }
+
+    /**
+     * @param $table
+     * @param $name
+     *
+     * @return array|false
+     * @throws SqlQueryException
+     */
+    public function getColumn($table, $name)
+    {
+        return $this->query(sprintf('SHOW COLUMNS FROM `%s` WHERE Field="%s"', $table, $name))->Fetch();
+    }
+
+    /**
+     * @param string $table
+     * @param string $name
+     * @param string $attributes
+     *
+     * @throws SqlQueryException
+     */
+    public function addColumn($table, $name, $attributes)
+    {
+        //$attributes = 'int(11) unsigned DEFAULT NULL AFTER `ID`';
+
+        $this->query(sprintf('ALTER TABLE `%s` ADD COLUMN %s %s', $table, $name, $attributes));
+    }
+
+    /**
+     * @param string $table
+     * @param string $name
+     * @param        $attributes
+     *
+     * @throws SqlQueryException
+     */
+    public function addColumnIfNotExists($table, $name, $attributes)
+    {
+        $column = $this->getColumn($table, $name);
+
+        if (empty($column)) {
+            $this->addColumn($table, $name, $attributes);
+        }
+    }
+
+    /**
+     * @param string $table
+     * @param string $name
+     *
+     * @return array|false
+     * @throws SqlQueryException
+     */
+    public function getIndex($table, $name)
+    {
+        return $this->query(sprintf('SHOW INDEX FROM `%s` WHERE Key_name="%s"', $table, $name))->Fetch();
+    }
+
+    /**
+     * @param string $table
+     * @param string $name
+     * @param string|array $columns
+     *
+     * @throws SqlQueryException
+     */
+    public function addIndex($table, $name, $columns)
+    {
+        $columns = $this->prepareColumnsForIndex($columns);
+
+        $this->query(sprintf('ALTER TABLE `%s` ADD INDEX `%s` (%s)', $table, $name, $columns));
+    }
+
+    /**
+     * @param string $table
+     * @param string $name
+     * @param string|array $columns
+     *
+     * @throws SqlQueryException
+     */
+    public function addIndexIfNotExists($table, $name, $columns)
+    {
+        $index = $this->getIndex($table, $name);
+
+        if (empty($index)) {
+            $this->addIndex($table, $name, $columns);
+        }
+    }
+
+    private function prepareColumnsForIndex($columns)
+    {
+        $columns = is_array($columns) ? $columns : [$columns];
+        $columns = array_map(
+            function ($name) {
+                return "`$name`";
+            },
+            $columns
+        );
+
+        return implode(',', $columns);
+    }
+}

@@ -1,5 +1,7 @@
 <?php
-if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
+    die();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_status" && check_bitrix_sessid('send_sessid')) {
     /** @noinspection PhpIncludeInspection */
@@ -14,16 +16,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
     \Sprint\Migration\Module::setDbOption('admin_versions_view', 'status');
     \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
 
-    $versions = $versionManager->getVersions(array(
+    $versions = $versionManager->getVersions([
         'status' => '',
         'search' => $search,
-    ));
+    ]);
 
-    $status = array(
+    $status = [
         'new' => 0,
         'installed' => 0,
         'unknown' => 0,
-    );
+    ];
 
     foreach ($versions as $aItem) {
         $key = $aItem['status'];

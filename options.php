@@ -4,7 +4,7 @@ global $APPLICATION;
 
 try {
 
-    if (!\CModule::IncludeModule('sprint.migration')) {
+    if (!\Bitrix\Main\Loader::includeModule('sprint.migration')) {
         Throw new \Exception('need to install module sprint.migration');
     }
 
@@ -21,7 +21,7 @@ try {
 } catch (\Exception $e) {
 
 
-    $sperrors = array();
+    $sperrors = [];
     $sperrors[] = $e->getMessage();
 
     include __DIR__ . '/admin/includes/errors.php';

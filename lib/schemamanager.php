@@ -11,13 +11,14 @@ class SchemaManager
     /** @var VersionConfig */
     protected $versionConfig = null;
 
-    protected $params = array();
+    protected $params = [];
 
-    private $progress = array();
+    private $progress = [];
 
     protected $testMode = 0;
 
-    public function __construct($configName = '', $params = array()) {
+    public function __construct($configName = '', $params = [])
+    {
         if ($configName instanceof VersionConfig) {
             $this->versionConfig = $configName;
         } else {
@@ -29,15 +30,17 @@ class SchemaManager
         $this->params = $params;
     }
 
-    public function setTestMode($testMode = 1) {
+    public function setTestMode($testMode = 1)
+    {
         $this->testMode = $testMode;
     }
 
     /**
      * @return AbstractSchema[]
      */
-    public function getEnabledSchemas() {
-        $result = array();
+    public function getEnabledSchemas()
+    {
+        $result = [];
         $schemas = $this->getVersionSchemas();
         $schemas = array_keys($schemas);
         foreach ($schemas as $name) {
@@ -49,19 +52,20 @@ class SchemaManager
         return $result;
     }
 
-    protected function getVersionSchemas($filter = array()) {
+    protected function getVersionSchemas($filter = [])
+    {
         $schemas = $this->getVersionConfig()->getVal('version_schemas');
-        $schemas = is_array($schemas) ? $schemas : array();
+        $schemas = is_array($schemas) ? $schemas : [];
 
         if (!isset($filter['name'])) {
             return $schemas;
         }
 
         if (!is_array($filter['name'])) {
-            $filter['name'] = array($filter['name']);
+            $filter['name'] = [$filter['name']];
         }
 
-        $filtered = array();
+        $filtered = [];
         foreach ($schemas as $name => $class) {
             if (in_array($name, $filter['name'])) {
                 $filtered[$name] = $class;
@@ -72,7 +76,8 @@ class SchemaManager
 
     }
 
-    public function export($filter = array()) {
+    public function export($filter = [])
+    {
         $schemas = $this->getVersionSchemas($filter);
         $schemas = array_keys($schemas);
 
@@ -92,8 +97,9 @@ class SchemaManager
         unset($this->params['schema']);
     }
 
-    public function import($filter = array()) {
-        $this->progress = array();
+    public function import($filter = [])
+    {
+        $this->progress = [];
 
         $schemas = $this->getVersionSchemas($filter);
         $schemas = array_keys($schemas);
@@ -114,11 +120,13 @@ class SchemaManager
         unset($this->params['schema']);
     }
 
-    public function getProgress($type = false) {
+    public function getProgress($type = false)
+    {
         return ($type) ? $this->progress[$type] : $this->progress;
     }
 
-    protected function setProgress($type, $index, $cnt) {
+    protected function setProgress($type, $index, $cnt)
+    {
         if ($cnt > 0) {
             $this->progress[$type] = round($index / $cnt * 100);
         } else {
@@ -126,7 +134,8 @@ class SchemaManager
         }
     }
 
-    protected function exportSchema($name) {
+    protected function exportSchema($name)
+    {
         $schema = $this->createSchema($name);
         if (!$schema->isEnabled()) {
             return false;
@@ -153,7 +162,8 @@ class SchemaManager
         return true;
     }
 
-    protected function importSchema($name) {
+    protected function importSchema($name)
+    {
         $schema = $this->createSchema($name);
         if (!$schema->isEnabled()) {
             return false;
@@ -195,26 +205,30 @@ class SchemaManager
         return true;
     }
 
-    protected function getVersionConfig() {
+    protected function getVersionConfig()
+    {
         return $this->versionConfig;
     }
 
     /** @return AbstractSchema */
-    protected function createSchema($name) {
+    protected function createSchema($name)
+    {
         $schemas = $this->getVersionSchemas();
         $class = $schemas[$name];
 
         return new $class($this->getVersionConfig(), $name);
     }
 
-    protected function removeQueue(AbstractSchema $schema) {
+    protected function removeQueue(AbstractSchema $schema)
+    {
         $file = $this->getQueueFile($schema->getName());
         if (is_file($file)) {
             unlink($file);
         }
     }
 
-    protected function loadQueue(AbstractSchema $schema) {
+    protected function loadQueue(AbstractSchema $schema)
+    {
         $file = $this->getQueueFile($schema->getName());
         if (is_file($file)) {
             $items = include $file;
@@ -227,11 +241,12 @@ class SchemaManager
             }
         }
 
-        return array();
+        return [];
     }
 
 
-    protected function saveQueue(AbstractSchema $schema) {
+    protected function saveQueue(AbstractSchema $schema)
+    {
         $file = $this->getQueueFile($schema->getName());
         $data = $schema->getQueue();
 
@@ -240,19 +255,22 @@ class SchemaManager
             mkdir($dir, BX_DIR_PERMISSIONS, true);
         }
 
-        file_put_contents($file, '<?php return ' . var_export(array('items' => $data), 1) . ';');
+        file_put_contents($file, '<?php return ' . var_export(['items' => $data], 1) . ';');
     }
 
-    protected function getQueueFile($name) {
+    protected function getQueueFile($name)
+    {
         $name = 'queue__' . strtolower($name);
         return Module::getDocRoot() . '/bitrix/tmp/sprint.migration/' . $name . '.php';
     }
 
-    protected function restart() {
+    protected function restart()
+    {
         Throw new RestartException('restart');
     }
 
-    public function getRestartParams() {
+    public function getRestartParams()
+    {
         return $this->params;
     }
 }
