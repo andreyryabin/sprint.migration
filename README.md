@@ -28,24 +28,25 @@
 /bitrix/modules/sprint.migration/tools/migrate.php
 
 Можно запускать его напрямую или сделать алиас, 
-создав файл, например, /local/bin/migrate.php и прописав в нем:
+создав файл в корне проекта, bin/migrate и прописав в нем:
 
 ```
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/../../bitrix/modules/sprint.migration/tools/migrate.php';
+$_SERVER['DOCUMENT_ROOT'] = dirname(__DIR__);
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/tools/migrate.php';
 
 ```
 
 Примеры команд
 -------------------------
-* php migrate.php add (создать новую миграцию)
-* php migrate.php ls  (показать список миграций )
-* php migrate.php up (накатить все миграции) 
-* php migrate.php up [version] (накатить выбранную миграцию)
-* php migrate.php down (откатить все миграции)
-* php migrate.php down [version] (откатить выбранную миграцию)
+* php bin/migrate add (создать новую миграцию)
+* php bin/migrate ls  (показать список миграций )
+* php bin/migrate up (накатить все миграции) 
+* php bin/migrate up [version] (накатить выбранную миграцию)
+* php bin/migrate down (откатить все миграции)
+* php bin/migrate down [version] (откатить выбранную миграцию)
 
 Все команды: https://github.com/andreyryabin/sprint.migration/blob/master/commands.txt
 

@@ -2,41 +2,42 @@
 
 namespace Sprint\Migration\Tables;
 
+use \Bitrix\Main\Db\SqlQueryException;
+use \Bitrix\Main\Db\Result;
+
 class VersionTable extends AbstractTable
 {
 
+    protected $tableVersion = 3;
+
     /**
      * @return array
+     * @throws SqlQueryException
      */
     public function getRecords()
     {
-        $dbres = $this->query('SELECT * FROM `#TABLE1#`');
-        $result = [];
-        while ($item = $dbres->Fetch()) {
-            $result[] = $item;
-        }
-
-        return $result;
+        return $this->query('SELECT * FROM `#TABLE1#`')->fetchAll();
     }
 
     /**
      * @param $versionName
-     * @return array
+     * @return array|false
+     * @throws SqlQueryException
      */
     public function getRecord($versionName)
     {
         return $this->query('SELECT * FROM `#TABLE1#` WHERE `version` = "%s"',
             $this->forSql($versionName)
-        )->Fetch();
+        )->fetch();
     }
 
     /**
      * @param $meta
-     * @return bool|\CDBResult
+     * @throws SqlQueryException
      */
     public function addRecord($meta)
     {
-        return $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `hash`) VALUES ("%s", "%s")',
+        $this->query('INSERT IGNORE INTO `#TABLE1#` (`version`, `hash`) VALUES ("%s", "%s")',
             $this->forSql($meta['version']),
             $this->forSql($meta['hash'])
         );
@@ -44,18 +45,18 @@ class VersionTable extends AbstractTable
 
     /**
      * @param $meta
-     * @return bool|\CDBResult
+     * @throws SqlQueryException
      */
     public function removeRecord($meta)
     {
-        return $this->query('DELETE FROM `#TABLE1#` WHERE `version` = "%s"',
+        $this->query('DELETE FROM `#TABLE1#` WHERE `version` = "%s"',
             $this->forSql($meta['version'])
         );
     }
 
     protected function createTable()
     {
-        //upgrade1
+        //tableVersion 1
         $this->query('CREATE TABLE IF NOT EXISTS `#TABLE1#`(
               `id` MEDIUMINT NOT NULL AUTO_INCREMENT NOT NULL,
               `version` varchar(255) COLLATE #COLLATE# NOT NULL,
@@ -63,9 +64,14 @@ class VersionTable extends AbstractTable
               )ENGINE=InnoDB DEFAULT CHARSET=#CHARSET# COLLATE=#COLLATE# AUTO_INCREMENT=1;'
         );
 
-        //upgrade2
+        //tableVersion 2
         if (empty($this->query('SHOW COLUMNS FROM `#TABLE1#` LIKE "hash"')->Fetch())) {
             $this->query('ALTER TABLE `#TABLE1#` ADD COLUMN `hash` VARCHAR(50) NULL AFTER `version`');
+        }
+
+        //tableVersion 3
+        if (empty($this->query('SHOW COLUMNS FROM `#TABLE1#` LIKE "tag"')->Fetch())) {
+            $this->query('ALTER TABLE `#TABLE1#` ADD COLUMN `tag` VARCHAR(50) NULL AFTER `hash`');
         }
     }
 

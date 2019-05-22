@@ -98,13 +98,9 @@ class VersionManager
             }
 
             if ($action == 'up') {
-                $ok = $this->getVersionTable()->addRecord($meta);
+                $this->getVersionTable()->addRecord($meta);
             } else {
-                $ok = $this->getVersionTable()->removeRecord($meta);
-            }
-
-            if ($ok === false) {
-                throw new MigrationException('unable to write migration to the database');
+                $this->getVersionTable()->removeRecord($meta);
             }
 
             return true;

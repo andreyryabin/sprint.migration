@@ -5,32 +5,36 @@ namespace Sprint\Migration\Tables;
 use Sprint\Migration\Module;
 use Sprint\Migration\Locale;
 
+use \Bitrix\Main\Application;
+
+use \Bitrix\Main\DB\Result;
+use \Bitrix\Main\DB\SqlQueryException;
+
 abstract class AbstractTable
 {
-
-    private $dbName = false;
-
-    /** @var \CDatabase */
-    private $bitrixDb = null;
-
     private $tableName = '';
+
+    private $dbName = '';
+
+    protected $tableVersion = 1;
+
+    protected $connection;
 
     abstract protected function createTable();
 
     abstract protected function dropTable();
 
-
     public function __construct($tableName)
     {
+        $this->connection = Application::getConnection();
+
         $this->tableName = $tableName;
+        $this->dbName = $this->connection->getDatabase();
 
-        $this->bitrixDb = $GLOBALS['DB'];
-        $this->dbName = $GLOBALS['DBName'];
-
-        $opt = 'upgrade2_' . md5($this->tableName);
-        if (!Module::getDbOption($opt)) {
+        $uid = $this->getUid();
+        if (!Module::getDbOption($uid)) {
             $this->createTable();
-            Module::setDbOption($opt, 1);
+            Module::setDbOption($uid, 1);
         }
 
     }
@@ -39,16 +43,20 @@ abstract class AbstractTable
     {
         $this->dropTable();
 
-        $opt = 'upgrade2_' . md5($this->tableName);
-        Module::removeDbOption($opt);
+        Module::removeDbOption($this->getUid());
     }
 
+    private function getUid()
+    {
+        return 'upgrade' . $this->tableVersion . '_' . md5($this->tableName);
+    }
 
     /**
      * @param $query
      * @param null $var1
      * @param null $var2
-     * @return bool|\CDBResult
+     * @return Result|bool
+     * @throws SqlQueryException
      */
     protected function query($query, $var1 = null, $var2 = null)
     {
@@ -75,13 +83,14 @@ abstract class AbstractTable
 
         $query = str_replace($querySearch, $queryReplace, $query);
 
-        return $this->bitrixDb->Query($query);
+        return $this->connection->query($query);
     }
 
     protected function forSql($query)
     {
-        return $this->bitrixDb->ForSql($query);
+        return $this->connection->getSqlHelper()->forSql($query);
     }
+
 }
 
 
