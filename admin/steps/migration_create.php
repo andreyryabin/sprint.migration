@@ -1,4 +1,8 @@
 <?php
+
+use Sprint\Migration\VersionConfig;
+use Sprint\Migration\VersionManager;
+
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
@@ -12,8 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     /** @noinspection PhpIncludeInspection */
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
-    /** @var $versionConfig \Sprint\Migration\VersionConfig */
-    $versionManager = new \Sprint\Migration\VersionManager($versionConfig);
+    /** @var $versionConfig VersionConfig */
+    $versionManager = new VersionManager($versionConfig);
 
     $builderName = !empty($_POST['builder_name']) ? trim($_POST['builder_name']) : '';
 

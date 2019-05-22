@@ -1,23 +1,27 @@
 <?php
 
 /** @noinspection PhpIncludeInspection */
+
+use Bitrix\Main\Loader;
+use Sprint\Migration\Module;
+
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
-/** @global $APPLICATION \CMain */
+/** @global $APPLICATION CMain */
 global $APPLICATION;
 
 try {
-    if (!\Bitrix\Main\Loader::includeModule('sprint.migration')) {
-        Throw new \Exception('need to install module sprint.migration');
+    if (!Loader::includeModule('sprint.migration')) {
+        Throw new Exception('need to install module sprint.migration');
     }
 
     if (!$APPLICATION->GetGroupRight("sprint.migration") >= "R") {
-        Throw new \Exception(GetMessage("ACCESS_DENIED"));
+        Throw new Exception(GetMessage("ACCESS_DENIED"));
     }
 
-    \Sprint\Migration\Module::checkHealth();
+    Module::checkHealth();
 
-} catch (\Exception $e) {
+} catch (Exception $e) {
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 
@@ -63,7 +67,7 @@ if ($versionConfig->getVal('show_admin_interface')) {
 
 /** @noinspection PhpIncludeInspection */
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
-\CUtil::InitJSCore(["jquery"]);
+CUtil::InitJSCore(["jquery"]);
 
 if ($versionConfig->getVal('show_admin_interface')) {
     if (isset($_REQUEST['schema'])) {

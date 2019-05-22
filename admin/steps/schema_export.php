@@ -1,4 +1,10 @@
 <?php
+
+use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Out;
+use Sprint\Migration\SchemaManager;
+use Sprint\Migration\VersionConfig;
+
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
@@ -15,8 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     $checked = !empty($_POST['schema_checked']) ? $_POST['schema_checked'] : [];
 
 
-    /** @var $versionConfig \Sprint\Migration\VersionConfig */
-    $schemaManager = new \Sprint\Migration\SchemaManager($versionConfig, $params);
+    /** @var $versionConfig VersionConfig */
+    $schemaManager = new SchemaManager($versionConfig, $params);
 
     $ok = false;
 
@@ -26,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
         $ok = true;
         $error = false;
 
-    } catch (\Sprint\Migration\Exceptions\RestartException $e) {
+    } catch (RestartException $e) {
 
         $json = json_encode([
             'params' => $schemaManager->getRestartParams(),
@@ -37,12 +43,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
             schemaExecuteStep('schema_export', <?=$json?>);
         </script>
         <?
-    } catch (\Exception $e) {
-        \Sprint\Migration\Out::outError($e->getMessage());
+    } catch (Exception $e) {
+        Out::outError($e->getMessage());
         $error = true;
 
-    } catch (\Throwable $e) {
-        \Sprint\Migration\Out::outError($e->getMessage());
+    } catch (Throwable $e) {
+        Out::outError($e->getMessage());
         $error = true;
     }
 

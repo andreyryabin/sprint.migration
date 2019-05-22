@@ -1,8 +1,11 @@
 <div class="sp-group"><?
     /** @var $builderGroup */
 
-    /** @var $versionConfig \Sprint\Migration\VersionConfig */
-    $versionManager = new \Sprint\Migration\VersionManager($versionConfig);
+    use Sprint\Migration\VersionConfig;
+    use Sprint\Migration\VersionManager;
+
+    /** @var $versionConfig VersionConfig */
+    $versionManager = new VersionManager($versionConfig);
 
     $colIndex = 0;
     $builders = $versionManager->createBuilders(['group' => $builderGroup]); ?>

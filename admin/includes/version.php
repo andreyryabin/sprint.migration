@@ -1,3 +1,8 @@
+<?php
+
+use Sprint\Migration\Module;
+
+?>
 <div id="migration-container" data-sessid="<?= bitrix_sessid() ?>">
     <div class="sp-group">
         <div class="sp-group-row2">
@@ -18,10 +23,10 @@
                        onclick="migrationMigrationsDownConfirm();"/>
             </div>
             <div class="sp-block">
-                <? $search = \Sprint\Migration\Module::getDbOption('admin_versions_search', ''); ?>
+                <? $search = Module::getDbOption('admin_versions_search', ''); ?>
                 <input placeholder="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" style="" type="text"
                        value="<?= $search ?>" class="adm-input" name="migration_search"/>
-                <? $listview = \Sprint\Migration\Module::getDbOption('admin_versions_view', 'list'); ?>
+                <? $listview = Module::getDbOption('admin_versions_view', 'list'); ?>
                 <select class="sp-stat">
                     <option <? if ($listview == 'list'): ?>selected="selected"<? endif ?>
                             value="list"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?></option>

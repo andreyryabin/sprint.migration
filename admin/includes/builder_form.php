@@ -1,6 +1,7 @@
 <?php
-/** @var $builder \Sprint\Migration\AbstractBuilder */
-?>
+/** @var $builder AbstractBuilder */
+
+use Sprint\Migration\AbstractBuilder; ?>
 <form method="post">
     <?= $builder->getDescription() ?>
     <? $fields = $builder->getFields() ?>

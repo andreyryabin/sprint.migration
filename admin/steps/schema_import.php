@@ -1,4 +1,10 @@
 <?php
+
+use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Out;
+use Sprint\Migration\SchemaManager;
+use Sprint\Migration\VersionConfig;
+
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
@@ -15,8 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
     $params = !empty($_POST['params']) ? $_POST['params'] : [];
     $checked = !empty($_POST['schema_checked']) ? $_POST['schema_checked'] : [];
 
-    /** @var $versionConfig \Sprint\Migration\VersionConfig */
-    $schemaManager = new \Sprint\Migration\SchemaManager($versionConfig, $params);
+    /** @var $versionConfig VersionConfig */
+    $schemaManager = new SchemaManager($versionConfig, $params);
 
     if ($_POST["step_code"] == "schema_test") {
         $schemaManager->setTestMode(1);
@@ -32,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
 
         $ok = true;
 
-    } catch (\Sprint\Migration\Exceptions\RestartException $e) {
+    } catch (RestartException $e) {
 
         $json = json_encode([
             'params' => $schemaManager->getRestartParams(),
@@ -43,12 +49,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
             schemaExecuteStep('<?=$_POST["step_code"]?>', <?=$json?>);
         </script>
         <?
-    } catch (\Exception $e) {
-        \Sprint\Migration\Out::outError($e->getMessage());
+    } catch (Exception $e) {
+        Out::outError($e->getMessage());
         $error = true;
 
-    } catch (\Throwable $e) {
-        \Sprint\Migration\Out::outError($e->getMessage());
+    } catch (Throwable $e) {
+        Out::outError($e->getMessage());
         $error = true;
     }
 

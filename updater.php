@@ -1,7 +1,7 @@
 <?php
 
 /** @var CUpdater $updater */
-if ($updater && $updater instanceof \CUpdater) {
+if ($updater && $updater instanceof CUpdater) {
 
     if (!function_exists('sprint_migration_rmdir')) {
         function sprint_migration_rmdir($dir)

@@ -1,7 +1,9 @@
 <?php
-/** @var $versionConfig \Sprint\Migration\VersionConfig */
+/** @var $versionConfig VersionConfig */
 
-$versionConfig = new \Sprint\Migration\VersionConfig();
+use Sprint\Migration\VersionConfig;
+
+$versionConfig = new VersionConfig();
 $configList = $versionConfig->getList();
 
 ?>

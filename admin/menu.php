@@ -1,11 +1,13 @@
 <?php
 global $APPLICATION;
 
+use Bitrix\Main\Loader;
+
 if ($APPLICATION->GetGroupRight('sprint.migration') == 'D') {
     return false;
 }
 
-if (!\Bitrix\Main\Loader::includeModule('sprint.migration')) {
+if (!Loader::includeModule('sprint.migration')) {
     return false;
 }
 

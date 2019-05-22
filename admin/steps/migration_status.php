@@ -1,4 +1,9 @@
 <?php
+
+use Sprint\Migration\Module;
+use Sprint\Migration\VersionConfig;
+use Sprint\Migration\VersionManager;
+
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
@@ -7,14 +12,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
     /** @noinspection PhpIncludeInspection */
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
-    /** @var $versionConfig \Sprint\Migration\VersionConfig */
-    $versionManager = new \Sprint\Migration\VersionManager($versionConfig);
+    /** @var $versionConfig VersionConfig */
+    $versionManager = new VersionManager($versionConfig);
 
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
-    \Sprint\Migration\Module::setDbOption('admin_versions_view', 'status');
-    \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
+    Module::setDbOption('admin_versions_view', 'status');
+    Module::setDbOption('admin_versions_search', $search);
 
     $versions = $versionManager->getVersions([
         'status' => '',

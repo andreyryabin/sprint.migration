@@ -3,29 +3,32 @@
 if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
     if (!empty($_REQUEST["options_remove"])) {
-        \Sprint\Migration\Module::removeDbOptions();
-        \Sprint\Migration\Out::outSuccess(GetMessage('SPRINT_MIGRATION_OPTIONS_REMOVE_success'));
+        Module::removeDbOptions();
+        Out::outSuccess(GetMessage('SPRINT_MIGRATION_OPTIONS_REMOVE_success'));
     }
 
     if (!empty($_REQUEST["configuration_remove"])) {
-        $versionConfig = new \Sprint\Migration\VersionConfig();
+        $versionConfig = new VersionConfig();
         if ($versionConfig->deleteConfig($_REQUEST['configuration_name'])) {
-            \Sprint\Migration\Out::outSuccess(GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_success'));
+            Out::outSuccess(GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_success'));
         } else {
-            \Sprint\Migration\Out::outError(GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_error'));
+            Out::outError(GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_error'));
         }
     }
 
     if (!empty($_REQUEST["configuration_create"])) {
-        $versionConfig = new \Sprint\Migration\VersionConfig();
+        $versionConfig = new VersionConfig();
         if ($versionConfig->createConfig($_REQUEST['configuration_name'])) {
-            \Sprint\Migration\Out::outSuccess(GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_success'));
+            Out::outSuccess(GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_success'));
         } else {
-            \Sprint\Migration\Out::outError(GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_error'));
+            Out::outError(GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_error'));
         }
     }
 }
-?>
+
+use Sprint\Migration\Module;
+use Sprint\Migration\Out;
+use Sprint\Migration\VersionConfig; ?>
 
 <? include __DIR__ . '/help.php' ?>
     <div class="sp-separator"></div>

@@ -1,4 +1,10 @@
 <?php
+
+use Sprint\Migration\Module;
+use Sprint\Migration\Out;
+use Sprint\Migration\VersionConfig;
+use Sprint\Migration\VersionManager;
+
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
@@ -14,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     /** @noinspection PhpIncludeInspection */
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
-    /** @var $versionConfig \Sprint\Migration\VersionConfig */
-    $versionManager = new \Sprint\Migration\VersionManager($versionConfig);
+    /** @var $versionConfig VersionConfig */
+    $versionManager = new VersionManager($versionConfig);
 
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
@@ -24,23 +30,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     $webdir = $versionManager->getWebDir();
 
     if ($_POST["step_code"] == "migration_new") {
-        \Sprint\Migration\Module::setDbOption('admin_versions_view', 'new');
-        \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
+        Module::setDbOption('admin_versions_view', 'new');
+        Module::setDbOption('admin_versions_search', $search);
         $versions = $versionManager->getVersions([
             'status' => 'new',
             'search' => $search,
         ]);
     } elseif ($_POST["step_code"] == "migration_installed") {
-        \Sprint\Migration\Module::setDbOption('admin_versions_view', 'installed');
-        \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
+        Module::setDbOption('admin_versions_view', 'installed');
+        Module::setDbOption('admin_versions_search', $search);
         $versions = $versionManager->getVersions([
             'status' => 'installed',
             'search' => $search,
         ]);
 
     } else {
-        \Sprint\Migration\Module::setDbOption('admin_versions_view', 'list');
-        \Sprint\Migration\Module::setDbOption('admin_versions_search', $search);
+        Module::setDbOption('admin_versions_view', 'list');
+        Module::setDbOption('admin_versions_search', $search);
         $versions = $versionManager->getVersions([
             'status' => '',
             'search' => $search,
@@ -85,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                                     '<a target="_blank" href="' . $taskUrl . '">#$1</a>', $aItem['description']);
                             }
                             ?>
-                            <?= \Sprint\Migration\Out::prepareToHtml($aItem['description']) ?>
+                            <?= Out::prepareToHtml($aItem['description']) ?>
                         <? endif ?>
                     </td>
                 </tr>
