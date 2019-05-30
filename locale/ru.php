@@ -189,6 +189,10 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_MODIFIED_SCHEMA" => "Содержимое схемы было изменено после импорта",
     "SPRINT_MIGRATION_MODIFIED_LABEL" => "M",
     "SPRINT_MIGRATION_TAG" => "Миграция отмечена тегом",
+    "SPRINT_MIGRATION_ADDTAG" => "Поставить тег",
+    "SPRINT_MIGRATION_ADDTAG_TAG" => "Название",
+    "SPRINT_MIGRATION_ADDTAG_TITLE" => "Поставить тег устанавливаемым миграциям",
+
     "SPRINT_MIGRATION_MENU_SCHEMA" => "Cхемы данных",
     "SPRINT_MIGRATION_SCHEMA_TEST" => "Тестовый импорт",
     "SPRINT_MIGRATION_SCHEMA_IMPORT" => "Импорт",

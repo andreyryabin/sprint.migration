@@ -18,9 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
-    Module::setDbOption('admin_versions_view', 'status');
-    Module::setDbOption('admin_versions_search', $search);
-
     $versions = $versionManager->getVersions([
         'status' => '',
         'search' => $search,

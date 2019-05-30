@@ -23,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
     $skipVersions = !empty($_POST['skip_versions']) ? $_POST['skip_versions'] : [];
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
+    $addtag = !empty($_POST['addtag']) ? trim($_POST['addtag']) : '';
 
     if (!$version) {
         if ($nextAction == 'up' || $nextAction == 'down') {
@@ -51,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
             Sprint\Migration\Out::out('[%s]%s (%s) start[/]', $action, $version, $action);
         }
 
-        $success = $versionManager->startMigration($version, $action, $params);
+        $success = $versionManager->startMigration($version, $action, $params, false, $addtag);
         $restart = $versionManager->needRestart($version);
 
         if ($success && !$restart) {
@@ -90,6 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
                 'next_action' => $nextAction,
                 'skip_versions' => $skipVersions,
                 'search' => $search,
+                'addtag' => $addtag,
             ]);
 
             ?>

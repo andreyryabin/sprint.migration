@@ -209,17 +209,23 @@ class Out
         }
     }
 
-    public static function prepareToConsole($msg)
+    public static function prepareToConsole($msg, $options = [])
     {
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
+        }
+
+        if (isset($options['tracker_task_url']) && $options['tracker_task_url']) {
+            if (false !== strpos($options['tracker_task_url'], '$1')) {
+                $msg = preg_replace('/\#([a-z0-9_\-])/i', $options['tracker_task_url'], $msg);
+            }
         }
 
         $msg = Locale::convertToUtf8IfNeed($msg);
         return $msg;
     }
 
-    public static function prepareToHtml($msg)
+    public static function prepareToHtml($msg, $options = [])
     {
         $msg = nl2br($msg);
 
@@ -228,6 +234,9 @@ class Out
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
+
+        $msg = self::makeTaskUrl($msg, $options);
+        $msg = self::makeLinks($msg, $options);
 
         $msg = Locale::convertToWin1251IfNeed($msg);
         return $msg;
@@ -389,4 +398,25 @@ class Out
         return $diff;
     }
 
+    protected static function makeTaskUrl($msg, $options = [])
+    {
+        if (isset($options['tracker_task_url']) && $options['tracker_task_url']) {
+            if (false !== strpos($options['tracker_task_url'], '$1')) {
+                $msg = preg_replace('/\#([a-z0-9_\-])/i', $options['tracker_task_url'], $msg);
+            }
+        }
+        return $msg;
+    }
+
+
+    protected static function makeLinks($msg, $options = [])
+    {
+        if (isset($options['make_links']) && $options['make_links']) {
+            $reg_exUrl = "/(http|https)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
+            if (preg_match($reg_exUrl, $msg, $url)) {
+                $msg = preg_replace($reg_exUrl, '<a target="_blank" href="' . $url[0] . '">' . $url[0] . '</a>', $msg);
+            }
+        }
+        return $msg;
+    }
 }

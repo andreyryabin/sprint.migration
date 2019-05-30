@@ -30,6 +30,7 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
     postData['step_code'] = step_code;
     postData['send_sessid'] = $('#migration-container').data('sessid');
     postData['search'] = $('input[name=migration_search]').val();
+    postData['addtag'] = $('input[name=migration_addtag]').val();
 
     migrationEnableButtons(0);
 
