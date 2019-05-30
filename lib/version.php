@@ -46,7 +46,7 @@ class Version
         return $this->description;
     }
 
-    /** @deprecated  */
+    /** @deprecated */
     public function getVersionFilter()
     {
         return $this->versionFilter;

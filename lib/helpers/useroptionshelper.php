@@ -16,11 +16,13 @@ class UserOptionsHelper extends Helper
     private $props = [];
     private $iblock = [];
 
+    /**
+     * UserOptionsHelper constructor.
+     */
     public function __construct()
     {
         $this->checkModules(['iblock']);
     }
-
 
     /**
      * Извлекает настройки формы инфоблока в массив, бросает исключение если их не существует
