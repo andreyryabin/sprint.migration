@@ -101,11 +101,13 @@ class Console
         $descr = $this->getArg(0);
         /** @compability */
         $prefix = $this->getArg(1);
-        /** @compability */
-        $prefix = $this->getArg('--name=', $prefix);
 
-        $descr = $this->getArg('--desc=', $descr);
+        /** @compability */
         $prefix = $this->getArg('--prefix=', $prefix);
+
+        $prefix = $this->getArg('--name=', $prefix);
+        $descr = $this->getArg('--desc=', $descr);
+
         $from = $this->getArg('--from=', 'Version');
 
         $this->executeBuilder($from, [
@@ -160,6 +162,7 @@ class Console
         $versions = $this->versionManager->getVersions([
             'status' => $status,
             'search' => $this->getArg('--search='),
+            'tag' => $this->getArg('--tag='),
         ]);
 
         if ($status) {
@@ -229,9 +232,10 @@ class Console
             $this->executeOnce($versionName, 'up', $this->getArg('--force'));
         } else {
             $this->executeAll([
-                'search' => $this->getArg('--search='),
                 'status' => 'new',
-            ], $this->getArg('--force'));
+                'search' => $this->getArg('--search='),
+                'tag' => $this->getArg('--tag='),
+            ]);
         }
     }
 
@@ -245,12 +249,13 @@ class Console
         }
 
         if ($this->versionManager->checkVersionName($versionName)) {
-            $this->executeOnce($versionName, 'down', $this->getArg('--force'));
+            $this->executeOnce($versionName, 'down');
         } else {
             $this->executeAll([
-                'search' => $this->getArg('--search='),
                 'status' => 'installed',
-            ], $this->getArg('--force'));
+                'search' => $this->getArg('--search='),
+                'tag' => $this->getArg('--tag='),
+            ]);
         }
     }
 
@@ -343,9 +348,10 @@ class Console
         /** @compability */
         $status = $this->getArg('--down') ? 'installed' : 'new';
         $this->executeAll([
-            'search' => $this->getArg('--search='),
             'status' => $status,
-        ], $this->getArg('--force'));
+            'search' => $this->getArg('--search='),
+            'tag' => $this->getArg('--tag='),
+        ]);
     }
 
     public function commandMi()
@@ -497,7 +503,7 @@ class Console
     protected function executeVersion($version, $action = 'up')
     {
 
-        $tag = $this->getArg('--tag=', '');
+        $tag = $this->getArg('--add-tag=', '');
         $force = $this->getArg('--force');
 
         $params = [];

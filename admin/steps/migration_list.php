@@ -90,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                         <? endif; ?>
 
                         <? if ($aItem['tag']): ?>
-                            <span class="sp-tag"><?= $aItem['tag'] ?></span>
+                            <span class="sp-tag" title="<?= GetMessage('SPRINT_MIGRATION_TAG') ?>"><?= $aItem['tag'] ?></span>
                         <? endif; ?>
 
                         <? if (!empty($aItem['description'])): ?><?php

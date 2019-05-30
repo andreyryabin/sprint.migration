@@ -51,6 +51,18 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/tools
 Все команды: https://github.com/andreyryabin/sprint.migration/blob/master/commands.txt
 
 
+Тегирование миграций
+-------------------------
+При установке новых миграций их можно пометить произвольным тегом: 
+php bin/migrate up --add-tag=release001
+
+Это бывает удобно в случае отката релиза, когда требуется вернуть его в начальное состояние, 
+при условии что написан код отката 
+
+Откат миграций по тегу:
+php bin/migrate down --tag=release001
+
+
 Скриншоты
 -------------------------
 ![админка](https://bitbucket.org/repo/aejkky/images/4102016731-admin-interface.png)
