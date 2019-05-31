@@ -215,11 +215,7 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
 
-        if (isset($options['tracker_task_url']) && $options['tracker_task_url']) {
-            if (false !== strpos($options['tracker_task_url'], '$1')) {
-                $msg = preg_replace('/\#([a-z0-9_\-])/i', $options['tracker_task_url'], $msg);
-            }
-        }
+        $msg = self::makeTaskUrl($msg, $options);
 
         $msg = Locale::convertToUtf8IfNeed($msg);
         return $msg;
