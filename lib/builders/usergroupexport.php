@@ -19,17 +19,7 @@ class UserGroupExport extends VersionBuilder
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport2'));
 
-        $this->addField('prefix', [
-            'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
-            'value' => $this->getVersionConfig()->getVal('version_prefix'),
-            'width' => 250,
-        ]);
-
-        $this->addField('description', [
-            'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
-            'width' => 350,
-            'height' => 40,
-        ]);
+        $this->addVersionFields();
     }
 
 
