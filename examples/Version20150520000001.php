@@ -9,7 +9,7 @@ class Version20150520000001 extends Version
 
     public function up()
     {
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
 
         $helper->Iblock()->saveIblockType([
             'ID' => 'content',
@@ -79,7 +79,7 @@ class Version20150520000001 extends Version
 
     public function down()
     {
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
         $ok = $helper->Iblock()->deleteIblockIfExists('content_news');
 
         if ($ok) {

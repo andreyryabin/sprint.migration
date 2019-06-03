@@ -10,7 +10,7 @@ class Version20170213000009 extends Version
 
     public function up()
     {
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
 
         $helper->Event()->saveEventType('NEW_MATERIAL', [
             'LID' => 'ru',

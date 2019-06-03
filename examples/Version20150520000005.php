@@ -10,7 +10,7 @@ class Version20150520000005 extends Version
     public function up()
     {
 
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
 
         $hlblockId = $helper->Hlblock()->saveHlblock([
             'NAME' => 'Test',

@@ -20,7 +20,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     protected $description = "<?php echo $description ?>";
 
     public function up() {
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
 
     <? if (!empty($iblockType)): ?>
         $helper->Iblock()->saveIblockType(<?php echo var_export($iblockType, 1) ?>);
@@ -50,6 +50,8 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     public function down()
     {
+        $helper = $this->getHelperManager();
+
         //your code ...
     }
 

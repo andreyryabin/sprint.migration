@@ -19,8 +19,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     protected $description = "<?php echo $description ?>";
 
-    public function up() {
-        $helper = new HelperManager();
+    public function up()
+    {
+        $helper = $this->getHelperManager();
 
         <?foreach ($result as $eventName => $item):?>
 
@@ -37,6 +38,8 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     public function down()
     {
+        $helper = $this->getHelperManager();
+
         //your code ...
     }
 

@@ -10,7 +10,7 @@ class Version20150520000004 extends Version
     public function up()
     {
 
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
 
         $iblockId = $helper->Iblock()->getIblockIdIfExists('content_news', 'content');
 

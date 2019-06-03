@@ -10,7 +10,7 @@ class Version20170213000007 extends Version
 
     public function up()
     {
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
 
         //получить список шаблонов
         $helper->Site()->getSiteTemplates('s1');

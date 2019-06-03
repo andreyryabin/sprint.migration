@@ -20,8 +20,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     protected $description = "<?php echo $description ?>";
 
-    public function up() {
-        $helper = new HelperManager();
+    public function up()
+    {
+        $helper = $this->getHelperManager();
 
     <?php foreach ($entities as $entity): ?>
         $helper->UserTypeEntity()->saveUserTypeEntity(<?php echo var_export($entity, 1) ?>);
@@ -30,6 +31,8 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     public function down()
     {
+        $helper = $this->getHelperManager();
+
         //your code ...
     }
 

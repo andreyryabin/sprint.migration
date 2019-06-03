@@ -9,7 +9,7 @@ class Version20170213000006 extends Version
 
     public function up()
     {
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
         $hlblockId = $helper->Hlblock()->saveHlblock([
             'NAME' => 'Test',
             'TABLE_NAME' => 'hl_test',
@@ -29,7 +29,7 @@ class Version20170213000006 extends Version
 
     public function down()
     {
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
 
         $hlblockId = $helper->Hlblock()->getHlblockIdIfExists('Test');
 

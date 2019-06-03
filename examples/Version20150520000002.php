@@ -14,7 +14,7 @@ class Version20150520000002 extends Version
     {
         //Добавляем 100 элементов
 
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
         $iblockId1 = $helper->Iblock()->getIblockIdIfExists('content_news');
 
         if (!isset($this->params['add'])) {
@@ -39,7 +39,7 @@ class Version20150520000002 extends Version
     {
         //Удаляем все элементы по 10 штук за раз
 
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
         $iblockId1 = $helper->Iblock()->getIblockIdIfExists('content_news');
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */

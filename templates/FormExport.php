@@ -25,7 +25,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     public function up()
     {
-        $helper = new HelperManager();
+        $helper = $this->getHelperManager();
 
         $formHelper = $helper->Form();
 <? if (!empty($formExport)): ?>
@@ -46,6 +46,8 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     public function down()
     {
+        $helper = $this->getHelperManager();
+
         //your code ...
     }
 
