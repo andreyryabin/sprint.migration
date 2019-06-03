@@ -25,9 +25,8 @@ class FormExport extends VersionBuilder
     protected function execute()
     {
         $helper = HelperManager::getInstance();
-        $formHelper = $helper->Form();
 
-        $forms = $formHelper->getList();
+        $forms = $helper->Form()->getList();
 
         $structure = [];
         foreach ($forms as $item) {
@@ -48,7 +47,7 @@ class FormExport extends VersionBuilder
             $this->rebuildField('form_id');
         }
 
-        $form = $formHelper->getFormById($formId);
+        $form = $helper->Form()->getFormById($formId);
         $this->exitIfEmpty($form, 'Form not found');
 
         unset($form['ID']);
@@ -92,7 +91,7 @@ class FormExport extends VersionBuilder
 
         $statuses = [];
         if (in_array('statuses', $what)) {
-            $statuses = $formHelper->getFormStatuses($formId);
+            $statuses = $helper->Form()->getFormStatuses($formId);
             foreach ($statuses as $index => $status) {
                 unset($status['ID']);
                 unset($status['TIMESTAMP_X']);
@@ -105,7 +104,7 @@ class FormExport extends VersionBuilder
 
         $fields = [];
         if (in_array('fields', $what)) {
-            $fields = $formHelper->getFormFields($formId);
+            $fields = $helper->Form()->getFormFields($formId);
             foreach ($fields as $index => $field) {
                 unset($field['ID']);
                 unset($field['TIMESTAMP_X']);

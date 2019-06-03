@@ -22,7 +22,6 @@ class IblockExport extends VersionBuilder
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport2'));
 
         $this->addVersionFields();
-
     }
 
     protected function execute()
