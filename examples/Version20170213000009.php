@@ -40,7 +40,7 @@ class Version20170213000009 extends Version
 
     public function down()
     {
-        //
+        //your code ...
     }
 
 
@@ -53,7 +53,6 @@ class Version20170213000009 extends Version
 #URL# - Ссылка на материал     
 
 TEXT1;
-
     }
 
     private function getMessage()
@@ -72,7 +71,5 @@ TEXT1;
 #URL#
 
 TEXT2;
-
-
     }
 }

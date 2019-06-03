@@ -10,6 +10,13 @@
     "andrey",
     "ryabin"
   ],
+  "authors": [
+    {
+      "name": "Andrey Ryabin",
+      "email": "andreyryabin@yandex.ru",
+      "role": "Author"
+    }
+  ],
   "license": "MIT",
   "require": {
     "php": ">=5.4.0",

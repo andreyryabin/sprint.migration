@@ -60,7 +60,7 @@ class Version20170213000007 extends Version
 
     public function down()
     {
-        //
+        //your code ...
     }
 
 }
