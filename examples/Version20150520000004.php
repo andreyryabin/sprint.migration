@@ -31,6 +31,19 @@ class Version20150520000004 extends Version
             'SEO' => [],
         ]);
 
+        //Пример отображения списка элементов
+        $helper->UserOptions()->saveElementList($iblockId, [
+            'order' => 'desc',
+            'by' => 'id',
+            'page_size' => 10,
+            'columns' => [
+                'NAME',
+                'SORT',
+                'ID',
+                'PROPERTY_LINK',
+            ],
+        ]);
+
         //Пример отображения формы редактирования категории
         $helper->UserOptions()->saveSectionForm($iblockId, [
             'Категория' => [
@@ -42,27 +55,7 @@ class Version20150520000004 extends Version
             ],
         ]);
 
-        //Пример отображения списка элементов
-        $helper->UserOptions()->saveElementList($iblockId, [
-            'NAME',
-            'SORT',
-            'ID',
-            'PROPERTY_LINK',
-        ], [
-            'order' => 'desc',
-            'by' => 'id',
-            'page_size' => 10,
-        ]);
 
-
-        //пример с обновлениями нескольких полей
-        $tabs = $helper->UserOptions()->extractElementForm($iblockId);
-
-        unset($tabs['Tab2']['PREVIEW_TEXT']);
-
-        $tabs['Tab1']['SECTIONS'] = 'Разделы';
-
-        $helper->UserOptions()->saveElementForm($iblockId, $tabs);
 
     }
 

@@ -9,7 +9,23 @@ use Sprint\Migration\Exceptions\HelperException;
 class Helper
 {
 
-    use OutTrait;
+    use OutTrait {
+        out as protected;
+        outIf as protected;
+        outProgress as protected;
+        outNotice as protected;
+        outNoticeIf as protected;
+        outInfo as protected;
+        outInfoIf as protected;
+        outSuccess as protected;
+        outSuccessIf as protected;
+        outWarning as protected;
+        outWarningIf as protected;
+        outError as protected;
+        outErrorIf as protected;
+        outDiff as protected;
+        outDiffIf as protected;
+    }
 
     /**
      * @deprecated
@@ -55,7 +71,12 @@ class Helper
         $this->setMode('test', $val);
     }
 
-    public function throwException($method, $msg, $var1 = null, $var2 = null)
+    public function isEnabled()
+    {
+        return true;
+    }
+
+    protected function throwException($method, $msg, $var1 = null, $var2 = null)
     {
         $args = func_get_args();
         $method = array_shift($args);
@@ -66,11 +87,6 @@ class Helper
         $this->lastError = $msg;
 
         Throw new HelperException($msg);
-    }
-
-    public function isEnabled()
-    {
-        return true;
     }
 
     protected function hasDiff($exists, $fields)

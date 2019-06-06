@@ -2,12 +2,51 @@
 
 namespace Sprint\Migration\Helpers;
 
-use CIBlock;
-use CIBlockProperty;
 use CUserOptions;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
+use Sprint\Migration\HelperManager;
+use Sprint\Migration\Helpers\UserOptions\IblockElementTrait;
+use Sprint\Migration\Helpers\UserOptions\IblockSectionTrait;
+use Sprint\Migration\Helpers\UserOptions\UserGroupTrait;
+use Sprint\Migration\Helpers\UserOptions\UserTrait;
 use function IncludeModuleLangFile;
+
+/*
+Example $formData for buildForm
+
+$formData = [
+    'Tab1' => [
+        'ACTIVE' => 'Активность',
+        'ACTIVE_FROM' => '',
+        'ACTIVE_TO' => '',
+        'NAME' => 'Название',
+        'CODE' => 'Символьный код',
+        'SORT' => '',
+    ],
+    'Tab2' => [
+        'PREVIEW_TEXT' => '',
+        'PROPERTY_LINK' => '',
+    ],
+];
+
+
+Example $listData for listForm
+$listData = [
+    'columns' => [
+        'LOGIN',
+        'ACTIVE',
+        'TIMESTAMP_X',
+        'NAME',
+        'LAST_NAME',
+        'EMAIL',
+        'ID',
+    ],
+    'page_size' => 20,
+    'order' => 'desc',
+    'by' => 'timestamp_x',
+];
+*/
 
 class UserOptionsHelper extends Helper
 {
@@ -15,6 +54,12 @@ class UserOptionsHelper extends Helper
     private $titles = [];
     private $props = [];
     private $iblock = [];
+    private $lastIblockId = 0;
+
+    use IblockElementTrait;
+    use IblockSectionTrait;
+    use UserTrait;
+    use UserGroupTrait;
 
     /**
      * UserOptionsHelper constructor.
@@ -24,40 +69,92 @@ class UserOptionsHelper extends Helper
         $this->checkModules(['iblock']);
     }
 
-    /**
-     * Извлекает настройки формы инфоблока в массив, бросает исключение если их не существует
-     * @param $iblockId
-     * @param array $params
-     * @throws HelperException
-     * @return array
-     */
-    public function extractElementForm($iblockId, $params = [])
+    public function exportList($params = [])
     {
-        $result = $this->exportElementForm($iblockId, $params);
-
-        if (!empty($result)) {
-            return $result;
-        }
-
-        $this->throwException(__METHOD__, 'Iblock form options not found');
-    }
-
-    /**
-     * Извлекает настройки формы инфоблока в массив
-     * @param $iblockId
-     * @param array $params
-     * @return array
-     */
-    public function exportElementForm($iblockId, $params = [])
-    {
-        $this->initializeVars($iblockId);
+        $this->checkRequiredKeys(__METHOD__, $params, ['name']);
 
         $params = array_merge([
-            'name_prefix' => 'form_element_',
-            'category' => 'form',
+            'name' => '',
+            'category' => 'list',
         ], $params);
 
-        $params['name'] = $params['name_prefix'] . $iblockId;
+        $option = CUserOptions::GetOption($params['category'], $params['name'], false, false);
+
+        $option['columns'] = explode(',', $option['columns']);
+
+        return $option;
+    }
+
+    public function buildList($listData = [], $params = [])
+    {
+        $this->checkRequiredKeys(__METHOD__, $params, ['name']);
+
+        /** @compability with old format */
+        if (!isset($listData['columns'])) {
+            $listData = [
+                'columns' => is_array($listData) ? $listData : [],
+                'page_size' => isset($params['page_size']) ? $params['page_size'] : '',
+                'order' => isset($params['order']) ? $params['order'] : '',
+                'by' => isset($params['by']) ? $params['by'] : '',
+            ];
+        }
+
+        $params = array_merge([
+            'name' => '',
+            'category' => 'list',
+        ], $params);
+
+        $listData = array_merge([
+            'columns' => [],
+            'page_size' => 20,
+            'order' => 'desc',
+            'by' => 'id',
+        ], $listData);
+
+        if (empty($listData) || empty($listData['columns'])) {
+            CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
+            return true;
+        }
+
+        $opts = [];
+        foreach ($listData['columns'] as $columnCode) {
+            $opts[] = $this->transformCode($columnCode);
+        }
+        $opts = implode(',', $opts);
+
+        $value = [
+            'columns' => $opts,
+            'page_size' => $params['page_size'],
+            'order' => $params['order'],
+            'by' => $params['by'],
+        ];
+
+        CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
+        CUserOptions::SetOption($params['category'], $params['name'], $value, true);
+    }
+
+    public function saveList($listData = [], $params = [])
+    {
+        $exists = $this->exportList($params);
+        if ($this->hasDiff($exists, $listData)) {
+            $ok = $this->getMode('test') ? true : $this->buildList($listData, $params);
+            $this->outNoticeIf($ok, 'Список "%s" сохранен', $params['name']);
+            $this->outDiffIf($ok, $exists, $listData);
+            return $ok;
+        } else {
+            if ($this->getMode('out_equal')) {
+                $this->out('Список "%s" совпадает', $params['name']);
+            }
+            return true;
+        }
+    }
+
+    public function exportForm($params = [])
+    {
+        $params = array_merge([
+            'name' => '',
+            'category' => 'form',
+        ], $params);
 
 
         $option = CUserOptions::GetOption($params['category'], $params['name'], false, false);
@@ -103,142 +200,24 @@ class UserOptionsHelper extends Helper
         }
 
         return $extractedTabs;
-
     }
 
-    /**
-     * Сохраняет настройки формы инфоблока, если они отличаются
-     * @param $iblockId
-     * @param array $elementForm массив вида:
-     * [
-     *     'Tab1' => [
-     *         'ACTIVE' => 'Активность',
-     *         'ACTIVE_FROM' => '',
-     *         'ACTIVE_TO' => '',
-     *         'NAME' => 'Название',
-     *         'CODE' => Символьный код',
-     *         'SORT' => '',
-     *     ],
-     *     'Tab2' => [
-     *         'PREVIEW_TEXT' => '',
-     *         'PROPERTY_LINK' => '',
-     *     ]
-     * ]
-     * @param array $params
-     * @return bool
-     */
-    public function saveElementForm($iblockId, $elementForm = [], $params = [])
+    public function buildForm($formData = [], $params = [])
     {
-        $exists = $this->exportElementForm($iblockId, $params);
-        if ($this->hasDiff($exists, $elementForm)) {
-            $ok = $this->getMode('test') ? true : $this->buildElementForm($iblockId, $elementForm, $params);
-            $this->outNoticeIf($ok, 'Инфоблок %s: форма редактирования сохранена', $iblockId);
-            $this->outDiffIf($ok, $exists, $elementForm);
-            return $ok;
-        } else {
-            if ($this->getMode('out_equal')) {
-                $this->out('Инфоблок %s: форма редактирования совпадает', $iblockId);
-            }
-            return true;
-        }
-    }
-
-    public function saveSectionForm($iblockId, $elementForm = [], $params = [])
-    {
-        $params['name_prefix'] = 'form_section_';
-        return $this->saveElementForm($iblockId, $elementForm, $params);
-    }
-
-    /**
-     * Сохраняет настройки списка инфоблока
-     * @param $iblockId
-     * @param array $columns массив вида:
-     * [
-     *     'NAME',
-     *     'SORT',
-     *     'ID',
-     *     'PROPERTY_LINK',
-     * ];
-     *
-     * @param array $params
-     */
-    public function saveElementList($iblockId, $columns = [], $params = [])
-    {
-        $this->initializeVars($iblockId);
-
-        $opts = [];
-        foreach ($columns as $columnCode) {
-            $opts[] = $this->transformCode($columnCode);
-        }
-        $opts = implode(',', $opts);
 
         $params = array_merge([
-            'name_prefix' => 'tbl_iblock_element_',
-            'category' => 'list',
-            'page_size' => 20,
-            'order' => 'desc',
-            'by' => 'id',
-        ], $params);
-
-        $name = $params['name_prefix'] . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
-        $value = [
-            'columns' => $opts,
-            'order' => $params['order'],
-            'by' => $params['by'],
-            'page_size' => $params['page_size'],
-        ];
-
-        CUserOptions::DeleteOptionsByName($params['category'], $name);
-        CUserOptions::SetOption($params['category'], $name, $value, true);
-    }
-
-    public function saveSectionList($iblockId, $columns = [], $params = [])
-    {
-        $params['name_prefix'] = 'tbl_iblock_section_';
-        return $this->saveElementList($iblockId, $columns, $params);
-    }
-
-    /**
-     * Сохраняет настройки формы инфоблока
-     * @param $iblockId
-     * @param array $elementForm массив типа
-     * [
-     *     'Tab1' => [
-     *         'ACTIVE' => 'Активность',
-     *         'ACTIVE_FROM' => '',
-     *         'ACTIVE_TO' => '',
-     *         'NAME' => 'Название',
-     *         'CODE' => Символьный код',
-     *         'SORT' => '',
-     *     ],
-     *     'Tab2' => [
-     *         'PREVIEW_TEXT' => '',
-     *         'PROPERTY_LINK' => '',
-     *     ]
-     * ]
-     *
-     * @param array $params
-     * @return bool
-     */
-    public function buildElementForm($iblockId, $elementForm = [], $params = [])
-    {
-        $this->initializeVars($iblockId);
-
-        $params = array_merge([
-            'name_prefix' => 'form_element_',
+            'name' => '',
             'category' => 'form',
         ], $params);
 
-        $params['name'] = $params['name_prefix'] . $iblockId;
-
-        if (empty($elementForm)) {
+        if (empty($formData)) {
             CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
             return true;
         }
 
         $tabIndex = 0;
         $tabVals = [];
-        foreach ($elementForm as $tabTitle => $fields) {
+        foreach ($formData as $tabTitle => $fields) {
 
             if ($tabTitle == 'SEO' && empty($fields)) {
                 $fields = $this->getSeoTab();
@@ -283,39 +262,56 @@ class UserOptionsHelper extends Helper
         return true;
     }
 
-    /**
-     * @param $iblockId
-     * @param array $columns
-     * @param array $params
-     * @deprecated use saveElementList
-     */
-    public function buildElementList($iblockId, $columns = [], $params = [])
+    public function saveForm($formData = [], $params = [])
     {
-        $this->saveElementList($iblockId, $columns, $params);
+        $exists = $this->exportForm($params);
+        if ($this->hasDiff($exists, $formData)) {
+            $ok = $this->getMode('test') ? true : $this->buildForm($formData, $params);
+            $this->outNoticeIf($ok, 'Форма редактирования "%s" сохранена', $params['name']);
+            $this->outDiffIf($ok, $exists, $formData);
+            return $ok;
+        } else {
+            if ($this->getMode('out_equal')) {
+                $this->out('Форма редактирования "%s" совпадает', $params['name']);
+            }
+            return true;
+        }
     }
 
-    protected function initializeVars($iblockId)
+    protected function initializeIblockVars($iblockId)
     {
-        $this->props = [];
-        $this->titles = [];
+        $helper = HelperManager::getInstance();
 
-        $this->iblock = CIBlock::GetList(['SORT' => 'ASC'], [
+        if (empty($iblockId)) {
+            $this->lastIblockId = 0;
+            $this->props = [];
+            $this->titles = [];
+            $this->iblock = [];
+            return true;
+        }
+
+        if ($this->lastIblockId == $iblockId) {
+            return true;
+        }
+
+        $iblock = $helper->Iblock()->getIblock([
             'ID' => $iblockId,
-            'CHECK_PERMISSIONS' => 'N',
-        ])->Fetch();
-        if (!$this->iblock) {
+        ]);
+
+        if (empty($this->iblock)) {
             $this->throwException(__METHOD__, 'Iblock %d not found', $iblockId);
         }
 
-        $dbResult = CIBlockProperty::GetList(["sort" => "asc"], [
-            "IBLOCK_ID" => $iblockId,
-            "CHECK_PERMISSIONS" => "N",
-        ]);
+        $this->lastIblockId = $iblockId;
+        $this->iblock = $iblock;
+        $this->props = [];
+        $this->titles = [];
 
-        while ($aItem = $dbResult->Fetch()) {
-            if (!empty($aItem['CODE'])) {
-                $this->titles['PROPERTY_' . $aItem['ID']] = $aItem['NAME'];
-                $this->props[] = $aItem;
+        $props = $helper->Iblock()->getProperties($iblockId);
+        foreach ($props as $prop) {
+            if (!empty($prop['CODE'])) {
+                $this->titles['PROPERTY_' . $prop['ID']] = $prop['NAME'];
+                $this->props[] = $prop;
             }
         }
 
@@ -330,6 +326,8 @@ class UserOptionsHelper extends Helper
                 $this->titles[$fcode] = $value;
             }
         }
+
+        return true;
     }
 
     protected function getSeoTab()
@@ -397,5 +395,23 @@ class UserOptionsHelper extends Helper
         return $fieldCode;
     }
 
+    /**
+     * Извлекает настройки формы инфоблока в массив, бросает исключение если их не существует
+     * @param $iblockId
+     * @param array $params
+     * @throws HelperException
+     * @return array
+     * @deprecated
+     * @compability
+     */
+    public function extractElementForm($iblockId)
+    {
+        $result = $this->exportElementForm($iblockId);
 
+        if (!empty($result)) {
+            return $result;
+        }
+
+        $this->throwException(__METHOD__, 'Iblock form options not found');
+    }
 }
