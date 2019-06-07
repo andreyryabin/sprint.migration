@@ -58,8 +58,8 @@ class IblockExport extends VersionBuilder
                     'value' => 'iblockProperties',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIiblockAdminTabs'),
-                    'value' => 'iblockAdminTabs',
+                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockUserOptions'),
+                    'value' => 'iblockUserOptions',
                 ],
             ],
         ]);
@@ -85,7 +85,11 @@ class IblockExport extends VersionBuilder
         $iblockType = [];
         $iblockProperties = [];
         $iblockFields = [];
-        $iblockAdminTabs = [];
+
+        $exportElementForm = [];
+        $exportSectionForm = [];
+        $exportElementList = [];
+        $exportSectionList = [];
 
         if (in_array('iblock', $what)) {
             $iblockExport = true;
@@ -123,8 +127,11 @@ class IblockExport extends VersionBuilder
         }
 
 
-        if (in_array('iblockAdminTabs', $what)) {
-            $iblockAdminTabs = $helper->UserOptions()->exportElementForm($iblockId);
+        if (in_array('iblockUserOptions', $what)) {
+            $exportElementForm = $helper->UserOptions()->exportElementForm($iblockId);
+            $exportSectionForm = $helper->UserOptions()->exportSectionForm($iblockId);
+            $exportElementList = $helper->UserOptions()->exportElementList($iblockId);
+            $exportSectionList = $helper->UserOptions()->exportSectionList($iblockId);
         }
 
         $this->createVersionFile(
@@ -135,7 +142,10 @@ class IblockExport extends VersionBuilder
                 'iblockType' => $iblockType,
                 'iblockFields' => $iblockFields,
                 'iblockProperties' => $iblockProperties,
-                'iblockAdminTabs' => $iblockAdminTabs,
+                'exportElementForm' => $exportElementForm,
+                'exportSectionForm' => $exportSectionForm,
+                'exportElementList' => $exportElementList,
+                'exportSectionList' => $exportSectionList,
             ]
         );
     }

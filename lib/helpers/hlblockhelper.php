@@ -5,6 +5,8 @@ namespace Sprint\Migration\Helpers;
 use Bitrix\Highloadblock as HL;
 use Bitrix\Main\ArgumentException;
 use Bitrix\Main\SystemException;
+use CTask;
+use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
@@ -379,6 +381,92 @@ class HlblockHelper extends Helper
         }
 
         return $this->deleteHlblock($item['ID']);
+    }
+
+    /**
+     * Получает права доступа к highload-блоку для групп
+     * возвращает массив вида [$groupId => $letter ]
+     *
+     * @param $hlblockId
+     * @return array
+     */
+    public function getGroupPermissions($hlblockId)
+    {
+        $result = [];
+        $rights = $this->getGroupRights($hlblockId);
+        foreach ($rights as $right) {
+            $result[$right['GROUP_ID']] = $right['LETTER'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Устанавливает права доступа к highload-блоку для групп
+     * предыдущие права сбрасываются
+     * принимает массив вида [$groupId => $letter ]
+     *
+     * @param $hlblockId
+     * @param array $permissions
+     * @throws Exception
+     */
+    public function setGroupPermissions($hlblockId, $permissions = [])
+    {
+        $rights = $this->getGroupRights($hlblockId);
+        foreach ($rights as $right) {
+            HL\HighloadBlockRightsTable::delete($right['ID']);
+        }
+
+        foreach ($permissions as $groupId => $letter) {
+            $taskId = CTask::GetIdByLetter($letter, 'highloadblock');
+
+            if (empty($taskId)) {
+                continue;
+            }
+
+            HL\HighloadBlockRightsTable::add(
+                [
+                    'HL_ID' => $hlblockId,
+                    'TASK_ID' => $taskId,
+                    'ACCESS_CODE' => 'G' . $groupId,
+                ]
+            );
+        }
+    }
+
+    protected function getGroupRights($hlblockId)
+    {
+        $dbres = HL\HighloadBlockRightsTable::getList(
+            [
+                'filter' => [
+                    'HL_ID' => $hlblockId,
+                ],
+            ]
+        );
+        $result = [];
+
+        while ($item = $dbres->fetch()) {
+            if (strpos($item['ACCESS_CODE'], 'G') !== 0) {
+                continue;
+            }
+
+            $groupId = (int)substr($item['ACCESS_CODE'], 1);
+            if (empty($groupId)) {
+                continue;
+            }
+
+            $letter = CTask::GetLetter($item['TASK_ID']);
+            if (empty($letter)) {
+                continue;
+            }
+
+            $item['LETTER'] = $letter;
+            $item['GROUP_ID'] = $groupId;
+
+            $result[] = $item;
+        }
+
+        return $result;
     }
 
     protected function prepareExportHlblockField($item)

@@ -28,7 +28,6 @@ class Version20150520000004 extends Version
                 'PREVIEW_TEXT',
                 'PROPERTY_LINK',
             ],
-            'SEO' => [],
         ]);
 
         //Пример отображения списка элементов

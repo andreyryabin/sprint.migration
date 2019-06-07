@@ -42,10 +42,21 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     <? endforeach; ?>
     <? endif; ?>
 
-    <? if (!empty($iblockAdminTabs)): ?>
-        $helper->UserOptions()->saveElementForm($iblockId, <?php echo var_export($iblockAdminTabs, 1) ?>);
+    <? if (!empty($exportElementForm)): ?>
+        $helper->UserOptions()->saveElementForm($iblockId, <?php echo var_export($exportElementForm, 1) ?>);
     <? endif; ?>
 
+    <? if (!empty($exportSectionForm)): ?>
+        $helper->UserOptions()->saveSectionForm($iblockId, <?php echo var_export($exportSectionForm, 1) ?>);
+    <? endif; ?>
+
+    <? if (!empty($exportElementList)): ?>
+        $helper->UserOptions()->saveElementList($iblockId, <?php echo var_export($exportElementList, 1) ?>);
+    <? endif; ?>
+
+    <? if (!empty($exportSectionList)): ?>
+        $helper->UserOptions()->saveSectionList($iblockId, <?php echo var_export($exportSectionList, 1) ?>);
+    <? endif; ?>
     }
 
     public function down()

@@ -116,7 +116,14 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockType" => "Тип инфоблока",
     "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockFields" => "Поля инфоблока",
     "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockProperties" => "Свойства инфоблока",
-    "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIiblockAdminTabs" => "Настройки формы редактирования",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockUserOptions" => "Настройки формы редактирования и списка",
+
+    "SPRINT_MIGRATION_BUILDER_UserOptionsExport_Title" => "Создать миграцию для пользовательских настроек",
+    "SPRINT_MIGRATION_BUILDER_UserOptionsExport_Desc" => "",
+    "SPRINT_MIGRATION_BUILDER_UserOptionsExport_What" => "Что переносим",
+    "SPRINT_MIGRATION_BUILDER_UserOptionsExport_WhatUserForm" => "Настрока формы редактирования пользователей",
+    "SPRINT_MIGRATION_BUILDER_UserOptionsExport_WhatUserList" => "Настрока списка пользователей",
+    "SPRINT_MIGRATION_BUILDER_UserOptionsExport_WhatGroupList" => "Настрока списка групп",
 
     "SPRINT_MIGRATION_BUILDER_HlblockExport1" => "Создать миграцию для highload-блока",
     "SPRINT_MIGRATION_BUILDER_HlblockExport2" => "",

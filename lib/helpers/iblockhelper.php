@@ -1421,6 +1421,32 @@ class IblockHelper extends Helper
         return false;
     }
 
+
+    /**
+     * Получает права доступа к инфоблоку для групп
+     * возвращает массив вида [$groupId => $letter ]
+     *
+     * @param $iblockId
+     * @return array
+     */
+    public function getGroupPermissions($iblockId)
+    {
+        return CIBlock::GetGroupPermissions($iblockId);
+    }
+
+    /**
+     * Устанавливает права доступа к инфоблоку для групп
+     * предыдущие права сбрасываются
+     * принимает массив вида [$groupId => $letter ]
+     *
+     * @param $iblockId
+     * @param array $permissions
+     */
+    public function setGroupPermissions($iblockId, $permissions = [])
+    {
+        CIBlock::SetPermission($iblockId, $permissions);
+    }
+
     /**
      * @param $iblockId
      * @param $code

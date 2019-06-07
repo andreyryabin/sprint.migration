@@ -334,6 +334,7 @@ class VersionConfig
             'OptionExport' => '\Sprint\Migration\Builders\OptionExport',
             'FormExport' => '\Sprint\Migration\Builders\FormExport',
             'EventExport' => '\Sprint\Migration\Builders\EventExport',
+            'UserOptionsExport' => '\Sprint\Migration\Builders\UserOptionsExport',
             'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
             'Marker' => '\Sprint\Migration\Builders\Marker',
             'Transfer' => '\Sprint\Migration\Builders\Transfer',
