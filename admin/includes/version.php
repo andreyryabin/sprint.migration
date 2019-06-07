@@ -27,7 +27,7 @@ $addtag = '';
                 <input type="button"
                        value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>"
                        onclick="migrationMigrationsDownConfirm();"/>
-                <span style="float: right" title="<?= GetMessage('SPRINT_MIGRATION_ADDTAG_TITLE') ?>">
+                <span title="<?= GetMessage('SPRINT_MIGRATION_ADDTAG_TITLE') ?>">
                 <?= GetMessage('SPRINT_MIGRATION_ADDTAG') ?>
                 <input placeholder="<?= GetMessage('SPRINT_MIGRATION_ADDTAG_TAG') ?>"
                        style="width: 100px;"
