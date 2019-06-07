@@ -275,7 +275,7 @@ class UserGroupHelper extends Helper
      * Cброс настроек доступа группы
      * @param $groupId
      */
-    protected function deleteGroupPermissions($groupId)
+    public function deleteGroupPermissions($groupId)
     {
         global $APPLICATION;
 
