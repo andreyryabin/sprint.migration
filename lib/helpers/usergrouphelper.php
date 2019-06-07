@@ -279,13 +279,6 @@ class UserGroupHelper extends Helper
     {
         global $APPLICATION;
 
-        CGroup::SetSubordinateGroups($groupId);
-
-        $tasksMap = CGroup::GetTasks($groupId, true);
-        foreach ($tasksMap as $moduleId => $taskId) {
-            CTask::Delete($taskId, false);
-        }
-
         $moduleIds = [];
         $dbres = CModule::GetList();
         while ($item = $dbres->Fetch()) {
@@ -303,6 +296,13 @@ class UserGroupHelper extends Helper
             foreach ($siteIds as $siteId) {
                 $APPLICATION->DelGroupRight($moduleId, [$groupId], $siteId);
             }
+        }
+
+        CGroup::SetSubordinateGroups($groupId);
+
+        $tasksMap = CGroup::GetTasks($groupId, true);
+        foreach ($tasksMap as $moduleId => $taskId) {
+            CTask::Delete($taskId, false);
         }
     }
 
