@@ -3,6 +3,9 @@
 namespace Sprint\Migration\Helpers;
 
 use CGroup;
+use CModule;
+use CSite;
+use CTask;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
@@ -266,6 +269,41 @@ class UserGroupHelper extends Helper
     public function getGroupsByFilter($filter = [])
     {
         return $this->getGroups($filter);
+    }
+
+    /**
+     * Cброс настроек доступа группы
+     * @param $groupId
+     */
+    protected function deleteGroupPermissions($groupId)
+    {
+        global $APPLICATION;
+
+        CGroup::SetSubordinateGroups($groupId);
+
+        $tasksMap = CGroup::GetTasks($groupId, true);
+        foreach ($tasksMap as $moduleId => $taskId) {
+            CTask::Delete($taskId, false);
+        }
+
+        $moduleIds = [];
+        $dbres = CModule::GetList();
+        while ($item = $dbres->Fetch()) {
+            $moduleIds[] = $item['ID'];
+        }
+
+        $siteIds = [];
+        $dbres = CSite::GetList($by = "sort", $order = "asc", ["ACTIVE" => "Y"]);
+        while ($item = $dbres->GetNext()) {
+            $siteIds[] = $item["ID"];
+        }
+
+        foreach ($moduleIds as $moduleId) {
+            $APPLICATION->DelGroupRight($moduleId, [$groupId], false);
+            foreach ($siteIds as $siteId) {
+                $APPLICATION->DelGroupRight($moduleId, [$groupId], $siteId);
+            }
+        }
     }
 
     protected function prepareExportGroup($item)
