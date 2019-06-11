@@ -13,6 +13,14 @@ trait IblockTrait
 
     public function exportElementForm($iblockId)
     {
+        /**
+         * @compability
+         * @deprecated
+         */
+        if (func_num_args() > 1) {
+            $this->throwException(__METHOD__, '$params is no longer supported, see examples');
+        }
+
         $this->initializeIblockVars($iblockId);
 
         return $this->exportForm([
@@ -22,6 +30,14 @@ trait IblockTrait
 
     public function buildElementForm($iblockId, $formData = [])
     {
+        /**
+         * @compability
+         * @deprecated
+         */
+        if (func_num_args() > 2) {
+            $this->throwException(__METHOD__, '$params is no longer supported, see examples');
+        }
+
         $this->initializeIblockVars($iblockId);
 
         return $this->buildForm($formData, [
@@ -31,6 +47,14 @@ trait IblockTrait
 
     public function saveElementForm($iblockId, $formData = [])
     {
+        /**
+         * @compability
+         * @deprecated
+         */
+        if (func_num_args() > 2) {
+            $this->throwException(__METHOD__, '$params is no longer supported, see examples');
+        }
+
         $this->initializeIblockVars($iblockId);
 
         return $this->saveForm($formData, [
