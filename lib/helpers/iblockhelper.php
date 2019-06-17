@@ -1424,7 +1424,7 @@ class IblockHelper extends Helper
 
     /**
      * Получает права доступа к инфоблоку для групп
-     * возвращает массив вида [$groupId => $letter ]
+     * возвращает массив вида [$groupId => $letter]
      *
      * @param $iblockId
      * @return array
@@ -1437,7 +1437,7 @@ class IblockHelper extends Helper
     /**
      * Устанавливает права доступа к инфоблоку для групп
      * предыдущие права сбрасываются
-     * принимает массив вида [$groupId => $letter ]
+     * принимает массив вида [$groupId => $letter]
      *
      * @param $iblockId
      * @param array $permissions

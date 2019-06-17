@@ -385,7 +385,7 @@ class HlblockHelper extends Helper
 
     /**
      * Получает права доступа к highload-блоку для групп
-     * возвращает массив вида [$groupId => $letter ]
+     * возвращает массив вида [$groupId => $letter]
      *
      * @param $hlblockId
      * @return array
@@ -404,7 +404,7 @@ class HlblockHelper extends Helper
     /**
      * Устанавливает права доступа к highload-блоку для групп
      * предыдущие права сбрасываются
-     * принимает массив вида [$groupId => $letter ]
+     * принимает массив вида [$groupId => $letter]
      *
      * @param $hlblockId
      * @param array $permissions

@@ -11,6 +11,7 @@ use Sprint\Migration\Helpers\FormHelper;
 use Sprint\Migration\Helpers\HlblockHelper;
 use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Helpers\LangHelper;
+use Sprint\Migration\Helpers\MedialibHelper;
 use Sprint\Migration\Helpers\OptionHelper;
 use Sprint\Migration\Helpers\SiteHelper;
 use Sprint\Migration\Helpers\SqlHelper;
@@ -32,6 +33,7 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  * @method FormHelper               Form()
  * @method DeliveryServiceHelper    DeliveryService()
  * @method SqlHelper                Sql()
+ * @method MedialibHelper           Medialib()
  * @method AdminIblockHelper        AdminIblock()
  */
 class HelperManager
