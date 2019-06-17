@@ -15,6 +15,10 @@ if ($updater && $updater instanceof CUpdater) {
     }
 
     if (!empty($_SERVER['DOCUMENT_ROOT'])) {
+
+        sprint_migration_rmdir($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/localization/');
+        sprint_migration_rmdir($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/lang/');
+
 //        sprint_migration_rmdir($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/classes/');
 //        sprint_migration_rmdir($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/templates/');
 //        sprint_migration_rmdir($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/admin/');

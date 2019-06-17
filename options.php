@@ -11,7 +11,7 @@ try {
         Throw new Exception('need to install module sprint.migration');
     }
 
-    if (!$APPLICATION->GetGroupRight("sprint.migration") >= "R") {
+    if ($APPLICATION->GetGroupRight('sprint.migration') == 'D') {
         Throw new Exception(GetMessage("ACCESS_DENIED"));
     }
 
