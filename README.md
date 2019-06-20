@@ -4,7 +4,7 @@
 * Composer: [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
 * Документация: [https://github.com/andreyryabin/sprint.migration/wiki](https://github.com/andreyryabin/sprint.migration/wiki)
 * Материалы: [https://dev.1c-bitrix.ru/search/?tags=sprint.migration](https://dev.1c-bitrix.ru/search/?tags=sprint.migration)
-* Группа в телеграм: [tg://resolve?domain=sprint_migration_bitrix](tg://resolve?domain=sprint_migration_bitrix)
+* Группа в телеграм: [https://t-do.ru/sprint_migration_bitrix](https://t-do.ru/sprint_migration_bitrix)
 
 Установка через composer
 -------------------------
