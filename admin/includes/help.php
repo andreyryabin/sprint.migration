@@ -31,6 +31,12 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
                 <br/>
                 <a href="https://dev.1c-bitrix.ru/search/?tags=sprint.migration" target="_blank">https://dev.1c-bitrix.ru/search/?tags=sprint.migration</a>
             </div>
+            <div style="margin-bottom: 10px;">
+                <?= GetMessage('SPRINT_MIGRATION_LINK_TELEGRAM') ?>
+                <br/>
+                <a href="https://t.me/sprint_migration_bitrix" target="_blank">https://t.me/sprint_migration_bitrix</a>
+            </div>
+
         </div>
     </div>
 </div>
