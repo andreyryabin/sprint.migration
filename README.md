@@ -1,5 +1,12 @@
 # Миграции для разработчиков (1С-Битрикс) #
 
+Помогает синхронизировать изменения между нескольким копиями базы данных
+
+Все изменения для базы данных пишутся в файлы миграций, эти файлы, как и весь код проекта, хранятся в системе контроля версий (например git)
+и попадают в копии разработчиков, после чего им необходимо выполнить установку новых миграций, чтобы обновить бд.
+
+Работать можно как через консоль, так и через админку.
+
 * Маркетплейс: [http://marketplace.1c-bitrix.ru/solutions/sprint.migration/](http://marketplace.1c-bitrix.ru/solutions/sprint.migration/)
 * Composer: [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
 * Документация: [https://github.com/andreyryabin/sprint.migration/wiki](https://github.com/andreyryabin/sprint.migration/wiki)
