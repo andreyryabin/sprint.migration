@@ -1,5 +1,9 @@
 <?php
 
+use Sprint\Migration\Module;
+use Sprint\Migration\Out;
+use Sprint\Migration\VersionConfig;
+
 if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
     if (!empty($_REQUEST["options_remove"])) {
@@ -25,10 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         }
     }
 }
-
-use Sprint\Migration\Module;
-use Sprint\Migration\Out;
-use Sprint\Migration\VersionConfig; ?>
+?>
 
 <? include __DIR__ . '/help.php' ?>
     <div class="sp-separator"></div>
