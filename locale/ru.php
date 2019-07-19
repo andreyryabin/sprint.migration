@@ -82,6 +82,7 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_BUILDER_NEXT" => "Далее",
     "SPRINT_MIGRATION_BUILDER_RESET" => "Сбросить",
     "SPRINT_MIGRATION_SELECT_ALL" => "Выбрать все",
+    "SPRINT_MIGRATION_SELECT_ONE" => "Выбрать",
 
     "SPRINT_MIGRATION_BUILDER_Transfer1" => "Перенести миграции",
     "SPRINT_MIGRATION_BUILDER_TransferTo" => "Перенести в другую конфигурацию",
