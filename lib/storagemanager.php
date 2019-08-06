@@ -2,11 +2,18 @@
 
 namespace Sprint\Migration;
 
+use Bitrix\Main\DB\SqlQueryException;
 use Sprint\Migration\Tables\StorageTable;
 
 class StorageManager extends StorageTable
 {
 
+    /**
+     * @param $category
+     * @param $name
+     * @param string $value
+     * @throws SqlQueryException
+     */
     public function saveData($category, $name, $value = '')
     {
         $category = $this->forSql($category);
@@ -26,6 +33,13 @@ class StorageManager extends StorageTable
         }
     }
 
+    /**
+     * @param $category
+     * @param $name
+     * @param string $default
+     * @throws SqlQueryException
+     * @return mixed|string
+     */
     public function getSavedData($category, $name, $default = '')
     {
         $category = $this->forSql($category);
@@ -43,6 +57,11 @@ class StorageManager extends StorageTable
         return $default;
     }
 
+    /**
+     * @param $category
+     * @param bool $name
+     * @throws SqlQueryException
+     */
     public function deleteSavedData($category, $name = false)
     {
         $category = $this->forSql($category);

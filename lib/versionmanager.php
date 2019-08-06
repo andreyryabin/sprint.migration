@@ -117,6 +117,10 @@ class VersionManager
         return $versionInstance;
     }
 
+    /**
+     * @param $ok
+     * @throws MigrationException
+     */
     protected function checkResultAfterStart($ok)
     {
         /* @global $APPLICATION CMain */
@@ -131,6 +135,12 @@ class VersionManager
         }
     }
 
+    /**
+     * @param $force
+     * @param $action
+     * @param $meta
+     * @throws MigrationException
+     */
     protected function checkStatusBeforeStart($force, $action, $meta)
     {
         if (!$force) {
@@ -210,6 +220,11 @@ class VersionManager
         return $res;
     }
 
+    /**
+     * @param $search
+     * @param $status
+     * @return array
+     */
     public function markMigration($search, $status)
     {
         // $search - VersionName | new | installed | unknown
@@ -243,6 +258,11 @@ class VersionManager
         return $result;
     }
 
+    /**
+     * @param $meta
+     * @param $status
+     * @return array
+     */
     protected function markMigrationByMeta($meta, $status)
     {
         $msg = 'SPRINT_MIGRATION_MARK_ERROR3';
@@ -450,10 +470,13 @@ class VersionManager
             $filter = $versionInstance->getVersionFilter();
             $enabled = $versionInstance->isVersionEnabled();
         } elseif (class_exists('\ReflectionClass')) {
-            $reflect = new ReflectionClass($class);
-            $props = $reflect->getDefaultProperties();
-            $descr = $props['description'];
-            $filter = $props['version_filter'];
+            try {
+                $reflect = new ReflectionClass($class);
+                $props = $reflect->getDefaultProperties();
+                $descr = $props['description'];
+                $filter = $props['version_filter'];
+            } catch (\ReflectionException $e) {
+            }
         }
 
         $meta['class'] = $class;
@@ -486,6 +509,10 @@ class VersionManager
         ] : 0;
     }
 
+    /**
+     * @param $versionName
+     * @return array|false|int
+     */
     protected function getRecordIfExists($versionName)
     {
         $record = $this->getVersionTable()->getRecord($versionName);
@@ -527,6 +554,9 @@ class VersionManager
     }
 
 
+    /**
+     * @return array
+     */
     public function getRecords()
     {
         $result = [];

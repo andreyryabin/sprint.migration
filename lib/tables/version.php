@@ -58,6 +58,9 @@ class VersionTable extends AbstractTable
         );
     }
 
+    /**
+     * @throws SqlQueryException
+     */
     protected function createTable()
     {
         //tableVersion 1
@@ -79,6 +82,9 @@ class VersionTable extends AbstractTable
         }
     }
 
+    /**
+     * @throws SqlQueryException
+     */
     protected function dropTable()
     {
         $this->query('DROP TABLE IF EXISTS `#TABLE1#`;');

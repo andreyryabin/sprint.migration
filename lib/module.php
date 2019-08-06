@@ -72,6 +72,9 @@ class Module
         return isset($arModuleVersion['VERSION']) ? $arModuleVersion['VERSION'] : '';
     }
 
+    /**
+     * @throws Exception
+     */
     public static function checkHealth()
     {
         if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql') {

@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration\Tables;
 
+use Bitrix\Main\DB\SqlQueryException;
+
 class StorageTable extends AbstractTable
 {
 
@@ -10,6 +12,9 @@ class StorageTable extends AbstractTable
         parent::__construct('sprint_storage_' . $name);
     }
 
+    /**
+     * @throws SqlQueryException
+     */
     protected function createTable()
     {
         $this->query('CREATE TABLE IF NOT EXISTS `#TABLE1#`(
@@ -22,6 +27,9 @@ class StorageTable extends AbstractTable
         );
     }
 
+    /**
+     * @throws SqlQueryException
+     */
     protected function dropTable()
     {
         $this->query('DROP TABLE IF EXISTS `#TABLE1#`;');

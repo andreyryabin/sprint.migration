@@ -40,6 +40,9 @@ class Console
 
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function executeConsoleCommand()
     {
         if (empty($this->command)) {
@@ -90,11 +93,17 @@ class Console
 
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandRun()
     {
         $this->executeBuilder($this->getArg(0));
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandCreate()
     {
         /** @compability */
@@ -116,6 +125,9 @@ class Console
         ]);
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandMark()
     {
         $search = $this->getArg(0);
@@ -219,6 +231,9 @@ class Console
 
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandUp()
     {
         $versionName = $this->getArg(0);
@@ -229,7 +244,7 @@ class Console
         }
 
         if ($this->versionManager->checkVersionName($versionName)) {
-            $this->executeOnce($versionName, 'up', $this->getArg('--force'));
+            $this->executeOnce($versionName, 'up');
         } else {
             $this->executeAll([
                 'status' => 'new',
@@ -239,6 +254,9 @@ class Console
         }
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandDown()
     {
         $versionName = $this->getArg(0);
@@ -259,6 +277,9 @@ class Console
         }
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandRedo()
     {
         $version = $this->getArg(0);
@@ -338,11 +359,17 @@ class Console
         $this->commandList();
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandAdd()
     {
         $this->commandCreate();
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandMigrate()
     {
         /** @compability */
@@ -354,12 +381,18 @@ class Console
         ]);
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandMi()
     {
         /** @compability */
         $this->commandMigrate();
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandExecute()
     {
         /** @compability */
@@ -375,6 +408,9 @@ class Console
         }
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandForce()
     {
         /** @compability */
@@ -382,6 +418,9 @@ class Console
         $this->commandExecute();
     }
 
+    /**
+     * @return bool
+     */
     public function commandSchema()
     {
         $action = $this->getArg(0);
@@ -459,6 +498,10 @@ class Console
         return true;
     }
 
+    /**
+     * @param $filter
+     * @throws MigrationException
+     */
     protected function executeAll($filter)
     {
         $success = 0;
@@ -491,6 +534,11 @@ class Console
         }
     }
 
+    /**
+     * @param $version
+     * @param string $action
+     * @throws MigrationException
+     */
     protected function executeOnce($version, $action = 'up')
     {
         $ok = $this->executeVersion($version, $action);
@@ -545,6 +593,11 @@ class Console
         return $success;
     }
 
+    /**
+     * @param $from
+     * @param array $postvars
+     * @throws MigrationException
+     */
     protected function executeBuilder($from, $postvars = [])
     {
         do {
@@ -616,6 +669,10 @@ class Console
         }
     }
 
+    /**
+     * @param $msg
+     * @throws MigrationException
+     */
     protected function exitWithMessage($msg)
     {
         Out::outError($msg);

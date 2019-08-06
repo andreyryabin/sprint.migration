@@ -30,6 +30,7 @@ class Version20150520000001 extends Version
         $iblockId1 = $helper->Iblock()->saveIblock([
             'NAME' => 'Новости',
             'CODE' => 'content_news',
+            'LID' => ['s1'],
             'IBLOCK_TYPE_ID' => 'content',
             'LIST_PAGE_URL' => '',
             'DETAIL_PAGE_URL' => '#SITE_DIR#/news/#ELEMENT_ID#',

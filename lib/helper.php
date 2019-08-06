@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use Bitrix\Main\Loader;
+use Bitrix\Main\LoaderException;
 use CDBResult;
 use Sprint\Migration\Exceptions\HelperException;
 
@@ -76,6 +77,13 @@ class Helper
         return true;
     }
 
+    /**
+     * @param $method
+     * @param $msg
+     * @param null $var1
+     * @param null $var2
+     * @throws HelperException
+     */
     protected function throwException($method, $msg, $var1 = null, $var2 = null)
     {
         $args = func_get_args();
@@ -94,6 +102,11 @@ class Helper
         return ($exists != $fields);
     }
 
+    /**
+     * @param array $names
+     * @throws HelperException
+     * @throws LoaderException
+     */
     protected function checkModules($names = [])
     {
         $names = is_array($names) ? $names : [$names];
@@ -104,6 +117,12 @@ class Helper
         }
     }
 
+    /**
+     * @param $method
+     * @param $fields
+     * @param array $reqKeys
+     * @throws HelperException
+     */
     protected function checkRequiredKeys($method, $fields, $reqKeys = [])
     {
         foreach ($reqKeys as $name) {

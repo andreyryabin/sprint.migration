@@ -56,6 +56,9 @@ abstract class AbstractBuilder
         //your code
     }
 
+    /**
+     * @throws RestartException|RebuildException
+     */
     protected function execute()
     {
         //your code
@@ -253,22 +256,38 @@ abstract class AbstractBuilder
         }
     }
 
+    /**
+     * @param $code
+     * @throws RebuildException
+     */
     protected function rebuildField($code)
     {
         $this->unbindField($code);
         Throw new RebuildException('rebuild form');
     }
 
+    /**
+     * @throws RestartException
+     */
     protected function restart()
     {
         Throw new RestartException('restart form');
     }
 
+    /**
+     * @param $msg
+     * @throws BuilderException
+     */
     protected function exitWithMessage($msg)
     {
         Throw new BuilderException($msg);
     }
 
+    /**
+     * @param $cond
+     * @param $msg
+     * @throws BuilderException
+     */
     protected function exitIf($cond, $msg)
     {
         if ($cond) {
@@ -276,6 +295,11 @@ abstract class AbstractBuilder
         }
     }
 
+    /**
+     * @param $var
+     * @param $msg
+     * @throws BuilderException
+     */
     protected function exitIfEmpty($var, $msg)
     {
         if (empty($var)) {

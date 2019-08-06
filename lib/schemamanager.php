@@ -92,6 +92,10 @@ class SchemaManager
 
     }
 
+    /**
+     * @param array $filter
+     * @throws RestartException
+     */
     public function export($filter = [])
     {
         $schemas = $this->getVersionSchemas($filter);
@@ -113,6 +117,10 @@ class SchemaManager
         unset($this->params['schema']);
     }
 
+    /**
+     * @param array $filter
+     * @throws RestartException
+     */
     public function import($filter = [])
     {
         $this->progress = [];
@@ -178,6 +186,11 @@ class SchemaManager
         return true;
     }
 
+    /**
+     * @param $name
+     * @throws RestartException
+     * @return bool
+     */
     protected function importSchema($name)
     {
         $schema = $this->createSchema($name);
@@ -226,7 +239,10 @@ class SchemaManager
         return $this->versionConfig;
     }
 
-    /** @return AbstractSchema */
+    /**
+     * @param $name
+     * @return AbstractSchema
+     */
     protected function createSchema($name)
     {
         $schemas = $this->getVersionSchemas();
@@ -280,6 +296,9 @@ class SchemaManager
         return Module::getDocRoot() . '/bitrix/tmp/sprint.migration/' . $name . '.php';
     }
 
+    /**
+     * @throws RestartException
+     */
     protected function restart()
     {
         Throw new RestartException('restart');
