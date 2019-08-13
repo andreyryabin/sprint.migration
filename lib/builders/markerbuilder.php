@@ -5,7 +5,7 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\AbstractBuilder;
 use Sprint\Migration\VersionManager;
 
-class Marker extends AbstractBuilder
+class MarkerBuilder extends AbstractBuilder
 {
 
     protected function isBuilderEnabled()

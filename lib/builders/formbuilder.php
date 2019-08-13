@@ -6,7 +6,7 @@ use Bitrix\Main\Loader;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
-class FormExport extends VersionBuilder
+class FormBuilder extends VersionBuilder
 {
     protected function isBuilderEnabled()
     {

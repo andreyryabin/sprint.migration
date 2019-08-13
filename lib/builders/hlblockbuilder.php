@@ -6,7 +6,7 @@ use Bitrix\Main\Loader;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
-class HlblockExport extends VersionBuilder
+class HlblockBuilder extends VersionBuilder
 {
 
     protected function isBuilderEnabled()

@@ -5,14 +5,13 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
-class Version extends VersionBuilder
+class BlankBuilder extends VersionBuilder
 {
 
     protected function isBuilderEnabled()
     {
         return true;
     }
-
 
     protected function initialize()
     {

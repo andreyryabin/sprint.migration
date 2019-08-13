@@ -5,10 +5,11 @@ namespace Sprint\Migration\Exchange;
 use CIBlockElement;
 use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Module;
 use XMLWriter;
 
 
-class IblockExport extends AbstractExchange
+class IblockElementsExport extends AbstractExchange
 {
     protected $iblockId;
     protected $file;
@@ -43,6 +44,7 @@ class IblockExport extends AbstractExchange
             $this->params['NavPageCount'] = (int)$dbres->NavPageCount;
             $this->params['NavPageNomer'] = (int)$dbres->NavPageNomer;
 
+            Module::createDir(dirname($this->file));
             file_put_contents($this->file, '<?xml version="1.0" encoding="UTF-8"?>');
             file_put_contents($this->file, '<items>', FILE_APPEND);
         }

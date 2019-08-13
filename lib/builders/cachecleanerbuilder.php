@@ -5,7 +5,7 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\AbstractBuilder;
 use function BXClearCache;
 
-class CacheCleaner extends AbstractBuilder
+class CacheCleanerBuilder extends AbstractBuilder
 {
 
     protected function isBuilderEnabled()

@@ -8,10 +8,11 @@ use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Exchange\IblockElementsExport;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
-class IblockElementsExport extends VersionBuilder
+class IblockElementsBuilder extends VersionBuilder
 {
 
     /**
@@ -58,22 +59,22 @@ class IblockElementsExport extends VersionBuilder
             $this->rebuildField('iblock_id');
         }
 
-        $versionName = $this->getVersionName();
+        $file = Module::getDocRoot() . '/bitrix/tmp/sprint.migration/iblock_elements.xml';
 
-        $resourceDir = $this->createVersionResourcesDir($versionName);
-
-        $exchange = new \Sprint\Migration\Exchange\IblockExport($this);
+        $exchange = new IblockElementsExport($this);
         $exchange->from($iblockId);
-        $exchange->to($resourceDir . '/iblock_elements.xml');
+        $exchange->to($file);
         $exchange->execute();
 
-        $this->createVersionFile(
+        $versionName = $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockElementsExport.php',
             [
-                'version' => $versionName,
                 'iblock' => $iblock,
             ]
         );
+
+        $resourceDir = $this->createVersionResourcesDir($versionName);
+        rename($file, $resourceDir . '/iblock_elements.xml');
     }
 
     /**

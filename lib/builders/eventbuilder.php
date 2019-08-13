@@ -6,7 +6,7 @@ use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
-class EventExport extends VersionBuilder
+class EventBuilder extends VersionBuilder
 {
 
     protected function isBuilderEnabled()

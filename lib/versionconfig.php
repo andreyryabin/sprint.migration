@@ -156,7 +156,7 @@ class VersionConfig
         }
 
         if (!is_dir($values['migration_dir'])) {
-            mkdir($values['migration_dir'], BX_DIR_PERMISSIONS, true);
+            Module::createDir($values['migration_dir']);
             $values['migration_dir'] = realpath($values['migration_dir']);
         } else {
             $values['migration_dir'] = realpath($values['migration_dir']);
@@ -325,20 +325,20 @@ class VersionConfig
     protected function getDefaultBuilders()
     {
         return [
-            'Version' => \Sprint\Migration\Builders\Version::class,
-            'IblockExport' => \Sprint\Migration\Builders\IblockExport::class,
-            'IblockElementsExport' => \Sprint\Migration\Builders\IblockElementsExport::class,
-            'HlblockExport' => \Sprint\Migration\Builders\HlblockExport::class,
-            'UserTypeEntities' => \Sprint\Migration\Builders\UserTypeEntities::class,
-            'UserGroupExport' => \Sprint\Migration\Builders\UserGroupExport::class,
-            'AgentExport' => \Sprint\Migration\Builders\AgentExport::class,
-            'OptionExport' => \Sprint\Migration\Builders\OptionExport::class,
-            'FormExport' => \Sprint\Migration\Builders\FormExport::class,
-            'EventExport' => \Sprint\Migration\Builders\EventExport::class,
-            'UserOptionsExport' => \Sprint\Migration\Builders\UserOptionsExport::class,
-            'CacheCleaner' => \Sprint\Migration\Builders\CacheCleaner::class,
-            'Marker' => \Sprint\Migration\Builders\Marker::class,
-            'Transfer' => \Sprint\Migration\Builders\Transfer::class,
+            'BlankBuilder' => \Sprint\Migration\Builders\BlankBuilder::class,
+            'IblockBuilder' => \Sprint\Migration\Builders\IblockBuilder::class,
+            'IblockElementsBuilder' => \Sprint\Migration\Builders\IblockElementsBuilder::class,
+            'HlblockBuilder' => \Sprint\Migration\Builders\HlblockBuilder::class,
+            'UserTypeEntitiesBuilder' => \Sprint\Migration\Builders\UserTypeEntitiesBuilder::class,
+            'UserGroupBuilder' => \Sprint\Migration\Builders\UserGroupBuilder::class,
+            'AgentBuilder' => \Sprint\Migration\Builders\AgentBuilder::class,
+            'OptionBuilder' => \Sprint\Migration\Builders\OptionBuilder::class,
+            'FormBuilder' => \Sprint\Migration\Builders\FormBuilder::class,
+            'EventBuilder' => \Sprint\Migration\Builders\EventBuilder::class,
+            'UserOptionsBuilder' => \Sprint\Migration\Builders\UserOptionsBuilder::class,
+            'CacheCleanerBuilder' => \Sprint\Migration\Builders\CacheCleanerBuilder::class,
+            'MarkerBuilder' => \Sprint\Migration\Builders\MarkerBuilder::class,
+            'TransferBuilder' => \Sprint\Migration\Builders\TransferBuilder::class,
         ];
     }
 

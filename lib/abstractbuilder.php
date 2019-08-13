@@ -30,6 +30,20 @@ abstract class AbstractBuilder extends RestartableService
 
     private $actions = [];
 
+    public function __construct(VersionConfig $versionConfig, $name, $params = [])
+    {
+        $this->versionConfig = $versionConfig;
+        $this->name = $name;
+        $this->enabled = $this->isBuilderEnabled();
+        $this->params = $params;
+
+        $this->addField('builder_name', [
+            'value' => $this->getName(),
+            'type' => 'hidden',
+            'bind' => 1,
+        ]);
+    }
+
     protected function initialize()
     {
         //your code
@@ -50,19 +64,6 @@ abstract class AbstractBuilder extends RestartableService
         return false;
     }
 
-    public function __construct(VersionConfig $versionConfig, $name, $params = [])
-    {
-        $this->versionConfig = $versionConfig;
-        $this->name = $name;
-        $this->enabled = $this->isBuilderEnabled();
-        $this->params = $params;
-
-        $this->addField('builder_name', [
-            'value' => $this->getName(),
-            'type' => 'hidden',
-            'bind' => 1,
-        ]);
-    }
 
     public function initializeBuilder()
     {

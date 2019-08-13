@@ -11,7 +11,7 @@ use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
-class IblockExport extends VersionBuilder
+class IblockBuilder extends VersionBuilder
 {
 
     /**

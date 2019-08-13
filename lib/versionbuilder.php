@@ -59,24 +59,15 @@ class VersionBuilder extends AbstractBuilder
         return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '.php';
     }
 
-    protected function getVersionName()
-    {
-        $prefix = $this->purifyPrefix(
-            $this->getFieldValue('prefix')
-        );
-
-        return $prefix . $this->getTimestamp();
-    }
-
     protected function createVersionFile($templateFile = '', $templateVars = [])
     {
         $templateVars['description'] = $this->purifyDescription(
             $this->getFieldValue('description')
         );
 
-        if (empty($templateVars['version'])) {
-            $templateVars['version'] = $this->getVersionName();
-        }
+        $templateVars['version'] = $this->purifyPrefix(
+                $this->getFieldValue('prefix')
+            ) . $this->getTimestamp();
 
         list($extendUse, $extendClass) = explode(' as ', $this->getVersionConfig()->getVal('migration_extend_class'));
         $extendUse = trim($extendUse);
@@ -117,11 +108,9 @@ class VersionBuilder extends AbstractBuilder
 
     protected function createVersionResourcesDir($versionName)
     {
-        $dir = $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '_files';
-        if (!is_dir($dir)) {
-            mkdir($dir, BX_DIR_PERMISSIONS, true);
-        }
-        return $dir;
+        return Module::createDir(
+            $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '_files'
+        );
     }
 
     protected function getTimestamp()

@@ -125,12 +125,7 @@ abstract class AbstractSchema extends RestartableService
     protected function saveSchema($name, $data)
     {
         $file = $this->getSchemaFile($name);
-
-        $dir = pathinfo($file, PATHINFO_DIRNAME);
-
-        if (!is_dir($dir)) {
-            mkdir($dir, BX_DIR_PERMISSIONS, true);
-        }
+        Module::createDir(dirname($file));
 
         file_put_contents($file,
             json_encode($data, JSON_UNESCAPED_UNICODE + JSON_PRETTY_PRINT)

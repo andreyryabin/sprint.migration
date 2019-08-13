@@ -117,7 +117,7 @@ class Console
         $prefix = $this->getArg('--name=', $prefix);
         $descr = $this->getArg('--desc=', $descr);
 
-        $from = $this->getArg('--from=', 'Version');
+        $from = $this->getArg('--from=', 'BlankBuilder');
 
         $this->executeBuilder($from, [
             'description' => $descr,

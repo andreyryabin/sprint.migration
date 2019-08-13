@@ -64,6 +64,14 @@ class Module
         return $dir;
     }
 
+    public static function createDir($dir)
+    {
+        if (!is_dir($dir)) {
+            mkdir($dir, BX_DIR_PERMISSIONS, true);
+        }
+        return $dir;
+    }
+
     public static function getVersion()
     {
         $arModuleVersion = [];

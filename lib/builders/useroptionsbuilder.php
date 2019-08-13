@@ -5,7 +5,7 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
-class UserOptionsExport extends VersionBuilder
+class UserOptionsBuilder extends VersionBuilder
 {
 
     protected function isBuilderEnabled()

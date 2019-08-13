@@ -5,7 +5,7 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
-class AgentExport extends VersionBuilder
+class AgentBuilder extends VersionBuilder
 {
 
     protected function isBuilderEnabled()

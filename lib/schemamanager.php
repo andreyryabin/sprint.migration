@@ -261,11 +261,7 @@ class SchemaManager extends RestartableService
         $file = $this->getQueueFile($schema->getName());
         $data = $schema->getQueue();
 
-        $dir = dirname($file);
-        if (!is_dir($dir)) {
-            mkdir($dir, BX_DIR_PERMISSIONS, true);
-        }
-
+        Module::createDir(dirname($file));
         file_put_contents($file, '<?php return ' . var_export(['items' => $data], 1) . ';');
     }
 

@@ -6,14 +6,12 @@ use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
 
-
-class IblockImport extends AbstractExchange
+class IblockElementsImport extends AbstractExchange
 {
     protected $iblockId;
 
     public function from($file)
     {
-
     }
 
     public function to($iblockId)

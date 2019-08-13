@@ -6,7 +6,7 @@ use CUserTypeEntity;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
-class UserTypeEntities extends VersionBuilder
+class UserTypeEntitiesBuilder extends VersionBuilder
 {
 
     protected function isBuilderEnabled()

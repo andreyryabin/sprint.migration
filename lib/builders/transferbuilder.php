@@ -7,7 +7,7 @@ use Sprint\Migration\AbstractBuilder;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\VersionManager;
 
-class Transfer extends AbstractBuilder
+class TransferBuilder extends AbstractBuilder
 {
 
     protected function isBuilderEnabled()
