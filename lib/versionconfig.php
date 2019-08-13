@@ -325,32 +325,33 @@ class VersionConfig
     protected function getDefaultBuilders()
     {
         return [
-            'Version' => '\Sprint\Migration\Builders\Version',
-            'IblockExport' => '\Sprint\Migration\Builders\IblockExport',
-            'HlblockExport' => '\Sprint\Migration\Builders\HlblockExport',
-            'UserTypeEntities' => '\Sprint\Migration\Builders\UserTypeEntities',
-            'UserGroupExport' => '\Sprint\Migration\Builders\UserGroupExport',
-            'AgentExport' => '\Sprint\Migration\Builders\AgentExport',
-            'OptionExport' => '\Sprint\Migration\Builders\OptionExport',
-            'FormExport' => '\Sprint\Migration\Builders\FormExport',
-            'EventExport' => '\Sprint\Migration\Builders\EventExport',
-            'UserOptionsExport' => '\Sprint\Migration\Builders\UserOptionsExport',
-            'CacheCleaner' => '\Sprint\Migration\Builders\CacheCleaner',
-            'Marker' => '\Sprint\Migration\Builders\Marker',
-            'Transfer' => '\Sprint\Migration\Builders\Transfer',
+            'Version' => \Sprint\Migration\Builders\Version::class,
+            'IblockExport' => \Sprint\Migration\Builders\IblockExport::class,
+            'IblockElementsExport' => \Sprint\Migration\Builders\IblockElementsExport::class,
+            'HlblockExport' => \Sprint\Migration\Builders\HlblockExport::class,
+            'UserTypeEntities' => \Sprint\Migration\Builders\UserTypeEntities::class,
+            'UserGroupExport' => \Sprint\Migration\Builders\UserGroupExport::class,
+            'AgentExport' => \Sprint\Migration\Builders\AgentExport::class,
+            'OptionExport' => \Sprint\Migration\Builders\OptionExport::class,
+            'FormExport' => \Sprint\Migration\Builders\FormExport::class,
+            'EventExport' => \Sprint\Migration\Builders\EventExport::class,
+            'UserOptionsExport' => \Sprint\Migration\Builders\UserOptionsExport::class,
+            'CacheCleaner' => \Sprint\Migration\Builders\CacheCleaner::class,
+            'Marker' => \Sprint\Migration\Builders\Marker::class,
+            'Transfer' => \Sprint\Migration\Builders\Transfer::class,
         ];
     }
 
     protected function getDefaultSchemas()
     {
         return [
-            'IblockSchema' => '\Sprint\Migration\Schema\IblockSchema',
-            'HlblockSchema' => '\Sprint\Migration\Schema\HlblockSchema',
-            'UserTypeEntitiesSchema' => '\Sprint\Migration\Schema\UserTypeEntitiesSchema',
-            'AgentSchema' => '\Sprint\Migration\Schema\AgentSchema',
-            'GroupSchema' => '\Sprint\Migration\Schema\GroupSchema',
-            'OptionSchema' => '\Sprint\Migration\Schema\OptionSchema',
-            'EventSchema' => '\Sprint\Migration\Schema\EventSchema',
+            'IblockSchema' => \Sprint\Migration\Schema\IblockSchema::class,
+            'HlblockSchema' => \Sprint\Migration\Schema\HlblockSchema::class,
+            'UserTypeEntitiesSchema' => \Sprint\Migration\Schema\UserTypeEntitiesSchema::class,
+            'AgentSchema' => \Sprint\Migration\Schema\AgentSchema::class,
+            'GroupSchema' => \Sprint\Migration\Schema\GroupSchema::class,
+            'OptionSchema' => \Sprint\Migration\Schema\OptionSchema::class,
+            'EventSchema' => \Sprint\Migration\Schema\EventSchema::class,
         ];
     }
 }

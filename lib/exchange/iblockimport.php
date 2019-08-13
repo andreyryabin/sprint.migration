@@ -40,5 +40,7 @@ class IblockImport extends AbstractExchange
             $this->params['add']++;
             $this->restart();
         }
+
+        $this->saveParams();
     }
 }

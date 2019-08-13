@@ -29,7 +29,7 @@ abstract class abstractexchange
         outDiffIf as protected;
     }
 
-    abstract protected function execute();
+    abstract public function execute();
 
     /**
      * abstractexchange constructor.
@@ -51,9 +51,8 @@ abstract class abstractexchange
         return true;
     }
 
-    public function start()
+    protected function saveParams()
     {
-        $this->execute();
         $this->service->setRestartParams($this->params);
     }
 
