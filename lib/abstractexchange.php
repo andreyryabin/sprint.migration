@@ -8,8 +8,6 @@ use Sprint\Migration\Exceptions\RestartException;
 
 abstract class abstractexchange
 {
-    protected $service;
-
     protected $params = [];
 
     use OutTrait {
@@ -34,13 +32,12 @@ abstract class abstractexchange
 
     /**
      * abstractexchange constructor.
-     * @param RestartableEntity $service
+     * @param $params
      * @throws ExchangeException
      */
-    public function __construct(RestartableEntity $service)
+    public function __construct(&$params)
     {
-        $this->service = $service;
-        $this->params = $service->getRestartParams();
+        $this->params = $params;
 
         if (!$this->isEnabled()) {
             Throw new ExchangeException('Exchange disabled');
@@ -52,18 +49,12 @@ abstract class abstractexchange
         return true;
     }
 
-    protected function saveParams()
-    {
-        $this->service->setRestartParams($this->params);
-    }
-
     /**
      * @throws RestartException
      */
     protected function restart()
     {
-        $this->service->setRestartParams($this->params);
-        $this->service->restart();
+        Throw new RestartException();
     }
 
     /**

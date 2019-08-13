@@ -9,8 +9,28 @@ use Sprint\Migration\Exceptions\MigrationException;
  * Class Version
  * @package Sprint\Migration
  */
-class Version extends RestartableEntity
+class Version
 {
+
+    use RestartableTrait;
+
+    use OutTrait {
+        out as protected;
+        outIf as protected;
+        outProgress as protected;
+        outNotice as protected;
+        outNoticeIf as protected;
+        outInfo as protected;
+        outInfoIf as protected;
+        outSuccess as protected;
+        outSuccessIf as protected;
+        outWarning as protected;
+        outWarningIf as protected;
+        outError as protected;
+        outErrorIf as protected;
+        outDiff as protected;
+        outDiffIf as protected;
+    }
     /**
      * @var string
      */

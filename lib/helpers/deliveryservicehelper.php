@@ -4,7 +4,6 @@ namespace Sprint\Migration\Helpers;
 
 use Bitrix\Main\ArgumentException;
 use Bitrix\Main\ArgumentNullException;
-use Bitrix\Main\LoaderException;
 use Bitrix\Main\SystemException;
 use Bitrix\Sale\Delivery\ExtraServices\Manager as ExtraServicesManager;
 use Bitrix\Sale\Delivery\Services\Base;

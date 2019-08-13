@@ -5,7 +5,6 @@ namespace Sprint\Migration\Exchange;
 use CIBlockElement;
 use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Module;
 use XMLWriter;
 
 

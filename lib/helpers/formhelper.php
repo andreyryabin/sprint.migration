@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Helpers;
 
-use Bitrix\Main\LoaderException;
 use CDatabase;
 use CForm;
 use CFormAnswer;

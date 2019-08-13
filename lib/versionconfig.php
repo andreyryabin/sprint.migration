@@ -3,6 +3,27 @@
 namespace Sprint\Migration;
 
 use DirectoryIterator;
+use Sprint\Migration\Builders\AgentBuilder;
+use Sprint\Migration\Builders\BlankBuilder;
+use Sprint\Migration\Builders\CacheCleanerBuilder;
+use Sprint\Migration\Builders\EventBuilder;
+use Sprint\Migration\Builders\FormBuilder;
+use Sprint\Migration\Builders\HlblockBuilder;
+use Sprint\Migration\Builders\IblockBuilder;
+use Sprint\Migration\Builders\IblockElementsBuilder;
+use Sprint\Migration\Builders\MarkerBuilder;
+use Sprint\Migration\Builders\OptionBuilder;
+use Sprint\Migration\Builders\TransferBuilder;
+use Sprint\Migration\Builders\UserGroupBuilder;
+use Sprint\Migration\Builders\UserOptionsBuilder;
+use Sprint\Migration\Builders\UserTypeEntitiesBuilder;
+use Sprint\Migration\Schema\AgentSchema;
+use Sprint\Migration\Schema\EventSchema;
+use Sprint\Migration\Schema\GroupSchema;
+use Sprint\Migration\Schema\HlblockSchema;
+use Sprint\Migration\Schema\IblockSchema;
+use Sprint\Migration\Schema\OptionSchema;
+use Sprint\Migration\Schema\UserTypeEntitiesSchema;
 
 class VersionConfig
 {
@@ -325,33 +346,33 @@ class VersionConfig
     protected function getDefaultBuilders()
     {
         return [
-            'BlankBuilder' => \Sprint\Migration\Builders\BlankBuilder::class,
-            'IblockBuilder' => \Sprint\Migration\Builders\IblockBuilder::class,
-            'IblockElementsBuilder' => \Sprint\Migration\Builders\IblockElementsBuilder::class,
-            'HlblockBuilder' => \Sprint\Migration\Builders\HlblockBuilder::class,
-            'UserTypeEntitiesBuilder' => \Sprint\Migration\Builders\UserTypeEntitiesBuilder::class,
-            'UserGroupBuilder' => \Sprint\Migration\Builders\UserGroupBuilder::class,
-            'AgentBuilder' => \Sprint\Migration\Builders\AgentBuilder::class,
-            'OptionBuilder' => \Sprint\Migration\Builders\OptionBuilder::class,
-            'FormBuilder' => \Sprint\Migration\Builders\FormBuilder::class,
-            'EventBuilder' => \Sprint\Migration\Builders\EventBuilder::class,
-            'UserOptionsBuilder' => \Sprint\Migration\Builders\UserOptionsBuilder::class,
-            'CacheCleanerBuilder' => \Sprint\Migration\Builders\CacheCleanerBuilder::class,
-            'MarkerBuilder' => \Sprint\Migration\Builders\MarkerBuilder::class,
-            'TransferBuilder' => \Sprint\Migration\Builders\TransferBuilder::class,
+            'BlankBuilder' => BlankBuilder::class,
+            'IblockBuilder' => IblockBuilder::class,
+            'IblockElementsBuilder' => IblockElementsBuilder::class,
+            'HlblockBuilder' => HlblockBuilder::class,
+            'UserTypeEntitiesBuilder' => UserTypeEntitiesBuilder::class,
+            'UserGroupBuilder' => UserGroupBuilder::class,
+            'AgentBuilder' => AgentBuilder::class,
+            'OptionBuilder' => OptionBuilder::class,
+            'FormBuilder' => FormBuilder::class,
+            'EventBuilder' => EventBuilder::class,
+            'UserOptionsBuilder' => UserOptionsBuilder::class,
+            'CacheCleanerBuilder' => CacheCleanerBuilder::class,
+            'MarkerBuilder' => MarkerBuilder::class,
+            'TransferBuilder' => TransferBuilder::class,
         ];
     }
 
     protected function getDefaultSchemas()
     {
         return [
-            'IblockSchema' => \Sprint\Migration\Schema\IblockSchema::class,
-            'HlblockSchema' => \Sprint\Migration\Schema\HlblockSchema::class,
-            'UserTypeEntitiesSchema' => \Sprint\Migration\Schema\UserTypeEntitiesSchema::class,
-            'AgentSchema' => \Sprint\Migration\Schema\AgentSchema::class,
-            'GroupSchema' => \Sprint\Migration\Schema\GroupSchema::class,
-            'OptionSchema' => \Sprint\Migration\Schema\OptionSchema::class,
-            'EventSchema' => \Sprint\Migration\Schema\EventSchema::class,
+            'IblockSchema' => IblockSchema::class,
+            'HlblockSchema' => HlblockSchema::class,
+            'UserTypeEntitiesSchema' => UserTypeEntitiesSchema::class,
+            'AgentSchema' => AgentSchema::class,
+            'GroupSchema' => GroupSchema::class,
+            'OptionSchema' => OptionSchema::class,
+            'EventSchema' => EventSchema::class,
         ];
     }
 }
