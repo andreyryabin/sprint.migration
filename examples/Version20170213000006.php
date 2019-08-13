@@ -2,11 +2,20 @@
 
 namespace Sprint\Migration;
 
+use Bitrix\Main\ArgumentException;
+use Bitrix\Main\SystemException;
+
 class Version20170213000006 extends Version
 {
 
     protected $description = "Пример работы с highload-блоками # 2";
 
+    /**
+     * @throws Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws SystemException
+     * @return bool|void
+     */
     public function up()
     {
         $helper = $this->getHelperManager();
@@ -27,6 +36,12 @@ class Version20170213000006 extends Version
         );
     }
 
+    /**
+     * @throws Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws SystemException
+     * @return bool|void
+     */
     public function down()
     {
         $helper = $this->getHelperManager();

@@ -4,6 +4,8 @@ namespace Sprint\Migration\Helpers;
 
 use Bitrix\Highloadblock as HL;
 use Bitrix\Main\ArgumentException;
+use Bitrix\Main\LoaderException;
+use Bitrix\Main\ObjectPropertyException;
 use Bitrix\Main\SystemException;
 use CTask;
 use Exception;
@@ -14,6 +16,11 @@ use Sprint\Migration\Helper;
 class HlblockHelper extends Helper
 {
 
+    /**
+     * HlblockHelper constructor.
+     * @throws HelperException
+     * @throws LoaderException
+     */
     public function __construct()
     {
         $this->checkModules(['highloadblock']);
@@ -23,6 +30,7 @@ class HlblockHelper extends Helper
      * Получает список highload-блоков
      * @param array $filter
      * @throws ArgumentException
+     * @throws SystemException
      * @return array
      */
     public function getHlblocks($filter = [])
@@ -48,6 +56,7 @@ class HlblockHelper extends Helper
      * Данные подготовлены для экспорта в миграцию или схему
      * @param array $filter
      * @throws ArgumentException
+     * @throws SystemException
      * @return array
      */
     public function exportHlblocks($filter = [])
@@ -66,6 +75,7 @@ class HlblockHelper extends Helper
      * Получает список полей highload-блока
      * @param $hlblockName int|string|array - id, имя или фильтр
      * @throws ArgumentException
+     * @throws SystemException
      * @return array
      */
     public function getFields($hlblockName)
@@ -84,6 +94,7 @@ class HlblockHelper extends Helper
      * @param array $field
      * @throws ArgumentException
      * @throws HelperException
+     * @throws SystemException
      * @return bool|int|mixed
      */
     public function saveField($hlblockName, $field = [])
@@ -141,6 +152,7 @@ class HlblockHelper extends Helper
      * @param $fieldName
      * @throws ArgumentException
      * @throws HelperException
+     * @throws SystemException
      * @return bool
      */
     public function deleteField($hlblockName, $fieldName)
@@ -157,6 +169,7 @@ class HlblockHelper extends Helper
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $hlblockName
      * @throws ArgumentException
+     * @throws SystemException
      * @return array
      */
     public function exportFields($hlblockName)
@@ -175,6 +188,7 @@ class HlblockHelper extends Helper
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $hlblockName
      * @throws ArgumentException
+     * @throws SystemException
      * @return mixed
      */
     public function exportHlblock($hlblockName)
@@ -188,6 +202,7 @@ class HlblockHelper extends Helper
      * Получает highload-блок
      * @param $hlblockName - id, имя или фильтр
      * @throws ArgumentException
+     * @throws SystemException
      * @return array|false
      */
     public function getHlblock($hlblockName)
@@ -219,7 +234,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      * @throws ArgumentException
      * @throws HelperException
-     * @return array|false
+     * @throws SystemException
+     * @return array|false|void
      */
     public function getHlblockIfExists($hlblockName)
     {
@@ -236,7 +252,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName - id, имя или фильтр
      * @throws ArgumentException
      * @throws HelperException
-     * @return mixed
+     * @throws SystemException
+     * @return int|void
      */
     public function getHlblockIdIfExists($hlblockName)
     {
@@ -252,6 +269,7 @@ class HlblockHelper extends Helper
      * Получает id highload-блока
      * @param $hlblockName - id, имя или фильтр
      * @throws ArgumentException
+     * @throws SystemException
      * @return int|mixed
      */
     public function getHlblockId($hlblockName)
@@ -265,7 +283,7 @@ class HlblockHelper extends Helper
      * @param $fields , обязательные параметры - название сущности, название таблицы в БД
      * @throws SystemException
      * @throws HelperException
-     * @return int
+     * @return int|void
      */
     public function addHlblock($fields)
     {
@@ -312,8 +330,11 @@ class HlblockHelper extends Helper
      * Обновляет highload-блок
      * @param $hlblockId
      * @param $fields
+     * @throws ArgumentException
      * @throws HelperException
-     * @return mixed
+     * @throws SystemException
+     * @throws ObjectPropertyException
+     * @return int|void
      */
     public function updateHlblock($hlblockId, $fields)
     {
@@ -338,6 +359,7 @@ class HlblockHelper extends Helper
      * @param $fields
      * @throws ArgumentException
      * @throws HelperException
+     * @throws SystemException
      * @return bool|mixed
      */
     public function updateHlblockIfExists($hlblockName, $fields)
@@ -354,7 +376,7 @@ class HlblockHelper extends Helper
      * Удаляет highload-блок
      * @param $hlblockId
      * @throws HelperException
-     * @return bool
+     * @return bool|void
      */
     public function deleteHlblock($hlblockId)
     {
@@ -371,6 +393,7 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      * @throws ArgumentException
      * @throws HelperException
+     * @throws SystemException
      * @return bool
      */
     public function deleteHlblockIfExists($hlblockName)
@@ -388,6 +411,9 @@ class HlblockHelper extends Helper
      * возвращает массив вида [$groupId => $letter]
      *
      * @param $hlblockId
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws ObjectPropertyException
      * @return array
      */
     public function getGroupPermissions($hlblockId)
@@ -434,6 +460,13 @@ class HlblockHelper extends Helper
         }
     }
 
+    /**
+     * @param $hlblockId
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws ObjectPropertyException
+     * @return array
+     */
     protected function getGroupRights($hlblockId)
     {
         $dbres = HL\HighloadBlockRightsTable::getList(
@@ -492,6 +525,13 @@ class HlblockHelper extends Helper
         return $item;
     }
 
+    /**
+     * @param $hlblockId
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws ObjectPropertyException
+     * @return array
+     */
     protected function getHblockLangs($hlblockId)
     {
         $result = [];
@@ -514,6 +554,13 @@ class HlblockHelper extends Helper
         return $result;
     }
 
+    /**
+     * @param $hlblockId
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws ObjectPropertyException
+     * @return int
+     */
     protected function deleteHblockLangs($hlblockId)
     {
         $del = 0;
@@ -535,6 +582,12 @@ class HlblockHelper extends Helper
         return $del;
     }
 
+    /**
+     * @param $hlblockId
+     * @param array $lang
+     * @throws Exception
+     * @return int
+     */
     protected function addHblockLangs($hlblockId, $lang = [])
     {
         $add = 0;
@@ -558,6 +611,13 @@ class HlblockHelper extends Helper
         return $add;
     }
 
+    /**
+     * @param $hlblockId
+     * @param array $lang
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws ObjectPropertyException
+     */
     protected function replaceHblockLangs($hlblockId, $lang = [])
     {
         if (!empty($lang) && is_array($lang)) {

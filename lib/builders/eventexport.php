@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\HelperManager;
+use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -23,9 +23,12 @@ class EventExport extends VersionBuilder
     }
 
 
+    /**
+     * @throws RebuildException
+     */
     protected function execute()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $this->addField('event_types', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_EventExport_event_types'),
@@ -60,9 +63,12 @@ class EventExport extends VersionBuilder
     }
 
 
+    /**
+     * @return array
+     */
     protected function getEventTypesStructure()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         $eventTypes = $helper->Event()->getEventTypes([
             'LID' => LANGUAGE_ID,
         ]);

@@ -7,6 +7,11 @@ class Version20150520000004 extends Version
 
     protected $description = "Пример отображения списка и формы для элементов инфоблока в админке";
 
+    /**
+     * @throws Exceptions\HelperException
+     * @throws Exceptions\RestartException
+     * @return bool|void
+     */
     public function up()
     {
 
@@ -53,11 +58,13 @@ class Version20150520000004 extends Version
                 'USER_FIELDS_ADD' => 'Добавить пользовательское свойство',
             ],
         ]);
-
-
-
     }
 
+    /**
+     * @throws Exceptions\HelperException
+     * @throws Exceptions\RestartException
+     * @return bool|void
+     */
     public function down()
     {
         //

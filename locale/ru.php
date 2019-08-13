@@ -119,6 +119,7 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockFields" => "Поля инфоблока",
     "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockProperties" => "Свойства инфоблока",
     "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockUserOptions" => "Настройки формы редактирования и списка",
+    "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockElements" => "Элементы",
 
     "SPRINT_MIGRATION_BUILDER_UserOptionsExport_Title" => "Создать миграцию для пользовательских настроек",
     "SPRINT_MIGRATION_BUILDER_UserOptionsExport_Desc" => "",

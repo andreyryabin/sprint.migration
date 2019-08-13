@@ -7,6 +7,11 @@ class Version20150520000003 extends Version
 
     protected $description = "Примеры вывода сообщений";
 
+    /**
+     * @throws Exceptions\HelperException
+     * @throws Exceptions\RestartException
+     * @return bool|void
+     */
     public function up()
     {
         $this->out('Примеры вывода сообщений');
@@ -17,6 +22,11 @@ class Version20150520000003 extends Version
         $this->outProgress('Прогресс', 10, 100);
     }
 
+    /**
+     * @throws Exceptions\HelperException
+     * @throws Exceptions\RestartException
+     * @return bool|void
+     */
     public function down()
     {
         //your code ...

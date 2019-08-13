@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\HelperManager;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -11,7 +10,7 @@ class OptionExport extends VersionBuilder
 
     protected function isBuilderEnabled()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         return $helper->Option()->isEnabled();
     }
 
@@ -26,7 +25,7 @@ class OptionExport extends VersionBuilder
 
     protected function execute()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $this->addField('module_id', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_OptionExport_module_id'),
@@ -68,7 +67,7 @@ class OptionExport extends VersionBuilder
 
     protected function getModules()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $items = $helper->Option()->getModules();
 

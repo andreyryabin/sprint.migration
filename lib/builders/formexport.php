@@ -3,7 +3,6 @@
 namespace Sprint\Migration\Builders;
 
 use Bitrix\Main\Loader;
-use Sprint\Migration\HelperManager;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -24,7 +23,7 @@ class FormExport extends VersionBuilder
 
     protected function execute()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $forms = $helper->Form()->getList();
 

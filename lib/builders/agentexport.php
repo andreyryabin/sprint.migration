@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\HelperManager;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -25,7 +24,7 @@ class AgentExport extends VersionBuilder
 
     protected function execute()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $this->addField('agent_id', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_AgentExport_agent_id'),
@@ -67,7 +66,7 @@ class AgentExport extends VersionBuilder
 
     protected function getAgents()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $agents = $helper->Agent()->getList([]);
 

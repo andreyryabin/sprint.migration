@@ -3,7 +3,7 @@
 namespace Sprint\Migration\Schema;
 
 use Sprint\Migration\AbstractSchema;
-use Sprint\Migration\HelperManager;
+use Sprint\Migration\Exceptions\HelperException;
 
 class GroupSchema extends AbstractSchema
 {
@@ -32,9 +32,10 @@ class GroupSchema extends AbstractSchema
         $this->out('Группы пользователей: %d', count($schemaItems['items']));
     }
 
+
     public function export()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $exportItems = $helper->UserGroup()->exportGroups();
 
@@ -62,16 +63,23 @@ class GroupSchema extends AbstractSchema
     }
 
 
+    /**
+     * @param $fields
+     * @throws HelperException
+     */
     protected function saveGroup($fields)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         $helper->UserGroup()->setTestMode($this->testMode);
         $helper->UserGroup()->saveGroup($fields['STRING_ID'], $fields);
     }
 
+    /**
+     * @param array $skip
+     */
     protected function cleanGroups($skip = [])
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $olds = $helper->UserGroup()->getGroups();
         foreach ($olds as $old) {

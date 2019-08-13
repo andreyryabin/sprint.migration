@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\HelperManager;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -25,7 +24,7 @@ class UserOptionsExport extends VersionBuilder
 
     protected function execute()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $this->addField('what', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserOptionsExport_What'),

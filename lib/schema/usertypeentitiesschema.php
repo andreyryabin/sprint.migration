@@ -2,8 +2,9 @@
 
 namespace Sprint\Migration\Schema;
 
+use Bitrix\Main\ArgumentException;
 use Sprint\Migration\AbstractSchema;
-use Sprint\Migration\HelperManager;
+use Sprint\Migration\Exceptions\HelperException;
 
 class UserTypeEntitiesSchema extends AbstractSchema
 {
@@ -36,7 +37,7 @@ class UserTypeEntitiesSchema extends AbstractSchema
 
     public function export()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $exportItems = $helper->UserTypeEntity()->exportUserTypeEntities();
         $exportItems = $this->filterEntities($exportItems);
@@ -67,17 +68,25 @@ class UserTypeEntitiesSchema extends AbstractSchema
     }
 
 
+    /**
+     * @param $fields
+     * @throws ArgumentException
+     * @throws HelperException
+     */
     protected function saveUserTypeEntity($fields)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         $helper->UserTypeEntity()->setTestMode($this->testMode);
         $helper->UserTypeEntity()->saveUserTypeEntity($fields);
     }
 
+    /**
+     * @param array $skip
+     * @throws HelperException
+     */
     protected function clearUserTypeEntities($skip = [])
     {
-        $helper = HelperManager::getInstance();
-
+        $helper = $this->getHelperManager();
         $olds = $helper->UserTypeEntity()->exportUserTypeEntities();
         $olds = $this->filterEntities($olds);
 
@@ -96,7 +105,7 @@ class UserTypeEntitiesSchema extends AbstractSchema
         $entityId = $item['ENTITY_ID'];
 
         if (!isset($this->transforms[$entityId])) {
-            $helper = HelperManager::getInstance();
+            $helper = $this->getHelperManager();
             $this->transforms[$entityId] = $helper->UserTypeEntity()->transformEntityId($entityId);
         }
 

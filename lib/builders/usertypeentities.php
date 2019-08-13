@@ -3,7 +3,6 @@
 namespace Sprint\Migration\Builders;
 
 use CUserTypeEntity;
-use Sprint\Migration\HelperManager;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -27,7 +26,7 @@ class UserTypeEntities extends VersionBuilder
 
     protected function execute()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $this->addField('type_codes', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId'),

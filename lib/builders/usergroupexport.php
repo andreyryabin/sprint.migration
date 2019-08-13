@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\HelperManager;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -25,7 +24,7 @@ class UserGroupExport extends VersionBuilder
 
     protected function execute()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $this->addField('user_group', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport_user_group'),
@@ -68,7 +67,7 @@ class UserGroupExport extends VersionBuilder
 
     protected function getUserGroups()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $groups = $helper->UserGroup()->getGroups();
 

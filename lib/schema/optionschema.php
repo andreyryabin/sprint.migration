@@ -2,8 +2,9 @@
 
 namespace Sprint\Migration\Schema;
 
+use Bitrix\Main\ArgumentException;
+use Bitrix\Main\SystemException;
 use Sprint\Migration\AbstractSchema;
-use Sprint\Migration\HelperManager;
 
 class OptionSchema extends AbstractSchema
 {
@@ -20,9 +21,12 @@ class OptionSchema extends AbstractSchema
         return ['options/'];
     }
 
+    /**
+     * @return bool
+     */
     protected function isBuilderEnabled()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         return $helper->Option()->isEnabled();
     }
 
@@ -41,9 +45,13 @@ class OptionSchema extends AbstractSchema
         $this->out('Настроек: %d', $cnt);
     }
 
+    /**
+     * @throws ArgumentException
+     * @throws SystemException
+     */
     public function export()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $modules = $helper->Option()->getModules();
 
@@ -70,9 +78,13 @@ class OptionSchema extends AbstractSchema
     }
 
 
+    /**
+     * @param $items
+     * @throws ArgumentException
+     */
     protected function saveOptions($items)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         $helper->Option()->setTestMode($this->testMode);
 
         foreach ($items as $item) {

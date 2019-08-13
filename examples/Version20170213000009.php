@@ -8,6 +8,10 @@ class Version20170213000009 extends Version
 
     protected $description = "Пример работы с почтовыми шаблонами";
 
+    /**
+     * @throws Exceptions\HelperException
+     * @return bool|void
+     */
     public function up()
     {
         $helper = $this->getHelperManager();
@@ -38,6 +42,9 @@ class Version20170213000009 extends Version
 
     }
 
+    /**
+     * @return bool|void
+     */
     public function down()
     {
         //your code ...

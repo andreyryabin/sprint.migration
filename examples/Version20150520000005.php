@@ -2,11 +2,20 @@
 
 namespace Sprint\Migration;
 
+use Bitrix\Main\ArgumentException;
+use Bitrix\Main\SystemException;
+
 class Version20150520000005 extends Version
 {
 
     protected $description = "Пример работы с highload-блоками";
 
+    /**
+     * @throws Exceptions\HelperException
+     * @throws ArgumentException
+     * @throws SystemException
+     * @return bool|void
+     */
     public function up()
     {
 
@@ -17,16 +26,23 @@ class Version20150520000005 extends Version
             'TABLE_NAME' => 'hl_test',
         ]);
 
-        $helper->Hlblock()->saveField($hlblockId, 'UF_NAME', [
+        $helper->Hlblock()->saveField($hlblockId, [
+            'FIELD_NAME' => 'UF_NAME',
             'USER_TYPE_ID' => 'string',
         ]);
 
-        $helper->Hlblock()->saveField($hlblockId, 'UF_CODE', [
+        $helper->Hlblock()->saveField($hlblockId, [
+            'FIELD_NAME' => 'UF_CODE',
             'USER_TYPE_ID' => 'string',
         ]);
 
     }
 
+    /**
+     * @throws Exceptions\HelperException
+     * @throws Exceptions\RestartException
+     * @return bool|void
+     */
     public function down()
     {
         //your code ...

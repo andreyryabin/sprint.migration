@@ -4,30 +4,10 @@ namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\RestartException;
 
-class SchemaManager
+class SchemaManager extends RestartableService
 {
-    use OutTrait {
-        out as protected;
-        outIf as protected;
-        outProgress as protected;
-        outNotice as protected;
-        outNoticeIf as protected;
-        outInfo as protected;
-        outInfoIf as protected;
-        outSuccess as protected;
-        outSuccessIf as protected;
-        outWarning as protected;
-        outWarningIf as protected;
-        outError as protected;
-        outErrorIf as protected;
-        outDiff as protected;
-        outDiffIf as protected;
-    }
-
     /** @var VersionConfig */
     protected $versionConfig = null;
-
-    protected $params = [];
 
     private $progress = [];
 
@@ -42,7 +22,6 @@ class SchemaManager
                 $configName
             );
         }
-
         $this->params = $params;
     }
 
@@ -263,6 +242,7 @@ class SchemaManager
     {
         $file = $this->getQueueFile($schema->getName());
         if (is_file($file)) {
+            /** @noinspection PhpIncludeInspection */
             $items = include $file;
             if (
                 $items &&
@@ -275,7 +255,6 @@ class SchemaManager
 
         return [];
     }
-
 
     protected function saveQueue(AbstractSchema $schema)
     {
@@ -294,18 +273,5 @@ class SchemaManager
     {
         $name = 'queue__' . strtolower($name);
         return Module::getDocRoot() . '/bitrix/tmp/sprint.migration/' . $name . '.php';
-    }
-
-    /**
-     * @throws RestartException
-     */
-    protected function restart()
-    {
-        Throw new RestartException('restart');
-    }
-
-    public function getRestartParams()
-    {
-        return $this->params;
     }
 }

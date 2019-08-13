@@ -3,11 +3,23 @@
 namespace Sprint\Migration;
 
 
+use Bitrix\Main\ArgumentException;
+use Bitrix\Main\ObjectPropertyException;
+use Bitrix\Main\SystemException;
+use Exception;
+
 class Version20190606000011 extends Version
 {
 
     protected $description = "Пример работы с доступами групп к инфоблоками и highload-блоками";
 
+    /**
+     * @throws ArgumentException
+     * @throws ObjectPropertyException
+     * @throws SystemException
+     * @throws Exception
+     * @return bool|void
+     */
     public function up()
     {
         $helper = $this->getHelperManager();
@@ -34,6 +46,9 @@ class Version20190606000011 extends Version
         }
     }
 
+    /**
+     * @return bool|void
+     */
     public function down()
     {
         //your code ...

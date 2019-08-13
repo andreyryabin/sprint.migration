@@ -3,7 +3,7 @@
 namespace Sprint\Migration\Schema;
 
 use Sprint\Migration\AbstractSchema;
-use Sprint\Migration\HelperManager;
+use Sprint\Migration\Exceptions\HelperException;
 
 class AgentSchema extends AbstractSchema
 {
@@ -32,9 +32,10 @@ class AgentSchema extends AbstractSchema
         $this->out('Агенты: %d', count($schemaItems['items']));
     }
 
+
     public function export()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $exportItems = $helper->Agent()->exportAgents();
 
@@ -62,16 +63,23 @@ class AgentSchema extends AbstractSchema
     }
 
 
+    /**
+     * @param $item
+     * @throws HelperException
+     */
     protected function saveAgent($item)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         $helper->Agent()->setTestMode($this->testMode);
         $helper->Agent()->saveAgent($item);
     }
 
+    /**
+     * @param array $skip
+     */
     protected function cleanAgents($skip = [])
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $olds = $helper->Agent()->getList();
         foreach ($olds as $old) {

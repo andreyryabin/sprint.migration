@@ -5,34 +5,14 @@ namespace Sprint\Migration;
 use DirectoryIterator;
 use SplFileInfo;
 
-abstract class AbstractSchema
+abstract class AbstractSchema extends RestartableService
 {
-    use OutTrait {
-        out as protected;
-        outIf as protected;
-        outProgress as protected;
-        outNotice as protected;
-        outNoticeIf as protected;
-        outInfo as protected;
-        outInfoIf as protected;
-        outSuccess as protected;
-        outSuccessIf as protected;
-        outWarning as protected;
-        outWarningIf as protected;
-        outError as protected;
-        outErrorIf as protected;
-        outDiff as protected;
-        outDiffIf as protected;
-    }
-
     private $name;
 
     /** @var VersionConfig */
     private $versionConfig = null;
 
     private $queue = [];
-
-    protected $params = [];
 
     protected $testMode = 0;
 

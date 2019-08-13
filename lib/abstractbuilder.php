@@ -8,27 +8,8 @@ use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 
 
-abstract class AbstractBuilder
+abstract class AbstractBuilder extends RestartableService
 {
-
-    use OutTrait {
-        out as protected;
-        outIf as protected;
-        outProgress as protected;
-        outNotice as protected;
-        outNoticeIf as protected;
-        outInfo as protected;
-        outInfoIf as protected;
-        outSuccess as protected;
-        outSuccessIf as protected;
-        outWarning as protected;
-        outWarningIf as protected;
-        outError as protected;
-        outErrorIf as protected;
-        outDiff as protected;
-        outDiffIf as protected;
-    }
-
     private $name;
 
     /** @var VersionConfig */
@@ -41,8 +22,6 @@ abstract class AbstractBuilder
     ];
 
     private $fields = [];
-
-    protected $params = [];
 
     private $execStatus = '';
 
@@ -202,11 +181,6 @@ abstract class AbstractBuilder
         return ($this->execStatus == 'restart');
     }
 
-    public function getRestartParams()
-    {
-        return $this->params;
-    }
-
     private function buildExecute()
     {
         $this->execStatus = '';
@@ -264,14 +238,6 @@ abstract class AbstractBuilder
     {
         $this->unbindField($code);
         Throw new RebuildException('rebuild form');
-    }
-
-    /**
-     * @throws RestartException
-     */
-    protected function restart()
-    {
-        Throw new RestartException('restart form');
     }
 
     /**

@@ -56,6 +56,12 @@ class HelperManager
         return static::$instance;
     }
 
+    /**
+     * @param $name
+     * @param $arguments
+     * @throws HelperException
+     * @return Helper
+     */
     public function __call($name, $arguments)
     {
         return $this->callHelper($name);

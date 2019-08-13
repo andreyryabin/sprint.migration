@@ -2,8 +2,6 @@
 
 namespace Sprint\Migration\Helpers\UserOptions;
 
-use Sprint\Migration\HelperManager;
-
 trait IblockTrait
 {
     private $titles = [];
@@ -146,7 +144,7 @@ trait IblockTrait
 
     /**
      * @param $iblockId
-     * @return mixed
+     * @return array|void
      * @deprecated
      */
     public function extractElementForm($iblockId)
@@ -161,9 +159,13 @@ trait IblockTrait
     }
 
 
+    /**
+     * @param $iblockId
+     * @return bool
+     */
     protected function initializeIblockVars($iblockId)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         /** @compability */
         if (empty($iblockId)) {

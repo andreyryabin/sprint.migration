@@ -2,9 +2,11 @@
 
 namespace Sprint\Migration\Schema;
 
+use Bitrix\Main\ArgumentException;
 use Bitrix\Main\Loader;
+use Bitrix\Main\SystemException;
 use Sprint\Migration\AbstractSchema;
-use Sprint\Migration\HelperManager;
+use Sprint\Migration\Exceptions\HelperException;
 
 class HlblockSchema extends AbstractSchema
 {
@@ -42,9 +44,13 @@ class HlblockSchema extends AbstractSchema
         $this->out('Полей: %d', $cntFields);
     }
 
+    /**
+     * @throws ArgumentException
+     * @throws SystemException
+     */
     public function export()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $exportItems = $helper->Hlblock()->exportHlblocks();
 
@@ -93,26 +99,45 @@ class HlblockSchema extends AbstractSchema
     }
 
 
+    /**
+     * @param $item
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws HelperException
+     */
     protected function saveHlblock($item)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         $helper->Hlblock()->setTestMode($this->testMode);
         $helper->Hlblock()->saveHlblock($item);
     }
 
+    /**
+     * @param $hlblockUid
+     * @param $field
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws HelperException
+     */
     protected function saveField($hlblockUid, $field)
     {
         $hlblockId = $this->getHlblockId($hlblockUid);
         if (!empty($hlblockId)) {
-            $helper = HelperManager::getInstance();
+            $helper = $this->getHelperManager();
             $helper->Hlblock()->setTestMode($this->testMode);
             $helper->Hlblock()->saveField($hlblockId, $field);
         }
     }
 
+    /**
+     * @param array $skip
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws HelperException
+     */
     protected function cleanHlblocks($skip = [])
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $olds = $helper->Hlblock()->getHlblocks();
         foreach ($olds as $old) {
@@ -124,11 +149,18 @@ class HlblockSchema extends AbstractSchema
         }
     }
 
+    /**
+     * @param $hlblockUid
+     * @param array $skip
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws HelperException
+     */
     protected function cleanFields($hlblockUid, $skip = [])
     {
         $hlblockId = $this->getHlblockId($hlblockUid);
         if (!empty($hlblockId)) {
-            $helper = HelperManager::getInstance();
+            $helper = $this->getHelperManager();
             $olds = $helper->Hlblock()->getFields($hlblockId);
             foreach ($olds as $old) {
                 $uniq = $this->getUniqField($old);
@@ -140,9 +172,15 @@ class HlblockSchema extends AbstractSchema
         }
     }
 
+    /**
+     * @param $hlblockUid
+     * @throws ArgumentException
+     * @throws SystemException
+     * @return mixed
+     */
     protected function getHlblockId($hlblockUid)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         if (isset($this->uniqs[$hlblockUid])) {
             return $this->uniqs[$hlblockUid];

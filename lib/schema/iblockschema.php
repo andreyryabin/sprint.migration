@@ -3,14 +3,19 @@
 namespace Sprint\Migration\Schema;
 
 use Bitrix\Main\Loader;
+use Bitrix\Main\LoaderException;
 use Sprint\Migration\AbstractSchema;
-use Sprint\Migration\HelperManager;
+use Sprint\Migration\Exceptions\HelperException;
 
 class IblockSchema extends AbstractSchema
 {
 
     private $iblockIds = [];
 
+    /**
+     * @throws LoaderException
+     * @return bool
+     */
     protected function isBuilderEnabled()
     {
         return (Loader::includeModule('iblock'));
@@ -59,7 +64,7 @@ class IblockSchema extends AbstractSchema
 
     public function export()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $types = $helper->Iblock()->getIblockTypes();
         $exportTypes = [];
@@ -145,14 +150,14 @@ class IblockSchema extends AbstractSchema
 
     protected function saveIblockType($fields = [])
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         $helper->Iblock()->setTestMode($this->testMode);
         $helper->Iblock()->saveIblockType($fields);
     }
 
     protected function saveIblock($fields)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         $helper->Iblock()->setTestMode($this->testMode);
         $helper->Iblock()->saveIblock($fields);
     }
@@ -161,7 +166,7 @@ class IblockSchema extends AbstractSchema
     {
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = HelperManager::getInstance();
+            $helper = $this->getHelperManager();
             $helper->Iblock()->setTestMode($this->testMode);
             $helper->Iblock()->saveIblockFields($iblockId, $fields);
         }
@@ -171,7 +176,7 @@ class IblockSchema extends AbstractSchema
     {
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = HelperManager::getInstance();
+            $helper = $this->getHelperManager();
             $helper->Iblock()->setTestMode($this->testMode);
             foreach ($properties as $property) {
                 $helper->Iblock()->saveProperty($iblockId, $property);
@@ -183,17 +188,22 @@ class IblockSchema extends AbstractSchema
     {
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = HelperManager::getInstance();
+            $helper = $this->getHelperManager();
             $helper->UserOptions()->setTestMode($this->testMode);
             $helper->UserOptions()->saveElementForm($iblockId, $elementForm);
         }
     }
 
+    /**
+     * @param $iblockUid
+     * @param array $skip
+     * @throws HelperException
+     */
     protected function cleanProperties($iblockUid, $skip = [])
     {
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = HelperManager::getInstance();
+            $helper = $this->getHelperManager();
             $olds = $helper->Iblock()->getProperties($iblockId);
             foreach ($olds as $old) {
                 if (!empty($old['CODE'])) {
@@ -208,9 +218,13 @@ class IblockSchema extends AbstractSchema
         }
     }
 
+    /**
+     * @param array $skip
+     * @throws HelperException
+     */
     protected function cleanIblockTypes($skip = [])
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $olds = $helper->Iblock()->getIblockTypes();
         foreach ($olds as $old) {
@@ -222,9 +236,13 @@ class IblockSchema extends AbstractSchema
         }
     }
 
+    /**
+     * @param array $skip
+     * @throws HelperException
+     */
     protected function cleanIblocks($skip = [])
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $olds = $helper->Iblock()->getIblocks();
         foreach ($olds as $old) {
@@ -259,9 +277,10 @@ class IblockSchema extends AbstractSchema
         return $iblock['IBLOCK_TYPE_ID'] . ':' . $iblock['CODE'];
     }
 
+
     protected function getIblockId($iblockUid)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         if (isset($this->iblockIds[$iblockUid])) {
             return $this->iblockIds[$iblockUid];

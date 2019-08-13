@@ -3,7 +3,7 @@
 namespace Sprint\Migration\Schema;
 
 use Sprint\Migration\AbstractSchema;
-use Sprint\Migration\HelperManager;
+use Sprint\Migration\Exceptions\HelperException;
 
 class EventSchema extends AbstractSchema
 {
@@ -21,7 +21,7 @@ class EventSchema extends AbstractSchema
 
     protected function isBuilderEnabled()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         return $helper->Event()->isEnabled();
     }
 
@@ -47,7 +47,7 @@ class EventSchema extends AbstractSchema
 
     public function export()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         $eventTypes = $helper->Event()->getEventTypes([]);
         foreach ($eventTypes as $eventType) {
             $eventName = $eventType['EVENT_NAME'];
@@ -106,9 +106,14 @@ class EventSchema extends AbstractSchema
 
     }
 
+    /**
+     * @param $eventName
+     * @param $fields
+     * @throws HelperException
+     */
     protected function saveEventType($eventName, $fields)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         $helper->Event()->setTestMode($this->testMode);
 
         if (isset($fields['DESCRIPTION']) && is_array($fields['DESCRIPTION'])) {
@@ -118,9 +123,14 @@ class EventSchema extends AbstractSchema
         $helper->Event()->saveEventType($eventName, $fields);
     }
 
+    /**
+     * @param $eventName
+     * @param $fields
+     * @throws HelperException
+     */
     protected function saveEventMessage($eventName, $fields)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
         $helper->Event()->setTestMode($this->testMode);
 
         if (isset($fields['MESSAGE']) && is_array($fields['MESSAGE'])) {
@@ -130,9 +140,13 @@ class EventSchema extends AbstractSchema
         $helper->Event()->saveEventMessage($eventName, $fields);
     }
 
+    /**
+     * @param array $skip
+     * @throws HelperException
+     */
     protected function cleanEventTypes($skip = [])
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $olds = $helper->Event()->getEventTypes([]);
         foreach ($olds as $old) {
@@ -144,9 +158,14 @@ class EventSchema extends AbstractSchema
         }
     }
 
+    /**
+     * @param $eventName
+     * @param array $skip
+     * @throws HelperException
+     */
     protected function cleanEventMessages($eventName, $skip = [])
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $olds = $helper->Event()->getEventMessages($eventName);
         foreach ($olds as $old) {

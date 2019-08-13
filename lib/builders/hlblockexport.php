@@ -3,7 +3,6 @@
 namespace Sprint\Migration\Builders;
 
 use Bitrix\Main\Loader;
-use Sprint\Migration\HelperManager;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -26,7 +25,7 @@ class HlblockExport extends VersionBuilder
 
     protected function execute()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $this->addField('hlblock_id', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId'),
@@ -69,7 +68,7 @@ class HlblockExport extends VersionBuilder
 
     protected function getHlStructure()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $hlblocks = $helper->Hlblock()->getHlblocks();
 

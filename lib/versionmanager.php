@@ -6,6 +6,7 @@ use CMain;
 use DirectoryIterator;
 use Exception;
 use ReflectionClass;
+use ReflectionException;
 use SplFileInfo;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
@@ -69,7 +70,7 @@ class VersionManager
 
             $versionInstance = $this->getVersionInstance($meta);
 
-            $versionInstance->setParams($params);
+            $versionInstance->setRestartParams($params);
 
             if ($action == 'up') {
 
@@ -88,7 +89,7 @@ class VersionManager
             return true;
 
         } catch (RestartException $e) {
-            $this->restarts[$versionName] = isset($versionInstance) ? $versionInstance->getParams() : [];
+            $this->restarts[$versionName] = isset($versionInstance) ? $versionInstance->getRestartParams() : [];
 
         } catch (Exception $e) {
             $this->lastException = $e;
@@ -475,7 +476,7 @@ class VersionManager
                 $props = $reflect->getDefaultProperties();
                 $descr = $props['description'];
                 $filter = $props['version_filter'];
-            } catch (\ReflectionException $e) {
+            } catch (ReflectionException $e) {
             }
         }
 

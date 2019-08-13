@@ -3,7 +3,11 @@
 namespace Sprint\Migration\Builders;
 
 use Bitrix\Main\Loader;
-use Sprint\Migration\HelperManager;
+use Bitrix\Main\LoaderException;
+use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Exchange\IblockImport;
 use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -11,6 +15,10 @@ use Sprint\Migration\VersionBuilder;
 class IblockExport extends VersionBuilder
 {
 
+    /**
+     * @throws LoaderException
+     * @return bool
+     */
     protected function isBuilderEnabled()
     {
         return (Loader::includeModule('iblock'));
@@ -24,9 +32,15 @@ class IblockExport extends VersionBuilder
         $this->addVersionFields();
     }
 
+    /**
+     * @throws HelperException
+     * @throws RebuildException
+     * @throws LoaderException
+     * @throws RestartException
+     */
     protected function execute()
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         $this->addField('iblock_id', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_IblockId'),
@@ -60,6 +74,10 @@ class IblockExport extends VersionBuilder
                 [
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockUserOptions'),
                     'value' => 'iblockUserOptions',
+                ],
+                [
+                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockElements'),
+                    'value' => 'iblockElements',
                 ],
             ],
         ]);
@@ -133,6 +151,12 @@ class IblockExport extends VersionBuilder
             $exportElementList = $helper->UserOptions()->exportElementList($iblockId);
             $exportSectionList = $helper->UserOptions()->exportSectionList($iblockId);
         }
+        if (in_array('iblockElements', $what)) {
+            $import = new IblockImport($this);
+            $import->from('elements.xml');
+            $import->to($helper->Iblock()->getIblockId('content_news'));
+            $import->execute();
+        }
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockExport.php',
@@ -153,6 +177,8 @@ class IblockExport extends VersionBuilder
 
     /**
      * Структура инфоблоков для построения выпадающего списка
+     * @throws LoaderException
+     * @throws HelperException
      * @return array
      */
     public function getIblocksStructure()
@@ -182,6 +208,10 @@ class IblockExport extends VersionBuilder
     }
 
 
+    /**
+     * @param array $props
+     * @return array
+     */
     protected function getPropsStructure($props = [])
     {
         $structure = [

@@ -7,6 +7,7 @@ use Bitrix\Main\ArgumentNullException;
 use Bitrix\Main\ArgumentOutOfRangeException;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\ModuleManager;
+use Bitrix\Main\SystemException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Tables\OptionTable;
 
@@ -33,6 +34,7 @@ class OptionHelper extends Helper
     /**
      * @param array $filter
      * @throws ArgumentException
+     * @throws SystemException
      * @return array
      */
     public function getOptions($filter = [])
