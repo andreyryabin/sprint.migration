@@ -4,7 +4,7 @@ namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\RestartException;
 
-class SchemaManager extends RestartableService
+class SchemaManager extends RestartableEntity
 {
     /** @var VersionConfig */
     protected $versionConfig = null;

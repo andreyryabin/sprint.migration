@@ -5,7 +5,7 @@ namespace Sprint\Migration;
 use DirectoryIterator;
 use SplFileInfo;
 
-abstract class AbstractSchema extends RestartableService
+abstract class AbstractSchema extends RestartableEntity
 {
     private $name;
 

@@ -8,7 +8,7 @@ use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 
 
-abstract class AbstractBuilder extends RestartableService
+abstract class AbstractBuilder extends RestartableEntity
 {
     private $name;
 

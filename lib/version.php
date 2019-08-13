@@ -9,7 +9,7 @@ use Sprint\Migration\Exceptions\MigrationException;
  * Class Version
  * @package Sprint\Migration
  */
-class Version extends RestartableService
+class Version extends RestartableEntity
 {
     /**
      * @var string

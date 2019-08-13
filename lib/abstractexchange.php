@@ -34,10 +34,10 @@ abstract class abstractexchange
 
     /**
      * abstractexchange constructor.
-     * @param RestartableService $service
+     * @param RestartableEntity $service
      * @throws ExchangeException
      */
-    public function __construct(RestartableService $service)
+    public function __construct(RestartableEntity $service)
     {
         $this->service = $service;
         $this->params = $service->getRestartParams();

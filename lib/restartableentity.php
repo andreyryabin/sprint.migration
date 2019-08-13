@@ -5,7 +5,7 @@ namespace Sprint\Migration;
 use Sprint\Migration\Exceptions\RestartException;
 
 
-abstract class RestartableService
+abstract class RestartableEntity
 {
     use OutTrait {
         out as protected;
