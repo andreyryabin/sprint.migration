@@ -33,10 +33,10 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper = $this->getHelperManager();
 
         $iblockId = $helper->Iblock()->getIblockIdIfExists('<?php echo $iblock['CODE'] ?>', '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
-        $file = __DIR__ . '/<?=$version?>_files/iblock_elements.xml';
+        $xmlfile = __DIR__ . '/<?=$version?>_files/iblock_elements.xml';
 
         $exchange = new IblockElementsImport($this);
-        $exchange->from($file);
+        $exchange->from($xmlfile);
         $exchange->to($iblockId);
         $exchange->execute();
     }

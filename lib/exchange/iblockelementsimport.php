@@ -12,11 +12,13 @@ class IblockElementsImport extends AbstractExchange
 
     public function from($file)
     {
+        return $this;
     }
 
     public function to($iblockId)
     {
         $this->iblockId = $iblockId;
+        return $this;
     }
 
     /**
