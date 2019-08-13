@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Helpers;
 
 use CUserOptions;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Helpers\UserOptions\IblockTrait;
 use Sprint\Migration\Helpers\UserOptions\UserGroupTrait;
@@ -50,6 +51,11 @@ class UserOptionsHelper extends Helper
     use UserTrait;
     use UserGroupTrait;
 
+    /**
+     * @param array $params
+     * @throws HelperException
+     * @return array|bool|mixed
+     */
     public function exportList($params = [])
     {
         $this->checkRequiredKeys(__METHOD__, $params, ['name']);
@@ -81,6 +87,12 @@ class UserOptionsHelper extends Helper
         return $option;
     }
 
+    /**
+     * @param array $listData
+     * @param array $params
+     * @throws HelperException
+     * @return bool
+     */
     public function buildList($listData = [], $params = [])
     {
         $this->checkRequiredKeys(__METHOD__, $params, ['name']);
@@ -140,6 +152,12 @@ class UserOptionsHelper extends Helper
         return true;
     }
 
+    /**
+     * @param array $listData
+     * @param array $params
+     * @throws HelperException
+     * @return bool
+     */
     public function saveList($listData = [], $params = [])
     {
         $exists = $this->exportList($params);
@@ -156,6 +174,11 @@ class UserOptionsHelper extends Helper
         }
     }
 
+    /**
+     * @param array $params
+     * @throws HelperException
+     * @return array
+     */
     public function exportForm($params = [])
     {
         /** @compability */
@@ -219,6 +242,12 @@ class UserOptionsHelper extends Helper
         return $extractedTabs;
     }
 
+    /**
+     * @param array $formData
+     * @param array $params
+     * @throws HelperException
+     * @return bool
+     */
     public function buildForm($formData = [], $params = [])
     {
         /** @compability */
@@ -291,6 +320,12 @@ class UserOptionsHelper extends Helper
         return true;
     }
 
+    /**
+     * @param array $formData
+     * @param array $params
+     * @throws HelperException
+     * @return bool
+     */
     public function saveForm($formData = [], $params = [])
     {
         $exists = $this->exportForm($params);

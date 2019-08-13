@@ -44,7 +44,6 @@ class IblockElementsExport extends AbstractExchange
             $this->params['NavPageCount'] = (int)$dbres->NavPageCount;
             $this->params['NavPageNomer'] = (int)$dbres->NavPageNomer;
 
-            Module::createDir(dirname($this->file));
             file_put_contents($this->file, '<?xml version="1.0" encoding="UTF-8"?>');
             file_put_contents($this->file, '<items>', FILE_APPEND);
         }

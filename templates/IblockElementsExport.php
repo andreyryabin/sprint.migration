@@ -15,7 +15,7 @@
 namespace Sprint\Migration;
 
 <?php echo $extendUse ?>
-use Sprint\Migration\Exchange\IblockImport;
+use Sprint\Migration\Exchange\IblockElementsImport;
 
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
@@ -35,7 +35,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $iblockId = $helper->Iblock()->getIblockIdIfExists('<?php echo $iblock['CODE'] ?>', '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
         $file = __DIR__ . '/<?=$version?>_files/iblock_elements.xml';
 
-        $exchange = new IblockImport($this);
+        $exchange = new IblockElementsImport($this);
         $exchange->from($file);
         $exchange->to($iblockId);
         $exchange->execute();

@@ -4,15 +4,16 @@ namespace Sprint\Migration\Builders;
 
 use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
-use Sprint\Migration\Exceptions\ExchangeException;
+use Sprint\Migration\Builders\Traits\IblocksStructureTrait;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
-use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class IblockBuilder extends VersionBuilder
 {
+
+    use IblocksStructureTrait;
 
     /**
      * @throws LoaderException
@@ -159,36 +160,6 @@ class IblockBuilder extends VersionBuilder
         );
     }
 
-
-    /**
-     * Структура инфоблоков для построения выпадающего списка
-     * @return array
-     */
-    public function getIblocksStructure()
-    {
-        $helper = $this->getHelperManager();
-        $iblockTypes = $helper->Iblock()->getIblockTypes();
-
-        $structure = [];
-        foreach ($iblockTypes as $iblockType) {
-            $structure[$iblockType['ID']] = [
-                'title' => '[' . $iblockType['ID'] . '] ' . $iblockType['LANG'][LANGUAGE_ID]['NAME'],
-                'items' => [],
-            ];
-        }
-
-        $iblocks = $helper->Iblock()->getIblocks();
-        foreach ($iblocks as $iblock) {
-            $structure[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
-                'title' => '[' . $iblock['CODE'] . '] ' . $iblock['NAME'],
-                'value' => $iblock['ID'],
-            ];
-        }
-
-        return $structure;
-    }
-
-
     /**
      * @param array $props
      * @return array
@@ -208,5 +179,4 @@ class IblockBuilder extends VersionBuilder
 
         return $structure;
     }
-
 }

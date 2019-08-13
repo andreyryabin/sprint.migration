@@ -9,6 +9,7 @@ use Sprint\Migration\Exceptions\RestartException;
 abstract class abstractexchange
 {
     protected $service;
+
     protected $params = [];
 
     use OutTrait {

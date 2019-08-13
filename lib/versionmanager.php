@@ -15,8 +15,6 @@ use Throwable;
 
 class VersionManager
 {
-
-
     /** @var VersionConfig */
     private $versionConfig = null;
 

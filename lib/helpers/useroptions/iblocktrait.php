@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration\Helpers\UserOptions;
 
+use Sprint\Migration\HelperManager;
+
 trait IblockTrait
 {
     private $titles = [];
@@ -165,7 +167,7 @@ trait IblockTrait
      */
     protected function initializeIblockVars($iblockId)
     {
-        $helper = $this->getHelperManager();
+        $helper = HelperManager::getInstance();
 
         /** @compability */
         if (empty($iblockId)) {

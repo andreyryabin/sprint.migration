@@ -59,6 +59,11 @@ class VersionBuilder extends AbstractBuilder
         return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '.php';
     }
 
+    protected function getVersionResourcesDir($versionName)
+    {
+        return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '_files';
+    }
+
     protected function createVersionFile($templateFile = '', $templateVars = [])
     {
         $templateVars['description'] = $this->purifyDescription(
@@ -104,13 +109,6 @@ class VersionBuilder extends AbstractBuilder
         ]));
 
         return $templateVars['version'];
-    }
-
-    protected function createVersionResourcesDir($versionName)
-    {
-        return Module::createDir(
-            $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '_files'
-        );
     }
 
     protected function getTimestamp()

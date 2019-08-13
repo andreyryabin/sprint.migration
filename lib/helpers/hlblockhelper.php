@@ -4,7 +4,6 @@ namespace Sprint\Migration\Helpers;
 
 use Bitrix\Highloadblock as HL;
 use Bitrix\Main\ArgumentException;
-use Bitrix\Main\LoaderException;
 use Bitrix\Main\ObjectPropertyException;
 use Bitrix\Main\SystemException;
 use CTask;
@@ -75,6 +74,7 @@ class HlblockHelper extends Helper
      * @param $hlblockName int|string|array - id, имя или фильтр
      * @throws ArgumentException
      * @throws SystemException
+     * @throws HelperException
      * @return array
      */
     public function getFields($hlblockName)
@@ -168,6 +168,7 @@ class HlblockHelper extends Helper
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $hlblockName
      * @throws ArgumentException
+     * @throws HelperException
      * @throws SystemException
      * @return array
      */
@@ -558,6 +559,7 @@ class HlblockHelper extends Helper
      * @throws ArgumentException
      * @throws SystemException
      * @throws ObjectPropertyException
+     * @throws Exception
      * @return int
      */
     protected function deleteHblockLangs($hlblockId)
@@ -616,6 +618,7 @@ class HlblockHelper extends Helper
      * @throws ArgumentException
      * @throws SystemException
      * @throws ObjectPropertyException
+     * @throws Exception
      */
     protected function replaceHblockLangs($hlblockId, $lang = [])
     {
