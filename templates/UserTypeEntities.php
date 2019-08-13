@@ -17,16 +17,14 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-
     protected $description = "<?php echo $description ?>";
 
     public function up()
     {
         $helper = $this->getHelperManager();
-
-    <?php foreach ($entities as $entity): ?>
+<?php foreach ($entities as $entity): ?>
         $helper->UserTypeEntity()->saveUserTypeEntity(<?php echo var_export($entity, 1) ?>);
-    <? endforeach; ?>
+<? endforeach; ?>
     }
 
     public function down()
@@ -35,5 +33,4 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
         //your code ...
     }
-
 }

@@ -16,47 +16,39 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-
     protected $description = "<?php echo $description ?>";
 
-    public function up() {
+    public function up()
+    {
         $helper = $this->getHelperManager();
-
-    <? if (!empty($iblockType)): ?>
+<? if (!empty($iblockType)): ?>
         $helper->Iblock()->saveIblockType(<?php echo var_export($iblockType, 1) ?>);
-    <? endif; ?>
-
-    <? if (!empty($iblockExport)): ?>
+<? endif; ?>
+<? if (!empty($iblockExport)): ?>
         $iblockId = $helper->Iblock()->saveIblock(<?php echo var_export($iblock, 1) ?>);
-    <? else:?>
+<? else:?>
         $iblockId = $helper->Iblock()->getIblockIdIfExists('<?php echo $iblock['CODE'] ?>','<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
-    <? endif; ?>
-
-    <? if (!empty($iblockFields)): ?>
+<? endif; ?>
+<? if (!empty($iblockFields)): ?>
         $helper->Iblock()->saveIblockFields($iblockId, <?php echo var_export($iblockFields, 1) ?>);
-    <? endif; ?>
-
-    <? if (!empty($iblockProperties)): ?>
-    <?php foreach ($iblockProperties as $iblockProperty): ?>
+<? endif; ?>
+<? if (!empty($iblockProperties)): ?>
+<?php foreach ($iblockProperties as $iblockProperty): ?>
         $helper->Iblock()->saveProperty($iblockId, <?php echo var_export($iblockProperty, 1) ?>);
-    <? endforeach; ?>
-    <? endif; ?>
-
-    <? if (!empty($exportElementForm)): ?>
+<? endforeach; ?>
+<? endif; ?>
+<? if (!empty($exportElementForm)): ?>
         $helper->UserOptions()->saveElementForm($iblockId, <?php echo var_export($exportElementForm, 1) ?>);
-    <? endif; ?>
-
-    <? if (!empty($exportSectionForm)): ?>
+<? endif; ?>
+<? if (!empty($exportSectionForm)): ?>
         $helper->UserOptions()->saveSectionForm($iblockId, <?php echo var_export($exportSectionForm, 1) ?>);
-    <? endif; ?>
-
-    <? if (!empty($exportElementList)): ?>
+<? endif; ?>
+<? if (!empty($exportElementList)): ?>
         $helper->UserOptions()->saveElementList($iblockId, <?php echo var_export($exportElementList, 1) ?>);
-    <? endif; ?>
-
-    <? if (!empty($exportSectionList)): ?>
+<? endif; ?>
+<? if (!empty($exportSectionList)): ?>
         $helper->UserOptions()->saveSectionList($iblockId, <?php echo var_export($exportSectionList, 1) ?>);
-    <? endif; ?>
+<? endif; ?>
     }
 
     public function down()
@@ -65,5 +57,4 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
         //your code ...
     }
-
 }

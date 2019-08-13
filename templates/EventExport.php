@@ -16,24 +16,19 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-
     protected $description = "<?php echo $description ?>";
 
     public function up()
     {
         $helper = $this->getHelperManager();
-
-        <?foreach ($result as $eventName => $item):?>
-
-        <?php foreach ($item['types'] as $fields): ?>
+<?foreach ($result as $eventName => $item):?>
+<?php foreach ($item['types'] as $fields): ?>
         $helper->Event()->saveEventType('<?php echo $eventName ?>', <?php echo var_export($fields, 1) ?>);
-        <? endforeach; ?>
-
-        <?php foreach ($item['messages'] as $fields): ?>
+<? endforeach; ?>
+<?php foreach ($item['messages'] as $fields): ?>
         $helper->Event()->saveEventMessage('<?php echo $eventName ?>', <?php echo var_export($fields, 1) ?>);
-        <? endforeach; ?>
-
-        <? endforeach; ?>
+<? endforeach; ?>
+<? endforeach; ?>
     }
 
     public function down()
@@ -42,5 +37,4 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
         //your code ...
     }
-
 }

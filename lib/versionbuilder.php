@@ -59,17 +59,29 @@ class VersionBuilder extends AbstractBuilder
         return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '.php';
     }
 
-    public function createVersionFile($templateFile = '', $templateVars = [])
+    protected function getVersionResources($versionName)
     {
-        $description = $this->purifyDescription(
-            $this->getFieldValue('description')
-        );
+        return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '_files';
+    }
 
+    protected function getVersionName()
+    {
         $prefix = $this->purifyPrefix(
             $this->getFieldValue('prefix')
         );
 
-        $versionName = $prefix . $this->getTimestamp();
+        return $prefix . $this->getTimestamp();
+    }
+
+    protected function createVersionFile($templateFile = '', $templateVars = [])
+    {
+        $templateVars['description'] = $this->purifyDescription(
+            $this->getFieldValue('description')
+        );
+
+        if (empty($templateVars['version'])) {
+            $templateVars['version'] = $this->getVersionName();
+        }
 
         list($extendUse, $extendClass) = explode(' as ', $this->getVersionConfig()->getVal('migration_extend_class'));
         $extendUse = trim($extendUse);
@@ -83,8 +95,6 @@ class VersionBuilder extends AbstractBuilder
         }
 
         $tplVars = array_merge([
-            'version' => $versionName,
-            'description' => $description,
             'extendUse' => $extendUse,
             'extendClass' => $extendClass,
         ], $templateVars);
@@ -93,21 +103,21 @@ class VersionBuilder extends AbstractBuilder
             $templateFile = Module::getModuleDir() . '/templates/version.php';
         }
 
-        $fileName = $this->getVersionFile($versionName);
+        $fileName = $this->getVersionFile($templateVars['version']);
         $fileContent = $this->renderFile($templateFile, $tplVars);
 
         file_put_contents($fileName, $fileContent);
 
         if (!is_file($fileName)) {
-            Out::outError('%s, error: can\'t create a file "%s"', $versionName, $fileName);
+            Out::outError('%s, error: can\'t create a file "%s"', $templateVars['version'], $fileName);
             return false;
         }
 
         Out::outSuccess(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS', [
-            '#VERSION#' => $versionName,
+            '#VERSION#' => $templateVars['version'],
         ]));
 
-        return $versionName;
+        return $templateVars['version'];
     }
 
     protected function getTimestamp()

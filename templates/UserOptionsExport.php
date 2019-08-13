@@ -16,23 +16,20 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-
     protected $description = "<?php echo $description ?>";
 
-    public function up() {
+    public function up()
+    {
         $helper = $this->getHelperManager();
-
-    <? if (!empty($exportUserForm)): ?>
+<? if (!empty($exportUserForm)): ?>
         $helper->UserOptions()->saveUserForm(<?php echo var_export($exportUserForm, 1) ?>);
-    <? endif; ?>
-
-    <? if (!empty($exportUserList)): ?>
+<? endif; ?>
+<? if (!empty($exportUserList)): ?>
         $helper->UserOptions()->saveUserList(<?php echo var_export($exportUserList, 1) ?>);
-    <? endif; ?>
-
-    <? if (!empty($exportUserGroupList)): ?>
+<? endif; ?>
+<? if (!empty($exportUserGroupList)): ?>
         $helper->UserOptions()->saveUserGroupList(<?php echo var_export($exportUserGroupList, 1) ?>);
-    <? endif; ?>
+<? endif; ?>
     }
 
     public function down()
@@ -41,5 +38,4 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
         //your code ...
     }
-
 }

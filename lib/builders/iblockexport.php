@@ -4,10 +4,10 @@ namespace Sprint\Migration\Builders;
 
 use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
+use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
-use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -32,15 +32,15 @@ class IblockExport extends VersionBuilder
     }
 
     /**
+     * @throws ExchangeException
      * @throws HelperException
      * @throws RebuildException
-     * @throws LoaderException
-     * @throws RestartException
-     * @throws ExchangeException
+     * @throws BuilderException
      */
     protected function execute()
     {
         $helper = $this->getHelperManager();
+        $versionName = $this->getVersionName();
 
         $this->addField('iblock_id', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_IblockId'),
@@ -139,11 +139,9 @@ class IblockExport extends VersionBuilder
             ]);
         }
 
-
         if (in_array('iblockFields', $what)) {
             $iblockFields = $helper->Iblock()->exportIblockFields($iblockId);
         }
-
 
         if (in_array('iblockUserOptions', $what)) {
             $exportElementForm = $helper->UserOptions()->exportElementForm($iblockId);
@@ -155,14 +153,14 @@ class IblockExport extends VersionBuilder
         if (in_array('iblockElements', $what)) {
             $exchange = new \Sprint\Migration\Exchange\IblockExport($this);
             $exchange->from($iblockId);
-            $exchange->to(__DIR__ . '/1.xml');
+            $exchange->to($this->getVersionResources($versionName) . '/iblock_elements.xml');
             $exchange->start();
-            $this->exitWithMessage('x1');
         }
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockExport.php',
             [
+                'version' => $versionName,
                 'iblockExport' => $iblockExport,
                 'iblock' => $iblock,
                 'iblockType' => $iblockType,

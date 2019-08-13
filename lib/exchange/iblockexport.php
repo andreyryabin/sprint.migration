@@ -4,7 +4,6 @@ namespace Sprint\Migration\Exchange;
 
 use CIBlockElement;
 use Sprint\Migration\AbstractExchange;
-use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
 use XMLWriter;
 
@@ -35,7 +34,6 @@ class IblockExport extends AbstractExchange
 
 
     /**
-     * @throws HelperException
      * @throws RestartException
      */
     protected function execute()
@@ -45,6 +43,7 @@ class IblockExport extends AbstractExchange
             $this->params['NavPageCount'] = (int)$dbres->NavPageCount;
             $this->params['NavPageNomer'] = (int)$dbres->NavPageNomer;
 
+            $this->createResourceDir($this->file);
             file_put_contents($this->file, '<?xml version="1.0" encoding="UTF-8"?>');
             file_put_contents($this->file, '<items>', FILE_APPEND);
         }
@@ -87,6 +86,15 @@ class IblockExport extends AbstractExchange
             'iNumPage' => $pageNum,
             'checkOutOfRange' => true,
         ]);
+    }
+
+    protected function createResourceDir($file)
+    {
+        $dir = dirname($file);
+        if (!is_dir($dir)) {
+            mkdir($dir, BX_DIR_PERMISSIONS, true);
+        }
+        return $dir;
     }
 
 }

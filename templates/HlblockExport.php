@@ -16,22 +16,17 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-
     protected $description = "<?php echo $description ?>";
 
     public function up()
     {
         $helper = $this->getHelperManager();
-
-        <?foreach ($items as $item):?>
-
+<?foreach ($items as $item):?>
         $helper->Hlblock()->saveHlblock(<?php echo var_export($item['hlblock'], 1) ?>);
-
-        <?php foreach ($item['hlblockEntities'] as $entity): ?>
+<?php foreach ($item['hlblockEntities'] as $entity): ?>
         $helper->UserTypeEntity()->saveUserTypeEntity(<?php echo var_export($entity, 1) ?>);
-        <? endforeach; ?>
-
-        <? endforeach; ?>
+<? endforeach; ?>
+<? endforeach; ?>
     }
 
     public function down()
@@ -40,5 +35,4 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
         //your code ...
     }
-
 }

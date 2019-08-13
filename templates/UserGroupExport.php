@@ -16,16 +16,15 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-
     protected $description = "<?php echo $description ?>";
 
     public function up()
     {
         $helper = $this->getHelperManager();
 
-        <?foreach ($items as $item):?>
+<?foreach ($items as $item):?>
         $helper->UserGroup()->saveGroup('<?php echo $item['STRING_ID'] ?>',<?php echo var_export($item['FIELDS'], 1) ?>);
-        <? endforeach; ?>
+<? endforeach; ?>
     }
 
     public function down()
@@ -34,5 +33,4 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
         //your code ...
     }
-
 }
