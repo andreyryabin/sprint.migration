@@ -40,6 +40,17 @@ class Helper
     ];
 
     /**
+     * Helper constructor.
+     * @throws HelperException
+     */
+    public function __construct()
+    {
+        if (!$this->isEnabled()) {
+            $this->throwException(__METHOD__, 'Helper disabled');
+        }
+    }
+
+    /**
      * @return string
      * @deprecated
      */
@@ -78,6 +89,25 @@ class Helper
     }
 
     /**
+     * @param array $names
+     * @return bool
+     */
+    protected function checkModules($names = [])
+    {
+        $names = is_array($names) ? $names : [$names];
+        foreach ($names as $name) {
+            try {
+                if (!Loader::includeModule($name)) {
+                    return false;
+                }
+            } catch (LoaderException $e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * @param $method
      * @param $msg
      * @param null $var1
@@ -100,21 +130,6 @@ class Helper
     protected function hasDiff($exists, $fields)
     {
         return ($exists != $fields);
-    }
-
-    /**
-     * @param array $names
-     * @throws HelperException
-     * @throws LoaderException
-     */
-    protected function checkModules($names = [])
-    {
-        $names = is_array($names) ? $names : [$names];
-        foreach ($names as $name) {
-            if (!Loader::includeModule($name)) {
-                $this->throwException(__METHOD__, "module %s not installed", $name);
-            }
-        }
     }
 
     /**

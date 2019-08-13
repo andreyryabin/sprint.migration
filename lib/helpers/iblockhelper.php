@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Helpers;
 
-use Bitrix\Main\LoaderException;
 use CIBlock;
 use CIBlockElement;
 use CIBlockProperty;
@@ -18,12 +17,10 @@ class IblockHelper extends Helper
 
     /**
      * IblockHelper constructor.
-     * @throws HelperException
-     * @throws LoaderException
      */
-    public function __construct()
+    public function isEnabled()
     {
-        $this->checkModules(['iblock']);
+        return $this->checkModules(['iblock']);
     }
 
     /**
@@ -809,6 +806,26 @@ class IblockHelper extends Helper
             $list[] = $item;
         }
         return $list;
+    }
+
+    /**
+     * @param $iblockId
+     * @param array $filter
+     * @return int
+     */
+    public function getElementsCount($iblockId, $filter = [])
+    {
+        $filter['IBLOCK_ID'] = $iblockId;
+        $filter['CHECK_PERMISSIONS'] = 'N';
+
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        return (int)CIBlockElement::GetList(
+            [],
+            $filter,
+            [],
+            false,
+            ['ID', 'NAME']
+        );
     }
 
     /**

@@ -7,7 +7,9 @@ use Bitrix\Main\ArgumentNullException;
 use Bitrix\Main\ArgumentOutOfRangeException;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\ModuleManager;
+use Bitrix\Main\ObjectPropertyException;
 use Bitrix\Main\SystemException;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Tables\OptionTable;
 
@@ -54,6 +56,9 @@ class OptionHelper extends Helper
     /**
      * @param array $filter , обязательные параметры - id модуля, функция агента
      * @throws ArgumentException
+     * @throws SystemException
+     * @throws ObjectPropertyException
+     * @throws HelperException
      * @return mixed
      */
     public function getOption($filter = [])
@@ -70,6 +75,10 @@ class OptionHelper extends Helper
     /**
      * @param $fields , обязательные параметры - id модуля, функция агента
      * @throws ArgumentException
+     * @throws ArgumentOutOfRangeException
+     * @throws SystemException
+     * @throws ObjectPropertyException
+     * @throws HelperException
      * @return bool
      */
     public function saveOption($fields)
@@ -107,6 +116,7 @@ class OptionHelper extends Helper
     /**
      * @param array $filter , обязательные параметры - id модуля
      * @throws ArgumentNullException
+     * @throws HelperException
      * @return bool
      */
     public function deleteOptions($filter = [])
@@ -130,6 +140,7 @@ class OptionHelper extends Helper
     /**
      * @param array $filter
      * @throws ArgumentException
+     * @throws SystemException
      * @return array
      */
     public function exportOptions($filter = [])
@@ -147,6 +158,9 @@ class OptionHelper extends Helper
     /**
      * @param array $filter
      * @throws ArgumentException
+     * @throws SystemException
+     * @throws ObjectPropertyException
+     * @throws HelperException
      * @return bool
      */
     public function exportOption($filter = [])

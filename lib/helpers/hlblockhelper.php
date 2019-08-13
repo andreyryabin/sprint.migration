@@ -18,12 +18,11 @@ class HlblockHelper extends Helper
 
     /**
      * HlblockHelper constructor.
-     * @throws HelperException
-     * @throws LoaderException
+     * @return bool
      */
-    public function __construct()
+    public function isEnabled()
     {
-        $this->checkModules(['highloadblock']);
+        return $this->checkModules(['highloadblock']);
     }
 
     /**

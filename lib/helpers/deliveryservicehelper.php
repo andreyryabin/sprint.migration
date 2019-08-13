@@ -4,6 +4,7 @@ namespace Sprint\Migration\Helpers;
 
 use Bitrix\Main\ArgumentException;
 use Bitrix\Main\ArgumentNullException;
+use Bitrix\Main\LoaderException;
 use Bitrix\Main\SystemException;
 use Bitrix\Sale\Delivery\ExtraServices\Manager as ExtraServicesManager;
 use Bitrix\Sale\Delivery\Services\Base;
@@ -16,9 +17,13 @@ use Sprint\Migration\Helper;
 
 class DeliveryServiceHelper extends Helper
 {
-    public function __construct()
+    /**
+     * DeliveryServiceHelper constructor.
+     * @return bool
+     */
+    public function isEnabled()
     {
-        $this->checkModules(['sale']);
+        return $this->checkModules(['sale']);
     }
 
     /**

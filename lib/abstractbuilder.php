@@ -69,7 +69,7 @@ abstract class AbstractBuilder extends RestartableService
         $this->initialize();
     }
 
-    public function executeBuilder()
+    public function start()
     {
         $this->buildExecute();
         $this->buildAfter();

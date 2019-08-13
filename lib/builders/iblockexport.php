@@ -4,11 +4,10 @@ namespace Sprint\Migration\Builders;
 
 use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
+use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\IblockImport;
-use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -37,6 +36,7 @@ class IblockExport extends VersionBuilder
      * @throws RebuildException
      * @throws LoaderException
      * @throws RestartException
+     * @throws ExchangeException
      */
     protected function execute()
     {
@@ -151,11 +151,13 @@ class IblockExport extends VersionBuilder
             $exportElementList = $helper->UserOptions()->exportElementList($iblockId);
             $exportSectionList = $helper->UserOptions()->exportSectionList($iblockId);
         }
+
         if (in_array('iblockElements', $what)) {
-            $import = new IblockImport($this);
-            $import->from('elements.xml');
-            $import->to($helper->Iblock()->getIblockId('content_news'));
-            $import->execute();
+            $exchange = new \Sprint\Migration\Exchange\IblockExport($this);
+            $exchange->from($iblockId);
+            $exchange->to(__DIR__ . '/1.xml');
+            $exchange->start();
+            $this->exitWithMessage('x1');
         }
 
         $this->createVersionFile(
@@ -177,18 +179,14 @@ class IblockExport extends VersionBuilder
 
     /**
      * Структура инфоблоков для построения выпадающего списка
-     * @throws LoaderException
-     * @throws HelperException
      * @return array
      */
     public function getIblocksStructure()
     {
+        $helper = $this->getHelperManager();
+        $iblockTypes = $helper->Iblock()->getIblockTypes();
 
         $structure = [];
-        $iblockHelper = new IblockHelper();
-
-        $iblockTypes = $iblockHelper->getIblockTypes();
-
         foreach ($iblockTypes as $iblockType) {
             $structure[$iblockType['ID']] = [
                 'title' => '[' . $iblockType['ID'] . '] ' . $iblockType['LANG'][LANGUAGE_ID]['NAME'],
@@ -196,7 +194,7 @@ class IblockExport extends VersionBuilder
             ];
         }
 
-        $iblocks = $iblockHelper->getIblocks();
+        $iblocks = $helper->Iblock()->getIblocks();
         foreach ($iblocks as $iblock) {
             $structure[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
                 'title' => '[' . $iblock['CODE'] . '] ' . $iblock['NAME'],

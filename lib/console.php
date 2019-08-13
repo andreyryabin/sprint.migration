@@ -610,7 +610,7 @@ class Console
 
             $builder->renderConsole();
 
-            $builder->executeBuilder();
+            $builder->start();
 
             $builder->renderConsole();
 

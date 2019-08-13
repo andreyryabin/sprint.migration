@@ -2,46 +2,91 @@
 
 namespace Sprint\Migration\Exchange;
 
+use CIBlockElement;
 use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
+use XMLWriter;
 
 
 class IblockExport extends AbstractExchange
 {
-
     protected $iblockId;
+    protected $file;
 
-    public function from($file)
+    public function isEnabled()
     {
-
+        return (
+            $this->getHelperManager()->Iblock()->isEnabled() &&
+            class_exists('XMLReader') &&
+            class_exists('XMLWriter')
+        );
     }
 
-    public function to($iblockId)
+    public function to($file)
+    {
+        $this->file = $file;
+    }
+
+    public function from($iblockId)
     {
         $this->iblockId = $iblockId;
     }
+
 
     /**
      * @throws HelperException
      * @throws RestartException
      */
-    public function execute()
+    protected function execute()
     {
-        $helper = $this->getHelperManager();
+        if (!isset($this->params['NavPageCount'])) {
+            $dbres = $this->getElementsDbres($this->iblockId, 1);
+            $this->params['NavPageCount'] = (int)$dbres->NavPageCount;
+            $this->params['NavPageNomer'] = (int)$dbres->NavPageNomer;
 
-        if (!isset($this->params['add'])) {
-            $this->params['add'] = 0;
+            file_put_contents($this->file, '<?xml version="1.0" encoding="UTF-8"?>');
+            file_put_contents($this->file, '<items>', FILE_APPEND);
         }
-        $cnt = 100;
 
-        if ($this->params['add'] <= $cnt) {
-            $this->outProgress('Прогресс добавления', $this->params['add'], $cnt);
-            $helper->Iblock()->addElement($this->iblockId, ['NAME' => 'name' . microtime()]);
-            $this->params['add']++;
+        if ($this->params['NavPageNomer'] <= $this->params['NavPageCount']) {
+            $dbres = $this->getElementsDbres($this->iblockId, $this->params['NavPageNomer']);
+
+            while ($item = $dbres->GetNextElement(false, false)) {
+                $xml = new XMLWriter();
+                $xml->openMemory();
+                $xml->startElement('item');
+
+                $fields = $item->GetFields();
+                foreach ($fields as $code => $val) {
+                    $xml->writeElement($code, $val);
+                }
+                $xml->endElement();
+                file_put_contents($this->file, $xml->flush(), FILE_APPEND);
+            }
+
+            $this->outProgress('', $this->params['NavPageNomer'], $this->params['NavPageCount']);
+            $this->params['NavPageNomer']++;
             $this->restart();
         }
+
+        file_put_contents($this->file, '</items>', FILE_APPEND);
+        unset($this->params['NavPageCount']);
+        unset($this->params['NavPageNomer']);
     }
 
+
+    protected function getElementsDbres($iblockId, $pageNum)
+    {
+        return CIBlockElement::GetList([
+            'ID' => 'ASC',
+        ], [
+            'IBLOCK_ID' => $iblockId,
+        ], false, [
+            'nPageSize' => 20,
+            'iNumPage' => $pageNum,
+            'checkOutOfRange' => true,
+        ]);
+    }
 
 }

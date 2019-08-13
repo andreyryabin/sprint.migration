@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Helpers;
 
+use Bitrix\Main\LoaderException;
 use CDatabase;
 use CForm;
 use CFormAnswer;
@@ -15,9 +16,13 @@ use Sprint\Migration\Helper;
 class FormHelper extends Helper
 {
 
-    public function __construct()
+    /**
+     * FormHelper constructor.
+     * @return bool
+     */
+    public function isEnabled()
     {
-        $this->checkModules(['form']);
+        return $this->checkModules(['form']);
     }
 
     /**
