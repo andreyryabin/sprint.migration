@@ -27,13 +27,14 @@ class Version20150520000005 extends Version
         ]);
 
         $helper->Hlblock()->saveField($hlblockId, [
-            'FIELD_NAME' => 'UF_NAME',
+
             'USER_TYPE_ID' => 'string',
+            'FIELD_NAME' => 'UF_NAME',
         ]);
 
         $helper->Hlblock()->saveField($hlblockId, [
-            'FIELD_NAME' => 'UF_CODE',
             'USER_TYPE_ID' => 'string',
+            'FIELD_NAME' => 'UF_CODE',
         ]);
 
     }

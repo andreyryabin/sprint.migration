@@ -8,6 +8,7 @@ use Bitrix\Main\ObjectPropertyException;
 use Bitrix\Main\SystemException;
 use Exception;
 
+
 class Version20190606000011 extends Version
 {
 

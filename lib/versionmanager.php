@@ -130,7 +130,7 @@ class VersionManager
         }
 
         if ($ok === false) {
-            throw new MigrationException('migration returns false');
+            throw new MigrationException('migration return false');
         }
     }
 

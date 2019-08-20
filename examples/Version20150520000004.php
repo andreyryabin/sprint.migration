@@ -9,7 +9,6 @@ class Version20150520000004 extends Version
 
     /**
      * @throws Exceptions\HelperException
-     * @throws Exceptions\RestartException
      * @return bool|void
      */
     public function up()
@@ -61,8 +60,6 @@ class Version20150520000004 extends Version
     }
 
     /**
-     * @throws Exceptions\HelperException
-     * @throws Exceptions\RestartException
      * @return bool|void
      */
     public function down()

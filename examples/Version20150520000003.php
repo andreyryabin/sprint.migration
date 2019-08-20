@@ -8,8 +8,6 @@ class Version20150520000003 extends Version
     protected $description = "Примеры вывода сообщений";
 
     /**
-     * @throws Exceptions\HelperException
-     * @throws Exceptions\RestartException
      * @return bool|void
      */
     public function up()

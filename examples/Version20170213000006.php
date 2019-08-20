@@ -37,8 +37,8 @@ class Version20170213000006 extends Version
     }
 
     /**
-     * @throws Exceptions\HelperException
      * @throws ArgumentException
+     * @throws Exceptions\HelperException
      * @throws SystemException
      * @return bool|void
      */

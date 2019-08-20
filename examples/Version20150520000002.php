@@ -9,7 +9,6 @@ class Version20150520000002 extends Version
 
     protected $description = "Пошаговая миграция";
 
-
     /**
      * @throws Exceptions\HelperException
      * @throws Exceptions\RestartException
