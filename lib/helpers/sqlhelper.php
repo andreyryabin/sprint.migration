@@ -8,8 +8,8 @@ use Bitrix\Main\Db\SqlQueryException;
 use CMain;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Helper;
+use Throwable;
 
 /**
  * Class SqlHelper
@@ -43,6 +43,10 @@ class SqlHelper extends Helper
 
             $connection->commitTransaction();
         } catch (Exception $ex) {
+            $connection->rollbackTransaction();
+            throw new HelperException($ex->getMessage());
+
+        } catch (Throwable $ex) {
             $connection->rollbackTransaction();
             throw new HelperException($ex->getMessage());
         }
