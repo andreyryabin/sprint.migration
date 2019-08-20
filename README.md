@@ -13,6 +13,15 @@
 * Материалы: [https://dev.1c-bitrix.ru/search/?tags=sprint.migration](https://dev.1c-bitrix.ru/search/?tags=sprint.migration)
 * Группа в телеграм: [https://t-do.ru/sprint_migration_bitrix](https://t-do.ru/sprint_migration_bitrix)
 
+Особая благодарность
+-------------------------
+![https://www.jetbrains.com/?from=sprint.migration](https://raw.githubusercontent.com/wiki/andreyryabin/sprint.migration/assets/phpstorm.png) 
+[https://www.jetbrains.com/?from=sprint.migration](https://www.jetbrains.com/?from=sprint.migration)
+
+А также всем помощникам!
+[https://github.com/andreyryabin/sprint.migration/blob/master/contributors.txt](https://github.com/andreyryabin/sprint.migration/blob/master/contributors.txt)
+
+
 Установка через composer
 -------------------------
 Пример вашего composer.json с установкой модуля в local/modules/
@@ -79,3 +88,4 @@ php bin/migrate down --tag=release001
 Формы создания миграций
 ![bitrix-sprint-migration-2.png](https://raw.githubusercontent.com/wiki/andreyryabin/sprint.migration/assets/bitrix-sprint-migration-2.png)
 
+https://www.jetbrains.com/?from=sprint.migration
