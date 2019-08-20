@@ -73,4 +73,9 @@ php bin/migrate down --tag=release001
 
 Скриншоты
 -------------------------
-![админка](https://bitbucket.org/repo/aejkky/images/4102016731-admin-interface.png)
+Админка миграций
+![bitrix-sprint-migration-1.png](https://raw.githubusercontent.com/wiki/andreyryabin/sprint.migration/assets/bitrix-sprint-migration-1.png)
+
+Формы создания миграций
+![bitrix-sprint-migration-2.png](https://raw.githubusercontent.com/wiki/andreyryabin/sprint.migration/assets/bitrix-sprint-migration-2.png)
+
