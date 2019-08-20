@@ -7,6 +7,9 @@ class Version20150520000003 extends Version
 
     protected $description = "Примеры вывода сообщений";
 
+    /**
+     * @return bool|void
+     */
     public function up()
     {
         $this->out('Примеры вывода сообщений');

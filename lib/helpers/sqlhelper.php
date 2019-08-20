@@ -5,6 +5,10 @@ namespace Sprint\Migration\Helpers;
 use Bitrix\Main\Application;
 use Bitrix\Main\DB\Result;
 use Bitrix\Main\Db\SqlQueryException;
+use CMain;
+use Exception;
+use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Helper;
 
 /**
@@ -14,6 +18,36 @@ use Sprint\Migration\Helper;
  */
 class SqlHelper extends Helper
 {
+
+    /**
+     * @param callable $func
+     * @throws HelperException
+     * @throws SqlQueryException
+     */
+    public function transaction(callable $func)
+    {
+        $connection = Application::getConnection();
+        $connection->startTransaction();
+        try {
+            $ok = call_user_func($func);
+
+            /* @global $APPLICATION CMain */
+            global $APPLICATION;
+            if ($APPLICATION->GetException()) {
+                throw new HelperException($APPLICATION->GetException()->GetString());
+            }
+
+            if ($ok === false) {
+                throw new HelperException('transaction return false');
+            }
+
+            $connection->commitTransaction();
+        } catch (Exception $ex) {
+            $connection->rollbackTransaction();
+            throw new HelperException($ex->getMessage());
+        }
+    }
+
     /**
      * @param $query
      *

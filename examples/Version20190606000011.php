@@ -3,11 +3,17 @@
 namespace Sprint\Migration;
 
 
+use Bitrix\Main\ArgumentException;
+
 class Version20190606000011 extends Version
 {
 
     protected $description = "Пример работы с доступами групп к инфоблоками и highload-блоками";
 
+    /**
+     * @throws ArgumentException
+     * @return bool|void
+     */
     public function up()
     {
         $helper = $this->getHelperManager();

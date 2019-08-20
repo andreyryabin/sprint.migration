@@ -9,7 +9,11 @@ class Version20150520000002 extends Version
 
     protected $description = "Пошаговая миграция";
 
-
+    /**
+     * @throws Exceptions\HelperException
+     * @throws Exceptions\RestartException
+     * @return bool|void
+     */
     public function up()
     {
         //Добавляем 100 элементов
@@ -35,6 +39,11 @@ class Version20150520000002 extends Version
 
     }
 
+    /**
+     * @throws Exceptions\HelperException
+     * @throws Exceptions\RestartException
+     * @return bool|void
+     */
     public function down()
     {
         //Удаляем все элементы по 10 штук за раз

@@ -7,6 +7,10 @@ class Version20150520000001 extends Version
 
     protected $description = "Добавляем инфоблок новости";
 
+    /**
+     * @throws Exceptions\HelperException
+     * @return bool|void
+     */
     public function up()
     {
         $helper = $this->getHelperManager();
@@ -54,6 +58,10 @@ class Version20150520000001 extends Version
 
     }
 
+    /**
+     * @throws Exceptions\HelperException
+     * @return bool|void
+     */
     public function down()
     {
         $helper = $this->getHelperManager();

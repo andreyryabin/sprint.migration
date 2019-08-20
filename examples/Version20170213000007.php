@@ -8,6 +8,9 @@ class Version20170213000007 extends Version
 
     protected $description = "Пример работы с шаблонами сайта";
 
+    /**
+     * @return bool|void
+     */
     public function up()
     {
         $helper = $this->getHelperManager();
