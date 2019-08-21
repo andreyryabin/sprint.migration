@@ -111,14 +111,13 @@ class IblockBuilder extends VersionBuilder
             $iblockType = $helper->Iblock()->exportIblockType($iblock['IBLOCK_TYPE_ID']);
         }
 
-        $props = $helper->Iblock()->getProperties($iblockId);
-        if (in_array('iblockProperties', $what) && !empty($props)) {
+        if (in_array('iblockProperties', $what)) {
             $this->addField('property_ids', [
                 'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_PropertyIds'),
                 'width' => 250,
                 'multiple' => 1,
                 'value' => [],
-                'items' => $this->getPropsStructure($props),
+                'items' => $this->getPropsStructure($iblockId),
             ]);
 
             $propertyIds = $this->getFieldValue('property_ids');
@@ -160,23 +159,5 @@ class IblockBuilder extends VersionBuilder
         );
     }
 
-    /**
-     * @param array $props
-     * @return array
-     */
-    protected function getPropsStructure($props = [])
-    {
-        $structure = [
-            0 => ['items' => []],
-        ];
 
-        foreach ($props as $prop) {
-            $structure[0]['items'][] = [
-                'title' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
-                'value' => $prop['ID'],
-            ];
-        }
-
-        return $structure;
-    }
 }

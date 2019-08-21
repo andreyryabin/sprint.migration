@@ -65,6 +65,28 @@ class IblockElementsBuilder extends VersionBuilder
         Module::createDir(dirname($file));
 
         $exchange = new IblockElementsExport($this);
+        $exchange->setLimit(10);
+
+        $exchange->setExportFields([
+            'NAME',
+            'CODE',
+            'SORT',
+            'XML_ID',
+            'TAGS',
+            'DATE_ACTIVE_FROM',
+            'DATE_ACTIVE_TO',
+            'PREVIEW_TEXT',
+            'PREVIEW_TEXT_TYPE',
+            'DETAIL_TEXT',
+            'DETAIL_TEXT_TYPE',
+            'PREVIEW_PICTURE',
+            'DETAIL_PICTURE',
+        ]);
+
+        $exchange->setExportProperties(
+            $this->getPropsCodes($iblockId)
+        );
+
         $exchange->from($iblockId);
         $exchange->to($file);
         $exchange->execute();

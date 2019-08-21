@@ -13,6 +13,11 @@ class IblockElementsExport extends AbstractExchange
     protected $iblockId;
     protected $file;
 
+    protected $limit = 10;
+
+    protected $exportFields = [];
+    protected $exportProperties = [];
+
     public function isEnabled()
     {
         return (
@@ -55,27 +60,23 @@ class IblockElementsExport extends AbstractExchange
                 $writer->openMemory();
                 $writer->startElement('item');
 
-                $fields = array_filter($item->GetFields(), function ($field) {
-                    return (in_array($field, ['NAME', 'CODE', 'SORT']));
-                }, ARRAY_FILTER_USE_KEY);
-
-
-                foreach ($fields as $code => $val) {
-                    $writer->startElement('field');
-                    $writer->writeAttribute('name', $code);
-                    $this->writeValues($writer, $val);
-                    $writer->endElement();
+                foreach ($item->GetFields() as $code => $val) {
+                    if (in_array($code, $this->getExportFields())) {
+                        $writer->startElement('field');
+                        $writer->writeAttribute('name', $code);
+                        $this->writeValues($writer, $val);
+                        $writer->endElement();
+                    }
                 }
 
-
-                $props = $item->GetProperties();
-                foreach ($props as $prop) {
-                    $writer->startElement('property');
-                    $writer->writeAttribute('name', $prop['CODE']);
-                    $this->writeValues($writer, $prop['VALUE']);
-                    $writer->endElement();
+                foreach ($item->GetProperties() as $prop) {
+                    if (in_array($prop['CODE'], $this->getExportProperties())) {
+                        $writer->startElement('property');
+                        $writer->writeAttribute('name', $prop['CODE']);
+                        $this->writeValues($writer, $prop['VALUE']);
+                        $writer->endElement();
+                    }
                 }
-
 
                 //item
                 $writer->endElement();
@@ -111,11 +112,60 @@ class IblockElementsExport extends AbstractExchange
             'ID' => 'ASC',
         ], [
             'IBLOCK_ID' => $iblockId,
+            'CHECK_PERMISSIONS' => 'N',
         ], false, [
-            'nPageSize' => 20,
+            'nPageSize' => $this->getLimit(),
             'iNumPage' => $pageNum,
             'checkOutOfRange' => true,
         ]);
+    }
+
+    /**
+     * @param int $limit
+     */
+    public function setLimit(int $limit): void
+    {
+        $this->limit = $limit;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExportFields(): array
+    {
+        return $this->exportFields;
+    }
+
+    /**
+     * @param array $exportFields
+     */
+    public function setExportFields(array $exportFields): void
+    {
+        $this->exportFields = $exportFields;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExportProperties(): array
+    {
+        return $this->exportProperties;
+    }
+
+    /**
+     * @param array $exportProperties
+     */
+    public function setExportProperties(array $exportProperties): void
+    {
+        $this->exportProperties = $exportProperties;
     }
 
 }

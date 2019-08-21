@@ -2,14 +2,11 @@
 
 namespace Sprint\Migration;
 
-
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\RestartException;
 
 abstract class abstractexchange
 {
-
-
     use OutTrait {
         out as protected;
         outIf as protected;
@@ -62,7 +59,7 @@ abstract class abstractexchange
      */
     protected function restart()
     {
-        $this->entity->restart();
+        Throw new RestartException();
     }
 
     /**

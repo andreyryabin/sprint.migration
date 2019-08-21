@@ -33,14 +33,18 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     {
         $helper = $this->getHelperManager();
 
-        $iblockId = $helper->Iblock()->getIblockIdIfExists('<?php echo $iblock['CODE'] ?>', '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
+        $iblockId = $helper->Iblock()->getIblockIdIfExists(
+            '<?php echo $iblock['CODE'] ?>',
+            '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>'
+        );
 
         $exchange = new IblockElementsImport($this);
         $exchange->from($this->getResource('iblock_elements.xml'));
-        $exchange->to($iblockId);
-        $exchange->execute(function($item) use ($helper, $iblockId){
+        $exchange->setLimit(20);
+        $exchange->setCallback(function($item) use ($helper, $iblockId){
             $helper->Iblock()->addElement($iblockId, $item['field'], $item['property']);
         });
+        $exchange->execute();
     }
 
     public function down()

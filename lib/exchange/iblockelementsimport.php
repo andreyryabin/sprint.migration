@@ -10,6 +10,12 @@ class IblockElementsImport extends AbstractExchange
 {
     protected $file;
 
+    protected $limit = 10;
+
+    /**
+     * @var callable
+     */
+    protected $callback;
 
     public function from($file)
     {
@@ -18,10 +24,9 @@ class IblockElementsImport extends AbstractExchange
     }
 
     /**
-     * @param callable $callback
      * @throws RestartException
      */
-    public function execute(callable $callback)
+    public function execute()
     {
         if (!isset($this->params['all'])) {
             $reader = new XMLReader();
@@ -36,7 +41,6 @@ class IblockElementsImport extends AbstractExchange
             }
         }
 
-        $limit = 1;
         $index = 0;
 
         $reader = new XMLReader();
@@ -47,14 +51,14 @@ class IblockElementsImport extends AbstractExchange
 
                 $collect = (
                     $index >= $this->params['pos'] &&
-                    $index < $this->params['pos'] + $limit
+                    $index < $this->params['pos'] + $this->getLimit()
                 );
 
                 $finish = ($index >= $this->params['all'] - 1);
-                $restart = ($index >= $this->params['pos'] + $limit);
+                $restart = ($index >= $this->params['pos'] + $this->getLimit());
 
                 if ($collect) {
-                    $this->collectItem($reader, $callback);
+                    $this->collectItem($reader);
                 }
 
                 if ($finish || $restart) {
@@ -74,15 +78,13 @@ class IblockElementsImport extends AbstractExchange
         }
 
         $reader->close();
-        unset($this->params['NavPageCount']);
-        unset($this->params['NavPageNomer']);
+        unset($this->params['pos']);
+        unset($this->params['all']);
     }
 
 
     protected function collectItem(
-        XMLReader $reader,
-        callable $fetchCallback
-
+        XMLReader $reader
     ) {
         if ($this->isOpenTag($reader, 'item')) {
             $item = [];
@@ -93,8 +95,8 @@ class IblockElementsImport extends AbstractExchange
 
             } while (!$this->isCloseTag($reader, 'item'));
 
-            if (!empty($item)) {
-                call_user_func($fetchCallback, $item);
+            if (!empty($item) && is_callable($this->callback)) {
+                call_user_func($this->callback, $item);
             }
         }
     }
@@ -106,15 +108,8 @@ class IblockElementsImport extends AbstractExchange
     ) {
         if ($this->isOpenTag($reader, $tag)) {
             $name = $reader->getAttribute('name');
-
-            if ($reader->isEmptyElement) {
-                $item[$tag][$name] = '';
-                return;
-            }
-
             do {
                 $reader->read();
-
                 if ($this->isOpenTag($reader, 'value')) {
                     $reader->read();
                     $item[$tag][$name][] = trim($reader->value);
@@ -130,7 +125,7 @@ class IblockElementsImport extends AbstractExchange
         XMLReader $reader,
         $tag
     ) {
-        return ($reader->nodeType == XMLReader::ELEMENT && $reader->name == $tag);
+        return ($reader->nodeType == XMLReader::ELEMENT && $reader->name == $tag && !$reader->isEmptyElement);
     }
 
     protected function isCloseTag(
@@ -138,5 +133,29 @@ class IblockElementsImport extends AbstractExchange
         $tag
     ) {
         return ($reader->nodeType == XMLReader::END_ELEMENT && $reader->name == $tag);
+    }
+
+    /**
+     * @param int $limit
+     */
+    public function setLimit(int $limit): void
+    {
+        $this->limit = $limit;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
+
+    /**
+     * @param callable $callback
+     */
+    public function setCallback(callable $callback): void
+    {
+        $this->callback = $callback;
     }
 }

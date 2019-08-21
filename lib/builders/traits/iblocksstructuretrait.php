@@ -13,7 +13,6 @@ use Sprint\Migration\HelperManager;
 trait IblocksStructureTrait
 {
 
-
     /**
      * Структура инфоблоков для построения выпадающего списка
      * @return array
@@ -43,5 +42,44 @@ trait IblocksStructureTrait
         return $structure;
     }
 
+    /**
+     * @param $iblockId
+     * @return array
+     */
+    protected function getPropsStructure($iblockId)
+    {
+        $helper = $this->getHelperManager();
+        $props = $helper->Iblock()->getProperties($iblockId);
 
+        $structure = [
+            0 => ['items' => []],
+        ];
+
+        foreach ($props as $prop) {
+            $structure[0]['items'][] = [
+                'title' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
+                'value' => $prop['ID'],
+            ];
+        }
+
+        return $structure;
+    }
+
+    /**
+     * @param $iblockId
+     * @return array
+     */
+    protected function getPropsCodes($iblockId)
+    {
+        $helper = $this->getHelperManager();
+        $props = $helper->Iblock()->getProperties($iblockId);
+        $res = [];
+        foreach ($props as $prop) {
+            if (!empty($prop['CODE'])) {
+                $res[] = $prop['CODE'];
+            }
+        }
+        return $res;
+
+    }
 }
