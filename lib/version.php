@@ -2,18 +2,15 @@
 
 namespace Sprint\Migration;
 
-use ReflectionClass;
-use ReflectionException;
 use Sprint\Migration\Exceptions\MigrationException;
 
 /**
  * Class Version
  * @package Sprint\Migration
  */
-class Version implements RestartableInterface
+class Version implements ExchangeInterface
 {
-
-    use RestartableTrait;
+    use ExchangeTrait;
 
     use OutTrait {
         out as protected;
@@ -77,8 +74,7 @@ class Version implements RestartableInterface
      */
     public function getVersionName()
     {
-        $path = explode('\\', get_class($this));
-        return array_pop($path);
+        return $this->getClassName();
     }
 
     /**
@@ -152,22 +148,19 @@ class Version implements RestartableInterface
     }
 
     /**
-     * @param $name
-     * @throws MigrationException
-     * @return string
+     * @return ExchangeManager
      */
-    public function getResource($name)
+    protected function getExchangeManager()
     {
-        try {
-            $classInfo = new ReflectionClass($this);
-            $file = dirname($classInfo->getFileName()) . '/' . $this->getVersionName() . '_files/' . $name;
-            $file = is_file($file) ? $file : '';
-        } catch (ReflectionException $e) {
-            $file = '';
-        }
+        return new ExchangeManager($this);
+    }
 
-        $this->exitIfEmpty($file, 'resource not found');
-        return $file;
+    /**
+     * @return HelperManager
+     */
+    protected function getHelperManager()
+    {
+        return HelperManager::getInstance();
     }
 }
 

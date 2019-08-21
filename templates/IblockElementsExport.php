@@ -26,7 +26,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      * @throws Exceptions\ExchangeException
      * @throws Exceptions\HelperException
      * @throws Exceptions\RestartException
-     * @throws Exceptions\MigrationException
      * @return bool|void
      */
     public function up()
@@ -38,13 +37,18 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
             '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>'
         );
 
-        $exchange = new IblockElementsImport($this);
-        $exchange->from($this->getResource('iblock_elements.xml'));
-        $exchange->setLimit(20);
-        $exchange->process(function($item) use ($helper, $iblockId){
-            $helper->Iblock()->addElement($iblockId, $item['field'], $item['property']);
-        });
-    }
+        $this->getExchangeManager()
+            ->IblockElementsImport()
+            ->setResource('iblock_elements.xml')
+            ->setLimit(20)
+            ->execute(function ($item) use ($helper, $iblockId) {
+                $helper->Iblock()->addElement(
+                    $iblockId,
+                    $item['field'],
+                    $item['property']
+                );
+            });
+        }
 
     public function down()
     {

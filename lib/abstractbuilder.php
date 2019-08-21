@@ -8,10 +8,9 @@ use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 
 
-abstract class AbstractBuilder implements RestartableInterface
+abstract class AbstractBuilder implements ExchangeInterface
 {
-    use RestartableTrait;
-
+    use ExchangeTrait;
     use OutTrait {
         out as protected;
         outIf as protected;
@@ -29,7 +28,6 @@ abstract class AbstractBuilder implements RestartableInterface
         outDiff as protected;
         outDiffIf as protected;
     }
-
     private $name;
 
     /** @var VersionConfig */
@@ -364,4 +362,19 @@ abstract class AbstractBuilder implements RestartableInterface
         $this->addField($code, $param);
     }
 
+    /**
+     * @return ExchangeManager
+     */
+    protected function getExchangeManager()
+    {
+        return new ExchangeManager($this);
+    }
+
+    /**
+     * @return HelperManager
+     */
+    protected function getHelperManager()
+    {
+        return HelperManager::getInstance();
+    }
 }

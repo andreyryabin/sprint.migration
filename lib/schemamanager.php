@@ -4,10 +4,9 @@ namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\RestartException;
 
-class SchemaManager implements RestartableInterface
+class SchemaManager implements ExchangeInterface
 {
-    use RestartableTrait;
-
+    use ExchangeTrait;
     use OutTrait {
         out as protected;
         outIf as protected;
@@ -288,5 +287,21 @@ class SchemaManager implements RestartableInterface
     {
         $name = 'queue__' . strtolower($name);
         return Module::getDocRoot() . '/bitrix/tmp/sprint.migration/' . $name . '.php';
+    }
+
+    /**
+     * @return ExchangeManager
+     */
+    protected function getExchangeManager()
+    {
+        return new ExchangeManager($this);
+    }
+
+    /**
+     * @return HelperManager
+     */
+    protected function getHelperManager()
+    {
+        return HelperManager::getInstance();
     }
 }

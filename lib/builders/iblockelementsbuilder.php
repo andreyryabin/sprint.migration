@@ -90,7 +90,7 @@ class IblockElementsBuilder extends VersionBuilder
         $exchange->from($iblockId);
         $exchange->to($file);
 
-        $exchange->process();
+        $exchange->execute();
 
         $versionName = $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockElementsExport.php',

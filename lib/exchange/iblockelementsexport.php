@@ -30,7 +30,7 @@ class IblockElementsExport extends AbstractExchange
     /**
      * @throws RestartException
      */
-    public function process()
+    public function execute()
     {
         if (!isset($this->params['NavPageCount'])) {
             $dbres = $this->getElementsDbres($this->iblockId, 1);
@@ -80,33 +80,6 @@ class IblockElementsExport extends AbstractExchange
         file_put_contents($this->file, '</items>', FILE_APPEND);
         unset($this->params['NavPageCount']);
         unset($this->params['NavPageNomer']);
-    }
-
-    protected function writeValues(XMLWriter $writer, $value)
-    {
-        if (!empty($value)) {
-            if (is_array($value)) {
-                foreach ($value as $text) {
-                    $writer->writeElement('value', $text);
-                }
-            } else {
-                $writer->text($value);
-            }
-        }
-    }
-
-    protected function getElementsDbres($iblockId, $pageNum)
-    {
-        return CIBlockElement::GetList([
-            'ID' => 'ASC',
-        ], [
-            'IBLOCK_ID' => $iblockId,
-            'CHECK_PERMISSIONS' => 'N',
-        ], false, [
-            'nPageSize' => $this->getLimit(),
-            'iNumPage' => $pageNum,
-            'checkOutOfRange' => true,
-        ]);
     }
 
     /**
@@ -165,5 +138,32 @@ class IblockElementsExport extends AbstractExchange
     public function from($iblockId)
     {
         $this->iblockId = $iblockId;
+    }
+
+    protected function writeValues(XMLWriter $writer, $value)
+    {
+        if (!empty($value)) {
+            if (is_array($value)) {
+                foreach ($value as $text) {
+                    $writer->writeElement('value', $text);
+                }
+            } else {
+                $writer->text($value);
+            }
+        }
+    }
+
+    protected function getElementsDbres($iblockId, $pageNum)
+    {
+        return CIBlockElement::GetList([
+            'ID' => 'ASC',
+        ], [
+            'IBLOCK_ID' => $iblockId,
+            'CHECK_PERMISSIONS' => 'N',
+        ], false, [
+            'nPageSize' => $this->getLimit(),
+            'iNumPage' => $pageNum,
+            'checkOutOfRange' => true,
+        ]);
     }
 }

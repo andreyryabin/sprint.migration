@@ -30,20 +30,19 @@ class IblockElementsImport extends AbstractExchange
      * @param callable $callback
      * @throws RestartException
      */
-    public function process(callable $callback)
+    public function execute(callable $callback)
     {
-
         $this->callback = $callback;
 
-        if (!isset($this->params['all'])) {
+        if (!isset($this->params['total'])) {
             $reader = new XMLReader();
             $reader->open($this->file);
-            $this->params['all'] = 0;
-            $this->params['pos'] = 0;
+            $this->params['total'] = 0;
+            $this->params['offset'] = 0;
 
             while ($reader->read()) {
                 if ($this->isOpenTag($reader, 'item')) {
-                    $this->params['all']++;
+                    $this->params['total']++;
                 }
             }
         }
@@ -57,12 +56,12 @@ class IblockElementsImport extends AbstractExchange
             if ($this->isOpenTag($reader, 'item')) {
 
                 $collect = (
-                    $index >= $this->params['pos'] &&
-                    $index < $this->params['pos'] + $this->getLimit()
+                    $index >= $this->params['offset'] &&
+                    $index < $this->params['offset'] + $this->getLimit()
                 );
 
-                $finish = ($index >= $this->params['all'] - 1);
-                $restart = ($index >= $this->params['pos'] + $this->getLimit());
+                $finish = ($index >= $this->params['total'] - 1);
+                $restart = ($index >= $this->params['offset'] + $this->getLimit());
 
                 if ($collect) {
                     $this->collectItem($reader);
@@ -70,14 +69,14 @@ class IblockElementsImport extends AbstractExchange
 
                 if ($finish || $restart) {
                     $this->outProgress(
-                        ($index + 1) . ':' . $this->params['all'],
+                        ($index + 1) . ':' . $this->params['total'],
                         ($index + 1),
-                        $this->params['all']
+                        $this->params['total']
                     );
                 }
 
                 if ($restart) {
-                    $this->params['pos'] = $index;
+                    $this->params['offset'] = $index;
                     $this->restart();
                 }
                 $index++;
@@ -85,8 +84,8 @@ class IblockElementsImport extends AbstractExchange
         }
 
         $reader->close();
-        unset($this->params['pos']);
-        unset($this->params['all']);
+        unset($this->params['offset']);
+        unset($this->params['total']);
     }
 
 
@@ -124,6 +123,23 @@ class IblockElementsImport extends AbstractExchange
         }
     }
 
+    protected function isOpenTag(XMLReader $reader, $tag)
+    {
+        return (
+            $reader->nodeType == XMLReader::ELEMENT &&
+            $reader->name == $tag &&
+            !$reader->isEmptyElement
+        );
+    }
+
+    protected function isCloseTag(XMLReader $reader, $tag)
+    {
+        return (
+            $reader->nodeType == XMLReader::END_ELEMENT &&
+            $reader->name == $tag
+        );
+    }
+
     protected function prepareValue($value)
     {
         $value = trim($value);
@@ -153,36 +169,49 @@ class IblockElementsImport extends AbstractExchange
         return $res;
     }
 
-    protected function isOpenTag(XMLReader $reader, $tag)
-    {
-        return ($reader->nodeType == XMLReader::ELEMENT && $reader->name == $tag && !$reader->isEmptyElement);
-    }
-
-    protected function isCloseTag(XMLReader $reader, $tag)
-    {
-        return ($reader->nodeType == XMLReader::END_ELEMENT && $reader->name == $tag);
-    }
-
     /**
      * @param int $limit
+     * @return $this
      */
-    public function setLimit(int $limit): void
+    public function setLimit(int $limit)
     {
         $this->limit = $limit;
+        return $this;
     }
 
     /**
      * @return int
      */
-    public function getLimit(): int
+    public function getLimit()
     {
         return $this->limit;
     }
 
-    public function from($file)
+    /**
+     * @param $name
+     * @return $this
+     */
+    public function setResource($name)
+    {
+        $this->setFile($this->exchange->getResource($name));
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
+     * @param mixed $file
+     * @return $this
+     */
+    public function setFile($file)
     {
         $this->file = $file;
         return $this;
     }
-
 }

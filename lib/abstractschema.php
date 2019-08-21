@@ -5,10 +5,9 @@ namespace Sprint\Migration;
 use DirectoryIterator;
 use SplFileInfo;
 
-abstract class AbstractSchema implements RestartableInterface
+abstract class AbstractSchema implements ExchangeInterface
 {
-    use RestartableTrait;
-
+    use ExchangeTrait;
     use OutTrait {
         out as protected;
         outIf as protected;
@@ -266,5 +265,21 @@ abstract class AbstractSchema implements RestartableInterface
     protected function getVersionConfig()
     {
         return $this->versionConfig;
+    }
+
+    /**
+     * @return ExchangeManager
+     */
+    protected function getExchangeManager()
+    {
+        return new ExchangeManager($this);
+    }
+
+    /**
+     * @return HelperManager
+     */
+    protected function getHelperManager()
+    {
+        return HelperManager::getInstance();
     }
 }

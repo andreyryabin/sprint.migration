@@ -5,7 +5,7 @@ namespace Sprint\Migration;
 use Sprint\Migration\Exceptions\RestartException;
 
 
-interface RestartableInterface
+interface ExchangeInterface
 {
     /**
      * @throws RestartException
@@ -22,4 +22,14 @@ interface RestartableInterface
      */
     public function setRestartParams($params = []);
 
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function getResource($name);
+
+    /**
+     * @return mixed
+     */
+    public function getClassName();
 }
