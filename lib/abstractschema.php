@@ -5,7 +5,7 @@ namespace Sprint\Migration;
 use DirectoryIterator;
 use SplFileInfo;
 
-abstract class AbstractSchema
+abstract class AbstractSchema implements RestartableInterface
 {
     use RestartableTrait;
 

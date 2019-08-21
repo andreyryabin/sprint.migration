@@ -2,15 +2,12 @@
 
 namespace Sprint\Migration\Tables;
 
-use Bitrix\Main\Db\SqlQueryException;
-
 class VersionTable extends AbstractTable
 {
 
     protected $tableVersion = 3;
 
     /**
-     * @throws SqlQueryException
      * @return array
      */
     public function getRecords()
@@ -20,7 +17,6 @@ class VersionTable extends AbstractTable
 
     /**
      * @param $versionName
-     * @throws SqlQueryException
      * @return array|false
      */
     public function getRecord($versionName)
@@ -32,7 +28,6 @@ class VersionTable extends AbstractTable
 
     /**
      * @param $meta
-     * @throws SqlQueryException
      */
     public function addRecord($meta)
     {
@@ -49,7 +44,6 @@ class VersionTable extends AbstractTable
 
     /**
      * @param $meta
-     * @throws SqlQueryException
      */
     public function removeRecord($meta)
     {
@@ -58,9 +52,6 @@ class VersionTable extends AbstractTable
         );
     }
 
-    /**
-     * @throws SqlQueryException
-     */
     protected function createTable()
     {
         //tableVersion 1
@@ -82,9 +73,6 @@ class VersionTable extends AbstractTable
         }
     }
 
-    /**
-     * @throws SqlQueryException
-     */
     protected function dropTable()
     {
         $this->query('DROP TABLE IF EXISTS `#TABLE1#`;');

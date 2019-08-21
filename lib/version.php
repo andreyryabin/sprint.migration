@@ -2,14 +2,15 @@
 
 namespace Sprint\Migration;
 
-use Bitrix\Main\DB\SqlQueryException;
+use ReflectionClass;
+use ReflectionException;
 use Sprint\Migration\Exceptions\MigrationException;
 
 /**
  * Class Version
  * @package Sprint\Migration
  */
-class Version
+class Version implements RestartableInterface
 {
 
     use RestartableTrait;
@@ -99,7 +100,6 @@ class Version
     /**
      * @param $name
      * @param $data
-     * @throws SqlQueryException
      */
     public function saveData($name, $data)
     {
@@ -109,7 +109,6 @@ class Version
 
     /**
      * @param $name
-     * @throws SqlQueryException
      * @return mixed|string
      *
      */
@@ -121,7 +120,6 @@ class Version
 
     /**
      * @param bool $name
-     * @throws SqlQueryException
      */
     public function deleteSavedData($name = false)
     {
@@ -151,6 +149,25 @@ class Version
         if (empty($var)) {
             Throw new MigrationException($msg);
         }
+    }
+
+    /**
+     * @param $name
+     * @throws MigrationException
+     * @return string
+     */
+    public function getResource($name)
+    {
+        try {
+            $classInfo = new ReflectionClass($this);
+            $file = dirname($classInfo->getFileName()) . '/' . $this->getVersionName() . '_files/' . $name;
+            $file = is_file($file) ? $file : '';
+        } catch (ReflectionException $e) {
+            $file = '';
+        }
+
+        $this->exitIfEmpty($file, 'resource not found');
+        return $file;
     }
 }
 

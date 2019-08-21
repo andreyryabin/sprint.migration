@@ -3,15 +3,12 @@
 namespace Sprint\Migration;
 
 
-use Bitrix\Main\DB\SqlQueryException;
-
 class Version20170213000008 extends Version
 {
 
     protected $description = "Пример работы миграции с сохранением промежуточных данных в бд";
 
     /**
-     * @throws SqlQueryException
      * @return bool|void
      */
     public function up()

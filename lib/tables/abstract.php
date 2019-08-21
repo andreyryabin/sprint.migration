@@ -53,7 +53,6 @@ abstract class AbstractTable
      * @param $query
      * @param null $var1
      * @param null $var2
-     * @throws SqlQueryException
      * @return Result|bool
      */
     protected function query($query, $var1 = null, $var2 = null)
@@ -80,8 +79,11 @@ abstract class AbstractTable
         $queryReplace = array_values($search);
 
         $query = str_replace($querySearch, $queryReplace, $query);
-
-        return $this->connection->query($query);
+        try {
+            return $this->connection->query($query);
+        } catch (SqlQueryException $e) {
+            return false;
+        }
     }
 
     protected function forSql($query)

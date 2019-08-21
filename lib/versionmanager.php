@@ -64,7 +64,15 @@ class VersionManager
 
             $meta = $this->getVersionByName($versionName);
 
-            $this->checkStatusBeforeStart($force, $action, $meta);
+            if (!$force) {
+                if ($action == 'up' && $meta['status'] != 'new') {
+                    throw new MigrationException('migration already up');
+                }
+
+                if ($action == 'down' && $meta['status'] != 'installed') {
+                    throw new MigrationException('migration already down');
+                }
+            }
 
             $versionInstance = $this->getVersionInstance($meta);
 
@@ -133,26 +141,6 @@ class VersionManager
             throw new MigrationException('migration return false');
         }
     }
-
-    /**
-     * @param $force
-     * @param $action
-     * @param $meta
-     * @throws MigrationException
-     */
-    protected function checkStatusBeforeStart($force, $action, $meta)
-    {
-        if (!$force) {
-            if ($action == 'up' && $meta['status'] != 'new') {
-                throw new MigrationException('migration already up');
-            }
-
-            if ($action == 'down' && $meta['status'] != 'installed') {
-                throw new MigrationException('migration already down');
-            }
-        }
-    }
-
 
     public function needRestart($version)
     {

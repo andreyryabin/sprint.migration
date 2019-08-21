@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Builders;
 
-use Bitrix\Main\Db\SqlQueryException;
 use Sprint\Migration\AbstractBuilder;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\VersionManager;
@@ -65,7 +64,6 @@ class TransferBuilder extends AbstractBuilder
     }
 
     /**
-     * @throws SqlQueryException
      * @throws BuilderException
      */
     protected function execute()

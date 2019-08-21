@@ -51,16 +51,35 @@ class IblockElementsExport extends AbstractExchange
             $dbres = $this->getElementsDbres($this->iblockId, $this->params['NavPageNomer']);
 
             while ($item = $dbres->GetNextElement(false, false)) {
-                $xml = new XMLWriter();
-                $xml->openMemory();
-                $xml->startElement('item');
+                $writer = new XMLWriter();
+                $writer->openMemory();
+                $writer->startElement('item');
 
-                $fields = $item->GetFields();
+                $fields = array_filter($item->GetFields(), function ($field) {
+                    return (in_array($field, ['NAME', 'CODE', 'SORT']));
+                }, ARRAY_FILTER_USE_KEY);
+
+
                 foreach ($fields as $code => $val) {
-                    $xml->writeElement($code, $val);
+                    $writer->startElement('field');
+                    $writer->writeAttribute('name', $code);
+                    $this->writeValues($writer, $val);
+                    $writer->endElement();
                 }
-                $xml->endElement();
-                file_put_contents($this->file, $xml->flush(), FILE_APPEND);
+
+
+                $props = $item->GetProperties();
+                foreach ($props as $prop) {
+                    $writer->startElement('property');
+                    $writer->writeAttribute('name', $prop['CODE']);
+                    $this->writeValues($writer, $prop['VALUE']);
+                    $writer->endElement();
+                }
+
+
+                //item
+                $writer->endElement();
+                file_put_contents($this->file, $writer->flush(), FILE_APPEND);
             }
 
             $this->outProgress('', $this->params['NavPageNomer'], $this->params['NavPageCount']);
@@ -71,10 +90,20 @@ class IblockElementsExport extends AbstractExchange
         file_put_contents($this->file, '</items>', FILE_APPEND);
         unset($this->params['NavPageCount']);
         unset($this->params['NavPageNomer']);
-
-        $this->saveParams();
     }
 
+    protected function writeValues(XMLWriter $writer, $value)
+    {
+        if (!empty($value)) {
+            if (is_array($value)) {
+                foreach ($value as $text) {
+                    $writer->writeElement('value', $text);
+                }
+            } else {
+                $writer->text($value);
+            }
+        }
+    }
 
     protected function getElementsDbres($iblockId, $pageNum)
     {

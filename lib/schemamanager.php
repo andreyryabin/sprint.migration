@@ -4,7 +4,7 @@ namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\RestartException;
 
-class SchemaManager
+class SchemaManager implements RestartableInterface
 {
     use RestartableTrait;
 

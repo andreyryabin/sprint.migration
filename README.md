@@ -87,5 +87,3 @@ php bin/migrate down --tag=release001
 
 Формы создания миграций
 ![bitrix-sprint-migration-2.png](https://raw.githubusercontent.com/wiki/andreyryabin/sprint.migration/assets/bitrix-sprint-migration-2.png)
-
-https://www.jetbrains.com/?from=sprint.migration
