@@ -37,8 +37,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
             '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>'
         );
 
-        $this->getExchangeManager()
-            ->IblockElementsImport()
+        $exchange = $this->getExchangeManager();
+
+        $exchange->IblockElementsImport()
             ->setResource('iblock_elements.xml')
             ->setLimit(20)
             ->execute(function ($item) use ($helper, $iblockId) {

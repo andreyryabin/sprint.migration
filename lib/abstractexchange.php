@@ -27,17 +27,17 @@ abstract class AbstractExchange
 
     protected $params = [];
 
-    protected $exchange;
+    protected $exchangeEntity;
 
     /**
      * abstractexchange constructor.
-     * @param ExchangeInterface $exchange
+     * @param ExchangeEntity $exchangeEntity
      * @throws ExchangeException
      */
-    public function __construct(ExchangeInterface $exchange)
+    public function __construct(ExchangeEntity $exchangeEntity)
     {
-        $this->exchange = $exchange;
-        $this->params = $exchange->getRestartParams();
+        $this->exchangeEntity = $exchangeEntity;
+        $this->params = $exchangeEntity->getRestartParams();
 
         if (!$this->isEnabled()) {
             Throw new ExchangeException('Exchange disabled');
@@ -46,7 +46,7 @@ abstract class AbstractExchange
 
     public function __destruct()
     {
-        $this->exchange->setRestartParams($this->params);
+        $this->exchangeEntity->setRestartParams($this->params);
     }
 
     public function isEnabled()

@@ -8,11 +8,11 @@ use Sprint\Migration\Exchange\IblockElementsImport;
 
 class ExchangeManager
 {
-    protected $restartable;
+    protected $exchangeEntity;
 
-    public function __construct(ExchangeInterface $restartable)
+    public function __construct(ExchangeEntity $exchangeEntity)
     {
-        $this->restartable = $restartable;
+        $this->exchangeEntity = $exchangeEntity;
     }
 
     /**
@@ -21,7 +21,7 @@ class ExchangeManager
      */
     public function IblockElementsExport()
     {
-        return new IblockElementsExport($this->restartable);
+        return new IblockElementsExport($this->exchangeEntity);
     }
 
     /**
@@ -30,6 +30,6 @@ class ExchangeManager
      */
     public function IblockElementsImport()
     {
-        return new IblockElementsImport($this->restartable);
+        return new IblockElementsImport($this->exchangeEntity);
     }
 }

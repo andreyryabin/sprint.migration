@@ -3,31 +3,12 @@
 namespace Sprint\Migration;
 
 use Exception;
-use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 
 
-abstract class AbstractBuilder implements ExchangeInterface
+abstract class AbstractBuilder extends ExchangeEntity
 {
-    use ExchangeTrait;
-    use OutTrait {
-        out as protected;
-        outIf as protected;
-        outProgress as protected;
-        outNotice as protected;
-        outNoticeIf as protected;
-        outInfo as protected;
-        outInfoIf as protected;
-        outSuccess as protected;
-        outSuccessIf as protected;
-        outWarning as protected;
-        outWarningIf as protected;
-        outError as protected;
-        outErrorIf as protected;
-        outDiff as protected;
-        outDiffIf as protected;
-    }
     private $name;
 
     /** @var VersionConfig */
@@ -257,39 +238,6 @@ abstract class AbstractBuilder implements ExchangeInterface
     {
         $this->unbindField($code);
         Throw new RebuildException('rebuild form');
-    }
-
-    /**
-     * @param $msg
-     * @throws BuilderException
-     */
-    protected function exitWithMessage($msg)
-    {
-        Throw new BuilderException($msg);
-    }
-
-    /**
-     * @param $cond
-     * @param $msg
-     * @throws BuilderException
-     */
-    protected function exitIf($cond, $msg)
-    {
-        if ($cond) {
-            Throw new BuilderException($msg);
-        }
-    }
-
-    /**
-     * @param $var
-     * @param $msg
-     * @throws BuilderException
-     */
-    protected function exitIfEmpty($var, $msg)
-    {
-        if (empty($var)) {
-            Throw new BuilderException($msg);
-        }
     }
 
     public function getName()
