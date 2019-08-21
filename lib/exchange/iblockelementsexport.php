@@ -27,21 +27,10 @@ class IblockElementsExport extends AbstractExchange
         );
     }
 
-    public function to($file)
-    {
-        $this->file = $file;
-    }
-
-    public function from($iblockId)
-    {
-        $this->iblockId = $iblockId;
-    }
-
-
     /**
      * @throws RestartException
      */
-    public function execute()
+    public function process()
     {
         if (!isset($this->params['NavPageCount'])) {
             $dbres = $this->getElementsDbres($this->iblockId, 1);
@@ -168,4 +157,13 @@ class IblockElementsExport extends AbstractExchange
         $this->exportProperties = $exportProperties;
     }
 
+    public function to($file)
+    {
+        $this->file = $file;
+    }
+
+    public function from($iblockId)
+    {
+        $this->iblockId = $iblockId;
+    }
 }

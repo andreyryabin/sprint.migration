@@ -17,17 +17,24 @@ class IblockElementsImport extends AbstractExchange
      */
     protected $callback;
 
-    public function from($file)
+    public function isEnabled()
     {
-        $this->file = $file;
-        return $this;
+        return (
+            $this->getHelperManager()->Iblock()->isEnabled() &&
+            class_exists('XMLReader') &&
+            class_exists('XMLWriter')
+        );
     }
 
     /**
+     * @param callable $callback
      * @throws RestartException
      */
-    public function execute()
+    public function process(callable $callback)
     {
+
+        $this->callback = $callback;
+
         if (!isset($this->params['all'])) {
             $reader = new XMLReader();
             $reader->open($this->file);
@@ -151,11 +158,10 @@ class IblockElementsImport extends AbstractExchange
         return $this->limit;
     }
 
-    /**
-     * @param callable $callback
-     */
-    public function setCallback(callable $callback): void
+    public function from($file)
     {
-        $this->callback = $callback;
+        $this->file = $file;
+        return $this;
     }
+
 }
