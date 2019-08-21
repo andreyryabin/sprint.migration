@@ -90,9 +90,8 @@ class IblockElementsImport extends AbstractExchange
     }
 
 
-    protected function collectItem(
-        XMLReader $reader
-    ) {
+    protected function collectItem(XMLReader $reader)
+    {
         if ($this->isOpenTag($reader, 'item')) {
             $item = [];
             do {
@@ -108,11 +107,8 @@ class IblockElementsImport extends AbstractExchange
         }
     }
 
-    protected function collectField(
-        XMLReader $reader,
-        $tag,
-        &$item
-    ) {
+    protected function collectField(XMLReader $reader, $tag, &$item)
+    {
         if ($this->isOpenTag($reader, $tag)) {
             $name = $reader->getAttribute('name');
             do {
@@ -157,17 +153,13 @@ class IblockElementsImport extends AbstractExchange
         return $res;
     }
 
-    protected function isOpenTag(
-        XMLReader $reader,
-        $tag
-    ) {
+    protected function isOpenTag(XMLReader $reader, $tag)
+    {
         return ($reader->nodeType == XMLReader::ELEMENT && $reader->name == $tag && !$reader->isEmptyElement);
     }
 
-    protected function isCloseTag(
-        XMLReader $reader,
-        $tag
-    ) {
+    protected function isCloseTag(XMLReader $reader, $tag)
+    {
         return ($reader->nodeType == XMLReader::END_ELEMENT && $reader->name == $tag);
     }
 
