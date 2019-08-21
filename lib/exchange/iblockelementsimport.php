@@ -119,13 +119,42 @@ class IblockElementsImport extends AbstractExchange
                 $reader->read();
                 if ($this->isOpenTag($reader, 'value')) {
                     $reader->read();
-                    $item[$tag][$name][] = trim($reader->value);
+                    $item[$tag][$name][] = $this->prepareValue($reader->value);
                 } elseif ($reader->nodeType == XMLReader::TEXT) {
-                    $item[$tag][$name] = trim($reader->value);
+                    $item[$tag][$name] = $this->prepareValue($reader->value);
                 }
 
             } while (!$this->isCloseTag($reader, $tag));
         }
+    }
+
+    protected function prepareValue($value)
+    {
+        $value = trim($value);
+
+        $search = [
+            "'&(quot|#34);'i",
+            "'&(lt|#60);'i",
+            "'&(gt|#62);'i",
+            "'&(amp|#38);'i",
+        ];
+
+        $replace = [
+            "\"",
+            "<",
+            ">",
+            "&",
+        ];
+
+        if (preg_match("/^\s*$/", $value)) {
+            $res = '';
+        } elseif (strpos($value, "&") === false) {
+            $res = $value;
+        } else {
+            $res = preg_replace($search, $replace, $value);
+        }
+
+        return $res;
     }
 
     protected function isOpenTag(
