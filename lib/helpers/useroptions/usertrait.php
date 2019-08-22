@@ -4,25 +4,35 @@ namespace Sprint\Migration\Helpers\UserOptions;
 
 trait UserTrait
 {
+    public function getUserGridId()
+    {
+        return 'tbl_user';
+    }
+
     public function exportUserList()
     {
         return $this->exportList([
-            'name' => 'tbl_user',
+            'name' => $this->getUserGridId(),
         ]);
     }
 
     public function buildUserList($listData = [])
     {
         return $this->buildList($listData, [
-            'name' => 'tbl_user',
+            'name' => $this->getUserGridId(),
         ]);
     }
 
     public function saveUserList($listData = [])
     {
         return $this->saveList($listData, [
-            'name' => 'tbl_user',
+            'name' => $this->getUserGridId(),
         ]);
+    }
+
+    public function saveUserGrid($params = [])
+    {
+        return $this->saveGrid($this->getUserGridId(), $params);
     }
 
     public function exportUserForm()

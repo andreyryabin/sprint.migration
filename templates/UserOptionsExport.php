@@ -30,6 +30,13 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 <? if (!empty($exportUserGroupList)): ?>
         $helper->UserOptions()->saveUserGroupList(<?php echo var_export($exportUserGroupList, 1) ?>);
 <? endif; ?>
+<? if (!empty($exportUserGrid)): ?>
+    $helper->UserOptions()->saveUserGrid(<?php echo var_export($exportUserGrid, 1) ?>);
+<? endif; ?>
+<? if (!empty($exportUserGroupGrid)): ?>
+    $helper->UserOptions()->saveUserGroupGrid(<?php echo var_export($exportUserGroupGrid, 1) ?>);
+<? endif; ?>
+
     }
 
     public function down()

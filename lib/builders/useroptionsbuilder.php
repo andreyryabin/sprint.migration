@@ -59,15 +59,23 @@ class UserOptionsBuilder extends VersionBuilder
         $exportUserForm = [];
         $exportUserList = [];
         $exportUserGroupList = [];
+        $exportUserGrid = [];
+        $exportUserGroupGrid = [];
 
         if (in_array('userForm', $what)) {
             $exportUserForm = $helper->UserOptions()->exportUserForm();
         }
         if (in_array('userList', $what)) {
             $exportUserList = $helper->UserOptions()->exportUserList();
+            $exportUserGrid = $helper->UserOptions()->exportGrid(
+                $helper->UserOptions()->getUserGridId()
+            );
         }
         if (in_array('groupList', $what)) {
             $exportUserGroupList = $helper->UserOptions()->exportUserGroupList();
+            $exportUserGroupGrid = $helper->UserOptions()->exportGrid(
+                $helper->UserOptions()->getUserGroupGridId()
+            );
         }
 
         $this->createVersionFile(
@@ -75,6 +83,8 @@ class UserOptionsBuilder extends VersionBuilder
             'exportUserForm' => $exportUserForm,
             'exportUserList' => $exportUserList,
             'exportUserGroupList' => $exportUserGroupList,
+            'exportUserGrid' => $exportUserGrid,
+            'exportUserGroupGrid' => $exportUserGroupGrid,
         ]);
 
     }
