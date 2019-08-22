@@ -18,6 +18,10 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 {
     protected $description = "<?php echo $description ?>";
 
+    /**
+    * @throws Exceptions\HelperException
+    * @return bool|void
+    */
     public function up()
     {
         $helper = $this->getHelperManager();
@@ -49,6 +53,13 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 <? if (!empty($exportSectionList)): ?>
         $helper->UserOptions()->saveSectionList($iblockId, <?php echo var_export($exportSectionList, 1) ?>);
 <? endif; ?>
+<? if (!empty($exportElementGrid)): ?>
+    $helper->UserOptions()->saveElementGrid($iblockId, <?php echo var_export($exportElementGrid, 1) ?>);
+<? endif; ?>
+<? if (!empty($exportSectionGrid)): ?>
+    $helper->UserOptions()->saveSectionGrid($iblockId, <?php echo var_export($exportSectionGrid, 1) ?>);
+<? endif; ?>
+
     }
 
     public function down()

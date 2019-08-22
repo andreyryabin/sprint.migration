@@ -103,6 +103,9 @@ class IblockBuilder extends VersionBuilder
         $exportElementList = [];
         $exportSectionList = [];
 
+        $exportElementGrid = [];
+        $exportSectionGrid = [];
+
         if (in_array('iblock', $what)) {
             $iblockExport = true;
         }
@@ -141,6 +144,13 @@ class IblockBuilder extends VersionBuilder
             $exportSectionForm = $helper->UserOptions()->exportSectionForm($iblockId);
             $exportElementList = $helper->UserOptions()->exportElementList($iblockId);
             $exportSectionList = $helper->UserOptions()->exportSectionList($iblockId);
+
+            $exportElementGrid = $helper->UserOptions()->exportGrid(
+                $helper->UserOptions()->getElementGridId($iblockId)
+            );
+            $exportSectionGrid = $helper->UserOptions()->exportGrid(
+                $helper->UserOptions()->getSectionGridId($iblockId)
+            );
         }
 
         $this->createVersionFile(
@@ -155,6 +165,8 @@ class IblockBuilder extends VersionBuilder
                 'exportSectionForm' => $exportSectionForm,
                 'exportElementList' => $exportElementList,
                 'exportSectionList' => $exportSectionList,
+                'exportElementGrid' => $exportElementGrid,
+                'exportSectionGrid' => $exportSectionGrid,
             ]
         );
     }

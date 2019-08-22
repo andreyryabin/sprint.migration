@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Helpers;
 
+use CGridOptions;
 use CUserOptions;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
@@ -169,6 +170,52 @@ class UserOptionsHelper extends Helper
         } else {
             if ($this->getMode('out_equal')) {
                 $this->out('Список "%s" совпадает', $params['name']);
+            }
+            return true;
+        }
+    }
+
+    public function exportGrid($gridId)
+    {
+        $params = CUserOptions::GetOption(
+            "main.interface.grid",
+            $gridId,
+            []
+        );
+        if (!empty($params)) {
+            $options = new CGridOptions($gridId);
+            return $options->GetOptions();
+        }
+        return [];
+    }
+
+    public function buildGrid($gridId, $params = [])
+    {
+        CUserOptions::DeleteOptionsByName(
+            'main.interface.grid',
+            $gridId
+        );
+        CUserOptions::setOption(
+            "main.interface.grid",
+            $gridId,
+            $params,
+            true
+        );
+
+        return true;
+    }
+
+    public function saveGrid($gridId, $params = [])
+    {
+        $exists = $this->exportGrid($gridId);
+        if ($this->hasDiff($exists, $params)) {
+            $ok = $this->getMode('test') ? true : $this->buildGrid($gridId, $params);
+            $this->outNoticeIf($ok, 'Грид "%s" сохранен', $gridId);
+            $this->outDiffIf($ok, $exists, $params);
+            return $ok;
+        } else {
+            if ($this->getMode('out_equal')) {
+                $this->out('Грид "%s" совпадает', $gridId);
             }
             return true;
         }

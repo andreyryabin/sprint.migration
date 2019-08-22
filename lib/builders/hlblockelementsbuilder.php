@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration\Builders;
 
+use Bitrix\Main\Loader;
+use Bitrix\Main\LoaderException;
 use Sprint\Migration\Builders\Traits\IblocksStructureTrait;
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
@@ -11,16 +13,14 @@ use Sprint\Migration\Exchange\IblockElementsExport;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
-class IblockElementsBuilder extends VersionBuilder
+class HlblockElementsBuilder extends VersionBuilder
 {
-    use IblocksStructureTrait;
-
     /**
      * @return bool
      */
     protected function isBuilderEnabled()
     {
-        return $this->getHelperManager()->Iblock()->isEnabled();
+        return $this->getHelperManager()->Hlblock()->isEnabled();
     }
 
     protected function initialize()

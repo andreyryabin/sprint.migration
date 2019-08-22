@@ -62,30 +62,51 @@ trait IblockTrait
         ]);
     }
 
-    public function exportElementList($iblockId)
+    public function saveElementGrid($iblockId, $params = [])
+    {
+        return $this->saveGrid($this->getElementGridId($iblockId), $params);
+    }
+
+    public function saveSectionGrid($iblockId, $params = [])
+    {
+        return $this->saveGrid($this->getSectionGridId($iblockId), $params);
+    }
+
+    public function getElementGridId($iblockId)
     {
         $this->initializeIblockVars($iblockId);
+        return 'tbl_iblock_element_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
+    }
 
+    public function getSectionGridId($iblockId)
+    {
+        $this->initializeIblockVars($iblockId);
+        return 'tbl_iblock_section_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
+    }
+
+    public function exportElementList($iblockId)
+    {
         return $this->exportList([
-            'name' => 'tbl_iblock_element_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId),
+            'name' => $this->getElementGridId($iblockId),
         ]);
+    }
+
+    public function exportElementGrid($iblockId)
+    {
+        return $this->exportGrid($this->getElementGridId($iblockId));
     }
 
     public function buildElementList($iblockId, $listData = [])
     {
-        $this->initializeIblockVars($iblockId);
-
         $this->buildList($listData, [
-            'name' => 'tbl_iblock_element_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId),
+            'name' => $this->getElementGridId($iblockId),
         ]);
     }
 
     public function saveElementList($iblockId, $listData = [])
     {
-        $this->initializeIblockVars($iblockId);
-
         $this->saveList($listData, [
-            'name' => 'tbl_iblock_element_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId),
+            'name' => $this->getElementGridId($iblockId),
         ]);
     }
 
@@ -121,7 +142,7 @@ trait IblockTrait
         $this->initializeIblockVars($iblockId);
 
         return $this->exportList([
-            'name' => 'tbl_iblock_section_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId),
+            'name' => $this->getSectionGridId($iblockId),
         ]);
     }
 
@@ -130,7 +151,7 @@ trait IblockTrait
         $this->initializeIblockVars($iblockId);
 
         return $this->buildList($listData, [
-            'name' => 'tbl_iblock_section_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId),
+            'name' => $this->getSectionGridId($iblockId),
         ]);
     }
 
@@ -139,7 +160,7 @@ trait IblockTrait
         $this->initializeIblockVars($iblockId);
 
         return $this->saveList($listData, [
-            'name' => 'tbl_iblock_section_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId),
+            'name' => $this->getSectionGridId($iblockId),
         ]);
     }
 
