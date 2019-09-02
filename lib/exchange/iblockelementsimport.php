@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Exchange;
 
 use Sprint\Migration\AbstractExchange;
+use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\RestartException;
 use XMLReader;
 
@@ -10,7 +11,7 @@ class IblockElementsImport extends AbstractExchange
 {
     protected $file;
 
-    protected $limit = 10;
+    protected $limit = 20;
 
     /**
      * @var callable
@@ -110,13 +111,24 @@ class IblockElementsImport extends AbstractExchange
     {
         if ($this->isOpenTag($reader, $tag)) {
             $name = $reader->getAttribute('name');
+            $multiple = $reader->getAttribute('multiple');
+            $multiple = ($multiple && $multiple == 'Y');
+
             do {
                 $reader->read();
                 if ($this->isOpenTag($reader, 'value')) {
                     $reader->read();
-                    $item[$tag][$name][] = $this->prepareValue($reader->value);
-                } elseif ($reader->nodeType == XMLReader::TEXT) {
-                    $item[$tag][$name] = $this->prepareValue($reader->value);
+                    $val = $this->prepareValue($reader->value);
+
+                    if (!isset($item[$tag][$name])) {
+                        $item[$tag][$name] = ($multiple) ? [] : '';
+                    }
+
+                    if ($multiple) {
+                        $item[$tag][$name][] = $val;
+                    } else {
+                        $item[$tag][$name] = $val;
+                    }
                 }
 
             } while (!$this->isCloseTag($reader, $tag));
@@ -173,7 +185,7 @@ class IblockElementsImport extends AbstractExchange
      * @param int $limit
      * @return $this
      */
-    public function setLimit(int $limit)
+    public function setLimit($limit)
     {
         $this->limit = $limit;
         return $this;
@@ -189,11 +201,12 @@ class IblockElementsImport extends AbstractExchange
 
     /**
      * @param $name
+     * @throws ExchangeException
      * @return $this
      */
     public function setResource($name)
     {
-        $this->setFile($this->exchange->getResource($name));
+        $this->setFile($this->exchangeEntity->getResource($name));
         return $this;
     }
 

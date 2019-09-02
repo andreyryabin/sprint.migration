@@ -53,7 +53,10 @@ class IblockElementsExport extends AbstractExchange
                     if (in_array($code, $this->getExportFields())) {
                         $writer->startElement('field');
                         $writer->writeAttribute('name', $code);
-                        $this->writeValues($writer, $val);
+                        if (!empty($val)) {
+                            $writer->text($val);
+                        }
+
                         $writer->endElement();
                     }
                 }
@@ -62,7 +65,23 @@ class IblockElementsExport extends AbstractExchange
                     if (in_array($prop['CODE'], $this->getExportProperties())) {
                         $writer->startElement('property');
                         $writer->writeAttribute('name', $prop['CODE']);
-                        $this->writeValues($writer, $prop['VALUE']);
+                        if ($prop['MULTIPLE'] == 'Y') {
+                            if (!empty($prop['VALUE'])) {
+                                foreach ($prop['VALUE'] as $index => $value) {
+                                    $writer->startElement('value');
+                                    if (!empty($prop['VALUE_XML_ID'][$index])) {
+                                        $writer->writeAttribute('xml_id', $prop['VALUE_XML_ID'][$index]);
+                                    }
+                                    $writer->text($value);
+                                    $writer->endElement();
+                                }
+                            }
+                        } else {
+                            if (!empty($prop['VALUE'])) {
+                                $writer->text($prop['VALUE']);
+                            }
+                        }
+
                         $writer->endElement();
                     }
                 }
@@ -85,7 +104,7 @@ class IblockElementsExport extends AbstractExchange
     /**
      * @param int $limit
      */
-    public function setLimit(int $limit): void
+    public function setLimit($limit)
     {
         $this->limit = $limit;
     }
@@ -93,7 +112,7 @@ class IblockElementsExport extends AbstractExchange
     /**
      * @return array
      */
-    public function getExportFields(): array
+    public function getExportFields()
     {
         return $this->exportFields;
     }
@@ -101,7 +120,7 @@ class IblockElementsExport extends AbstractExchange
     /**
      * @param array $exportFields
      */
-    public function setExportFields(array $exportFields): void
+    public function setExportFields(array $exportFields)
     {
         $this->exportFields = $exportFields;
     }
@@ -109,7 +128,7 @@ class IblockElementsExport extends AbstractExchange
     /**
      * @return int
      */
-    public function getLimit(): int
+    public function getLimit()
     {
         return $this->limit;
     }
@@ -117,7 +136,7 @@ class IblockElementsExport extends AbstractExchange
     /**
      * @return array
      */
-    public function getExportProperties(): array
+    public function getExportProperties()
     {
         return $this->exportProperties;
     }
@@ -125,7 +144,7 @@ class IblockElementsExport extends AbstractExchange
     /**
      * @param array $exportProperties
      */
-    public function setExportProperties(array $exportProperties): void
+    public function setExportProperties(array $exportProperties)
     {
         $this->exportProperties = $exportProperties;
     }
@@ -138,19 +157,6 @@ class IblockElementsExport extends AbstractExchange
     public function from($iblockId)
     {
         $this->iblockId = $iblockId;
-    }
-
-    protected function writeValues(XMLWriter $writer, $value)
-    {
-        if (!empty($value)) {
-            if (is_array($value)) {
-                foreach ($value as $text) {
-                    $writer->writeElement('value', $text);
-                }
-            } else {
-                $writer->text($value);
-            }
-        }
     }
 
     protected function getElementsDbres($iblockId, $pageNum)

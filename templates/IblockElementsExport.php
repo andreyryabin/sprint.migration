@@ -15,7 +15,6 @@
 namespace Sprint\Migration;
 
 <?php echo $extendUse ?>
-use Sprint\Migration\Exchange\IblockElementsImport;
 
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
@@ -31,15 +30,13 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     public function up()
     {
         $helper = $this->getHelperManager();
-
         $iblockId = $helper->Iblock()->getIblockIdIfExists(
             '<?php echo $iblock['CODE'] ?>',
             '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>'
         );
 
-        $exchange = $this->getExchangeManager();
-
-        $exchange->IblockElementsImport()
+        $this->getExchangeManager()
+            ->IblockElementsImport()
             ->setResource('iblock_elements.xml')
             ->setLimit(20)
             ->execute(function ($item) use ($helper, $iblockId) {

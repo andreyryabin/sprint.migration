@@ -59,7 +59,8 @@ abstract class AbstractExchange
      */
     protected function restart()
     {
-        Throw new RestartException();
+        $this->exchangeEntity->setRestartParams($this->params);
+        $this->exchangeEntity->restart();
     }
 
     /**

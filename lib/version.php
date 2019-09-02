@@ -50,6 +50,7 @@ class Version extends ExchangeEntity
     }
 
     /**
+     * @throws Exceptions\ExchangeException
      * @return string
      */
     public function getVersionName()
@@ -76,31 +77,39 @@ class Version extends ExchangeEntity
     /**
      * @param $name
      * @param $data
+     * @throws Exceptions\ExchangeException
      */
     public function saveData($name, $data)
     {
-        $storage = new StorageManager($this->storageName);
-        $storage->saveData($this->getVersionName(), $name, $data);
+        $this->getStorageManager()->saveData($this->getVersionName(), $name, $data);
     }
 
     /**
      * @param $name
+     * @throws Exceptions\ExchangeException
      * @return mixed|string
      *
      */
     public function getSavedData($name)
     {
-        $storage = new StorageManager($this->storageName);
-        return $storage->getSavedData($this->getVersionName(), $name);
+        return $this->getStorageManager()->getSavedData($this->getVersionName(), $name);
     }
 
     /**
      * @param bool $name
+     * @throws Exceptions\ExchangeException
      */
     public function deleteSavedData($name = false)
     {
-        $storage = new StorageManager($this->storageName);
-        $storage->deleteSavedData($this->getVersionName(), $name);
+        $this->getStorageManager()->deleteSavedData($this->getVersionName(), $name);
+    }
+
+    /**
+     * @return StorageManager
+     */
+    protected function getStorageManager()
+    {
+        return new StorageManager($this->storageName);
     }
 
     /**

@@ -9,6 +9,7 @@ class Version20170213000008 extends Version
     protected $description = "Пример работы миграции с сохранением промежуточных данных в бд";
 
     /**
+     * @throws Exceptions\ExchangeException
      * @return bool|void
      */
     public function up()
@@ -31,7 +32,7 @@ class Version20170213000008 extends Version
         $this->deleteSavedData();
 
         //получаем сохраненные данные какой-либо другой миграции
-        $storage = new StorageManager();
+        $storage = $this->getStorageManager();
         $var1 = $storage->getSavedData('Version20170213000007', 'var1');
 
     }
