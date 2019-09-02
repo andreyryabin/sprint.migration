@@ -27,8 +27,8 @@ $formData = [
 ];
 
 
-Example $listData for listForm
-$listData = [
+Example $data for listForm
+$data = [
     'columns' => [
         'LOGIN',
         'ACTIVE',
@@ -77,18 +77,21 @@ class UserOptionsHelper extends Helper
         ], $option);
 
         $option['columns'] = explode(',', $option['columns']);
+        foreach ($option['columns'] as $index => $columnCode) {
+            $option['columns'][$index] = $this->revertCode($columnCode);
+        }
 
         return $option;
     }
 
-    public function buildList($listData = [], $params = [])
+    public function buildList($data = [], $params = [])
     {
         $this->checkRequiredKeys(__METHOD__, $params, ['name']);
 
         /** @compability with old format */
-        if (!isset($listData['columns'])) {
-            $listData = [
-                'columns' => is_array($listData) ? $listData : [],
+        if (!isset($data['columns'])) {
+            $data = [
+                'columns' => is_array($data) ? $data : [],
                 'page_size' => isset($params['page_size']) ? $params['page_size'] : '',
                 'order' => isset($params['order']) ? $params['order'] : '',
                 'by' => isset($params['by']) ? $params['by'] : '',
@@ -100,26 +103,24 @@ class UserOptionsHelper extends Helper
             'category' => 'list',
         ], $params);
 
-        $listData = array_merge([
+        $data = array_merge([
             'columns' => [],
             'page_size' => 20,
             'order' => 'desc',
             'by' => 'timestamp_x',
-        ], $listData);
+        ], $data);
 
-        if (empty($listData) || empty($listData['columns'])) {
+        if (empty($data) || empty($data['columns'])) {
             CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
             return true;
         }
 
-        $opts = [];
-        foreach ($listData['columns'] as $columnCode) {
-            $opts[] = $this->transformCode($columnCode);
+        foreach ($data['columns'] as $index => $columnCode) {
+            $data['columns'][$index] = $this->transformCode($columnCode);
         }
-        $opts = implode(',', $opts);
 
         $value = [
-            'columns' => $opts,
+            'columns' => implode(',', $data['columns']),
             'page_size' => $params['page_size'],
             'order' => $params['order'],
             'by' => $params['by'],
@@ -140,13 +141,13 @@ class UserOptionsHelper extends Helper
         return true;
     }
 
-    public function saveList($listData = [], $params = [])
+    public function saveList($data = [], $params = [])
     {
         $exists = $this->exportList($params);
-        if ($this->hasDiff($exists, $listData)) {
-            $ok = $this->getMode('test') ? true : $this->buildList($listData, $params);
+        if ($this->hasDiff($exists, $data)) {
+            $ok = $this->getMode('test') ? true : $this->buildList($data, $params);
             $this->outNoticeIf($ok, 'Список "%s" сохранен', $params['name']);
-            $this->outDiffIf($ok, $exists, $listData);
+            $this->outDiffIf($ok, $exists, $data);
             return $ok;
         } else {
             if ($this->getMode('out_equal')) {
