@@ -73,6 +73,10 @@ class IblockBuilder extends VersionBuilder
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockUserOptions'),
                     'value' => 'iblockUserOptions',
                 ],
+                [
+                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockPermissions'),
+                    'value' => 'iblockPermissions',
+                ],
             ],
         ]);
 
@@ -97,6 +101,7 @@ class IblockBuilder extends VersionBuilder
         $iblockType = [];
         $iblockProperties = [];
         $iblockFields = [];
+        $iblockPermissions = [];
 
         $exportElementForm = [];
         $exportSectionForm = [];
@@ -139,6 +144,10 @@ class IblockBuilder extends VersionBuilder
             $iblockFields = $helper->Iblock()->exportIblockFields($iblockId);
         }
 
+        if (in_array('iblockPermissions', $what)) {
+            $iblockPermissions = $helper->Iblock()->getGroupPermissions($iblockId);
+        }
+
         if (in_array('iblockUserOptions', $what)) {
             $exportElementForm = $helper->UserOptions()->exportElementForm($iblockId);
             $exportSectionForm = $helper->UserOptions()->exportSectionForm($iblockId);
@@ -160,6 +169,7 @@ class IblockBuilder extends VersionBuilder
                 'iblock' => $iblock,
                 'iblockType' => $iblockType,
                 'iblockFields' => $iblockFields,
+                'iblockPermissions' => $iblockPermissions,
                 'iblockProperties' => $iblockProperties,
                 'exportElementForm' => $exportElementForm,
                 'exportSectionForm' => $exportSectionForm,

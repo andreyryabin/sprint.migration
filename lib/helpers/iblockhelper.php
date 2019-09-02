@@ -1447,27 +1447,45 @@ class IblockHelper extends Helper
 
     /**
      * Получает права доступа к инфоблоку для групп
-     * возвращает массив вида [$groupId => $letter]
+     * возвращает массив вида [$groupCode => $letter]
      *
      * @param $iblockId
+     * @throws HelperException
      * @return array
      */
     public function getGroupPermissions($iblockId)
     {
-        return CIBlock::GetGroupPermissions($iblockId);
+        $result = [];
+        $groupHelper = new UserGroupHelper();
+        $permissions = CIBlock::GetGroupPermissions($iblockId);
+        foreach ($permissions as $groupId => $letter) {
+            $groupCode = $groupHelper->getGroupCode($groupId);
+            $groupCode = !empty($groupCode) ? $groupCode : $groupId;
+            $result[$groupCode] = $letter;
+        }
+
+        return $result;
     }
 
     /**
      * Устанавливает права доступа к инфоблоку для групп
      * предыдущие права сбрасываются
-     * принимает массив вида [$groupId => $letter]
+     * принимает массив вида [$groupCode => $letter]
      *
      * @param $iblockId
      * @param array $permissions
+     * @throws HelperException
      */
     public function setGroupPermissions($iblockId, $permissions = [])
     {
-        CIBlock::SetPermission($iblockId, $permissions);
+        $result = [];
+        $groupHelper = new UserGroupHelper();
+        foreach ($permissions as $groupCode => $letter) {
+            $groupId = is_numeric($groupCode) ? $groupCode : $groupHelper->getGroupId($groupCode);
+            $result[$groupId] = $letter;
+        }
+
+        CIBlock::SetPermission($iblockId, $result);
     }
 
     /**

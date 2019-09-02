@@ -76,23 +76,25 @@ class UserGroupHelper extends Helper
     /**
      * Получает код группы пользователей по id
      * @param $id
+     * @param bool $default
      * @return bool
      */
-    public function getGroupCode($id)
+    public function getGroupCode($id, $default = false)
     {
         $group = $this->getGroup($id);
-        return ($group) ? $group['STRING_ID'] : false;
+        return ($group) ? $group['STRING_ID'] : $default;
     }
 
     /**
      * Получает id группы пользователей по id
      * @param $code
+     * @param bool $default
      * @return bool
      */
-    public function getGroupId($code)
+    public function getGroupId($code, $default = false)
     {
         $group = $this->getGroup($code);
-        return ($group) ? $group['ID'] : false;
+        return ($group) ? $group['ID'] : $default;
     }
 
     /**
