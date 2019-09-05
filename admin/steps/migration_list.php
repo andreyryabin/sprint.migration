@@ -26,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
-    $taskUrl = $versionConfig->getVal('tracker_task_url');
     $webdir = $versionManager->getWebDir();
 
     if ($_POST["step_code"] == "migration_new") {
@@ -87,7 +86,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
 
                         <? if (!empty($aItem['description'])): ?>
                             <?= Out::prepareToHtml($aItem['description'], [
-                                    'tracker_task_url' => $taskUrl,
                                     'make_links' => true
                             ]) ?>
                         <? endif ?>

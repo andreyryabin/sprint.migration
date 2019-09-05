@@ -3,11 +3,11 @@
 namespace Sprint\Migration;
 
 use DirectoryIterator;
+use Exception;
 use SplFileInfo;
 
 abstract class AbstractSchema extends ExchangeEntity
 {
-
     private $name;
 
     /** @var VersionConfig */
@@ -20,8 +20,6 @@ abstract class AbstractSchema extends ExchangeEntity
     protected $info = [
         'title' => '',
     ];
-
-    private $enabled = false;
 
     private $filecache = [];
 
@@ -40,8 +38,6 @@ abstract class AbstractSchema extends ExchangeEntity
         $this->versionConfig = $versionConfig;
         $this->name = $name;
         $this->params = $params;
-        $this->enabled = $this->isBuilderEnabled();
-
         $this->initialize();
     }
 
@@ -64,7 +60,11 @@ abstract class AbstractSchema extends ExchangeEntity
 
     public function isEnabled()
     {
-        return $this->enabled;
+        try {
+            return $this->isBuilderEnabled();
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function isModified()
@@ -229,7 +229,7 @@ abstract class AbstractSchema extends ExchangeEntity
         return $this->queue;
     }
 
-    protected function addToQueue($method, $var1 = null, $var2 = null)
+    protected function addToQueue($method, ...$vars)
     {
         $args = func_get_args();
         $method = array_shift($args);

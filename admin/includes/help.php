@@ -34,7 +34,7 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
             <div style="margin-bottom: 10px;">
                 <?= GetMessage('SPRINT_MIGRATION_LINK_TELEGRAM') ?>
                 <br/>
-                <a href="tg://resolve?domain=sprint_migration_bitrix" target="_blank">tg://resolve?domain=sprint_migration_bitrix</a>
+                <a href="tg://resolve?domain=sprint_migration_bitrix">tg://resolve?domain=sprint_migration_bitrix</a>
             </div>
 
         </div>

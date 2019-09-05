@@ -186,7 +186,7 @@ class ConsoleGrid
      *                         self::CONSOLE_TABLE_ALIGN_LEFT,
      *                         self::CONSOLE_TABLE_ALIGN_CENTER or
      *                         self::CONSOLE_TABLE_ALIGN_RIGHT.
-     * @param string $border The character used for table borders or
+     * @param int $border The character used for table borders or
      *                         self::CONSOLE_TABLE_BORDER_ASCII.
      * @param integer $padding How many spaces to use to pad the table.
      * @param string $charset A charset supported by the mbstring PHP
@@ -237,6 +237,10 @@ class ConsoleGrid
      */
     function setBorder($border)
     {
+        $intersection = '';
+        $horizontal = '';
+        $vertical = '';
+
         if ($border === self::CONSOLE_TABLE_BORDER_ASCII) {
             $intersection = '+';
             $horizontal = '-';
@@ -632,7 +636,7 @@ class ConsoleGrid
     function _getSeparator()
     {
         if (!$this->_border) {
-            return;
+            return '';
         }
 
         $horizontal = $this->_border['horizontal'];
@@ -696,6 +700,8 @@ class ConsoleGrid
             . str_repeat(' ', $this->_padding);
 
         $separator = $this->_getSeparator();
+        $return = [];
+
         if (!empty($separator) && $this->_borderVisibility['top']) {
             $return[] = $separator;
         }
@@ -850,7 +856,7 @@ class ConsoleGrid
      * @param integer $length The length of the resulting string.
      * @param string $pad The string to pad the input string with. Must
      *                        be in the same charset like the input string.
-     * @param const $type The padding type. One of STR_PAD_LEFT,
+     * @param integer $type The padding type. One of STR_PAD_LEFT,
      *                        STR_PAD_RIGHT, or STR_PAD_BOTH.
      *
      * @return string  The padded string.
@@ -870,27 +876,27 @@ class ConsoleGrid
         if ($mb_length == $sb_length && $pad_length == strlen($pad)) {
             return str_pad($input, $length, $pad, $type);
         }
-
+        $output = '';
         switch ($type) {
             case STR_PAD_LEFT:
                 $left = $length - $mb_length;
                 $output = $this->_substr(str_repeat($pad, ceil($left / $pad_length)),
-                        0, $left, $this->_charset) . $input;
+                        0, $left) . $input;
                 break;
             case STR_PAD_BOTH:
                 $left = floor(($length - $mb_length) / 2);
                 $right = ceil(($length - $mb_length) / 2);
                 $output = $this->_substr(str_repeat($pad, ceil($left / $pad_length)),
-                        0, $left, $this->_charset) .
+                        0, $left) .
                     $input .
                     $this->_substr(str_repeat($pad, ceil($right / $pad_length)),
-                        0, $right, $this->_charset);
+                        0, $right);
                 break;
             case STR_PAD_RIGHT:
                 $right = $length - $mb_length;
                 $output = $input .
                     $this->_substr(str_repeat($pad, ceil($right / $pad_length)),
-                        0, $right, $this->_charset);
+                        0, $right);
                 break;
         }
 

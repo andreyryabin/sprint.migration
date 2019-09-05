@@ -51,11 +51,10 @@ abstract class AbstractTable
 
     /**
      * @param $query
-     * @param null $var1
-     * @param null $var2
+     * @param string ...$vars
      * @return Result|bool
      */
-    protected function query($query, $var1 = null, $var2 = null)
+    protected function query($query, ...$vars)
     {
         if (func_num_args() > 1) {
             $params = func_get_args();

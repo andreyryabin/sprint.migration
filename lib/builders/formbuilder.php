@@ -2,7 +2,8 @@
 
 namespace Sprint\Migration\Builders;
 
-use Bitrix\Main\Loader;
+use Sprint\Migration\Exceptions\ExchangeException;
+use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -10,7 +11,7 @@ class FormBuilder extends VersionBuilder
 {
     protected function isBuilderEnabled()
     {
-        return (Loader::includeModule('form'));
+        return $this->getHelperManager()->Form()->isEnabled();
     }
 
     protected function initialize()
@@ -21,6 +22,10 @@ class FormBuilder extends VersionBuilder
         $this->addVersionFields();
     }
 
+    /**
+     * @throws ExchangeException
+     * @throws RebuildException
+     */
     protected function execute()
     {
         $helper = $this->getHelperManager();

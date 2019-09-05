@@ -2,7 +2,8 @@
 
 namespace Sprint\Migration\Helpers;
 
-use CDatabase;
+use Bitrix\Main\Application;
+use Bitrix\Main\Db\SqlQueryException;
 use CForm;
 use CFormAnswer;
 use CFormField;
@@ -33,19 +34,22 @@ class FormHelper extends Helper
         $by = 's_name';
         $order = 'asc';
         $isFiltered = null;
-
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbres = CForm::GetList($by, $order, $filter, $isFiltered);
         return $this->fetchAll($dbres);
     }
 
     /**
      * @param $formId
+     * @throws HelperException
+     * @throws SqlQueryException
      * @return array|bool
      */
     public function getFormById($formId)
     {
         $formId = (int)$formId;
 
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $form = CForm::GetByID($formId)->Fetch();
         if (empty($form)) {
             return false;
@@ -68,6 +72,7 @@ class FormHelper extends Helper
      */
     public function getFormId($sid)
     {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $form = CForm::GetBySID($sid)->Fetch();
         return ($form && isset($form['ID'])) ? $form['ID'] : false;
 
@@ -76,7 +81,7 @@ class FormHelper extends Helper
     /**
      * @param $sid
      * @throws HelperException
-     * @return bool|int
+     * @return int|void
      */
     public function getFormIdIfExists($sid)
     {
@@ -92,7 +97,7 @@ class FormHelper extends Helper
     /**
      * @param $form
      * @throws HelperException
-     * @return bool|int
+     * @return int|void
      */
     public function saveForm($form)
     {
@@ -112,6 +117,8 @@ class FormHelper extends Helper
 
 
         $formId = $this->getFormId($form['SID']);
+
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $formId = CForm::Set($form, $formId, 'N');
 
         if ($formId) {
@@ -164,19 +171,20 @@ class FormHelper extends Helper
                     break;
                 }
             }
-
+            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             $fieldId = CFormField::Set($field, $fieldId, 'N');
             if (empty($fieldId)) {
                 $this->throwException(__METHOD__, $GLOBALS['strError']);
             }
 
-            $this->saveFieldAnswers($formId, $fieldId, $answers);
+            $this->saveFieldAnswers($fieldId, $answers);
             $this->saveFieldValidators($formId, $fieldId, $validators);
 
         }
 
         foreach ($currentFields as $currentField) {
             if (!in_array($currentField['ID'], $updatedIds)) {
+                /** @noinspection PhpDynamicAsStaticMethodCallInspection */
                 CFormField::Delete($currentField['ID'], 'N');
             }
         }
@@ -207,7 +215,7 @@ class FormHelper extends Helper
                     break;
                 }
             }
-
+            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             $statusId = CFormStatus::Set($status, $statusId, 'N');
             if (empty($statusId)) {
                 $this->throwException(__METHOD__, $GLOBALS['strError']);
@@ -216,6 +224,7 @@ class FormHelper extends Helper
 
         foreach ($currentStatuses as $currentStatus) {
             if (!in_array($currentStatus['ID'], $updatedIds)) {
+                /** @noinspection PhpDynamicAsStaticMethodCallInspection */
                 CFormStatus::Delete($currentStatus['ID'], 'N');
             }
         }
@@ -223,20 +232,26 @@ class FormHelper extends Helper
     }
 
     /**
+     * @param $formId
      * @return array
      */
     public function getFormStatuses($formId)
     {
-        $dbres = CFormStatus::GetList($formId, $by = 's_sort', $order = 'asc', [], $f);
+        $isFiltered = false;
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        $dbres = CFormStatus::GetList($formId, $by = 's_sort', $order = 'asc', [], $isFiltered);
         return $this->fetchAll($dbres);
     }
 
     /**
+     * @param $formId
      * @return array
      */
     public function getFormFields($formId)
     {
-        $dbres = CFormField::GetList($formId, 'ALL', $by = 's_sort', $order = 'asc', [], $f);
+        $isFiltered = false;
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        $dbres = CFormField::GetList($formId, 'ALL', $by = 's_sort', $order = 'asc', [], $isFiltered);
         $fields = $this->fetchAll($dbres);
         foreach ($fields as $index => $field) {
             $fields[$index]['ANSWERS'] = $this->getFieldAnswers($field['ID']);
@@ -248,7 +263,7 @@ class FormHelper extends Helper
     /**
      * @param $sid
      * @throws HelperException
-     * @return bool
+     * @return bool|void
      */
     public function deleteFormIfExists($sid)
     {
@@ -257,7 +272,7 @@ class FormHelper extends Helper
         if (!$formId) {
             return false;
         }
-
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         if (CForm::Delete($formId)) {
             return true;
         }
@@ -271,7 +286,9 @@ class FormHelper extends Helper
      */
     protected function getFieldAnswers($fieldId)
     {
-        $dbres = CFormAnswer::GetList($fieldId, $by = 's_sort', $order = 'asc', [], $f);
+        $isFiltered = false;
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        $dbres = CFormAnswer::GetList($fieldId, $by = 's_sort', $order = 'asc', [], $isFiltered);
         return $this->fetchAll($dbres);
     }
 
@@ -281,24 +298,27 @@ class FormHelper extends Helper
      */
     protected function getFieldValidators($fieldId)
     {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbres = CFormValidator::GetList($fieldId, [], $by = 's_sort', $order = 'asc');
         return $this->fetchAll($dbres);
     }
 
     /**
      * @param int $formId
+     * @throws HelperException
+     * @throws SqlQueryException
      * @return array
      */
     protected function exportRights($formId)
     {
-        /** @var CDatabase $DB */
-        global $DB;
-
         $userGroupHelper = new UserGroupHelper();
 
+        $dbres = Application::getConnection()->query(
+            "SELECT GROUP_ID, PERMISSION FROM b_form_2_group WHERE FORM_ID = {$formId}"
+        );
+
         $rights = [];
-        $dbGroup = $DB->Query("SELECT GROUP_ID, PERMISSION FROM b_form_2_group WHERE FORM_ID = {$formId}");
-        while ($group = $dbGroup->Fetch()) {
+        while ($group = $dbres->fetch()) {
             $groupCode = $userGroupHelper->getGroupCode($group['GROUP_ID']);
             if ($groupCode) {
                 $rights[$groupCode] = $group["PERMISSION"];
@@ -313,6 +333,7 @@ class FormHelper extends Helper
      */
     protected function exportSites($formId)
     {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return CForm::GetSiteArray($formId);
     }
 
@@ -322,6 +343,7 @@ class FormHelper extends Helper
      */
     protected function exportMailTemplates($formId)
     {
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return CForm::GetMailTemplateArray($formId);
     }
 
@@ -332,6 +354,7 @@ class FormHelper extends Helper
     protected function exportMenus($formId)
     {
         $res = [];
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbres = CForm::GetMenuList(['FORM_ID' => $formId], 'N');
         while ($menuItem = $dbres->Fetch()) {
             $res[$menuItem["LID"]] = $menuItem["MENU"];
@@ -339,7 +362,12 @@ class FormHelper extends Helper
         return $res;
     }
 
-    protected function saveFieldAnswers($formId, $fieldId, $answers)
+    /**
+     * @param $fieldId
+     * @param $answers
+     * @throws HelperException
+     */
+    protected function saveFieldAnswers($fieldId, $answers)
     {
         $currentAnswers = $this->getFieldAnswers($fieldId);
 
@@ -361,6 +389,7 @@ class FormHelper extends Helper
 
             $answer['FIELD_ID'] = $fieldId;
 
+            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             $answerId = CFormAnswer::Set(
                 $answer,
                 $answerId
@@ -373,18 +402,25 @@ class FormHelper extends Helper
 
         foreach ($currentAnswers as $currentAnswer) {
             if (!in_array($currentAnswer['ID'], $updatedIds)) {
+                /** @noinspection PhpDynamicAsStaticMethodCallInspection */
                 CFormAnswer::Delete($currentAnswer['ID'], $fieldId);
             }
         }
     }
 
+    /**
+     * @param $formId
+     * @param $fieldId
+     * @param $validators
+     * @throws HelperException
+     */
     protected function saveFieldValidators($formId, $fieldId, $validators)
     {
-
+        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         CFormValidator::Clear($fieldId);
 
         foreach ($validators as $index => $validator) {
-
+            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             $validatorId = CFormValidator::Set(
                 $formId,
                 $fieldId,

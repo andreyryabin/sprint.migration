@@ -15,7 +15,7 @@ class HlblockSchema extends AbstractSchema
 
     protected function isBuilderEnabled()
     {
-        return (Loader::includeModule('highloadblock'));
+        return $this->getHelperManager()->Hlblock()->isEnabled();
     }
 
     protected function initialize()
@@ -172,10 +172,24 @@ class HlblockSchema extends AbstractSchema
         }
     }
 
+    protected function getUniqField($item)
+    {
+        return $item['FIELD_NAME'];
+    }
+
     /**
-     * @param $hlblockUid
+     * @param $item
      * @throws ArgumentException
      * @throws SystemException
+     * @return string
+     */
+    protected function getUniqHlblock($item)
+    {
+        return $this->getHelperManager()->Hlblock()->getHlblockUid($item);
+    }
+
+    /**
+     * @param $hlblockUid
      * @return mixed
      */
     protected function getHlblockId($hlblockUid)
@@ -186,21 +200,10 @@ class HlblockSchema extends AbstractSchema
             return $this->uniqs[$hlblockUid];
         }
 
-        list($tableName, $hlblockName) = explode(':', $hlblockUid);
+        $this->uniqs[$hlblockUid] = $helper->Hlblock()
+            ->getHlblockIdByUid($hlblockUid);
 
-        $this->uniqs[$hlblockUid] = $helper->Hlblock()->getHlblockId($hlblockName);
         return $this->uniqs[$hlblockUid];
     }
-
-    protected function getUniqField($item)
-    {
-        return $item['FIELD_NAME'];
-    }
-
-    protected function getUniqHlblock($item)
-    {
-        return $item['TABLE_NAME'] . ':' . $item['NAME'];
-    }
-
 
 }

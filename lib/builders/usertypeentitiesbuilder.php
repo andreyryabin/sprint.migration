@@ -3,6 +3,8 @@
 namespace Sprint\Migration\Builders;
 
 use CUserTypeEntity;
+use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -23,7 +25,10 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $this->addVersionFields();
     }
 
-
+    /**
+     * @throws HelperException
+     * @throws RebuildException
+     */
     protected function execute()
     {
         $helper = $this->getHelperManager();

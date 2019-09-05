@@ -93,8 +93,8 @@ class Module
             Throw new Exception('json functions not supported');
         }
 
-        if (version_compare(PHP_VERSION, '5.4', '<')) {
-            Throw new Exception(PHP_VERSION . 'not supported');
+        if (version_compare(PHP_VERSION, '5.6', '<')) {
+            Throw new Exception(PHP_VERSION . ' not supported');
         }
 
         if (

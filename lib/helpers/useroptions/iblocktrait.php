@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Helpers\UserOptions;
 
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\HelperManager;
 
 trait IblockTrait
@@ -11,6 +12,11 @@ trait IblockTrait
     private $iblock = [];
     private $lastIblockId = 0;
 
+    /**
+     * @param $iblockId
+     * @throws HelperException
+     * @return mixed
+     */
     public function exportElementForm($iblockId)
     {
         /**
@@ -28,6 +34,12 @@ trait IblockTrait
         ]);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $formData
+     * @throws HelperException
+     * @return mixed
+     */
     public function buildElementForm($iblockId, $formData = [])
     {
         /**
@@ -45,6 +57,12 @@ trait IblockTrait
         ]);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $formData
+     * @throws HelperException
+     * @return mixed
+     */
     public function saveElementForm($iblockId, $formData = [])
     {
         /**
@@ -62,28 +80,55 @@ trait IblockTrait
         ]);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $params
+     * @throws HelperException
+     * @return mixed
+     */
     public function saveElementGrid($iblockId, $params = [])
     {
         return $this->saveGrid($this->getElementGridId($iblockId), $params);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $params
+     * @throws HelperException
+     * @return mixed
+     */
     public function saveSectionGrid($iblockId, $params = [])
     {
         return $this->saveGrid($this->getSectionGridId($iblockId), $params);
     }
 
+    /**
+     * @param $iblockId
+     * @throws HelperException
+     * @return string
+     */
     public function getElementGridId($iblockId)
     {
         $this->initializeIblockVars($iblockId);
         return 'tbl_iblock_element_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
     }
 
+    /**
+     * @param $iblockId
+     * @throws HelperException
+     * @return string
+     */
     public function getSectionGridId($iblockId)
     {
         $this->initializeIblockVars($iblockId);
         return 'tbl_iblock_section_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
     }
 
+    /**
+     * @param $iblockId
+     * @throws HelperException
+     * @return mixed
+     */
     public function exportElementList($iblockId)
     {
         return $this->exportList([
@@ -91,11 +136,21 @@ trait IblockTrait
         ]);
     }
 
+    /**
+     * @param $iblockId
+     * @throws HelperException
+     * @return mixed
+     */
     public function exportElementGrid($iblockId)
     {
         return $this->exportGrid($this->getElementGridId($iblockId));
     }
 
+    /**
+     * @param $iblockId
+     * @param array $listData
+     * @throws HelperException
+     */
     public function buildElementList($iblockId, $listData = [])
     {
         $this->buildList($listData, [
@@ -103,6 +158,11 @@ trait IblockTrait
         ]);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $listData
+     * @throws HelperException
+     */
     public function saveElementList($iblockId, $listData = [])
     {
         $this->saveList($listData, [
@@ -110,6 +170,11 @@ trait IblockTrait
         ]);
     }
 
+    /**
+     * @param $iblockId
+     * @throws HelperException
+     * @return mixed
+     */
     public function exportSectionForm($iblockId)
     {
         $this->initializeIblockVars($iblockId);
@@ -119,6 +184,12 @@ trait IblockTrait
         ]);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $formData
+     * @throws HelperException
+     * @return mixed
+     */
     public function buildSectionForm($iblockId, $formData = [])
     {
         $this->initializeIblockVars($iblockId);
@@ -128,6 +199,12 @@ trait IblockTrait
         ]);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $formData
+     * @throws HelperException
+     * @return mixed
+     */
     public function saveSectionForm($iblockId, $formData = [])
     {
         $this->initializeIblockVars($iblockId);
@@ -137,6 +214,11 @@ trait IblockTrait
         ]);
     }
 
+    /**
+     * @param $iblockId
+     * @throws HelperException
+     * @return mixed
+     */
     public function exportSectionList($iblockId)
     {
         $this->initializeIblockVars($iblockId);
@@ -146,6 +228,12 @@ trait IblockTrait
         ]);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $listData
+     * @throws HelperException
+     * @return mixed
+     */
     public function buildSectionList($iblockId, $listData = [])
     {
         $this->initializeIblockVars($iblockId);
@@ -155,6 +243,12 @@ trait IblockTrait
         ]);
     }
 
+    /**
+     * @param $iblockId
+     * @param array $listData
+     * @throws HelperException
+     * @return mixed
+     */
     public function saveSectionList($iblockId, $listData = [])
     {
         $this->initializeIblockVars($iblockId);
@@ -167,6 +261,7 @@ trait IblockTrait
 
     /**
      * @param $iblockId
+     * @throws HelperException
      * @return array|void
      * @deprecated
      */
@@ -184,6 +279,7 @@ trait IblockTrait
 
     /**
      * @param $iblockId
+     * @throws HelperException
      * @return bool
      */
     protected function initializeIblockVars($iblockId)
@@ -199,13 +295,7 @@ trait IblockTrait
             return true;
         }
 
-        $iblock = $helper->Iblock()->getIblock([
-            'ID' => $iblockId,
-        ]);
-
-        if (empty($iblock)) {
-            $this->throwException(__METHOD__, 'iblock %d not found', $iblockId);
-        }
+        $iblock = $helper->Iblock()->getIblockIfExists($iblockId);
 
         $this->lastIblockId = $iblockId;
         $this->iblock = $iblock;

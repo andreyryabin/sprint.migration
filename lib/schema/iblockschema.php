@@ -13,12 +13,11 @@ class IblockSchema extends AbstractSchema
     private $iblockIds = [];
 
     /**
-     * @throws LoaderException
      * @return bool
      */
     protected function isBuilderEnabled()
     {
-        return (Loader::includeModule('iblock'));
+        return $this->getHelperManager()->Iblock()->isEnabled();
     }
 
     protected function initialize()
@@ -62,6 +61,9 @@ class IblockSchema extends AbstractSchema
         $this->out('Форм редактирования: %d', $cntForms);
     }
 
+    /**
+     * @throws HelperException
+     */
     public function export()
     {
         $helper = $this->getHelperManager();
@@ -147,7 +149,10 @@ class IblockSchema extends AbstractSchema
         $this->addToQueue('cleanIblockTypes', $skip);
     }
 
-
+    /**
+     * @param array $fields
+     * @throws HelperException
+     */
     protected function saveIblockType($fields = [])
     {
         $helper = $this->getHelperManager();
@@ -155,6 +160,10 @@ class IblockSchema extends AbstractSchema
         $helper->Iblock()->saveIblockType($fields);
     }
 
+    /**
+     * @param $fields
+     * @throws HelperException
+     */
     protected function saveIblock($fields)
     {
         $helper = $this->getHelperManager();
@@ -162,6 +171,10 @@ class IblockSchema extends AbstractSchema
         $helper->Iblock()->saveIblock($fields);
     }
 
+    /**
+     * @param $iblockUid
+     * @param $fields
+     */
     protected function saveIblockFields($iblockUid, $fields)
     {
         $iblockId = $this->getIblockId($iblockUid);
@@ -172,6 +185,11 @@ class IblockSchema extends AbstractSchema
         }
     }
 
+    /**
+     * @param $iblockUid
+     * @param $properties
+     * @throws HelperException
+     */
     protected function saveProperties($iblockUid, $properties)
     {
         $iblockId = $this->getIblockId($iblockUid);
@@ -184,6 +202,11 @@ class IblockSchema extends AbstractSchema
         }
     }
 
+    /**
+     * @param $iblockUid
+     * @param $elementForm
+     * @throws HelperException
+     */
     protected function saveElementForm($iblockUid, $elementForm)
     {
         $iblockId = $this->getIblockId($iblockUid);
@@ -210,8 +233,11 @@ class IblockSchema extends AbstractSchema
                     $uniq = $this->getUniqProp($old);
                     if (!in_array($uniq, $skip)) {
                         $ok = ($this->testMode) ? true : $helper->Iblock()->deletePropertyById($old['ID']);
-                        $this->outWarningIf($ok, 'Инфоблок %s: свойство %s удалено', $iblockId,
-                            $this->getTitleProp($old));
+                        $this->outWarningIf($ok,
+                            'Инфоблок %s: свойство %s удалено',
+                            $iblockId,
+                            $this->getTitleProp($old)
+                        );
                     }
                 }
             }
@@ -274,7 +300,7 @@ class IblockSchema extends AbstractSchema
 
     protected function getUniqIblock($iblock)
     {
-        return $iblock['IBLOCK_TYPE_ID'] . ':' . $iblock['CODE'];
+        return $this->getHelperManager()->Iblock()->getIblockUid($iblock);
     }
 
 
@@ -286,9 +312,9 @@ class IblockSchema extends AbstractSchema
             return $this->iblockIds[$iblockUid];
         }
 
-        list($type, $code) = explode(':', $iblockUid);
+        $this->iblockIds[$iblockUid] = $helper->Iblock()
+            ->getIblockIdByUid($iblockUid);
 
-        $this->iblockIds[$iblockUid] = $helper->Iblock()->getIblockId($code, $type);
         return $this->iblockIds[$iblockUid];
 
     }

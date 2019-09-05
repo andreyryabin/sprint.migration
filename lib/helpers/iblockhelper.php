@@ -36,7 +36,7 @@ class IblockHelper extends Helper
             return $item;
         }
 
-        $this->throwException(__METHOD__, "iblock type not found");
+        $this->throwException(__METHOD__, 'iblock type not found');
     }
 
     /**
@@ -52,7 +52,7 @@ class IblockHelper extends Helper
             return $item['ID'];
         }
 
-        $this->throwException(__METHOD__, "iblock type id not found");
+        $this->throwException(__METHOD__, 'iblock type id not found');
     }
 
     /**
@@ -69,7 +69,7 @@ class IblockHelper extends Helper
             return $item;
         }
 
-        $this->throwException(__METHOD__, "iblock not found");
+        $this->throwException(__METHOD__, 'iblock not found');
     }
 
     /**
@@ -86,7 +86,7 @@ class IblockHelper extends Helper
             return $item['ID'];
         }
 
-        $this->throwException(__METHOD__, "iblock id not found");
+        $this->throwException(__METHOD__, 'iblock id not found');
     }
 
     /**
@@ -246,16 +246,19 @@ class IblockHelper extends Helper
 
     /**
      * Получает инфоблок
-     * @param $code string|array - код или фильтр
+     * @param $code int|string|array - id, код или фильтр
      * @param string $typeId
      * @return array|false
      */
     public function getIblock($code, $typeId = '')
     {
-        /** @compatibility filter or code */
-        $filter = is_array($code) ? $code : [
-            '=CODE' => $code,
-        ];
+        if (is_array($code)) {
+            $filter = $code;
+        } elseif (is_numeric($code)) {
+            $filter = ['ID' => $code];
+        } else {
+            $filter = ['=CODE' => $code];
+        }
 
         if (!empty($typeId)) {
             $filter['=TYPE'] = $typeId;
@@ -474,8 +477,10 @@ class IblockHelper extends Helper
     public function getPropertyEnums($filter = [])
     {
         $result = [];
-
-        $dbres = CIBlockPropertyEnum::GetList(["SORT" => "ASC", "VALUE" => "ASC"], $filter);
+        $dbres = CIBlockPropertyEnum::GetList([
+            'SORT' => 'ASC',
+            'VALUE' => 'ASC',
+        ], $filter);
         while ($item = $dbres->Fetch()) {
             $result[] = $item;
         }
@@ -604,8 +609,7 @@ class IblockHelper extends Helper
         }
 
         if (false !== strpos($fields['LINK_IBLOCK_ID'], ':')) {
-            list($ibtype, $ibcode) = explode(':', $fields['LINK_IBLOCK_ID']);
-            $fields['LINK_IBLOCK_ID'] = $this->getIblockId($ibcode, $ibtype);
+            $fields['LINK_IBLOCK_ID'] = $this->getIblockIdByUid($fields['LINK_IBLOCK_ID']);
         }
 
         $fields['IBLOCK_ID'] = $iblockId;
@@ -695,8 +699,7 @@ class IblockHelper extends Helper
         }
 
         if (false !== strpos($fields['LINK_IBLOCK_ID'], ':')) {
-            list($ibtype, $ibcode) = explode(':', $fields['LINK_IBLOCK_ID']);
-            $fields['LINK_IBLOCK_ID'] = $this->getIblockId($ibcode, $ibtype);
+            $fields['LINK_IBLOCK_ID'] = $this->getIblockIdByUid($fields['LINK_IBLOCK_ID']);
         }
 
         if (isset($fields['VALUES']) && is_array($fields['VALUES'])) {
@@ -859,15 +862,15 @@ class IblockHelper extends Helper
     public function addElement($iblockId, $fields = [], $props = [])
     {
         $default = [
-            "NAME" => "element",
-            "IBLOCK_SECTION_ID" => false,
-            "ACTIVE" => "Y",
-            "PREVIEW_TEXT" => "",
-            "DETAIL_TEXT" => "",
+            'NAME' => 'element',
+            'IBLOCK_SECTION_ID' => false,
+            'ACTIVE' => 'Y',
+            'PREVIEW_TEXT' => '',
+            'DETAIL_TEXT' => '',
         ];
 
         $fields = array_replace_recursive($default, $fields);
-        $fields["IBLOCK_ID"] = $iblockId;
+        $fields['IBLOCK_ID'] = $iblockId;
 
         if (!empty($props)) {
             $fields['PROPERTY_VALUES'] = $props;
@@ -1064,18 +1067,18 @@ class IblockHelper extends Helper
     public function addSection($iblockId, $fields = [])
     {
         $default = [
-            "ACTIVE" => "Y",
-            "IBLOCK_SECTION_ID" => false,
-            "NAME" => 'section',
-            "CODE" => '',
-            "SORT" => 100,
-            "PICTURE" => false,
-            "DESCRIPTION" => '',
-            "DESCRIPTION_TYPE" => 'text',
+            'ACTIVE' => 'Y',
+            'IBLOCK_SECTION_ID' => false,
+            'NAME' => 'section',
+            'CODE' => '',
+            'SORT' => 100,
+            'PICTURE' => false,
+            'DESCRIPTION' => '',
+            'DESCRIPTION_TYPE' => 'text',
         ];
 
         $fields = array_replace_recursive($default, $fields);
-        $fields["IBLOCK_ID"] = $iblockId;
+        $fields['IBLOCK_ID'] = $iblockId;
 
         $ib = new CIBlockSection;
         $id = $ib->Add($fields);
@@ -1168,7 +1171,7 @@ class IblockHelper extends Helper
     public function getIblockTypeLangs($typeId)
     {
         $result = [];
-        $dbres = CLanguage::GetList($lby = "sort", $lorder = "asc");
+        $dbres = CLanguage::GetList($lby = 'sort', $lorder = 'asc');
         while ($item = $dbres->GetNext()) {
             $values = CIBlockType::GetByIDLang($typeId, $item['LID'], false);
             if (!empty($values)) {
@@ -1348,7 +1351,7 @@ class IblockHelper extends Helper
     public function exportIblock($iblockId)
     {
         $export = $this->prepareExportIblock(
-            $this->getIblock(['ID' => $iblockId])
+            $this->getIblock($iblockId)
         );
 
         if (!empty($export['CODE'])) {
@@ -1570,6 +1573,44 @@ class IblockHelper extends Helper
     }
 
     /**
+     * @param $iblock int|array
+     * @param string $default
+     * @return string
+     */
+    public function getIblockUid($iblock, $default = '')
+    {
+        if (!is_array($iblock)) {
+            $iblock = $this->getIblock($iblock);
+        }
+
+        if (!empty($iblock['IBLOCK_TYPE_ID']) && !empty($iblock['CODE'])) {
+            return $iblock['IBLOCK_TYPE_ID'] . ':' . $iblock['CODE'];
+        }
+
+        return $default;
+    }
+
+    /**
+     * @param $iblockUid
+     * @return int
+     */
+    public function getIblockIdByUid($iblockUid)
+    {
+        $iblockId = 0;
+
+        if (empty($iblockUid)) {
+            return $iblockId;
+        }
+
+        list($type, $code) = explode(':', $iblockUid);
+        if (!empty($type) && !empty($code)) {
+            $iblockId = $this->getIblockId($code, $type);
+        }
+
+        return $iblockId;
+    }
+
+    /**
      * @param $item
      * @return mixed
      */
@@ -1610,7 +1651,7 @@ class IblockHelper extends Helper
 
         $exportFields = [];
         foreach ($fields as $code => $field) {
-            if ($field["VISIBLE"] == "N" || preg_match("/^(LOG_)/", $code)) {
+            if ($field['VISIBLE'] == 'N' || preg_match('/^(LOG_)/', $code)) {
                 continue;
             }
             $exportFields[$code] = $field;
@@ -1638,37 +1679,29 @@ class IblockHelper extends Helper
             return $prop;
         }
 
-        unset($prop['ID']);
-        unset($prop['IBLOCK_ID']);
-        unset($prop['TIMESTAMP_X']);
-        unset($prop['TMP_ID']);
-
         if (!empty($prop['VALUES']) && is_array($prop['VALUES'])) {
             $exportValues = [];
 
             foreach ($prop['VALUES'] as $item) {
-                unset($item['ID']);
-                unset($item['TMP_ID']);
-                unset($item['PROPERTY_ID']);
-                unset($item['EXTERNAL_ID']);
-                unset($item['PROPERTY_NAME']);
-                unset($item['PROPERTY_CODE']);
-                unset($item['PROPERTY_SORT']);
-                $exportValues[] = $item;
+                $exportValues[] = [
+                    'VALUE' => $item['VALUE'],
+                    'DEF' => $item['DEF'],
+                    'SORT' => $item['SORT'],
+                    'XML_ID' => $item['XML_ID'],
+                ];
             }
 
             $prop['VALUES'] = $exportValues;
         }
 
         if (!empty($prop['LINK_IBLOCK_ID'])) {
-            $linked = $this->getIblock([
-                'ID' => $prop['LINK_IBLOCK_ID'],
-            ]);
-
-            if (!empty($linked['CODE'])) {
-                $prop['LINK_IBLOCK_ID'] = $linked['IBLOCK_TYPE_ID'] . ':' . $linked['CODE'];
-            }
+            $prop['LINK_IBLOCK_ID'] = $this->getIblockUid($prop['LINK_IBLOCK_ID']);
         }
+
+        unset($prop['ID']);
+        unset($prop['IBLOCK_ID']);
+        unset($prop['TIMESTAMP_X']);
+        unset($prop['TMP_ID']);
 
         return $prop;
     }

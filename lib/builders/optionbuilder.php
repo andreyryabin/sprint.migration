@@ -2,6 +2,9 @@
 
 namespace Sprint\Migration\Builders;
 
+use Bitrix\Main\ArgumentException;
+use Bitrix\Main\SystemException;
+use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -10,8 +13,7 @@ class OptionBuilder extends VersionBuilder
 
     protected function isBuilderEnabled()
     {
-        $helper = $this->getHelperManager();
-        return $helper->Option()->isEnabled();
+        return $this->getHelperManager()->Option()->isEnabled();
     }
 
     protected function initialize()
@@ -22,7 +24,11 @@ class OptionBuilder extends VersionBuilder
         $this->addVersionFields();
     }
 
-
+    /**
+     * @throws ArgumentException
+     * @throws SystemException
+     * @throws RebuildException
+     */
     protected function execute()
     {
         $helper = $this->getHelperManager();

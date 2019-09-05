@@ -5,6 +5,8 @@ namespace Sprint\Migration;
 use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
 use CDBResult;
+use ReflectionClass;
+use ReflectionException;
 use Sprint\Migration\Exceptions\HelperException;
 
 class Helper
@@ -46,7 +48,7 @@ class Helper
     public function __construct()
     {
         if (!$this->isEnabled()) {
-            $this->throwException(__METHOD__, 'Helper disabled');
+            $this->throwException(__METHOD__, '%s disabled', $this->getHelperName());
         }
     }
 
@@ -110,11 +112,10 @@ class Helper
     /**
      * @param $method
      * @param $msg
-     * @param null $var1
-     * @param null $var2
+     * @param string ...$vars
      * @throws HelperException
      */
-    protected function throwException($method, $msg, $var1 = null, $var2 = null)
+    protected function throwException($method, $msg, ...$vars)
     {
         $args = func_get_args();
         $method = array_shift($args);
@@ -125,6 +126,16 @@ class Helper
         $this->lastError = $msg;
 
         Throw new HelperException($msg);
+    }
+
+    protected function getHelperName()
+    {
+        try {
+            $classInfo = new ReflectionClass($this);
+            return $classInfo->getShortName();
+        } catch (ReflectionException $e) {
+            return 'Helper';
+        }
     }
 
     protected function hasDiff($exists, $fields)

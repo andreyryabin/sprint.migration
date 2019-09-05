@@ -26,8 +26,7 @@ class OptionSchema extends AbstractSchema
      */
     protected function isBuilderEnabled()
     {
-        $helper = $this->getHelperManager();
-        return $helper->Option()->isEnabled();
+        return $this->getHelperManager()->Option()->isEnabled();
     }
 
     public function outDescription()

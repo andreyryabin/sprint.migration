@@ -61,7 +61,7 @@ abstract class ExchangeEntity
      * @throws ExchangeException
      * @return string
      */
-    public function getResource($name)
+    public function getResourceFile($name)
     {
         try {
             $classInfo = new ReflectionClass($this);

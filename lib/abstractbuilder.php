@@ -24,23 +24,13 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     private $execStatus = '';
 
-    private $enabled = false;
-
-
-    private $actions = [];
-
     public function __construct(VersionConfig $versionConfig, $name, $params = [])
     {
         $this->versionConfig = $versionConfig;
         $this->name = $name;
-        $this->enabled = $this->isBuilderEnabled();
         $this->params = $params;
 
-        $this->addField('builder_name', [
-            'value' => $this->getName(),
-            'type' => 'hidden',
-            'bind' => 1,
-        ]);
+        $this->addFieldHidden('builder_name', $this->getName());
     }
 
     protected function initialize()
@@ -69,12 +59,6 @@ abstract class AbstractBuilder extends ExchangeEntity
         $this->initialize();
     }
 
-    public function start()
-    {
-        $this->buildExecute();
-        $this->buildAfter();
-    }
-
     public function getVersionConfig()
     {
         return $this->versionConfig;
@@ -82,7 +66,11 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     public function isEnabled()
     {
-        return $this->enabled;
+        try {
+            return $this->isBuilderEnabled();
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     protected function addField($code, $param = [])
@@ -109,8 +97,16 @@ abstract class AbstractBuilder extends ExchangeEntity
         }
 
         $this->fields[$code] = $param;
-        return $param;
     }
+
+    protected function addFieldHidden($code, $val)
+    {
+        $this->params[$code] = $val;
+        $this->addField($code, [
+            'type' => 'hidden',
+        ]);
+    }
+
 
     protected function getFieldValue($code, $default = '')
     {
@@ -128,11 +124,6 @@ abstract class AbstractBuilder extends ExchangeEntity
             $this->fields[$code]['value'] = $val;
             $this->params[$code] = $val;
         }
-    }
-
-    public function canShowReset()
-    {
-        return 0;
     }
 
     protected function renderFile($file, $vars = [])
@@ -181,7 +172,7 @@ abstract class AbstractBuilder extends ExchangeEntity
         return ($this->execStatus == 'restart');
     }
 
-    private function buildExecute()
+    public function buildExecute()
     {
         $this->execStatus = '';
 
@@ -207,16 +198,12 @@ abstract class AbstractBuilder extends ExchangeEntity
         return true;
     }
 
-    private function buildAfter()
+    public function buildAfter()
     {
         foreach ($this->params as $code => $val) {
             if (!isset($this->fields[$code])) {
                 if (is_numeric($val) || is_string($val)) {
-                    $this->addField($code, [
-                        'value' => $val,
-                        'type' => 'hidden',
-                        'bind' => 1,
-                    ]);
+                    $this->addFieldHidden($code, $val);
                 }
             }
         }
@@ -226,7 +213,21 @@ abstract class AbstractBuilder extends ExchangeEntity
     {
         if (isset($this->fields[$code])) {
             $this->fields[$code]['bind'] = 0;
+        }
+
+        if (isset($this->params[$code])) {
             unset($this->params[$code]);
+        }
+    }
+
+    protected function removeField($code)
+    {
+        if (isset($this->params[$code])) {
+            unset($this->params[$code]);
+        }
+
+        if (isset($this->fields[$code])) {
+            unset($this->fields[$code]);
         }
     }
 
@@ -248,24 +249,6 @@ abstract class AbstractBuilder extends ExchangeEntity
     public function getFields()
     {
         return $this->fields;
-    }
-
-    protected function redirect($url)
-    {
-        $this->actions[] = [
-            'type' => 'redirect',
-            'url' => $url,
-        ];
-    }
-
-    public function hasActions()
-    {
-        return !empty($this->actions);
-    }
-
-    public function getActions()
-    {
-        return $this->actions;
     }
 
     protected function setTitle($title = '')

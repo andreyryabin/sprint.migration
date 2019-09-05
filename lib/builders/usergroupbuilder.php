@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration\Builders;
 
+use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -21,7 +23,10 @@ class UserGroupBuilder extends VersionBuilder
         $this->addVersionFields();
     }
 
-
+    /**
+     * @throws HelperException
+     * @throws RebuildException
+     */
     protected function execute()
     {
         $helper = $this->getHelperManager();

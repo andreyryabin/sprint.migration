@@ -75,7 +75,6 @@ class VersionManager
             }
 
             $versionInstance = $this->getVersionInstance($meta);
-
             $versionInstance->setRestartParams($params);
 
             if ($action == 'up') {

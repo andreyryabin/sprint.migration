@@ -33,8 +33,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     public function down()
     {
-        $helper = $this->getHelperManager();
-
         //your code ...
     }
 }

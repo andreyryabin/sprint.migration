@@ -9,6 +9,7 @@ use Sprint\Migration\Builders\CacheCleanerBuilder;
 use Sprint\Migration\Builders\EventBuilder;
 use Sprint\Migration\Builders\FormBuilder;
 use Sprint\Migration\Builders\HlblockBuilder;
+use Sprint\Migration\Builders\HlblockElementsBuilder;
 use Sprint\Migration\Builders\IblockBuilder;
 use Sprint\Migration\Builders\IblockElementsBuilder;
 use Sprint\Migration\Builders\MarkerBuilder;
@@ -37,7 +38,6 @@ class VersionConfig
         'stop_on_errors',
         'migration_dir',
         'migration_dir_absolute',
-        'tracker_task_url',
         'version_prefix',
         'version_filter',
         'version_builders',
@@ -203,10 +203,6 @@ class VersionConfig
             $values['stop_on_errors'] = false;
         }
 
-        if (empty($values['tracker_task_url'])) {
-            $values['tracker_task_url'] = '';
-        }
-
         $cond1 = isset($values['console_user']);
         $cond2 = ($cond1 && $values['console_user'] === false);
         $cond3 = ($cond1 && strpos($values['console_user'], 'login:') === 0);
@@ -349,6 +345,7 @@ class VersionConfig
             'BlankBuilder' => BlankBuilder::class,
             'IblockBuilder' => IblockBuilder::class,
             'IblockElementsBuilder' => IblockElementsBuilder::class,
+            'HlblockElementsBuilder' => HlblockElementsBuilder::class,
             'HlblockBuilder' => HlblockBuilder::class,
             'UserTypeEntitiesBuilder' => UserTypeEntitiesBuilder::class,
             'UserGroupBuilder' => UserGroupBuilder::class,

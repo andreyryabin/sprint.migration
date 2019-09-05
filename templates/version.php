@@ -20,15 +20,11 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     public function up()
     {
-        $helper = $this->getHelperManager();
-
         //your code ...
     }
 
     public function down()
     {
-        $helper = $this->getHelperManager();
-
         //your code ...
     }
 }

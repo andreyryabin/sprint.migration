@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Helpers;
 
-use Bitrix\Main\ArgumentException;
 use CMain;
 use CUserFieldEnum;
 use CUserTypeEntity;
@@ -62,7 +61,7 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldName
      * @param $fields
      * @throws HelperException
-     * @return int
+     * @return int|void
      */
     public function addUserTypeEntity($entityId, $fieldName, $fields)
     {
@@ -123,7 +122,7 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldId
      * @param $fields
      * @throws HelperException
-     * @return mixed
+     * @return int|void
      */
     public function updateUserTypeEntity($fieldId, $fields)
     {
@@ -206,6 +205,7 @@ class UserTypeEntityHelper extends Helper
      * Получает пользовательское поле у объекта
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $fieldId
+     * @throws HelperException
      * @return mixed
      */
     public function exportUserTypeEntity($fieldId)
@@ -218,6 +218,7 @@ class UserTypeEntityHelper extends Helper
      * Получает пользовательские поля у объекта
      * Данные подготовлены для экспорта в миграцию или схему
      * @param bool $entityId
+     * @throws HelperException
      * @return array
      */
     public function exportUserTypeEntities($entityId = false)
@@ -260,7 +261,7 @@ class UserTypeEntityHelper extends Helper
         }
 
         if ($item['USER_TYPE_ID'] == 'enumeration') {
-            $item['ENUM_VALUES'] = $this->getEnumValues($fieldId, false);
+            $item['ENUM_VALUES'] = $this->getEnumValues($fieldId);
         }
 
         return $item;
@@ -275,7 +276,7 @@ class UserTypeEntityHelper extends Helper
     public function setUserTypeEntityEnumValues($fieldId, $newenums)
     {
         $newenums = is_array($newenums) ? $newenums : [];
-        $oldenums = $this->getEnumValues($fieldId, true);
+        $oldenums = $this->getEnumValues($fieldId);
 
         $index = 0;
 
@@ -309,7 +310,7 @@ class UserTypeEntityHelper extends Helper
      * @param $entityId
      * @param $fieldName
      * @throws HelperException
-     * @return bool
+     * @return bool|void
      */
     public function deleteUserTypeEntityIfExists($entityId, $fieldName)
     {
@@ -341,7 +342,6 @@ class UserTypeEntityHelper extends Helper
     /**
      * Декодирует название объекта в оригинальный вид
      * @param $entityId
-     * @throws ArgumentException
      * @throws HelperException
      * @return string
      */
@@ -364,7 +364,6 @@ class UserTypeEntityHelper extends Helper
     /**
      * Кодирует название объекта в вид удобный для экспорта в миграцию или схему
      * @param $entityId
-     * @throws ArgumentException
      * @throws HelperException
      * @return string
      */
@@ -386,7 +385,6 @@ class UserTypeEntityHelper extends Helper
      * Сохраняет пользовательское поле
      * Создаст если не было, обновит если существует и отличается
      * @param array $fields , обязательные параметры - название объекта, название поля
-     * @throws ArgumentException
      * @throws HelperException
      * @return bool|int|mixed
      */
@@ -444,53 +442,51 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
-     * @param $item
+     * @param $entity
      * @param bool $transformEntityId
-     * @throws ArgumentException
      * @throws HelperException
      * @return mixed
      */
-    protected function prepareExportUserTypeEntity($item, $transformEntityId = false)
+    protected function prepareExportUserTypeEntity($entity, $transformEntityId = false)
     {
-        if (empty($item)) {
-            return $item;
+        if (empty($entity)) {
+            return $entity;
         }
 
         if ($transformEntityId) {
-            $item['ENTITY_ID'] = $this->transformEntityId(
-                $item['ENTITY_ID']
+            $entity['ENTITY_ID'] = $this->transformEntityId(
+                $entity['ENTITY_ID']
             );
         }
 
-        unset($item['ID']);
-        return $item;
+        if (!empty($entity['ENUM_VALUES']) && is_array($entity['ENUM_VALUES'])) {
+            $exportValues = [];
+
+            foreach ($entity['ENUM_VALUES'] as $item) {
+                $exportValues[] = [
+                    'VALUE' => $item['VALUE'],
+                    'DEF' => $item['DEF'],
+                    'SORT' => $item['SORT'],
+                    'XML_ID' => $item['XML_ID'],
+                ];
+            }
+
+            $entity['ENUM_VALUES'] = $exportValues;
+        }
+
+        unset($entity['ID']);
+        return $entity;
     }
 
     /**
      * @param $fieldId
-     * @param bool $full
      * @return array
      */
-    protected function getEnumValues($fieldId, $full = false)
+    protected function getEnumValues($fieldId)
     {
         $obEnum = new CUserFieldEnum;
         $dbres = $obEnum->GetList([], ["USER_FIELD_ID" => $fieldId]);
-
-        $result = [];
-        while ($enum = $dbres->Fetch()) {
-            if ($full) {
-                $result[] = $enum;
-            } else {
-                $result[] = [
-                    'VALUE' => $enum['VALUE'],
-                    'DEF' => $enum['DEF'],
-                    'SORT' => $enum['SORT'],
-                    'XML_ID' => $enum['XML_ID'],
-                ];
-            }
-        }
-
-        return $result;
+        return $this->fetchAll($dbres);
     }
 
     /**

@@ -2,16 +2,20 @@
 
 namespace Sprint\Migration\Builders;
 
-use Bitrix\Main\Loader;
+use Sprint\Migration\Builders\Traits\HlblocksStructureTrait;
+use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class HlblockBuilder extends VersionBuilder
 {
 
+    use HlblocksStructureTrait;
+
     protected function isBuilderEnabled()
     {
-        return (Loader::includeModule('highloadblock'));
+        return $this->getHelperManager()->Hlblock()->isEnabled();
     }
 
     protected function initialize()
@@ -22,7 +26,10 @@ class HlblockBuilder extends VersionBuilder
         $this->addVersionFields();
     }
 
-
+    /**
+     * @throws HelperException
+     * @throws RebuildException
+     */
     protected function execute()
     {
         $helper = $this->getHelperManager();
@@ -33,7 +40,7 @@ class HlblockBuilder extends VersionBuilder
             'multiple' => 1,
             'value' => [],
             'width' => 250,
-            'items' => $this->getHlStructure(),
+            'select' => $this->getHlblocksStructure(),
         ]);
 
         $hlblockIds = $this->getFieldValue('hlblock_id');
@@ -63,27 +70,6 @@ class HlblockBuilder extends VersionBuilder
             Module::getModuleDir() . '/templates/HlblockExport.php', [
             'items' => $items,
         ]);
-
-    }
-
-    protected function getHlStructure()
-    {
-        $helper = $this->getHelperManager();
-
-        $hlblocks = $helper->Hlblock()->getHlblocks();
-
-        $structure = [
-            0 => ['items' => []],
-        ];
-
-        foreach ($hlblocks as $hlblock) {
-            $structure[0]['items'][] = [
-                'title' => $hlblock['NAME'],
-                'value' => $hlblock['ID'],
-            ];
-        }
-
-        return $structure;
 
     }
 }

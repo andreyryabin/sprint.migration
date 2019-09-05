@@ -21,8 +21,7 @@ class EventSchema extends AbstractSchema
 
     protected function isBuilderEnabled()
     {
-        $helper = $this->getHelperManager();
-        return $helper->Event()->isEnabled();
+        return $this->getHelperManager()->Event()->isEnabled();
     }
 
     public function outDescription()

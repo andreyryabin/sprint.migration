@@ -7,7 +7,6 @@ use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\IblockElementsExport;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -58,49 +57,46 @@ class IblockElementsBuilder extends VersionBuilder
             $this->rebuildField('iblock_id');
         }
 
-        $exchange = new IblockElementsExport($this);
-        $exchange->setLimit(10);
-
-        $exchange->setExportFields([
-            'NAME',
-            'CODE',
-            'SORT',
-            'XML_ID',
-            'TAGS',
-            'DATE_ACTIVE_FROM',
-            'DATE_ACTIVE_TO',
-            'PREVIEW_TEXT',
-            'PREVIEW_TEXT_TYPE',
-            'DETAIL_TEXT',
-            'DETAIL_TEXT_TYPE',
-            'PREVIEW_PICTURE',
-            'DETAIL_PICTURE',
-        ]);
-
-        $exchange->setExportProperties(
-            $this->getPropsCodes($iblockId)
-        );
-
-        $exchange->from($iblockId);
-
         if (!isset($this->params['~version_name'])) {
-            $versionName = $this->getVersionName();
-        } else {
-            $versionName = $this->params['~version_name'];
+            $this->params['~version_name'] = $this->getVersionName();
         }
 
-        $versionDir = $this->getVersionResourcesDir($versionName);
+        $versionName = $this->params['~version_name'];
 
-        $exchange->to($versionDir . '/iblock_elements.xml');
-        $exchange->execute();
+        $this->getExchangeManager()
+            ->IblockElementsExport()
+            ->setExportFields([
+                'NAME',
+                'CODE',
+                'SORT',
+                'XML_ID',
+                'TAGS',
+                'DATE_ACTIVE_FROM',
+                'DATE_ACTIVE_TO',
+                'PREVIEW_TEXT',
+                'PREVIEW_TEXT_TYPE',
+                'DETAIL_TEXT',
+                'DETAIL_TEXT_TYPE',
+                'PREVIEW_PICTURE',
+                'DETAIL_PICTURE',
+            ])
+            ->setExportProperties(
+                $this->getIblockPropertiesCodes($iblockId)
+            )
+            ->setIblockId($iblockId)
+            ->setLimit(20)
+            ->setExchangeFile(
+                $this->getVersionResource($versionName, 'iblock_elements.xml')
+            )->execute();
 
-        return $this->createVersionFile(
+        $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockElementsExport.php',
             [
-                'iblock' => $iblock,
                 'version' => $versionName,
             ]
         );
+
+        unset($this->params['~version_name']);
     }
 
 

@@ -64,7 +64,6 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_CONFIG_migration_dir" => "Директория для миграций",
     "SPRINT_MIGRATION_CONFIG_migration_extend_class" => "Класс, от которого наследуются миграции",
     "SPRINT_MIGRATION_CONFIG_migration_table" => "Таблица в бд с миграциями",
-    "SPRINT_MIGRATION_CONFIG_tracker_task_url" => "Шаблон ссылки на задачу в трекере",
     "SPRINT_MIGRATION_CONFIG_version_prefix" => "Заголовок класса миграции",
     "SPRINT_MIGRATION_CONFIG_version_builders" => "Конструкторы",
     "SPRINT_MIGRATION_CONFIG_version_filter" => "Фильтрация списка миграций",
@@ -124,6 +123,10 @@ require_once __DIR__ . '/../lib/locale.php';
     'SPRINT_MIGRATION_BUILDER_IblockElementsExport1' => 'Перенести элементы инфоблоков',
     'SPRINT_MIGRATION_BUILDER_IblockElementsExport2' => '',
     'SPRINT_MIGRATION_BUILDER_IblockElementsExport_IblockId' => 'Выберите инфоблок',
+
+    'SPRINT_MIGRATION_BUILDER_HlblockElementsExport1' => 'Перенести элементы highload-блоков',
+    'SPRINT_MIGRATION_BUILDER_HlblockElementsExport2' => '',
+    'SPRINT_MIGRATION_BUILDER_HlblockElementsExport_HlblockId' => 'Выберите highload-блок',
 
     "SPRINT_MIGRATION_BUILDER_UserOptionsExport_Title" => "Создать миграцию для пользовательских настроек",
     "SPRINT_MIGRATION_BUILDER_UserOptionsExport_Desc" => "",

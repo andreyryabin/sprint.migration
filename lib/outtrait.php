@@ -5,12 +5,12 @@ namespace Sprint\Migration;
 trait OutTrait
 {
 
-    protected function out($msg, $var1 = null, $var2 = null)
+    protected function out($msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'out'], func_get_args());
     }
 
-    protected function outIf($cond, $msg, $var1 = null, $var2 = null)
+    protected function outIf($cond, $msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'outIf'], func_get_args());
     }
@@ -20,52 +20,52 @@ trait OutTrait
         call_user_func_array(['Sprint\Migration\Out', 'outProgress'], func_get_args());
     }
 
-    protected function outNotice($msg, $var1 = null, $var2 = null)
+    protected function outNotice($msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'outNotice'], func_get_args());
     }
 
-    protected function outNoticeIf($cond, $msg, $var1 = null, $var2 = null)
+    protected function outNoticeIf($cond, $msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'outNoticeIf'], func_get_args());
     }
 
-    protected function outInfo($msg, $var1 = null, $var2 = null)
+    protected function outInfo($msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'outInfo'], func_get_args());
     }
 
-    protected function outInfoIf($msg, $var1 = null, $var2 = null)
+    protected function outInfoIf($msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'outInfoIf'], func_get_args());
     }
 
-    protected function outSuccess($msg, $var1 = null, $var2 = null)
+    protected function outSuccess($msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'outSuccess'], func_get_args());
     }
 
-    protected function outSuccessIf($msg, $var1 = null, $var2 = null)
+    protected function outSuccessIf($msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'outSuccessIf'], func_get_args());
     }
 
-    protected function outWarning($msg, $var1 = null, $var2 = null)
+    protected function outWarning($msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'outWarning'], func_get_args());
     }
 
-    protected function outWarningIf($msg, $var1 = null, $var2 = null)
+    protected function outWarningIf($msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'outWarningIf'], func_get_args());
     }
 
-    protected function outError($msg, $var1 = null, $var2 = null)
+    protected function outError($msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'outError'], func_get_args());
     }
 
-    protected function outErrorIf($msg, $var1 = null, $var2 = null)
+    protected function outErrorIf($msg, ...$vars)
     {
         call_user_func_array(['Sprint\Migration\Out', 'outErrorIf'], func_get_args());
     }

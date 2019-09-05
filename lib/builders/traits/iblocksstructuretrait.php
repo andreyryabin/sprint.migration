@@ -19,13 +19,11 @@ trait IblocksStructureTrait
      */
     public function getIblocksStructure()
     {
+        $res = [];
         $helper = $this->getHelperManager();
-
         $iblockTypes = $helper->Iblock()->getIblockTypes();
-
-        $structure = [];
         foreach ($iblockTypes as $iblockType) {
-            $structure[$iblockType['ID']] = [
+            $res[$iblockType['ID']] = [
                 'title' => '[' . $iblockType['ID'] . '] ' . $iblockType['LANG'][LANGUAGE_ID]['NAME'],
                 'items' => [],
             ];
@@ -33,53 +31,47 @@ trait IblocksStructureTrait
 
         $iblocks = $helper->Iblock()->getIblocks();
         foreach ($iblocks as $iblock) {
-            $structure[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
+            $res[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
                 'title' => '[' . $iblock['CODE'] . '] ' . $iblock['NAME'],
                 'value' => $iblock['ID'],
             ];
         }
 
-        return $structure;
+        return $res;
     }
 
     /**
      * @param $iblockId
      * @return array
      */
-    protected function getPropsStructure($iblockId)
+    protected function getIblockPropertiesStructure($iblockId)
     {
+        $res = [];
         $helper = $this->getHelperManager();
         $props = $helper->Iblock()->getProperties($iblockId);
-
-        $structure = [
-            0 => ['items' => []],
-        ];
-
         foreach ($props as $prop) {
-            $structure[0]['items'][] = [
+            $res[] = [
                 'title' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
                 'value' => $prop['ID'],
             ];
         }
-
-        return $structure;
+        return $res;
     }
 
     /**
      * @param $iblockId
      * @return array
      */
-    protected function getPropsCodes($iblockId)
+    protected function getIblockPropertiesCodes($iblockId)
     {
+        $res = [];
         $helper = $this->getHelperManager();
         $props = $helper->Iblock()->getProperties($iblockId);
-        $res = [];
         foreach ($props as $prop) {
             if (!empty($prop['CODE'])) {
                 $res[] = $prop['CODE'];
             }
         }
         return $res;
-
     }
 }

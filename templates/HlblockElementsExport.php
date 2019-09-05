@@ -23,21 +23,21 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     /**
      * @throws Exceptions\ExchangeException
      * @throws Exceptions\RestartException
+     * @throws Exceptions\HelperException
      * @return bool|void
      */
     public function up()
     {
         $this->getExchangeManager()
-            ->IblockElementsImport()
-            ->setExchangeResource('iblock_elements.xml')
+            ->HlblockElementsImport()
+            ->setExchangeResource('hlblock_elements.xml')
             ->setLimit(20)
             ->execute(function ($item) {
                 $this->getHelperManager()
-                    ->Iblock()
+                    ->Hlblock()
                     ->addElement(
-                        $item['iblock_id'],
-                        $item['fields'],
-                        $item['properties']
+                        $item['hlblock_id'],
+                        $item['fields']
                     );
             });
     }

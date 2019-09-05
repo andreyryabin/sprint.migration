@@ -3,8 +3,11 @@
 namespace Sprint\Migration\Helpers;
 
 use Bitrix\Highloadblock as HL;
+use Bitrix\Highloadblock\HighloadBlockTable;
 use Bitrix\Main\ArgumentException;
 use Bitrix\Main\ObjectPropertyException;
+use Bitrix\Main\ORM\Data\DataManager;
+use Bitrix\Main\ORM\Fields\ExpressionField;
 use Bitrix\Main\SystemException;
 use CTask;
 use Exception;
@@ -21,31 +24,35 @@ class HlblockHelper extends Helper
      */
     public function isEnabled()
     {
-        return $this->checkModules(['highloadblock']);
+        return (
+            $this->checkModules(['highloadblock']) &&
+            class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')
+        );
     }
 
     /**
      * Получает список highload-блоков
      * @param array $filter
-     * @throws ArgumentException
-     * @throws SystemException
+     * @throws HelperException
      * @return array
      */
     public function getHlblocks($filter = [])
     {
-        $dbres = HL\HighloadBlockTable::getList(
-            [
-                'select' => ['*'],
-                'filter' => $filter,
-            ]
-        );
-
         $result = [];
-        while ($hlblock = $dbres->fetch()) {
-            $hlblock['LANG'] = $this->getHblockLangs($hlblock['ID']);
-            $result[] = $hlblock;
+        try {
+            $dbres = HL\HighloadBlockTable::getList(
+                [
+                    'select' => ['*'],
+                    'filter' => $filter,
+                ]
+            );
+            while ($hlblock = $dbres->fetch()) {
+                $hlblock['LANG'] = $this->getHblockLangs($hlblock['ID']);
+                $result[] = $hlblock;
+            }
+        } catch (Exception $e) {
+            $this->throwException(__METHOD__, $e->getMessage());
         }
-
         return $result;
     }
 
@@ -53,8 +60,7 @@ class HlblockHelper extends Helper
      * Получает список highload-блоков
      * Данные подготовлены для экспорта в миграцию или схему
      * @param array $filter
-     * @throws ArgumentException
-     * @throws SystemException
+     * @throws HelperException
      * @return array
      */
     public function exportHlblocks($filter = [])
@@ -72,18 +78,46 @@ class HlblockHelper extends Helper
     /**
      * Получает список полей highload-блока
      * @param $hlblockName int|string|array - id, имя или фильтр
-     * @throws ArgumentException
-     * @throws SystemException
      * @throws HelperException
      * @return array
      */
     public function getFields($hlblockName)
     {
-        $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
-
         $entityHelper = new UserTypeEntityHelper();
         $entityHelper->setMode($this);
-        return $entityHelper->getUserTypeEntities('HLBLOCK_' . $hlblockId);
+        return $entityHelper->getUserTypeEntities(
+            $this->getEntityId($hlblockName)
+        );
+    }
+
+    /**
+     * Получает поле highload-блока
+     *
+     * @param $hlblockName
+     * @param $fieldName
+     * @throws HelperException
+     * @return array|bool
+     */
+    public function getField($hlblockName, $fieldName)
+    {
+        $entityHelper = new UserTypeEntityHelper();
+        $entityHelper->setMode($this);
+
+        return $entityHelper->getUserTypeEntity(
+            $this->getEntityId($hlblockName),
+            $fieldName
+        );
+    }
+
+    /**
+     * @param $hlblockName
+     * @throws HelperException
+     * @return string
+     */
+    public function getEntityId($hlblockName)
+    {
+        $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
+        return 'HLBLOCK_' . $hlblockId;
     }
 
     /**
@@ -91,15 +125,12 @@ class HlblockHelper extends Helper
      * Создаст если не было, обновит если существует и отличается
      * @param $hlblockName int|string|array - id, имя или фильтр
      * @param array $field
-     * @throws ArgumentException
      * @throws HelperException
-     * @throws SystemException
      * @return bool|int|mixed
      */
     public function saveField($hlblockName, $field = [])
     {
-        $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
-        $field['ENTITY_ID'] = 'HLBLOCK_' . $hlblockId;
+        $field['ENTITY_ID'] = $this->getEntityId($hlblockName);
 
         $entityHelper = new UserTypeEntityHelper();
         $entityHelper->setMode($this);
@@ -110,8 +141,6 @@ class HlblockHelper extends Helper
      * Сохраняет highload-блок
      * Создаст если не было, обновит если существует и отличается
      * @param $fields , обязательные параметры - название сущности
-     * @throws ArgumentException
-     * @throws SystemException
      * @throws HelperException
      * @return bool|int|mixed
      */
@@ -149,27 +178,24 @@ class HlblockHelper extends Helper
      * Удаляет поле highload-блока
      * @param $hlblockName
      * @param $fieldName
-     * @throws ArgumentException
      * @throws HelperException
-     * @throws SystemException
      * @return bool
      */
     public function deleteField($hlblockName, $fieldName)
     {
-        $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
-
         $entityHelper = new UserTypeEntityHelper();
         $entityHelper->setMode($this);
-        return $entityHelper->deleteUserTypeEntity('HLBLOCK_' . $hlblockId, $fieldName);
+        return $entityHelper->deleteUserTypeEntity(
+            $this->getEntityId($hlblockName),
+            $fieldName
+        );
     }
 
     /**
      * Получает список полей highload-блока
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $hlblockName
-     * @throws ArgumentException
      * @throws HelperException
-     * @throws SystemException
      * @return array
      */
     public function exportFields($hlblockName)
@@ -187,8 +213,7 @@ class HlblockHelper extends Helper
      * Получает highload-блок
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $hlblockName
-     * @throws ArgumentException
-     * @throws SystemException
+     * @throws HelperException
      * @return mixed
      */
     public function exportHlblock($hlblockName)
@@ -201,8 +226,7 @@ class HlblockHelper extends Helper
     /**
      * Получает highload-блок
      * @param $hlblockName - id, имя или фильтр
-     * @throws ArgumentException
-     * @throws SystemException
+     * @throws HelperException
      * @return array|false
      */
     public function getHlblock($hlblockName)
@@ -215,26 +239,29 @@ class HlblockHelper extends Helper
             $filter = ['NAME' => $hlblockName];
         }
 
-        $result = HL\HighloadBlockTable::getList(
-            [
-                'select' => ['*'],
-                'filter' => $filter,
-            ]
-        );
+        try {
+            $hlblock = HL\HighloadBlockTable::getList(
+                [
+                    'select' => ['*'],
+                    'filter' => $filter,
+                ]
+            )->fetch();
 
-        $hlblock = $result->fetch();
-        if ($hlblock) {
-            $hlblock['LANG'] = $this->getHblockLangs($hlblock['ID']);
+            if ($hlblock) {
+                $hlblock['LANG'] = $this->getHblockLangs($hlblock['ID']);
+                return $hlblock;
+            }
+
+        } catch (Exception $e) {
+            $this->throwException(__METHOD__, $e->getMessage());
         }
 
-        return $hlblock;
+        return false;
     }
 
     /**
      * @param $hlblockName
-     * @throws ArgumentException
      * @throws HelperException
-     * @throws SystemException
      * @return array|false|void
      */
     public function getHlblockIfExists($hlblockName)
@@ -250,9 +277,7 @@ class HlblockHelper extends Helper
     /**
      * Получает highload-блок, бросает исключение если его не существует
      * @param $hlblockName - id, имя или фильтр
-     * @throws ArgumentException
      * @throws HelperException
-     * @throws SystemException
      * @return int|void
      */
     public function getHlblockIdIfExists($hlblockName)
@@ -268,8 +293,7 @@ class HlblockHelper extends Helper
     /**
      * Получает id highload-блока
      * @param $hlblockName - id, имя или фильтр
-     * @throws ArgumentException
-     * @throws SystemException
+     * @throws HelperException
      * @return int|mixed
      */
     public function getHlblockId($hlblockName)
@@ -281,13 +305,13 @@ class HlblockHelper extends Helper
     /**
      * Добавляет highload-блок
      * @param $fields , обязательные параметры - название сущности, название таблицы в БД
-     * @throws SystemException
      * @throws HelperException
      * @return int|void
      */
     public function addHlblock($fields)
     {
         $this->checkRequiredKeys(__METHOD__, $fields, ['NAME', 'TABLE_NAME']);
+        $fields['NAME'] = ucfirst($fields['NAME']);
 
         $lang = [];
         if (isset($fields['LANG'])) {
@@ -295,22 +319,23 @@ class HlblockHelper extends Helper
             unset($fields['LANG']);
         }
 
-        $fields['NAME'] = ucfirst($fields['NAME']);
+        try {
+            $result = HL\HighloadBlockTable::add($fields);
+            if ($result->isSuccess()) {
+                $this->replaceHblockLangs($result->getId(), $lang);
+                return $result->getId();
+            }
 
-        $result = HL\HighloadBlockTable::add($fields);
-        if ($result->isSuccess()) {
-            $this->replaceHblockLangs($result->getId(), $lang);
-            return $result->getId();
+            throw new HelperException($result->getErrors());
+
+        } catch (Exception $e) {
+            $this->throwException(__METHOD__, $e->getMessage());
         }
-
-        $this->throwException(__METHOD__, implode(', ', $result->getErrors()));
     }
 
     /**
      * Добавляет highload-блок, если его не существует
      * @param $fields , обязательные параметры - название сущности
-     * @throws ArgumentException
-     * @throws SystemException
      * @throws HelperException
      * @return int|mixed
      */
@@ -330,10 +355,7 @@ class HlblockHelper extends Helper
      * Обновляет highload-блок
      * @param $hlblockId
      * @param $fields
-     * @throws ArgumentException
      * @throws HelperException
-     * @throws SystemException
-     * @throws ObjectPropertyException
      * @return int|void
      */
     public function updateHlblock($hlblockId, $fields)
@@ -344,22 +366,26 @@ class HlblockHelper extends Helper
             unset($fields['LANG']);
         }
 
-        $result = HL\HighloadBlockTable::update($hlblockId, $fields);
-        if ($result->isSuccess()) {
-            $this->replaceHblockLangs($hlblockId, $lang);
-            return $hlblockId;
-        }
+        try {
+            $result = HL\HighloadBlockTable::update($hlblockId, $fields);
 
-        $this->throwException(__METHOD__, implode(', ', $result->getErrors()));
+            if ($result->isSuccess()) {
+                $this->replaceHblockLangs($hlblockId, $lang);
+                return $hlblockId;
+            }
+
+            throw new HelperException($result->getErrors());
+
+        } catch (Exception $e) {
+            $this->throwException(__METHOD__, $e->getMessage());
+        }
     }
 
     /**
      * Обновляет highload-блок, если существует
      * @param $hlblockName
      * @param $fields
-     * @throws ArgumentException
      * @throws HelperException
-     * @throws SystemException
      * @return bool|mixed
      */
     public function updateHlblockIfExists($hlblockName, $fields)
@@ -380,20 +406,23 @@ class HlblockHelper extends Helper
      */
     public function deleteHlblock($hlblockId)
     {
-        $result = HL\HighloadBlockTable::delete($hlblockId);
-        if ($result->isSuccess()) {
-            return true;
-        }
+        try {
+            $result = HL\HighloadBlockTable::delete($hlblockId);
+            if ($result->isSuccess()) {
+                return true;
+            }
 
-        $this->throwException(__METHOD__, implode(', ', $result->getErrors()));
+            throw new HelperException($result->getErrors());
+
+        } catch (Exception $e) {
+            $this->throwException(__METHOD__, $e->getMessage());
+        }
     }
 
     /**
      * Удаляет highload-блок, если существует
      * @param $hlblockName
-     * @throws ArgumentException
      * @throws HelperException
-     * @throws SystemException
      * @return bool
      */
     public function deleteHlblockIfExists($hlblockName)
@@ -404,6 +433,30 @@ class HlblockHelper extends Helper
         }
 
         return $this->deleteHlblock($item['ID']);
+    }
+
+    /**
+     * @param $hlblockName
+     * @param $fields
+     * @throws HelperException
+     * @return int|void
+     */
+    public function addElement($hlblockName, $fields)
+    {
+        $dataManager = $this->getDataManager($hlblockName);
+
+        try {
+            $result = $dataManager::add($fields);
+
+            if ($result->isSuccess()) {
+                return $result->getId();
+            }
+
+            Throw new HelperException($result->getErrors());
+
+        } catch (Exception $e) {
+            $this->throwException(__METHOD__, $e->getMessage());
+        }
     }
 
     /**
@@ -458,6 +511,102 @@ class HlblockHelper extends Helper
                 ]
             );
         }
+    }
+
+    /**
+     * @param $hlblockName
+     * @throws HelperException
+     * @return DataManager|void
+     */
+    public function getDataManager($hlblockName)
+    {
+        try {
+            $hlblock = $this->getHlblockIfExists($hlblockName);
+            $entity = HighloadBlockTable::compileEntity($hlblock);
+            return $entity->getDataClass();
+        } catch (Exception $e) {
+            $this->throwException(__METHOD__, $e->getMessage());
+        }
+    }
+
+    /**
+     * @param $hlblockName
+     * @param array $params
+     * @throws HelperException
+     * @return array|void
+     */
+    public function getElements($hlblockName, $params = [])
+    {
+        $dataManager = $this->getDataManager($hlblockName);
+        try {
+            return $dataManager::getList($params)->fetchAll();
+        } catch (Exception $e) {
+            $this->throwException(__METHOD__, $e->getMessage());
+        }
+    }
+
+    /**
+     * @param $hlblockName
+     * @param array $filter
+     * @throws HelperException
+     * @return int|void
+     */
+    public function getElementsCount($hlblockName, $filter = [])
+    {
+        $dataManager = $this->getDataManager($hlblockName);
+        try {
+            $item = $dataManager::getList([
+                'select' => ['CNT'],
+                'filter' => $filter,
+                'runtime' => [
+                    new ExpressionField('CNT', 'COUNT(*)'),
+                ],
+            ])->fetch();
+
+            return ($item) ? $item['CNT'] : 0;
+
+        } catch (Exception $e) {
+            $this->throwException(__METHOD__, $e->getMessage());
+        }
+    }
+
+    /**
+     * @param $hlblock
+     * @param string $default
+     * @throws HelperException
+     * @return string
+     */
+    public function getHlblockUid($hlblock, $default = '')
+    {
+        if (!is_array($hlblock)) {
+            $hlblock = $this->getHlblock($hlblock);
+        }
+
+        if (!empty($hlblock['TABLE_NAME']) && !empty($hlblock['NAME'])) {
+            return $hlblock['TABLE_NAME'] . ':' . $hlblock['NAME'];
+        }
+
+        return $default;
+    }
+
+    /**
+     * @param $hlblockUid
+     * @throws HelperException
+     * @return int
+     */
+    public function getHlblockIdByUid($hlblockUid)
+    {
+        $hlblockId = 0;
+        if (empty($hlblockUid)) {
+            return $hlblockId;
+        }
+
+        list($tableName, $hlblockName) = explode(':', $hlblockUid);
+        if (!empty($tableName) && !empty($hlblockName)) {
+            $hlblockId = $this->getHlblockId($hlblockName);
+        }
+
+        return $hlblockId;
     }
 
     /**
@@ -527,28 +676,24 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockId
-     * @throws ArgumentException
-     * @throws SystemException
-     * @throws ObjectPropertyException
      * @return array
      */
     protected function getHblockLangs($hlblockId)
     {
         $result = [];
 
-        if (!class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')) {
-            return $result;
-        }
+        try {
+            $dbres = HL\HighloadBlockLangTable::getList([
+                'filter' => ['ID' => $hlblockId],
+            ]);
 
-        $dbres = HL\HighloadBlockLangTable::getList([
-            'filter' => ['ID' => $hlblockId],
-        ]);
+            while ($item = $dbres->fetch()) {
+                $result[$item['LID']] = [
+                    'NAME' => $item['NAME'],
+                ];
+            }
+        } catch (Exception $e) {
 
-
-        while ($item = $dbres->fetch()) {
-            $result[$item['LID']] = [
-                'NAME' => $item['NAME'],
-            ];
         }
 
         return $result;
@@ -565,11 +710,6 @@ class HlblockHelper extends Helper
     protected function deleteHblockLangs($hlblockId)
     {
         $del = 0;
-
-        if (!class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')) {
-            return $del;
-        }
-
         $res = HL\HighloadBlockLangTable::getList([
             'filter' => ['ID' => $hlblockId],
         ]);
@@ -592,10 +732,6 @@ class HlblockHelper extends Helper
     protected function addHblockLangs($hlblockId, $lang = [])
     {
         $add = 0;
-
-        if (!class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')) {
-            return $add;
-        }
 
         foreach ($lang as $lid => $item) {
             if (!empty($item['NAME'])) {

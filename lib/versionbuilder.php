@@ -59,15 +59,16 @@ class VersionBuilder extends AbstractBuilder
         return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '.php';
     }
 
-    protected function getVersionResourcesDir($versionName)
+    protected function getVersionResource($versionName, $name)
     {
-        return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '_files';
+        return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '_files/' . $name;
     }
 
-    protected function getVersionName(){
+    protected function getVersionName()
+    {
         return $this->purifyPrefix(
-            $this->getFieldValue('prefix')
-        ) . $this->getTimestamp();
+                $this->getFieldValue('prefix')
+            ) . $this->getTimestamp();
     }
 
     protected function createVersionFile($templateFile = '', $templateVars = [])
@@ -76,7 +77,7 @@ class VersionBuilder extends AbstractBuilder
             $this->getFieldValue('description')
         );
 
-        if (empty($templateVars['version'])){
+        if (empty($templateVars['version'])) {
             $templateVars['version'] = $this->getVersionName();
         }
 

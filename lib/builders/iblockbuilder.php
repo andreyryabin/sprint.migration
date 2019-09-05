@@ -2,8 +2,6 @@
 
 namespace Sprint\Migration\Builders;
 
-use Bitrix\Main\Loader;
-use Bitrix\Main\LoaderException;
 use Sprint\Migration\Builders\Traits\IblocksStructureTrait;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
@@ -15,13 +13,9 @@ class IblockBuilder extends VersionBuilder
 
     use IblocksStructureTrait;
 
-    /**
-     * @throws LoaderException
-     * @return bool
-     */
     protected function isBuilderEnabled()
     {
-        return (Loader::includeModule('iblock'));
+        return $this->getHelperManager()->Iblock()->isEnabled();
     }
 
     protected function initialize()
@@ -125,7 +119,7 @@ class IblockBuilder extends VersionBuilder
                 'width' => 250,
                 'multiple' => 1,
                 'value' => [],
-                'items' => $this->getPropsStructure($iblockId),
+                'select' => $this->getIblockPropertiesStructure($iblockId),
             ]);
 
             $propertyIds = $this->getFieldValue('property_ids');

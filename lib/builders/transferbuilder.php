@@ -3,7 +3,7 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\AbstractBuilder;
-use Sprint\Migration\Exceptions\BuilderException;
+use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\VersionManager;
 
 class TransferBuilder extends AbstractBuilder
@@ -64,7 +64,7 @@ class TransferBuilder extends AbstractBuilder
     }
 
     /**
-     * @throws BuilderException
+     * @throws ExchangeException
      */
     protected function execute()
     {

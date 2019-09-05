@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration;
 
+use Sprint\Migration\Exchange\HlblockElementsExport;
+use Sprint\Migration\Exchange\HlblockElementsImport;
 use Sprint\Migration\Exchange\IblockElementsExport;
 use Sprint\Migration\Exchange\IblockElementsImport;
 
@@ -31,5 +33,23 @@ class ExchangeManager
     public function IblockElementsImport()
     {
         return new IblockElementsImport($this->exchangeEntity);
+    }
+
+    /**
+     * @throws Exceptions\ExchangeException
+     * @return HlblockElementsImport
+     */
+    public function HlblockElementsImport()
+    {
+        return new HlblockElementsImport($this->exchangeEntity);
+    }
+
+    /**
+     * @throws Exceptions\ExchangeException
+     * @return HlblockElementsExport
+     */
+    public function HlblockElementsExport()
+    {
+        return new HlblockElementsExport($this->exchangeEntity);
     }
 }

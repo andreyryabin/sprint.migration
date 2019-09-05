@@ -26,7 +26,7 @@ class Out
 
     protected static $needEol = false;
 
-    public static function out($msg, $var1 = null, $var2 = null)
+    public static function out($msg, ...$vars)
     {
         if (func_num_args() > 1) {
             $params = func_get_args();
@@ -70,7 +70,7 @@ class Out
 
     }
 
-    public static function outNotice($msg, $var1 = null, $var2 = null)
+    public static function outNotice($msg, ...$vars)
     {
         if (func_num_args() > 1) {
             $params = func_get_args();
@@ -85,7 +85,7 @@ class Out
         }
     }
 
-    public static function outWarning($msg, $var1 = null, $var2 = null)
+    public static function outWarning($msg, ...$vars)
     {
         if (func_num_args() > 1) {
             $params = func_get_args();
@@ -100,7 +100,7 @@ class Out
         }
     }
 
-    public static function outInfo($msg, $var1 = null, $var2 = null)
+    public static function outInfo($msg, ...$vars)
     {
         if (func_num_args() > 1) {
             $params = func_get_args();
@@ -115,7 +115,7 @@ class Out
         }
     }
 
-    public static function outError($msg, $var1 = null, $var2 = null)
+    public static function outError($msg, ...$vars)
     {
         if (func_num_args() > 1) {
             $params = func_get_args();
@@ -135,7 +135,7 @@ class Out
         }
     }
 
-    public static function outSuccess($msg, $var1 = null, $var2 = null)
+    public static function outSuccess($msg, ...$vars)
     {
         if (func_num_args() > 1) {
             $params = func_get_args();
@@ -154,7 +154,7 @@ class Out
         }
     }
 
-    public static function outIf($cond, $msg, $var1 = null, $var2 = null)
+    public static function outIf($cond, $msg, ...$vars)
     {
         $args = func_get_args();
         $cond = array_shift($args);
@@ -164,7 +164,7 @@ class Out
 
     }
 
-    public static function outInfoIf($cond, $msg, $var1 = null, $var2 = null)
+    public static function outInfoIf($cond, $msg, ...$vars)
     {
         $args = func_get_args();
         $cond = array_shift($args);
@@ -173,7 +173,7 @@ class Out
         }
     }
 
-    public static function outWarningIf($cond, $msg, $var1 = null, $var2 = null)
+    public static function outWarningIf($cond, $msg, ...$vars)
     {
         $args = func_get_args();
         $cond = array_shift($args);
@@ -182,7 +182,7 @@ class Out
         }
     }
 
-    public static function outErrorIf($cond, $msg, $var1 = null, $var2 = null)
+    public static function outErrorIf($cond, $msg, ...$vars)
     {
         $args = func_get_args();
         $cond = array_shift($args);
@@ -191,7 +191,7 @@ class Out
         }
     }
 
-    public static function outNoticeIf($cond, $msg, $var1 = null, $var2 = null)
+    public static function outNoticeIf($cond, $msg, ...$vars)
     {
         $args = func_get_args();
         $cond = array_shift($args);
@@ -200,7 +200,7 @@ class Out
         }
     }
 
-    public static function outSuccessIf($cond, $msg, $var1 = null, $var2 = null)
+    public static function outSuccessIf($cond, $msg, ...$vars)
     {
         $args = func_get_args();
         $cond = array_shift($args);
@@ -214,8 +214,6 @@ class Out
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
-
-        $msg = self::makeTaskUrl($msg, $options);
 
         $msg = Locale::convertToUtf8IfNeed($msg);
         return $msg;
@@ -231,7 +229,6 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
 
-        $msg = self::makeTaskUrl($msg, $options);
         $msg = self::makeLinks($msg, $options);
 
         $msg = Locale::convertToWin1251IfNeed($msg);
@@ -393,17 +390,6 @@ class Out
         }
         return $diff;
     }
-
-    protected static function makeTaskUrl($msg, $options = [])
-    {
-        if (isset($options['tracker_task_url']) && $options['tracker_task_url']) {
-            if (false !== strpos($options['tracker_task_url'], '$1')) {
-                $msg = preg_replace('/\#([a-z0-9_\-])/i', $options['tracker_task_url'], $msg);
-            }
-        }
-        return $msg;
-    }
-
 
     protected static function makeLinks($msg, $options = [])
     {
