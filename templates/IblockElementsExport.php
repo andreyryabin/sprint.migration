@@ -37,7 +37,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
         $this->getExchangeManager()
             ->IblockElementsImport()
-            ->setResource('iblock_elements.xml')
+            ->setFile(
+                $this->getResource('iblock_elements.xml')
+            )
             ->setLimit(20)
             ->execute(function ($item) use ($helper, $iblockId) {
                 $helper->Iblock()->addElement(

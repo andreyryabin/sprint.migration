@@ -5,6 +5,7 @@ namespace Sprint\Migration\Exchange;
 use CIBlockElement;
 use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Module;
 use XMLWriter;
 
 
@@ -37,6 +38,8 @@ class IblockElementsExport extends AbstractExchange
             $this->params['NavPageCount'] = (int)$dbres->NavPageCount;
             $this->params['NavPageNomer'] = (int)$dbres->NavPageNomer;
 
+            Module::createDir(dirname($this->file));
+
             file_put_contents($this->file, '<?xml version="1.0" encoding="UTF-8"?>');
             file_put_contents($this->file, '<items>', FILE_APPEND);
         }
@@ -53,36 +56,25 @@ class IblockElementsExport extends AbstractExchange
                     if (in_array($code, $this->getExportFields())) {
                         $writer->startElement('field');
                         $writer->writeAttribute('name', $code);
-                        if (!empty($val)) {
-                            $writer->text($val);
-                        }
 
+                        if (in_array($code, ['PREVIEW_PICTURE', 'DETAIL_PICTURE'])) {
+                            $this->writeFile($writer, $val);
+                        } else {
+                            $this->writeValue($writer, $val);
+                        }
                         $writer->endElement();
                     }
                 }
 
                 foreach ($item->GetProperties() as $prop) {
                     if (in_array($prop['CODE'], $this->getExportProperties())) {
-                        $writer->startElement('property');
-                        $writer->writeAttribute('name', $prop['CODE']);
-                        if ($prop['MULTIPLE'] == 'Y') {
-                            if (!empty($prop['VALUE'])) {
-                                foreach ($prop['VALUE'] as $index => $value) {
-                                    $writer->startElement('value');
-                                    if (!empty($prop['VALUE_XML_ID'][$index])) {
-                                        $writer->writeAttribute('xml_id', $prop['VALUE_XML_ID'][$index]);
-                                    }
-                                    $writer->text($value);
-                                    $writer->endElement();
-                                }
-                            }
-                        } else {
-                            if (!empty($prop['VALUE'])) {
-                                $writer->text($prop['VALUE']);
-                            }
+                        $method = 'writeProperty' . $prop['PROPERTY_TYPE'];
+                        if (method_exists($this, $method)) {
+                            $writer->startElement('property');
+                            $writer->writeAttribute('name', $prop['CODE']);
+                            $this->$method($writer, $prop);
+                            $writer->endElement();
                         }
-
-                        $writer->endElement();
                     }
                 }
 
@@ -99,6 +91,101 @@ class IblockElementsExport extends AbstractExchange
         file_put_contents($this->file, '</items>', FILE_APPEND);
         unset($this->params['NavPageCount']);
         unset($this->params['NavPageNomer']);
+    }
+
+    public function writePropertySNEG(XMLWriter $writer, $prop)
+    {
+        if (!empty($prop['VALUE'])) {
+            if (is_array($prop['VALUE'])) {
+                foreach ($prop['VALUE'] as $index => $value) {
+                    $this->writeValue($writer, $value);
+                }
+            } else {
+                $this->writeValue($writer, $prop['VALUE']);
+            }
+        }
+    }
+
+    public function writePropertyS(XMLWriter $writer, $prop)
+    {
+        $this->writePropertySNEG($writer, $prop);
+    }
+
+    public function writePropertyN(XMLWriter $writer, $prop)
+    {
+        $this->writePropertySNEG($writer, $prop);
+    }
+
+    public function writePropertyE(XMLWriter $writer, $prop)
+    {
+        $this->writePropertySNEG($writer, $prop);
+    }
+
+    public function writePropertyG(XMLWriter $writer, $prop)
+    {
+        $this->writePropertySNEG($writer, $prop);
+    }
+
+    public function writePropertyL(XMLWriter $writer, $prop)
+    {
+        if (!empty($prop['VALUE_XML_ID'])) {
+            if (is_array($prop['VALUE_XML_ID'])) {
+                foreach ($prop['VALUE_XML_ID'] as $index => $value) {
+                    $this->writeValue($writer, $value);
+                }
+            } else {
+                $this->writeValue($writer, $prop['VALUE_XML_ID']);
+            }
+        }
+    }
+
+    public function writePropertyF(XMLWriter $writer, $prop)
+    {
+        if (!empty($prop['VALUE'])) {
+            if (is_array($prop['VALUE'])) {
+                foreach ($prop['VALUE'] as $index => $value) {
+                    $this->writeFile($writer, $value);
+                }
+            } else {
+                $this->writeFile($writer, $prop['VALUE']);
+            }
+        }
+    }
+
+    protected function writeValue(XMLWriter $writer, $val, $attributes = [])
+    {
+        if (!empty($val)) {
+            $writer->startElement('value');
+            foreach ($attributes as $atcode => $atval) {
+                if (!empty($atval)) {
+                    $writer->writeAttribute($atcode, $atval);
+                }
+            }
+            $writer->text($val);
+            $writer->endElement();
+        }
+    }
+
+    protected function writeFile(XMLWriter $writer, $fileId)
+    {
+        $file = \CFile::GetFileArray($fileId);
+        if (!empty($file)) {
+            $filePath = Module::getDocRoot() . $file['SRC'];
+            $newPath = $this->getExportDir() . '/' . $file['SUBDIR'] . '/' . $file['FILE_NAME'];
+
+            Module::createDir(dirname($newPath));
+
+            copy($filePath, $newPath);
+
+            $this->writeValue($writer, $file['SUBDIR'] . '/' . $file['FILE_NAME'], [
+                'description' => $file['DESCRIPTION'],
+            ]);
+        }
+    }
+
+    protected function getExportDir()
+    {
+        return dirname($this->file);
     }
 
     /**

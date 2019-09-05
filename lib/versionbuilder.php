@@ -64,15 +64,21 @@ class VersionBuilder extends AbstractBuilder
         return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '_files';
     }
 
+    protected function getVersionName(){
+        return $this->purifyPrefix(
+            $this->getFieldValue('prefix')
+        ) . $this->getTimestamp();
+    }
+
     protected function createVersionFile($templateFile = '', $templateVars = [])
     {
         $templateVars['description'] = $this->purifyDescription(
             $this->getFieldValue('description')
         );
 
-        $templateVars['version'] = $this->purifyPrefix(
-                $this->getFieldValue('prefix')
-            ) . $this->getTimestamp();
+        if (empty($templateVars['version'])){
+            $templateVars['version'] = $this->getVersionName();
+        }
 
         list($extendUse, $extendClass) = explode(' as ', $this->getVersionConfig()->getVal('migration_extend_class'));
         $extendUse = trim($extendUse);

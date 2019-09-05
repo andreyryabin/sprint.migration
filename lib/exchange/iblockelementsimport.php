@@ -111,8 +111,10 @@ class IblockElementsImport extends AbstractExchange
     {
         if ($this->isOpenTag($reader, $tag)) {
             $name = $reader->getAttribute('name');
-            $multiple = $reader->getAttribute('multiple');
-            $multiple = ($multiple && $multiple == 'Y');
+
+            if (!isset($item[$tag])) {
+                $item[$tag] = [];
+            }
 
             do {
                 $reader->read();
@@ -121,14 +123,14 @@ class IblockElementsImport extends AbstractExchange
                     $val = $this->prepareValue($reader->value);
 
                     if (!isset($item[$tag][$name])) {
-                        $item[$tag][$name] = ($multiple) ? [] : '';
+                        $item[$tag][$name] = [];
                     }
 
-                    if ($multiple) {
-                        $item[$tag][$name][] = $val;
-                    } else {
-                        $item[$tag][$name] = $val;
-                    }
+                    $item[$tag][$name][] = $val;
+
+                } elseif ($reader->nodeType == XMLReader::TEXT) {
+                    $val = $this->prepareValue($reader->value);
+                    $item[$tag][$name] = $val;
                 }
 
             } while (!$this->isCloseTag($reader, $tag));
@@ -197,17 +199,6 @@ class IblockElementsImport extends AbstractExchange
     public function getLimit()
     {
         return $this->limit;
-    }
-
-    /**
-     * @param $name
-     * @throws ExchangeException
-     * @return $this
-     */
-    public function setResource($name)
-    {
-        $this->setFile($this->exchangeEntity->getResource($name));
-        return $this;
     }
 
     /**

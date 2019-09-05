@@ -58,9 +58,6 @@ class IblockElementsBuilder extends VersionBuilder
             $this->rebuildField('iblock_id');
         }
 
-        $file = Module::getDocRoot() . '/bitrix/tmp/sprint.migration/iblock_elements.xml';
-        Module::createDir(dirname($file));
-
         $exchange = new IblockElementsExport($this);
         $exchange->setLimit(10);
 
@@ -85,19 +82,25 @@ class IblockElementsBuilder extends VersionBuilder
         );
 
         $exchange->from($iblockId);
-        $exchange->to($file);
 
+        if (!isset($this->params['~version_name'])) {
+            $versionName = $this->getVersionName();
+        } else {
+            $versionName = $this->params['~version_name'];
+        }
+
+        $versionDir = $this->getVersionResourcesDir($versionName);
+
+        $exchange->to($versionDir . '/iblock_elements.xml');
         $exchange->execute();
 
-        $versionName = $this->createVersionFile(
+        return $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockElementsExport.php',
             [
                 'iblock' => $iblock,
+                'version' => $versionName,
             ]
         );
-
-        $resourceDir = Module::createDir($this->getVersionResourcesDir($versionName));
-        rename($file, $resourceDir . '/iblock_elements.xml');
     }
 
 
