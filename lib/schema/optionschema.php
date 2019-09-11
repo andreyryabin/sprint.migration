@@ -3,13 +3,14 @@
 namespace Sprint\Migration\Schema;
 
 use Bitrix\Main\ArgumentException;
+use Bitrix\Main\ArgumentOutOfRangeException;
+use Bitrix\Main\ObjectPropertyException;
 use Bitrix\Main\SystemException;
 use Sprint\Migration\AbstractSchema;
+use Sprint\Migration\Exceptions\HelperException;
 
 class OptionSchema extends AbstractSchema
 {
-
-    private $transforms = [];
 
     protected function initialize()
     {
@@ -80,6 +81,10 @@ class OptionSchema extends AbstractSchema
     /**
      * @param $items
      * @throws ArgumentException
+     * @throws SystemException
+     * @throws ArgumentOutOfRangeException
+     * @throws ObjectPropertyException
+     * @throws HelperException
      */
     protected function saveOptions($items)
     {

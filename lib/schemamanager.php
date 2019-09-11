@@ -179,7 +179,7 @@ class SchemaManager extends ExchangeEntity
 
         $schema->setTestMode($this->testMode);
 
-        $title = $this->testMode ? 'test import' : 'import';
+        $title = $this->testMode ? 'diff' : 'import';
 
         if (!isset($this->params['index'])) {
             $this->outInfo('%s (%s) start', $schema->getTitle(), $title);

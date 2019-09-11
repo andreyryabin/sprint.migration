@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Schema;
 
-use Bitrix\Main\ArgumentException;
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
 
@@ -35,6 +34,9 @@ class UserTypeEntitiesSchema extends AbstractSchema
         $this->out('Полей: %d', count($schemaItems['items']));
     }
 
+    /**
+     * @throws HelperException
+     */
     public function export()
     {
         $helper = $this->getHelperManager();
@@ -48,6 +50,9 @@ class UserTypeEntitiesSchema extends AbstractSchema
 
     }
 
+    /**
+     * @throws HelperException
+     */
     public function import()
     {
         $schemaItems = $this->loadSchema('user_type_entities', [
@@ -70,7 +75,6 @@ class UserTypeEntitiesSchema extends AbstractSchema
 
     /**
      * @param $fields
-     * @throws ArgumentException
      * @throws HelperException
      */
     protected function saveUserTypeEntity($fields)
@@ -100,6 +104,11 @@ class UserTypeEntitiesSchema extends AbstractSchema
         }
     }
 
+    /**
+     * @param $item
+     * @throws HelperException
+     * @return string
+     */
     protected function getUniqEntity($item)
     {
         $entityId = $item['ENTITY_ID'];

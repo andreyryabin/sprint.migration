@@ -469,7 +469,7 @@ class Console
 
             try {
 
-                if ($action == 'test') {
+                if ($action == 'diff') {
                     $schemaManager->setTestMode(1);
                     $schemaManager->import(['name' => $select]);
 

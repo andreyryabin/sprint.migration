@@ -2,8 +2,6 @@
 
 namespace Sprint\Migration\Schema;
 
-use Bitrix\Main\Loader;
-use Bitrix\Main\LoaderException;
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
 

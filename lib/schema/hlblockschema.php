@@ -2,9 +2,6 @@
 
 namespace Sprint\Migration\Schema;
 
-use Bitrix\Main\ArgumentException;
-use Bitrix\Main\Loader;
-use Bitrix\Main\SystemException;
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
 
@@ -45,8 +42,7 @@ class HlblockSchema extends AbstractSchema
     }
 
     /**
-     * @throws ArgumentException
-     * @throws SystemException
+     * @throws HelperException
      */
     public function export()
     {
@@ -62,6 +58,9 @@ class HlblockSchema extends AbstractSchema
         }
     }
 
+    /**
+     * @throws HelperException
+     */
     public function import()
     {
         $schemas = $this->loadSchemas('hlblocks/', [
@@ -101,8 +100,6 @@ class HlblockSchema extends AbstractSchema
 
     /**
      * @param $item
-     * @throws ArgumentException
-     * @throws SystemException
      * @throws HelperException
      */
     protected function saveHlblock($item)
@@ -115,8 +112,6 @@ class HlblockSchema extends AbstractSchema
     /**
      * @param $hlblockUid
      * @param $field
-     * @throws ArgumentException
-     * @throws SystemException
      * @throws HelperException
      */
     protected function saveField($hlblockUid, $field)
@@ -131,8 +126,6 @@ class HlblockSchema extends AbstractSchema
 
     /**
      * @param array $skip
-     * @throws ArgumentException
-     * @throws SystemException
      * @throws HelperException
      */
     protected function cleanHlblocks($skip = [])
@@ -152,8 +145,6 @@ class HlblockSchema extends AbstractSchema
     /**
      * @param $hlblockUid
      * @param array $skip
-     * @throws ArgumentException
-     * @throws SystemException
      * @throws HelperException
      */
     protected function cleanFields($hlblockUid, $skip = [])
@@ -179,8 +170,7 @@ class HlblockSchema extends AbstractSchema
 
     /**
      * @param $item
-     * @throws ArgumentException
-     * @throws SystemException
+     * @throws HelperException
      * @return string
      */
     protected function getUniqHlblock($item)
@@ -190,6 +180,7 @@ class HlblockSchema extends AbstractSchema
 
     /**
      * @param $hlblockUid
+     * @throws HelperException
      * @return mixed
      */
     protected function getHlblockId($hlblockUid)
