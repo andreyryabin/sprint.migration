@@ -14,12 +14,10 @@ class TransferBuilder extends AbstractBuilder
         return true;
     }
 
-
     protected function initialize()
     {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Transfer1'));
         $this->setGroup('configurator');
-
 
         $configFrom = $this->getVersionConfig()->getName();
         $items = $this->getVersionConfig()->getList();
@@ -59,8 +57,6 @@ class TransferBuilder extends AbstractBuilder
             'width' => 250,
             'select' => $structure,
         ]);
-
-
     }
 
     /**
@@ -68,7 +64,6 @@ class TransferBuilder extends AbstractBuilder
      */
     protected function execute()
     {
-
         $configFrom = $this->getVersionConfig()->getName();
         $configTo = $this->getFieldValue('transfer_to');
 
@@ -82,7 +77,6 @@ class TransferBuilder extends AbstractBuilder
             $this->exitWithMessage(GetMessage('SPRINT_MIGRATION_BUILDER_TransferBadDest'));
         }
 
-
         $vmFrom = new VersionManager($configFrom);
         $vmTo = new VersionManager($configTo);
 
@@ -92,7 +86,6 @@ class TransferBuilder extends AbstractBuilder
         } else {
             $filter = [];
         }
-
 
         $versions = $vmFrom->getVersions($filter);
 
@@ -116,10 +109,8 @@ class TransferBuilder extends AbstractBuilder
                 $vmTo->getVersionTable()->addRecord($meta);
             }
 
-
             $cnt++;
         }
-
 
         $this->outSuccess(GetMessage('SPRINT_MIGRATION_BUILDER_TransferCnt', ['#CNT#' => $cnt]));
     }

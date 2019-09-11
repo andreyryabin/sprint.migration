@@ -33,26 +33,14 @@ abstract class AbstractBuilder extends ExchangeEntity
         $this->addFieldHidden('builder_name', $this->getName());
     }
 
-    protected function initialize()
-    {
-        //your code
-    }
+    abstract protected function initialize();
 
-    /**
-     * @throws RestartException|RebuildException
-     */
-    protected function execute()
-    {
-        //your code
-    }
+    abstract protected function execute();
 
     protected function isBuilderEnabled()
     {
-        //your code
-
         return false;
     }
-
 
     public function initializeBuilder()
     {
@@ -281,13 +269,19 @@ abstract class AbstractBuilder extends ExchangeEntity
         return $this->info['group'];
     }
 
-    /** @deprecated */
+    /** @param $code
+     * @param array $param
+     * @deprecated
+     */
     protected function requiredField($code, $param = [])
     {
         $this->addField($code, $param);
     }
 
-    /** @deprecated */
+    /** @param $code
+     * @param array $param
+     * @deprecated
+     */
     protected function setField($code, $param = [])
     {
         $this->addField($code, $param);

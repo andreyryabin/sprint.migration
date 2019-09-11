@@ -10,7 +10,6 @@ use Sprint\Migration\VersionBuilder;
 
 class IblockBuilder extends VersionBuilder
 {
-
     use IblocksStructureTrait;
 
     protected function isBuilderEnabled()
@@ -22,7 +21,6 @@ class IblockBuilder extends VersionBuilder
     {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport2'));
-
         $this->addVersionFields();
     }
 
@@ -174,6 +172,4 @@ class IblockBuilder extends VersionBuilder
             ]
         );
     }
-
-
 }

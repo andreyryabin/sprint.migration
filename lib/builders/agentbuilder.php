@@ -17,7 +17,6 @@ class AgentBuilder extends VersionBuilder
     {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_AgentExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_AgentExport2'));
-
         $this->addVersionFields();
     }
 

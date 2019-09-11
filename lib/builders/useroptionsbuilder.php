@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Builders;
 
+use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -17,11 +18,12 @@ class UserOptionsBuilder extends VersionBuilder
     {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_UserOptionsExport_Title'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_UserOptionsExport_Desc'));
-
         $this->addVersionFields();
     }
 
-
+    /**
+     * @throws RebuildException
+     */
     protected function execute()
     {
         $helper = $this->getHelperManager();

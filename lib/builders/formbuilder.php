@@ -2,7 +2,9 @@
 
 namespace Sprint\Migration\Builders;
 
+use Bitrix\Main\Db\SqlQueryException;
 use Sprint\Migration\Exceptions\ExchangeException;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -18,13 +20,14 @@ class FormBuilder extends VersionBuilder
     {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_FormExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_FormExport2'));
-
         $this->addVersionFields();
     }
 
     /**
      * @throws ExchangeException
      * @throws RebuildException
+     * @throws SqlQueryException
+     * @throws HelperException
      */
     protected function execute()
     {
@@ -92,7 +95,6 @@ class FormBuilder extends VersionBuilder
             $formExport = true;
         }
 
-
         $statuses = [];
         if (in_array('statuses', $what)) {
             $statuses = $helper->Form()->getFormStatuses($formId);
@@ -104,7 +106,6 @@ class FormBuilder extends VersionBuilder
                 $statuses[$index] = $status;
             }
         }
-
 
         $fields = [];
         if (in_array('fields', $what)) {
