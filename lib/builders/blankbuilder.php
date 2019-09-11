@@ -17,7 +17,6 @@ class BlankBuilder extends VersionBuilder
     {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Version1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_Version2'));
-
         $this->addVersionFields();
     }
 

@@ -87,6 +87,5 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         }
 
         return $structure;
-
     }
 }

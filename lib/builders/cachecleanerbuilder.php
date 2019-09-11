@@ -14,12 +14,10 @@ class CacheCleanerBuilder extends AbstractBuilder
         return true;
     }
 
-
     protected function initialize()
     {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_CacheCleaner1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_CacheCleaner2'));
-
     }
 
     protected function execute()
@@ -29,7 +27,5 @@ class CacheCleanerBuilder extends AbstractBuilder
         } else {
             $this->outError('Error');
         }
-
-
     }
 }

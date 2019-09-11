@@ -18,7 +18,6 @@ class EventBuilder extends VersionBuilder
     {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_EventExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_EventExport2'));
-
         $this->addVersionFields();
     }
 

@@ -86,7 +86,7 @@ class IblockElementsBuilder extends VersionBuilder
             ->setIblockId($iblockId)
             ->setLimit(20)
             ->setExchangeFile(
-                $this->getVersionResource($versionName, 'iblock_elements.xml')
+                $this->getVersionResourceFile($versionName, 'iblock_elements.xml')
             )->execute();
 
         $this->createVersionFile(

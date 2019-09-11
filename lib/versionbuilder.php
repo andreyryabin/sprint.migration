@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration;
 
-class VersionBuilder extends AbstractBuilder
+abstract class VersionBuilder extends AbstractBuilder
 {
 
     protected function addVersionFields()
@@ -59,7 +59,7 @@ class VersionBuilder extends AbstractBuilder
         return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '.php';
     }
 
-    protected function getVersionResource($versionName, $name)
+    protected function getVersionResourceFile($versionName, $name)
     {
         return $this->getVersionConfig()->getVal('migration_dir') . '/' . $versionName . '_files/' . $name;
     }

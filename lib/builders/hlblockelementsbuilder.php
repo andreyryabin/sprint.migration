@@ -7,7 +7,6 @@ use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\HlblockElementsExport;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -27,7 +26,6 @@ class HlblockElementsBuilder extends VersionBuilder
     {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockElementsExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockElementsExport2'));
-
         $this->addVersionFields();
     }
 
@@ -39,7 +37,6 @@ class HlblockElementsBuilder extends VersionBuilder
      */
     protected function execute()
     {
-
         $this->addField('hlblock_id', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockElementsExport_HlblockId'),
             'placeholder' => '',
@@ -58,14 +55,15 @@ class HlblockElementsBuilder extends VersionBuilder
 
         $versionName = $this->params['~version_name'];
 
-        (new HlblockElementsExport($this))
+        $this->getExchangeManager()
+            ->HlblockElementsExport()
             ->setLimit(20)
             ->setExportFields(
                 $this->getHlblockFieldsCodes($hlblockId)
             )
             ->setHlblockId($hlblockId)
             ->setExchangeFile(
-                $this->getVersionResource($versionName, 'hlblock_elements.xml')
+                $this->getVersionResourceFile($versionName, 'hlblock_elements.xml')
             )
             ->execute();
 
@@ -78,6 +76,4 @@ class HlblockElementsBuilder extends VersionBuilder
 
         unset($this->params['~version_name']);
     }
-
-
 }

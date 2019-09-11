@@ -30,6 +30,7 @@ abstract class AbstractExchange
     }
 
     protected $exchangeEntity;
+
     protected $exchangeHelper;
 
     protected $file;

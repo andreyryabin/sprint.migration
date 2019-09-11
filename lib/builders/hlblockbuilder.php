@@ -10,7 +10,6 @@ use Sprint\Migration\VersionBuilder;
 
 class HlblockBuilder extends VersionBuilder
 {
-
     use HlblocksStructureTrait;
 
     protected function isBuilderEnabled()
@@ -22,7 +21,6 @@ class HlblockBuilder extends VersionBuilder
     {
         $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport1'));
         $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport2'));
-
         $this->addVersionFields();
     }
 

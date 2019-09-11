@@ -65,14 +65,10 @@ abstract class ExchangeEntity
     {
         try {
             $classInfo = new ReflectionClass($this);
-            $file = dirname($classInfo->getFileName()) . '/' . $classInfo->getShortName() . '_files/' . $name;
-            $file = is_file($file) ? $file : '';
+            return dirname($classInfo->getFileName()) . '/' . $classInfo->getShortName() . '_files/' . $name;
         } catch (ReflectionException $e) {
-            $file = '';
+            $this->exitWithMessage($e->getMessage());
         }
-
-        $this->exitIfEmpty($file, 'resource not found');
-        return $file;
     }
 
     /**

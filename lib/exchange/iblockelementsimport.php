@@ -38,6 +38,14 @@ class IblockElementsImport extends AbstractExchange
         $params = $this->exchangeEntity->getRestartParams();
 
         if (!isset($params['total'])) {
+            $this->exchangeEntity->exitIf(
+                !is_callable($this->converter), 'converter not callable'
+            );
+
+            $this->exchangeEntity->exitIf(
+                !is_file($this->file), 'exchange file not found'
+            );
+
             $reader = new XMLReader();
             $reader->open($this->getExchangeFile());
             $params['total'] = 0;
@@ -57,16 +65,12 @@ class IblockElementsImport extends AbstractExchange
             }
 
             $reader->close();
+
+            $this->exchangeEntity->exitIfEmpty(
+                $params['iblock_id'], 'iblockId not found'
+            );
+
         }
-
-
-        $this->exchangeEntity->exitIf(
-            !is_callable($this->converter), 'converter not callable'
-        );
-
-        $this->exchangeEntity->exitIfEmpty(
-            $params['iblock_id'], 'iblockId not found'
-        );
 
         $reader = new XMLReader();
         $reader->open($this->getExchangeFile());
