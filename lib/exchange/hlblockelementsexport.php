@@ -78,9 +78,9 @@ class HlblockElementsExport extends AbstractExchange
                 //item
                 $writer->endElement();
                 $this->appendToExchangeFile($writer->flush());
+                $params['offset']++;
             }
 
-            $params['offset'] = $params['offset'] + $this->getLimit();
             $this->outProgress('', $params['offset'], $params['total']);
 
             $this->exchangeEntity->setRestartParams($params);

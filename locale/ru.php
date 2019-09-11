@@ -170,8 +170,8 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_BUILDER_Cleaner_error" => "Ошибка удаления конфигурации",
     "SPRINT_MIGRATION_BUILDER_Cleaner_success" => "Конфигурация удалена",
 
-    "SPRINT_MIGRATION_BUILDER_SchemaImport" => "Импорт схемы",
-    "SPRINT_MIGRATION_BUILDER_SchemaExport" => "Экспорт схемы",
+    "SPRINT_MIGRATION_BUILDER_SchemaImport" => "Установка схемы",
+    "SPRINT_MIGRATION_BUILDER_SchemaExport" => "Создание схемы",
 
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Админка миграций",
     "SPRINT_MIGRATION_GOTO_OPTIONS" => "Настройки модуля",
@@ -203,7 +203,7 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_RIGHT_W" => "Доступ разрешен",
 
     "SPRINT_MIGRATION_MODIFIED_VERSION" => "Код миграции был изменен после установки",
-    "SPRINT_MIGRATION_MODIFIED_SCHEMA" => "Содержимое схемы было изменено после импорта",
+    "SPRINT_MIGRATION_MODIFIED_SCHEMA" => "Содержимое схемы было изменено после установки",
     "SPRINT_MIGRATION_MODIFIED_LABEL" => "M",
     "SPRINT_MIGRATION_TAG" => "Миграция отмечена тегом",
     "SPRINT_MIGRATION_ADDTAG" => "Поставить тег",
@@ -212,7 +212,7 @@ require_once __DIR__ . '/../lib/locale.php';
 
     "SPRINT_MIGRATION_MENU_SCHEMA" => "Cхемы данных",
     "SPRINT_MIGRATION_SCHEMA_DIFF" => "Проверить изменения",
-    "SPRINT_MIGRATION_SCHEMA_IMPORT" => "Импорт",
-    "SPRINT_MIGRATION_SCHEMA_EXPORT" => "Экспорт",
+    "SPRINT_MIGRATION_SCHEMA_IMPORT" => "Установить схему",
+    "SPRINT_MIGRATION_SCHEMA_EXPORT" => "Создать схему",
 
 ]);

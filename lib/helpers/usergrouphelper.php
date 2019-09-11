@@ -39,7 +39,7 @@ class UserGroupHelper extends Helper
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $code
      * @throws HelperException
-     * @return mixed
+     * @return array|void
      */
     public function exportGroup($code)
     {
@@ -208,7 +208,7 @@ class UserGroupHelper extends Helper
      * @param $code
      * @param array $fields , , обязательные параметры - название групы
      * @throws HelperException
-     * @return int
+     * @return int|void
      */
     public function addGroup($code, $fields = [])
     {
@@ -230,7 +230,7 @@ class UserGroupHelper extends Helper
      * @param $groupId
      * @param array $fields
      * @throws HelperException
-     * @return int
+     * @return int|void
      */
     public function updateGroup($groupId, $fields = [])
     {

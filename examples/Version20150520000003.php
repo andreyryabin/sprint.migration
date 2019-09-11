@@ -21,8 +21,6 @@ class Version20150520000003 extends Version
     }
 
     /**
-     * @throws Exceptions\HelperException
-     * @throws Exceptions\RestartException
      * @return bool|void
      */
     public function down()

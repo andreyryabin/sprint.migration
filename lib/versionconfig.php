@@ -343,12 +343,12 @@ class VersionConfig
     {
         return [
             'BlankBuilder' => BlankBuilder::class,
+            'UserGroupBuilder' => UserGroupBuilder::class,
             'IblockBuilder' => IblockBuilder::class,
+            'HlblockBuilder' => HlblockBuilder::class,
             'IblockElementsBuilder' => IblockElementsBuilder::class,
             'HlblockElementsBuilder' => HlblockElementsBuilder::class,
-            'HlblockBuilder' => HlblockBuilder::class,
             'UserTypeEntitiesBuilder' => UserTypeEntitiesBuilder::class,
-            'UserGroupBuilder' => UserGroupBuilder::class,
             'AgentBuilder' => AgentBuilder::class,
             'OptionBuilder' => OptionBuilder::class,
             'FormBuilder' => FormBuilder::class,
