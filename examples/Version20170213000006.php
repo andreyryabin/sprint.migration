@@ -2,9 +2,6 @@
 
 namespace Sprint\Migration;
 
-use Bitrix\Main\ArgumentException;
-use Bitrix\Main\SystemException;
-
 class Version20170213000006 extends Version
 {
 
@@ -12,8 +9,6 @@ class Version20170213000006 extends Version
 
     /**
      * @throws Exceptions\HelperException
-     * @throws ArgumentException
-     * @throws SystemException
      * @return bool|void
      */
     public function up()
@@ -37,9 +32,7 @@ class Version20170213000006 extends Version
     }
 
     /**
-     * @throws ArgumentException
      * @throws Exceptions\HelperException
-     * @throws SystemException
      * @return bool|void
      */
     public function down()

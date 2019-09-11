@@ -175,8 +175,6 @@ jQuery(document).ready(function ($) {
         if (elemTop <= docViewTop) {
             $(document).scrollTop(elemTop - 25);
         }
-
-        $('[data-builder]').find('.adm-info-message-wrap,.sp-out').remove();
     });
 
 

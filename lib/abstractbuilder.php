@@ -264,6 +264,11 @@ abstract class AbstractBuilder extends ExchangeEntity
         return $this->info['description'];
     }
 
+    public function hasDescription()
+    {
+        return !empty($this->info['description']);
+    }
+
     public function getGroup()
     {
         return $this->info['group'];

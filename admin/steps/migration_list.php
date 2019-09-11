@@ -83,11 +83,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                         <? if ($aItem['tag']): ?>
                             <span class="sp-tag" title="<?= GetMessage('SPRINT_MIGRATION_TAG') ?>"><?= $aItem['tag'] ?></span>
                         <? endif; ?>
-
                         <? if (!empty($aItem['description'])): ?>
-                            <?= Out::prepareToHtml($aItem['description'], [
-                                    'make_links' => true
-                            ]) ?>
+                            <? Out::out($aItem['description']) ?>
                         <? endif ?>
                     </td>
                 </tr>

@@ -197,12 +197,12 @@ class IblockElementsImport extends AbstractExchange
         }
     }
 
-    protected function convertFieldF($field)
+    protected function convertFieldS($field)
     {
         return $field['value'][0]['value'];
     }
 
-    protected function convertFieldS($field)
+    protected function convertFieldF($field)
     {
         return $this->makeFile($field['value'][0]);
     }

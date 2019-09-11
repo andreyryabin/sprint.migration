@@ -1,9 +1,9 @@
 <?php
 /** @var $builder AbstractBuilder */
 
-use Sprint\Migration\AbstractBuilder; ?>
+use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Out; ?>
 <form method="post">
-    <?= $builder->getDescription() ?>
     <? $fields = $builder->getFields() ?>
     <? foreach ($fields as $fieldCode => $fieldItem): ?>
         <? if ($fieldItem['type'] == 'hidden'): ?>
@@ -106,6 +106,11 @@ use Sprint\Migration\AbstractBuilder; ?>
             </div>
         <? endif ?>
     <? endforeach ?>
+    <? if ($builder->hasDescription()): ?>
+        <div class="sp-field sp-info-message">
+            <? Out::out($builder->getDescription()) ?>
+        </div>
+    <? endif; ?>
     <div class="sp-field">
         <input type="submit" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"/>
     </div>

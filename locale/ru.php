@@ -88,6 +88,7 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_BUILDER_TransferAll" => "Все",
     "SPRINT_MIGRATION_BUILDER_TransferNew" => "Новые",
     "SPRINT_MIGRATION_BUILDER_TransferInstalled" => "Установленные",
+    "SPRINT_MIGRATION_BUILDER_TransferUnknown" => "Неизвестные",
     "SPRINT_MIGRATION_BUILDER_TransferSelect" => "Выбрать миграции",
     "SPRINT_MIGRATION_BUILDER_TransferCnt" => "Перенесено миграций: #CNT#",
     "SPRINT_MIGRATION_BUILDER_TransferEmptyDest" => "Укажите конфигурацию для перемещения",
@@ -121,11 +122,11 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockPermissions" => "Доступ к инфоблоку",
 
     'SPRINT_MIGRATION_BUILDER_IblockElementsExport1' => 'Перенести элементы инфоблоков',
-    'SPRINT_MIGRATION_BUILDER_IblockElementsExport2' => '',
+    'SPRINT_MIGRATION_BUILDER_IblockElementsExport2' => "Переносит элементы с полями и свойствами\nПереносит изображения, файлы, списки\nНе переносит категории",
     'SPRINT_MIGRATION_BUILDER_IblockElementsExport_IblockId' => 'Выберите инфоблок',
 
     'SPRINT_MIGRATION_BUILDER_HlblockElementsExport1' => 'Перенести элементы highload-блоков',
-    'SPRINT_MIGRATION_BUILDER_HlblockElementsExport2' => '',
+    'SPRINT_MIGRATION_BUILDER_HlblockElementsExport2' => "Переносит элементы\nПереносит файлы и списки",
     'SPRINT_MIGRATION_BUILDER_HlblockElementsExport_HlblockId' => 'Выберите highload-блок',
 
     "SPRINT_MIGRATION_BUILDER_UserOptionsExport_Title" => "Создать миграцию для пользовательских настроек",
@@ -170,8 +171,8 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_BUILDER_Cleaner_error" => "Ошибка удаления конфигурации",
     "SPRINT_MIGRATION_BUILDER_Cleaner_success" => "Конфигурация удалена",
 
-    "SPRINT_MIGRATION_BUILDER_SchemaImport" => "Импорт схемы",
-    "SPRINT_MIGRATION_BUILDER_SchemaExport" => "Экспорт схемы",
+    "SPRINT_MIGRATION_BUILDER_SchemaImport" => "Установка схемы",
+    "SPRINT_MIGRATION_BUILDER_SchemaExport" => "Создание схемы",
 
     "SPRINT_MIGRATION_GOTO_MIGRATION" => "Админка миграций",
     "SPRINT_MIGRATION_GOTO_OPTIONS" => "Настройки модуля",
@@ -203,7 +204,7 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_RIGHT_W" => "Доступ разрешен",
 
     "SPRINT_MIGRATION_MODIFIED_VERSION" => "Код миграции был изменен после установки",
-    "SPRINT_MIGRATION_MODIFIED_SCHEMA" => "Содержимое схемы было изменено после импорта",
+    "SPRINT_MIGRATION_MODIFIED_SCHEMA" => "Содержимое схемы было изменено после установки",
     "SPRINT_MIGRATION_MODIFIED_LABEL" => "M",
     "SPRINT_MIGRATION_TAG" => "Миграция отмечена тегом",
     "SPRINT_MIGRATION_ADDTAG" => "Поставить тег",
@@ -212,7 +213,7 @@ require_once __DIR__ . '/../lib/locale.php';
 
     "SPRINT_MIGRATION_MENU_SCHEMA" => "Cхемы данных",
     "SPRINT_MIGRATION_SCHEMA_DIFF" => "Проверить изменения",
-    "SPRINT_MIGRATION_SCHEMA_IMPORT" => "Импорт",
-    "SPRINT_MIGRATION_SCHEMA_EXPORT" => "Экспорт",
+    "SPRINT_MIGRATION_SCHEMA_IMPORT" => "Установить схему",
+    "SPRINT_MIGRATION_SCHEMA_EXPORT" => "Создать схему",
 
 ]);

@@ -199,16 +199,31 @@ a.sp-item-unknown:visited {
     border-radius: 10px;
 }
 
-.sp-out-rarr {
-    color: #555;
-}
-
 .sp-optgroup {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .sp-field {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+.sp-info-message {
+    border-radius: 5px;
+    border: 1px solid;
+    border-color: #d3c6a3 #cabc90 #c1b37f #c9bc8f;
+    box-shadow: inset 0 1px 0 #fff;
+    color: #716536;
+    background: #e6e5be;
+    display: inline-block;
+    font-size: 13px;
+    line-height: 18px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+    padding: 15px 30px 15px 18px;
+    position: relative;
+}
+
+#schema_progress_current {
+    margin-top: 10px;
 }
 
 #schema_progress_current,

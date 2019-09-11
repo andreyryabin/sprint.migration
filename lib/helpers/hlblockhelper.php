@@ -200,13 +200,19 @@ class HlblockHelper extends Helper
      */
     public function exportFields($hlblockName)
     {
-        $fields = $this->getFields($hlblockName);
-        $export = [];
-        foreach ($fields as $field) {
-            $export[] = $this->prepareExportHlblockField($field);
+        $entityHelper = new UserTypeEntityHelper();
+        $entityHelper->setMode($this);
+
+        $fields = $entityHelper->exportUserTypeEntities(
+            $this->getEntityId($hlblockName)
+        );
+
+        foreach ($fields as $index => $field) {
+            unset($field['ENTITY_ID']);
+            $fields[$index] = $field;
         }
 
-        return $export;
+        return $fields;
     }
 
     /**
@@ -287,7 +293,7 @@ class HlblockHelper extends Helper
             return $item['ID'];
         }
 
-        $this->throwException(__METHOD__, "hlblock id not found");
+        $this->throwException(__METHOD__, "hlblock not found");
     }
 
     /**
@@ -582,8 +588,8 @@ class HlblockHelper extends Helper
             $hlblock = $this->getHlblock($hlblock);
         }
 
-        if (!empty($hlblock['TABLE_NAME']) && !empty($hlblock['NAME'])) {
-            return $hlblock['TABLE_NAME'] . ':' . $hlblock['NAME'];
+        if (!empty($hlblock['NAME'])) {
+            return $hlblock['NAME'];
         }
 
         return $default;
@@ -601,12 +607,7 @@ class HlblockHelper extends Helper
             return $hlblockId;
         }
 
-        list($tableName, $hlblockName) = explode(':', $hlblockUid);
-        if (!empty($tableName) && !empty($hlblockName)) {
-            $hlblockId = $this->getHlblockId($hlblockName);
-        }
-
-        return $hlblockId;
+        return $this->getHlblockId($hlblockUid);
     }
 
     /**
@@ -649,18 +650,6 @@ class HlblockHelper extends Helper
         }
 
         return $result;
-    }
-
-    protected function prepareExportHlblockField($item)
-    {
-        if (empty($item)) {
-            return $item;
-        }
-
-        unset($item['ID']);
-        unset($item['ENTITY_ID']);
-
-        return $item;
     }
 
     protected function prepareExportHlblock($item)

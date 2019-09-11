@@ -348,14 +348,20 @@ class UserTypeEntityHelper extends Helper
     public function revertEntityId($entityId)
     {
         if (0 === strpos($entityId, 'HLBLOCK_')) {
-            $hlblockName = substr($entityId, 8);
-            $hlhelper = new HlblockHelper();
-            $hlblock = $hlhelper->getHlblock($hlblockName);
-            if (empty($hlblock)) {
-                $this->throwException(__METHOD__, '%s not found', $entityId);
+            $hlblockId = substr($entityId, 8);
+            if (!is_numeric($hlblockId)) {
+                $hlblockId = (new HlblockHelper())->getHlblockIdByUid($hlblockId);
             }
+            return 'HLBLOCK_' . $hlblockId;
+        }
 
-            $entityId = 'HLBLOCK_' . $hlblock['ID'];
+        $matches = [];
+        if (preg_match('/^IBLOCK_(.+)_SECTION$/', $entityId, $matches)) {
+            $iblockId = $matches[1];
+            if (!is_numeric($iblockId)) {
+                $iblockId = (new IblockHelper())->getIblockIdByUid($iblockId);
+            }
+            return 'IBLOCK_' . $iblockId . '_SECTION';
         }
 
         return $entityId;
@@ -371,13 +377,21 @@ class UserTypeEntityHelper extends Helper
     {
         if (0 === strpos($entityId, 'HLBLOCK_')) {
             $hlblockId = substr($entityId, 8);
-            $hlhelper = new HlblockHelper();
-            $hlblock = $hlhelper->getHlblock($hlblockId);
-            if (empty($hlblock)) {
-                $this->throwException(__METHOD__, '%s not found', $entityId);
+            if (is_numeric($hlblockId)) {
+                $hlblockId = (new HlblockHelper())->getHlblockUid($hlblockId);
             }
-            $entityId = 'HLBLOCK_' . $hlblock['NAME'];
+            return 'HLBLOCK_' . $hlblockId;
         }
+
+        $matches = [];
+        if (preg_match('/^IBLOCK_(.+)_SECTION$/', $entityId, $matches)) {
+            $iblockId = $matches[1];
+            if (is_numeric($iblockId)) {
+                $iblockId = (new IblockHelper())->getIblockUid($iblockId);
+            }
+            return 'IBLOCK_' . $iblockId . '_SECTION';
+        }
+
         return $entityId;
     }
 
@@ -453,15 +467,8 @@ class UserTypeEntityHelper extends Helper
             return $entity;
         }
 
-        if ($transformEntityId) {
-            $entity['ENTITY_ID'] = $this->transformEntityId(
-                $entity['ENTITY_ID']
-            );
-        }
-
         if (!empty($entity['ENUM_VALUES']) && is_array($entity['ENUM_VALUES'])) {
             $exportValues = [];
-
             foreach ($entity['ENUM_VALUES'] as $item) {
                 $exportValues[] = [
                     'VALUE' => $item['VALUE'],
@@ -470,8 +477,13 @@ class UserTypeEntityHelper extends Helper
                     'XML_ID' => $item['XML_ID'],
                 ];
             }
-
             $entity['ENUM_VALUES'] = $exportValues;
+        }
+
+        if ($transformEntityId) {
+            $entity['ENTITY_ID'] = $this->transformEntityId(
+                $entity['ENTITY_ID']
+            );
         }
 
         unset($entity['ID']);

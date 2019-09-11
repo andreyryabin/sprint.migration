@@ -56,8 +56,7 @@ class Out
                 "PROGRESS_VALUE" => $val,
             ];
 
-            $m = new CAdminMessage($mess);
-            echo '<div class="sp-progress">' . $m->Show() . '</div>';
+            echo '<div class="sp-progress">' . (new CAdminMessage($mess))->Show() . '</div>';
 
         } elseif (self::canOutAsHtml()) {
             $msg = self::prepareToHtml($msg);
@@ -123,13 +122,11 @@ class Out
         }
 
         if (self::canOutAsAdminMessage()) {
-            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-            CAdminMessage::ShowMessage([
+            echo (new CAdminMessage([
                 "MESSAGE" => self::prepareToHtml($msg),
                 'HTML' => true,
                 'TYPE' => 'ERROR',
-            ]);
-
+            ]))->Show();
         } else {
             self::outWarning($msg);
         }
@@ -143,12 +140,11 @@ class Out
         }
 
         if (self::canOutAsAdminMessage()) {
-            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-            CAdminMessage::ShowMessage([
+            echo (new CAdminMessage([
                 "MESSAGE" => self::prepareToHtml($msg),
                 'HTML' => true,
                 'TYPE' => 'OK',
-            ]);
+            ]))->Show();
         } else {
             self::outNotice($msg);
         }
@@ -209,7 +205,7 @@ class Out
         }
     }
 
-    public static function prepareToConsole($msg, $options = [])
+    protected static function prepareToConsole($msg)
     {
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
@@ -219,7 +215,7 @@ class Out
         return $msg;
     }
 
-    public static function prepareToHtml($msg, $options = [])
+    protected static function prepareToHtml($msg)
     {
         $msg = nl2br($msg);
 
@@ -229,7 +225,7 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
 
-        $msg = self::makeLinks($msg, $options);
+        $msg = self::makeLinks($msg);
 
         $msg = Locale::convertToWin1251IfNeed($msg);
         return $msg;
@@ -391,14 +387,13 @@ class Out
         return $diff;
     }
 
-    protected static function makeLinks($msg, $options = [])
+    protected static function makeLinks($msg)
     {
-        if (isset($options['make_links']) && $options['make_links']) {
-            $reg_exUrl = "/(http|https)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
-            if (preg_match($reg_exUrl, $msg, $url)) {
-                $msg = preg_replace($reg_exUrl, '<a target="_blank" href="' . $url[0] . '">' . $url[0] . '</a>', $msg);
-            }
+        $reg_exUrl = "/(http|https)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
+        if (preg_match($reg_exUrl, $msg, $url)) {
+            $msg = preg_replace($reg_exUrl, '<a target="_blank" href="' . $url[0] . '">' . $url[0] . '</a>', $msg);
         }
+
         return $msg;
     }
 }

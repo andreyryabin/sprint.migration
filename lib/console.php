@@ -221,10 +221,7 @@ class Console
 
         $grid = new ConsoleGrid(-1, '', 1, 'UTF-8');
         foreach ($summary as $k => $v) {
-            $grid->addRow([
-                GetMessage('SPRINT_MIGRATION_META_' . strtoupper($k)) . ':',
-                $v,
-            ]);
+            $grid->addRow([GetMessage('SPRINT_MIGRATION_META_' . strtoupper($k)) . ':', $v,]);
         }
 
         Out::out($grid->build());

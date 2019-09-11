@@ -45,6 +45,10 @@ class TransferBuilder extends AbstractBuilder
                     'value' => 'new',
                 ],
                 [
+                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferUnknown'),
+                    'value' => 'unknown',
+                ],
+                [
                     'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferAll'),
                     'value' => 'all',
                 ],
@@ -81,10 +85,10 @@ class TransferBuilder extends AbstractBuilder
         $vmTo = new VersionManager($configTo);
 
         $status = $this->getFieldValue('transfer_status');
-        if (in_array($status, ['installed', 'new'])) {
-            $filter = ['status' => $status];
-        } else {
+        if (in_array($status, ['all'])) {
             $filter = [];
+        } else {
+            $filter = ['status' => $status];
         }
 
         $versions = $vmFrom->getVersions($filter);
