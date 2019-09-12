@@ -5,6 +5,10 @@
  * @var $description
  * @var $extendUse
  * @var $extendClass
+ *
+ * @var $hlblock
+ * @var $hlblockFields
+ * @var $hlblockPermissions
  */
 
 ?><?php echo "<?php\n" ?>
@@ -25,12 +29,15 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     public function up()
     {
         $helper = $this->getHelperManager();
-<?foreach ($items as $item):?>
-        $helper->Hlblock()->saveHlblock(<?php echo var_export($item['hlblock'], 1) ?>);
-<?php foreach ($item['hlblockEntities'] as $entity): ?>
-        $helper->UserTypeEntity()->saveUserTypeEntity(<?php echo var_export($entity, 1) ?>);
+        $hlblockId = $helper->Hlblock()->saveHlblock(<?php echo var_export($hlblock, 1) ?>);
+<? if (!empty($hlblockPermissions)): ?>
+    $helper->Hlblock()->saveGroupPermissions($hlblockId, <?php echo var_export($hlblockPermissions, 1) ?>);
+<?endif?>
+<? if (!empty($hlblockFields)): ?>
+<?php foreach ($hlblockFields as $field): ?>
+        $helper->Hlblock()->saveField($hlblockId, <?php echo var_export($field, 1) ?>);
 <? endforeach; ?>
-<? endforeach; ?>
+<?endif?>
     }
 
     public function down()

@@ -137,7 +137,7 @@ class IblockBuilder extends VersionBuilder
         }
 
         if (in_array('iblockPermissions', $what)) {
-            $iblockPermissions = $helper->Iblock()->getGroupPermissions($iblockId);
+            $iblockPermissions = $helper->Iblock()->exportGroupPermissions($iblockId);
         }
 
         if (in_array('iblockUserOptions', $what)) {

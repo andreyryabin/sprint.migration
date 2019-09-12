@@ -35,38 +35,29 @@ class HlblockBuilder extends VersionBuilder
         $this->addField('hlblock_id', [
             'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId'),
             'placeholder' => '',
-            'multiple' => 1,
-            'value' => [],
             'width' => 250,
             'select' => $this->getHlblocksStructure(),
         ]);
 
-        $hlblockIds = $this->getFieldValue('hlblock_id');
-        if (!empty($hlblockIds)) {
-            $hlblockIds = is_array($hlblockIds) ? $hlblockIds : [$hlblockIds];
-        } else {
+        $hlblockId = $this->getFieldValue('hlblock_id');
+        if (empty($hlblockId)) {
             $this->rebuildField('hlblock_id');
         }
 
-        $items = [];
-        foreach ($hlblockIds as $hlblockId) {
-            $hlblock = $helper->Hlblock()->getHlblock($hlblockId);
-            if (!empty($hlblock['ID'])) {
-
-                $hlblockEntities = $helper->UserTypeEntity()->exportUserTypeEntities('HLBLOCK_' . $hlblock['ID']);
-                unset($hlblock['ID']);
-
-                $items[] = [
-                    'hlblock' => $hlblock,
-                    'hlblockEntities' => $hlblockEntities,
-                ];
-            }
+        $hlblock = $helper->Hlblock()->exportHlblock($hlblockId);
+        if (empty($hlblockId)) {
+            $this->rebuildField('hlblock_id');
         }
 
+        $hlblockFields = $helper->Hlblock()->exportFields($hlblockId);
+
+        $hlblockPermissions = $helper->Hlblock()->exportGroupPermissions($hlblockId);
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/HlblockExport.php', [
-            'items' => $items,
+            'hlblock' => $hlblock,
+            'hlblockFields' => $hlblockFields,
+            'hlblockPermissions' => $hlblockPermissions,
         ]);
 
     }

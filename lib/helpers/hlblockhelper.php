@@ -2,13 +2,11 @@
 
 namespace Sprint\Migration\Helpers;
 
-use Bitrix\Highloadblock as HL;
+use Bitrix\Highloadblock\HighloadBlockLangTable;
+use Bitrix\Highloadblock\HighloadBlockRightsTable;
 use Bitrix\Highloadblock\HighloadBlockTable;
-use Bitrix\Main\ArgumentException;
-use Bitrix\Main\ObjectPropertyException;
-use Bitrix\Main\ORM\Data\DataManager;
-use Bitrix\Main\ORM\Fields\ExpressionField;
-use Bitrix\Main\SystemException;
+use Bitrix\Main\Entity\DataManager;
+use Bitrix\Main\Entity\ExpressionField;
 use CTask;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
@@ -24,10 +22,7 @@ class HlblockHelper extends Helper
      */
     public function isEnabled()
     {
-        return (
-            $this->checkModules(['highloadblock']) &&
-            class_exists('Bitrix\Highloadblock\HighloadBlockLangTable')
-        );
+        return $this->checkModules(['highloadblock']);
     }
 
     /**
@@ -40,7 +35,7 @@ class HlblockHelper extends Helper
     {
         $result = [];
         try {
-            $dbres = HL\HighloadBlockTable::getList(
+            $dbres = HighloadBlockTable::getList(
                 [
                     'select' => ['*'],
                     'filter' => $filter,
@@ -246,7 +241,7 @@ class HlblockHelper extends Helper
         }
 
         try {
-            $hlblock = HL\HighloadBlockTable::getList(
+            $hlblock = HighloadBlockTable::getList(
                 [
                     'select' => ['*'],
                     'filter' => $filter,
@@ -326,7 +321,7 @@ class HlblockHelper extends Helper
         }
 
         try {
-            $result = HL\HighloadBlockTable::add($fields);
+            $result = HighloadBlockTable::add($fields);
             if ($result->isSuccess()) {
                 $this->replaceHblockLangs($result->getId(), $lang);
                 return $result->getId();
@@ -373,7 +368,7 @@ class HlblockHelper extends Helper
         }
 
         try {
-            $result = HL\HighloadBlockTable::update($hlblockId, $fields);
+            $result = HighloadBlockTable::update($hlblockId, $fields);
 
             if ($result->isSuccess()) {
                 $this->replaceHblockLangs($hlblockId, $lang);
@@ -413,7 +408,7 @@ class HlblockHelper extends Helper
     public function deleteHlblock($hlblockId)
     {
         try {
-            $result = HL\HighloadBlockTable::delete($hlblockId);
+            $result = HighloadBlockTable::delete($hlblockId);
             if ($result->isSuccess()) {
                 return true;
             }
@@ -470,20 +465,49 @@ class HlblockHelper extends Helper
      * возвращает массив вида [$groupId => $letter]
      *
      * @param $hlblockId
-     * @throws ArgumentException
-     * @throws SystemException
-     * @throws ObjectPropertyException
      * @return array
      */
     public function getGroupPermissions($hlblockId)
     {
-        $result = [];
+        $permissions = [];
         $rights = $this->getGroupRights($hlblockId);
         foreach ($rights as $right) {
-            $result[$right['GROUP_ID']] = $right['LETTER'];
+            $permissions[$right['GROUP_ID']] = $right['LETTER'];
+        }
+        return $permissions;
+    }
+
+    /**
+     * @param $hlblockId
+     * @throws HelperException
+     * @return array
+     */
+    public function exportGroupPermissions($hlblockId)
+    {
+        $groupHelper = new UserGroupHelper();
+        $permissions = $this->getGroupPermissions($hlblockId);
+
+        $result = [];
+        foreach ($permissions as $groupId => $letter) {
+            $groupCode = $groupHelper->getGroupCode($groupId);
+            $groupCode = !empty($groupCode) ? $groupCode : $groupId;
+            $result[$groupCode] = $letter;
         }
 
         return $result;
+    }
+
+    public function saveGroupPermissions($hlblockId, $permissions = [])
+    {
+        $groupHelper = new UserGroupHelper();
+
+        $result = [];
+        foreach ($permissions as $groupCode => $letter) {
+            $groupId = is_numeric($groupCode) ? $groupCode : $groupHelper->getGroupId($groupCode);
+            $result[$groupId] = $letter;
+        }
+
+        $this->setGroupPermissions($hlblockId, $result);
     }
 
     /**
@@ -493,30 +517,40 @@ class HlblockHelper extends Helper
      *
      * @param $hlblockId
      * @param array $permissions
-     * @throws Exception
+     * @return bool
      */
     public function setGroupPermissions($hlblockId, $permissions = [])
     {
-        $rights = $this->getGroupRights($hlblockId);
-        foreach ($rights as $right) {
-            HL\HighloadBlockRightsTable::delete($right['ID']);
+        if (!class_exists('\Bitrix\Highloadblock\HighloadBlockRightsTable')) {
+            return false;
         }
 
-        foreach ($permissions as $groupId => $letter) {
-            $taskId = CTask::GetIdByLetter($letter, 'highloadblock');
+        $rights = $this->getGroupRights($hlblockId);
 
-            if (empty($taskId)) {
-                continue;
+        try {
+
+            foreach ($rights as $right) {
+                HighloadBlockRightsTable::delete($right['ID']);
             }
 
-            HL\HighloadBlockRightsTable::add(
-                [
-                    'HL_ID' => $hlblockId,
-                    'TASK_ID' => $taskId,
-                    'ACCESS_CODE' => 'G' . $groupId,
-                ]
-            );
+            foreach ($permissions as $groupId => $letter) {
+                $taskId = CTask::GetIdByLetter($letter, 'highloadblock');
+
+                if (!empty($taskId)) {
+                    HighloadBlockRightsTable::add(
+                        [
+                            'HL_ID' => $hlblockId,
+                            'TASK_ID' => $taskId,
+                            'ACCESS_CODE' => 'G' . $groupId,
+                        ]
+                    );
+                }
+            }
+        } catch (Exception $e) {
+            return false;
         }
+
+        return true;
     }
 
     /**
@@ -612,23 +646,29 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockId
-     * @throws ArgumentException
-     * @throws SystemException
-     * @throws ObjectPropertyException
      * @return array
      */
     protected function getGroupRights($hlblockId)
     {
-        $dbres = HL\HighloadBlockRightsTable::getList(
-            [
-                'filter' => [
-                    'HL_ID' => $hlblockId,
-                ],
-            ]
-        );
         $result = [];
+        if (!class_exists('\Bitrix\Highloadblock\HighloadBlockRightsTable')) {
+            return $result;
+        }
 
-        while ($item = $dbres->fetch()) {
+        try {
+            $items = HighloadBlockRightsTable::getList(
+                [
+                    'filter' => [
+                        'HL_ID' => $hlblockId,
+                    ],
+                ]
+            )->fetchAll();
+
+        } catch (Exception $e) {
+            $items = [];
+        }
+
+        foreach ($items as $item) {
             if (strpos($item['ACCESS_CODE'], 'G') !== 0) {
                 continue;
             }
@@ -671,8 +711,12 @@ class HlblockHelper extends Helper
     {
         $result = [];
 
+        if (!class_exists('\Bitrix\Highloadblock\HighloadBlockLangTable')) {
+            return $result;
+        }
+
         try {
-            $dbres = HL\HighloadBlockLangTable::getList([
+            $dbres = HighloadBlockLangTable::getList([
                 'filter' => ['ID' => $hlblockId],
             ]);
 
@@ -690,22 +734,27 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockId
-     * @throws ArgumentException
-     * @throws SystemException
-     * @throws ObjectPropertyException
      * @throws Exception
      * @return int
      */
     protected function deleteHblockLangs($hlblockId)
     {
         $del = 0;
-        $res = HL\HighloadBlockLangTable::getList([
-            'filter' => ['ID' => $hlblockId],
-        ]);
 
+        if (!class_exists('\Bitrix\Highloadblock\HighloadBlockLangTable')) {
+            return $del;
+        }
 
-        while ($row = $res->fetch()) {
-            HL\HighloadBlockLangTable::delete($row['ID']);
+        try {
+            $items = HighloadBlockLangTable::getList([
+                'filter' => ['ID' => $hlblockId],
+            ])->fetchAll();
+        } catch (Exception $e) {
+            $items = [];
+        }
+
+        foreach ($items as $item) {
+            HighloadBlockLangTable::delete($item['ID']);
             $del++;
         }
 
@@ -722,9 +771,13 @@ class HlblockHelper extends Helper
     {
         $add = 0;
 
+        if (!class_exists('\Bitrix\Highloadblock\HighloadBlockLangTable')) {
+            return $add;
+        }
+
         foreach ($lang as $lid => $item) {
             if (!empty($item['NAME'])) {
-                HL\HighloadBlockLangTable::add([
+                HighloadBlockLangTable::add([
                     'ID' => $hlblockId,
                     'LID' => $lid,
                     'NAME' => $item['NAME'],
@@ -740,9 +793,6 @@ class HlblockHelper extends Helper
     /**
      * @param $hlblockId
      * @param array $lang
-     * @throws ArgumentException
-     * @throws SystemException
-     * @throws ObjectPropertyException
      * @throws Exception
      */
     protected function replaceHblockLangs($hlblockId, $lang = [])

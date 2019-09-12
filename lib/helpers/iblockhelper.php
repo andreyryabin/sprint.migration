@@ -1453,14 +1453,24 @@ class IblockHelper extends Helper
      * возвращает массив вида [$groupCode => $letter]
      *
      * @param $iblockId
-     * @throws HelperException
      * @return array
      */
     public function getGroupPermissions($iblockId)
     {
-        $result = [];
+        return CIBlock::GetGroupPermissions($iblockId);
+    }
+
+    /**
+     * @param $iblockId
+     * @throws HelperException
+     * @return array
+     */
+    public function exportGroupPermissions($iblockId)
+    {
         $groupHelper = new UserGroupHelper();
-        $permissions = CIBlock::GetGroupPermissions($iblockId);
+        $permissions = $this->getGroupPermissions($iblockId);
+
+        $result = [];
         foreach ($permissions as $groupId => $letter) {
             $groupCode = $groupHelper->getGroupCode($groupId);
             $groupCode = !empty($groupCode) ? $groupCode : $groupId;
@@ -1470,6 +1480,19 @@ class IblockHelper extends Helper
         return $result;
     }
 
+    public function saveGroupPermissions($iblockId, $permissions = [])
+    {
+        $groupHelper = new UserGroupHelper();
+
+        $result = [];
+        foreach ($permissions as $groupCode => $letter) {
+            $groupId = is_numeric($groupCode) ? $groupCode : $groupHelper->getGroupId($groupCode);
+            $result[$groupId] = $letter;
+        }
+
+        $this->setGroupPermissions($iblockId, $result);
+    }
+
     /**
      * Устанавливает права доступа к инфоблоку для групп
      * предыдущие права сбрасываются
@@ -1477,18 +1500,10 @@ class IblockHelper extends Helper
      *
      * @param $iblockId
      * @param array $permissions
-     * @throws HelperException
      */
     public function setGroupPermissions($iblockId, $permissions = [])
     {
-        $result = [];
-        $groupHelper = new UserGroupHelper();
-        foreach ($permissions as $groupCode => $letter) {
-            $groupId = is_numeric($groupCode) ? $groupCode : $groupHelper->getGroupId($groupCode);
-            $result[$groupId] = $letter;
-        }
-
-        CIBlock::SetPermission($iblockId, $result);
+        CIBlock::SetPermission($iblockId, $permissions);
     }
 
     /**
