@@ -42,8 +42,7 @@ class HlblockHelper extends Helper
                 ]
             );
             while ($hlblock = $dbres->fetch()) {
-                $hlblock['LANG'] = $this->getHblockLangs($hlblock['ID']);
-                $result[] = $hlblock;
+                $result[] = $this->prepareHlblock($hlblock);
             }
         } catch (Exception $e) {
             $this->throwException(__METHOD__, $e->getMessage());
@@ -248,10 +247,7 @@ class HlblockHelper extends Helper
                 ]
             )->fetch();
 
-            if ($hlblock) {
-                $hlblock['LANG'] = $this->getHblockLangs($hlblock['ID']);
-                return $hlblock;
-            }
+            return $this->prepareHlblock($hlblock);
 
         } catch (Exception $e) {
             $this->throwException(__METHOD__, $e->getMessage());
@@ -642,6 +638,24 @@ class HlblockHelper extends Helper
         }
 
         return $this->getHlblockId($hlblockUid);
+    }
+
+    /**
+     * @param $item
+     * @return mixed
+     */
+    protected function prepareHlblock($item)
+    {
+        if (empty($item['ID'])) {
+            return $item;
+        }
+
+        $langs = $this->getHblockLangs($item['ID']);
+        if (!empty($langs)) {
+            $item['LANG'] = $langs;
+        }
+
+        return $item;
     }
 
     /**
