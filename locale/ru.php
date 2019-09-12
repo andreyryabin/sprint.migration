@@ -122,11 +122,11 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockPermissions" => "Доступ к инфоблоку",
 
     'SPRINT_MIGRATION_BUILDER_IblockElementsExport1' => 'Перенести элементы инфоблоков',
-    'SPRINT_MIGRATION_BUILDER_IblockElementsExport2' => "Переносит элементы с полями и свойствами\nПереносит изображения, файлы, списки\nНе переносит категории",
+    'SPRINT_MIGRATION_BUILDER_IblockElementsExport2' => "Переносит элементы с полями и свойствами\nПереносит изображения, файлы и списки\nНе переносит категории",
     'SPRINT_MIGRATION_BUILDER_IblockElementsExport_IblockId' => 'Выберите инфоблок',
 
     'SPRINT_MIGRATION_BUILDER_HlblockElementsExport1' => 'Перенести элементы highload-блоков',
-    'SPRINT_MIGRATION_BUILDER_HlblockElementsExport2' => "Переносит элементы\nПереносит файлы и списки",
+    'SPRINT_MIGRATION_BUILDER_HlblockElementsExport2' => "Переносит элементы\nПереносит изображения, файлы и списки",
     'SPRINT_MIGRATION_BUILDER_HlblockElementsExport_HlblockId' => 'Выберите highload-блок',
 
     "SPRINT_MIGRATION_BUILDER_UserOptionsExport_Title" => "Создать миграцию для пользовательских настроек",
