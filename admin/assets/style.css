@@ -226,6 +226,10 @@ a.sp-item-unknown:visited {
     margin-top: 10px;
 }
 
+#schema_progress_current {
+    margin-top: 10px;
+}
+
 #schema_progress_current,
 #schema_progress_full {
     display: none;
