@@ -250,3 +250,11 @@ a.sp-item-unknown:visited {
     background: #9d9;
     width: 0;
 }
+
+#bx-admin-prefix #migration-container .adm-info-message {
+    margin: 5px 0 5px 0;
+}
+
+#bx-admin-prefix #migration-container .sp-progress .adm-info-message-buttons {
+    display: none;
+}
