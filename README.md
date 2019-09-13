@@ -1,7 +1,6 @@
+# Миграции для разработчиков (1С-Битрикс) #
 [![Latest Stable Version](https://poser.pugx.org/andreyryabin/sprint.migration/v/stable.svg)](https://packagist.org/packages/andreyryabin/sprint.migration/)
 [![Total Downloads](https://img.shields.io/packagist/dt/andreyryabin/sprint.migration.svg?style=flat)](https://packagist.org/packages/andreyryabin/sprint.migration)
-
-# Миграции для разработчиков (1С-Битрикс) #
 
 Помогает синхронизировать изменения между нескольким копиями базы данных
 
