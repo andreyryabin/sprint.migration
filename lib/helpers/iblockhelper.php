@@ -1635,6 +1635,9 @@ class IblockHelper extends Helper
             return $item;
         }
         $item['LID'] = $this->getIblockSites($item['ID']);
+
+        $messages = CIBlock::GetMessages($item['ID']);
+        $item = array_merge($item, $messages);
         return $item;
     }
 
