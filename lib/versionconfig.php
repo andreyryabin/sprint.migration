@@ -46,6 +46,11 @@ class VersionConfig
         'console_user',
     ];
 
+    /**
+     * VersionConfig constructor.
+     * @param string $configName
+     * @throws \Exception
+     */
     public function __construct($configName = '')
     {
         $this->configList = $this->searchConfigs();
@@ -93,6 +98,10 @@ class VersionConfig
         return $this->configCurrent['name'];
     }
 
+    /**
+     * @throws \Exception
+     * @return array
+     */
     protected function searchConfigs()
     {
         $result = [];
@@ -137,6 +146,13 @@ class VersionConfig
         return false;
     }
 
+    /**
+     * @param $configName
+     * @param array $configValues
+     * @param bool $file
+     * @throws \Exception
+     * @return array
+     */
     protected function prepare($configName, $configValues = [], $file = false)
     {
         $configValues = $this->prepareValues($configValues);
@@ -160,6 +176,11 @@ class VersionConfig
         ];
     }
 
+    /**
+     * @param array $values
+     * @throws \Exception
+     * @return array
+     */
     protected function prepareValues($values = [])
     {
         if (empty($values['migration_extend_class'])) {

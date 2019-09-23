@@ -256,6 +256,10 @@ class SchemaManager extends ExchangeEntity
         return [];
     }
 
+    /**
+     * @param AbstractSchema $schema
+     * @throws \Exception
+     */
     protected function saveQueue(AbstractSchema $schema)
     {
         $file = $this->getQueueFile($schema->getName());

@@ -64,11 +64,21 @@ class Module
         return $dir;
     }
 
+    /**
+     * @param $dir
+     * @throws Exception
+     * @return mixed
+     */
     public static function createDir($dir)
     {
         if (!is_dir($dir)) {
             mkdir($dir, BX_DIR_PERMISSIONS, true);
         }
+
+        if (!is_dir($dir)) {
+            Throw new Exception("Can't create directory $dir");
+        }
+
         return $dir;
     }
 

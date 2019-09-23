@@ -136,6 +136,11 @@ abstract class AbstractExchange
         }
     }
 
+    /**
+     * @param XMLWriter $writer
+     * @param $fileId
+     * @throws \Exception
+     */
     protected function writeSingleFile(XMLWriter $writer, $fileId)
     {
         $file = CFile::GetFileArray($fileId);
@@ -243,6 +248,9 @@ abstract class AbstractExchange
         return dirname($this->file);
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function createExchangeDir()
     {
         Module::createDir($this->getExchangeDir());

@@ -123,6 +123,11 @@ abstract class AbstractSchema extends ExchangeEntity
         return ($relative) ? Module::getRelativeDir($file) : $file;
     }
 
+    /**
+     * @param $name
+     * @param $data
+     * @throws Exception
+     */
     protected function saveSchema($name, $data)
     {
         $file = $this->getSchemaFile($name);
