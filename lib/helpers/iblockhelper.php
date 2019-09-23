@@ -1594,13 +1594,13 @@ class IblockHelper extends Helper
      */
     public function getIblockUid($iblock, $default = '')
     {
-        //на вход уже пришел uid
-        if (false !== strpos($iblock, ':')) {
-            return $iblock;
-        }
-
-        //на вход пришел id или код инфоблока
         if (!is_array($iblock)) {
+            //на вход уже пришел uid
+            if (false !== strpos($iblock, ':')) {
+                return $iblock;
+            }
+
+            //на вход пришел id или код инфоблока
             $iblock = $this->getIblock($iblock);
         }
 
