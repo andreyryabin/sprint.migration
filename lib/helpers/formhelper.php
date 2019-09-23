@@ -215,6 +215,15 @@ class FormHelper extends Helper
                     break;
                 }
             }
+            
+            //Зададим доступы к статусу для создателя результата
+            //Сделано по аналогии с тем, как  у самого Битрикс при создании новой веб-формы в упрощенном режиме
+            //см. \bitrix\modules\form\admin\form_edit.php#295
+            $status['arPERMISSION_VIEW']   = $status['arPERMISSION_VIEW'] ? $status['arPERMISSION_VIEW'] : [0];
+            $status['arPERMISSION_MOVE']   = $status['arPERMISSION_MOVE'] ? $status['arPERMISSION_MOVE'] : [0];
+            $status['arPERMISSION_EDIT']   = $status['arPERMISSION_EDIT'] ? $status['arPERMISSION_EDIT'] : [0];
+            $status['arPERMISSION_DELETE'] = $status['arPERMISSION_DELETE'] ? $status['arPERMISSION_DELETE'] : [0];
+
             /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             $statusId = CFormStatus::Set($status, $statusId, 'N');
             if (empty($statusId)) {
