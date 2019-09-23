@@ -1713,7 +1713,9 @@ class IblockHelper extends Helper
         }
 
         if (!empty($prop['LINK_IBLOCK_ID'])) {
-            $prop['LINK_IBLOCK_ID'] = $this->getIblockUid($prop['LINK_IBLOCK_ID']);
+            $isAlreadyInExportFormat = (false !== strpos($prop['LINK_IBLOCK_ID'], ':'));
+
+            $prop['LINK_IBLOCK_ID'] = $isAlreadyInExportFormat ? $prop['LINK_IBLOCK_ID'] : $this->getIblockUid($prop['LINK_IBLOCK_ID']);
         }
 
         unset($prop['ID']);
