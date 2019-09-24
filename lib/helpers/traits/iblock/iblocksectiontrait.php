@@ -12,7 +12,7 @@ trait IblockSectionTrait
      * Получает секцию инфоблока
      * @param $iblockId
      * @param $code string|array - код или фильтр
-     * @return array
+     * @return array|false
      */
     public function getSection($iblockId, $code)
     {
@@ -21,18 +21,8 @@ trait IblockSectionTrait
             '=CODE' => $code,
         ];
 
-        $filter['IBLOCK_ID'] = $iblockId;
-        $filter['CHECK_PERMISSIONS'] = 'N';
-
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        return CIBlockSection::GetList([
-            'ID' => 'ASC',
-        ], $filter, false, [
-            'ID',
-            'IBLOCK_ID',
-            'NAME',
-            'CODE',
-        ])->Fetch();
+        $sections = $this->getSections($iblockId, $filter);
+        return (isset($sections[0])) ? $sections[0] : false;
     }
 
     /**
@@ -63,16 +53,23 @@ trait IblockSectionTrait
             'SORT' => 'ASC',
         ], $filter, false, [
             'ID',
-            'IBLOCK_ID',
             'NAME',
             'CODE',
+            'IBLOCK_SECTION_ID',
+            'SORT',
+            'ACTIVE',
+            'XML_ID',
+            'PICTURE',
+            'DESCRIPTION',
+            'DESCRIPTION_TYPE',
+            'LEFT_MARGIN',
+            'RIGHT_MARGIN',
+            'DEPTH_LEVEL',
+            'DETAIL_PICTURE',
+            'UF_*',
         ]);
 
-        $list = [];
-        while ($item = $dbres->Fetch()) {
-            $list[] = $item;
-        }
-        return $list;
+        return $this->fetchAll($dbres);
     }
 
     /**
@@ -126,44 +123,6 @@ trait IblockSectionTrait
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
-    }
-
-    /**
-     * @param $iblockId
-     * @param $tree
-     * @param bool $parentId
-     * @throws HelperException
-     */
-    public function addSectionsFromTree($iblockId, $tree, $parentId = false)
-    {
-        foreach ($tree as $item) {
-            if (empty($item['NAME'])) {
-                $this->throwException(__METHOD__, 'Section name not found');
-            }
-
-            $childs = [];
-            if (isset($item['CHILDS'])) {
-                $childs = is_array($item['CHILDS']) ? $item['CHILDS'] : [];
-                unset($item['CHILDS']);
-            }
-
-            $item['IBLOCK_SECTION_ID'] = $parentId;
-
-            $sectionId = $this->getSectionId(
-                $iblockId, [
-                    '=NAME' => $item['NAME'],
-                    'SECTION_ID' => $parentId,
-                ]
-            );
-
-            if (empty($sectionId)) {
-                $sectionId = $this->addSection($iblockId, $item);
-            }
-
-            if (!empty($childs)) {
-                $this->addSectionsFromTree($iblockId, $childs, $sectionId);
-            }
-        }
     }
 
     /**
@@ -237,6 +196,132 @@ trait IblockSectionTrait
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
+    }
+
+    /**
+     * Возвращает ID категории по пути из названий категорий
+     *
+     * Пример:
+     * ищем Категория3 которая находится по пути Категория1/Категория2/Категория3
+     * то $path = ['Категория1','Категория2','Категория3']
+     *
+     * @param $iblockId
+     * @param array $path
+     * @return int|mixed
+     */
+    public function getSectionIdByNamePath($iblockId, $path = [])
+    {
+        $sectionId = 0;
+        foreach ($path as $name) {
+            $sectionId = $this->getSectionId($iblockId, [
+                '=NAME' => $name,
+                'SECTION_ID' => $sectionId,
+            ]);
+        }
+        return $sectionId;
+    }
+
+    /**
+     * Возвращает путь из названий категорий до заданной
+     *
+     * @param $iblockId
+     * @param $sectionId
+     * @return array
+     */
+    public function getSectionNamePathById($iblockId, $sectionId)
+    {
+        $sectionId = intval($sectionId);
+        if ($sectionId > 0) {
+            $items = CIBlockSection::GetNavChain($iblockId, $sectionId, ['ID', 'NAME'], true);
+            return array_column($items, 'NAME');
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * @param $iblockId
+     * @param $tree
+     * @param bool $parentId
+     * @throws HelperException
+     */
+    public function addSectionsFromTree($iblockId, $tree, $parentId = false)
+    {
+        foreach ($tree as $item) {
+            if (empty($item['NAME'])) {
+                $this->throwException(__METHOD__, 'Section name not found');
+            }
+
+            $childs = [];
+            if (isset($item['CHILDS'])) {
+                $childs = is_array($item['CHILDS']) ? $item['CHILDS'] : [];
+                unset($item['CHILDS']);
+            }
+
+            $item['IBLOCK_SECTION_ID'] = $parentId;
+
+            $sectionId = $this->getSectionId(
+                $iblockId, [
+                    '=NAME' => $item['NAME'],
+                    'SECTION_ID' => $parentId,
+                ]
+            );
+
+            if (empty($sectionId)) {
+                $sectionId = $this->addSection($iblockId, $item);
+            }
+
+            if (!empty($childs)) {
+                $this->addSectionsFromTree($iblockId, $childs, $sectionId);
+            }
+        }
+    }
+
+    /**
+     * @param $iblockId
+     * @return array
+     */
+    public function getSectionsTree($iblockId)
+    {
+        $sections = $this->getSections($iblockId);
+        return $this->buildSectionsTree($sections, 0, false);
+    }
+
+    /**
+     * @param $iblockId
+     * @return array
+     */
+    public function exportSectionsTree($iblockId)
+    {
+        $sections = $this->getSections($iblockId);
+        return $this->buildSectionsTree($sections, 0, true);
+    }
+
+    protected function buildSectionsTree(array &$sections, $parentId = 0, $export = false)
+    {
+        $branch = [];
+        foreach ($sections as $section) {
+            if ((int)$section['IBLOCK_SECTION_ID'] == $parentId) {
+
+                $childs = $this->buildSectionsTree($sections, $section['ID'], $export);
+
+                if ($export) {
+                    unset($section['ID']);
+                    unset($section['IBLOCK_SECTION_ID']);
+                    unset($section['LEFT_MARGIN']);
+                    unset($section['RIGHT_MARGIN']);
+                    unset($section['DEPTH_LEVEL']);
+                    unset($section['PICTURE']);
+                    unset($section['DETAIL_PICTURE']);
+                }
+
+                if (!empty($childs)) {
+                    $section['CHILDS'] = $childs;
+                }
+                $branch[] = $section;
+            }
+        }
+        return $branch;
     }
 
 }
