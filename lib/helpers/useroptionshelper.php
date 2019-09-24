@@ -6,9 +6,9 @@ use CGridOptions;
 use CUserOptions;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
-use Sprint\Migration\Helpers\UserOptions\IblockTrait;
-use Sprint\Migration\Helpers\UserOptions\UserGroupTrait;
-use Sprint\Migration\Helpers\UserOptions\UserTrait;
+use Sprint\Migration\Helpers\Traits\UserOptions\IblockTrait;
+use Sprint\Migration\Helpers\Traits\UserOptions\UserGroupTrait;
+use Sprint\Migration\Helpers\Traits\UserOptions\UserTrait;
 
 /*
 Example $formData for buildForm

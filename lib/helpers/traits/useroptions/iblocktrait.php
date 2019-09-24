@@ -1,6 +1,6 @@
 <?php
 
-namespace Sprint\Migration\Helpers\UserOptions;
+namespace Sprint\Migration\Helpers\Traits\UserOptions;
 
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\HelperManager;

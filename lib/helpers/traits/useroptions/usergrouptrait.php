@@ -1,6 +1,6 @@
 <?php
 
-namespace Sprint\Migration\Helpers\UserOptions;
+namespace Sprint\Migration\Helpers\Traits\UserOptions;
 
 trait UserGroupTrait
 {
