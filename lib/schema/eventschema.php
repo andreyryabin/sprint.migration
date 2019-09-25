@@ -191,7 +191,7 @@ class EventSchema extends AbstractSchema
         $res = [];
         $string = explode(PHP_EOL, $string);
         foreach ($string as $value) {
-            $res[] = trim($value);
+            $res[] = $value;
         }
         return $res;
     }
