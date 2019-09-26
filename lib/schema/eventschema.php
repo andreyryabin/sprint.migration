@@ -188,12 +188,7 @@ class EventSchema extends AbstractSchema
 
     protected function explodeText($string)
     {
-        $res = [];
-        $string = explode(PHP_EOL, $string);
-        foreach ($string as $value) {
-            $res[] = $value;
-        }
-        return $res;
+        return explode(PHP_EOL, $string);
     }
 
     protected function implodeText($strings)
