@@ -197,6 +197,22 @@ class EventHelper extends Helper
     public function updateEventMessageById($id, $fields)
     {
         $event = new CEventMessage;
+
+        //Удаление "лишних" значений из массива, наличие которых вызовет ошибку при \CAllEventMessage::Update() (bitrix\modules\main\classes\general\event.php#355)
+        //Код удаления взят из соседнего метода \CAllEventMessage::Add() (bitrix\modules\main\classes\general\event.php#310), который сам удаляет эти значения, 
+        //а в \CAllEventMessage::Update() Битрикс видимо забыл это перенести
+        $arDeleteFields = [
+            'EVENT_MESSAGE_TYPE_ID', 'EVENT_MESSAGE_TYPE_ID',
+            'EVENT_MESSAGE_TYPE_NAME', 'EVENT_MESSAGE_TYPE_EVENT_NAME',
+            'SITE_ID', 'EVENT_TYPE'
+        ];
+
+        foreach ($arDeleteFields as $deleteField) {
+            if (array_key_exists($deleteField, $fields)) {
+                unset($fields[$deleteField]);
+            }
+        }
+
         if ($event->Update($id, $fields)) {
             return $id;
         }
