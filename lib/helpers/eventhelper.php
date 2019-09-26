@@ -54,6 +54,13 @@ class EventHelper extends Helper
         $by = 'id';
         $order = 'asc';
 
+        if (isset($filter['EVENT_NAME'])) {
+            $filter['EVENT_NAME_EXACT_MATCH'] = 'Y';
+        }
+        if (isset($filter['SUBJECT'])) {
+            $filter['SUBJECT_EXACT_MATCH'] = 'Y';
+        }
+
         $item = CEventMessage::GetList($by, $order, $filter)->Fetch();
         return $this->prepareEventMessage($item);
     }
@@ -71,6 +78,13 @@ class EventHelper extends Helper
 
         $by = 'id';
         $order = 'asc';
+
+        if (isset($filter['EVENT_NAME'])) {
+            $filter['EVENT_NAME_EXACT_MATCH'] = 'Y';
+        }
+        if (isset($filter['SUBJECT'])) {
+            $filter['SUBJECT_EXACT_MATCH'] = 'Y';
+        }
 
         $result = [];
         $dbres = CEventMessage::GetList($by, $order, $filter);
