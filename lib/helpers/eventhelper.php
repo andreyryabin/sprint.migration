@@ -54,10 +54,10 @@ class EventHelper extends Helper
         $by = 'id';
         $order = 'asc';
 
-        if ($filter['EVENT_NAME']) {
+        if (isset($filter['EVENT_NAME'])) {
             $filter['EVENT_NAME_EXACT_MATCH'] = 'Y';
         }
-        if ($filter['SUBJECT']) {
+        if (isset($filter['SUBJECT'])) {
             $filter['SUBJECT_EXACT_MATCH'] = 'Y';
         }
 
@@ -79,10 +79,10 @@ class EventHelper extends Helper
         $by = 'id';
         $order = 'asc';
 
-        if ($filter['EVENT_NAME']) {
+        if (isset($filter['EVENT_NAME'])) {
             $filter['EVENT_NAME_EXACT_MATCH'] = 'Y';
         }
-        if ($filter['SUBJECT']) {
+        if (isset($filter['SUBJECT'])) {
             $filter['SUBJECT_EXACT_MATCH'] = 'Y';
         }
 
