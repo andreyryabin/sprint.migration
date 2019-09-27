@@ -34,12 +34,14 @@ Class sprint_migration extends CModule
     {
         RegisterModule($this->MODULE_ID);
         CopyDirFiles(__DIR__ . "/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
+        CopyDirFiles(__DIR__ . "/gadgets", $_SERVER["DOCUMENT_ROOT"] . "/local/gadgets", true, true);
     }
 
     function DoUninstall()
     {
         //launch upgrade when reinstalled module
         DeleteDirFiles(__DIR__ . "/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
+        DeleteDirFilesEx("local/gadgets/sprint.migration");
         UnRegisterModule($this->MODULE_ID);
     }
 
