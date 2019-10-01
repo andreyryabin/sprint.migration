@@ -3,6 +3,7 @@
 /** @noinspection PhpIncludeInspection */
 
 use Bitrix\Main\Loader;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
@@ -16,7 +17,7 @@ try {
     }
 
     if ($APPLICATION->GetGroupRight('sprint.migration') == 'D') {
-        Throw new Exception(GetMessage("ACCESS_DENIED"));
+        Throw new Exception(Locale::getMessage("ACCESS_DENIED"));
     }
 
     Module::checkHealth();

@@ -1,6 +1,6 @@
 <?php
 
-use Sprint\Migration\Module;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Out;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
@@ -55,13 +55,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                         <? if ($aItem['status'] == 'new'): ?>
                             <input disabled="disabled"
                                    onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'up'});"
-                                   value="<?= GetMessage('SPRINT_MIGRATION_UP') ?>" type="button">
+                                   value="<?= Locale::getMessage('UP') ?>" type="button">
                         <? endif ?>
                         <? if ($aItem['status'] == 'installed'): ?>
                             <input disabled="disabled"
                                    onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: 'down'});"
-                                   value="<?= GetMessage('SPRINT_MIGRATION_DOWN') ?>" type="button">
-                            <? endif ?>
+                                   value="<?= Locale::getMessage('DOWN') ?>" type="button">
+                        <? endif ?>
                     </td>
                     <td class="sp-list-r">
                         <? if ($aItem['status'] != 'unknown' && $webdir): ?>
@@ -77,11 +77,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
                         <? endif ?>
 
                         <? if ($aItem['modified']): ?>
-                            <span class="sp-modified" title="<?= GetMessage('SPRINT_MIGRATION_MODIFIED_VERSION') ?>"><?= GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL') ?></span>
+                            <span class="sp-modified"
+                                  title="<?= Locale::getMessage('MODIFIED_VERSION') ?>"><?= Locale::getMessage('MODIFIED_LABEL') ?></span>
                         <? endif; ?>
 
                         <? if ($aItem['tag']): ?>
-                            <span class="sp-tag" title="<?= GetMessage('SPRINT_MIGRATION_TAG') ?>"><?= $aItem['tag'] ?></span>
+                            <span class="sp-tag" title="<?= Locale::getMessage('TAG') ?>"><?= $aItem['tag'] ?></span>
                         <? endif; ?>
                         <? if (!empty($aItem['description'])): ?>
                             <? Out::out($aItem['description']) ?>
@@ -91,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
             <? endforeach ?>
         </table>
     <? else: ?>
-        <?= GetMessage('SPRINT_MIGRATION_LIST_EMPTY') ?>
+        <?= Locale::getMessage('LIST_EMPTY') ?>
     <? endif ?>
     <?
     /** @noinspection PhpIncludeInspection */

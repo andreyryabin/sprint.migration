@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use DirectoryIterator;
+use Exception;
 use Sprint\Migration\Builders\AgentBuilder;
 use Sprint\Migration\Builders\BlankBuilder;
 use Sprint\Migration\Builders\CacheCleanerBuilder;
@@ -49,7 +50,7 @@ class VersionConfig
     /**
      * VersionConfig constructor.
      * @param string $configName
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($configName = '')
     {
@@ -61,7 +62,7 @@ class VersionConfig
 
         if (!isset($this->configList['archive'])) {
             $this->configList['archive'] = $this->prepare('archive', [
-                'title' => GetMessage('SPRINT_MIGRATION_CONFIG_archive'),
+                'title' => Locale::getMessage('CONFIG_archive'),
                 'migration_dir' => $this->getSiblingDir('archive', true),
                 'migration_table' => 'sprint_migration_archive',
             ]);
@@ -99,7 +100,7 @@ class VersionConfig
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      * @return array
      */
     protected function searchConfigs()
@@ -150,7 +151,7 @@ class VersionConfig
      * @param $configName
      * @param array $configValues
      * @param bool $file
-     * @throws \Exception
+     * @throws Exception
      * @return array
      */
     protected function prepare($configName, $configValues = [], $file = false)
@@ -160,13 +161,13 @@ class VersionConfig
         if (!empty($configValues['title'])) {
             $title = sprintf('%s (%s)', $configValues['title'], $configName);
         } else {
-            $title = sprintf('%s (%s)', GetMessage('SPRINT_MIGRATION_CFG_TITLE'), $configName);
+            $title = sprintf('%s (%s)', Locale::getMessage('CFG_TITLE'), $configName);
         }
 
         if (!empty($configValues['schema_title'])) {
             $schemaTitle = sprintf('%s (%s)', $configValues['schema_title'], $configName);
         } else {
-            $schemaTitle = sprintf('%s (%s)', GetMessage('SPRINT_MIGRATION_SCH_TITLE'), $configName);
+            $schemaTitle = sprintf('%s (%s)', Locale::getMessage('SCH_TITLE'), $configName);
         }
 
         if (isset($configValues['title'])) {
@@ -188,7 +189,7 @@ class VersionConfig
 
     /**
      * @param array $values
-     * @throws \Exception
+     * @throws Exception
      * @return array
      */
     protected function prepareValues($values = [])
@@ -262,7 +263,7 @@ class VersionConfig
         foreach ($values as $key => $val) {
             if ($val === true || $val === false) {
                 $val = ($val) ? 'yes' : 'no';
-                $val = GetMessage('SPRINT_MIGRATION_CONFIG_' . $val);
+                $val = Locale::getMessage('CONFIG_' . $val);
             } elseif (is_array($val)) {
                 $fres = [];
                 foreach ($val as $fkey => $fval) {

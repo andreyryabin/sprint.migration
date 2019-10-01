@@ -1,5 +1,8 @@
 <?php
-$APPLICATION->SetTitle(GetMessage('SPRINT_MIGRATION_TITLE'));
+
+use Sprint\Migration\Locale;
+
+$APPLICATION->SetTitle(Locale::getMessage('TITLE'));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
@@ -42,7 +45,7 @@ if ($versionConfig->getVal('show_admin_interface')) {
 
 $sperrors = [];
 if (!$versionConfig->getVal('show_admin_interface')) {
-    $sperrors[] = GetMessage('SPRINT_MIGRATION_ADMIN_INTERFACE_HIDDEN');
+    $sperrors[] = Locale::getMessage('ADMIN_INTERFACE_HIDDEN');
 }
 
 include __DIR__ . '/../includes/errors.php';

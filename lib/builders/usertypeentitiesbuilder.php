@@ -5,6 +5,7 @@ namespace Sprint\Migration\Builders;
 use CUserTypeEntity;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -19,8 +20,8 @@ class UserTypeEntitiesBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities2'));
+        $this->setTitle(Locale::getMessage('BUILDER_UserTypeEntities1'));
+        $this->setDescription(Locale::getMessage('BUILDER_UserTypeEntities2'));
 
         $this->addVersionFields();
     }
@@ -34,7 +35,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $this->addField('type_codes', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserTypeEntities_EntityId'),
+            'title' => Locale::getMessage('BUILDER_UserTypeEntities_EntityId'),
             'placeholder' => '',
             'width' => 250,
             'multiple' => 1,

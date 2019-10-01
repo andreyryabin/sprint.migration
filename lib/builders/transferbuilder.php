@@ -4,6 +4,7 @@ namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\AbstractBuilder;
 use Sprint\Migration\Exceptions\ExchangeException;
+use Sprint\Migration\Locale;
 use Sprint\Migration\VersionManager;
 
 class TransferBuilder extends AbstractBuilder
@@ -16,7 +17,7 @@ class TransferBuilder extends AbstractBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Transfer1'));
+        $this->setTitle(Locale::getMessage('BUILDER_Transfer1'));
         $this->setGroup('configurator');
 
         $configFrom = $this->getVersionConfig()->getName();
@@ -32,31 +33,31 @@ class TransferBuilder extends AbstractBuilder
         }
 
         $this->addField('transfer_status', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferSelect'),
+            'title' => Locale::getMessage('BUILDER_TransferSelect'),
             'placeholder' => '',
             'width' => 250,
             'select' => [
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferInstalled'),
+                    'title' => Locale::getMessage('BUILDER_TransferInstalled'),
                     'value' => 'installed',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferNew'),
+                    'title' => Locale::getMessage('BUILDER_TransferNew'),
                     'value' => 'new',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferUnknown'),
+                    'title' => Locale::getMessage('BUILDER_TransferUnknown'),
                     'value' => 'unknown',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferAll'),
+                    'title' => Locale::getMessage('BUILDER_TransferAll'),
                     'value' => 'all',
                 ],
             ],
         ]);
 
         $this->addField('transfer_to', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_TransferTo'),
+            'title' => Locale::getMessage('BUILDER_TransferTo'),
             'placeholder' => '',
             'width' => 250,
             'select' => $structure,
@@ -71,14 +72,14 @@ class TransferBuilder extends AbstractBuilder
         $configFrom = $this->getVersionConfig()->getName();
         $configTo = $this->getFieldValue('transfer_to');
 
-        $this->exitIfEmpty($configTo, GetMessage('SPRINT_MIGRATION_BUILDER_TransferEmptyDest'));
+        $this->exitIfEmpty($configTo, Locale::getMessage('BUILDER_TransferEmptyDest'));
 
         if ($configTo == $configFrom) {
-            $this->exitWithMessage(GetMessage('SPRINT_MIGRATION_BUILDER_TransferBadDest'));
+            $this->exitWithMessage(Locale::getMessage('BUILDER_TransferBadDest'));
         }
 
         if (!$this->getVersionConfig()->isExists($configTo)) {
-            $this->exitWithMessage(GetMessage('SPRINT_MIGRATION_BUILDER_TransferBadDest'));
+            $this->exitWithMessage(Locale::getMessage('BUILDER_TransferBadDest'));
         }
 
         $vmFrom = new VersionManager($configFrom);
@@ -116,6 +117,6 @@ class TransferBuilder extends AbstractBuilder
             $cnt++;
         }
 
-        $this->outSuccess(GetMessage('SPRINT_MIGRATION_BUILDER_TransferCnt', ['#CNT#' => $cnt]));
+        $this->outSuccess(Locale::getMessage('BUILDER_TransferCnt', ['#CNT#' => $cnt]));
     }
 }

@@ -1,6 +1,7 @@
 <?
 
 use Bitrix\Main\Loader;
+use Sprint\Migration\Locale;
 use Sprint\Migration\SchemaManager;
 use Sprint\Migration\VersionConfig;
 
@@ -29,7 +30,7 @@ foreach ($configs as $config) {
 $arParameters = [
     'USER_PARAMETERS' => [
         'SELECT_CONFIGS' => [
-            'NAME' => GetMessage('SELECT_CONFIGS'),
+            'NAME' => Locale::getMessage('GD_SELECT_CONFIGS'),
             'TYPE' => 'LIST',
             'SIZE' => 10,
             'VALUES' => $configValues,
@@ -37,7 +38,7 @@ $arParameters = [
             'DEFAULT' => [],
         ],
         'CHECK_SCHEMAS' => [
-            'NAME' => GetMessage('CHECK_SCHEMAS'),
+            'NAME' => Locale::getMessage('GD_CHECK_SCHEMAS'),
             'TYPE' => 'LIST',
             'SIZE' => 10,
             'VALUES' => $schemaValues,

@@ -130,7 +130,7 @@ jQuery(document).ready(function ($) {
     });
 
     $('#migration-container').on('keypress', 'input[name=migration_search]', function (e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             migrationMigrationRefresh(function () {
                 migrationEnableButtons(1);
                 migrationScrollList();

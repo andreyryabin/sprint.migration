@@ -4,6 +4,7 @@ namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -17,8 +18,8 @@ class UserGroupBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport2'));
+        $this->setTitle(Locale::getMessage('BUILDER_UserGroupExport1'));
+        $this->setDescription(Locale::getMessage('BUILDER_UserGroupExport2'));
         $this->addVersionFields();
     }
 
@@ -31,7 +32,7 @@ class UserGroupBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $this->addField('user_group', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserGroupExport_user_group'),
+            'title' => Locale::getMessage('BUILDER_UserGroupExport_user_group'),
             'placeholder' => '',
             'multiple' => 1,
             'value' => [],

@@ -8,13 +8,13 @@ abstract class VersionBuilder extends AbstractBuilder
     protected function addVersionFields()
     {
         $this->addField('prefix', [
-            'title' => GetMessage('SPRINT_MIGRATION_FORM_PREFIX'),
+            'title' => Locale::getMessage('FORM_PREFIX'),
             'value' => $this->getVersionConfig()->getVal('version_prefix'),
             'width' => 250,
         ]);
 
         $this->addField('description', [
-            'title' => GetMessage('SPRINT_MIGRATION_FORM_DESCR'),
+            'title' => Locale::getMessage('FORM_DESCR'),
             'width' => 350,
             'height' => 40,
         ]);
@@ -111,7 +111,7 @@ abstract class VersionBuilder extends AbstractBuilder
             return false;
         }
 
-        Out::outSuccess(GetMessage('SPRINT_MIGRATION_CREATED_SUCCESS', [
+        Out::outSuccess(Locale::getMessage('CREATED_SUCCESS', [
             '#VERSION#' => $templateVars['version'],
         ]));
 

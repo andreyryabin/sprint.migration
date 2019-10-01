@@ -2,7 +2,10 @@
 /** @var $builder AbstractBuilder */
 
 use Sprint\Migration\AbstractBuilder;
-use Sprint\Migration\Out; ?>
+use Sprint\Migration\Locale;
+use Sprint\Migration\Out;
+
+?>
 <form method="post">
     <? $fields = $builder->getFields() ?>
     <? foreach ($fields as $fieldCode => $fieldItem): ?>
@@ -37,7 +40,7 @@ use Sprint\Migration\Out; ?>
                 <? elseif (isset($fieldItem['select']) && $fieldItem['multiple']): ?>
                     <div class="sp-optgroup">
                         <div style="padding: 5px 0;">
-                            <a href="#" class="sp-optgroup-check"><?= GetMessage('SPRINT_MIGRATION_SELECT_ALL') ?></a>
+                            <a href="#" class="sp-optgroup-check"><?= Locale::getMessage('SELECT_ALL') ?></a>
                         </div>
                         <? foreach ($fieldItem['select'] as $item): ?>
                             <label>
@@ -76,7 +79,7 @@ use Sprint\Migration\Out; ?>
                             <? if (isset($group['items'])): ?>
                                 <div style="padding: 5px 0;">
                                     <a href="#"
-                                       class="sp-optgroup-check"><?= GetMessage('SPRINT_MIGRATION_SELECT_ALL') ?></a>
+                                       class="sp-optgroup-check"><?= Locale::getMessage('SELECT_ALL') ?></a>
                                 </div>
                                 <? foreach ($group['items'] as $item): ?>
                                     <label>
@@ -112,6 +115,6 @@ use Sprint\Migration\Out; ?>
         </div>
     <? endif; ?>
     <div class="sp-field">
-        <input type="submit" value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"/>
+        <input type="submit" value="<?= Locale::getMessage('BUILDER_NEXT') ?>"/>
     </div>
 </form>

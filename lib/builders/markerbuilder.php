@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Locale;
 use Sprint\Migration\VersionManager;
 
 class MarkerBuilder extends AbstractBuilder
@@ -16,26 +17,26 @@ class MarkerBuilder extends AbstractBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_MARK'));
+        $this->setTitle(Locale::getMessage('MARK'));
         $this->setGroup('configurator');
 
         $this->addField('mark_version', [
-            'title' => GetMessage('SPRINT_MIGRATION_MARK_FIELD1'),
-            'placeholder' => GetMessage('SPRINT_MIGRATION_MARK_VERSION'),
+            'title' => Locale::getMessage('MARK_FIELD1'),
+            'placeholder' => Locale::getMessage('MARK_VERSION'),
             'width' => 250,
         ]);
 
         $this->addField('mark_status', [
-            'title' => GetMessage('SPRINT_MIGRATION_MARK_FIELD2'),
+            'title' => Locale::getMessage('MARK_FIELD2'),
             'placeholder' => '',
             'width' => 250,
             'select' => [
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_MARK_AS_INSTALLED'),
+                    'title' => Locale::getMessage('MARK_AS_INSTALLED'),
                     'value' => 'installed',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_MARK_AS_NEW'),
+                    'title' => Locale::getMessage('MARK_AS_NEW'),
                     'value' => 'new',
                 ],
             ],

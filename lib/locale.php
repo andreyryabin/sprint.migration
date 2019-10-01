@@ -38,9 +38,14 @@ class Locale
 
         if (!self::$localeLoaded) {
             foreach ($loc as $key => $msg) {
-                $MESS[$key] = self::convertToWin1251IfNeed($msg);
+                $MESS['SPRINT_MIGRATION_' . $key] = self::convertToWin1251IfNeed($msg);
             }
         }
 
+    }
+
+    public static function getMessage($name, $aReplace = null)
+    {
+        return GetMessage('SPRINT_MIGRATION_' . $name, $aReplace);
     }
 }

@@ -1,9 +1,11 @@
+<?
+/** @var $builderGroup */
+
+use Sprint\Migration\VersionConfig;
+use Sprint\Migration\VersionManager;
+
+?>
 <div class="sp-group"><?
-    /** @var $builderGroup */
-
-    use Sprint\Migration\VersionConfig;
-    use Sprint\Migration\VersionManager;
-
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
 

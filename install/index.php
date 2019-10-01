@@ -1,5 +1,7 @@
 <?php
 
+use Sprint\Migration\Locale;
+
 Class sprint_migration extends CModule
 {
     var $MODULE_ID = "sprint.migration";
@@ -24,10 +26,10 @@ Class sprint_migration extends CModule
 
         include(__DIR__ . '/../locale/ru.php');
 
-        $this->MODULE_NAME = GetMessage("SPRINT_MIGRATION_MODULE_NAME");
-        $this->MODULE_DESCRIPTION = GetMessage("SPRINT_MIGRATION_MODULE_DESCRIPTION");
-        $this->PARTNER_NAME = GetMessage("SPRINT_MIGRATION_PARTNER_NAME");
-        $this->PARTNER_URI = GetMessage("SPRINT_MIGRATION_PARTNER_URI");
+        $this->MODULE_NAME = Locale::getMessage("MODULE_NAME");
+        $this->MODULE_DESCRIPTION = Locale::getMessage("MODULE_DESCRIPTION");
+        $this->PARTNER_NAME = Locale::getMessage("PARTNER_NAME");
+        $this->PARTNER_URI = Locale::getMessage("PARTNER_URI");
     }
 
     function DoInstall()
@@ -61,8 +63,8 @@ Class sprint_migration extends CModule
         $arr = [
             "reference_id" => ["D", "W"],
             "reference" => [
-                "[D] " . GetMessage("SPRINT_MIGRATION_RIGHT_D"),
-                "[W] " . GetMessage("SPRINT_MIGRATION_RIGHT_W"),
+                "[D] " . Locale::getMessage("RIGHT_D"),
+                "[W] " . Locale::getMessage("RIGHT_W"),
             ],
         ];
         return $arr;

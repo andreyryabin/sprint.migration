@@ -3,6 +3,7 @@
 global $APPLICATION;
 
 use Bitrix\Main\Loader;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 
 try {
@@ -12,7 +13,7 @@ try {
     }
 
     if ($APPLICATION->GetGroupRight('sprint.migration') == 'D') {
-        Throw new Exception(GetMessage("ACCESS_DENIED"));
+        Throw new Exception(Locale::getMessage("ACCESS_DENIED"));
     }
 
     Module::checkHealth();

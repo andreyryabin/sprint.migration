@@ -1,6 +1,6 @@
 <?php
 
-use Sprint\Migration\Module;
+use Sprint\Migration\Locale;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 
@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
     $versionManager = new VersionManager($versionConfig);
 
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
-    $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
+    $search = Locale::convertToUtf8IfNeed($search);
 
     $versions = $versionManager->getVersions([
         'status' => '',
@@ -41,9 +41,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_st
             <tr>
                 <td class="sp-status-l">
                 <span class="sp-item-<?= $code ?>">
-                    <?= GetMessage('SPRINT_MIGRATION_' . $ucode) ?>
+                    <?= Locale::getMessage($ucode) ?>
                 </span>
-                    <?= GetMessage('SPRINT_MIGRATION_DESC_' . $ucode) ?>
+                    <?= Locale::getMessage('DESC_' . $ucode) ?>
                 </td>
                 <td class="sp-status-r">
                     <?= $cnt ?>

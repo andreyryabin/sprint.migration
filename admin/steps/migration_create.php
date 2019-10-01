@@ -31,13 +31,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_cr
 
     if ($builder->isRestart()) {
         $json = json_encode($builder->getRestartParams());
-        ?><script>migrationBuilder(<?=$json?>);</script><?
+        ?>
+        <script>migrationBuilder(<?=$json?>);</script><?
 
     } elseif ($builder->isRebuild()) {
-        ?><script>migrationEnableButtons(1);</script><?
+        ?>
+        <script>migrationEnableButtons(1);</script><?
 
     } else {
-        ?><script>
+        ?>
+        <script>
             migrationMigrationRefresh(function () {
                 migrationScrollList();
                 migrationEnableButtons(1);

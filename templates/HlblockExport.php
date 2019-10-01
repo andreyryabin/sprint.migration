@@ -20,28 +20,28 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-    protected $description = "<?php echo $description ?>";
+protected $description = "<?php echo $description ?>";
 
-    /**
-     * @throws Exceptions\HelperException
-     * @return bool|void
-     */
-    public function up()
-    {
-        $helper = $this->getHelperManager();
-        $hlblockId = $helper->Hlblock()->saveHlblock(<?php echo var_export($hlblock, 1) ?>);
+/**
+* @throws Exceptions\HelperException
+* @return bool|void
+*/
+public function up()
+{
+$helper = $this->getHelperManager();
+$hlblockId = $helper->Hlblock()->saveHlblock(<?php echo var_export($hlblock, 1) ?>);
 <? if (!empty($hlblockPermissions)): ?>
     $helper->Hlblock()->saveGroupPermissions($hlblockId, <?php echo var_export($hlblockPermissions, 1) ?>);
-<?endif?>
+<? endif ?>
 <? if (!empty($hlblockFields)): ?>
-<?php foreach ($hlblockFields as $field): ?>
+    <?php foreach ($hlblockFields as $field): ?>
         $helper->Hlblock()->saveField($hlblockId, <?php echo var_export($field, 1) ?>);
-<? endforeach; ?>
-<?endif?>
-    }
+    <? endforeach; ?>
+<? endif ?>
+}
 
-    public function down()
-    {
-        //your code ...
-    }
+public function down()
+{
+//your code ...
+}
 }

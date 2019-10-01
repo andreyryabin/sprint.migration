@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration;
 
+use Exception;
 use Sprint\Migration\Exceptions\RestartException;
 
 class SchemaManager extends ExchangeEntity
@@ -258,7 +259,7 @@ class SchemaManager extends ExchangeEntity
 
     /**
      * @param AbstractSchema $schema
-     * @throws \Exception
+     * @throws Exception
      */
     protected function saveQueue(AbstractSchema $schema)
     {

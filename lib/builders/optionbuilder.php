@@ -5,6 +5,7 @@ namespace Sprint\Migration\Builders;
 use Bitrix\Main\ArgumentException;
 use Bitrix\Main\SystemException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -18,8 +19,8 @@ class OptionBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_OptionExport1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_OptionExport2'));
+        $this->setTitle(Locale::getMessage('BUILDER_OptionExport1'));
+        $this->setDescription(Locale::getMessage('BUILDER_OptionExport2'));
 
         $this->addVersionFields();
     }
@@ -34,7 +35,7 @@ class OptionBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $this->addField('module_id', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_OptionExport_module_id'),
+            'title' => Locale::getMessage('BUILDER_OptionExport_module_id'),
             'placeholder' => '',
             'multiple' => 1,
             'value' => [],

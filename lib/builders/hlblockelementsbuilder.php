@@ -7,6 +7,7 @@ use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -24,8 +25,8 @@ class HlblockElementsBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockElementsExport1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockElementsExport2'));
+        $this->setTitle(Locale::getMessage('BUILDER_HlblockElementsExport1'));
+        $this->setDescription(Locale::getMessage('BUILDER_HlblockElementsExport2'));
         $this->addVersionFields();
     }
 
@@ -38,7 +39,7 @@ class HlblockElementsBuilder extends VersionBuilder
     protected function execute()
     {
         $this->addField('hlblock_id', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockElementsExport_HlblockId'),
+            'title' => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
             'placeholder' => '',
             'width' => 250,
             'select' => $this->getHlblocksStructure(),

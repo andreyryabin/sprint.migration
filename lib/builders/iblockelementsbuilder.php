@@ -7,6 +7,7 @@ use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -24,8 +25,8 @@ class IblockElementsBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockElementsExport1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_IblockElementsExport2'));
+        $this->setTitle(Locale::getMessage('BUILDER_IblockElementsExport1'));
+        $this->setDescription(Locale::getMessage('BUILDER_IblockElementsExport2'));
 
         $this->addVersionFields();
     }
@@ -41,7 +42,7 @@ class IblockElementsBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $this->addField('iblock_id', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockElementsExport_IblockId'),
+            'title' => Locale::getMessage('BUILDER_IblockElementsExport_IblockId'),
             'placeholder' => '',
             'width' => 250,
             'items' => $this->getIblocksStructure(),

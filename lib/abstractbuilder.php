@@ -178,7 +178,7 @@ abstract class AbstractBuilder extends ExchangeEntity
 
         } catch (Exception $e) {
             $this->execStatus = 'error';
-            $this->outError('%s: %s', GetMessage('SPRINT_MIGRATION_BUILDER_ERROR'), $e->getMessage());
+            $this->outError('%s: %s', Locale::getMessage('BUILDER_ERROR'), $e->getMessage());
             return false;
         }
 

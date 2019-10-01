@@ -4,6 +4,7 @@
  */
 
 use Bitrix\Main\Loader;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\SchemaManager;
 use Sprint\Migration\VersionConfig;
@@ -13,12 +14,13 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
-$results = [];
+if (!Loader::includeModule('sprint.migration')) {
+    return false;
+}
 
+$results = [];
 try {
-    if (!Loader::includeModule('sprint.migration')) {
-        return false;
-    }
+
 
     Module::checkHealth();
 
@@ -43,12 +45,12 @@ try {
 
         $results[] = [
             'title' => $config['title'],
-            'text' => ($hasNewVersions) ? GetMessage('MIGRATIONS_RED') : GetMessage('MIGRATIONS_GREEN'),
+            'text' => ($hasNewVersions) ? Locale::getMessage('GD_MIGRATIONS_RED') : Locale::getMessage('GD_MIGRATIONS_GREEN'),
             'state' => ($hasNewVersions) ? 'red' : 'green',
             'buttons' => [
                 [
-                    'text' => GetMessage('SHOW'),
-                    'title' => GetMessage('SHOW_MIGRATIONS'),
+                    'text' => Locale::getMessage('GD_SHOW'),
+                    'title' => Locale::getMessage('GD_SHOW_MIGRATIONS'),
                     'url' => '/bitrix/admin/sprint_migrations.php?' . http_build_query([
                             'config' => $config['name'],
                             'lang' => LANGUAGE_ID,
@@ -77,12 +79,12 @@ try {
 
             $results[] = [
                 'title' => $config['schema_title'],
-                'text' => ($modifiedCnt) ? GetMessage('SCHEMA_RED') : GetMessage('SCHEMA_GREEN'),
+                'text' => ($modifiedCnt) ? Locale::getMessage('GD_SCHEMA_RED') : Locale::getMessage('GD_SCHEMA_GREEN'),
                 'state' => ($modifiedCnt) ? 'red' : 'green',
                 'buttons' => [
                     [
-                        'text' => GetMessage('SHOW'),
-                        'title' => GetMessage('SHOW_SCHEMAS'),
+                        'text' => Locale::getMessage('GD_SHOW'),
+                        'title' => Locale::getMessage('GD_SHOW_SCHEMAS'),
                         'url' => '/bitrix/admin/sprint_migrations.php?' . http_build_query([
                                 'schema' => $config['name'],
                                 'lang' => LANGUAGE_ID,

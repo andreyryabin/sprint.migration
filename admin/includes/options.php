@@ -1,5 +1,6 @@
 <?php
 
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\Out;
 use Sprint\Migration\VersionConfig;
@@ -8,32 +9,32 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
     if (!empty($_REQUEST["options_remove"])) {
         Module::removeDbOptions();
-        Out::outSuccess(GetMessage('SPRINT_MIGRATION_OPTIONS_REMOVE_success'));
+        Out::outSuccess(Locale::getMessage('OPTIONS_REMOVE_success'));
     }
 
     if (!empty($_REQUEST["configuration_remove"])) {
         $versionConfig = new VersionConfig();
         if ($versionConfig->deleteConfig($_REQUEST['configuration_name'])) {
-            Out::outSuccess(GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_success'));
+            Out::outSuccess(Locale::getMessage('BUILDER_Cleaner_success'));
         } else {
-            Out::outError(GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_error'));
+            Out::outError(Locale::getMessage('BUILDER_Cleaner_error'));
         }
     }
 
     if (!empty($_REQUEST["configuration_create"])) {
         $versionConfig = new VersionConfig();
         if ($versionConfig->createConfig($_REQUEST['configuration_name'])) {
-            Out::outSuccess(GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_success'));
+            Out::outSuccess(Locale::getMessage('BUILDER_Configurator_success'));
         } else {
-            Out::outError(GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_error'));
+            Out::outError(Locale::getMessage('BUILDER_Configurator_error'));
         }
     }
 
-    if (!empty($_REQUEST["gadgets_install"])){
-        /** @var $tmpmodule \sprint_migration */
-        $tmpmodule = \CModule::CreateModuleObject('sprint.migration');
+    if (!empty($_REQUEST["gadgets_install"])) {
+        /** @var $tmpmodule sprint_migration */
+        $tmpmodule = CModule::CreateModuleObject('sprint.migration');
         $tmpmodule->installGadgets();
-        Out::outSuccess(GetMessage('SPRINT_MIGRATION_GADGETS_INSTALL_success'));
+        Out::outSuccess(Locale::getMessage('GD_INSTALL_success'));
     }
 
 }
@@ -46,21 +47,21 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         <div class="sp-group-row2">
             <div class="sp-block">
                 <form method="post" action="">
-                    <p><?= GetMessage('SPRINT_MIGRATION_BUILDER_Configurator') ?></p>
+                    <p><?= Locale::getMessage('BUILDER_Configurator') ?></p>
                     <p><input size="30" type="text" name="configuration_name" value=""
-                              placeholder="<?= GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_config_name') ?>"></p>
+                              placeholder="<?= Locale::getMessage('BUILDER_Configurator_config_name') ?>"></p>
                     <p><input type="submit" name="configuration_create"
-                              value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"></p>
+                              value="<?= Locale::getMessage('BUILDER_NEXT') ?>"></p>
                     <?= bitrix_sessid_post(); ?>
                 </form>
             </div>
             <div class="sp-block">
                 <form method="post" action="">
-                    <p><?= GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_desc') ?></p>
+                    <p><?= Locale::getMessage('BUILDER_Cleaner_desc') ?></p>
                     <p><input size="30" type="text" name="configuration_name" value=""
-                              placeholder="<?= GetMessage('SPRINT_MIGRATION_BUILDER_Cleaner_config_name') ?>"></p>
+                              placeholder="<?= Locale::getMessage('BUILDER_Cleaner_config_name') ?>"></p>
                     <p><input type="submit" name="configuration_remove"
-                              value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"></p>
+                              value="<?= Locale::getMessage('BUILDER_NEXT') ?>"></p>
                     <?= bitrix_sessid_post(); ?>
                 </form>
             </div>
@@ -71,17 +72,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         <div class="sp-group-row2">
             <div class="sp-block">
                 <form method="post" action="">
-                    <p><?= GetMessage('SPRINT_MIGRATION_GADGETS_INSTALL') ?></p>
+                    <p><?= Locale::getMessage('GD_INSTALL') ?></p>
                     <p><input type="submit" name="gadgets_install"
-                              value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"></p>
+                              value="<?= Locale::getMessage('BUILDER_NEXT') ?>"></p>
                     <?= bitrix_sessid_post(); ?>
                 </form>
             </div>
             <div class="sp-block">
                 <form method="post" action="">
-                    <p><?= GetMessage('SPRINT_MIGRATION_OPTIONS_REMOVE') ?></p>
+                    <p><?= Locale::getMessage('OPTIONS_REMOVE') ?></p>
                     <p><input type="submit" name="options_remove"
-                              value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"></p>
+                              value="<?= Locale::getMessage('BUILDER_NEXT') ?>"></p>
                     <?= bitrix_sessid_post(); ?>
                 </form>
             </div>

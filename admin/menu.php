@@ -2,6 +2,7 @@
 global $APPLICATION;
 
 use Bitrix\Main\Loader;
+use Sprint\Migration\Locale;
 
 if ($APPLICATION->GetGroupRight('sprint.migration') == 'D') {
     return false;
@@ -40,7 +41,7 @@ try {
 
     $items[] = [
         'items_id' => 'sp-menu-schema',
-        'text' => GetMessage('SPRINT_MIGRATION_MENU_SCHEMAS'),
+        'text' => Locale::getMessage('MENU_SCHEMAS'),
         'items' => $schemas,
     ];
 
@@ -48,7 +49,7 @@ try {
         'parent_menu' => 'global_menu_settings',
         'section' => 'Sprint',
         'sort' => 50,
-        'text' => GetMessage('SPRINT_MIGRATION_MENU_SPRINT'),
+        'text' => Locale::getMessage('MENU_SPRINT'),
         'icon' => 'sys_menu_icon',
         'page_icon' => 'sys_page_icon',
         'items_id' => 'sprint_migrations',
@@ -62,7 +63,7 @@ try {
         'parent_menu' => 'global_menu_settings',
         'section' => 'Sprint',
         'sort' => 50,
-        'text' => GetMessage('SPRINT_MIGRATION_MENU_SPRINT'),
+        'text' => Locale::getMessage('MENU_SPRINT'),
         'icon' => 'sys_menu_icon',
         'page_icon' => 'sys_page_icon',
         'items_id' => 'sprint_migrations',
@@ -78,7 +79,7 @@ try {
         'parent_menu' => 'global_menu_settings',
         'section' => 'Sprint',
         'sort' => 50,
-        'text' => GetMessage('SPRINT_MIGRATION_MENU_SPRINT'),
+        'text' => Locale::getMessage('MENU_SPRINT'),
         'icon' => 'sys_menu_icon',
         'page_icon' => 'sys_page_icon',
         'items_id' => 'sprint_migrations',

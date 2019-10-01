@@ -5,6 +5,7 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Builders\Traits\HlblocksStructureTrait;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -19,8 +20,8 @@ class HlblockBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport2'));
+        $this->setTitle(Locale::getMessage('BUILDER_HlblockExport1'));
+        $this->setDescription(Locale::getMessage('BUILDER_HlblockExport2'));
         $this->addVersionFields();
     }
 
@@ -33,7 +34,7 @@ class HlblockBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $this->addField('hlblock_id', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_HlblockExport_HlblockId'),
+            'title' => Locale::getMessage('BUILDER_HlblockExport_HlblockId'),
             'placeholder' => '',
             'width' => 250,
             'select' => $this->getHlblocksStructure(),

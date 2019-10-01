@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -16,8 +17,8 @@ class UserOptionsBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_UserOptionsExport_Title'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_UserOptionsExport_Desc'));
+        $this->setTitle(Locale::getMessage('BUILDER_UserOptionsExport_Title'));
+        $this->setDescription(Locale::getMessage('BUILDER_UserOptionsExport_Desc'));
         $this->addVersionFields();
     }
 
@@ -29,21 +30,21 @@ class UserOptionsBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $this->addField('what', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserOptionsExport_What'),
+            'title' => Locale::getMessage('BUILDER_UserOptionsExport_What'),
             'width' => 250,
             'multiple' => 1,
             'value' => [],
             'select' => [
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserOptionsExport_WhatUserForm'),
+                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserForm'),
                     'value' => 'userForm',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserOptionsExport_WhatUserList'),
+                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserList'),
                     'value' => 'userList',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_UserOptionsExport_WhatGroupList'),
+                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatGroupList'),
                     'value' => 'groupList',
                 ],
             ],

@@ -16,18 +16,18 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-    protected $description = "<?php echo $description ?>";
+protected $description = "<?php echo $description ?>";
 
-    public function up()
-    {
-        $helper = $this->getHelperManager();
-<?foreach ($items as $item):?>
-        $helper->Option()->saveOption(<?php echo var_export($item, 1) ?>);
+public function up()
+{
+$helper = $this->getHelperManager();
+<? foreach ($items as $item): ?>
+    $helper->Option()->saveOption(<?php echo var_export($item, 1) ?>);
 <? endforeach; ?>
-    }
+}
 
-    public function down()
-    {
-        //your code ...
-    }
+public function down()
+{
+//your code ...
+}
 }

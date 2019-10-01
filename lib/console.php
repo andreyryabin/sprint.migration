@@ -208,12 +208,12 @@ class Console
 
         foreach ($versions as $index => $item) {
             if ($item['modified']) {
-                $item['version'] .= ' (' . GetMessage('SPRINT_MIGRATION_MODIFIED_LABEL') . ')';
+                $item['version'] .= ' (' . Locale::getMessage('MODIFIED_LABEL') . ')';
             }
 
             $grid->addRow([
                 $item['version'],
-                GetMessage('SPRINT_MIGRATION_META_' . strtoupper($item['status'])),
+                Locale::getMessage('META_' . strtoupper($item['status'])),
                 $item['tag'],
                 $item['description'],
             ]);
@@ -226,7 +226,7 @@ class Console
 
         $grid = new ConsoleGrid(-1, '', 1, 'UTF-8');
         foreach ($summary as $k => $v) {
-            $grid->addRow([GetMessage('SPRINT_MIGRATION_META_' . strtoupper($k)) . ':', $v,]);
+            $grid->addRow([Locale::getMessage('META_' . strtoupper($k)) . ':', $v,]);
         }
 
         Out::out($grid->build());
@@ -297,7 +297,7 @@ class Console
     {
         global $USER;
 
-        Out::out(GetMessage('SPRINT_MIGRATION_MODULE_NAME'));
+        Out::out(Locale::getMessage('MODULE_NAME'));
         Out::out('Версия bitrix: %s', defined('SM_VERSION') ? SM_VERSION : '');
         Out::out('Версия модуля: %s', Module::getVersion());
 
@@ -335,7 +335,7 @@ class Console
         $configValues = $this->versionConfig->humanValues($configValues);
 
         Out::out('%s: %s',
-            GetMessage('SPRINT_MIGRATION_CONFIG'),
+            Locale::getMessage('CONFIG'),
             $configTitle
         );
 

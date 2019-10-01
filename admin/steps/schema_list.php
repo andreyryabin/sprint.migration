@@ -1,5 +1,6 @@
 <?php
 
+use Sprint\Migration\Locale;
 use Sprint\Migration\SchemaManager;
 use Sprint\Migration\VersionConfig;
 
@@ -37,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
                            class="sp-schema adm-btn <? if (in_array($schema->getName(),
                                $schemaChecked)): ?>adm-btn-active<? endif ?>"
                            type="button"
-                           value="<?=GetMessage('SPRINT_MIGRATION_SELECT_ONE')?>"
+                           value="<?= Locale::getMessage('SELECT_ONE') ?>"
                     />
                 </td>
                 <td class="sp-list-r">

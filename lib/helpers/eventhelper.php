@@ -216,9 +216,12 @@ class EventHelper extends Helper
         //Код удаления взят из соседнего метода \CAllEventMessage::Add() (bitrix\modules\main\classes\general\event.php#310), который сам удаляет эти значения, 
         //а в \CAllEventMessage::Update() Битрикс видимо забыл это перенести
         $arDeleteFields = [
-            'EVENT_MESSAGE_TYPE_ID', 'EVENT_MESSAGE_TYPE_ID',
-            'EVENT_MESSAGE_TYPE_NAME', 'EVENT_MESSAGE_TYPE_EVENT_NAME',
-            'SITE_ID', 'EVENT_TYPE'
+            'EVENT_MESSAGE_TYPE_ID',
+            'EVENT_MESSAGE_TYPE_ID',
+            'EVENT_MESSAGE_TYPE_NAME',
+            'EVENT_MESSAGE_TYPE_EVENT_NAME',
+            'SITE_ID',
+            'EVENT_TYPE',
         ];
 
         foreach ($arDeleteFields as $deleteField) {

@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -16,8 +17,8 @@ class EventBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_EventExport1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_EventExport2'));
+        $this->setTitle(Locale::getMessage('BUILDER_EventExport1'));
+        $this->setDescription(Locale::getMessage('BUILDER_EventExport2'));
         $this->addVersionFields();
     }
 
@@ -30,7 +31,7 @@ class EventBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $this->addField('event_types', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_EventExport_event_types'),
+            'title' => Locale::getMessage('BUILDER_EventExport_event_types'),
             'width' => 350,
             'select' => $this->getEventTypesStructure(),
             'multiple' => 1,

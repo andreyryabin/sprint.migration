@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use CFile;
+use Exception;
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\Helpers\ExchangeHelper;
@@ -139,7 +140,7 @@ abstract class AbstractExchange
     /**
      * @param XMLWriter $writer
      * @param $fileId
-     * @throws \Exception
+     * @throws Exception
      */
     protected function writeSingleFile(XMLWriter $writer, $fileId)
     {
@@ -249,7 +250,7 @@ abstract class AbstractExchange
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     protected function createExchangeDir()
     {

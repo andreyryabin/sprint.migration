@@ -5,6 +5,7 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Builders\Traits\IblocksStructureTrait;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -19,8 +20,8 @@ class IblockBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport2'));
+        $this->setTitle(Locale::getMessage('BUILDER_IblockExport1'));
+        $this->setDescription(Locale::getMessage('BUILDER_IblockExport2'));
         $this->addVersionFields();
     }
 
@@ -33,40 +34,40 @@ class IblockBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $this->addField('iblock_id', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_IblockId'),
+            'title' => Locale::getMessage('BUILDER_IblockExport_IblockId'),
             'placeholder' => '',
             'width' => 250,
             'items' => $this->getIblocksStructure(),
         ]);
 
         $this->addField('what', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_What'),
+            'title' => Locale::getMessage('BUILDER_IblockExport_What'),
             'width' => 250,
             'multiple' => 1,
             'value' => [],
             'select' => [
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockType'),
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockType'),
                     'value' => 'iblockType',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblock'),
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblock'),
                     'value' => 'iblock',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockFields'),
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockFields'),
                     'value' => 'iblockFields',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockProperties'),
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockProperties'),
                     'value' => 'iblockProperties',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockUserOptions'),
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockUserOptions'),
                     'value' => 'iblockUserOptions',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_WhatIblockPermissions'),
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockPermissions'),
                     'value' => 'iblockPermissions',
                 ],
             ],
@@ -113,7 +114,7 @@ class IblockBuilder extends VersionBuilder
 
         if (in_array('iblockProperties', $what)) {
             $this->addField('property_ids', [
-                'title' => GetMessage('SPRINT_MIGRATION_BUILDER_IblockExport_PropertyIds'),
+                'title' => Locale::getMessage('BUILDER_IblockExport_PropertyIds'),
                 'width' => 250,
                 'multiple' => 1,
                 'value' => [],

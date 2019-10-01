@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Locale;
 use function BXClearCache;
 
 
@@ -16,8 +17,8 @@ class CacheCleanerBuilder extends AbstractBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_CacheCleaner1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_CacheCleaner2'));
+        $this->setTitle(Locale::getMessage('BUILDER_CacheCleaner1'));
+        $this->setDescription(Locale::getMessage('BUILDER_CacheCleaner2'));
     }
 
     protected function execute()

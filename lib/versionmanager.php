@@ -241,7 +241,7 @@ class VersionManager
 
         if (empty($result)) {
             $result[] = [
-                'message' => GetMessage('SPRINT_MIGRATION_MARK_ERROR4'),
+                'message' => Locale::getMessage('MARK_ERROR4'),
                 'success' => false,
             ];
         }
@@ -256,29 +256,29 @@ class VersionManager
      */
     protected function markMigrationByMeta($meta, $status)
     {
-        $msg = 'SPRINT_MIGRATION_MARK_ERROR3';
+        $msg = 'MARK_ERROR3';
         $success = false;
 
         if ($status == 'new') {
             if ($meta['is_record']) {
                 $this->getVersionTable()->removeRecord($meta);
-                $msg = 'SPRINT_MIGRATION_MARK_SUCCESS1';
+                $msg = 'MARK_SUCCESS1';
                 $success = true;
             } else {
-                $msg = 'SPRINT_MIGRATION_MARK_ERROR1';
+                $msg = 'MARK_ERROR1';
             }
         } elseif ($status == 'installed') {
             if (!$meta['is_record']) {
                 $this->getVersionTable()->addRecord($meta);
-                $msg = 'SPRINT_MIGRATION_MARK_SUCCESS2';
+                $msg = 'MARK_SUCCESS2';
                 $success = true;
             } else {
-                $msg = 'SPRINT_MIGRATION_MARK_ERROR2';
+                $msg = 'MARK_ERROR2';
             }
         }
 
         return [
-            'message' => GetMessage($msg, ['#VERSION#' => $meta['version']]),
+            'message' => Locale::getMessage($msg, ['#VERSION#' => $meta['version']]),
             'success' => $success,
         ];
     }
@@ -634,7 +634,7 @@ class VersionManager
             }
         } else {
             $result[] = [
-                'message' => GetMessage('SPRINT_MIGRATION_DELETE_ERROR1'),
+                'message' => Locale::getMessage('DELETE_ERROR1'),
                 'success' => 0,
             ];
         }
@@ -656,10 +656,10 @@ class VersionManager
             $success = 1;
         }
 
-        $msg = $success ? 'SPRINT_MIGRATION_DELETE_OK' : 'SPRINT_MIGRATION_DELETE_ERROR2';
+        $msg = $success ? 'DELETE_OK' : 'DELETE_ERROR2';
 
         return [
-            'message' => GetMessage($msg, ['#VERSION#' => $meta['version']]),
+            'message' => Locale::getMessage($msg, ['#VERSION#' => $meta['version']]),
             'success' => $success,
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Builders;
 
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -15,8 +16,8 @@ class AgentBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_AgentExport1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_AgentExport2'));
+        $this->setTitle(Locale::getMessage('BUILDER_AgentExport1'));
+        $this->setDescription(Locale::getMessage('BUILDER_AgentExport2'));
         $this->addVersionFields();
     }
 
@@ -26,7 +27,7 @@ class AgentBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $this->addField('agent_id', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_AgentExport_agent_id'),
+            'title' => Locale::getMessage('BUILDER_AgentExport_agent_id'),
             'placeholder' => '',
             'multiple' => 1,
             'value' => [],

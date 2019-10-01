@@ -16,15 +16,15 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-    protected $description = "<?php echo $description ?>";
+protected $description = "<?php echo $description ?>";
 
-    public function up()
-    {
-        //your code ...
-    }
+public function up()
+{
+//your code ...
+}
 
-    public function down()
-    {
-        //your code ...
-    }
+public function down()
+{
+//your code ...
+}
 }

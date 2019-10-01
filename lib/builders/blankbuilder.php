@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Builders;
 
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -15,8 +16,8 @@ class BlankBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_Version1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_Version2'));
+        $this->setTitle(Locale::getMessage('BUILDER_Version1'));
+        $this->setDescription(Locale::getMessage('BUILDER_Version2'));
         $this->addVersionFields();
     }
 

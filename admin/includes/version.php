@@ -1,5 +1,7 @@
 <?php
 
+use Sprint\Migration\Locale;
+
 $search = '';
 $listview = 'list';
 $addtag = '';
@@ -21,15 +23,15 @@ $addtag = '';
         <div class="sp-group-row2">
             <div class="sp-block">
                 <input type="button"
-                       value="<?= GetMessage('SPRINT_MIGRATION_UP_START') ?>"
+                       value="<?= Locale::getMessage('UP_START') ?>"
                        onclick="migrationMigrationsUpConfirm();"
                        class="adm-btn-green"/>
                 <input type="button"
-                       value="<?= GetMessage('SPRINT_MIGRATION_DOWN_START') ?>"
+                       value="<?= Locale::getMessage('DOWN_START') ?>"
                        onclick="migrationMigrationsDownConfirm();"/>
-                <span title="<?= GetMessage('SPRINT_MIGRATION_ADDTAG_TITLE') ?>">
-                <?= GetMessage('SPRINT_MIGRATION_ADDTAG') ?>
-                <input placeholder="<?= GetMessage('SPRINT_MIGRATION_ADDTAG_TAG') ?>"
+                <span title="<?= Locale::getMessage('ADDTAG_TITLE') ?>">
+                <?= Locale::getMessage('ADDTAG') ?>
+                <input placeholder="<?= Locale::getMessage('ADDTAG_TAG') ?>"
                        style="width: 100px;"
                        type="text"
                        value="<?= $addtag ?>"
@@ -38,7 +40,7 @@ $addtag = '';
                     </span>
             </div>
             <div class="sp-block">
-                <input placeholder="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>"
+                <input placeholder="<?= Locale::getMessage('SEARCH') ?>"
                        style=""
                        type="text"
                        value="<?= $search ?>"
@@ -46,15 +48,15 @@ $addtag = '';
                        name="migration_search"/>
                 <select class="sp-stat">
                     <option <? if ($listview == 'list'): ?>selected="selected"<? endif ?>
-                            value="list"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_LIST') ?></option>
+                            value="list"><?= Locale::getMessage('TOGGLE_LIST') ?></option>
                     <option <? if ($listview == 'new'): ?>selected="selected"<? endif ?>
-                            value="new"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_NEW') ?></option>
+                            value="new"><?= Locale::getMessage('TOGGLE_NEW') ?></option>
                     <option <? if ($listview == 'installed'): ?>selected="selected"<? endif ?>
-                            value="installed"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_INSTALLED') ?></option>
+                            value="installed"><?= Locale::getMessage('TOGGLE_INSTALLED') ?></option>
                     <option <? if ($listview == 'status'): ?>selected="selected"<? endif ?>
-                            value="status"><?= GetMessage('SPRINT_MIGRATION_TOGGLE_STATUS') ?></option>
+                            value="status"><?= Locale::getMessage('TOGGLE_STATUS') ?></option>
                 </select>
-                <input type="button" value="<?= GetMessage('SPRINT_MIGRATION_SEARCH') ?>" class="sp-search"/>
+                <input type="button" value="<?= Locale::getMessage('SEARCH') ?>" class="sp-search"/>
 
             </div>
         </div>

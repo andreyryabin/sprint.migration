@@ -6,6 +6,7 @@ use Bitrix\Main\Db\SqlQueryException;
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
@@ -18,8 +19,8 @@ class FormBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(GetMessage('SPRINT_MIGRATION_BUILDER_FormExport1'));
-        $this->setDescription(GetMessage('SPRINT_MIGRATION_BUILDER_FormExport2'));
+        $this->setTitle(Locale::getMessage('BUILDER_FormExport1'));
+        $this->setDescription(Locale::getMessage('BUILDER_FormExport2'));
         $this->addVersionFields();
     }
 
@@ -44,7 +45,7 @@ class FormBuilder extends VersionBuilder
         }
 
         $this->addField('form_id', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_FormId'),
+            'title' => Locale::getMessage('BUILDER_FormExport_FormId'),
             'width' => 250,
             'select' => $structure,
         ]);
@@ -62,21 +63,21 @@ class FormBuilder extends VersionBuilder
         unset($form['VARNAME']);
 
         $this->addField('what_else', [
-            'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_What'),
+            'title' => Locale::getMessage('BUILDER_FormExport_What'),
             'width' => 250,
             'multiple' => 1,
             'value' => [],
             'select' => [
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Form'),
+                    'title' => Locale::getMessage('BUILDER_FormExport_Form'),
                     'value' => 'form',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Fields'),
+                    'title' => Locale::getMessage('BUILDER_FormExport_Fields'),
                     'value' => 'fields',
                 ],
                 [
-                    'title' => GetMessage('SPRINT_MIGRATION_BUILDER_FormExport_Statuses'),
+                    'title' => Locale::getMessage('BUILDER_FormExport_Statuses'),
                     'value' => 'statuses',
                 ],
             ],
