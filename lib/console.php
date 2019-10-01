@@ -21,6 +21,11 @@ class Console
 
     private $argoptions = [];
 
+    /**
+     * Console constructor.
+     * @param $args
+     * @throws Exception
+     */
     public function __construct($args)
     {
         $this->script = array_shift($args);

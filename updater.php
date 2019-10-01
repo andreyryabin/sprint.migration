@@ -20,4 +20,8 @@ if ($updater && $updater instanceof CUpdater) {
 //        unlink($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/loader.php');
     }
 
+    if (is_dir(__DIR__ . '/install/gadgets/')) {
+        $updater->CopyFiles("install/gadgets/", "gadgets/");
+    }
+
 }

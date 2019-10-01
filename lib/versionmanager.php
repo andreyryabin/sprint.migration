@@ -25,6 +25,11 @@ class VersionManager
 
     private $lastException = null;
 
+    /**
+     * VersionManager constructor.
+     * @param string $configName
+     * @throws Exception
+     */
     public function __construct($configName = '')
     {
         if ($configName instanceof VersionConfig) {

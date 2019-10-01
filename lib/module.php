@@ -56,11 +56,11 @@ class Module
     public static function getRelativeDir($dir)
     {
         $docroot = Module::getDocRoot();
-
+        $docroot = str_replace("/", DIRECTORY_SEPARATOR, $docroot);
+        $dir = str_replace("/", DIRECTORY_SEPARATOR, $dir);
         if (strpos($dir, $docroot) === 0) {
             $dir = substr($dir, strlen($docroot));
         }
-
         return $dir;
     }
 

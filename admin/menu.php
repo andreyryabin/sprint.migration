@@ -19,7 +19,7 @@ try {
     $schemas = [];
     foreach ($configList as $item) {
         $schemas[] = [
-            'text' => GetMessage('SPRINT_MIGRATION_MENU_SCHEMA') . ' (' . $item['name'] . ')',
+            'text' => $item['schema_title'],
             'url' => 'sprint_migrations.php?' . http_build_query([
                     'schema' => $item['name'],
                     'lang' => LANGUAGE_ID,

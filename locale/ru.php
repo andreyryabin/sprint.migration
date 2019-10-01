@@ -57,7 +57,9 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_SEARCH" => "Поиск",
     "SPRINT_MIGRATION_ADMIN_INTERFACE_HIDDEN" => "Управление миграциями через админку отключено",
 
-    "SPRINT_MIGRATION_CONFIG_TITLE" => "Миграции",
+    "SPRINT_MIGRATION_CFG_TITLE" => "Миграции",
+    "SPRINT_MIGRATION_SCH_TITLE" => "Схемы данных",
+
     "SPRINT_MIGRATION_CONFIG" => "Конфигурация",
     "SPRINT_MIGRATION_CONFIG_archive" => "Архив",
 
@@ -211,9 +213,10 @@ require_once __DIR__ . '/../lib/locale.php';
     "SPRINT_MIGRATION_ADDTAG_TAG" => "Название",
     "SPRINT_MIGRATION_ADDTAG_TITLE" => "Поставить тег устанавливаемым миграциям",
 
-    "SPRINT_MIGRATION_MENU_SCHEMA" => "Cхемы данных",
     "SPRINT_MIGRATION_SCHEMA_DIFF" => "Проверить изменения",
     "SPRINT_MIGRATION_SCHEMA_IMPORT" => "Установить схему",
     "SPRINT_MIGRATION_SCHEMA_EXPORT" => "Создать схему",
 
+    "SPRINT_MIGRATION_GADGETS_INSTALL" => "Установить гаджеты: \"Сводка по миграциям\"",
+    "SPRINT_MIGRATION_GADGETS_INSTALL_success" => "Гаджеты установлены",
 ]);

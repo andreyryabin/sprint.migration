@@ -160,17 +160,27 @@ class VersionConfig
         if (!empty($configValues['title'])) {
             $title = sprintf('%s (%s)', $configValues['title'], $configName);
         } else {
-            $title = sprintf('%s (%s)', GetMessage('SPRINT_MIGRATION_CONFIG_TITLE'), $configName);
+            $title = sprintf('%s (%s)', GetMessage('SPRINT_MIGRATION_CFG_TITLE'), $configName);
+        }
+
+        if (!empty($configValues['schema_title'])) {
+            $schemaTitle = sprintf('%s (%s)', $configValues['schema_title'], $configName);
+        } else {
+            $schemaTitle = sprintf('%s (%s)', GetMessage('SPRINT_MIGRATION_SCH_TITLE'), $configName);
         }
 
         if (isset($configValues['title'])) {
             unset($configValues['title']);
+        }
+        if (isset($configValues['schema_title'])) {
+            unset($configValues['schema_title']);
         }
 
         return [
             'name' => $configName,
             'sort' => $this->getSort($configName),
             'title' => $title,
+            'schema_title' => $schemaTitle,
             'file' => $file,
             'values' => $configValues,
         ];

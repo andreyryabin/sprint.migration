@@ -28,6 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
             Out::outError(GetMessage('SPRINT_MIGRATION_BUILDER_Configurator_error'));
         }
     }
+
+    if (!empty($_REQUEST["gadgets_install"])){
+        /** @var $tmpmodule \sprint_migration */
+        $tmpmodule = \CModule::CreateModuleObject('sprint.migration');
+        $tmpmodule->installGadgets();
+        Out::outSuccess(GetMessage('SPRINT_MIGRATION_GADGETS_INSTALL_success'));
+    }
+
 }
 ?>
 
@@ -60,7 +68,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
     </div>
 
     <div class="sp-group">
-        <div class="sp-group-row">
+        <div class="sp-group-row2">
+            <div class="sp-block">
+                <form method="post" action="">
+                    <p><?= GetMessage('SPRINT_MIGRATION_GADGETS_INSTALL') ?></p>
+                    <p><input type="submit" name="gadgets_install"
+                              value="<?= GetMessage('SPRINT_MIGRATION_BUILDER_NEXT') ?>"></p>
+                    <?= bitrix_sessid_post(); ?>
+                </form>
+            </div>
             <div class="sp-block">
                 <form method="post" action="">
                     <p><?= GetMessage('SPRINT_MIGRATION_OPTIONS_REMOVE') ?></p>

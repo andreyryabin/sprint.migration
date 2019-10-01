@@ -1,2 +1,3 @@
 <?
-$MESS["SCHEMA_CLASS_TO_TRACK_LIST"] = 'Показывать статус для схем';
+$MESS["SELECT_CONFIGS"] = 'Конфигурации';
+$MESS["CHECK_SCHEMAS"] = 'Показывать статус для схем';
