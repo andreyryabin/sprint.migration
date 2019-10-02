@@ -15,7 +15,7 @@ if ($updater && $updater instanceof CUpdater) {
     }
 
     if (!empty($_SERVER['DOCUMENT_ROOT'])) {
-        sprint_migration_rmdir($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/lib/helpers/useroptions/');
+//        sprint_migration_rmdir($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/lib/helpers/useroptions/');
 //        sprint_migration_rmdir($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/admin/');
 //        unlink($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/loader.php');
     }

@@ -3,13 +3,12 @@
 require_once __DIR__ . "/../lib/locale.php";
 
 \Sprint\Migration\Locale::loadLocale([
-    "MIGRATION_DIR" => "Директория для миграций",
     "MODULE_NAME" => "Миграции для разработчиков",
     "MODULE_DESCRIPTION" => "Модуль для управления миграциями бд, создание, установка, откат миграций",
     "PARTNER_NAME" => "Андрей Рябин",
     "PARTNER_URI" => "https://packagist.org/packages/andreyryabin/sprint.migration",
+    "ACCESS_DENIED" => "Доступ запрещен",
     "MENU_SPRINT" => "Миграции для разработчиков",
-    "MENU_MIGRATIONS" => "Миграции",
     "MENU_SCHEMAS" => "Схемы данных",
     "TITLE" => "Миграции",
     "FORM_DESCR" => "Описание",
@@ -21,13 +20,10 @@ require_once __DIR__ . "/../lib/locale.php";
     "DOWN_START" => "Откатить все",
     "UP_CONFIRM" => "Установить новые миграции?",
     "DOWN_CONFIRM" => "Откатить все установленные миграции?",
-    "SET_REQUIRED_FIELD" => "Заполните обязательное поле: #TITLE#",
-    "REFRESH" => "Обновить",
     "TOGGLE_LIST" => "Все",
     "TOGGLE_NEW" => "Новые",
     "TOGGLE_STATUS" => "Суммарно",
     "TOGGLE_INSTALLED" => "Установленные",
-    "TOGGLE_UNKNOWN" => "Неизвестные",
 
     "LINK_MP" => "Маркетплейс",
     "LINK_DOC" => "Документация",
@@ -35,15 +31,6 @@ require_once __DIR__ . "/../lib/locale.php";
     "LINK_COMPOSER" => "Composer",
     "LINK_TASKS" => "Задачи",
     "LINK_TELEGRAM" => "Группа в телеграме",
-
-    "TAB1" => "Миграции",
-    "TAB1_TITLE" => "Список миграций",
-    "TAB2" => "Создать",
-    "TAB2_TITLE" => "Создать миграцию",
-    "TAB3" => "Логирование",
-    "TAB3_TITLE" => "Логирование",
-    "TAB4" => "Конфиги",
-    "TAB4_TITLE" => "Конфиги",
     "NEW" => "Новые миграции",
     "INSTALLED" => "Установленные",
     "UNKNOWN" => "Неизвестные",
@@ -181,7 +168,6 @@ require_once __DIR__ . "/../lib/locale.php";
 
     "OPTIONS_REMOVE" => "Сбросить настройки модуля",
     "OPTIONS_REMOVE_success" => "Настройки сброшены",
-
 
     "MARK" => "Отметить миграцию",
     "MARK_FIELD1" => "Выбрать миграцию",

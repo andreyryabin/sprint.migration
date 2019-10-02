@@ -14,18 +14,22 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
-if (!Loader::includeModule('sprint.migration')) {
-    return false;
-}
-
-$results = [];
 try {
 
+    if (!Loader::includeModule('sprint.migration')) {
+        Throw new Exception('need to install module sprint.migration');
+    }
+
+    if ($APPLICATION->GetGroupRight('sprint.migration') == 'D') {
+        Throw new Exception(Locale::getMessage("ACCESS_DENIED"));
+    }
 
     Module::checkHealth();
 
     $arGadgetParams['SELECT_CONFIGS'] = is_array($arGadgetParams['SELECT_CONFIGS']) ? $arGadgetParams['SELECT_CONFIGS'] : [];
     $arGadgetParams['CHECK_SCHEMAS'] = is_array($arGadgetParams['CHECK_SCHEMAS']) ? $arGadgetParams['CHECK_SCHEMAS'] : [];
+
+    $results = [];
 
     $configs = (new VersionConfig())->getList();
     foreach ($configs as $config) {
