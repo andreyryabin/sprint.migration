@@ -16,23 +16,23 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-protected $description = "<?php echo $description ?>";
+    protected $description = "<?php echo $description ?>";
 
-/**
-* @throws Exceptions\HelperException
-* @return bool|void
-*/
-public function up()
-{
-$helper = $this->getHelperManager();
+    /**
+     * @throws Exceptions\HelperException
+     * @return bool|void
+     */
+    public function up()
+    {
+        $helper = $this->getHelperManager();
 
-<? foreach ($items as $item): ?>
-    $helper->UserGroup()->saveGroup('<?php echo $item['STRING_ID'] ?>',<?php echo var_export($item['FIELDS'], 1) ?>);
+<?foreach ($items as $item):?>
+        $helper->UserGroup()->saveGroup('<?php echo $item['STRING_ID'] ?>',<?php echo var_export($item['FIELDS'], 1) ?>);
 <? endforeach; ?>
-}
+    }
 
-public function down()
-{
-//your code ...
-}
+    public function down()
+    {
+        //your code ...
+    }
 }

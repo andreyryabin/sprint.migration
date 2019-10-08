@@ -20,28 +20,28 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-protected $description = "<?php echo $description ?>";
+    protected $description = "<?php echo $description ?>";
 
-public function up()
-{
-$helper = $this->getHelperManager();
-$formHelper = $helper->Form();
+    public function up()
+    {
+        $helper = $this->getHelperManager();
+        $formHelper = $helper->Form();
 <? if (!empty($formExport)): ?>
-    $formId = $formHelper->saveForm(<?= var_export($form, 1) ?>);
-<? else: ?>
-    $formId = $formHelper->getFormIdIfExists('<?= $form['SID'] ?>');
-<? endif ?>
+        $formId = $formHelper->saveForm(<?= var_export($form, 1)?>);
+<?else:?>
+        $formId = $formHelper->getFormIdIfExists('<?= $form['SID']?>');
+<?endif?>
 <? if (!empty($statuses)): ?>
-    $formHelper->saveStatuses($formId, <?= var_export($statuses, 1) ?>);
-<? endif; ?>
+        $formHelper->saveStatuses($formId, <?= var_export($statuses, 1)?>);
+<?endif;?>
 <? if (!empty($fields)): ?>
-    $formHelper->saveFields($formId, <?= var_export($fields, 1) ?>);
-<? endif; ?>
-}
+        $formHelper->saveFields($formId, <?= var_export($fields, 1)?>);
+<?endif;?>
+    }
 
-public function down()
-{
-//your code ...
-}
+    public function down()
+    {
+        //your code ...
+    }
 }
 
