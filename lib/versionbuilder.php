@@ -66,9 +66,10 @@ abstract class VersionBuilder extends AbstractBuilder
 
     protected function getVersionName()
     {
-        return $this->purifyPrefix(
-                $this->getFieldValue('prefix')
-            ) . $this->getTimestamp();
+        return strtr($this->getVersionConfig()->getVal('version_name_template'), [
+            '#NAME#' => $this->purifyPrefix($this->getFieldValue('prefix')),
+            '#TIMESTAMP#' => $this->getTimestamp(),
+        ]);
     }
 
     protected function createVersionFile($templateFile = '', $templateVars = [])

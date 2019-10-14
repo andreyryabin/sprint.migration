@@ -253,6 +253,9 @@ class VersionConfig
             $values['version_schemas'] = $this->getDefaultSchemas();
         }
 
+        if (!isset($values['version_name_template'])) {
+            $values['version_name_template'] = '#NAME##TIMESTAMP#';
+        }
 
         ksort($values);
         return $values;

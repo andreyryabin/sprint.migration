@@ -519,16 +519,16 @@ class VersionManager
     public function getVersionTimestamp($versionName)
     {
         $matches = [];
-        if (preg_match('/[0-9]{14}$/', $versionName, $matches)) {
-            return $matches[0];
-        } else {
-            return false;
+        if (preg_match('/\d{14}/', $versionName, $matches)) {
+            return end($matches);
         }
+
+        return false;
     }
 
     protected function purifyDescriptionForMeta($descr = '')
     {
-        $descr = strval($descr);
+        $descr = (string)$descr;
         $descr = str_replace(["\n\r", "\r\n", "\n", "\r"], ' ', $descr);
         $descr = strip_tags($descr);
         $descr = stripslashes($descr);
