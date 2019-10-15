@@ -443,7 +443,7 @@ class VersionManager
 
         ob_start();
         /** @noinspection PhpIncludeInspection */
-        require_once($meta['location']);
+        require_once($file['location']);
         ob_end_clean();
 
         $class = 'Sprint\Migration\\' . $versionName;

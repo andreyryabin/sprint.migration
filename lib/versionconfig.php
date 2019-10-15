@@ -44,6 +44,7 @@ class VersionConfig
         'version_builders',
         'version_schemas',
         'show_admin_interface',
+        'version_name_template',
         'console_user',
     ];
 
@@ -253,8 +254,15 @@ class VersionConfig
             $values['version_schemas'] = $this->getDefaultSchemas();
         }
 
-        if (!isset($values['version_name_template'])) {
+        if (empty($values['version_name_template'])) {
             $values['version_name_template'] = '#NAME##TIMESTAMP#';
+        }
+
+        if (
+            (strpos($values['version_name_template'], '#TIMESTAMP#') === false) ||
+            (strpos($values['version_name_template'], '#NAME#') === false)
+        ) {
+            Throw new Exception("Config version_name_template format error");
         }
 
         ksort($values);
@@ -331,6 +339,11 @@ class VersionConfig
         return is_file($configPath);
     }
 
+    /**
+     * @param $configName
+     * @throws Exception
+     * @return bool
+     */
     public function deleteConfig($configName)
     {
         $fileName = 'migrations.' . $configName . '.php';

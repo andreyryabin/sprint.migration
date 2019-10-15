@@ -1,6 +1,7 @@
 <?php
 
 use Sprint\Migration\Locale;
+use Sprint\Migration\Out;
 
 $APPLICATION->SetTitle(Locale::getMessage('TITLE'));
 
@@ -17,15 +18,29 @@ if (isset($_REQUEST['schema'])) {
 }
 
 if ($versionConfig->getVal('show_admin_interface')) {
-    if (isset($_REQUEST['schema'])) {
-        include __DIR__ . '/../steps/schema_list.php';
-        include __DIR__ . '/../steps/schema_export.php';
-        include __DIR__ . '/../steps/schema_import.php';
-    } else {
-        include __DIR__ . '/../steps/migration_execute.php';
-        include __DIR__ . '/../steps/migration_list.php';
-        include __DIR__ . '/../steps/migration_status.php';
-        include __DIR__ . '/../steps/migration_create.php';
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        /** @noinspection PhpIncludeInspection */
+        require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
+
+        try {
+            if (isset($_REQUEST['schema'])) {
+                include __DIR__ . '/../steps/schema_list.php';
+                include __DIR__ . '/../steps/schema_export.php';
+                include __DIR__ . '/../steps/schema_import.php';
+            } else {
+                include __DIR__ . '/../steps/migration_execute.php';
+                include __DIR__ . '/../steps/migration_list.php';
+                include __DIR__ . '/../steps/migration_status.php';
+                include __DIR__ . '/../steps/migration_create.php';
+            }
+        } catch (Exception $e) {
+            Out::outError($e->getMessage());
+        } catch (Throwable $e) {
+            Out::outError($e->getMessage());
+        }
+        /** @noinspection PhpIncludeInspection */
+        require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
+        die();
     }
 }
 

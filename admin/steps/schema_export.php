@@ -9,13 +9,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
-$hasSteps = (
-($_POST["step_code"] == "schema_export")
-);
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('send_sessid')) {
-    /** @noinspection PhpIncludeInspection */
-    require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
+if ($_POST["step_code"] == "schema_export" && check_bitrix_sessid('send_sessid')) {
 
     $params = !empty($_POST['params']) ? $_POST['params'] : [];
     $checked = !empty($_POST['schema_checked']) ? $_POST['schema_checked'] : [];
@@ -78,7 +72,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $hasSteps && check_bitrix_sessid('se
         <?
     }
 
-    /** @noinspection PhpIncludeInspection */
-    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
-    die();
 }

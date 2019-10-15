@@ -8,9 +8,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
 }
 
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sessid')) {
-    /** @noinspection PhpIncludeInspection */
-    require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
+if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sessid')) {
 
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
@@ -113,7 +111,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["step_code"] == "migration_ex
         </script><?
     }
 
-    /** @noinspection PhpIncludeInspection */
-    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
-    die();
 }

@@ -15,10 +15,7 @@ $listView = (
     ($_POST["step_code"] == "migration_installed")
 );
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('send_sessid')) {
-
-    /** @noinspection PhpIncludeInspection */
-    require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
+if ($listView && check_bitrix_sessid('send_sessid')) {
 
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
@@ -95,8 +92,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $listView && check_bitrix_sessid('se
         <?= Locale::getMessage('LIST_EMPTY') ?>
     <? endif ?>
     <?
-    /** @noinspection PhpIncludeInspection */
-    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
-    die();
 
 }
