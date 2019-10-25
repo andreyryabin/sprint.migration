@@ -583,8 +583,13 @@ class VersionManager
                 continue;
             }
 
+            if ($item->getExtension() != 'php') {
+                continue;
+            }
+
             $filename = pathinfo($item->getPathname(), PATHINFO_FILENAME);
             $timestamp = $this->getVersionTimestamp($filename);
+
             if (!$timestamp) {
                 continue;
             }
