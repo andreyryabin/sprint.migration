@@ -111,7 +111,7 @@ require_once __DIR__ . "/../lib/locale.php";
     "BUILDER_IblockExport_WhatIblockPermissions" => "Доступ к инфоблоку",
 
     "BUILDER_IblockElementsExport1" => "Перенести элементы инфоблоков",
-    "BUILDER_IblockElementsExport2" => "Переносит элементы с полями и свойствами\nПереносит изображения, файлы и списки\nНе переносит категории",
+    "BUILDER_IblockElementsExport2" => "Переносит элементы с полями и свойствами\nПереносит изображения, файлы и списки\nНе переносит категории\nНе прикрепляет элементы к категориям",
     "BUILDER_IblockElementsExport_IblockId" => "Выберите инфоблок",
 
     "BUILDER_HlblockElementsExport1" => "Перенести элементы highload-блоков",
