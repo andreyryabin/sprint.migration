@@ -146,11 +146,13 @@ class FormBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/FormExport.php', [
-            'formExport' => $formExport,
-            'form' => $form,
-            'statuses' => $statuses,
-            'fields' => $fields,
-        ]);
+            Module::getModuleDir() . '/templates/FormExport.php',
+            [
+                'formExport' => $formExport,
+                'form' => $form,
+                'statuses' => $statuses,
+                'fields' => $fields,
+            ]
+        );
     }
 }

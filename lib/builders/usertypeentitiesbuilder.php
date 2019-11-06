@@ -59,9 +59,12 @@ class UserTypeEntitiesBuilder extends VersionBuilder
             }
         }
 
-        $this->createVersionFile(Module::getModuleDir() . '/templates/UserTypeEntities.php', [
-            'entities' => $entities,
-        ]);
+        $this->createVersionFile(
+            Module::getModuleDir() . '/templates/UserTypeEntities.php',
+            [
+                'entities' => $entities,
+            ]
+        );
     }
 
 

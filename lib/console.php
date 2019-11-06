@@ -5,6 +5,7 @@ namespace Sprint\Migration;
 use CGroup;
 use CUser;
 use Exception;
+use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Throwable;
 
@@ -169,9 +170,9 @@ class Console
     public function commandList()
     {
         if ($this->getArg('--new')) {
-            $status = 'new';
+            $status = VersionEnum::STATUS_NEW;
         } elseif ($this->getArg('--installed')) {
-            $status = 'installed';
+            $status = VersionEnum::STATUS_INSTALLED;
         } else {
             $status = '';
         }
@@ -187,9 +188,9 @@ class Console
             $summary[$status] = 0;
         } else {
             $summary = [
-                'new' => 0,
-                'installed' => 0,
-                'unknown' => 0,
+                VersionEnum::STATUS_NEW => 0,
+                VersionEnum::STATUS_INSTALLED => 0,
+                VersionEnum::STATUS_UNKNOWN => 0,
             ];
         }
 
@@ -246,10 +247,10 @@ class Console
         }
 
         if ($this->versionManager->checkVersionName($versionName)) {
-            $this->executeOnce($versionName, 'up');
+            $this->executeOnce($versionName, VersionEnum::ACTION_UP);
         } else {
             $this->executeAll([
-                'status' => 'new',
+                'status' => VersionEnum::STATUS_NEW,
                 'search' => $this->getArg('--search='),
                 'tag' => $this->getArg('--tag='),
             ]);
@@ -269,10 +270,10 @@ class Console
         }
 
         if ($this->versionManager->checkVersionName($versionName)) {
-            $this->executeOnce($versionName, 'down');
+            $this->executeOnce($versionName, VersionEnum::ACTION_DOWN);
         } else {
             $this->executeAll([
-                'status' => 'installed',
+                'status' => VersionEnum::STATUS_INSTALLED,
                 'search' => $this->getArg('--search='),
                 'tag' => $this->getArg('--tag='),
             ]);
@@ -286,8 +287,8 @@ class Console
     {
         $version = $this->getArg(0);
         if ($version) {
-            $this->executeVersion($version, 'down');
-            $this->executeVersion($version, 'up');
+            $this->executeVersion($version, VersionEnum::ACTION_DOWN);
+            $this->executeVersion($version, VersionEnum::ACTION_UP);
         } else {
             $this->exitWithMessage('Version not found!');
         }
@@ -375,7 +376,7 @@ class Console
     public function commandMigrate()
     {
         /** @compability */
-        $status = $this->getArg('--down') ? 'installed' : 'new';
+        $status = $this->getArg('--down') ? VersionEnum::STATUS_INSTALLED : VersionEnum::STATUS_NEW;
         $this->executeAll([
             'status' => $status,
             'search' => $this->getArg('--search='),
@@ -401,9 +402,9 @@ class Console
         $version = $this->getArg(0);
         if ($version) {
             if ($this->getArg('--down')) {
-                $this->executeOnce($version, 'down');
+                $this->executeOnce($version, VersionEnum::ACTION_DOWN);
             } else {
-                $this->executeOnce($version, 'up');
+                $this->executeOnce($version, VersionEnum::ACTION_UP);
             }
         } else {
             $this->exitWithMessage('Version not found!');
@@ -511,7 +512,7 @@ class Console
 
         $versions = $this->versionManager->getVersions($filter);
 
-        $action = ($filter['status'] == 'new') ? 'up' : 'down';
+        $action = ($filter['status'] == VersionEnum::STATUS_NEW) ? VersionEnum::ACTION_UP : VersionEnum::ACTION_DOWN;
 
         foreach ($versions as $item) {
 
@@ -541,7 +542,7 @@ class Console
      * @param string $action
      * @throws MigrationException
      */
-    protected function executeOnce($version, $action = 'up')
+    protected function executeOnce($version, $action = VersionEnum::ACTION_UP)
     {
         $ok = $this->executeVersion($version, $action);
 
@@ -550,7 +551,7 @@ class Console
         }
     }
 
-    protected function executeVersion($version, $action = 'up')
+    protected function executeVersion($version, $action = VersionEnum::ACTION_UP)
     {
 
         $tag = $this->getArg('--add-tag=', '');

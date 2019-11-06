@@ -30,6 +30,6 @@ class BlankBuilder extends VersionBuilder
             $template = Module::getModuleDir() . '/templates/version.php';
         }
 
-        $this->createVersionFile($template, []);
+        $this->createVersionFile($template, [], false);
     }
 }

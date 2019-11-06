@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
 use Sprint\Migration\VersionManager;
 
@@ -33,11 +34,11 @@ class MarkerBuilder extends AbstractBuilder
             'select' => [
                 [
                     'title' => Locale::getMessage('MARK_AS_INSTALLED'),
-                    'value' => 'installed',
+                    'value' => VersionEnum::STATUS_INSTALLED,
                 ],
                 [
                     'title' => Locale::getMessage('MARK_AS_NEW'),
-                    'value' => 'new',
+                    'value' => VersionEnum::STATUS_NEW,
                 ],
             ],
         ]);

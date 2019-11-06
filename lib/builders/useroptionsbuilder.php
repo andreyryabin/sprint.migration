@@ -82,13 +82,14 @@ class UserOptionsBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/UserOptionsExport.php', [
-            'exportUserForm' => $exportUserForm,
-            'exportUserList' => $exportUserList,
-            'exportUserGroupList' => $exportUserGroupList,
-            'exportUserGrid' => $exportUserGrid,
-            'exportUserGroupGrid' => $exportUserGroupGrid,
-        ]);
-
+            Module::getModuleDir() . '/templates/UserOptionsExport.php',
+            [
+                'exportUserForm' => $exportUserForm,
+                'exportUserList' => $exportUserList,
+                'exportUserGroupList' => $exportUserGroupList,
+                'exportUserGrid' => $exportUserGrid,
+                'exportUserGroupGrid' => $exportUserGroupGrid,
+            ]
+        );
     }
 }

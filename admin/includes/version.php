@@ -3,7 +3,7 @@
 use Sprint\Migration\Locale;
 
 $search = '';
-$listview = 'list';
+$listview = 'view_all';
 $addtag = '';
 
 
@@ -47,14 +47,16 @@ $addtag = '';
                        class="adm-input"
                        name="migration_search"/>
                 <select class="sp-stat">
-                    <option <? if ($listview == 'list'): ?>selected="selected"<? endif ?>
-                            value="list"><?= Locale::getMessage('TOGGLE_LIST') ?></option>
-                    <option <? if ($listview == 'new'): ?>selected="selected"<? endif ?>
-                            value="new"><?= Locale::getMessage('TOGGLE_NEW') ?></option>
-                    <option <? if ($listview == 'installed'): ?>selected="selected"<? endif ?>
-                            value="installed"><?= Locale::getMessage('TOGGLE_INSTALLED') ?></option>
-                    <option <? if ($listview == 'status'): ?>selected="selected"<? endif ?>
-                            value="status"><?= Locale::getMessage('TOGGLE_STATUS') ?></option>
+                    <option <? if ($listview == 'migration_view_all'): ?>selected="selected"<? endif ?>
+                            value="migration_view_all"><?= Locale::getMessage('TOGGLE_LIST') ?></option>
+                    <option <? if ($listview == 'migration_view_new'): ?>selected="selected"<? endif ?>
+                            value="migration_view_new"><?= Locale::getMessage('TOGGLE_NEW') ?></option>
+                    <option <? if ($listview == 'migration_view_installed'): ?>selected="selected"<? endif ?>
+                            value="migration_view_installed"><?= Locale::getMessage('TOGGLE_INSTALLED') ?></option>
+                    <option <? if ($listview == 'migration_view_tag'): ?>selected="selected"<? endif ?>
+                            value="migration_view_tag"><?= Locale::getMessage('TOGGLE_TAG') ?></option>
+                    <option <? if ($listview == 'migration_view_status'): ?>selected="selected"<? endif ?>
+                            value="migration_view_status"><?= Locale::getMessage('TOGGLE_STATUS') ?></option>
                 </select>
                 <input type="button" value="<?= Locale::getMessage('SEARCH') ?>" class="sp-search"/>
 

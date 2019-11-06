@@ -58,9 +58,11 @@ class AgentBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/AgentExport.php', [
-            'items' => $items,
-        ]);
+            Module::getModuleDir() . '/templates/AgentExport.php',
+            [
+                'items' => $items,
+            ]
+        );
 
     }
 

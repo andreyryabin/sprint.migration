@@ -61,8 +61,7 @@ function migrationEnableButtons(enable) {
 }
 
 function migrationMigrationRefresh(callbackAfterRefresh) {
-    var view = $('.sp-stat').val();
-    migrationExecuteStep('migration_' + view, {}, function (data) {
+    migrationExecuteStep($('.sp-stat').val(), {}, function (data) {
         $('#migration_migrations').empty().html(data);
         if (callbackAfterRefresh) {
             callbackAfterRefresh()

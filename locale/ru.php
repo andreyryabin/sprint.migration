@@ -24,6 +24,7 @@ require_once __DIR__ . "/../lib/locale.php";
     "TOGGLE_NEW" => "Новые",
     "TOGGLE_STATUS" => "Суммарно",
     "TOGGLE_INSTALLED" => "Установленные",
+    "TOGGLE_TAG" => "Тег",
 
     "LINK_MP" => "Маркетплейс",
     "LINK_DOC" => "Документация",

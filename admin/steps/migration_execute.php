@@ -1,5 +1,6 @@
 <?php
 
+use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 
@@ -24,13 +25,13 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
     $addtag = !empty($_POST['addtag']) ? trim($_POST['addtag']) : '';
 
     if (!$version) {
-        if ($nextAction == 'up' || $nextAction == 'down') {
+        if ($nextAction == VersionEnum::ACTION_UP || $nextAction == VersionEnum::ACTION_DOWN) {
 
             $version = 0;
             $action = $nextAction;
 
             $items = $versionManager->getVersions([
-                'status' => ($action == 'up') ? 'new' : 'installed',
+                'status' => ($action == VersionEnum::ACTION_UP) ? VersionEnum::STATUS_NEW : VersionEnum::STATUS_INSTALLED,
                 'search' => $search,
             ]);
 

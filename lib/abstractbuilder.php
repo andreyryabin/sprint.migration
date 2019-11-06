@@ -307,4 +307,5 @@ abstract class AbstractBuilder extends ExchangeEntity
     {
         return HelperManager::getInstance();
     }
+
 }

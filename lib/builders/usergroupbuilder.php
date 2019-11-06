@@ -64,10 +64,11 @@ class UserGroupBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/UserGroupExport.php', [
-            'items' => $items,
-        ]);
-
+            Module::getModuleDir() . '/templates/UserGroupExport.php',
+            [
+                'items' => $items,
+            ]
+        );
     }
 
     protected function getUserGroups()

@@ -57,9 +57,11 @@ class EventBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/EventExport.php', [
-            'result' => $result,
-        ]);
+            Module::getModuleDir() . '/templates/EventExport.php',
+            [
+                'result' => $result,
+            ]
+        );
     }
 
 

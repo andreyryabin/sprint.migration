@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\VersionManager;
@@ -39,15 +40,15 @@ class TransferBuilder extends AbstractBuilder
             'select' => [
                 [
                     'title' => Locale::getMessage('BUILDER_TransferInstalled'),
-                    'value' => 'installed',
+                    'value' => VersionEnum::STATUS_INSTALLED,
                 ],
                 [
                     'title' => Locale::getMessage('BUILDER_TransferNew'),
-                    'value' => 'new',
+                    'value' => VersionEnum::STATUS_NEW,
                 ],
                 [
                     'title' => Locale::getMessage('BUILDER_TransferUnknown'),
-                    'value' => 'unknown',
+                    'value' => VersionEnum::STATUS_UNKNOWN,
                 ],
                 [
                     'title' => Locale::getMessage('BUILDER_TransferAll'),

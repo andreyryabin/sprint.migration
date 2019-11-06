@@ -66,9 +66,11 @@ class OptionBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/OptionExport.php', [
-            'items' => $items,
-        ]);
+            Module::getModuleDir() . '/templates/OptionExport.php',
+            [
+                'items' => $items,
+            ]
+        );
 
     }
 

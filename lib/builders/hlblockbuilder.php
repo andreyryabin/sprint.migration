@@ -55,11 +55,13 @@ class HlblockBuilder extends VersionBuilder
         $hlblockPermissions = $helper->Hlblock()->exportGroupPermissions($hlblockId);
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/HlblockExport.php', [
-            'hlblock' => $hlblock,
-            'hlblockFields' => $hlblockFields,
-            'hlblockPermissions' => $hlblockPermissions,
-        ]);
+            Module::getModuleDir() . '/templates/HlblockExport.php',
+            [
+                'hlblock' => $hlblock,
+                'hlblockFields' => $hlblockFields,
+                'hlblockPermissions' => $hlblockPermissions,
+            ]
+        );
 
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration;
 
+use Sprint\Migration\Enum\VersionEnum;
+
 abstract class VersionBuilder extends AbstractBuilder
 {
 
@@ -72,7 +74,7 @@ abstract class VersionBuilder extends AbstractBuilder
         ]);
     }
 
-    protected function createVersionFile($templateFile = '', $templateVars = [])
+    protected function createVersionFile($templateFile = '', $templateVars = [], $markAsInstalled = true)
     {
         $templateVars['description'] = $this->purifyDescription(
             $this->getFieldValue('description')
@@ -115,6 +117,11 @@ abstract class VersionBuilder extends AbstractBuilder
         Out::outSuccess(Locale::getMessage('CREATED_SUCCESS', [
             '#VERSION#' => $templateVars['version'],
         ]));
+
+        if ($markAsInstalled) {
+            $vm = new VersionManager($this->getVersionConfig());
+            $vm->markMigration($templateVars['version'], VersionEnum::STATUS_INSTALLED);
+        }
 
         return $templateVars['version'];
     }

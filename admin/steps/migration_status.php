@@ -1,5 +1,6 @@
 <?php
 
+use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
@@ -8,7 +9,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
-if ($_POST["step_code"] == "migration_status" && check_bitrix_sessid('send_sessid')) {
+if ($_POST["step_code"] == "migration_view_status" && check_bitrix_sessid('send_sessid')) {
 
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
@@ -22,9 +23,9 @@ if ($_POST["step_code"] == "migration_status" && check_bitrix_sessid('send_sessi
     ]);
 
     $status = [
-        'new' => 0,
-        'installed' => 0,
-        'unknown' => 0,
+        VersionEnum::STATUS_NEW => 0,
+        VersionEnum::STATUS_INSTALLED => 0,
+        VersionEnum::STATUS_UNKNOWN => 0,
     ];
 
     foreach ($versions as $aItem) {

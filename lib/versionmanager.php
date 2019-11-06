@@ -8,6 +8,7 @@ use Exception;
 use ReflectionClass;
 use ReflectionException;
 use SplFileInfo;
+use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Tables\VersionTable;
@@ -57,7 +58,15 @@ class VersionManager
         return $this->versionTable;
     }
 
-    public function startMigration($versionName, $action = 'up', $params = [], $force = false, $tag = '')
+    /**
+     * @param $versionName
+     * @param string $action
+     * @param array $params
+     * @param bool $force
+     * @param string $tag
+     * @return bool
+     */
+    public function startMigration($versionName, $action = VersionEnum::ACTION_UP, $params = [], $force = false, $tag = '')
     {
         if (isset($this->restarts[$versionName])) {
             unset($this->restarts[$versionName]);
@@ -70,11 +79,11 @@ class VersionManager
             $meta = $this->getVersionByName($versionName);
 
             if (!$force) {
-                if ($action == 'up' && $meta['status'] != 'new') {
+                if ($action == VersionEnum::ACTION_UP && $meta['status'] != VersionEnum::STATUS_NEW) {
                     throw new MigrationException('migration already up');
                 }
 
-                if ($action == 'down' && $meta['status'] != 'installed') {
+                if ($action == VersionEnum::ACTION_DOWN && $meta['status'] != VersionEnum::STATUS_INSTALLED) {
                     throw new MigrationException('migration already down');
                 }
             }
@@ -82,7 +91,7 @@ class VersionManager
             $versionInstance = $this->getVersionInstance($meta);
             $versionInstance->setRestartParams($params);
 
-            if ($action == 'up') {
+            if ($action == VersionEnum::ACTION_UP) {
 
                 $this->checkResultAfterStart($versionInstance->up());
 
@@ -225,13 +234,14 @@ class VersionManager
         $status = trim($status);
 
         $result = [];
-        if (in_array($status, ['new', 'installed'])) {
+        if (in_array($status, [VersionEnum::STATUS_NEW, VersionEnum::STATUS_INSTALLED])) {
             if ($this->checkVersionName($search)) {
                 $meta = $this->getVersionByName($search);
                 $meta = !empty($meta) ? $meta : ['version' => $search];
                 $result[] = $this->markMigrationByMeta($meta, $status);
 
-            } elseif (in_array($search, ['new', 'installed', 'unknown'])) {
+            } elseif (in_array($search,
+                [VersionEnum::STATUS_NEW, VersionEnum::STATUS_INSTALLED, VersionEnum::STATUS_UNKNOWN])) {
                 $metas = $this->getVersions(['status' => $search]);
                 foreach ($metas as $meta) {
                     $result[] = $this->markMigrationByMeta($meta, $status);
@@ -259,7 +269,7 @@ class VersionManager
         $msg = 'MARK_ERROR3';
         $success = false;
 
-        if ($status == 'new') {
+        if ($status == VersionEnum::STATUS_NEW) {
             if ($meta['is_record']) {
                 $this->getVersionTable()->removeRecord($meta);
                 $msg = 'MARK_SUCCESS1';
@@ -267,7 +277,7 @@ class VersionManager
             } else {
                 $msg = 'MARK_ERROR1';
             }
-        } elseif ($status == 'installed') {
+        } elseif ($status == VersionEnum::STATUS_INSTALLED) {
             if (!$meta['is_record']) {
                 $this->getVersionTable()->addRecord($meta);
                 $msg = 'MARK_SUCCESS2';
@@ -315,7 +325,7 @@ class VersionManager
             $merge[$item['version']] = $item['ts'];
         }
 
-        if ($filter['status'] == 'installed' || $filter['status'] == 'unknown') {
+        if ($filter['status'] == VersionEnum::STATUS_INSTALLED || $filter['status'] == VersionEnum::STATUS_UNKNOWN) {
             arsort($merge);
         } else {
             asort($merge);
@@ -422,11 +432,11 @@ class VersionManager
         ];
 
         if ($isRecord && $isFile) {
-            $meta['status'] = 'installed';
+            $meta['status'] = VersionEnum::STATUS_INSTALLED;
         } elseif (!$isRecord && $isFile) {
-            $meta['status'] = 'new';
+            $meta['status'] = VersionEnum::STATUS_NEW;
         } elseif ($isRecord && !$isFile) {
-            $meta['status'] = 'unknown';
+            $meta['status'] = VersionEnum::STATUS_UNKNOWN;
         } else {
             return false;
         }
@@ -627,7 +637,7 @@ class VersionManager
     {
         $result = [];
 
-        if (in_array($versionName, ['new', 'installed', 'unknown'])) {
+        if (in_array($versionName, [VersionEnum::STATUS_NEW, VersionEnum::STATUS_INSTALLED, VersionEnum::STATUS_UNKNOWN])) {
             $metas = $this->getVersions(['status' => $versionName]);
         } elseif ($meta = $this->getVersionByName($versionName)) {
             $metas = [$meta];
