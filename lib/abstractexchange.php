@@ -58,7 +58,7 @@ abstract class AbstractExchange
         );
 
         if (!$enabled) {
-            Throw new ExchangeException('Exchange disabled');
+            Throw new ExchangeException('Exchange disabled, install php-extension XMLReader and XMLWriter');
         }
     }
 
@@ -126,6 +126,11 @@ abstract class AbstractExchange
         }
     }
 
+    /**
+     * @param XMLWriter $writer
+     * @param $fileIds
+     * @throws Exception
+     */
     protected function writeFile(XMLWriter $writer, $fileIds)
     {
         if (is_array($fileIds)) {
