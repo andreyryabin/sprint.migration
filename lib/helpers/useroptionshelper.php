@@ -61,10 +61,13 @@ class UserOptionsHelper extends Helper
     {
         $this->checkRequiredKeys(__METHOD__, $params, ['name']);
 
-        $params = array_merge([
-            'name' => '',
-            'category' => 'list',
-        ], $params);
+        $params = array_merge(
+            [
+                'name' => '',
+                'category' => 'list',
+            ],
+            $params
+        );
 
         $option = CUserOptions::GetOption(
             $params['category'],
@@ -77,11 +80,14 @@ class UserOptionsHelper extends Helper
             return [];
         }
 
-        $option = array_merge([
-            'page_size' => 20,
-            'order' => 'desc',
-            'by' => 'timestamp_x',
-        ], $option);
+        $option = array_merge(
+            [
+                'page_size' => 20,
+                'order' => 'desc',
+                'by' => 'timestamp_x',
+            ],
+            $option
+        );
 
         $option['columns'] = explode(',', $option['columns']);
         foreach ($option['columns'] as $index => $columnCode) {
@@ -111,17 +117,23 @@ class UserOptionsHelper extends Helper
             ];
         }
 
-        $params = array_merge([
-            'name' => '',
-            'category' => 'list',
-        ], $params);
+        $params = array_merge(
+            [
+                'name' => '',
+                'category' => 'list',
+            ],
+            $params
+        );
 
-        $data = array_merge([
-            'columns' => [],
-            'page_size' => 20,
-            'order' => 'desc',
-            'by' => 'timestamp_x',
-        ], $data);
+        $data = array_merge(
+            [
+                'columns' => [],
+                'page_size' => 20,
+                'order' => 'desc',
+                'by' => 'timestamp_x',
+            ],
+            $data
+        );
 
         if (empty($data) || empty($data['columns'])) {
             CUserOptions::DeleteOptionsByName($params['category'], $params['name']);
@@ -234,11 +246,13 @@ class UserOptionsHelper extends Helper
             $this->throwException(__METHOD__, 'name_prefix is no longer supported, see examples');
         }
 
-        $params = array_merge([
-            'name' => '',
-            'category' => 'form',
-        ], $params);
-
+        $params = array_merge(
+            [
+                'name' => '',
+                'category' => 'form',
+            ],
+            $params
+        );
 
         $option = CUserOptions::GetOption(
             $params['category'],
@@ -254,9 +268,11 @@ class UserOptionsHelper extends Helper
         }
 
         $optionTabs = explode(';', $option['tabs']);
+
         foreach ($optionTabs as $tabStrings) {
             $extractedFields = [];
             $tabTitle = '';
+            $tabId = '';
 
             $columnString = explode(',', $tabStrings);
 
@@ -275,6 +291,7 @@ class UserOptionsHelper extends Helper
 
                 if ($fieldIndex == 0) {
                     $tabTitle = $fieldTitle;
+                    $tabId = $fieldCode;
                 } else {
                     $fieldCode = $this->revertCode($fieldCode);
                     $extractedFields[$fieldCode] = $fieldTitle;
@@ -282,9 +299,8 @@ class UserOptionsHelper extends Helper
             }
 
             if ($tabTitle) {
-                $extractedTabs[$tabTitle] = $extractedFields;
+                $extractedTabs[$tabTitle . '|' . $tabId] = $extractedFields;
             }
-
         }
 
         return $extractedTabs;
@@ -303,10 +319,13 @@ class UserOptionsHelper extends Helper
             $this->throwException(__METHOD__, 'name_prefix is no longer supported, see examples');
         }
 
-        $params = array_merge([
-            'name' => '',
-            'category' => 'form',
-        ], $params);
+        $params = array_merge(
+            [
+                'name' => '',
+                'category' => 'form',
+            ],
+            $params
+        );
 
         if (empty($formData)) {
             CUserOptions::DeleteOptionsByName(
@@ -320,12 +339,17 @@ class UserOptionsHelper extends Helper
         $tabVals = [];
 
         foreach ($formData as $tabTitle => $fields) {
+            list($tabTitle, $tabId) = explode('|', $tabTitle);
 
-            $tabCode = ($tabIndex == 0) ? 'edit' . ($tabIndex + 1) : '--edit' . ($tabIndex + 1);
-            $tabVals[$tabIndex][] = $tabCode . '--#--' . $tabTitle . '--';
+            if (!$tabId) {
+                $tabId = 'edit' . ($tabIndex + 1);
+            }
+
+            $tabId = ($tabIndex == 0) ? $tabId : '--' . $tabId;
+
+            $tabVals[$tabIndex][] = $tabId . '--#--' . $tabTitle . '--';
 
             foreach ($fields as $fieldKey => $fieldValue) {
-
                 if (is_numeric($fieldKey)) {
                     /** @compability */
                     list($fcode, $ftitle) = explode('|', $fieldValue);
@@ -389,5 +413,4 @@ class UserOptionsHelper extends Helper
             return true;
         }
     }
-
 }
