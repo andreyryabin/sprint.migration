@@ -80,9 +80,17 @@ class IblockExchangeHelper extends ExchangeHelper
 
         $result = [];
         while ($item = $dbres->GetNextElement(false, false)) {
+
+            $fields = $item->GetFields();
+            $props = $item->GetProperties();
+
+            $fields['IBLOCK_SECTION'] = $this->getHelperManager()
+                ->Iblock()
+                ->getElementSectionIds($fields['ID']);
+
             $result[] = [
-                'FIELDS' => $item->GetFields(),
-                'PROPS' => $item->GetProperties(),
+                'FIELDS' => $fields,
+                'PROPS' => $props,
             ];
         }
         return $result;

@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Exchange;
 
+use Exception;
 use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\Helpers\IblockExchangeHelper;
@@ -68,6 +69,7 @@ class IblockElementsExport extends AbstractExchange
 
     /**
      * @throws RestartException
+     * @throws Exception
      */
     public function execute()
     {
@@ -147,6 +149,11 @@ class IblockElementsExport extends AbstractExchange
         }
     }
 
+    /**
+     * @param XMLWriter $writer
+     * @param $val
+     * @throws Exception
+     */
     protected function writeFieldF(XMLWriter $writer, $val)
     {
         $this->writeFile($writer, $val);
@@ -176,6 +183,11 @@ class IblockElementsExport extends AbstractExchange
         $this->writeValue($writer, $prop['VALUE_XML_ID']);
     }
 
+    /**
+     * @param XMLWriter $writer
+     * @param $prop
+     * @throws Exception
+     */
     protected function writePropertyF(XMLWriter $writer, $prop)
     {
         $this->writeFile($writer, $prop['VALUE']);

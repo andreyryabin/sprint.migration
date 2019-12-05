@@ -33,11 +33,13 @@ trait IblockElementTrait
         ], $select);
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        return CIBlockElement::GetList([
+        $item = CIBlockElement::GetList([
             'SORT' => 'ASC',
         ], $filter, false, [
             'nTopCount' => 1,
         ], $select)->Fetch();
+
+        return $this->prepareElement($item);
     }
 
     /**
@@ -78,7 +80,7 @@ trait IblockElementTrait
 
         $list = [];
         while ($item = $dbres->Fetch()) {
-            $list[] = $item;
+            $list[] = $this->prepareElement($item);;
         }
         return $list;
     }
@@ -101,6 +103,27 @@ trait IblockElementTrait
             false,
             ['ID', 'NAME']
         );
+    }
+
+    /**
+     * @param $elementId
+     * @param array $sectionSelect
+     * @return mixed
+     */
+    public function getElementSections($elementId, $sectionSelect = [])
+    {
+        $dbres = CIBlockElement::GetElementGroups($elementId, true, $sectionSelect);
+        return $this->fetchAll($dbres);
+    }
+
+    /**
+     * @param $elementId
+     * @return array
+     */
+    public function getElementSectionIds($elementId)
+    {
+        $sections = $this->getElementSections($elementId);
+        return array_column($sections, 'ID');
     }
 
     /**
@@ -242,4 +265,18 @@ trait IblockElementTrait
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
+    /**
+     * @param $item
+     * @return mixed
+     */
+    protected function prepareElement($item)
+    {
+        if (empty($item['ID'])) {
+            return $item;
+        }
+
+        $item['IBLOCK_SECTION'] = $this->getElementSectionIds($item['ID']);
+
+        return $item;
+    }
 }

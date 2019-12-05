@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Exchange;
 
+use Exception;
 use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
@@ -32,6 +33,7 @@ class HlblockElementsExport extends AbstractExchange
     /**
      * @throws RestartException
      * @throws HelperException
+     * @throws Exception
      */
     public function execute()
     {
@@ -114,6 +116,11 @@ class HlblockElementsExport extends AbstractExchange
         $this->writeValue($writer, $field['VALUE']);
     }
 
+    /**
+     * @param XMLWriter $writer
+     * @param $field
+     * @throws Exception
+     */
     protected function writeFieldFile(XMLWriter $writer, $field)
     {
         $this->writeFile($writer, $field['VALUE']);
