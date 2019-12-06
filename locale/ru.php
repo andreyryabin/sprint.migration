@@ -115,6 +115,10 @@ require_once __DIR__ . "/../lib/locale.php";
     "BUILDER_IblockElementsExport2" => "Переносит элементы с полями и свойствами\nПереносит изображения, файлы и списки\nНе переносит категории\nНе прикрепляет элементы к категориям",
     "BUILDER_IblockElementsExport_IblockId" => "Выберите инфоблок",
 
+    "BUILDER_IblockCategoryExport1" => "Перенести категории инфоблоков",
+    "BUILDER_IblockCategoryExport2" => "Переносит категории инфоблоков без изображений",
+    "BUILDER_IblockCategoryExport_IblockId" => "Выберите инфоблок",
+
     "BUILDER_HlblockElementsExport1" => "Перенести элементы highload-блоков",
     "BUILDER_HlblockElementsExport2" => "Переносит элементы\nПереносит изображения, файлы и списки",
     "BUILDER_HlblockElementsExport_HlblockId" => "Выберите highload-блок",

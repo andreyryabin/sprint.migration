@@ -80,7 +80,7 @@ class IblockElementsBuilder extends VersionBuilder
                 'DETAIL_TEXT_TYPE',
                 'PREVIEW_PICTURE',
                 'DETAIL_PICTURE',
-                'IBLOCK_SECTION'
+                'IBLOCK_SECTION',
             ])
             ->setExportProperties(
                 $this->getIblockPropertiesCodes($iblockId)

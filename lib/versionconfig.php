@@ -12,6 +12,7 @@ use Sprint\Migration\Builders\FormBuilder;
 use Sprint\Migration\Builders\HlblockBuilder;
 use Sprint\Migration\Builders\HlblockElementsBuilder;
 use Sprint\Migration\Builders\IblockBuilder;
+use Sprint\Migration\Builders\IblockCategoryBuilder;
 use Sprint\Migration\Builders\IblockElementsBuilder;
 use Sprint\Migration\Builders\MarkerBuilder;
 use Sprint\Migration\Builders\OptionBuilder;
@@ -395,6 +396,7 @@ class VersionConfig
             'IblockBuilder' => IblockBuilder::class,
             'HlblockBuilder' => HlblockBuilder::class,
             'IblockElementsBuilder' => IblockElementsBuilder::class,
+            'IblockCategoryBuilder' => IblockCategoryBuilder::class,
             'HlblockElementsBuilder' => HlblockElementsBuilder::class,
             'UserTypeEntitiesBuilder' => UserTypeEntitiesBuilder::class,
             'AgentBuilder' => AgentBuilder::class,
