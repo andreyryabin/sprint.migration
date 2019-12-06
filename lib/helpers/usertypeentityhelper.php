@@ -65,7 +65,6 @@ class UserTypeEntityHelper extends Helper
      */
     public function addUserTypeEntity($entityId, $fieldName, $fields)
     {
-
         $default = [
             "ENTITY_ID" => '',
             "FIELD_NAME" => '',
@@ -88,13 +87,10 @@ class UserTypeEntityHelper extends Helper
 
         $fields = array_replace_recursive($default, $fields);
         $fields['FIELD_NAME'] = $fieldName;
-        $fields['ENTITY_ID'] = $entityId;
+        $fields['ENTITY_ID'] = $this->revertEntityId($entityId);
 
-        $enums = [];
-        if (isset($fields['ENUM_VALUES'])) {
-            $enums = $fields['ENUM_VALUES'];
-            unset($fields['ENUM_VALUES']);
-        }
+        $this->revertSettings($fields);
+        $enums = $this->revertEnums($fields);
 
         $obUserField = new CUserTypeEntity;
         $userFieldId = $obUserField->Add($fields);
@@ -126,15 +122,12 @@ class UserTypeEntityHelper extends Helper
      */
     public function updateUserTypeEntity($fieldId, $fields)
     {
-        $enums = [];
-        if (isset($fields['ENUM_VALUES'])) {
-            $enums = $fields['ENUM_VALUES'];
-            unset($fields['ENUM_VALUES']);
-        }
-
         unset($fields["ENTITY_ID"]);
         unset($fields["FIELD_NAME"]);
         unset($fields["MULTIPLE"]);
+
+        $this->revertSettings($fields);
+        $enums = $this->revertEnums($fields);
 
         $entity = new CUserTypeEntity;
         $userFieldUpdated = $entity->Update($fieldId, $fields);
@@ -211,7 +204,7 @@ class UserTypeEntityHelper extends Helper
     public function exportUserTypeEntity($fieldId)
     {
         $item = $this->getUserTypeEntityById($fieldId);
-        return $this->prepareExportUserTypeEntity($item, true);
+        return $this->prepareExportUserTypeEntity($item);
     }
 
     /**
@@ -226,7 +219,7 @@ class UserTypeEntityHelper extends Helper
         $items = $this->getUserTypeEntities($entityId);
         $export = [];
         foreach ($items as $item) {
-            $export[] = $this->prepareExportUserTypeEntity($item, true);
+            $export[] = $this->prepareExportUserTypeEntity($item);
         }
         return $export;
     }
@@ -404,7 +397,6 @@ class UserTypeEntityHelper extends Helper
      */
     public function saveUserTypeEntity($fields = [])
     {
-
         if (func_num_args() > 1) {
             /** @compability */
             list($entityId, $fieldName, $fields) = func_get_args();
@@ -414,17 +406,13 @@ class UserTypeEntityHelper extends Helper
 
         $this->checkRequiredKeys(__METHOD__, $fields, ['ENTITY_ID', 'FIELD_NAME']);
 
-        $fields['ENTITY_ID'] = $this->revertEntityId(
-            $fields['ENTITY_ID']
-        );
-
         $exists = $this->getUserTypeEntity(
-            $fields['ENTITY_ID'],
+            $this->revertEntityId($fields['ENTITY_ID']),
             $fields['FIELD_NAME']
         );
 
-        $exportExists = $this->prepareExportUserTypeEntity($exists, false);
-        $fields = $this->prepareExportUserTypeEntity($fields, false);
+        $exportExists = $this->prepareExportUserTypeEntity($exists);
+        $fields = $this->prepareExportUserTypeEntity($fields);
 
         if (empty($exists)) {
             $ok = $this->getMode('test') ? true : $this->addUserTypeEntity(
@@ -456,38 +444,27 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
-     * @param $entity
-     * @param bool $transformEntityId
+     * @param $fields
      * @throws HelperException
      * @return mixed
      */
-    protected function prepareExportUserTypeEntity($entity, $transformEntityId = false)
+    protected function prepareExportUserTypeEntity($fields)
     {
-        if (empty($entity)) {
-            return $entity;
+        if (empty($fields)) {
+            return $fields;
         }
 
-        if (!empty($entity['ENUM_VALUES']) && is_array($entity['ENUM_VALUES'])) {
-            $exportValues = [];
-            foreach ($entity['ENUM_VALUES'] as $item) {
-                $exportValues[] = [
-                    'VALUE' => $item['VALUE'],
-                    'DEF' => $item['DEF'],
-                    'SORT' => $item['SORT'],
-                    'XML_ID' => $item['XML_ID'],
-                ];
-            }
-            $entity['ENUM_VALUES'] = $exportValues;
-        }
+        $this->transformSettings($fields);
+        $this->transformEnums($fields);
 
-        if ($transformEntityId) {
-            $entity['ENTITY_ID'] = $this->transformEntityId(
-                $entity['ENTITY_ID']
-            );
-        }
 
-        unset($entity['ID']);
-        return $entity;
+        $fields['ENTITY_ID'] = $this->transformEntityId(
+            $fields['ENTITY_ID']
+        );
+
+
+        unset($fields['ID']);
+        return $fields;
     }
 
     /**
@@ -514,6 +491,75 @@ class UserTypeEntityHelper extends Helper
             }
         }
         return false;
+    }
+
+    private function transformSettings(&$fields)
+    {
+        if ($fields['USER_TYPE_ID'] == 'iblock_element') {
+            if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
+                $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockUid(
+                    $fields['SETTINGS']['IBLOCK_ID']
+                );
+            }
+        }
+        if ($fields['USER_TYPE_ID'] == 'hlblock') {
+            if (!empty($fields['SETTINGS']['HLBLOCK_ID'])) {
+                $fields['SETTINGS']['HLBLOCK_ID'] = (new HlblockHelper())->getHlblockUid(
+                    $fields['SETTINGS']['HLBLOCK_ID']
+                );
+                if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
+                    //
+                }
+            }
+        }
+    }
+
+    private function revertSettings(&$fields)
+    {
+        if ($fields['USER_TYPE_ID'] == 'iblock_element') {
+            if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
+                $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockIdByUid(
+                    $fields['SETTINGS']['IBLOCK_ID']
+                );
+            }
+        }
+        if ($fields['USER_TYPE_ID'] == 'hlblock') {
+            if (!empty($fields['SETTINGS']['HLBLOCK_ID'])) {
+                $fields['SETTINGS']['HLBLOCK_ID'] = (new HlblockHelper())->getHlblockIdByUid(
+                    $fields['SETTINGS']['HLBLOCK_ID']
+                );
+                if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
+                    //
+                }
+            }
+        }
+    }
+
+    private function transformEnums(&$fields)
+    {
+        if (!empty($fields['ENUM_VALUES']) && is_array($fields['ENUM_VALUES'])) {
+            $exportValues = [];
+            foreach ($fields['ENUM_VALUES'] as $item) {
+                $exportValues[] = [
+                    'VALUE' => $item['VALUE'],
+                    'DEF' => $item['DEF'],
+                    'SORT' => $item['SORT'],
+                    'XML_ID' => $item['XML_ID'],
+                ];
+            }
+            $fields['ENUM_VALUES'] = $exportValues;
+        }
+    }
+
+    private function revertEnums(&$fields)
+    {
+        $enums = [];
+        if (isset($fields['ENUM_VALUES'])) {
+            $enums = $fields['ENUM_VALUES'];
+            unset($fields['ENUM_VALUES']);
+        }
+
+        return $enums;
     }
 
 }
