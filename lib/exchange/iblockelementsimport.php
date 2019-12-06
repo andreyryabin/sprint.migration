@@ -163,9 +163,9 @@ class IblockElementsImport extends AbstractExchange
 
         $convertedFields = [];
         foreach ($item['fields'] as $field) {
-            $method = $this->getConvertFieldMethod($field['name']);
+            $method = $this->getConvertFieldMethod($item['iblock_id'], $field['name']);
             if (method_exists($this, $method)) {
-                $convertedFields[$field['name']] = $this->$method($field);
+                $convertedFields[$field['name']] = $this->$method($item['iblock_id'], $field);
             }
         }
 
@@ -188,21 +188,47 @@ class IblockElementsImport extends AbstractExchange
         ];
     }
 
-    protected function getConvertFieldMethod($code)
+    /**
+     * @param $iblockId
+     * @param $code
+     * @return string
+     */
+    protected function getConvertFieldMethod($iblockId, $code)
     {
         if (in_array($code, ['PREVIEW_PICTURE', 'DETAIL_PICTURE'])) {
             return 'convertFieldF';
+        } elseif ($code == 'IBLOCK_SECTION') {
+            return 'convertFieldIblockSection';
         } else {
             return 'convertFieldS';
         }
     }
 
-    protected function convertFieldS($field)
+    /**
+     * @param $iblockId
+     * @param $field
+     * @return mixed
+     */
+    protected function convertFieldS($iblockId, $field)
     {
         return $field['value'][0]['value'];
     }
 
-    protected function convertFieldF($field)
+    protected function convertFieldIblockSection($iblockId, $field)
+    {
+        $res = [];
+        foreach ($field['value'] as $val) {
+            $res[] = $val['value'];
+        }
+        return $res;
+    }
+
+    /**
+     * @param $iblockId
+     * @param $field
+     * @return array|bool|null
+     */
+    protected function convertFieldF($iblockId, $field)
     {
         return $this->makeFile($field['value'][0]);
     }
