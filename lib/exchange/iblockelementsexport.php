@@ -144,6 +144,8 @@ class IblockElementsExport extends AbstractExchange
     {
         if (in_array($code, ['PREVIEW_PICTURE', 'DETAIL_PICTURE'])) {
             return 'writeFieldF';
+        } elseif ($code == 'IBLOCK_SECTION') {
+            return 'writeFieldSection';
         } else {
             return 'writeFieldS';
         }
@@ -157,6 +159,11 @@ class IblockElementsExport extends AbstractExchange
     protected function writeFieldF(XMLWriter $writer, $val)
     {
         $this->writeFile($writer, $val);
+    }
+
+    protected function writeFieldSection(XMLWriter $writer, $val)
+    {
+        $this->writeValue($writer, $val);
     }
 
     protected function writeFieldS(XMLWriter $writer, $val)
