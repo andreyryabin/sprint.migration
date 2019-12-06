@@ -105,6 +105,55 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockName
+     * @param $field
+     * @throws HelperException
+     * @return mixed|string
+     */
+    public function getFieldUid($hlblockName, $field)
+    {
+        $entityHelper = new UserTypeEntityHelper();
+        $entityHelper->setMode($this);
+
+        if (!is_array($field)) {
+            //на вход пришел id или название поля
+            if (is_numeric($field)) {
+                $field = $entityHelper->getUserTypeEntityById($field);
+            } else {
+                $field = $entityHelper->getUserTypeEntity(
+                    $this->getEntityId($hlblockName),
+                    $field
+                );
+            }
+        }
+        return !empty($field['FIELD_NAME']) ? $field['FIELD_NAME'] : '';
+    }
+
+
+    /**
+     * @param $hlblockName
+     * @param $fieldUid
+     * @throws HelperException
+     * @return int
+     */
+    public function getFieldIdByUid($hlblockName, $fieldUid)
+    {
+        $fieldId = 0;
+
+        if (empty($fieldUid)) {
+            return $fieldId;
+        }
+
+        if (is_numeric($fieldUid)) {
+            return $fieldUid;
+        }
+
+        $field = $this->getField($hlblockName, $fieldUid);
+
+        return ($field) ? (int)$field['ID'] : 0;
+    }
+
+    /**
+     * @param $hlblockName
      * @throws HelperException
      * @return string
      */

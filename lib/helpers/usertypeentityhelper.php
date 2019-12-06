@@ -183,8 +183,6 @@ class UserTypeEntityHelper extends Helper
             $filter = [];
         }
 
-
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbres = CUserTypeEntity::GetList([], $filter);
         $result = [];
         while ($item = $dbres->Fetch()) {
@@ -232,7 +230,6 @@ class UserTypeEntityHelper extends Helper
      */
     public function getUserTypeEntity($entityId, $fieldName)
     {
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $item = CUserTypeEntity::GetList([], [
             'ENTITY_ID' => $entityId,
             'FIELD_NAME' => $fieldName,
@@ -493,6 +490,10 @@ class UserTypeEntityHelper extends Helper
         return false;
     }
 
+    /**
+     * @param $fields
+     * @throws HelperException
+     */
     private function transformSettings(&$fields)
     {
         if ($fields['USER_TYPE_ID'] == 'iblock_element') {
@@ -508,12 +509,19 @@ class UserTypeEntityHelper extends Helper
                     $fields['SETTINGS']['HLBLOCK_ID']
                 );
                 if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
-                    //
+                    $fields['SETTINGS']['HLFIELD_ID'] = (new HlblockHelper())->getFieldUid(
+                        $fields['SETTINGS']['HLBLOCK_ID'],
+                        $fields['SETTINGS']['HLFIELD_ID']
+                    );
                 }
             }
         }
     }
 
+    /**
+     * @param $fields
+     * @throws HelperException
+     */
     private function revertSettings(&$fields)
     {
         if ($fields['USER_TYPE_ID'] == 'iblock_element') {
@@ -529,7 +537,10 @@ class UserTypeEntityHelper extends Helper
                     $fields['SETTINGS']['HLBLOCK_ID']
                 );
                 if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
-                    //
+                    $fields['SETTINGS']['HLFIELD_ID'] = (new HlblockHelper())->getFieldIdByUid(
+                        $fields['SETTINGS']['HLBLOCK_ID'],
+                        $fields['SETTINGS']['HLFIELD_ID']
+                    );
                 }
             }
         }
