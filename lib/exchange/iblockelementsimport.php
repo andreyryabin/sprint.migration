@@ -214,6 +214,11 @@ class IblockElementsImport extends AbstractExchange
         return $field['value'][0]['value'];
     }
 
+    /**
+     * @param $iblockId
+     * @param $field
+     * @return array
+     */
     protected function convertFieldIblockSection($iblockId, $field)
     {
         $res = [];
