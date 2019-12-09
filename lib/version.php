@@ -8,12 +8,14 @@ namespace Sprint\Migration;
  */
 class Version extends ExchangeEntity
 {
-
     /**
      * @var string
      */
     protected $description = "";
-
+    /**
+     * @var string
+     */
+    protected $moduleVersion = "";
     /**
      * @var array
      */
@@ -22,7 +24,6 @@ class Version extends ExchangeEntity
      * @var string
      */
     protected $storageName = 'default';
-
     /**
      * your code for up
      * @return bool
@@ -65,7 +66,13 @@ class Version extends ExchangeEntity
     {
         return $this->description;
     }
-
+    /**
+     * @return string
+     */
+    public function getModuleVersion()
+    {
+        return $this->moduleVersion;
+    }
     /**
      * @return array
      */

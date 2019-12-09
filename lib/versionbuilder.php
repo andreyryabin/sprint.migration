@@ -98,6 +98,7 @@ abstract class VersionBuilder extends AbstractBuilder
         $tplVars = array_merge([
             'extendUse' => $extendUse,
             'extendClass' => $extendClass,
+            'moduleVersion' => Module::getVersion()
         ], $templateVars);
 
         if (!is_file($templateFile)) {

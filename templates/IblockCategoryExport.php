@@ -4,7 +4,7 @@
  * @var $description
  * @var $extendUse
  * @var $extendClass
- *
+ * @var $moduleVersion
  * @var $iblock
  * @var $sectionTree
  */
@@ -19,6 +19,8 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
     protected $description = "<?php echo $description ?>";
+
+    protected $moduleVersion = "<?php echo $moduleVersion ?>";
 
     /**
      * @throws Exceptions\HelperException

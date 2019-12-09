@@ -5,6 +5,7 @@
  * @var $description
  * @var $extendUse
  * @var $extendClass
+ * @var $moduleVersion
  */
 
 ?><?php echo "<?php\n" ?>
@@ -17,6 +18,8 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
     protected $description = "<?php echo $description ?>";
+
+    protected $moduleVersion = "<?php echo $moduleVersion ?>";
 
     public function up()
     {

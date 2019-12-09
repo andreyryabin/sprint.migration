@@ -6,6 +6,7 @@
  * @var $extendUse
  * @var $extendClass
  * @var $entities
+ * @var $moduleVersion
  */
 
 ?><?php echo "<?php\n" ?>
@@ -18,6 +19,8 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
     protected $description = "<?php echo $description ?>";
+
+    protected $moduleVersion = "<?php echo $moduleVersion ?>";
 
     /**
      * @throws Exceptions\HelperException
