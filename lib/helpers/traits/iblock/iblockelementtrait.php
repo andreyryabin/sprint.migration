@@ -30,6 +30,7 @@ trait IblockElementTrait
             'IBLOCK_ID',
             'NAME',
             'CODE',
+            'ACTIVE',
         ], $select);
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
@@ -71,6 +72,7 @@ trait IblockElementTrait
             'IBLOCK_ID',
             'NAME',
             'CODE',
+            'ACTIVE',
         ], $select);
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
@@ -95,13 +97,21 @@ trait IblockElementTrait
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
 
+        $select = [
+            'ID',
+            'IBLOCK_ID',
+            'NAME',
+            'CODE',
+            'ACTIVE',
+        ];
+
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return (int)CIBlockElement::GetList(
             [],
             $filter,
             [],
             false,
-            ['ID', 'NAME']
+            $select
         );
     }
 
