@@ -65,7 +65,7 @@ class IblockExchangeHelper extends ExchangeHelper
      */
     public function getElements($iblockId, $offset, $limit)
     {
-        $pageNum = (int)floor($offset / $limit) + 1;
+        $pageNum = $this->getPageNumberFromOffset($offset, $limit);
 
         $dbres = CIBlockElement::GetList([
             'ID' => 'ASC',

@@ -27,6 +27,7 @@ trait IblockElementTrait
 
         $select = array_merge([
             'ID',
+            'XML_ID',
             'IBLOCK_ID',
             'NAME',
             'CODE',
@@ -69,6 +70,7 @@ trait IblockElementTrait
 
         $select = array_merge([
             'ID',
+            'XML_ID',
             'IBLOCK_ID',
             'NAME',
             'CODE',
@@ -99,6 +101,7 @@ trait IblockElementTrait
 
         $select = [
             'ID',
+            'XML_ID',
             'IBLOCK_ID',
             'NAME',
             'CODE',
