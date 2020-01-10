@@ -7,6 +7,7 @@ use Exception;
 
 class Module
 {
+    private static $version = '';
 
     public static function getDbOption($name, $default = '')
     {
@@ -84,10 +85,13 @@ class Module
 
     public static function getVersion()
     {
-        $arModuleVersion = [];
-        /** @noinspection PhpIncludeInspection */
-        include self::getModuleDir() . '/install/version.php';
-        return isset($arModuleVersion['VERSION']) ? $arModuleVersion['VERSION'] : '';
+        if (!self::$version) {
+            $arModuleVersion = [];
+            /** @noinspection PhpIncludeInspection */
+            include self::getModuleDir() . '/install/version.php';
+            self::$version = isset($arModuleVersion['VERSION']) ? $arModuleVersion['VERSION'] : '';
+        }
+        return self::$version;
     }
 
     /**

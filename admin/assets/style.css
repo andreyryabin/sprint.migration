@@ -188,15 +188,23 @@ a.sp-item-unknown:visited {
 
 .sp-modified {
     padding: 0 10px;
-    background: #ccc;
-    color: #555;
+    background: #ffcc00;
+    color: #000;
     border-radius: 10px;
+    cursor: default;
 }
-
+.sp-older {
+    padding: 0 10px;
+    background: #a00;
+    color: #fff;
+    border-radius: 10px;
+    cursor: default;
+}
 .sp-tag {
     padding: 0 10px;
     background: #ccc;
     border-radius: 10px;
+    cursor: default;
 }
 
 .sp-optgroup {

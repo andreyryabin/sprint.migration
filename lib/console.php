@@ -211,7 +211,9 @@ class Console
             if ($item['modified']) {
                 $item['version'] .= ' (' . Locale::getMessage('MODIFIED_LABEL') . ')';
             }
-
+            if ($item['older']) {
+                $item['version'] .= ' (' . Locale::getMessage('OLDER_LABEL') . ')';
+            }
             $grid->addRow([
                 $item['version'],
                 Locale::getMessage('META_' . strtoupper($item['status'])),

@@ -2,6 +2,7 @@
 
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
+use Sprint\Migration\Module;
 use Sprint\Migration\Out;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
@@ -72,19 +73,30 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
                                     'site' => SITE_ID,
                                     'path' => $webdir . '/' . $aItem['version'] . '.php',
                                 ]) ?>
-                            <a class="sp-item-<?= $aItem['status'] ?>" href="<?= $href ?>" target="_blank"
-                               title=""><?= $aItem['version'] ?></a>
+                            <a class="sp-item-<?= $aItem['status'] ?>" href="<?= $href ?>" target="_blank">
+                                <?= $aItem['version'] ?>
+                            </a>
                         <? else: ?>
                             <span class="sp-item-<?= $aItem['status'] ?>"><?= $aItem['version'] ?></span>
                         <? endif ?>
 
                         <? if ($aItem['modified']): ?>
-                            <span class="sp-modified"
-                                  title="<?= Locale::getMessage('MODIFIED_VERSION') ?>"><?= Locale::getMessage('MODIFIED_LABEL') ?></span>
+                            <span class="sp-modified" title="<?= Locale::getMessage('MODIFIED_VERSION') ?>">
+                                <?= Locale::getMessage('MODIFIED_LABEL') ?>
+                            </span>
                         <? endif; ?>
-
+                        <? if ($aItem['older']): ?>
+                            <span class="sp-older" title="<?= Locale::getMessage('OLDER_VERSION', [
+                                '#V1#' => $aItem['older'],
+                                '#V2#' => Module::getVersion(),
+                            ]) ?>">
+                                <?= Locale::getMessage('OLDER_LABEL') ?>
+                            </span>
+                        <? endif; ?>
                         <? if ($aItem['tag']): ?>
-                            <span class="sp-tag" title="<?= Locale::getMessage('TAG') ?>"><?= $aItem['tag'] ?></span>
+                            <span class="sp-tag" title="<?= Locale::getMessage('TAG') ?>">
+                                <?= $aItem['tag'] ?>
+                            </span>
                         <? endif; ?>
                         <? if (!empty($aItem['description'])): ?>
                             <? Out::out($aItem['description']) ?>
