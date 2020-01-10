@@ -2,8 +2,10 @@
 
 namespace Sprint\Migration\Exchange;
 
+use Adv\McdonaldsCmsBundle\Tools\IblockSectionTools;
 use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\ExchangeException;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\Helpers\IblockExchangeHelper;
 use Sprint\Migration\ExchangeEntity;
@@ -217,15 +219,17 @@ class IblockElementsImport extends AbstractExchange
     /**
      * @param $iblockId
      * @param $field
+     * @throws HelperException
      * @return array
      */
     protected function convertFieldIblockSection($iblockId, $field)
     {
-        $res = [];
+        $value = [];
         foreach ($field['value'] as $val) {
-            $res[] = $val['value'];
+            $value[] = $val['value'];
         }
-        return $res;
+
+        return $this->exchangeHelper->getSectionIdsByUniqNames($iblockId, $value);
     }
 
     /**

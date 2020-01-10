@@ -163,6 +163,10 @@ class IblockElementsExport extends AbstractExchange
 
     protected function writeFieldSection(XMLWriter $writer, $val)
     {
+        $val = $this->exchangeHelper->getSectionUniqNamesByIds(
+            $this->iblockId,
+            $val
+        );
         $this->writeValue($writer, $val);
     }
 
