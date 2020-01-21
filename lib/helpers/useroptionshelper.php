@@ -89,10 +89,7 @@ class UserOptionsHelper extends Helper
             $option
         );
 
-        $option['columns'] = explode(',', $option['columns']);
-        foreach ($option['columns'] as $index => $columnCode) {
-            $option['columns'][$index] = $this->revertCode($columnCode);
-        }
+        $option['columns'] = $this->revertCodesFromColumns($option['columns']);
 
         return $option;
     }
@@ -140,12 +137,8 @@ class UserOptionsHelper extends Helper
             return true;
         }
 
-        foreach ($data['columns'] as $index => $columnCode) {
-            $data['columns'][$index] = $this->transformCode($columnCode);
-        }
-
         $value = [
-            'columns' => implode(',', $data['columns']),
+            'columns' => $this->transformCodesToColumns($data['columns']),
             'page_size' => $params['page_size'],
             'order' => $params['order'],
             'by' => $params['by'],
@@ -196,14 +189,25 @@ class UserOptionsHelper extends Helper
             []
         );
         if (!empty($params)) {
-            $options = new CGridOptions($gridId);
-            return $options->GetOptions();
+            $options = (new CGridOptions($gridId))->GetOptions();
+
+            foreach ($options['views'] as $viewCode => $view) {
+                $view['columns'] = $this->revertCodesFromColumns($view['columns']);
+                $options['views'][$viewCode] = $view;
+            }
+
+            return $options;
         }
         return [];
     }
 
-    public function buildGrid($gridId, $params = [])
+    public function buildGrid($gridId, $options = [])
     {
+        foreach ($options['views'] as $viewCode => $view) {
+            $view['columns'] = $this->transformCodesToColumns($view['columns']);
+            $options['views'][$viewCode] = $view;
+        }
+
         CUserOptions::DeleteOptionsByName(
             'main.interface.grid',
             $gridId
@@ -211,7 +215,7 @@ class UserOptionsHelper extends Helper
         CUserOptions::setOption(
             "main.interface.grid",
             $gridId,
-            $params,
+            $options,
             true
         );
 

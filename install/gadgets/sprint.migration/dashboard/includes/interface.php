@@ -12,7 +12,7 @@
                 <td class="sp-db-col-text"><?= $item['text'] ?></td>
                 <td>
                     <? foreach ($item['buttons'] as $button): ?>
-                        <a href="<?= $button['url'] ?>" class="adm-btn" target="_blank" title="<?= $button['title'] ?>">
+                        <a href="<?= $button['url'] ?>" class="adm-btn" title="<?= $button['title'] ?>">
                             <?= $button['text'] ?>
                         </a>
                     <? endforeach; ?>

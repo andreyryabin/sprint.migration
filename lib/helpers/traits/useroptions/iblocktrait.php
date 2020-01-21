@@ -375,4 +375,27 @@ trait IblockTrait
         }
         return $fieldCode;
     }
+
+    protected function revertCodesFromColumns($columns)
+    {
+        if (!is_array($columns)) {
+            $columns = explode(',', $columns);
+            foreach ($columns as $index => $columnCode) {
+                $columns[$index] = $this->revertCode($columnCode);
+            }
+            return $columns;
+        }
+        return $columns;
+    }
+
+    protected function transformCodesToColumns($columns)
+    {
+        if (is_array($columns)) {
+            foreach ($columns as $index => $columnCode) {
+                $columns[$index] = $this->transformCode($columnCode);
+            }
+            return implode(',', $columns);
+        }
+        return $columns;
+    }
 }
