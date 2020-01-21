@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Helpers\Traits\UserOptions;
 
+use CIBlock;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\HelperManager;
 
@@ -110,7 +111,14 @@ trait IblockTrait
     public function getElementGridId($iblockId)
     {
         $this->initializeIblockVars($iblockId);
-        return 'tbl_iblock_element_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
+
+        if (CIBlock::GetAdminListMode($iblockId) == 'S') {
+            $prefix = defined('CATALOG_PRODUCT') ? 'tbl_product_admin_' : 'tbl_iblock_element_';
+        } else {
+            $prefix = defined('CATALOG_PRODUCT') ? 'tbl_product_list_' : 'tbl_iblock_list_';
+        }
+
+        return $prefix . md5($this->iblock['IBLOCK_TYPE_ID'] . '.' . $iblockId);
     }
 
     /**
