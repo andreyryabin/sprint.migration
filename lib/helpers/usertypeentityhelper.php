@@ -483,7 +483,7 @@ class UserTypeEntityHelper extends Helper
     protected function searchEnum($enum, $haystack = [])
     {
         foreach ($haystack as $item) {
-            if (!empty($item['XML_ID']) && $item['XML_ID'] == $enum['XML_ID']) {
+            if (isset($item['XML_ID']) && strlen($item['XML_ID']) > 0 && $item['XML_ID'] == $enum['XML_ID']) {
                 return $item;
             }
         }
