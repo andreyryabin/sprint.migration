@@ -31,6 +31,7 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
     postData['send_sessid'] = $('#migration-container').data('sessid');
     postData['search'] = $('input[name=migration_search]').val();
     postData['addtag'] = $('input[name=migration_addtag]').val();
+    postData['filter'] = $('select[name=migration_filter]').val();
 
     migrationEnableButtons(0);
 
@@ -61,14 +62,17 @@ function migrationEnableButtons(enable) {
 }
 
 function migrationMigrationRefresh(callbackAfterRefresh) {
-    migrationExecuteStep($('.sp-stat').val(), {}, function (data) {
-        $('#migration_migrations').empty().html(data);
-        if (callbackAfterRefresh) {
-            callbackAfterRefresh()
-        } else {
-            migrationEnableButtons(1);
-        }
-    });
+    migrationExecuteStep(
+        $('select[name=migration_filter]').val(),
+        {},
+        function (data) {
+            $('#migration_migrations').empty().html(data);
+            if (callbackAfterRefresh) {
+                callbackAfterRefresh()
+            } else {
+                migrationEnableButtons(1);
+            }
+        });
 }
 
 function migrationBuilder(postData) {
@@ -120,7 +124,7 @@ jQuery(document).ready(function ($) {
         migrationScrollList();
     });
 
-    $('#migration-container').on('change', '.sp-stat', function () {
+    $('#migration-container').on('change', 'select[name=migration_filter]', function () {
         migrationMigrationRefresh(function () {
             migrationEnableButtons(1);
             migrationScrollList();

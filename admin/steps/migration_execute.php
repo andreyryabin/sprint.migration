@@ -20,9 +20,30 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
     $action = !empty($_POST['action']) ? $_POST['action'] : 0;
     $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
     $skipVersions = !empty($_POST['skip_versions']) ? $_POST['skip_versions'] : [];
+    $addtag = !empty($_POST['addtag']) ? trim($_POST['addtag']) : '';
+
+
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
-    $addtag = !empty($_POST['addtag']) ? trim($_POST['addtag']) : '';
+
+    $filter = !empty($_POST['filter']) ? trim($_POST['filter']) : '';
+
+    $filterVersion = [
+        'search' => $search,
+        'tag' => '',
+        'modified' => '',
+        'older' => '',
+    ];
+
+    if ($filter == 'migration_view_tag') {
+        $filterVersion['tag'] = $search;
+        $filterVersion['search'] = '';
+    } elseif ($filter == 'migration_view_modified') {
+        $filterVersion['modified'] = 1;
+    } elseif ($filter == 'migration_view_older') {
+        $filterVersion['older'] = 1;
+    }
+
 
     if (!$version) {
         if ($nextAction == VersionEnum::ACTION_UP || $nextAction == VersionEnum::ACTION_DOWN) {
@@ -30,10 +51,11 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
             $version = 0;
             $action = $nextAction;
 
-            $items = $versionManager->getVersions([
+            $filterVersion = array_merge([
                 'status' => ($action == VersionEnum::ACTION_UP) ? VersionEnum::STATUS_NEW : VersionEnum::STATUS_INSTALLED,
-                'search' => $search,
-            ]);
+            ], $filterVersion);
+
+            $items = $versionManager->getVersions($filterVersion);
 
             foreach ($items as $aItem) {
                 if (!in_array($aItem['version'], $skipVersions)) {
@@ -81,6 +103,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
                 'next_action' => $nextAction,
                 'restart' => 1,
                 'search' => $search,
+                'filter' => $filter,
             ]);
 
             ?>
@@ -89,8 +112,9 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
             $json = json_encode([
                 'next_action' => $nextAction,
                 'skip_versions' => $skipVersions,
-                'search' => $search,
                 'addtag' => $addtag,
+                'search' => $search,
+                'filter' => $filter,
             ]);
 
             ?>

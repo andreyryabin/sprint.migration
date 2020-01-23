@@ -181,6 +181,8 @@ class Console
             'status' => $status,
             'search' => $this->getArg('--search='),
             'tag' => $this->getArg('--tag='),
+            'modified' => $this->getArg('--modified'),
+            'older' => $this->getArg('--older'),
         ]);
 
         if ($status) {
@@ -248,13 +250,19 @@ class Console
             $this->exitWithMessage('limit is no longer supported');
         }
 
-        if ($this->versionManager->checkVersionName($versionName)) {
-            $this->executeOnce($versionName, VersionEnum::ACTION_UP);
+        if ($versionName) {
+            if ($this->versionManager->checkVersionName($versionName)) {
+                $this->executeOnce($versionName, VersionEnum::ACTION_UP);
+            } else {
+                $this->exitWithMessage('version name is not valid');
+            }
         } else {
             $this->executeAll([
                 'status' => VersionEnum::STATUS_NEW,
                 'search' => $this->getArg('--search='),
                 'tag' => $this->getArg('--tag='),
+                'modified' => $this->getArg('--modified'),
+                'older' => $this->getArg('--older'),
             ]);
         }
     }
@@ -271,13 +279,20 @@ class Console
             $this->exitWithMessage('limit is no longer supported');
         }
 
-        if ($this->versionManager->checkVersionName($versionName)) {
-            $this->executeOnce($versionName, VersionEnum::ACTION_DOWN);
+
+        if ($versionName) {
+            if ($this->versionManager->checkVersionName($versionName)) {
+                $this->executeOnce($versionName, VersionEnum::ACTION_DOWN);
+            } else {
+                $this->exitWithMessage('version name is not valid');
+            }
         } else {
             $this->executeAll([
                 'status' => VersionEnum::STATUS_INSTALLED,
                 'search' => $this->getArg('--search='),
                 'tag' => $this->getArg('--tag='),
+                'modified' => $this->getArg('--modified'),
+                'older' => $this->getArg('--older'),
             ]);
         }
     }
@@ -383,6 +398,8 @@ class Console
             'status' => $status,
             'search' => $this->getArg('--search='),
             'tag' => $this->getArg('--tag='),
+            'modified' => $this->getArg('--modified'),
+            'older' => $this->getArg('--older'),
         ]);
     }
 

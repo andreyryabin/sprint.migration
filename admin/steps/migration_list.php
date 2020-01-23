@@ -15,6 +15,8 @@ $listView = (
     ($_POST["step_code"] == "migration_view_all") ||
     ($_POST["step_code"] == "migration_view_new") ||
     ($_POST["step_code"] == "migration_view_tag") ||
+    ($_POST["step_code"] == "migration_view_modified") ||
+    ($_POST["step_code"] == "migration_view_older") ||
     ($_POST["step_code"] == "migration_view_installed")
 );
 
@@ -42,9 +44,18 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
         $versions = $versionManager->getVersions([
             'tag' => $search,
         ]);
+    } elseif ($_POST["step_code"] == "migration_view_modified") {
+        $versions = $versionManager->getVersions([
+            'search' => $search,
+            'modified' => 1,
+        ]);
+    } elseif ($_POST["step_code"] == "migration_view_older") {
+        $versions = $versionManager->getVersions([
+            'search' => $search,
+            'older' => 1,
+        ]);
     } else {
         $versions = $versionManager->getVersions([
-            'status' => '',
             'search' => $search,
         ]);
     }

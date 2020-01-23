@@ -3,7 +3,7 @@
 use Sprint\Migration\Locale;
 
 $search = '';
-$listview = 'view_all';
+$listview = '';
 $addtag = '';
 
 
@@ -46,7 +46,7 @@ $addtag = '';
                        value="<?= $search ?>"
                        class="adm-input"
                        name="migration_search"/>
-                <select class="sp-stat">
+                <select name="migration_filter">
                     <option <? if ($listview == 'migration_view_all'): ?>selected="selected"<? endif ?>
                             value="migration_view_all"><?= Locale::getMessage('TOGGLE_LIST') ?></option>
                     <option <? if ($listview == 'migration_view_new'): ?>selected="selected"<? endif ?>
@@ -55,6 +55,10 @@ $addtag = '';
                             value="migration_view_installed"><?= Locale::getMessage('TOGGLE_INSTALLED') ?></option>
                     <option <? if ($listview == 'migration_view_tag'): ?>selected="selected"<? endif ?>
                             value="migration_view_tag"><?= Locale::getMessage('TOGGLE_TAG') ?></option>
+                    <option <? if ($listview == 'migration_view_modified'): ?>selected="selected"<? endif ?>
+                            value="migration_view_modified"><?= Locale::getMessage('TOGGLE_MODIFIED') ?></option>
+                    <option <? if ($listview == 'migration_view_older'): ?>selected="selected"<? endif ?>
+                            value="migration_view_older"><?= Locale::getMessage('TOGGLE_OLDER') ?></option>
                     <option <? if ($listview == 'migration_view_status'): ?>selected="selected"<? endif ?>
                             value="migration_view_status"><?= Locale::getMessage('TOGGLE_STATUS') ?></option>
                 </select>

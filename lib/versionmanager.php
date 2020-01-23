@@ -314,7 +314,13 @@ class VersionManager
         /** @var  $versionFilter array */
         $versionFilter = $this->getVersionConfig()->getVal('version_filter', []);
 
-        $filter = array_merge($versionFilter, ['status' => '', 'search' => '', 'tag' => ''], $filter);
+        $filter = array_merge($versionFilter, [
+            'status' => '',
+            'search' => '',
+            'tag' => '',
+            'modified' => '',
+            'older' => '',
+        ], $filter);
 
         $merge = [];
 
@@ -347,6 +353,8 @@ class VersionManager
                 $this->containsFilterStatus($meta, $filter) &&
                 $this->containsFilterSearch($meta, $filter) &&
                 $this->containsFilterTag($meta, $filter) &&
+                $this->containsFilterModified($meta, $filter) &&
+                $this->containsFilterOlder($meta, $filter) &&
                 $this->containsFilterVersion($meta, $filter)
             ) {
                 $result[] = $meta;
@@ -366,6 +374,8 @@ class VersionManager
         unset($filter['status']);
         unset($filter['search']);
         unset($filter['tag']);
+        unset($filter['modified']);
+        unset($filter['older']);
 
         foreach ($filter as $k => $v) {
             if (empty($meta['version_filter'][$k]) || $meta['version_filter'][$k] != $v) {
@@ -383,6 +393,24 @@ class VersionManager
         }
 
         return ($meta['tag'] == $filter['tag']);
+    }
+
+    protected function containsFilterModified($meta, $filter)
+    {
+        if (empty($filter['modified'])) {
+            return true;
+        }
+
+        return ($meta['modified']);
+    }
+
+    protected function containsFilterOlder($meta, $filter)
+    {
+        if (empty($filter['older'])) {
+            return true;
+        }
+
+        return ($meta['older']);
     }
 
     protected function containsFilterSearch($meta, $filter)
