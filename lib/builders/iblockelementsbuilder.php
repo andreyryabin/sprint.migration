@@ -70,6 +70,7 @@ class IblockElementsBuilder extends VersionBuilder
                 'NAME',
                 'CODE',
                 'SORT',
+                'ACTIVE',
                 'XML_ID',
                 'TAGS',
                 'DATE_ACTIVE_FROM',
