@@ -140,7 +140,7 @@ class Helper
 
     protected function hasDiff($exists, $fields)
     {
-        return ($exists != $fields);
+        return ($exists !== $fields);
     }
 
     /**
