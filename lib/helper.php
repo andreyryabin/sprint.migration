@@ -144,6 +144,16 @@ class Helper
     }
 
     /**
+     * @param $exists
+     * @param $fields
+     * @return bool
+     */
+    protected function hasDiffStrict($exists, $fields)
+    {
+        return ($exists !== $fields);
+    }
+
+    /**
      * @param $method
      * @param $fields
      * @param array $reqKeys

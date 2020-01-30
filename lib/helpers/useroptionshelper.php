@@ -405,7 +405,7 @@ class UserOptionsHelper extends Helper
     public function saveForm($formData = [], $params = [])
     {
         $exists = $this->exportForm($params);
-        if ($this->hasDiff($exists, $formData)) {
+        if ($this->hasDiffStrict($exists, $formData)) {
             $ok = $this->getMode('test') ? true : $this->buildForm($formData, $params);
             $this->outNoticeIf($ok, 'Форма редактирования "%s" сохранена', $params['name']);
             $this->outDiffIf($ok, $exists, $formData);
