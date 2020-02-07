@@ -276,8 +276,13 @@ class VersionManager
         if ($status == VersionEnum::STATUS_NEW) {
             if ($meta['is_record']) {
                 $this->getVersionTable()->removeRecord($meta);
-                $msg = 'MARK_SUCCESS1';
-                $success = true;
+                if ($meta['is_file']) {
+                    $msg = 'MARK_SUCCESS1';
+                    $success = true;
+                } else {
+                    $msg = 'MARK_SUCCESS3';
+                    $success = true;
+                }
             } else {
                 $msg = 'MARK_ERROR1';
             }
@@ -675,8 +680,11 @@ class VersionManager
     {
         $result = [];
 
-        if (in_array($versionName,
-            [VersionEnum::STATUS_NEW, VersionEnum::STATUS_INSTALLED, VersionEnum::STATUS_UNKNOWN])) {
+        if (in_array($versionName, [
+            VersionEnum::STATUS_NEW,
+            VersionEnum::STATUS_INSTALLED,
+            VersionEnum::STATUS_UNKNOWN,
+        ])) {
             $metas = $this->getVersions(['status' => $versionName]);
         } elseif ($meta = $this->getVersionByName($versionName)) {
             $metas = [$meta];
@@ -689,6 +697,33 @@ class VersionManager
         } else {
             $result[] = [
                 'message' => Locale::getMessage('DELETE_ERROR1'),
+                'success' => 0,
+            ];
+        }
+
+        return $result;
+    }
+
+    public function setMigrationTag($versionName, $tag = '')
+    {
+        $result = [];
+
+        if (in_array($versionName, [
+            VersionEnum::STATUS_INSTALLED,
+            VersionEnum::STATUS_UNKNOWN,
+        ])) {
+            $metas = $this->getVersions(['status' => $versionName]);
+        } elseif ($meta = $this->getVersionByName($versionName)) {
+            $metas = [$meta];
+        }
+
+        if (!empty($metas)) {
+            foreach ($metas as $meta) {
+                $result[] = $this->setMigrationTagByMeta($meta, $tag);
+            }
+        } else {
+            $result[] = [
+                'message' => Locale::getMessage('SETTAG_ERROR1'),
                 'success' => 0,
             ];
         }
@@ -711,6 +746,23 @@ class VersionManager
         }
 
         $msg = $success ? 'DELETE_OK' : 'DELETE_ERROR2';
+
+        return [
+            'message' => Locale::getMessage($msg, ['#VERSION#' => $meta['version']]),
+            'success' => $success,
+        ];
+    }
+
+    protected function setMigrationTagByMeta($meta, $tag = '')
+    {
+        $success = 0;
+
+        if ($meta['is_record']) {
+            $this->getVersionTable()->updateTag($meta['version'], $tag);
+            $success = 1;
+        }
+
+        $msg = $success ? 'SETTAG_OK' : 'SETTAG_ERROR2';
 
         return [
             'message' => Locale::getMessage($msg, ['#VERSION#' => $meta['version']]),

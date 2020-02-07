@@ -20,6 +20,7 @@ require_once __DIR__ . "/../lib/locale.php";
     "DOWN_START" => "Откатить все",
     "UP_CONFIRM" => "Установить новые миграции?",
     "DOWN_CONFIRM" => "Откатить все установленные миграции?",
+    "VIEW_FILE" => "Просмотреть",
     "TOGGLE_LIST" => "Все",
     "TOGGLE_NEW" => "Новые",
     "TOGGLE_STATUS" => "Суммарно",
@@ -27,7 +28,6 @@ require_once __DIR__ . "/../lib/locale.php";
     "TOGGLE_MODIFIED" => "Измененные",
     "TOGGLE_OLDER" => "Не поддерживаемые",
     "TOGGLE_TAG" => "Тег",
-
     "LINK_MP" => "Маркетплейс",
     "LINK_DOC" => "Документация",
     "LINK_ARTICLES" => "Статьи",
@@ -184,14 +184,21 @@ require_once __DIR__ . "/../lib/locale.php";
     "MARK_AS_INSTALLED" => "установленную",
     "MARK_SUCCESS1" => "Миграция #VERSION# отмечена как новая",
     "MARK_SUCCESS2" => "Миграция #VERSION# отмечена как установленная",
+    "MARK_SUCCESS3" => "Миграция #VERSION# удалена",
     "MARK_ERROR1" => "Миграция #VERSION# уже является новой",
     "MARK_ERROR2" => "Миграция #VERSION# уже была установлена",
     "MARK_ERROR3" => "Миграция #VERSION# не изменена",
     "MARK_ERROR4" => "Не найдено миграций для изменения",
 
+    "MARK_NEW_AS_INSTALLED" => "Отметить как установленную",
+    "MARK_INSTALLED_AS_NEW" => "Отметить как новую",
+    "MARK_UNKNOWN_AS_NEW" => "Удалить",
+
+    "DELETE" => "Удалить",
     "DELETE_OK" => "Миграция #VERSION# удалена",
     "DELETE_ERROR1" => "Миграций для удаления не найдено",
     "DELETE_ERROR2" => "Миграция #VERSION# не найдена",
+
 
     "CREATE" => "Создать миграцию",
     "VERSION_NOT_FOUND" => "Миграция не найдена",
@@ -203,10 +210,16 @@ require_once __DIR__ . "/../lib/locale.php";
     "MODIFIED_LABEL" => "M",
     "OLDER_VERSION" => "Код миграции был создан в более поздней версии модуля #V1#\nВозможно, он использует возможности, которые не реализованы в текущей версии #V2#",
     "OLDER_LABEL" => "!",
+
     "TAG" => "Миграция отмечена тегом",
     "ADDTAG" => "Поставить тег",
     "ADDTAG_TAG" => "Название",
     "ADDTAG_TITLE" => "Поставить тег устанавливаемым миграциям",
+
+    "SETTAG" => "Поставить тег",
+    "SETTAG_OK" => "Тег для миграции #VERSION# задан",
+    "SETTAG_ERROR1" => "Миграций для установки тега не найдено",
+    "SETTAG_ERROR2" => "Миграция #VERSION# не найдена",
 
     "SCHEMA_DIFF" => "Проверить изменения",
     "SCHEMA_IMPORT" => "Установить схему",

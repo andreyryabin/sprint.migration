@@ -28,8 +28,8 @@ if ($_POST["step_code"] == "migration_view_status" && check_bitrix_sessid('send_
         VersionEnum::STATUS_UNKNOWN => 0,
     ];
 
-    foreach ($versions as $aItem) {
-        $key = $aItem['status'];
+    foreach ($versions as $item) {
+        $key = $item['status'];
         $status[$key]++;
     }
 

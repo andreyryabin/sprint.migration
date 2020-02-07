@@ -32,6 +32,9 @@ if ($versionConfig->getVal('show_admin_interface')) {
                 include __DIR__ . '/../steps/migration_list.php';
                 include __DIR__ . '/../steps/migration_status.php';
                 include __DIR__ . '/../steps/migration_create.php';
+                include __DIR__ . '/../steps/migration_mark.php';
+                include __DIR__ . '/../steps/migration_delete.php';
+                include __DIR__ . '/../steps/migration_settag.php';
             }
         } catch (Exception $e) {
             Out::outError($e->getMessage());

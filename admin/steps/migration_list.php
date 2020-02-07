@@ -28,8 +28,6 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
-    $webdir = $versionManager->getWebDir();
-
     if ($_POST["step_code"] == "migration_view_new") {
         $versions = $versionManager->getVersions([
             'status' => VersionEnum::STATUS_NEW,
@@ -60,57 +58,97 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
         ]);
     }
 
+    $webdir = $versionManager->getWebDir();
+
+    $getOnclickMenu = function ($item) use ($webdir) {
+        $menu = [];
+
+        if ($item['status'] == VersionEnum::STATUS_NEW) {
+            $menu[] = [
+                'TEXT' => Locale::getMessage('UP'),
+                'ONCLICK' => 'migrationMigrationUp(\'' . $item['version'] . '\')',
+            ];
+            $menu[] = [
+                'TEXT' => Locale::getMessage('MARK_NEW_AS_INSTALLED'),
+                'ONCLICK' => 'migrationMigrationMark(\'' . $item['version'] . '\',\'' . VersionEnum::STATUS_INSTALLED . '\')',
+            ];
+        }
+        if ($item['status'] == VersionEnum::STATUS_INSTALLED) {
+            $menu[] = [
+                'TEXT' => Locale::getMessage('DOWN'),
+                'ONCLICK' => 'migrationMigrationDown(\'' . $item['version'] . '\')',
+            ];
+            $menu[] = [
+                'TEXT' => Locale::getMessage('SETTAG'),
+                'ONCLICK' => 'migrationMigrationSetTag(\'' . $item['version'] . '\',\'' . $item['tag'] . '\')',
+            ];
+            $menu[] = [
+                'TEXT' => Locale::getMessage('MARK_INSTALLED_AS_NEW'),
+                'ONCLICK' => 'migrationMigrationMark(\'' . $item['version'] . '\',\'' . VersionEnum::STATUS_NEW . '\')',
+            ];
+        }
+
+        if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
+            $menu[] = [
+                'TEXT' => Locale::getMessage('SETTAG'),
+                'ONCLICK' => 'migrationMigrationSetTag(\'' . $item['version'] . '\')',
+            ];
+        }
+
+        if ($item['status'] != VersionEnum::STATUS_UNKNOWN && $webdir) {
+            $viewUrl = '/bitrix/admin/fileman_file_view.php?' . http_build_query([
+                    'lang' => LANGUAGE_ID,
+                    'site' => SITE_ID,
+                    'path' => $webdir . '/' . $item['version'] . '.php',
+                ]);
+
+            $menu[] = [
+                'TEXT' => Locale::getMessage('VIEW_FILE'),
+                'LINK' => $viewUrl,
+            ];
+        }
+
+        $menu[] = [
+            'TEXT' => Locale::getMessage('DELETE'),
+            'ONCLICK' => 'migrationMigrationDelete(\'' . $item['version'] . '\')',
+        ];
+
+        return CUtil::PhpToJSObject($menu);
+    }
+
     ?>
     <? if (!empty($versions)): ?>
         <table class="sp-list">
-            <? foreach ($versions as $aItem): ?>
+            <? foreach ($versions as $item): ?>
                 <tr>
                     <td class="sp-list-l">
-                        <? if ($aItem['status'] == VersionEnum::STATUS_NEW): ?>
-                            <input disabled="disabled"
-                                   onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: '<?= VersionEnum::ACTION_UP ?>'});"
-                                   value="<?= Locale::getMessage('UP') ?>" type="button">
-                        <? endif ?>
-                        <? if ($aItem['status'] == VersionEnum::STATUS_INSTALLED): ?>
-                            <input disabled="disabled"
-                                   onclick="migrationExecuteStep('migration_execute', {version: '<?= $aItem['version'] ?>', action: '<?= VersionEnum::ACTION_DOWN ?>'});"
-                                   value="<?= Locale::getMessage('DOWN') ?>" type="button">
-                        <? endif ?>
+                        <a onclick="this.blur();BX.adminShowMenu(this, <?= $getOnclickMenu($item) ?>, {active_class: 'adm-btn-active',public_frame: '0'}); return false;"
+                           href="javascript:void(0)"
+                           class="adm-btn"
+                           hidefocus="true">&equiv;</a>
                     </td>
                     <td class="sp-list-r">
-                        <? if ($aItem['status'] != VersionEnum::STATUS_UNKNOWN && $webdir): ?>
-                            <? $href = '/bitrix/admin/fileman_file_view.php?' . http_build_query([
-                                    'lang' => LANGUAGE_ID,
-                                    'site' => SITE_ID,
-                                    'path' => $webdir . '/' . $aItem['version'] . '.php',
-                                ]) ?>
-                            <a class="sp-item-<?= $aItem['status'] ?>" href="<?= $href ?>" target="_blank">
-                                <?= $aItem['version'] ?>
-                            </a>
-                        <? else: ?>
-                            <span class="sp-item-<?= $aItem['status'] ?>"><?= $aItem['version'] ?></span>
-                        <? endif ?>
-
-                        <? if ($aItem['modified']): ?>
+                        <span class="sp-item-<?= $item['status'] ?>"><?= $item['version'] ?></span>
+                        <? if ($item['modified']): ?>
                             <span class="sp-modified" title="<?= Locale::getMessage('MODIFIED_VERSION') ?>">
                                 <?= Locale::getMessage('MODIFIED_LABEL') ?>
                             </span>
                         <? endif; ?>
-                        <? if ($aItem['older']): ?>
+                        <? if ($item['older']): ?>
                             <span class="sp-older" title="<?= Locale::getMessage('OLDER_VERSION', [
-                                '#V1#' => $aItem['older'],
+                                '#V1#' => $item['older'],
                                 '#V2#' => Module::getVersion(),
                             ]) ?>">
                                 <?= Locale::getMessage('OLDER_LABEL') ?>
                             </span>
                         <? endif; ?>
-                        <? if ($aItem['tag']): ?>
+                        <? if ($item['tag']): ?>
                             <span class="sp-tag" title="<?= Locale::getMessage('TAG') ?>">
-                                <?= $aItem['tag'] ?>
+                                <?= $item['tag'] ?>
                             </span>
                         <? endif; ?>
-                        <? if (!empty($aItem['description'])): ?>
-                            <? Out::out($aItem['description']) ?>
+                        <? if (!empty($item['description'])): ?>
+                            <? Out::out($item['description']) ?>
                         <? endif ?>
                     </td>
                 </tr>
@@ -120,5 +158,4 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
         <?= Locale::getMessage('LIST_EMPTY') ?>
     <? endif ?>
     <?
-
 }

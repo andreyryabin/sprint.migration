@@ -57,9 +57,9 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
 
             $items = $versionManager->getVersions($filterVersion);
 
-            foreach ($items as $aItem) {
-                if (!in_array($aItem['version'], $skipVersions)) {
-                    $version = $aItem['version'];
+            foreach ($items as $item) {
+                if (!in_array($item['version'], $skipVersions)) {
+                    $version = $item['version'];
                     break;
                 }
             }

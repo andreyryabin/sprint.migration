@@ -1,0 +1,38 @@
+<?php
+
+use Sprint\Migration\VersionConfig;
+use Sprint\Migration\VersionManager;
+
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
+    die();
+}
+
+$existsEvents = (
+($_POST["step_code"] == "migration_mark")
+);
+
+if ($existsEvents && check_bitrix_sessid('send_sessid')) {
+
+    /** @var $versionConfig VersionConfig */
+    $versionManager = new VersionManager($versionConfig);
+
+    $version = !empty($_POST['version']) ? $_POST['version'] : '';
+    $status = !empty($_POST['status']) ? $_POST['status'] : '';
+
+    $markresult = $versionManager->markMigration($version, $status);
+
+    foreach ($markresult as $val) {
+        if ($val['success']) {
+            Sprint\Migration\Out::outSuccess($val['message']);
+        } else {
+            Sprint\Migration\Out::outError($val['message']);
+        }
+    }
+    ?>
+    <script>
+        migrationMigrationRefresh(function () {
+            migrationScrollList();
+            migrationEnableButtons(1);
+        });
+    </script><?
+}

@@ -31,7 +31,6 @@ class VersionTable extends AbstractTable
      */
     public function addRecord($meta)
     {
-
         $version = $this->forSql($meta['version']);
         $hash = $this->forSql($meta['hash']);
         $tag = $this->forSql($meta['tag']);
@@ -49,6 +48,20 @@ class VersionTable extends AbstractTable
     {
         $this->query('DELETE FROM `#TABLE1#` WHERE `version` = "%s"',
             $this->forSql($meta['version'])
+        );
+    }
+
+    /**
+     * @param $version
+     * @param string $tag
+     */
+    public function updateTag($version, $tag = '')
+    {
+        $version = $this->forSql($version);
+        $tag = $this->forSql($tag);
+
+        $this->query('UPDATE `#TABLE1#` SET `tag` = "%s" WHERE `version` = "%s"',
+            $tag, $version
         );
     }
 

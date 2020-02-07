@@ -14,6 +14,43 @@ function migrationMigrationsDownConfirm() {
     }
 }
 
+function migrationMigrationUp(version) {
+    migrationExecuteStep('migration_execute', {
+        'version': version,
+        'action': 'up'
+    });
+}
+
+function migrationMigrationDown(version) {
+    migrationExecuteStep('migration_execute', {
+        'version': version,
+        'action': 'down'
+    });
+}
+
+function migrationMigrationSetTag(version, defaultTag) {
+    var settag = prompt('Set migration tag', defaultTag);
+    if (settag !== null) {
+        migrationExecuteStep('migration_settag', {
+            'version': version,
+            'settag': settag
+        });
+    }
+}
+
+function migrationMigrationMark(version, status) {
+    migrationExecuteStep('migration_mark', {
+        'version': version,
+        'status': status,
+    });
+}
+
+function migrationMigrationDelete(version) {
+    migrationExecuteStep('migration_delete', {
+        'version': version,
+    });
+}
+
 function migrationOutLog(result) {
     var $el = $('#migration_progress');
     var lastOutElem = $el.children('div').last();
