@@ -4,9 +4,19 @@ use Sprint\Migration\Locale;
 
 $search = '';
 $listview = '';
-$addtag = '';
 
-
+$getOnclickMenu = function ()  {
+    $menu = [];
+    $menu[] = [
+        'TEXT' => Locale::getMessage('UP_START_WITH_TAG'),
+        'ONCLICK' => 'migrationMigrationsUpWithTag()',
+    ];
+    $menu[] = [
+        'TEXT' => Locale::getMessage('DOWN_START'),
+        'ONCLICK' => 'migrationMigrationsDownConfirm()',
+    ];
+    return CUtil::PhpToJSObject($menu);
+}
 ?>
 <div id="migration-container" data-sessid="<?= bitrix_sessid() ?>">
     <div class="sp-group">
@@ -26,18 +36,10 @@ $addtag = '';
                        value="<?= Locale::getMessage('UP_START') ?>"
                        onclick="migrationMigrationsUpConfirm();"
                        class="adm-btn-green"/>
-                <input type="button"
-                       value="<?= Locale::getMessage('DOWN_START') ?>"
-                       onclick="migrationMigrationsDownConfirm();"/>
-                <span title="<?= Locale::getMessage('ADDTAG_TITLE') ?>">
-                <?= Locale::getMessage('ADDTAG') ?>
-                <input placeholder="<?= Locale::getMessage('ADDTAG_TAG') ?>"
-                       style="width: 100px;"
-                       type="text"
-                       value="<?= $addtag ?>"
-                       class="adm-input"
-                       name="migration_addtag"/>
-                    </span>
+                <a onclick="this.blur();BX.adminShowMenu(this, <?= $getOnclickMenu() ?>, {active_class: 'adm-btn-active',public_frame: '0'}); return false;"
+                   href="javascript:void(0)"
+                   class="adm-btn"
+                   hidefocus="true">&equiv;</a>
             </div>
             <div class="sp-block">
                 <input placeholder="<?= Locale::getMessage('SEARCH') ?>"

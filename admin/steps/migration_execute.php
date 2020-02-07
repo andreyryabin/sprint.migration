@@ -20,7 +20,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
     $action = !empty($_POST['action']) ? $_POST['action'] : 0;
     $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
     $skipVersions = !empty($_POST['skip_versions']) ? $_POST['skip_versions'] : [];
-    $addtag = !empty($_POST['addtag']) ? trim($_POST['addtag']) : '';
+    $settag = !empty($_POST['settag']) ? trim($_POST['settag']) : '';
 
 
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
@@ -73,7 +73,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
             Sprint\Migration\Out::out('[%s]%s (%s) start[/]', $action, $version, $action);
         }
 
-        $success = $versionManager->startMigration($version, $action, $params, false, $addtag);
+        $success = $versionManager->startMigration($version, $action, $params, false, $settag);
         $restart = $versionManager->needRestart($version);
 
         if ($success && !$restart) {
@@ -104,6 +104,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
                 'restart' => 1,
                 'search' => $search,
                 'filter' => $filter,
+                'settag' => $settag,
             ]);
 
             ?>
@@ -112,7 +113,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
             $json = json_encode([
                 'next_action' => $nextAction,
                 'skip_versions' => $skipVersions,
-                'addtag' => $addtag,
+                'settag' => $settag,
                 'search' => $search,
                 'filter' => $filter,
             ]);

@@ -1,5 +1,5 @@
 function migrationMigrationsUpConfirm() {
-    if (confirm('Confirm action')) {
+    if (confirm('Confirm install migrations')) {
         migrationExecuteStep('migration_execute', {
             'next_action': 'up'
         });
@@ -7,9 +7,19 @@ function migrationMigrationsUpConfirm() {
 }
 
 function migrationMigrationsDownConfirm() {
-    if (confirm('Confirm action')) {
+    if (confirm('Confirm rollback migrations')) {
         migrationExecuteStep('migration_execute', {
             'next_action': 'down'
+        });
+    }
+}
+
+function migrationMigrationsUpWithTag() {
+    var settag = prompt('Set migrations tag');
+    if (settag !== null) {
+        migrationExecuteStep('migration_execute', {
+            'next_action': 'up',
+            'settag': settag
         });
     }
 }
@@ -67,7 +77,6 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
     postData['step_code'] = step_code;
     postData['send_sessid'] = $('#migration-container').data('sessid');
     postData['search'] = $('input[name=migration_search]').val();
-    postData['addtag'] = $('input[name=migration_addtag]').val();
     postData['filter'] = $('select[name=migration_filter]').val();
 
     migrationEnableButtons(0);
