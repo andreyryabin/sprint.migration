@@ -2,6 +2,7 @@
 global $APPLICATION;
 
 use Bitrix\Main\Loader;
+use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
 
 if ($APPLICATION->GetGroupRight('sprint.migration') == 'D') {
@@ -68,7 +69,7 @@ try {
         'page_icon' => 'sys_page_icon',
         'items_id' => 'sprint_migrations',
         'url' => 'sprint_migrations.php?' . http_build_query([
-                'config' => 'cfg',
+                'config' => VersionEnum::CONFIG_DEFAULT,
                 'lang' => LANGUAGE_ID,
             ]),
     ];
@@ -84,7 +85,7 @@ try {
         'page_icon' => 'sys_page_icon',
         'items_id' => 'sprint_migrations',
         'url' => 'sprint_migrations.php?' . http_build_query([
-                'config' => 'cfg',
+                'config' => VersionEnum::CONFIG_DEFAULT,
                 'lang' => LANGUAGE_ID,
             ]),
     ];

@@ -20,13 +20,7 @@ if ($existsEvents && check_bitrix_sessid('send_sessid')) {
     $settag = !empty($_POST['settag']) ? $_POST['settag'] : '';
 
     $settagresult = $versionManager->setMigrationTag($version, $settag);
-    foreach ($settagresult as $val) {
-        if ($val['success']) {
-            Sprint\Migration\Out::outSuccess($val['message']);
-        } else {
-            Sprint\Migration\Out::outError($val['message']);
-        }
-    }
+    Sprint\Migration\Out::outMessages($settagresult);
     ?>
     <script>
         migrationMigrationRefresh(function () {

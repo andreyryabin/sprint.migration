@@ -2,6 +2,9 @@
 
 namespace Sprint\Migration;
 
+use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\RestartException;
+
 /**
  * Class Version
  * @package Sprint\Migration
@@ -24,8 +27,11 @@ class Version extends ExchangeEntity
      * @var string
      */
     protected $storageName = 'default';
+
     /**
      * your code for up
+     * @throws RestartException
+     * @throws HelperException
      * @return bool
      */
     public function up()
@@ -35,6 +41,8 @@ class Version extends ExchangeEntity
 
     /**
      * your code for down
+     * @throws RestartException
+     * @throws HelperException
      * @return bool
      */
     public function down()
@@ -66,6 +74,7 @@ class Version extends ExchangeEntity
     {
         return $this->description;
     }
+
     /**
      * @return string
      */
@@ -73,6 +82,7 @@ class Version extends ExchangeEntity
     {
         return $this->moduleVersion;
     }
+
     /**
      * @return array
      */

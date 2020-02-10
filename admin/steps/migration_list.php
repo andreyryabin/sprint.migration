@@ -60,7 +60,7 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
 
     $webdir = $versionManager->getWebDir();
 
-    $getOnclickMenu = function ($item) use ($webdir) {
+    $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
         $menu = [];
 
         if ($item['status'] == VersionEnum::STATUS_NEW) {
@@ -107,6 +107,26 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
                 'LINK' => $viewUrl,
             ];
         }
+
+        $transferMenu = [];
+
+        $configList = $versionConfig->getList();
+        foreach ($configList as $configItem) {
+            if ($configItem['name'] != $versionConfig->getName()) {
+                $transferMenu[] = [
+                    'TEXT' => $configItem['title'],
+                    'ONCLICK' => 'migrationMigrationTransfer(\'' . $item['version'] . '\',\'' . $configItem['name'] . '\')',
+                ];
+            }
+        }
+
+        if (!empty($transferMenu)) {
+            $menu[] = [
+                'TEXT' => Locale::getMessage('TRANSFER_TO'),
+                'MENU' => $transferMenu,
+            ];
+        }
+
 
         $menu[] = [
             'TEXT' => Locale::getMessage('DELETE'),

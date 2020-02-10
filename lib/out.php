@@ -288,6 +288,17 @@ class Out
         }
     }
 
+    public static function outMessages($messages = [])
+    {
+        foreach ($messages as $val) {
+            if ($val['success']) {
+                self::outSuccess($val['message']);
+            } else {
+                self::outError($val['message']);
+            }
+        }
+    }
+
     protected static function outToHtml($msg)
     {
         $msg = self::prepareToHtml($msg);

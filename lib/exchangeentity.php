@@ -26,6 +26,7 @@ abstract class ExchangeEntity
         outErrorIf as protected;
         outDiff as protected;
         outDiffIf as protected;
+        outMessages as protected;
     }
     /**
      * @var array

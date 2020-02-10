@@ -22,6 +22,7 @@ require_once __DIR__ . "/../lib/locale.php";
     "UP_CONFIRM" => "Установить новые миграции?",
     "DOWN_CONFIRM" => "Откатить все установленные миграции?",
     "VIEW_FILE" => "Просмотреть",
+    "TRANSFER_TO" => "Перенести в",
     "TOGGLE_LIST" => "Все",
     "TOGGLE_NEW" => "Новые",
     "TOGGLE_STATUS" => "Суммарно",
@@ -83,9 +84,6 @@ require_once __DIR__ . "/../lib/locale.php";
     "BUILDER_TransferInstalled" => "Установленные",
     "BUILDER_TransferUnknown" => "Неизвестные",
     "BUILDER_TransferSelect" => "Выбрать миграции",
-    "BUILDER_TransferCnt" => "Перенесено миграций: #CNT#",
-    "BUILDER_TransferEmptyDest" => "Укажите конфигурацию для перемещения",
-    "BUILDER_TransferBadDest" => "Укажите подходящую конфигурацию",
 
     "BUILDER_EventExport1" => "Создать миграцию для почтовых событий",
     "BUILDER_EventExport2" => "",
@@ -200,6 +198,10 @@ require_once __DIR__ . "/../lib/locale.php";
     "DELETE_ERROR1" => "Миграций для удаления не найдено",
     "DELETE_ERROR2" => "Миграция #VERSION# не найдена",
 
+    "TRANSFER_OK" => "Миграция #VERSION# перенесена",
+    "TRANSFER_OK_CNT" => "Перенесено миграций: #CNT#",
+    "TRANSFER_ERROR1" => "Миграции для переноса не найдены",
+    "TRANSFER_ERROR2" => "Миграция уже находится в этой конфигурации",
 
     "CREATE" => "Создать миграцию",
     "VERSION_NOT_FOUND" => "Миграция не найдена",

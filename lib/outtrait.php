@@ -80,4 +80,9 @@ trait OutTrait
         call_user_func_array(['Sprint\Migration\Out', 'outDiffIf'], func_get_args());
     }
 
+    protected function outMessages($messages = [])
+    {
+        call_user_func_array(['Sprint\Migration\Out', 'outMessages'], func_get_args());
+    }
+
 }

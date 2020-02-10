@@ -55,6 +55,13 @@ function migrationMigrationMark(version, status) {
     });
 }
 
+function migrationMigrationTransfer(version, transferTo) {
+    migrationExecuteStep('migration_transfer', {
+        'version': version,
+        'transfer_to': transferTo,
+    });
+}
+
 function migrationMigrationDelete(version) {
     migrationExecuteStep('migration_delete', {
         'version': version,

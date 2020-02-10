@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Builders;
 
+use Exception;
 use Sprint\Migration\AbstractBuilder;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\ExchangeException;
@@ -33,7 +34,7 @@ class TransferBuilder extends AbstractBuilder
             }
         }
 
-        $this->addField('transfer_status', [
+        $this->addField('transfer_filter', [
             'title' => Locale::getMessage('BUILDER_TransferSelect'),
             'placeholder' => '',
             'width' => 250,
@@ -67,57 +68,31 @@ class TransferBuilder extends AbstractBuilder
 
     /**
      * @throws ExchangeException
+     * @throws Exception
      */
     protected function execute()
     {
-        $configFrom = $this->getVersionConfig()->getName();
-        $configTo = $this->getFieldValue('transfer_to');
+        $vmFrom = new VersionManager(
+            $this->getVersionConfig()->getName()
+        );
 
-        $this->exitIfEmpty($configTo, Locale::getMessage('BUILDER_TransferEmptyDest'));
+        $vmTo = new VersionManager(
+            $this->getFieldValue('transfer_to')
+        );
 
-        if ($configTo == $configFrom) {
-            $this->exitWithMessage(Locale::getMessage('BUILDER_TransferBadDest'));
-        }
+        $transferresult = $vmFrom->transferMigration(
+            $this->getFieldValue('transfer_filter'),
+            $vmTo
+        );
 
-        if (!$this->getVersionConfig()->isExists($configTo)) {
-            $this->exitWithMessage(Locale::getMessage('BUILDER_TransferBadDest'));
-        }
-
-        $vmFrom = new VersionManager($configFrom);
-        $vmTo = new VersionManager($configTo);
-
-        $status = $this->getFieldValue('transfer_status');
-        if (in_array($status, ['all'])) {
-            $filter = [];
-        } else {
-            $filter = ['status' => $status];
-        }
-
-        $versions = $vmFrom->getVersions($filter);
 
         $cnt = 0;
-        foreach ($versions as $meta) {
-
-            if ($meta['is_file']) {
-                $source = $meta['location'];
-                $dest = $vmTo->getVersionFile($meta['version']);
-
-                if (is_file($dest)) {
-                    unlink($source);
-                } else {
-                    rename($source, $dest);
-                }
+        foreach ($transferresult as $item) {
+            if ($item['success']) {
+                $cnt++;
             }
-
-
-            if ($meta['is_record']) {
-                $vmFrom->getVersionTable()->removeRecord($meta);
-                $vmTo->getVersionTable()->addRecord($meta);
-            }
-
-            $cnt++;
         }
 
-        $this->outSuccess(Locale::getMessage('BUILDER_TransferCnt', ['#CNT#' => $cnt]));
+        $this->outSuccess(Locale::getMessage('TRANSFER_OK_CNT', ['#CNT#' => $cnt]));
     }
 }

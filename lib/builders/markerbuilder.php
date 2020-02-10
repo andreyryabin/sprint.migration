@@ -50,16 +50,15 @@ class MarkerBuilder extends AbstractBuilder
         $version = $this->getFieldValue('mark_version');
         $status = $this->getFieldValue('mark_status');
 
-        $versionManager = new VersionManager($this->getVersionConfig()->getName());
-        $markresult = $versionManager->markMigration($version, $status);
+        $versionManager = new VersionManager(
+            $this->getVersionConfig()->getName()
+        );
 
-        foreach ($markresult as $val) {
-            if ($val['success']) {
-                $this->outSuccess($val['message']);
-            } else {
-                $this->outError($val['message']);
-            }
-        }
+        $markresult = $versionManager->markMigration(
+            $version,
+            $status
+        );
 
+        $this->outMessages($markresult);
     }
 }

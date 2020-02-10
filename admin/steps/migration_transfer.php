@@ -8,20 +8,24 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
 }
 
 $existsEvents = (
-($_POST["step_code"] == "migration_mark")
+($_POST["step_code"] == "migration_transfer")
 );
 
 if ($existsEvents && check_bitrix_sessid('send_sessid')) {
 
-    /** @var $versionConfig VersionConfig */
-    $versionManager = new VersionManager($versionConfig);
-
     $version = !empty($_POST['version']) ? $_POST['version'] : '';
-    $status = !empty($_POST['status']) ? $_POST['status'] : '';
+    $transferTo = !empty($_POST['transfer_to']) ? $_POST['transfer_to'] : '';
 
-    $markresult = $versionManager->markMigration($version, $status);
-    Sprint\Migration\Out::outMessages($markresult);
+    /** @var $versionConfig VersionConfig */
+    $vmFrom = new VersionManager($versionConfig);
+    $vmTo = new VersionManager($transferTo);
 
+    $transferresult = $vmFrom->transferMigration(
+        $version,
+        $vmTo
+    );
+
+    Sprint\Migration\Out::outMessages($transferresult);
     ?>
     <script>
         migrationMigrationRefresh(function () {

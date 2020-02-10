@@ -19,14 +19,8 @@ if ($existsEvents && check_bitrix_sessid('send_sessid')) {
     $version = !empty($_POST['version']) ? $_POST['version'] : '';
 
     $deleteresult = $versionManager->deleteMigration($version);
+    Sprint\Migration\Out::outMessages($deleteresult);
 
-    foreach ($deleteresult as $val) {
-        if ($val['success']) {
-            Sprint\Migration\Out::outSuccess($val['message']);
-        } else {
-            Sprint\Migration\Out::outError($val['message']);
-        }
-    }
     ?>
     <script>
         migrationMigrationRefresh(function () {

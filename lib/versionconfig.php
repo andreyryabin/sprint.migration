@@ -20,6 +20,7 @@ use Sprint\Migration\Builders\TransferBuilder;
 use Sprint\Migration\Builders\UserGroupBuilder;
 use Sprint\Migration\Builders\UserOptionsBuilder;
 use Sprint\Migration\Builders\UserTypeEntitiesBuilder;
+use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Schema\AgentSchema;
 use Sprint\Migration\Schema\EventSchema;
 use Sprint\Migration\Schema\GroupSchema;
@@ -58,16 +59,18 @@ class VersionConfig
     {
         $this->configList = $this->searchConfigs();
 
-        if (!isset($this->configList['cfg'])) {
-            $this->configList['cfg'] = $this->prepare('cfg');
+        if (!isset($this->configList[VersionEnum::CONFIG_DEFAULT])) {
+            $this->configList[VersionEnum::CONFIG_DEFAULT] = $this->prepare(VersionEnum::CONFIG_DEFAULT);
         }
 
-        if (!isset($this->configList['archive'])) {
-            $this->configList['archive'] = $this->prepare('archive', [
-                'title' => Locale::getMessage('CONFIG_archive'),
-                'migration_dir' => $this->getSiblingDir('archive', true),
-                'migration_table' => 'sprint_migration_archive',
-            ]);
+        if (!isset($this->configList[VersionEnum::CONFIG_ARCHIVE])) {
+            $this->configList[VersionEnum::CONFIG_ARCHIVE] = $this->prepare(
+                VersionEnum::CONFIG_ARCHIVE,
+                [
+                    'title' => Locale::getMessage('CONFIG_archive'),
+                    'migration_dir' => $this->getSiblingDir('archive', true),
+                    'migration_table' => 'sprint_migration_archive',
+                ]);
         }
 
         uasort($this->configList, function ($a, $b) {
@@ -77,13 +80,8 @@ class VersionConfig
         if (isset($this->configList[$configName])) {
             $this->configCurrent = $this->configList[$configName];
         } else {
-            $this->configCurrent = $this->configList['cfg'];
+            $this->configCurrent = $this->configList[VersionEnum::CONFIG_DEFAULT];
         }
-    }
-
-    public function isExists($configName)
-    {
-        return (isset($this->configList[$configName]));
     }
 
     public function getCurrent($key = false)
@@ -368,7 +366,7 @@ class VersionConfig
         return true;
     }
 
-    public function getSiblingDir($dirname, $relative = false, $configName = 'cfg')
+    public function getSiblingDir($dirname, $relative = false, $configName = VersionEnum::CONFIG_DEFAULT)
     {
         $def = $this->configList[$configName];
         $dir = rtrim($def['values']['migration_dir'], '/');
@@ -379,9 +377,9 @@ class VersionConfig
 
     protected function getSort($configName)
     {
-        if ($configName == 'archive') {
+        if ($configName == VersionEnum::CONFIG_ARCHIVE) {
             return 110;
-        } elseif ($configName == 'cfg') {
+        } elseif ($configName == VersionEnum::CONFIG_DEFAULT) {
             return 100;
         } else {
             return 500;
