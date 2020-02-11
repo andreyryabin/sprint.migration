@@ -130,14 +130,15 @@ class Helper
     }
 
     /**
+     * @param $method
      * @throws HelperException
      */
-    protected function throwApplicationExceptionIfExists()
+    protected function throwApplicationExceptionIfExists($method)
     {
         /* @global $APPLICATION CMain */
         global $APPLICATION;
         if ($APPLICATION->GetException()) {
-            $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
+            $this->throwException($method, $APPLICATION->GetException()->GetString());
         }
     }
 

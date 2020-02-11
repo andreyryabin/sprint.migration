@@ -103,7 +103,7 @@ class UserTypeEntityHelper extends Helper
             return $userFieldId;
         }
 
-        $this->throwApplicationExceptionIfExists();
+        $this->throwApplicationExceptionIfExists(__METHOD__);
         $this->throwException(__METHOD__, 'UserType %s not added', $fieldName);
     }
 
@@ -135,7 +135,7 @@ class UserTypeEntityHelper extends Helper
             return $fieldId;
         }
 
-        $this->throwApplicationExceptionIfExists();
+        $this->throwApplicationExceptionIfExists(__METHOD__);
         $this->throwException(__METHOD__, 'UserType %s not updated', $fieldId);
     }
 

@@ -407,7 +407,7 @@ class EventHelper extends Helper
             return $id;
         }
 
-        $this->throwApplicationExceptionIfExists();
+        $this->throwApplicationExceptionIfExists(__METHOD__);
         $this->throwException(__METHOD__, 'Event type %s not added', $eventName);
     }
 
@@ -441,7 +441,7 @@ class EventHelper extends Helper
             return $id;
         }
 
-        $this->throwApplicationExceptionIfExists();
+        $this->throwApplicationExceptionIfExists(__METHOD__);
         $this->throwException(__METHOD__, 'Event message %s not added, error: %s', $eventName, $event->LAST_ERROR);
     }
 

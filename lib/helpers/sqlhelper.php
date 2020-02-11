@@ -31,7 +31,7 @@ class SqlHelper extends Helper
         try {
             $ok = call_user_func($func);
 
-            $this->throwApplicationExceptionIfExists();
+            $this->throwApplicationExceptionIfExists(__METHOD__);
 
             if ($ok === false) {
                 throw new HelperException('transaction return false');

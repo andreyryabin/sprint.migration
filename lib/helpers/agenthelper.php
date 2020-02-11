@@ -202,7 +202,7 @@ class AgentHelper extends Helper
             return $agentId;
         }
 
-        $this->throwApplicationExceptionIfExists();
+        $this->throwApplicationExceptionIfExists(__METHOD__);
         $this->throwException(__METHOD__, 'Agent %s not added', $fields['NAME']);
     }
 
