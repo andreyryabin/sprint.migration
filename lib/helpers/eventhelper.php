@@ -406,6 +406,10 @@ class EventHelper extends Helper
             return $id;
         }
 
+        if ($e = $this->application->GetException()) {
+            $this->throwException(__METHOD__, $e->GetString(), $eventName);
+        }
+
         $this->throwException(__METHOD__, 'Event type %s not added', $eventName);
     }
 

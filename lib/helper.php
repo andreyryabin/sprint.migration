@@ -40,6 +40,10 @@ class Helper
         'test' => 0,
         'out_equal' => 0,
     ];
+    /**
+     * @var \CAllMain|\CMain
+     */
+    protected $application;
 
     /**
      * Helper constructor.
@@ -47,6 +51,10 @@ class Helper
      */
     public function __construct()
     {
+        global $APPLICATION;
+
+        $this->application = $APPLICATION;
+
         if (!$this->isEnabled()) {
             $this->throwException(__METHOD__, '%s disabled', $this->getHelperName());
         }
