@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Helpers;
 
-use CMain;
 use CUserFieldEnum;
 use CUserTypeEntity;
 use Sprint\Migration\Exceptions\HelperException;
@@ -104,13 +103,8 @@ class UserTypeEntityHelper extends Helper
             return $userFieldId;
         }
 
-        /* @global $APPLICATION CMain */
-        global $APPLICATION;
-        if ($APPLICATION->GetException()) {
-            $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
-        } else {
-            $this->throwException(__METHOD__, 'UserType %s not added', $fieldName);
-        }
+        $this->throwApplicationExceptionIfExists();
+        $this->throwException(__METHOD__, 'UserType %s not added', $fieldName);
     }
 
     /**
@@ -140,13 +134,9 @@ class UserTypeEntityHelper extends Helper
         if ($userFieldUpdated && $enumsCreated) {
             return $fieldId;
         }
-        /* @global $APPLICATION CMain */
-        global $APPLICATION;
-        if ($APPLICATION->GetException()) {
-            $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
-        } else {
-            $this->throwException(__METHOD__, 'UserType %s not updated', $fieldId);
-        }
+
+        $this->throwApplicationExceptionIfExists();
+        $this->throwException(__METHOD__, 'UserType %s not updated', $fieldId);
     }
 
     /**

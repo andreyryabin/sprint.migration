@@ -4,6 +4,7 @@ namespace Sprint\Migration\Helpers;
 
 use CEventMessage;
 use CEventType;
+use CMain;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
@@ -213,7 +214,7 @@ class EventHelper extends Helper
         $event = new CEventMessage;
 
         //Удаление "лишних" значений из массива, наличие которых вызовет ошибку при \CAllEventMessage::Update() (bitrix\modules\main\classes\general\event.php#355)
-        //Код удаления взят из соседнего метода \CAllEventMessage::Add() (bitrix\modules\main\classes\general\event.php#310), который сам удаляет эти значения, 
+        //Код удаления взят из соседнего метода \CAllEventMessage::Add() (bitrix\modules\main\classes\general\event.php#310), который сам удаляет эти значения,
         //а в \CAllEventMessage::Update() Битрикс видимо забыл это перенести
         $arDeleteFields = [
             'EVENT_MESSAGE_TYPE_ID',
@@ -396,8 +397,6 @@ class EventHelper extends Helper
      */
     public function addEventType($eventName, $fields)
     {
-        global $APPLICATION;
-
         $this->checkRequiredKeys(__METHOD__, $fields, ['LID', 'NAME']);
         $fields['EVENT_NAME'] = $eventName;
 
@@ -408,10 +407,7 @@ class EventHelper extends Helper
             return $id;
         }
 
-        if ($e = $APPLICATION->GetException()) {
-            $this->throwException(__METHOD__, $e->GetString(), $eventName);
-        }
-
+        $this->throwApplicationExceptionIfExists();
         $this->throwException(__METHOD__, 'Event type %s not added', $eventName);
     }
 
@@ -445,6 +441,7 @@ class EventHelper extends Helper
             return $id;
         }
 
+        $this->throwApplicationExceptionIfExists();
         $this->throwException(__METHOD__, 'Event message %s not added, error: %s', $eventName, $event->LAST_ERROR);
     }
 

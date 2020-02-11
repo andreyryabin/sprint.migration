@@ -5,6 +5,7 @@ namespace Sprint\Migration;
 use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
 use CDBResult;
+use CMain;
 use ReflectionClass;
 use ReflectionException;
 use Sprint\Migration\Exceptions\HelperException;
@@ -127,6 +128,19 @@ class Helper
 
         Throw new HelperException($msg);
     }
+
+    /**
+     * @throws HelperException
+     */
+    protected function throwApplicationExceptionIfExists()
+    {
+        /* @global $APPLICATION CMain */
+        global $APPLICATION;
+        if ($APPLICATION->GetException()) {
+            $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
+        }
+    }
+
 
     protected function getHelperName()
     {

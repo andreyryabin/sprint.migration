@@ -31,11 +31,7 @@ class SqlHelper extends Helper
         try {
             $ok = call_user_func($func);
 
-            /* @global $APPLICATION CMain */
-            global $APPLICATION;
-            if ($APPLICATION->GetException()) {
-                throw new HelperException($APPLICATION->GetException()->GetString());
-            }
+            $this->throwApplicationExceptionIfExists();
 
             if ($ok === false) {
                 throw new HelperException('transaction return false');

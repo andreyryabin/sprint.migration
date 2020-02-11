@@ -3,7 +3,6 @@
 namespace Sprint\Migration\Helpers;
 
 use CAgent;
-use CMain;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 
@@ -203,13 +202,8 @@ class AgentHelper extends Helper
             return $agentId;
         }
 
-        /* @global $APPLICATION CMain */
-        global $APPLICATION;
-        if ($APPLICATION->GetException()) {
-            $this->throwException(__METHOD__, $APPLICATION->GetException()->GetString());
-        } else {
-            $this->throwException(__METHOD__, 'Agent %s not added', $fields['NAME']);
-        }
+        $this->throwApplicationExceptionIfExists();
+        $this->throwException(__METHOD__, 'Agent %s not added', $fields['NAME']);
     }
 
     /**
