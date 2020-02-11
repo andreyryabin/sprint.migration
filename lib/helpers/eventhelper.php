@@ -396,6 +396,8 @@ class EventHelper extends Helper
      */
     public function addEventType($eventName, $fields)
     {
+        global $APPLICATION;
+
         $this->checkRequiredKeys(__METHOD__, $fields, ['LID', 'NAME']);
         $fields['EVENT_NAME'] = $eventName;
 
@@ -406,7 +408,7 @@ class EventHelper extends Helper
             return $id;
         }
 
-        if ($e = $this->application->GetException()) {
+        if ($e = $APPLICATION->GetException()) {
             $this->throwException(__METHOD__, $e->GetString(), $eventName);
         }
 
