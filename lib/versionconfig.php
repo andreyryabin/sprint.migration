@@ -225,9 +225,9 @@ class VersionConfig
         }
 
         if (isset($values['show_admin_interface']) && $values['show_admin_interface']) {
-            $values['show_admin_interface'] = true;
-        } else {
             $values['show_admin_interface'] = false;
+        } else {
+            $values['show_admin_interface'] = true;
         }
 
         if (isset($values['stop_on_errors']) && $values['stop_on_errors']) {
