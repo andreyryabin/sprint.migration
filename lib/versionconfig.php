@@ -224,7 +224,7 @@ class VersionConfig
             $values['version_filter'] = [];
         }
 
-        if (isset($values['show_admin_interface']) && $values['show_admin_interface']) {
+        if (isset($values['show_admin_interface']) && !$values['show_admin_interface']) {
             $values['show_admin_interface'] = false;
         } else {
             $values['show_admin_interface'] = true;
