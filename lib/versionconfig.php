@@ -48,6 +48,7 @@ class VersionConfig
         'show_admin_interface',
         'version_name_template',
         'console_user',
+        'console_auth_events_disable',
     ];
 
     /**
@@ -223,16 +224,22 @@ class VersionConfig
             $values['version_filter'] = [];
         }
 
-        if (isset($values['show_admin_interface']) && !$values['show_admin_interface']) {
-            $values['show_admin_interface'] = false;
-        } else {
+        if (isset($values['show_admin_interface']) && $values['show_admin_interface']) {
             $values['show_admin_interface'] = true;
+        } else {
+            $values['show_admin_interface'] = false;
         }
 
         if (isset($values['stop_on_errors']) && $values['stop_on_errors']) {
             $values['stop_on_errors'] = true;
         } else {
             $values['stop_on_errors'] = false;
+        }
+
+        if (isset($values['console_auth_events_disable']) && $values['console_auth_events_disable']) {
+            $values['console_auth_events_disable'] = true;
+        } else {
+            $values['console_auth_events_disable'] = false;
         }
 
         $cond1 = isset($values['console_user']);

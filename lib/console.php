@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration;
 
+use Bitrix\Main\EventManager;
 use CGroup;
 use CUser;
 use Exception;
@@ -35,6 +36,8 @@ class Console
 
         $this->versionConfig = new VersionConfig($this->getArg('--config='));
         $this->versionManager = new VersionManager($this->versionConfig);
+
+        $this->disableAuthHandlersIfNeed();
 
         $userlogin = $this->versionConfig->getVal('console_user');
         if ($userlogin == 'admin') {
@@ -149,6 +152,9 @@ class Console
         }
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandDelete()
     {
         $results = $this->versionManager->deleteMigration($this->getArg(0));
@@ -162,11 +168,17 @@ class Console
         }
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandDel()
     {
         $this->commandDelete();
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandList()
     {
         if ($this->getArg('--new')) {
@@ -374,6 +386,9 @@ class Console
 
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandLs()
     {
         $this->commandList();
@@ -703,4 +718,20 @@ class Console
         Throw new MigrationException();
     }
 
+    private function disableAuthHandlersIfNeed()
+    {
+        if ($this->versionConfig->getVal('console_auth_events_disable')) {
+            $this->disableHandler('main', 'OnAfterUserAuthorize');
+            $this->disableHandler('main', 'OnUserLogin');
+        }
+    }
+
+    private function disableHandler($moduleId, $eventType)
+    {
+        $eventManager = EventManager::getInstance();
+        $handlers = $eventManager->findEventHandlers($moduleId, $eventType);
+        foreach ($handlers as $iEventHandlerKey => $handler) {
+            $eventManager->removeEventHandler($moduleId, $eventType, $iEventHandlerKey);
+        }
+    }
 }
