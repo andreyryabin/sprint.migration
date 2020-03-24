@@ -541,6 +541,14 @@ class Console
      */
     protected function executeAll($filter)
     {
+        $stopOnErrors = $this->versionConfig->getVal('stop_on_errors');
+
+        if ($this->getArg('--skip-errors')) {
+            $stopOnErrors = false;
+        } elseif ($this->getArg('--stop-on-errors')) {
+            $stopOnErrors = true;
+        }
+
         $success = 0;
         $fails = 0;
 
@@ -558,7 +566,7 @@ class Console
                 $fails++;
             }
 
-            if ($fails && $this->versionConfig->getVal('stop_on_errors')) {
+            if ($fails && $stopOnErrors) {
                 break;
             }
 

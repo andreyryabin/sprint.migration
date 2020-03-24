@@ -25,7 +25,7 @@ if ($_POST["step_code"] == "schema_list" && check_bitrix_sessid('send_sessid')) 
     <table class="sp-list">
         <? foreach ($schemas as $schema): ?>
             <tr>
-                <td class="sp-list-l" style="vertical-align: top">
+                <td class="sp-list-td" style="vertical-align: top">
                     <input data-id="<?= $schema->getName() ?>"
                            class="sp-schema adm-btn <? if (in_array($schema->getName(),
                                $schemaChecked)): ?>adm-btn-active<? endif ?>"
@@ -33,7 +33,7 @@ if ($_POST["step_code"] == "schema_list" && check_bitrix_sessid('send_sessid')) 
                            value="<?= Locale::getMessage('SELECT_ONE') ?>"
                     />
                 </td>
-                <td class="sp-list-r">
+                <td class="sp-list-td">
                     <? $schema->outTitle(false) ?>
                     <? $schema->outDescription() ?>
                 </td>

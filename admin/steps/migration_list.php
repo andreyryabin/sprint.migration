@@ -141,13 +141,22 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
         <table class="sp-list">
             <? foreach ($versions as $item): ?>
                 <tr>
-                    <td class="sp-list-l">
+                    <td class="sp-list-td">
+
+                    </td>
+                    <td class="sp-list-td">
                         <a onclick="this.blur();BX.adminShowMenu(this, <?= $getOnclickMenu($item) ?>, {active_class: 'adm-btn-active',public_frame: '0'}); return false;"
                            href="javascript:void(0)"
                            class="adm-btn"
                            hidefocus="true">&equiv;</a>
+                        <? if ($item['status'] == VersionEnum::STATUS_INSTALLED) { ?>
+                            <input value="<?=Locale::getMessage('DOWN')?>" type="button" onclick="migrationMigrationDown('<?=$item['version']?>')">
+                        <? } ?>
+                        <? if ($item['status'] == VersionEnum::STATUS_NEW) { ?>
+                            <input value="<?=Locale::getMessage('UP')?>" type="button" onclick="migrationMigrationUp('<?=$item['version']?>')">
+                        <? } ?>
                     </td>
-                    <td class="sp-list-r">
+                    <td class="sp-list-td">
                         <span class="sp-item-<?= $item['status'] ?>"><?= $item['version'] ?></span>
                         <? if ($item['modified']): ?>
                             <span class="sp-modified" title="<?= Locale::getMessage('MODIFIED_VERSION') ?>">

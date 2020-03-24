@@ -118,17 +118,11 @@ table.sp-list {
     border-collapse: collapse;
 }
 
-table.sp-list td.sp-list-l {
+table.sp-list td.sp-list-td {
     vertical-align: middle;
     text-align: left;
-    padding: 5px 0;
-    width: 50px;
-}
-
-table.sp-list td.sp-list-r {
-    vertical-align: middle;
-    text-align: left;
-    padding: 5px 0;
+    padding: 5px 5px;
+    /*width: 50px;*/
 }
 
 table.sp-status {
