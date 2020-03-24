@@ -118,12 +118,20 @@ table.sp-list {
     border-collapse: collapse;
 }
 
-table.sp-list td.sp-list-td {
-    vertical-align: middle;
+table.sp-list td.sp-list-td__content {
+    vertical-align: top;
     text-align: left;
     padding: 5px 5px;
     /*width: 50px;*/
 }
+
+table.sp-list td.sp-list-td__buttons {
+    white-space: nowrap;
+    text-align: right;
+    vertical-align: top;
+    padding: 5px 5px;
+}
+
 
 table.sp-status {
     border-collapse: collapse;
@@ -187,6 +195,7 @@ a.sp-item-unknown:visited {
     border-radius: 10px;
     cursor: default;
 }
+
 .sp-older {
     padding: 0 10px;
     background: #a00;
@@ -194,6 +203,7 @@ a.sp-item-unknown:visited {
     border-radius: 10px;
     cursor: default;
 }
+
 .sp-tag {
     padding: 0 10px;
     background: #ccc;

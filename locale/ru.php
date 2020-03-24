@@ -39,6 +39,8 @@ require_once __DIR__ . "/../lib/locale.php";
     "NEW" => "Новые миграции",
     "INSTALLED" => "Установленные",
     "UNKNOWN" => "Неизвестные",
+    "VERSION_NEW" => "Новая",
+    "VERSION_INSTALLED" => "Установленная",
     "DESC_NEW" => "(только файл)",
     "DESC_INSTALLED" => "(файл + запись об установке)",
     "DESC_UNKNOWN" => "(только запись об установке)",
