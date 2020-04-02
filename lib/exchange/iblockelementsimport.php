@@ -9,6 +9,7 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\Helpers\IblockExchangeHelper;
 use Sprint\Migration\ExchangeEntity;
+use Sprint\Migration\Locale;
 use XMLReader;
 
 /**
@@ -41,11 +42,13 @@ class IblockElementsImport extends AbstractExchange
 
         if (!isset($params['total'])) {
             $this->exchangeEntity->exitIf(
-                !is_callable($this->converter), 'converter not callable'
+                !is_callable($this->converter),
+                Locale::getMessage('ERRR_CONVERTER_NOT_CALLABLE')
             );
 
             $this->exchangeEntity->exitIf(
-                !is_file($this->file), 'exchange file not found'
+                !is_file($this->file),
+                Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND')
             );
 
             $reader = new XMLReader();

@@ -93,6 +93,13 @@ class TransferBuilder extends AbstractBuilder
             }
         }
 
-        $this->outSuccess(Locale::getMessage('TRANSFER_OK_CNT', ['#CNT#' => $cnt]));
+        $this->outSuccess(
+            Locale::getMessage(
+                'TRANSFER_OK_CNT',
+                [
+                    '#CNT#' => $cnt,
+                ]
+            )
+        );
     }
 }

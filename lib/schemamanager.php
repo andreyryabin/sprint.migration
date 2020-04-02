@@ -14,6 +14,12 @@ class SchemaManager extends ExchangeEntity
 
     protected $testMode = 0;
 
+    /**
+     * SchemaManager constructor.
+     * @param string $configName
+     * @param array $params
+     * @throws Exception
+     */
     public function __construct($configName = '', $params = [])
     {
         if ($configName instanceof VersionConfig) {
@@ -151,12 +157,28 @@ class SchemaManager extends ExchangeEntity
 
         $files = $schema->getSchemaFiles();
         if (!empty($files)) {
-            $this->outNotice('%s сохранена', $schema->getTitle());
+            $this->outNotice(
+                Locale::getMessage(
+                    'ERR_SCHEMA_CREATED',
+                    [
+                        '#NAME#' => $schema->getTitle(),
+
+                    ]
+                )
+            );
             foreach ($files as $file) {
                 $this->out($file);
             }
         } else {
-            $this->outWarning('%s не содержит данных', $schema->getTitle());
+            $this->outWarning(
+                Locale::getMessage(
+                    'ERR_SCHEMA_EMPTY',
+                    [
+                        '#NAME#' => $schema->getTitle(),
+
+                    ]
+                )
+            );
         }
 
         if (!$this->testMode) {
@@ -169,6 +191,7 @@ class SchemaManager extends ExchangeEntity
     /**
      * @param $name
      * @throws RestartException
+     * @throws Exception
      * @return bool
      */
     protected function importSchema($name)

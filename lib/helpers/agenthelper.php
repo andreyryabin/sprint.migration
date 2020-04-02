@@ -130,7 +130,15 @@ class AgentHelper extends Helper
 
         if (empty($exists)) {
             $ok = $this->getMode('test') ? true : $this->addAgent($fields);
-            $this->outNoticeIf($ok, 'Агент %s: добавлен', $fields['NAME']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'AGENT_CREATED',
+                    [
+                        '#NAME#' => $fields['NAME'],
+                    ]
+                )
+            );
             return $ok;
         }
 
@@ -141,7 +149,17 @@ class AgentHelper extends Helper
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateAgent($fields);
-            $this->outNoticeIf($ok, 'Агент %s: обновлен', $fields['NAME']);
+
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'AGENT_UPDATED',
+                    [
+                        '#NAME#' => $fields['NAME'],
+                    ]
+                )
+            );
+
             $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
@@ -149,7 +167,16 @@ class AgentHelper extends Helper
 
         $ok = $this->getMode('test') ? true : $exists['ID'];
         if ($this->getMode('out_equal')) {
-            $this->outIf($ok, 'Агент %s: совпадает', $fields['NAME']);
+            $this->outIf(
+                $ok,
+                Locale::getMessage(
+                    'AGENT_EQUAL',
+                    [
+                        '#NAME#' => $fields['NAME'],
+                    ]
+                )
+            );
+
         }
         return $ok;
     }

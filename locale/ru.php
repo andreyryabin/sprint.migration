@@ -267,6 +267,34 @@ require_once __DIR__ . "/../lib/locale.php";
     "ERR_CANT_DELETE_IBLOCK" => 'Cant delete iblock #NAME#',
     "ERR_CANT_DELETE_IBLOCK_TYPE" => 'Cant delete iblock type #NAME#',
     "ERR_IB_FORM_OPTIONS_NOT_FOUND" => 'iblock form options not found',
+    "ERR_SCHEMA_EMPTY" => 'Схема #NAME# не содержит данных',
+    "ERR_SCHEMA_CREATED" => 'Схема #NAME# сохранена',
+    "ERRR_CONVERTER_NOT_CALLABLE" => 'ERRR_CONVERTER_NOT_CALLABLE',
+    "ERR_EXCHANGE_FILE_NOT_FOUND" => 'ERR_EXCHANGE_FILE_NOT_FOUND',
+
+    "AGENT_CREATED" => 'Агент "#NAME#" добавлен',
+    "AGENT_UPDATED" => 'Агент "#NAME#" обновлен',
+    "AGENT_EQUAL" => 'Агент "#NAME#" совпадает',
+
+    "EVENT_MESSAGE_CREATED" => 'Почтовый шаблон "#NAME#" добавлен',
+    "EVENT_MESSAGE_UPDATED" => 'Почтовый шаблон "#NAME#" обновлен',
+    "EVENT_MESSAGE_EQUAL" => 'Почтовый шаблон "#NAME#" совпадает',
+
+    "EVENT_TYPE_CREATED" => 'Тип почтового события "#NAME#" добавлен',
+    "EVENT_TYPE_UPDATED" => 'Тип почтового события "#NAME#" обновлен',
+    "EVENT_TYPE_EQUAL" => 'Тип почтового события "#NAME#" совпадает',
+
+    "HLBLOCK_CREATED" => 'Highload-блок "#NAME#" добавлен',
+    "HLBLOCK_UPDATED" => 'Highload-блок "#NAME#" обновлен',
+    "HLBLOCK_EQUAL" => 'Highload-блок "#NAME#" совпадает',
+
+    "OPTION_CREATED" => 'Настройка "#NAME#" добавлена',
+    "OPTION_UPDATED" => 'Настройка "#NAME#" обновлена',
+    "OPTION_EQUAL" => 'Настройка "#NAME#" совпадает',
+
+    "USER_GROUP_CREATED" => 'Группа "#NAME#" добавлена',
+    "USER_GROUP_UPDATED" => 'Группа "#NAME#" обновлена',
+    "USER_GROUP_EQUAL" => 'Группа "#NAME#" совпадает',
 
     "GD_INSTALL" => "Установить гаджеты: \"Сводка по миграциям\"",
     "GD_INSTALL_success" => "Гаджеты установлены",

@@ -9,24 +9,34 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
     if (!empty($_REQUEST["options_remove"])) {
         Module::removeDbOptions();
-        Out::outSuccess(Locale::getMessage('OPTIONS_REMOVE_success'));
+        Out::outSuccess(
+            Locale::getMessage('OPTIONS_REMOVE_success')
+        );
     }
 
     if (!empty($_REQUEST["configuration_remove"])) {
         $versionConfig = new VersionConfig();
         if ($versionConfig->deleteConfig($_REQUEST['configuration_name'])) {
-            Out::outSuccess(Locale::getMessage('BUILDER_Cleaner_success'));
+            Out::outSuccess(
+                Locale::getMessage('BUILDER_Cleaner_success')
+            );
         } else {
-            Out::outError(Locale::getMessage('BUILDER_Cleaner_error'));
+            Out::outError(
+                Locale::getMessage('BUILDER_Cleaner_error')
+            );
         }
     }
 
     if (!empty($_REQUEST["configuration_create"])) {
         $versionConfig = new VersionConfig();
         if ($versionConfig->createConfig($_REQUEST['configuration_name'])) {
-            Out::outSuccess(Locale::getMessage('BUILDER_Configurator_success'));
+            Out::outSuccess(
+                Locale::getMessage('BUILDER_Configurator_success')
+            );
         } else {
-            Out::outError(Locale::getMessage('BUILDER_Configurator_error'));
+            Out::outError(
+                Locale::getMessage('BUILDER_Configurator_error')
+            );
         }
     }
 
@@ -34,7 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         /** @var $tmpmodule sprint_migration */
         $tmpmodule = CModule::CreateModuleObject('sprint.migration');
         $tmpmodule->installGadgets();
-        Out::outSuccess(Locale::getMessage('GD_INSTALL_success'));
+        Out::outSuccess(
+            Locale::getMessage('GD_INSTALL_success')
+        );
     }
 
 }

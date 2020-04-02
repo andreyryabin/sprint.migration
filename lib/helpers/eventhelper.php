@@ -288,20 +288,46 @@ class EventHelper extends Helper
 
         if (empty($exists)) {
             $ok = $this->getMode('test') ? true : $this->addEventMessage($eventName, $fields);
-            $this->outNoticeIf($ok, 'Почтовый шаблон %s:%s: добавлен', $eventName, $fields['SUBJECT']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'EVENT_MESSAGE_CREATED',
+                    [
+                        '#NAME#' => $eventName . ':' . $fields['SUBJECT'],
+                    ]
+                )
+            );
             return $ok;
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateEventMessageById($exists['ID'], $fields);
-            $this->outNoticeIf($ok, 'Почтовый шаблон %s:%s: обновлен', $eventName, $fields['SUBJECT']);
+
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'EVENT_MESSAGE_UPDATED',
+                    [
+                        '#NAME#' => $eventName . ':' . $fields['SUBJECT'],
+                    ]
+                )
+            );
+
             $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
         $ok = $this->getMode('test') ? true : $eventName;
         if ($this->getMode('out_equal')) {
-            $this->outIf($ok, 'Почтовый шаблон %s:%s: совпадает', $eventName, $fields['SUBJECT']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'EVENT_MESSAGE_EQUAL',
+                    [
+                        '#NAME#' => $eventName . ':' . $fields['SUBJECT'],
+                    ]
+                )
+            );
         }
         return $ok;
     }
@@ -328,20 +354,48 @@ class EventHelper extends Helper
 
         if (empty($exists)) {
             $ok = $this->getMode('test') ? true : $this->addEventType($eventName, $fields);
-            $this->outNoticeIf($ok, 'Тип почтового события %s:%s: добавлен', $eventName, $fields['LID']);
+
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'EVENT_TYPE_CREATED',
+                    [
+                        '#NAME#' => $eventName . ':' . $fields['LID'],
+                    ]
+                )
+            );
+
             return $ok;
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateEventTypeById($exists['ID'], $fields);
-            $this->outNoticeIf($ok, 'Тип почтового события %s:%s: обновлен', $eventName, $fields['LID']);
+
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'EVENT_TYPE_UPDATED',
+                    [
+                        '#NAME#' => $eventName . ':' . $fields['LID'],
+                    ]
+                )
+            );
+
             $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
         $ok = $this->getMode('test') ? true : $eventName;
         if ($this->getMode('out_equal')) {
-            $this->outIf($ok, 'Тип почтового события %s:%s: совпадает', $eventName, $fields['LID']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'EVENT_TYPE_EQUAL',
+                    [
+                        '#NAME#' => $eventName . ':' . $fields['LID'],
+                    ]
+                )
+            );
         }
         return $ok;
     }

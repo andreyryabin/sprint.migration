@@ -156,13 +156,29 @@ class UserGroupHelper extends Helper
 
         if (empty($exists)) {
             $ok = $this->getMode('test') ? true : $this->addGroup($fields['STRING_ID'], $fields);
-            $this->outNoticeIf($ok, 'Группа %s: добавлена', $fields['NAME']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'USER_GROUP_CREATED',
+                    [
+                        '#NAME#' => $fields['NAME'],
+                    ]
+                )
+            );
             return $ok;
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateGroup($exists['ID'], $fields);
-            $this->outNoticeIf($ok, 'Группа %s: обновлена', $fields['NAME']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'USER_GROUP_UPDATED',
+                    [
+                        '#NAME#' => $fields['NAME'],
+                    ]
+                )
+            );
             $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
@@ -170,7 +186,15 @@ class UserGroupHelper extends Helper
 
         $ok = $this->getMode('test') ? true : $exists['ID'];
         if ($this->getMode('out_equal')) {
-            $this->outIf($ok, 'Группа %s: совпадает', $fields['NAME']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'USER_GROUP_EQUAL',
+                    [
+                        '#NAME#' => $fields['NAME'],
+                    ]
+                )
+            );
         }
         return $ok;
     }

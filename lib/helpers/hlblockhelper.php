@@ -200,13 +200,32 @@ class HlblockHelper extends Helper
 
         if (empty($exists)) {
             $ok = $this->getMode('test') ? true : $this->addHlblock($fields);
-            $this->outNoticeIf($ok, 'Highload-блок %s: добавлен', $fields['NAME']);
+
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'HLBLOCK_CREATED',
+                    [
+                        '#NAME#' => $fields['NAME'],
+                    ]
+                )
+            );
+
             return $ok;
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateHlblock($exists['ID'], $fields);
-            $this->outNoticeIf($ok, 'Highload-блок %s: обновлен', $fields['NAME']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'HLBLOCK_UPDATED',
+                    [
+                        '#NAME#' => $fields['NAME'],
+                    ]
+                )
+            );
+
             $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
@@ -214,7 +233,16 @@ class HlblockHelper extends Helper
 
         $ok = $this->getMode('test') ? true : $exists['ID'];
         if ($this->getMode('out_equal')) {
-            $this->outIf($ok, 'Highload-блок %s: совпадает', $fields['NAME']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'HLBLOCK_EQUAL',
+                    [
+                        '#NAME#' => $fields['NAME'],
+                    ]
+                )
+            );
+
         }
         return $ok;
     }

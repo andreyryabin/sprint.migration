@@ -119,14 +119,22 @@ abstract class VersionBuilder extends AbstractBuilder
 
         if (!is_file($fileName)) {
             Out::outError(
-                Locale::getMessage('ERR_CANT_CREATE_FILE', ['#NAME#' => $fileName])
+                Locale::getMessage('ERR_CANT_CREATE_FILE', [
+                        '#NAME#' => $fileName,
+                    ]
+                )
             );
             return false;
         }
 
-        Out::outSuccess(Locale::getMessage('CREATED_SUCCESS', [
-            '#VERSION#' => $templateVars['version'],
-        ]));
+        Out::outSuccess(
+            Locale::getMessage(
+                'CREATED_SUCCESS',
+                [
+                    '#VERSION#' => $templateVars['version'],
+                ]
+            )
+        );
 
         if ($markAsInstalled) {
             $vm = new VersionManager($this->getVersionConfig());

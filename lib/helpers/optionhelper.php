@@ -11,6 +11,7 @@ use Bitrix\Main\ObjectPropertyException;
 use Bitrix\Main\SystemException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Tables\OptionTable;
 
 class OptionHelper extends Helper
@@ -93,13 +94,29 @@ class OptionHelper extends Helper
 
         if (empty($exists)) {
             $ok = $this->getMode('test') ? true : $this->setOption($fields);
-            $this->outNoticeIf($ok, 'Настройка %s:%s: добавлена', $fields['MODULE_ID'], $fields['NAME']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'OPTION_CREATED',
+                    [
+                        '#NAME#' => $fields['MODULE_ID'] . ':' . $fields['NAME'],
+                    ]
+                )
+            );
             return $ok;
         }
 
         if ($this->hasDiff($exists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->setOption($fields);
-            $this->outNoticeIf($ok, 'Настройка %s:%s: обновлена', $fields['MODULE_ID'], $fields['NAME']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'OPTION_UPDATED',
+                    [
+                        '#NAME#' => $fields['MODULE_ID'] . ':' . $fields['NAME'],
+                    ]
+                )
+            );
             $this->outDiffIf($ok, $exists, $fields);
             return $ok;
         }
@@ -107,7 +124,15 @@ class OptionHelper extends Helper
 
         $ok = true;
         if ($this->getMode('out_equal')) {
-            $this->outIf($ok, 'Настройка %s:%s: совпадает', $fields['MODULE_ID'], $fields['NAME']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'OPTION_EQUAL',
+                    [
+                        '#NAME#' => $fields['MODULE_ID'] . ':' . $fields['NAME'],
+                    ]
+                )
+            );
         }
         return $ok;
 

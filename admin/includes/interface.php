@@ -42,13 +42,12 @@ if ($versionConfig->getVal('show_admin_interface')) {
         } catch (Throwable $e) {
             Out::outError($e->getMessage());
         }
-        /** @noinspection PhpIncludeInspection */
+
         require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");
         die();
     }
 }
 
-/** @noinspection PhpIncludeInspection */
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 CUtil::InitJSCore(["jquery"]);
 
