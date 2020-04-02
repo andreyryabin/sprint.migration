@@ -61,7 +61,9 @@ class Console
             call_user_func([$this, $this->command]);
 
         } else {
-            $this->exitWithMessage(sprintf('Command "%s" not found, see help', $this->command));
+            $this->exitWithMessage(
+                Locale::getMessage('ERR_COMMAND_NOT_FOUND', ['#NAME#' => $this->command])
+            );
         }
     }
 
@@ -143,12 +145,13 @@ class Console
         $status = $this->getArg('--as=');
 
         if ($search && $status) {
-            $markresult = $this->versionManager->markMigration($search, $status);
-            foreach ($markresult as $val) {
-                Out::out($val['message']);
-            }
+            Out::outMessages(
+                $this->versionManager->markMigration($search, $status)
+            );
         } else {
-            $this->exitWithMessage('Invalid arguments, see help');
+            $this->exitWithMessage(
+                Locale::getMessage('ERR_INVALID_ARGUMENTS')
+            );
         }
     }
 
@@ -157,15 +160,9 @@ class Console
      */
     public function commandDelete()
     {
-        $results = $this->versionManager->deleteMigration($this->getArg(0));
-
-        foreach ($results as $result) {
-            if ($result['success']) {
-                Out::outSuccess($result['message']);
-            } else {
-                Out::outError($result['message']);
-            }
-        }
+        Out::outMessages(
+            $this->versionManager->deleteMigration($this->getArg(0))
+        );
     }
 
     /**
@@ -257,16 +254,13 @@ class Console
     {
         $versionName = $this->getArg(0);
 
-        if (is_numeric($versionName)) {
-            /** @deprecated */
-            $this->exitWithMessage('limit is no longer supported');
-        }
-
         if ($versionName) {
             if ($this->versionManager->checkVersionName($versionName)) {
                 $this->executeOnce($versionName, VersionEnum::ACTION_UP);
             } else {
-                $this->exitWithMessage('version name is not valid');
+                $this->exitWithMessage(
+                    Locale::getMessage('ERR_VERSION_NOT_FOUND')
+                );
             }
         } else {
             $this->executeAll([
@@ -286,17 +280,13 @@ class Console
     {
         $versionName = $this->getArg(0);
 
-        if (is_numeric($versionName)) {
-            /** @deprecated */
-            $this->exitWithMessage('limit is no longer supported');
-        }
-
-
         if ($versionName) {
             if ($this->versionManager->checkVersionName($versionName)) {
                 $this->executeOnce($versionName, VersionEnum::ACTION_DOWN);
             } else {
-                $this->exitWithMessage('version name is not valid');
+                $this->exitWithMessage(
+                    Locale::getMessage('ERR_VERSION_NOT_FOUND')
+                );
             }
         } else {
             $this->executeAll([
@@ -314,12 +304,14 @@ class Console
      */
     public function commandRedo()
     {
-        $version = $this->getArg(0);
-        if ($version) {
-            $this->executeVersion($version, VersionEnum::ACTION_DOWN);
-            $this->executeVersion($version, VersionEnum::ACTION_UP);
+        $versionName = $this->getArg(0);
+        if ($this->versionManager->checkVersionName($versionName)) {
+            $this->executeVersion($versionName, VersionEnum::ACTION_DOWN);
+            $this->executeVersion($versionName, VersionEnum::ACTION_UP);
         } else {
-            $this->exitWithMessage('Version not found!');
+            $this->exitWithMessage(
+                Locale::getMessage('ERR_VERSION_NOT_FOUND')
+            );
         }
     }
 
@@ -328,11 +320,11 @@ class Console
         global $USER;
 
         Out::out(Locale::getMessage('MODULE_NAME'));
-        Out::out('Версия bitrix: %s', defined('SM_VERSION') ? SM_VERSION : '');
-        Out::out('Версия модуля: %s', Module::getVersion());
+        Out::out(Locale::getMessage('BITRIX_VERSION') . ': %s', defined('SM_VERSION') ? SM_VERSION : '');
+        Out::out(Locale::getMessage('MODULE_VERSION') . ': %s', Module::getVersion());
 
         if ($USER && $USER->GetID()) {
-            Out::out('Текущий пользователь: [%d] %s', $USER->GetID(), $USER->GetLogin());
+            Out::out(Locale::getMessage('CURRENT_USER') . ': [%d] %s', $USER->GetID(), $USER->GetLogin());
         }
 
         $configList = $this->versionConfig->getList();
@@ -340,7 +332,7 @@ class Console
 
         Out::out('');
 
-        Out::out('Список конфигураций:');
+        Out::out(Locale::getMessage('CONFIG_LIST') . ':');
         foreach ($configList as $configItem) {
             if ($configItem['name'] == $configName) {
                 Out::out('  ' . $configItem['title'] . ' *');
@@ -353,7 +345,8 @@ class Console
 
         Out::out('');
 
-        Out::out('Запуск:' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL, $this->script);
+        Out::out(Locale::getMessage('COMMAND_RUN') . ':' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL,
+            $this->script);
         Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
     }
 
@@ -382,8 +375,6 @@ class Console
         }
 
         Out::out($grid->build());
-
-
     }
 
     /**
@@ -441,7 +432,9 @@ class Console
                 $this->executeOnce($version, VersionEnum::ACTION_UP);
             }
         } else {
-            $this->exitWithMessage('Version not found!');
+            $this->exitWithMessage(
+                Locale::getMessage('ERR_VERSION_NOT_FOUND')
+            );
         }
     }
 
@@ -575,7 +568,9 @@ class Console
         Out::out('migrations (%s): %d', $action, $success);
 
         if ($fails) {
-            $this->exitWithMessage('some migrations fails');
+            $this->exitWithMessage(
+                Locale::getMessage('ERR_SOME_MIGRATIONS_FAILS')
+            );
         }
     }
 
@@ -589,7 +584,9 @@ class Console
         $ok = $this->executeVersion($version, $action);
 
         if (!$ok) {
-            $this->exitWithMessage('migration fail');
+            $this->exitWithMessage(
+                Locale::getMessage('ERR_MIGRATION_FAIL')
+            );
         }
     }
 
@@ -650,7 +647,9 @@ class Console
             $builder = $this->versionManager->createBuilder($from, $postvars);
 
             if (!$builder) {
-                $this->exitWithMessage('Builder not found');
+                $this->exitWithMessage(
+                    Locale::getMessage('ERR_BUILDER_NOT_FOUND')
+                );
             }
 
             $builder->renderConsole();

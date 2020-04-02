@@ -5,6 +5,7 @@ namespace Sprint\Migration\Helpers;
 use CLanguage;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
+use Sprint\Migration\Locale;
 
 class LangHelper extends Helper
 {
@@ -25,7 +26,11 @@ class LangHelper extends Helper
             return $item['LID'];
         }
 
-        $this->throwException(__METHOD__, 'Default language not found');
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_DEFAULT_LANGUAGE_NOT_FOUND'
+        ));
+
+        return false;
     }
 
     /**
@@ -57,6 +62,10 @@ class LangHelper extends Helper
         if (!empty($items)) {
             return $items;
         }
-        $this->throwException(__METHOD__, 'Active langs not found');
+
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_ACTIVE_LANGUAGES_NOT_FOUND'
+        ));
+        return [];
     }
 }

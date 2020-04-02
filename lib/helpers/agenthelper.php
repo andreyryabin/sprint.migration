@@ -5,6 +5,7 @@ namespace Sprint\Migration\Helpers;
 use CAgent;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
+use Sprint\Migration\Locale;
 
 class AgentHelper extends Helper
 {
@@ -88,7 +89,6 @@ class AgentHelper extends Helper
      */
     public function deleteAgent($moduleId, $name)
     {
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         CAgent::RemoveAgent($name, $moduleId);
         return true;
     }
@@ -187,7 +187,6 @@ class AgentHelper extends Helper
             'NEXT_EXEC' => $DB->GetNowDate(),
         ], $fields);
 
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $agentId = CAgent::AddAgent(
             $fields['NAME'],
             $fields['MODULE_ID'],
@@ -203,7 +202,13 @@ class AgentHelper extends Helper
         }
 
         $this->throwApplicationExceptionIfExists(__METHOD__);
-        $this->throwException(__METHOD__, 'Agent %s not added', $fields['NAME']);
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_AGENT_NOT_ADDED',
+            [
+                '#NAME#' => $fields['NAME'],
+            ]
+        ));
+        return false;
     }
 
     /**

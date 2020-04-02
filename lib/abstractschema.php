@@ -246,7 +246,9 @@ abstract class AbstractSchema extends ExchangeEntity
         if (method_exists($this, $item[0])) {
             call_user_func_array([$this, $item[0]], $item[1]);
         } else {
-            $this->outError('method %s not found', $item[0]);
+            $this->outError(
+                Locale::getMessage('ERR_METHOD_NOT_FOUND', ['#NAME#' => $item[0]])
+            );
         }
     }
 

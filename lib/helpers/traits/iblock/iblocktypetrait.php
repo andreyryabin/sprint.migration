@@ -5,6 +5,7 @@ namespace Sprint\Migration\Helpers\Traits\Iblock;
 use CIBlockType;
 use CLanguage;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 trait IblockTypeTrait
 {
@@ -22,7 +23,9 @@ trait IblockTypeTrait
             return $item;
         }
 
-        $this->throwException(__METHOD__, 'iblock type not found');
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_IB_TYPE_NOT_FOUND'
+        ));
     }
 
     /**
@@ -38,7 +41,9 @@ trait IblockTypeTrait
             return $item['ID'];
         }
 
-        $this->throwException(__METHOD__, 'iblock type id not found');
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_IB_TYPE_NOT_FOUND'
+        ));
     }
 
 
@@ -194,7 +199,11 @@ trait IblockTypeTrait
             return true;
         }
 
-        $this->throwException(__METHOD__, 'Could not delete iblock type %s', $typeId);
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_CANT_DELETE_IBLOCK_TYPE', [
+                '#NAME#' => $typeId,
+            ]
+        ));
     }
 
     /**

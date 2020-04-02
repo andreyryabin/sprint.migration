@@ -5,6 +5,7 @@ namespace Sprint\Migration\Helpers\Traits\UserOptions;
 use CIBlock;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\HelperManager;
+use Sprint\Migration\Locale;
 
 trait IblockTrait
 {
@@ -281,7 +282,9 @@ trait IblockTrait
             return $result;
         }
 
-        $this->throwException(__METHOD__, 'iblock form options not found');
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_IB_FORM_OPTIONS_NOT_FOUND'
+        ));
     }
 
 

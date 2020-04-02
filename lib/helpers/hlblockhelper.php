@@ -11,6 +11,7 @@ use CTask;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
+use Sprint\Migration\Locale;
 
 
 class HlblockHelper extends Helper
@@ -317,7 +318,9 @@ class HlblockHelper extends Helper
             return $item;
         }
 
-        $this->throwException(__METHOD__, "hlblock not found");
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_HLBLOCK_NOT_FOUND'
+        ));
     }
 
     /**
@@ -333,7 +336,9 @@ class HlblockHelper extends Helper
             return $item['ID'];
         }
 
-        $this->throwException(__METHOD__, "hlblock not found");
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_HLBLOCK_NOT_FOUND'
+        ));
     }
 
     /**

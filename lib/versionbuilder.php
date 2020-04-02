@@ -74,6 +74,13 @@ abstract class VersionBuilder extends AbstractBuilder
         ]);
     }
 
+    /**
+     * @param string $templateFile
+     * @param array $templateVars
+     * @param bool $markAsInstalled
+     * @throws Exceptions\MigrationException
+     * @return bool|string
+     */
     protected function createVersionFile($templateFile = '', $templateVars = [], $markAsInstalled = true)
     {
         $templateVars['description'] = $this->purifyDescription(
@@ -98,7 +105,7 @@ abstract class VersionBuilder extends AbstractBuilder
         $tplVars = array_merge([
             'extendUse' => $extendUse,
             'extendClass' => $extendClass,
-            'moduleVersion' => Module::getVersion()
+            'moduleVersion' => Module::getVersion(),
         ], $templateVars);
 
         if (!is_file($templateFile)) {
@@ -111,7 +118,9 @@ abstract class VersionBuilder extends AbstractBuilder
         file_put_contents($fileName, $fileContent);
 
         if (!is_file($fileName)) {
-            Out::outError('%s, error: can\'t create a file "%s"', $templateVars['version'], $fileName);
+            Out::outError(
+                Locale::getMessage('ERR_CANT_CREATE_FILE', ['#NAME#' => $fileName])
+            );
             return false;
         }
 

@@ -8,6 +8,7 @@ use CSite;
 use CTask;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
+use Sprint\Migration\Locale;
 
 class UserGroupHelper extends Helper
 {
@@ -51,7 +52,9 @@ class UserGroupHelper extends Helper
             return $item;
         }
 
-        $this->throwException(__METHOD__, 'code not found');
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_USER_GROUP_CODE_NOT_FOUND'
+        ));
     }
 
     /**
@@ -235,7 +238,9 @@ class UserGroupHelper extends Helper
     public function updateGroup($groupId, $fields = [])
     {
         if (empty($fields)) {
-            $this->throwException(__METHOD__, 'Set fields for group');
+            $this->throwException(__METHOD__, Locale::getMessage(
+                'ERR_SET_FIELDS_FOR_UPDATE_GROUP'
+            ));
         }
 
         $group = new CGroup;

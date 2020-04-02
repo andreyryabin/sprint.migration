@@ -5,6 +5,7 @@ namespace Sprint\Migration\Helpers\Traits\Iblock;
 use CIBlockProperty;
 use CIBlockPropertyEnum;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 trait IblockPropertyTrait
 {
@@ -350,7 +351,9 @@ trait IblockPropertyTrait
             return $export;
         }
 
-        $this->throwException(__METHOD__, 'code not found');
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_IB_PROPERTY_CODE_NOT_FOUND'
+        ));
     }
 
     /**

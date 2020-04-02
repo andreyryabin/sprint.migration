@@ -12,6 +12,7 @@ use CFormValidator;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
+use Sprint\Migration\Locale;
 
 class FormHelper extends Helper
 {
@@ -90,7 +91,10 @@ class FormHelper extends Helper
             return $formId;
         }
 
-        $this->throwException(__METHOD__, "Form %s not found", $sid);
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage('ERR_FORM_NOT_FOUND', ['#NAME#' => $sid])
+        );
 
     }
 
@@ -286,7 +290,11 @@ class FormHelper extends Helper
             return true;
         }
 
-        $this->throwException(__METHOD__, 'Cannot delete form "%s"', $sid);
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_CANT_DELETE_FORM', [
+                '#NAME#' => $sid,
+            ]
+        ));
     }
 
     /**

@@ -49,7 +49,10 @@ class Helper
     public function __construct()
     {
         if (!$this->isEnabled()) {
-            $this->throwException(__METHOD__, '%s disabled', $this->getHelperName());
+            $this->throwException(
+                __METHOD__,
+                Locale::getMessage('ERR_HELPER_DISABLED', ['#NAME#' => $this->getHelperName()])
+            );
         }
     }
 
@@ -178,7 +181,7 @@ class Helper
     {
         foreach ($reqKeys as $name) {
             if (empty($fields[$name])) {
-                $this->throwException($method, 'requred key "%s" empty', $name);
+                $this->throwException($method, Locale::getMessage('ERR_EMPTY_REQ_FIELD', ['#NAME#' => $name]));
             }
         }
     }

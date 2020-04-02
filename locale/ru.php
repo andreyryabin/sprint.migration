@@ -2,7 +2,7 @@
 
 require_once __DIR__ . "/../lib/locale.php";
 
-\Sprint\Migration\Locale::loadLocale([
+\Sprint\Migration\Locale::loadLocale('ru', [
     "MODULE_NAME" => "Миграции для разработчиков",
     "MODULE_DESCRIPTION" => "Модуль для управления миграциями бд, создание, установка, откат миграций",
     "PARTNER_NAME" => "Андрей Рябин",
@@ -50,13 +50,10 @@ require_once __DIR__ . "/../lib/locale.php";
     "CREATED_SUCCESS" => "Миграция #VERSION# создана",
     "SEARCH" => "Поиск",
     "ADMIN_INTERFACE_HIDDEN" => "Управление миграциями через админку отключено",
-
     "CFG_TITLE" => "Миграции",
     "SCH_TITLE" => "Схемы данных",
-
     "CONFIG" => "Конфигурация",
     "CONFIG_archive" => "Архив",
-
     "CONFIG_migration_dir" => "Директория для миграций",
     "CONFIG_migration_extend_class" => "Класс, от которого наследуются миграции",
     "CONFIG_migration_table" => "Таблица в бд с миграциями",
@@ -69,10 +66,8 @@ require_once __DIR__ . "/../lib/locale.php";
     "CONFIG_config_file" => "Файл конфигурации",
     "CONFIG_title" => "Название конфигурации",
     "CONFIG_version_schemas" => "Схемы данных",
-
     "CONFIG_yes" => "да",
     "CONFIG_no" => "нет",
-
     "BUILDER_ERROR" => "Ошибка",
     "BUILDER_NEXT" => "Далее",
     "BUILDER_RESET" => "Сбросить",
@@ -229,6 +224,49 @@ require_once __DIR__ . "/../lib/locale.php";
     "SCHEMA_DIFF" => "Проверить изменения",
     "SCHEMA_IMPORT" => "Установить схему",
     "SCHEMA_EXPORT" => "Создать схему",
+
+    "CONFIG_LIST" => "Список конфигураций",
+    "COMMAND_RUN" => "Запуск",
+    "CURRENT_USER" => "Текущий пользователь",
+    "BITRIX_VERSION" => "Версия bitrix",
+    "MODULE_VERSION" => "Версия модуля",
+
+    "ERR_BUILDER_NOT_FOUND" => "Builder not found",
+    "ERR_MIGRATION_FAIL" => "migration fail",
+    "ERR_SOME_MIGRATIONS_FAILS" => "some migrations fails",
+    "ERR_VERSION_NOT_FOUND" => 'Version not found!',
+    "ERR_INVALID_ARGUMENTS" => 'Invalid arguments, see help',
+    "ERR_COMMAND_NOT_FOUND" => 'Command "#NAME#" not found, see help',
+    "ERR_METHOD_NOT_FOUND" => 'method "#NAME#" not found',
+    "ERR_CANT_CREATE_FILE" => 'Cant create file "#NAME#"',
+    "ERR_FORM_NOT_FOUND" => 'Form "#NAME#" not found',
+    "ERR_EMPTY_REQ_FIELD" => 'requred key "#NAME#" empty',
+    "ERR_HELPER_DISABLED" => 'Helper "#NAME#" disabled',
+    "ERR_AGENT_NOT_ADDED" => 'Agent "#NAME#" not added',
+    "ERR_EVENT_TYPE_NOT_UPDATED" => 'event type not updated',
+    "ERR_CANT_DELETE_FORM" => 'Cant delete form #NAME#',
+    "ERR_CANT_DELETE_EVENT_TYPE" => 'Cant delete event type #NAME#',
+    "ERR_CANT_DELETE_EVENT_MESSAGE" => 'Cant delete event message #NAME#',
+    "ERR_EVENT_TYPE_NOT_ADDED" => 'Event type #NAME# not added',
+    "ERR_EVENT_MESSAGE_NOT_ADDED" => 'Event message #NAME# not added',
+    "ERR_HLBLOCK_NOT_FOUND" => 'hlblock not found',
+    "ERR_DEFAULT_LANGUAGE_NOT_FOUND" => 'Default language not found',
+    "ERR_ACTIVE_LANGUAGES_NOT_FOUND" => 'Active langs not found',
+    "ERR_DEFAULT_SITE_NOT_FOUND" => 'Default site not found',
+    "ERR_ACTIVE_SITES_NOT_FOUND" => 'Active sites not found',
+    "ERR_USER_GROUP_CODE_NOT_FOUND" => 'ERR_USER_GROUP_CODE_NOT_FOUND',
+    "ERR_SET_FIELDS_FOR_UPDATE_GROUP" => 'ERR_SET_FIELDS_FOR_UPDATE_GROUP',
+    "ERR_USERTYPE_NOT_ADDED" => 'UserType #NAME# not added',
+    "ERR_USERTYPE_NOT_UPDATED" => 'UserType #NAME# not updated',
+    "ERR_USERTYPE_NOT_DELETED" => 'UserType #NAME# not deleted',
+    "ERR_IB_PROPERTY_CODE_NOT_FOUND" => 'code not found',
+    "ERR_IB_CODE_NOT_FOUND" => 'code not found',
+    "ERR_IB_SECTION_NAME_NOT_FOUND" => 'Section name not found',
+    "ERR_IB_NOT_FOUND" => 'iblock not found',
+    "ERR_IB_TYPE_NOT_FOUND" => 'iblock type not found',
+    "ERR_CANT_DELETE_IBLOCK" => 'Cant delete iblock #NAME#',
+    "ERR_CANT_DELETE_IBLOCK_TYPE" => 'Cant delete iblock type #NAME#',
+    "ERR_IB_FORM_OPTIONS_NOT_FOUND" => 'iblock form options not found',
 
     "GD_INSTALL" => "Установить гаджеты: \"Сводка по миграциям\"",
     "GD_INSTALL_success" => "Гаджеты установлены",

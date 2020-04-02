@@ -5,6 +5,7 @@ namespace Sprint\Migration\Helpers\Traits\Iblock;
 use CIBlock;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helpers\UserGroupHelper;
+use Sprint\Migration\Locale;
 
 trait IblockTrait
 {
@@ -21,7 +22,9 @@ trait IblockTrait
         if ($item && isset($item['ID'])) {
             return $item;
         }
-        $this->throwException(__METHOD__, 'iblock not found');
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_IB_NOT_FOUND'
+        ));
     }
 
     /**
@@ -37,8 +40,9 @@ trait IblockTrait
         if ($item && isset($item['ID'])) {
             return $item['ID'];
         }
-
-        $this->throwException(__METHOD__, 'iblock id not found');
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_IB_NOT_FOUND'
+        ));
     }
 
     /**
@@ -233,7 +237,12 @@ trait IblockTrait
         if (CIBlock::Delete($iblockId)) {
             return true;
         }
-        $this->throwException(__METHOD__, 'Could not delete iblock %s', $iblockId);
+
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_CANT_DELETE_IBLOCK', [
+                '#NAME#' => $iblockId,
+            ]
+        ));
     }
 
     /**
@@ -333,7 +342,9 @@ trait IblockTrait
             return $export;
         }
 
-        $this->throwException(__METHOD__, 'code not found');
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_IB_CODE_NOT_FOUND'
+        ));
     }
 
     /**

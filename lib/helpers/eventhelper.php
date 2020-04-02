@@ -4,9 +4,9 @@ namespace Sprint\Migration\Helpers;
 
 use CEventMessage;
 use CEventType;
-use CMain;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
+use Sprint\Migration\Locale;
 
 class EventHelper extends Helper
 {
@@ -236,6 +236,7 @@ class EventHelper extends Helper
         }
 
         $this->throwException(__METHOD__, $event->LAST_ERROR);
+        return false;
     }
 
     /**
@@ -252,7 +253,11 @@ class EventHelper extends Helper
             return $id;
         }
 
-        $this->throwException(__METHOD__, 'event type not updated');
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_EVENT_TYPE_NOT_UPDATED'
+        ));
+
+        return false;
     }
 
     /**
@@ -358,7 +363,13 @@ class EventHelper extends Helper
             return true;
         }
 
-        $this->throwException(__METHOD__, 'Could not delete event type %s:%s', $fields['EVENT_NAME'], $fields['LID']);
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_CANT_DELETE_EVENT_TYPE',
+            [
+                '#NAME#' => $fields['EVENT_NAME'] . ':' . $fields['LID'],
+            ]
+        ));
+        return false;
     }
 
     /**
@@ -384,8 +395,13 @@ class EventHelper extends Helper
             return true;
         };
 
-        $this->throwException(__METHOD__, 'Could not delete event message %s:%s', $fields['EVENT_NAME'],
-            $fields['SUBJECT']);
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_CANT_DELETE_EVENT_MESSAGE',
+            [
+                '#NAME#' => $fields['EVENT_NAME'] . ':' . $fields['SUBJECT'],
+            ]
+        ));
+        return false;
     }
 
     /**
@@ -408,7 +424,13 @@ class EventHelper extends Helper
         }
 
         $this->throwApplicationExceptionIfExists(__METHOD__);
-        $this->throwException(__METHOD__, 'Event type %s not added', $eventName);
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_EVENT_TYPE_NOT_ADDED',
+            [
+                '#NAME#' => $eventName,
+            ]
+        ));
+        return false;
     }
 
     /**
@@ -442,7 +464,13 @@ class EventHelper extends Helper
         }
 
         $this->throwApplicationExceptionIfExists(__METHOD__);
-        $this->throwException(__METHOD__, 'Event message %s not added, error: %s', $eventName, $event->LAST_ERROR);
+        $this->throwException(__METHOD__, Locale::getMessage(
+            'ERR_EVENT_MESSAGE_NOT_ADDED',
+            [
+                '#NAME#' => $eventName,
+            ]
+        ));
+        return false;
     }
 
     /**

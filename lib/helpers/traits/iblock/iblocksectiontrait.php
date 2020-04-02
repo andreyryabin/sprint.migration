@@ -4,6 +4,7 @@ namespace Sprint\Migration\Helpers\Traits\Iblock;
 
 use CIBlockSection;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 trait IblockSectionTrait
 {
@@ -249,7 +250,9 @@ trait IblockSectionTrait
     {
         foreach ($tree as $item) {
             if (empty($item['NAME'])) {
-                $this->throwException(__METHOD__, 'Section name not found');
+                $this->throwException(__METHOD__, Locale::getMessage(
+                    'ERR_IB_SECTION_NAME_NOT_FOUND'
+                ));
             }
 
             $childs = [];

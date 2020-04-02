@@ -4,7 +4,7 @@ namespace Sprint\Migration;
 
 class Locale
 {
-    private static $localeLoaded = false;
+    private static $messages = [];
 
     public static function isWin1251()
     {
@@ -32,20 +32,25 @@ class Locale
         return (md5($msg) == md5(iconv('utf-8', 'utf-8', $msg))) ? 1 : 0;
     }
 
-    public static function loadLocale($loc)
+    public static function loadLocale($lang, $loc)
     {
-        global $MESS;
+        foreach ($loc as $name => $msg) {
+            self::$messages[$lang . $name] = self::convertToWin1251IfNeed($msg);
+        }
+    }
 
-        if (!self::$localeLoaded) {
-            foreach ($loc as $key => $msg) {
-                $MESS['SPRINT_MIGRATION_' . $key] = self::convertToWin1251IfNeed($msg);
+    public static function getMessage($name, $aReplace = [])
+    {
+        $lang = defined('LANGUAGE_ID') ? LANGUAGE_ID : 'ru';
+
+        $message = isset(self::$messages[$lang . $name]) ? self::$messages[$lang . $name] : $name;
+
+        if (!empty($aReplace)) {
+            foreach ($aReplace as $search => $replace) {
+                $message = str_replace($search, $replace, $message);
             }
         }
 
-    }
-
-    public static function getMessage($name, $aReplace = null)
-    {
-        return GetMessage('SPRINT_MIGRATION_' . $name, $aReplace);
+        return $message;
     }
 }
