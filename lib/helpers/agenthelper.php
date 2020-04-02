@@ -202,12 +202,15 @@ class AgentHelper extends Helper
         }
 
         $this->throwApplicationExceptionIfExists(__METHOD__);
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_AGENT_NOT_ADDED',
-            [
-                '#NAME#' => $fields['NAME'],
-            ]
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_AGENT_NOT_ADDED',
+                [
+                    '#NAME#' => $fields['NAME'],
+                ]
+            )
+        );
         return false;
     }
 

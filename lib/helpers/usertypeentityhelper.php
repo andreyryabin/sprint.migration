@@ -105,12 +105,15 @@ class UserTypeEntityHelper extends Helper
         }
 
         $this->throwApplicationExceptionIfExists(__METHOD__);
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_USERTYPE_NOT_ADDED',
-            [
-                '#NAME#' => $fieldName,
-            ]
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_USERTYPE_NOT_ADDED',
+                [
+                    '#NAME#' => $fieldName,
+                ]
+            )
+        );
     }
 
     /**
@@ -142,12 +145,15 @@ class UserTypeEntityHelper extends Helper
         }
 
         $this->throwApplicationExceptionIfExists(__METHOD__);
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_USERTYPE_NOT_UPDATED',
-            [
-                '#NAME#' => $fieldId,
-            ]
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_USERTYPE_NOT_UPDATED',
+                [
+                    '#NAME#' => $fieldId,
+                ]
+            )
+        );
     }
 
     /**
@@ -314,12 +320,15 @@ class UserTypeEntityHelper extends Helper
         if ($entity->Delete($item['ID'])) {
             return true;
         }
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_USERTYPE_NOT_DELETED',
-            [
-                '#NAME#' => $fieldName,
-            ]
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_USERTYPE_NOT_DELETED',
+                [
+                    '#NAME#' => $fieldName,
+                ]
+            )
+        );
     }
 
     /**

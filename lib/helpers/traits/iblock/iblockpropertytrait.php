@@ -351,9 +351,12 @@ trait IblockPropertyTrait
             return $export;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_IB_PROPERTY_CODE_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_IB_PROPERTY_CODE_NOT_FOUND'
+            )
+        );
     }
 
     /**

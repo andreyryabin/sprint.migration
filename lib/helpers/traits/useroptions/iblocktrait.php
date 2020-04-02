@@ -282,9 +282,12 @@ trait IblockTrait
             return $result;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_IB_FORM_OPTIONS_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_IB_FORM_OPTIONS_NOT_FOUND'
+            )
+        );
     }
 
 

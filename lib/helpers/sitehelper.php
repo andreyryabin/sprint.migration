@@ -25,9 +25,12 @@ class SiteHelper extends Helper
         if ($item) {
             return $item['LID'];
         }
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_DEFAULT_SITE_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_DEFAULT_SITE_NOT_FOUND'
+            )
+        );
         return false;
     }
 
@@ -59,9 +62,12 @@ class SiteHelper extends Helper
         if (!empty($items)) {
             return $items;
         }
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_ACTIVE_SITES_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_ACTIVE_SITES_NOT_FOUND'
+            )
+        );
         return [];
     }
 

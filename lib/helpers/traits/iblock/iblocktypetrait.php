@@ -23,9 +23,12 @@ trait IblockTypeTrait
             return $item;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_IB_TYPE_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_IB_TYPE_NOT_FOUND'
+            )
+        );
     }
 
     /**
@@ -41,9 +44,12 @@ trait IblockTypeTrait
             return $item['ID'];
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_IB_TYPE_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_IB_TYPE_NOT_FOUND'
+            )
+        );
     }
 
 
@@ -199,11 +205,14 @@ trait IblockTypeTrait
             return true;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_CANT_DELETE_IBLOCK_TYPE', [
-                '#NAME#' => $typeId,
-            ]
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_CANT_DELETE_IBLOCK_TYPE', [
+                    '#NAME#' => $typeId,
+                ]
+            )
+        );
     }
 
     /**

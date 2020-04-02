@@ -51,7 +51,12 @@ class Helper
         if (!$this->isEnabled()) {
             $this->throwException(
                 __METHOD__,
-                Locale::getMessage('ERR_HELPER_DISABLED', ['#NAME#' => $this->getHelperName()])
+                Locale::getMessage(
+                    'ERR_HELPER_DISABLED',
+                    [
+                        '#NAME#' => $this->getHelperName(),
+                    ]
+                )
             );
         }
     }
@@ -141,7 +146,10 @@ class Helper
         /* @global $APPLICATION CMain */
         global $APPLICATION;
         if ($APPLICATION->GetException()) {
-            $this->throwException($method, $APPLICATION->GetException()->GetString());
+            $this->throwException(
+                $method,
+                $APPLICATION->GetException()->GetString()
+            );
         }
     }
 
@@ -181,7 +189,15 @@ class Helper
     {
         foreach ($reqKeys as $name) {
             if (empty($fields[$name])) {
-                $this->throwException($method, Locale::getMessage('ERR_EMPTY_REQ_FIELD', ['#NAME#' => $name]));
+                $this->throwException(
+                    $method,
+                    Locale::getMessage(
+                        'ERR_EMPTY_REQ_FIELD',
+                        [
+                            '#NAME#' => $name,
+                        ]
+                    )
+                );
             }
         }
     }

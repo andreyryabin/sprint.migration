@@ -22,9 +22,12 @@ trait IblockTrait
         if ($item && isset($item['ID'])) {
             return $item;
         }
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_IB_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_IB_NOT_FOUND'
+            )
+        );
     }
 
     /**
@@ -40,9 +43,12 @@ trait IblockTrait
         if ($item && isset($item['ID'])) {
             return $item['ID'];
         }
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_IB_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_IB_NOT_FOUND'
+            )
+        );
     }
 
     /**
@@ -238,11 +244,14 @@ trait IblockTrait
             return true;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_CANT_DELETE_IBLOCK', [
-                '#NAME#' => $iblockId,
-            ]
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_CANT_DELETE_IBLOCK', [
+                    '#NAME#' => $iblockId,
+                ]
+            )
+        );
     }
 
     /**
@@ -342,9 +351,12 @@ trait IblockTrait
             return $export;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_IB_CODE_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_IB_CODE_NOT_FOUND'
+            )
+        );
     }
 
     /**

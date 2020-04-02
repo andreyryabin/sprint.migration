@@ -26,9 +26,12 @@ class LangHelper extends Helper
             return $item['LID'];
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_DEFAULT_LANGUAGE_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_DEFAULT_LANGUAGE_NOT_FOUND'
+            )
+        );
 
         return false;
     }
@@ -63,9 +66,12 @@ class LangHelper extends Helper
             return $items;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_ACTIVE_LANGUAGES_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_ACTIVE_LANGUAGES_NOT_FOUND'
+            )
+        );
         return [];
     }
 }

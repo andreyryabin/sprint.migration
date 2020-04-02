@@ -129,7 +129,10 @@ class FormHelper extends Helper
             return $formId;
         }
 
-        $this->throwException(__METHOD__, $GLOBALS['strError']);
+        $this->throwException(
+            __METHOD__,
+            $GLOBALS['strError']
+        );
     }
 
     /**
@@ -178,7 +181,10 @@ class FormHelper extends Helper
             /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             $fieldId = CFormField::Set($field, $fieldId, 'N');
             if (empty($fieldId)) {
-                $this->throwException(__METHOD__, $GLOBALS['strError']);
+                $this->throwException(
+                    __METHOD__,
+                    $GLOBALS['strError']
+                );
             }
 
             $this->saveFieldAnswers($fieldId, $answers);
@@ -231,7 +237,10 @@ class FormHelper extends Helper
             /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             $statusId = CFormStatus::Set($status, $statusId, 'N');
             if (empty($statusId)) {
-                $this->throwException(__METHOD__, $GLOBALS['strError']);
+                $this->throwException(
+                    __METHOD__,
+                    $GLOBALS['strError']
+                );
             }
         }
 
@@ -290,11 +299,14 @@ class FormHelper extends Helper
             return true;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_CANT_DELETE_FORM', [
-                '#NAME#' => $sid,
-            ]
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_CANT_DELETE_FORM', [
+                    '#NAME#' => $sid,
+                ]
+            )
+        );
     }
 
     /**
@@ -412,7 +424,10 @@ class FormHelper extends Helper
                 $answerId
             );
             if (empty($answerId)) {
-                $this->throwException(__METHOD__, $GLOBALS['strError']);
+                $this->throwException(
+                    __METHOD__,
+                    $GLOBALS['strError']
+                );
             }
         }
 
@@ -447,7 +462,10 @@ class FormHelper extends Helper
             );
 
             if (empty($validatorId)) {
-                $this->throwException(__METHOD__, $GLOBALS['strError']);
+                $this->throwException(
+                    __METHOD__,
+                    $GLOBALS['strError']
+                );
             }
         }
 

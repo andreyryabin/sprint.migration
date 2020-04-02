@@ -250,9 +250,12 @@ trait IblockSectionTrait
     {
         foreach ($tree as $item) {
             if (empty($item['NAME'])) {
-                $this->throwException(__METHOD__, Locale::getMessage(
-                    'ERR_IB_SECTION_NAME_NOT_FOUND'
-                ));
+                $this->throwException(
+                    __METHOD__,
+                    Locale::getMessage(
+                        'ERR_IB_SECTION_NAME_NOT_FOUND'
+                    )
+                );
             }
 
             $childs = [];

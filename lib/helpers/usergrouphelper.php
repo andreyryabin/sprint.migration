@@ -52,9 +52,12 @@ class UserGroupHelper extends Helper
             return $item;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_USER_GROUP_CODE_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_USER_GROUP_CODE_NOT_FOUND'
+            )
+        );
     }
 
     /**
@@ -238,9 +241,12 @@ class UserGroupHelper extends Helper
     public function updateGroup($groupId, $fields = [])
     {
         if (empty($fields)) {
-            $this->throwException(__METHOD__, Locale::getMessage(
-                'ERR_SET_FIELDS_FOR_UPDATE_GROUP'
-            ));
+            $this->throwException(
+                __METHOD__,
+                Locale::getMessage(
+                    'ERR_SET_FIELDS_FOR_UPDATE_GROUP'
+                )
+            );
         }
 
         $group = new CGroup;

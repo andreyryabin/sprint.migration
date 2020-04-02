@@ -5,7 +5,6 @@ namespace Sprint\Migration\Helpers;
 use Bitrix\Highloadblock\HighloadBlockLangTable;
 use Bitrix\Highloadblock\HighloadBlockRightsTable;
 use Bitrix\Highloadblock\HighloadBlockTable;
-use Bitrix\Main\Entity\DataManager;
 use Bitrix\Main\Entity\ExpressionField;
 use CTask;
 use Exception;
@@ -46,7 +45,10 @@ class HlblockHelper extends Helper
                 $result[] = $this->prepareHlblock($hlblock);
             }
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(
+                __METHOD__,
+                $e->getMessage()
+            );
         }
         return $result;
     }
@@ -300,7 +302,10 @@ class HlblockHelper extends Helper
             return $this->prepareHlblock($hlblock);
 
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(
+                __METHOD__,
+                $e->getMessage()
+            );
         }
 
         return false;
@@ -318,9 +323,12 @@ class HlblockHelper extends Helper
             return $item;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_HLBLOCK_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_HLBLOCK_NOT_FOUND'
+            )
+        );
     }
 
     /**
@@ -336,9 +344,12 @@ class HlblockHelper extends Helper
             return $item['ID'];
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage(
-            'ERR_HLBLOCK_NOT_FOUND'
-        ));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_HLBLOCK_NOT_FOUND'
+            )
+        );
     }
 
     /**
@@ -380,7 +391,10 @@ class HlblockHelper extends Helper
             throw new HelperException($result->getErrors());
 
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(
+                __METHOD__,
+                $e->getMessage()
+            );
         }
     }
 
@@ -428,7 +442,10 @@ class HlblockHelper extends Helper
             throw new HelperException($result->getErrors());
 
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(
+                __METHOD__,
+                $e->getMessage()
+            );
         }
     }
 
@@ -466,7 +483,10 @@ class HlblockHelper extends Helper
             throw new HelperException($result->getErrors());
 
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(
+                __METHOD__,
+                $e->getMessage()
+            );
         }
     }
 
@@ -506,7 +526,10 @@ class HlblockHelper extends Helper
             Throw new HelperException($result->getErrors());
 
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(
+                __METHOD__,
+                $e->getMessage()
+            );
         }
     }
 
@@ -615,7 +638,10 @@ class HlblockHelper extends Helper
             $entity = HighloadBlockTable::compileEntity($hlblock);
             return $entity->getDataClass();
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(
+                __METHOD__,
+                $e->getMessage()
+            );
         }
     }
 
@@ -631,7 +657,10 @@ class HlblockHelper extends Helper
         try {
             return $dataManager::getList($params)->fetchAll();
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(
+                __METHOD__,
+                $e->getMessage()
+            );
         }
     }
 
@@ -656,7 +685,10 @@ class HlblockHelper extends Helper
             return ($item) ? $item['CNT'] : 0;
 
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(
+                __METHOD__,
+                $e->getMessage()
+            );
         }
     }
 
