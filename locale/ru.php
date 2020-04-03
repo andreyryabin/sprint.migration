@@ -224,6 +224,13 @@ require_once __DIR__ . "/../lib/locale.php";
     "SCHEMA_DIFF" => "Проверить изменения",
     "SCHEMA_IMPORT" => "Установить схему",
     "SCHEMA_EXPORT" => "Создать схему",
+    "SCHEMA_AGENT" => "Схема агентов",
+    "SCHEMA_EVENT" => "Схема почтовых событий",
+    "SCHEMA_USER_GROUP" => "Схема групп пользователей",
+    "SCHEMA_HLBLOCK" => "Схема highload-блоков",
+    "SCHEMA_IBLOCK" => "Схема инфоблоков",
+    "SCHEMA_OPTION" => "Схема настроек модулей",
+    "SCHEMA_USER_TYPE_ENTITY" => "Схема пользовательских полей",
 
     "CONFIG_LIST" => "Список конфигураций",
     "COMMAND_RUN" => "Запуск",
@@ -275,18 +282,22 @@ require_once __DIR__ . "/../lib/locale.php";
     "AGENT_CREATED" => 'Агент "#NAME#" добавлен',
     "AGENT_UPDATED" => 'Агент "#NAME#" обновлен',
     "AGENT_EQUAL" => 'Агент "#NAME#" совпадает',
+    "AGENT_DELETED" => 'Агент "#NAME#" удален',
 
     "EVENT_MESSAGE_CREATED" => 'Почтовый шаблон "#NAME#" добавлен',
     "EVENT_MESSAGE_UPDATED" => 'Почтовый шаблон "#NAME#" обновлен',
     "EVENT_MESSAGE_EQUAL" => 'Почтовый шаблон "#NAME#" совпадает',
+    "EVENT_MESSAGE_DELETED" => 'Почтовый шаблон "#NAME#" удален',
 
     "EVENT_TYPE_CREATED" => 'Тип почтового события "#NAME#" добавлен',
     "EVENT_TYPE_UPDATED" => 'Тип почтового события "#NAME#" обновлен',
     "EVENT_TYPE_EQUAL" => 'Тип почтового события "#NAME#" совпадает',
+    "EVENT_TYPE_DELETED" => 'Тип почтового события "#NAME#" удален',
 
     "HLBLOCK_CREATED" => 'Highload-блок "#NAME#" добавлен',
     "HLBLOCK_UPDATED" => 'Highload-блок "#NAME#" обновлен',
     "HLBLOCK_EQUAL" => 'Highload-блок "#NAME#" совпадает',
+    "HLBLOCK_DELETED" => 'Highload-блок "#NAME#" удален',
 
     "OPTION_CREATED" => 'Настройка "#NAME#" добавлена',
     "OPTION_UPDATED" => 'Настройка "#NAME#" обновлена',
@@ -295,6 +306,7 @@ require_once __DIR__ . "/../lib/locale.php";
     "USER_GROUP_CREATED" => 'Группа "#NAME#" добавлена',
     "USER_GROUP_UPDATED" => 'Группа "#NAME#" обновлена',
     "USER_GROUP_EQUAL" => 'Группа "#NAME#" совпадает',
+    "USER_GROUP_DELETED" => 'Группа "#NAME#" удалена',
 
     "USER_OPTION_LIST_CREATED" => 'Список "#NAME#" сохранен',
     "USER_OPTION_LIST_EQUAL" => 'Список "#NAME#" совпадает',
@@ -329,13 +341,6 @@ require_once __DIR__ . "/../lib/locale.php";
     "IB_TYPE_EQUAL" => 'Тип инфоблока "#NAME#" совпадает',
     "IB_TYPE_DELETED" => 'Тип инфоблока "#NAME#" удален',
 
-    "AGENT_DELETED" => 'Агент "#NAME#" удален',
-
-    "EVENT_TYPE_DELETED" => 'Тип почтового события "#NAME#" удален',
-    "EVENT_MESSAGE_DELETED" => 'Почтовый шаблон "#NAME#" удален',
-    "USER_GROUP_DELETED" => 'Группа "#NAME#" удалена',
-    "HLBLOCK_DELETED" => 'Highload-блок "#NAME#" удален',
-    "HLBLOCK_FIELD_DELETED" => 'Поле highload-блока "#NAME#" удалено',
 
     "GD_INSTALL" => "Установить гаджеты: \"Сводка по миграциям\"",
     "GD_INSTALL_success" => "Гаджеты установлены",

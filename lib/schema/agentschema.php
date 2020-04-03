@@ -16,7 +16,8 @@ class AgentSchema extends AbstractSchema
 
     protected function initialize()
     {
-        $this->setTitle('Схема агентов');
+        $this->setTitle(Locale::getMessage('SCHEMA_AGENT'));
+
     }
 
     public function getMap()

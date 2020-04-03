@@ -16,7 +16,7 @@ class GroupSchema extends AbstractSchema
 
     protected function initialize()
     {
-        $this->setTitle('Схема групп пользователей');
+        $this->setTitle(Locale::getMessage('SCHEMA_USER_GROUP'));
     }
 
     public function getMap()
@@ -33,7 +33,9 @@ class GroupSchema extends AbstractSchema
         $this->out('Группы пользователей: %d', count($schemaItems['items']));
     }
 
-
+    /**
+     * @throws \Exception
+     */
     public function export()
     {
         $helper = $this->getHelperManager();

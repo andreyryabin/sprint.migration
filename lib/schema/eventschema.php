@@ -12,7 +12,7 @@ class EventSchema extends AbstractSchema
 
     protected function initialize()
     {
-        $this->setTitle('Схема почтовых событий');
+        $this->setTitle(Locale::getMessage('SCHEMA_EVENT'));
     }
 
     public function getMap()
@@ -45,6 +45,9 @@ class EventSchema extends AbstractSchema
         $this->out('Почтовые шаблоны: %d', $cnt);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function export()
     {
         $helper = $this->getHelperManager();

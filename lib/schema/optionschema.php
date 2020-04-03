@@ -8,13 +8,14 @@ use Bitrix\Main\ObjectPropertyException;
 use Bitrix\Main\SystemException;
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 class OptionSchema extends AbstractSchema
 {
 
     protected function initialize()
     {
-        $this->setTitle('Схема настроек модулей');
+        $this->setTitle(Locale::getMessage('SCHEMA_OPTION'));
     }
 
     public function getMap()
@@ -48,6 +49,7 @@ class OptionSchema extends AbstractSchema
     /**
      * @throws ArgumentException
      * @throws SystemException
+     * @throws \Exception
      */
     public function export()
     {

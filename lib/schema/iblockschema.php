@@ -21,7 +21,7 @@ class IblockSchema extends AbstractSchema
 
     protected function initialize()
     {
-        $this->setTitle('Схема инфоблоков');
+        $this->setTitle(Locale::getMessage('SCHEMA_IBLOCK'));
     }
 
     public function getMap()
@@ -62,6 +62,7 @@ class IblockSchema extends AbstractSchema
 
     /**
      * @throws HelperException
+     * @throws \Exception
      */
     public function export()
     {

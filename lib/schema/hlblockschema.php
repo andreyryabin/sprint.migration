@@ -18,7 +18,7 @@ class HlblockSchema extends AbstractSchema
 
     protected function initialize()
     {
-        $this->setTitle('Схема highload-блоков');
+        $this->setTitle(Locale::getMessage('SCHEMA_HLBLOCK'));
     }
 
     public function getMap()
@@ -44,6 +44,7 @@ class HlblockSchema extends AbstractSchema
 
     /**
      * @throws HelperException
+     * @throws \Exception
      */
     public function export()
     {
@@ -165,11 +166,16 @@ class HlblockSchema extends AbstractSchema
             foreach ($olds as $old) {
                 $uniq = $this->getUniqField($old);
                 if (!in_array($uniq, $skip)) {
-                    $ok = ($this->testMode) ? true : $helper->Hlblock()->deleteField($hlblockId, $old['FIELD_NAME']);
+
+                    $ok = ($this->testMode) ? true : $helper->Hlblock()->deleteField(
+                        $hlblockId,
+                        $old['FIELD_NAME']
+                    );
+
                     $this->outWarningIf(
                         $ok,
                         Locale::getMessage(
-                            'HLBLOCK_FIELD_DELETED',
+                            'USER_TYPE_ENTITY_DELETED',
                             [
                                 '#NAME#' => $old['FIELD_NAME'],
                             ]

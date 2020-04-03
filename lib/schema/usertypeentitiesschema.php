@@ -13,7 +13,7 @@ class UserTypeEntitiesSchema extends AbstractSchema
 
     protected function initialize()
     {
-        $this->setTitle('Схема пользовательских полей');
+        $this->setTitle(Locale::getMessage('SCHEMA_USER_TYPE_ENTITY'));
     }
 
     public function getMap()
@@ -37,6 +37,7 @@ class UserTypeEntitiesSchema extends AbstractSchema
 
     /**
      * @throws HelperException
+     * @throws \Exception
      */
     public function export()
     {
