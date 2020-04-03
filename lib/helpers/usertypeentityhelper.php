@@ -432,7 +432,15 @@ class UserTypeEntityHelper extends Helper
                 $fields
             );
 
-            $this->outNoticeIf($ok, 'Пользовательское поле %s: добавлено', $fields['FIELD_NAME']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'USER_TYPE_ENTITY_CREATED',
+                    [
+                        '#NAME#' => $fields['FIELD_NAME'],
+                    ]
+                )
+            );
             return $ok;
         }
 
@@ -441,14 +449,30 @@ class UserTypeEntityHelper extends Helper
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateUserTypeEntity($exists['ID'], $fields);
-            $this->outNoticeIf($ok, 'Пользовательское поле %s: обновлено', $fields['FIELD_NAME']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'USER_TYPE_ENTITY_UPDATED',
+                    [
+                        '#NAME#' => $fields['FIELD_NAME'],
+                    ]
+                )
+            );
             $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
         $ok = $this->getMode('test') ? true : $exists['ID'];
         if ($this->getMode('out_equal')) {
-            $this->outIf($ok, 'Пользовательское поле %s: совпадает', $fields['FIELD_NAME']);
+            $this->outIf(
+                $ok,
+                Locale::getMessage(
+                    'USER_TYPE_ENTITY_EQUAL',
+                    [
+                        '#NAME#' => $fields['FIELD_NAME'],
+                    ]
+                )
+            );
         }
         return $ok;
 

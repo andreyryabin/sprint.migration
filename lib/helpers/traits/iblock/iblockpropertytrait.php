@@ -28,20 +28,47 @@ trait IblockPropertyTrait
 
         if (empty($exists)) {
             $ok = $this->getMode('test') ? true : $this->addProperty($iblockId, $fields);
-            $this->outNoticeIf($ok, 'Инфоблок %s: свойство %s добавлено', $iblockId, $fields['CODE']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'IB_PROPERTY_CREATED',
+                    [
+                        '#IBLOCK_ID#' => $iblockId,
+                        '#NAME#' => $fields['CODE'],
+                    ]
+                )
+            );
             return $ok;
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updatePropertyById($exists['ID'], $fields);
-            $this->outNoticeIf($ok, 'Инфоблок %s: свойство %s обновлено', $iblockId, $fields['CODE']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'IB_PROPERTY_UPDATED',
+                    [
+                        '#IBLOCK_ID#' => $iblockId,
+                        '#NAME#' => $fields['CODE'],
+                    ]
+                )
+            );
             $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
         $ok = $this->getMode('test') ? true : $exists['ID'];
         if ($this->getMode('out_equal')) {
-            $this->outIf($ok, 'Инфоблок %s: свойство %s совпадает', $iblockId, $fields['CODE']);
+            $this->outIf(
+                $ok,
+                Locale::getMessage(
+                    'IB_PROPERTY_EQUAL',
+                    [
+                        '#IBLOCK_ID#' => $iblockId,
+                        '#NAME#' => $fields['CODE'],
+                    ]
+                )
+            );
         }
         return $ok;
     }

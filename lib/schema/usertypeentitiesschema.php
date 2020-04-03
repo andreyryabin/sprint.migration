@@ -4,6 +4,7 @@ namespace Sprint\Migration\Schema;
 
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 class UserTypeEntitiesSchema extends AbstractSchema
 {
@@ -97,9 +98,20 @@ class UserTypeEntitiesSchema extends AbstractSchema
         foreach ($olds as $old) {
             $uniq = $this->getUniqEntity($old);
             if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $helper->UserTypeEntity()->deleteUserTypeEntity($old['ENTITY_ID'],
-                    $old['FIELD_NAME']);
-                $this->outWarningIf($ok, 'Пользовательское поле %s: удалено', $old['FIELD_NAME']);
+                $ok = ($this->testMode) ? true : $helper->UserTypeEntity()->deleteUserTypeEntity(
+                    $old['ENTITY_ID'],
+                    $old['FIELD_NAME']
+                );
+
+                $this->outWarningIf(
+                    $ok,
+                    Locale::getMessage(
+                        'USER_TYPE_ENTITY_DELETED',
+                        [
+                            '#NAME#' => $old['FIELD_NAME'],
+                        ]
+                    )
+                );
             }
         }
     }

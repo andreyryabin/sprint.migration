@@ -296,6 +296,47 @@ require_once __DIR__ . "/../lib/locale.php";
     "USER_GROUP_UPDATED" => 'Группа "#NAME#" обновлена',
     "USER_GROUP_EQUAL" => 'Группа "#NAME#" совпадает',
 
+    "USER_OPTION_LIST_CREATED" => 'Список "#NAME#" сохранен',
+    "USER_OPTION_LIST_EQUAL" => 'Список "#NAME#" совпадает',
+
+    "USER_OPTION_GRID_CREATED" => 'Грид "#NAME#" сохранен',
+    "USER_OPTION_GRID_EQUAL" => 'Грид "#NAME#" совпадает',
+
+    "USER_OPTION_FORM_CREATED" => 'Форма редактирования "#NAME#" сохранена',
+    "USER_OPTION_FORM_EQUAL" => 'Форма редактирования "#NAME#" совпадает',
+
+    "USER_TYPE_ENTITY_CREATED" => 'Пользовательское поле "#NAME#" добавлено',
+    "USER_TYPE_ENTITY_UPDATED" => 'Пользовательское поле "#NAME#" обновлено',
+    "USER_TYPE_ENTITY_EQUAL" => 'Пользовательское поле "#NAME#" совпадает',
+    "USER_TYPE_ENTITY_DELETED" => 'Пользовательское поле "#NAME#" удалено',
+
+    "IB_PROPERTY_CREATED" => 'Инфоблок "#IBLOCK_ID#": свойство "#NAME#" добавлено',
+    "IB_PROPERTY_UPDATED" => 'Инфоблок "#IBLOCK_ID#": свойство "#NAME#" обновлено',
+    "IB_PROPERTY_EQUAL" => 'Инфоблок "#IBLOCK_ID#": свойство "#NAME#" совпадает',
+    "IB_PROPERTY_DELETED" => 'Инфоблок "#IBLOCK_ID#": свойство "#NAME#" удалено',
+
+    "IB_CREATED" => 'Инфоблок "#NAME#" добавлен',
+    "IB_UPDATED" => 'Инфоблок "#NAME#" обновлен',
+    "IB_EQUAL" => 'Инфоблок "#NAME#" совпадает',
+    "IB_DELETED" => 'Инфоблок "#NAME#" удален',
+
+    "IB_FIELDS_CREATED" => 'Инфоблок "#NAME#": поля добавлены',
+    "IB_FIELDS_UPDATED" => 'Инфоблок "#NAME#": поля обновлены',
+    "IB_FIELDS_EQUAL" => 'Инфоблок "#NAME#": поля совпадают',
+
+    "IB_TYPE_CREATED" => 'Тип инфоблока "#NAME#" добавлен',
+    "IB_TYPE_UPDATED" => 'Тип инфоблока "#NAME#" обновлен',
+    "IB_TYPE_EQUAL" => 'Тип инфоблока "#NAME#" совпадает',
+    "IB_TYPE_DELETED" => 'Тип инфоблока "#NAME#" удален',
+
+    "AGENT_DELETED" => 'Агент "#NAME#" удален',
+
+    "EVENT_TYPE_DELETED" => 'Тип почтового события "#NAME#" удален',
+    "EVENT_MESSAGE_DELETED" => 'Почтовый шаблон "#NAME#" удален',
+    "USER_GROUP_DELETED" => 'Группа "#NAME#" удалена',
+    "HLBLOCK_DELETED" => 'Highload-блок "#NAME#" удален',
+    "HLBLOCK_FIELD_DELETED" => 'Поле highload-блока "#NAME#" удалено',
+
     "GD_INSTALL" => "Установить гаджеты: \"Сводка по миграциям\"",
     "GD_INSTALL_success" => "Гаджеты установлены",
     "GD_SELECT_CONFIGS" => "Конфигурации",

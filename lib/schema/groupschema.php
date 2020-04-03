@@ -4,6 +4,7 @@ namespace Sprint\Migration\Schema;
 
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 class GroupSchema extends AbstractSchema
 {
@@ -87,7 +88,15 @@ class GroupSchema extends AbstractSchema
                 $uniq = $this->getUniqGroup($old);
                 if (!in_array($uniq, $skip)) {
                     $ok = ($this->testMode) ? true : $helper->UserGroup()->deleteGroup($old['STRING_ID']);
-                    $this->outWarningIf($ok, 'Группа %s: удалена', $old['NAME']);
+                    $this->outWarningIf(
+                        $ok,
+                        Locale::getMessage(
+                            'USER_GROUP_DELETED',
+                            [
+                                '#NAME#' => $old['NAME'],
+                            ]
+                        )
+                    );
                 }
             }
         }

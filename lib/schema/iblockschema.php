@@ -4,6 +4,7 @@ namespace Sprint\Migration\Schema;
 
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 class IblockSchema extends AbstractSchema
 {
@@ -231,10 +232,15 @@ class IblockSchema extends AbstractSchema
                     $uniq = $this->getUniqProp($old);
                     if (!in_array($uniq, $skip)) {
                         $ok = ($this->testMode) ? true : $helper->Iblock()->deletePropertyById($old['ID']);
-                        $this->outWarningIf($ok,
-                            'Инфоблок %s: свойство %s удалено',
-                            $iblockId,
-                            $this->getTitleProp($old)
+                        $this->outWarningIf(
+                            $ok,
+                            Locale::getMessage(
+                                'IB_PROPERTY_DELETED',
+                                [
+                                    '#IBLOCK_ID#' => $iblockId,
+                                    '#NAME#' => $this->getTitleProp($old),
+                                ]
+                            )
                         );
                     }
                 }
@@ -255,7 +261,15 @@ class IblockSchema extends AbstractSchema
             $uniq = $this->getUniqIblockType($old);
             if (!in_array($uniq, $skip)) {
                 $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblockType($old['ID']);
-                $this->outWarningIf($ok, 'Тип инфоблока %s: удален', $old['ID']);
+                $this->outWarningIf(
+                    $ok,
+                    Locale::getMessage(
+                        'IB_TYPE_DELETED',
+                        [
+                            '#NAME#' => $old['ID'],
+                        ]
+                    )
+                );
             }
         }
     }
@@ -274,7 +288,15 @@ class IblockSchema extends AbstractSchema
                 $uniq = $this->getUniqIblock($old);
                 if (!in_array($uniq, $skip)) {
                     $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblock($old['ID']);
-                    $this->outWarningIf($ok, 'Инфоблок %s: удален', $old['ID']);
+                    $this->outWarningIf(
+                        $ok,
+                        Locale::getMessage(
+                            'IB_DELETED',
+                            [
+                                '#NAME#' => $old['ID'],
+                            ]
+                        )
+                    );
                 }
             }
         }

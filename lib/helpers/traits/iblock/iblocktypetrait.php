@@ -254,14 +254,30 @@ trait IblockTypeTrait
 
         if (empty($item)) {
             $ok = $this->getMode('test') ? true : $this->addIblockType($fields);
-            $this->outNoticeIf($ok, 'Тип инфоблока %s: добавлен', $fields['ID']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'IB_TYPE_CREATED',
+                    [
+                        '#NAME#' => $fields['ID'],
+                    ]
+                )
+            );
             return $ok;
         }
 
 
         if ($this->hasDiff($exists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateIblockType($item['ID'], $fields);
-            $this->outNoticeIf($ok, 'Тип инфоблока %s: обновлен', $fields['ID']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'IB_TYPE_UPDATED',
+                    [
+                        '#NAME#' => $fields['ID'],
+                    ]
+                )
+            );
             $this->outDiffIf($ok, $exists, $fields);
 
             return $ok;
@@ -269,7 +285,15 @@ trait IblockTypeTrait
 
         $ok = $this->getMode('test') ? true : $fields['ID'];
         if ($this->getMode('out_equal')) {
-            $this->outIf($ok, 'Тип инфоблока %s: совпадает', $fields['ID']);
+            $this->outIf(
+                $ok,
+                Locale::getMessage(
+                    'IB_TYPE_EQUAL',
+                    [
+                        '#NAME#' => $fields['ID'],
+                    ]
+                )
+            );
         }
         return $ok;
     }

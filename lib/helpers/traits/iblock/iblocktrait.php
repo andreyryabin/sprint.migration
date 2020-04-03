@@ -73,8 +73,6 @@ trait IblockTrait
 
         $filter['CHECK_PERMISSIONS'] = 'N';
 
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-
         $item = CIBlock::GetList(['SORT' => 'ASC'], $filter)->Fetch();
         return $this->prepareIblock($item);
     }
@@ -111,7 +109,6 @@ trait IblockTrait
     {
         $filter['CHECK_PERMISSIONS'] = 'N';
 
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbres = CIBlock::GetList(['SORT' => 'ASC'], $filter);
         $list = [];
         while ($item = $dbres->Fetch()) {
@@ -281,20 +278,44 @@ trait IblockTrait
 
         if (empty($item)) {
             $ok = $this->getMode('test') ? true : $this->addIblock($fields);
-            $this->outNoticeIf($ok, 'Инфоблок %s: добавлен', $fields['CODE']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'IB_CREATED',
+                    [
+                        '#NAME#' => $fields['CODE'],
+                    ]
+                )
+            );
             return $ok;
         }
 
         if ($this->hasDiff($exists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateIblock($item['ID'], $fields);
-            $this->outNoticeIf($ok, 'Инфоблок %s: обновлен', $fields['CODE']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'IB_UPDATED',
+                    [
+                        '#NAME#' => $fields['CODE'],
+                    ]
+                )
+            );
             $this->outDiffIf($ok, $exists, $fields);
             return $ok;
         }
 
         $ok = $this->getMode('test') ? true : $item['ID'];
         if ($this->getMode('out_equal')) {
-            $this->outIf($ok, 'Инфоблок %s: совпадает', $fields['CODE']);
+            $this->outIf(
+                $ok,
+                Locale::getMessage(
+                    'IB_EQUAL',
+                    [
+                        '#NAME#' => $fields['CODE'],
+                    ]
+                )
+            );
         }
         return $ok;
     }
@@ -316,19 +337,42 @@ trait IblockTrait
 
         if (empty($exists)) {
             $ok = $this->getMode('test') ? true : $this->updateIblockFields($iblockId, $fields);
-            $this->outNoticeIf($ok, 'Инфоблок %s: поля добавлены', $iblockId);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'IB_FIELDS_CREATED',
+                    [
+                        '#NAME#' => $iblockId,
+                    ]
+                )
+            );
             return $ok;
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateIblockFields($iblockId, $fields);
-            $this->outNoticeIf($ok, 'Инфоблок %s: поля обновлены', $iblockId);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'IB_FIELDS_UPDATED',
+                    [
+                        '#NAME#' => $iblockId,
+                    ]
+                )
+            );
             $this->outDiffIf($ok, $exportExists, $fields);
             return $ok;
         }
 
         if ($this->getMode('out_equal')) {
-            $this->out('Инфоблок %s: поля совпадают', $iblockId);
+            $this->out(
+                Locale::getMessage(
+                    'IB_FIELDS_EQUAL',
+                    [
+                        '#NAME#' => $iblockId,
+                    ]
+                )
+            );
         }
 
         return true;

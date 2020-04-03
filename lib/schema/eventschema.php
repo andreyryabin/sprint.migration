@@ -4,6 +4,7 @@ namespace Sprint\Migration\Schema;
 
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 class EventSchema extends AbstractSchema
 {
@@ -152,7 +153,15 @@ class EventSchema extends AbstractSchema
             $uniq = $this->getUniqType($old['EVENT_NAME'], $old);
             if (!in_array($uniq, $skip)) {
                 $ok = ($this->testMode) ? true : $helper->Event()->deleteEventType($old);
-                $this->outWarningIf($ok, 'Тип почтового события %s:%s: удален', $old['EVENT_NAME'], $old['LID']);
+                $this->outWarningIf(
+                    $ok,
+                    Locale::getMessage(
+                        'EVENT_TYPE_DELETED',
+                        [
+                            '#NAME#' => $old['EVENT_NAME'] . ':' . $old['LID'],
+                        ]
+                    )
+                );
             }
         }
     }
@@ -171,7 +180,15 @@ class EventSchema extends AbstractSchema
             $uniq = $this->getUniqMessage($old['EVENT_NAME'], $old);
             if (!in_array($uniq, $skip)) {
                 $ok = ($this->testMode) ? true : $helper->Event()->deleteEventMessage($old);
-                $this->outWarningIf($ok, 'Почтовый шаблон %s:%s: удален', $old['EVENT_NAME'], $old['SUBJECT']);
+                $this->outWarningIf(
+                    $ok,
+                    Locale::getMessage(
+                        'EVENT_MESSAGE_DELETED',
+                        [
+                            '#NAME#' => $old['EVENT_NAME'] . ':' . $old['SUBJECT'],
+                        ]
+                    )
+                );
             }
         }
     }

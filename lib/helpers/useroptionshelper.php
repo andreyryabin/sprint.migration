@@ -9,6 +9,7 @@ use Sprint\Migration\Helper;
 use Sprint\Migration\Helpers\Traits\UserOptions\IblockTrait;
 use Sprint\Migration\Helpers\Traits\UserOptions\UserGroupTrait;
 use Sprint\Migration\Helpers\Traits\UserOptions\UserTrait;
+use Sprint\Migration\Locale;
 
 /*
 Example $formData for buildForm
@@ -170,12 +171,28 @@ class UserOptionsHelper extends Helper
         $exists = $this->exportList($params);
         if ($this->hasDiff($exists, $data)) {
             $ok = $this->getMode('test') ? true : $this->buildList($data, $params);
-            $this->outNoticeIf($ok, 'Список "%s" сохранен', $params['name']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'USER_OPTION_LIST_CREATED',
+                    [
+                        '#NAME#' => $params['name'],
+                    ]
+                )
+            );
             $this->outDiffIf($ok, $exists, $data);
             return $ok;
         } else {
             if ($this->getMode('out_equal')) {
-                $this->out('Список "%s" совпадает', $params['name']);
+
+                $this->out(
+                    Locale::getMessage(
+                        'USER_OPTION_LIST_EQUAL',
+                        [
+                            '#NAME#' => $params['name'],
+                        ]
+                    )
+                );
             }
             return true;
         }
@@ -227,12 +244,27 @@ class UserOptionsHelper extends Helper
         $exists = $this->exportGrid($gridId);
         if ($this->hasDiff($exists, $params)) {
             $ok = $this->getMode('test') ? true : $this->buildGrid($gridId, $params);
-            $this->outNoticeIf($ok, 'Грид "%s" сохранен', $gridId);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'USER_OPTION_GRID_CREATED',
+                    [
+                        '#NAME#' => $gridId,
+                    ]
+                )
+            );
             $this->outDiffIf($ok, $exists, $params);
             return $ok;
         } else {
             if ($this->getMode('out_equal')) {
-                $this->out('Грид "%s" совпадает', $gridId);
+                $this->out(
+                    Locale::getMessage(
+                        'USER_OPTION_GRID_EQUAL',
+                        [
+                            '#NAME#' => $gridId,
+                        ]
+                    )
+                );
             }
             return true;
         }
@@ -407,12 +439,27 @@ class UserOptionsHelper extends Helper
         $exists = $this->exportForm($params);
         if ($this->hasDiffStrict($exists, $formData)) {
             $ok = $this->getMode('test') ? true : $this->buildForm($formData, $params);
-            $this->outNoticeIf($ok, 'Форма редактирования "%s" сохранена', $params['name']);
+            $this->outNoticeIf(
+                $ok,
+                Locale::getMessage(
+                    'USER_OPTION_FORM_CREATED',
+                    [
+                        '#NAME#' => $params['name'],
+                    ]
+                )
+            );
             $this->outDiffIf($ok, $exists, $formData);
             return $ok;
         } else {
             if ($this->getMode('out_equal')) {
-                $this->out('Форма редактирования "%s" совпадает', $params['name']);
+                $this->out(
+                    Locale::getMessage(
+                        'USER_OPTION_FORM_EQUAL',
+                        [
+                            '#NAME#' => $params['name'],
+                        ]
+                    )
+                );
             }
             return true;
         }

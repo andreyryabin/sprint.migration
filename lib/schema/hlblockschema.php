@@ -4,6 +4,7 @@ namespace Sprint\Migration\Schema;
 
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 class HlblockSchema extends AbstractSchema
 {
@@ -137,7 +138,15 @@ class HlblockSchema extends AbstractSchema
             $uniq = $this->getUniqHlblock($old);
             if (!in_array($uniq, $skip)) {
                 $ok = ($this->testMode) ? true : $helper->Hlblock()->deleteHlblock($old['ID']);
-                $this->outWarningIf($ok, 'Highload-блок %s: удален', $old['NAME']);
+                $this->outWarningIf(
+                    $ok,
+                    Locale::getMessage(
+                        'HLBLOCK_DELETED',
+                        [
+                            '#NAME#' => $old['NAME'],
+                        ]
+                    )
+                );
             }
         }
     }
@@ -157,7 +166,15 @@ class HlblockSchema extends AbstractSchema
                 $uniq = $this->getUniqField($old);
                 if (!in_array($uniq, $skip)) {
                     $ok = ($this->testMode) ? true : $helper->Hlblock()->deleteField($hlblockId, $old['FIELD_NAME']);
-                    $this->outWarningIf($ok, 'Поле highload-блока %s: удалено', $old['FIELD_NAME']);
+                    $this->outWarningIf(
+                        $ok,
+                        Locale::getMessage(
+                            'HLBLOCK_FIELD_DELETED',
+                            [
+                                '#NAME#' => $old['FIELD_NAME'],
+                            ]
+                        )
+                    );
                 }
             }
         }
