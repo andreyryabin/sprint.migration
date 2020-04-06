@@ -354,7 +354,6 @@ require_once __DIR__ . "/../lib/locale.php";
     "IB_TYPE_EQUAL" => 'Тип инфоблока "#NAME#" совпадает',
     "IB_TYPE_DELETED" => 'Тип инфоблока "#NAME#" удален',
 
-
     "GD_INSTALL" => "Установить гаджеты: \"Сводка по миграциям\"",
     "GD_INSTALL_success" => "Гаджеты установлены",
     "GD_SELECT_CONFIGS" => "Конфигурации",
