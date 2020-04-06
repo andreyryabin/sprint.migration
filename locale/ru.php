@@ -245,8 +245,9 @@ require_once __DIR__ . "/../lib/locale.php";
     "SCHEMA_USER_TYPE_ENTITY_DESC" => "Полей: #COUNT#",
 
     "CONFIG_LIST" => "Список конфигураций",
-    "COMMAND_RUN" => "Запуск",
+    "COMMAND_RUN" => "Выполнение команд",
     "COMMAND_HELP" => "Помощь по командам",
+    "COMMAND_CONFIG" => "Просмотр конфигурации",
     "CURRENT_USER" => "Текущий пользователь",
     "BITRIX_VERSION" => "Версия bitrix",
     "MODULE_VERSION" => "Версия модуля",

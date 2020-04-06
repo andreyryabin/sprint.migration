@@ -335,7 +335,6 @@ class Console
         $configName = $this->versionConfig->getName();
 
         Out::out('');
-
         Out::out(Locale::getMessage('CONFIG_LIST') . ':');
         foreach ($configList as $configItem) {
             if ($configItem['name'] == $configName) {
@@ -343,17 +342,15 @@ class Console
             } else {
                 Out::out('  ' . $configItem['title']);
             }
-
         }
-
-
         Out::out('');
-
+        Out::out(Locale::getMessage('COMMAND_CONFIG') . ':' . PHP_EOL . '  php %s config' . PHP_EOL,
+            $this->script);
         Out::out(Locale::getMessage('COMMAND_RUN') . ':' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL,
             $this->script);
-
         Out::out(Locale::getMessage('COMMAND_HELP') . ':' . PHP_EOL . '  php %s help' . PHP_EOL,
             $this->script);
+
     }
 
     public function commandHelp()
