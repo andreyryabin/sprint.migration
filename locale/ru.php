@@ -246,6 +246,7 @@ require_once __DIR__ . "/../lib/locale.php";
 
     "CONFIG_LIST" => "Список конфигураций",
     "COMMAND_RUN" => "Запуск",
+    "COMMAND_HELP" => "Помощь по командам",
     "CURRENT_USER" => "Текущий пользователь",
     "BITRIX_VERSION" => "Версия bitrix",
     "MODULE_VERSION" => "Версия модуля",

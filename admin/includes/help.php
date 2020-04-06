@@ -10,7 +10,7 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
     <div class="sp-group-row2">
         <div class="sp-block">
             <div style="margin-bottom: 10px;">
-                Версия модуля: <?=Module::getVersion()?>
+                <?= Locale::getMessage('MODULE_VERSION') ?>: <?=Module::getVersion()?>
             </div>
             <div style="margin-bottom: 10px;">
             <? if ($isSettinsPage): ?>

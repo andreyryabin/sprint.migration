@@ -55,14 +55,18 @@ class Console
     public function executeConsoleCommand()
     {
         if (empty($this->command)) {
-            $this->commandHelp();
+            $this->commandInfo();
 
         } elseif (method_exists($this, $this->command)) {
             call_user_func([$this, $this->command]);
 
         } else {
             $this->exitWithMessage(
-                Locale::getMessage('ERR_COMMAND_NOT_FOUND', ['#NAME#' => $this->command])
+                Locale::getMessage(
+                    'ERR_COMMAND_NOT_FOUND', [
+                        '#NAME#' => $this->command,
+                    ]
+                )
             );
         }
     }
@@ -315,7 +319,7 @@ class Console
         }
     }
 
-    public function commandHelp()
+    public function commandInfo()
     {
         global $USER;
 
@@ -347,6 +351,13 @@ class Console
 
         Out::out(Locale::getMessage('COMMAND_RUN') . ':' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL,
             $this->script);
+
+        Out::out(Locale::getMessage('COMMAND_HELP') . ':' . PHP_EOL . '  php %s help' . PHP_EOL,
+            $this->script);
+    }
+
+    public function commandHelp()
+    {
         Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
     }
 
@@ -449,6 +460,7 @@ class Console
     }
 
     /**
+     * @throws Exception
      * @return bool
      */
     public function commandSchema()
