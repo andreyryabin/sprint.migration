@@ -58,7 +58,11 @@ abstract class AbstractExchange
         );
 
         if (!$enabled) {
-            Throw new ExchangeException('Exchange disabled, install php-extension XMLReader and XMLWriter');
+            Throw new ExchangeException(
+                Locale::getMessage(
+                    'ERR_EXCHANGE_DISABLED'
+                )
+            );
         }
     }
 

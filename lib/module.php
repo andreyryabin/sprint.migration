@@ -57,8 +57,8 @@ class Module
     public static function getRelativeDir($dir)
     {
         $docroot = Module::getDocRoot();
-        $docroot = str_replace("/", DIRECTORY_SEPARATOR, $docroot);
-        $dir = str_replace("/", DIRECTORY_SEPARATOR, $dir);
+        $docroot = str_replace('/', DIRECTORY_SEPARATOR, $docroot);
+        $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
         if (strpos($dir, $docroot) === 0) {
             $dir = substr($dir, strlen($docroot));
         }
@@ -77,7 +77,14 @@ class Module
         }
 
         if (!is_dir($dir)) {
-            Throw new Exception("Can't create directory $dir");
+            Throw new Exception(
+                Locale::getMessage(
+                    'ERR_CANT_CREATE_DIRECTORY',
+                    [
+                        '#NAME#' => $dir,
+                    ]
+                )
+            );
         }
 
         return $dir;
@@ -100,15 +107,30 @@ class Module
     public static function checkHealth()
     {
         if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql') {
-            Throw new Exception('mssql not supported');
+            Throw new Exception(
+                Locale::getMessage(
+                    'ERR_MSSQL_NOT_SUPPORTED'
+                )
+            );
         }
 
         if (!function_exists('json_encode')) {
-            Throw new Exception('json functions not supported');
+            Throw new Exception(
+                Locale::getMessage(
+                    'ERR_JSON_NOT_SUPPORTED'
+                )
+            );
         }
 
         if (version_compare(PHP_VERSION, '5.6', '<')) {
-            Throw new Exception(PHP_VERSION . ' not supported');
+            Throw new Exception(
+                Locale::getMessage(
+                    'ERR_PHP_NOT_SUPPORTED',
+                    [
+                        '#NAME#' => PHP_VERSION,
+                    ]
+                )
+            );
         }
 
         if (
@@ -117,6 +139,16 @@ class Module
         ) {
             Throw new Exception('module installed to bitrix and local folder');
         }
+    }
+
+    public static function getDefaultAdminLang()
+    {
+        return COption::GetOptionString('main', 'admin_lid');
+    }
+
+    public static function setDefaultAdminLang($lang)
+    {
+        COption::SetOptionString('main', 'admin_lid', $lang);
     }
 }
 

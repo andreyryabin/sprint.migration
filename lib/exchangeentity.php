@@ -85,7 +85,15 @@ abstract class ExchangeEntity
             $name = '';
         }
 
-        $this->exitIfEmpty($name, 'class not found');
+        $this->exitIfEmpty(
+            $name,
+            Locale::getMessage(
+                'ERR_CLASS_NOT_FOUND',
+                [
+                    '#NAME#' => $name,
+                ]
+            )
+        );
         return $name;
     }
 
