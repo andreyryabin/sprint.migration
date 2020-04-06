@@ -32,7 +32,14 @@ class UserTypeEntitiesSchema extends AbstractSchema
             'items' => [],
         ]);
 
-        $this->out('Полей: %d', count($schemaItems['items']));
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_USER_TYPE_ENTITY_DESC',
+                [
+                    '#COUNT#' => count($schemaItems['items']),
+                ]
+            )
+        );
     }
 
     /**

@@ -34,15 +34,29 @@ class EventSchema extends AbstractSchema
         ]);
 
         $ctnTypes = 0;
-        $cnt = 0;
+        $cntMessages = 0;
 
         foreach ($schemas as $schema) {
-            $cnt += count($schema['messages']);
+            $cntMessages += count($schema['messages']);
             $ctnTypes++;
         }
 
-        $this->out('Типы почтовых событий: %d', $ctnTypes);
-        $this->out('Почтовые шаблоны: %d', $cnt);
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_EVENT_DESC',
+                [
+                    '#COUNT#' => $ctnTypes,
+                ]
+            )
+        );
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_EVENT_MESSAGES_DESC',
+                [
+                    '#COUNT#' => $cntMessages,
+                ]
+            )
+        );
     }
 
     /**

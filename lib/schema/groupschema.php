@@ -30,7 +30,14 @@ class GroupSchema extends AbstractSchema
             'items' => [],
         ]);
 
-        $this->out('Группы пользователей: %d', count($schemaItems['items']));
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_USER_GROUP_DESC',
+                [
+                    '#COUNT#' => count($schemaItems['items']),
+                ]
+            )
+        );
     }
 
     /**

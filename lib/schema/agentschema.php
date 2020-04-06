@@ -31,7 +31,14 @@ class AgentSchema extends AbstractSchema
             'items' => [],
         ]);
 
-        $this->out('Агенты: %d', count($schemaItems['items']));
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_AGENT_DESC',
+                [
+                    '#COUNT#' => count($schemaItems['items']),
+                ]
+            )
+        );
     }
 
 

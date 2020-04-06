@@ -38,8 +38,22 @@ class HlblockSchema extends AbstractSchema
             $cntFields += count($schema['fields']);
         }
 
-        $this->out('Highload-блоки: %d', count($schemas));
-        $this->out('Полей: %d', $cntFields);
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_HLBLOCK_DESC',
+                [
+                    '#COUNT#' => count($schemas),
+                ]
+            )
+        );
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_HLBLOCK_FIELDS_DESC',
+                [
+                    '#COUNT#' => $cntFields,
+                ]
+            )
+        );
     }
 
     /**

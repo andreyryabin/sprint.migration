@@ -43,7 +43,14 @@ class OptionSchema extends AbstractSchema
             $cnt += count($schema['items']);
         }
 
-        $this->out('Настроек: %d', $cnt);
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_OPTION_DESC',
+                [
+                    '#COUNT#' => $cnt,
+                ]
+            )
+        );
     }
 
     /**

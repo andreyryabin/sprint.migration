@@ -35,7 +35,14 @@ class IblockSchema extends AbstractSchema
             'items' => [],
         ]);
 
-        $this->out('Типы инфоблоков: %d', count($schemaTypes['items']));
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_IBLOCK_TYPE_DESC',
+                [
+                    '#COUNT#' => count($schemaTypes['items']),
+                ]
+            )
+        );
 
         $schemaIblocks = $this->loadSchemas('iblocks/', [
             'iblock' => [],
@@ -44,7 +51,14 @@ class IblockSchema extends AbstractSchema
             'element_form' => [],
         ]);
 
-        $this->out('Инфоблоков: %d', count($schemaIblocks));
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_IBLOCK_DESC',
+                [
+                    '#COUNT#' => count($schemaIblocks),
+                ]
+            )
+        );
 
         $cntProps = 0;
         $cntForms = 0;
@@ -56,8 +70,22 @@ class IblockSchema extends AbstractSchema
             }
         }
 
-        $this->out('Свойств инфоблоков: %d', $cntProps);
-        $this->out('Форм редактирования: %d', $cntForms);
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_IBLOCK_PROPS_DESC',
+                [
+                    '#COUNT#' => $cntProps,
+                ]
+            )
+        );
+        $this->out(
+            Locale::getMessage(
+                'SCHEMA_IBLOCK_FORMS_DESC',
+                [
+                    '#COUNT#' => $cntForms,
+                ]
+            )
+        );
     }
 
     /**
