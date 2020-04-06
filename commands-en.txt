@@ -1,0 +1,51 @@
+All console commands:
+  add                           Create new migration
+  add [desc]                    Create new migration with description
+  add [desc] [name]             Create new migration with description and name
+    --name=[name]               Set name
+    --desc=[desc]               Set description
+
+  ls                            Show migrations
+    --new                       Show only new
+    --installed                 Show only installed
+    --search=[text]             Filter by name, description or tag
+    --tag=[text]                Filter by tag
+
+  up                            Install all new migrations
+    --search=[text]             Filter by name, description or tag
+    --add-tag=[text]            Set tag
+
+  up [version]                  Install selected migration
+    --add-tag=[text]            Set tag
+
+  down                          Uninstall all installed migrations
+    --search=[text]             Filter by name, description or tag
+    --tag=[text]                Filter by tag
+
+  down [version]                Uninstall selected migration
+
+  redo [version]                Reinstall selected migration
+
+  run [builder]                 Run builder
+
+  schema                        Show schemes
+    export [name]               Create selected schemes
+    import [name]               Install selected schemes
+    diff [name]                 Check differrences between scheme and database
+
+  mark [version]                Mark migration by name
+  mark new                      Mark all new migrations
+  mark installed                Mark all installed migrations
+  mark unknown                  Mark all unknown migrations
+    --as=installed              As installed (skip install)
+    --as=new                    As new (skip uninstall)
+
+  delete [version]              Delete migration by name
+  delete new                    Delete all new migrations
+  delete installed              Delete all installed migrations
+  delete unknown                Delete all unknown migrations
+
+  config                        Show config
+  --config=[name]               Change config by name
+
+  help                          Help

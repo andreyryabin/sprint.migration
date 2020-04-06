@@ -39,11 +39,16 @@ class Locale
         }
     }
 
-    public static function getMessage($name, $replaces = [])
+    public static function getLang()
     {
-        $lang = defined('LANGUAGE_ID') ? LANGUAGE_ID : 'ru';
+        return defined('LANGUAGE_ID') ? LANGUAGE_ID : 'ru';
+    }
 
-        $message = isset(self::$messages[$lang . $name]) ? self::$messages[$lang . $name] : $name;
+    public static function getMessage($message, $replaces = [])
+    {
+        if (isset(self::$messages[self::getLang() . $message])) {
+            $message = self::$messages[self::getLang() . $message];
+        }
 
         if (!empty($replaces)) {
             foreach ($replaces as $search => $replace) {

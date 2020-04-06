@@ -355,7 +355,11 @@ class Console
 
     public function commandHelp()
     {
-        Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
+        if (Locale::getLang() == 'en') {
+            Out::out(file_get_contents(Module::getModuleDir() . '/commands-en.txt'));
+        } else {
+            Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
+        }
     }
 
     public function commandConfig()
