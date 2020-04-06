@@ -37,11 +37,6 @@ class HlblockElementsImport extends AbstractExchange
         if (!isset($params['total'])) {
 
             $this->exchangeEntity->exitIf(
-                !is_callable($this->converter),
-                Locale::getMessage('ERRR_CONVERTER_NOT_CALLABLE')
-            );
-
-            $this->exchangeEntity->exitIf(
                 !is_file($this->file),
                 Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND')
             );
