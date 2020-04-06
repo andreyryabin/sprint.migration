@@ -377,6 +377,4 @@ require_once __DIR__ . "/../lib/locale.php";
     "GD_SCHEMAS" => "Схемы данных",
     "GD_SCHEMA_RED" => "Не установлена",
     "GD_SCHEMA_GREEN" => "Установлена",
-    "GD_SCHEMAS_RED" => "не установлены",
-    "GD_SCHEMAS_GREEN" => "Схемы установлены",
 ]);
