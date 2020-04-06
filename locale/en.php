@@ -63,7 +63,7 @@ require_once __DIR__ . "/../lib/locale.php";
     "CONFIG_stop_on_errors" => "Останавливать выполнение миграций при ошибках",
     "CONFIG_show_admin_interface" => "Показывать сервис миграций в админке",
     "CONFIG_console_user" => "Пользователь, от которого запускаются миграции в консоли",
-    "CONFIG_console_auth_events_disable" => "Отключить обработчики авторизации пользователя в консоли",
+    "CONFIG_console_auth_events_disable" => "Отключить обработчики авторизации в консоли",
     "CONFIG_config_file" => "Файл конфигурации",
     "CONFIG_title" => "Название конфигурации",
     "CONFIG_version_schemas" => "Схемы данных",
