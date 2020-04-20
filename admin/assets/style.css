@@ -194,14 +194,16 @@ a.sp-item-unknown:visited {
     color: #000;
     border-radius: 10px;
     cursor: default;
+    font-weight: bold;
 }
-
+.sp-new,
 .sp-older {
     padding: 0 10px;
-    background: #a00;
+    background: #b00;
     color: #fff;
     border-radius: 10px;
     cursor: default;
+    font-weight: bold;
 }
 
 .sp-tag {

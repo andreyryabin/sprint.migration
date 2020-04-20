@@ -45,7 +45,11 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
                 <br/>
                 <a href="tg://resolve?domain=sprint_migration_bitrix">tg://resolve?domain=sprint_migration_bitrix</a>
             </div>
-
+            <div style="margin-bottom:10px">
+                <span class="sp-new">new!</span>
+                <?= Locale::getMessage('LINK_IMPROVE_TRANSLATION') ?> <br/>
+                <a href="https://github.com/andreyryabin/sprint.migration/blob/master/locale/en.php" target="_blank">https://github.com/andreyryabin/sprint.migration/blob/master/locale/en.php</a>
+            </div>
         </div>
     </div>
 </div>
