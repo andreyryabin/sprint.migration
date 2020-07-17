@@ -233,7 +233,12 @@ class Console
                 $item['version'],
                 Locale::getMessage('META_' . strtoupper($item['status'])),
                 $item['tag'],
-                $item['description'],
+                Out::prepareToConsole(
+                    $item['description'],
+                    [
+                        'tracker_task_url' => $this->versionConfig->getVal('tracker_task_url'),
+                    ]
+                ),
             ]);
 
             $stval = $item['status'];

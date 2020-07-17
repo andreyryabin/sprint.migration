@@ -6,24 +6,22 @@ use CAdminMessage;
 
 class Out
 {
-
-    protected static $colors = [
-        '/' => ["\x1b[0m", '</span>'],
-        'is_unknown' => ["\x1b[0;34m", '<span style="color:#00a">'],
+    protected static $colors  = [
+        '/'            => ["\x1b[0m", '</span>'],
+        'is_unknown'   => ["\x1b[0;34m", '<span style="color:#00a">'],
         'is_installed' => ["\x1b[0;32m", '<span style="color:#080">'],
-        'is_new' => ["\x1b[0;31m", '<span style="color:#a00">'],
-        'unknown' => ["\x1b[0;34m", '<span style="color:#00a">'],
-        'installed' => ["\x1b[0;32m", '<span style="color:#080">'],
-        'new' => ["\x1b[0;31m", '<span style="color:#a00">'],
-        'blue' => ["\x1b[0;34m", '<span style="color:#00a">'],
-        'green' => ["\x1b[0;32m", '<span style="color:#080">'],
-        'up' => ["\x1b[0;32m", '<span style="color:#080">'],
-        'red' => ["\x1b[0;31m", '<span style="color:#a00">'],
-        'down' => ["\x1b[0;31m", '<span style="color:#a00">'],
-        'yellow' => ["\x1b[1;33m", '<span style="color:#aa0">'],
-        'b' => ["\x1b[1m", '<span style="font-weight:bold;color:#000">'],
+        'is_new'       => ["\x1b[0;31m", '<span style="color:#a00">'],
+        'unknown'      => ["\x1b[0;34m", '<span style="color:#00a">'],
+        'installed'    => ["\x1b[0;32m", '<span style="color:#080">'],
+        'new'          => ["\x1b[0;31m", '<span style="color:#a00">'],
+        'blue'         => ["\x1b[0;34m", '<span style="color:#00a">'],
+        'green'        => ["\x1b[0;32m", '<span style="color:#080">'],
+        'up'           => ["\x1b[0;32m", '<span style="color:#080">'],
+        'red'          => ["\x1b[0;31m", '<span style="color:#a00">'],
+        'down'         => ["\x1b[0;31m", '<span style="color:#a00">'],
+        'yellow'       => ["\x1b[1;33m", '<span style="color:#aa0">'],
+        'b'            => ["\x1b[1m", '<span style="font-weight:bold;color:#000">'],
     ];
-
     protected static $needEol = false;
 
     public static function out($msg, ...$vars)
@@ -48,25 +46,22 @@ class Out
 
         if (self::canOutProgressBar()) {
             $mess = [
-                "MESSAGE" => $msg,
-                "DETAILS" => "#PROGRESS_BAR#",
-                "HTML" => true,
-                "TYPE" => "PROGRESS",
+                "MESSAGE"        => $msg,
+                "DETAILS"        => "#PROGRESS_BAR#",
+                "HTML"           => true,
+                "TYPE"           => "PROGRESS",
                 "PROGRESS_TOTAL" => $total,
                 "PROGRESS_VALUE" => $val,
             ];
 
             echo '<div class="sp-progress">' . (new CAdminMessage($mess))->Show() . '</div>';
-
         } elseif (self::canOutAsHtml()) {
             $msg = self::prepareToHtml($msg);
             echo '<div class="sp-progress">' . "$msg $val/$total" . '</div>';
-
         } else {
             $msg = self::prepareToConsole($msg);
             fwrite(STDOUT, "\r$msg $val/$total");
         }
-
     }
 
     public static function outNotice($msg, ...$vars)
@@ -122,11 +117,13 @@ class Out
         }
 
         if (self::canOutAsAdminMessage()) {
-            echo (new CAdminMessage([
-                "MESSAGE" => self::prepareToHtml($msg),
-                'HTML' => true,
-                'TYPE' => 'ERROR',
-            ]))->Show();
+            echo (new CAdminMessage(
+                [
+                    "MESSAGE" => self::prepareToHtml($msg),
+                    'HTML'    => true,
+                    'TYPE'    => 'ERROR',
+                ]
+            ))->Show();
         } else {
             self::outWarning($msg);
         }
@@ -140,11 +137,13 @@ class Out
         }
 
         if (self::canOutAsAdminMessage()) {
-            echo (new CAdminMessage([
-                "MESSAGE" => self::prepareToHtml($msg),
-                'HTML' => true,
-                'TYPE' => 'OK',
-            ]))->Show();
+            echo (new CAdminMessage(
+                [
+                    "MESSAGE" => self::prepareToHtml($msg),
+                    'HTML'    => true,
+                    'TYPE'    => 'OK',
+                ]
+            ))->Show();
         } else {
             self::outNotice($msg);
         }
@@ -157,7 +156,6 @@ class Out
         if ($cond) {
             call_user_func_array([__CLASS__, 'out'], $args);
         }
-
     }
 
     public static function outInfoIf($cond, $msg, ...$vars)
@@ -205,17 +203,21 @@ class Out
         }
     }
 
-    protected static function prepareToConsole($msg)
+    public static function prepareToConsole($msg, $options = [])
     {
         foreach (self::$colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
+        }
+
+        if (isset($options['tracker_task_url'])) {
+            $msg = self::makeTaskUrl($msg, $options['tracker_task_url']);
         }
 
         $msg = Locale::convertToUtf8IfNeed($msg);
         return $msg;
     }
 
-    protected static function prepareToHtml($msg)
+    public static function prepareToHtml($msg, $options = [])
     {
         $msg = nl2br($msg);
 
@@ -225,7 +227,11 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
 
-        $msg = self::makeLinks($msg);
+        if (isset($options['tracker_task_url'])) {
+            $msg = self::makeTaskUrl($msg, $options['tracker_task_url']);
+        }
+
+        $msg = self::makeLinksHtml($msg);
 
         $msg = Locale::convertToWin1251IfNeed($msg);
         return $msg;
@@ -250,9 +256,11 @@ class Out
 
         if ($field['multiple']) {
             $val = explode(' ', $val);
-            $val = array_filter($val, function ($a) {
+            $val = array_filter(
+                $val, function ($a) {
                 return !empty($a);
-            });
+            }
+            );
         }
 
         return $val;
@@ -398,7 +406,16 @@ class Out
         return $diff;
     }
 
-    protected static function makeLinks($msg)
+    protected static function makeTaskUrl($msg, $taskUrl = '')
+    {
+        if (false !== strpos($taskUrl, '$1')) {
+            $msg = preg_replace('/\#([a-z0-9_\-]*)/i', $taskUrl, $msg);
+        }
+
+        return $msg;
+    }
+
+    protected static function makeLinksHtml($msg)
     {
         $reg_exUrl = "/(http|https)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
         if (preg_match($reg_exUrl, $msg, $url)) {

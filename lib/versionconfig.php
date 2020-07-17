@@ -32,9 +32,7 @@ use Sprint\Migration\Schema\UserTypeEntitiesSchema;
 class VersionConfig
 {
     private $configCurrent = [];
-
-    private $configList = [];
-
+    private $configList    = [];
     private $availablekeys = [
         'migration_table',
         'migration_extend_class',
@@ -49,11 +47,14 @@ class VersionConfig
         'version_name_template',
         'console_user',
         'console_auth_events_disable',
+        'tracker_task_url',
     ];
 
     /**
      * VersionConfig constructor.
+     *
      * @param string $configName
+     *
      * @throws Exception
      */
     public function __construct($configName = '')
@@ -68,15 +69,18 @@ class VersionConfig
             $this->configList[VersionEnum::CONFIG_ARCHIVE] = $this->prepare(
                 VersionEnum::CONFIG_ARCHIVE,
                 [
-                    'title' => Locale::getMessage('CONFIG_archive'),
-                    'migration_dir' => $this->getSiblingDir('archive', true),
+                    'title'           => Locale::getMessage('CONFIG_archive'),
+                    'migration_dir'   => $this->getSiblingDir('archive', true),
                     'migration_table' => 'sprint_migration_archive',
-                ]);
+                ]
+            );
         }
 
-        uasort($this->configList, function ($a, $b) {
+        uasort(
+            $this->configList, function ($a, $b) {
             return ($a['sort'] >= $b['sort']);
-        });
+        }
+        );
 
         if (isset($this->configList[$configName])) {
             $this->configCurrent = $this->configList[$configName];
@@ -149,9 +153,10 @@ class VersionConfig
     }
 
     /**
-     * @param $configName
+     * @param       $configName
      * @param array $configValues
-     * @param bool $file
+     * @param bool  $file
+     *
      * @throws Exception
      * @return array
      */
@@ -179,17 +184,18 @@ class VersionConfig
         }
 
         return [
-            'name' => $configName,
-            'sort' => $this->getSort($configName),
-            'title' => $title,
+            'name'         => $configName,
+            'sort'         => $this->getSort($configName),
+            'title'        => $title,
             'schema_title' => $schemaTitle,
-            'file' => $file,
-            'values' => $configValues,
+            'file'         => $file,
+            'values'       => $configValues,
         ];
     }
 
     /**
      * @param array $values
+     *
      * @throws Exception
      * @return array
      */
@@ -260,15 +266,19 @@ class VersionConfig
             $values['version_schemas'] = $this->getDefaultSchemas();
         }
 
+        if (empty($values['tracker_task_url'])) {
+            $values['tracker_task_url'] = '';
+        }
+
         if (empty($values['version_name_template'])) {
             $values['version_name_template'] = '#NAME##TIMESTAMP#';
         }
 
         if (
-            (strpos($values['version_name_template'], '#TIMESTAMP#') === false) ||
-            (strpos($values['version_name_template'], '#NAME#') === false)
+            (strpos($values['version_name_template'], '#TIMESTAMP#') === false)
+            || (strpos($values['version_name_template'], '#NAME#') === false)
         ) {
-            Throw new Exception("Config version_name_template format error");
+            throw new Exception("Config version_name_template format error");
         }
 
         ksort($values);
@@ -329,12 +339,12 @@ class VersionConfig
         if (isset($this->configList[$configName])) {
             $curValues = $this->configList[$configName]['values'];
             $configDefaults = [
-                'migration_dir' => Module::getRelativeDir($curValues['migration_dir']),
+                'migration_dir'   => Module::getRelativeDir($curValues['migration_dir']),
                 'migration_table' => $curValues['migration_table'],
             ];
         } else {
             $configDefaults = [
-                'migration_dir' => $this->getSiblingDir($configName, true),
+                'migration_dir'   => $this->getSiblingDir($configName, true),
                 'migration_table' => 'sprint_migration_' . $configName,
             ];
         }
@@ -347,6 +357,7 @@ class VersionConfig
 
     /**
      * @param $configName
+     *
      * @throws Exception
      * @return bool
      */
@@ -396,35 +407,35 @@ class VersionConfig
     protected function getDefaultBuilders()
     {
         return [
-            'BlankBuilder' => BlankBuilder::class,
-            'UserGroupBuilder' => UserGroupBuilder::class,
-            'IblockBuilder' => IblockBuilder::class,
-            'HlblockBuilder' => HlblockBuilder::class,
-            'IblockElementsBuilder' => IblockElementsBuilder::class,
-            'IblockCategoryBuilder' => IblockCategoryBuilder::class,
-            'HlblockElementsBuilder' => HlblockElementsBuilder::class,
+            'BlankBuilder'            => BlankBuilder::class,
+            'UserGroupBuilder'        => UserGroupBuilder::class,
+            'IblockBuilder'           => IblockBuilder::class,
+            'HlblockBuilder'          => HlblockBuilder::class,
+            'IblockElementsBuilder'   => IblockElementsBuilder::class,
+            'IblockCategoryBuilder'   => IblockCategoryBuilder::class,
+            'HlblockElementsBuilder'  => HlblockElementsBuilder::class,
             'UserTypeEntitiesBuilder' => UserTypeEntitiesBuilder::class,
-            'AgentBuilder' => AgentBuilder::class,
-            'OptionBuilder' => OptionBuilder::class,
-            'FormBuilder' => FormBuilder::class,
-            'EventBuilder' => EventBuilder::class,
-            'UserOptionsBuilder' => UserOptionsBuilder::class,
-            'CacheCleanerBuilder' => CacheCleanerBuilder::class,
-            'MarkerBuilder' => MarkerBuilder::class,
-            'TransferBuilder' => TransferBuilder::class,
+            'AgentBuilder'            => AgentBuilder::class,
+            'OptionBuilder'           => OptionBuilder::class,
+            'FormBuilder'             => FormBuilder::class,
+            'EventBuilder'            => EventBuilder::class,
+            'UserOptionsBuilder'      => UserOptionsBuilder::class,
+            'CacheCleanerBuilder'     => CacheCleanerBuilder::class,
+            'MarkerBuilder'           => MarkerBuilder::class,
+            'TransferBuilder'         => TransferBuilder::class,
         ];
     }
 
     protected function getDefaultSchemas()
     {
         return [
-            'IblockSchema' => IblockSchema::class,
-            'HlblockSchema' => HlblockSchema::class,
+            'IblockSchema'           => IblockSchema::class,
+            'HlblockSchema'          => HlblockSchema::class,
             'UserTypeEntitiesSchema' => UserTypeEntitiesSchema::class,
-            'AgentSchema' => AgentSchema::class,
-            'GroupSchema' => GroupSchema::class,
-            'OptionSchema' => OptionSchema::class,
-            'EventSchema' => EventSchema::class,
+            'AgentSchema'            => AgentSchema::class,
+            'GroupSchema'            => GroupSchema::class,
+            'OptionSchema'           => OptionSchema::class,
+            'EventSchema'            => EventSchema::class,
         ];
     }
 }
