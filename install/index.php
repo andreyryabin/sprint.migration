@@ -27,10 +27,10 @@ Class sprint_migration extends CModule
         include(__DIR__ . '/../locale/ru.php');
         include(__DIR__ . '/../locale/en.php');
 
-        $this->MODULE_NAME = Locale::getMessage("MODULE_NAME");
-        $this->MODULE_DESCRIPTION = Locale::getMessage("MODULE_DESCRIPTION");
-        $this->PARTNER_NAME = Locale::getMessage("PARTNER_NAME");
-        $this->PARTNER_URI = Locale::getMessage("PARTNER_URI");
+        $this->MODULE_NAME = GetMessage(Locale::getMessageName("MODULE_NAME"));
+        $this->MODULE_DESCRIPTION = GetMessage(Locale::getMessageName("MODULE_DESCRIPTION"));
+        $this->PARTNER_NAME = GetMessage(Locale::getMessageName("PARTNER_NAME"));
+        $this->PARTNER_URI = GetMessage(Locale::getMessageName("PARTNER_URI"));
     }
 
     function DoInstall()

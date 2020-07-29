@@ -4,8 +4,6 @@ namespace Sprint\Migration;
 
 class Locale
 {
-    private static $messages = [];
-
     public static function isWin1251()
     {
         return (defined('BX_UTF') && BX_UTF === true) ? 0 : 1;
@@ -34,9 +32,17 @@ class Locale
 
     public static function loadLocale($lang, $loc)
     {
-        foreach ($loc as $name => $msg) {
-            self::$messages[$lang . $name] = self::convertToWin1251IfNeed($msg);
+        global $MESS;
+        foreach ($loc as $shortName => $msg) {
+            $MESS[self::getMessageName($shortName, $lang)] = self::convertToWin1251IfNeed($msg);
         }
+    }
+
+    public static function getMessageName($shortName, $lang = false)
+    {
+        $lang = ($lang) ? $lang : self::getLang();
+
+        return strtoupper('SPRINT_MIGRATION_' . $lang . '_' . $shortName);
     }
 
     public static function getLang()
@@ -44,18 +50,8 @@ class Locale
         return defined('LANGUAGE_ID') ? LANGUAGE_ID : 'ru';
     }
 
-    public static function getMessage($message, $replaces = [])
+    public static function getMessage($shortName, $replaces = [])
     {
-        if (isset(self::$messages[self::getLang() . $message])) {
-            $message = self::$messages[self::getLang() . $message];
-        }
-
-        if (!empty($replaces)) {
-            foreach ($replaces as $search => $replace) {
-                $message = str_replace($search, $replace, $message);
-            }
-        }
-
-        return $message;
+        return GetMessage(self::getMessageName($shortName), $replaces);
     }
 }

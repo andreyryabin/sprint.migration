@@ -126,7 +126,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_HlblockElementsExport2"          => "Переносит элементы\nПереносит изображения, файлы и списки",
         "BUILDER_HlblockElementsExport_HlblockId" => "Выберите highload-блок",
 
-        "BUILDER_UserOptionsExport_Title"         => "Создать миграцию для пользовательских настроек",
+        "BUILDER_USEROPTIONSEXPORT_TITLE"         => "Создать миграцию для пользовательских настроек",
         "BUILDER_UserOptionsExport_Desc"          => "",
         "BUILDER_UserOptionsExport_What"          => "Что переносим",
         "BUILDER_UserOptionsExport_WhatUserForm"  => "Настрока формы редактирования пользователей",
