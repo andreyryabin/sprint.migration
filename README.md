@@ -12,7 +12,7 @@
 * Composer: [https://packagist.org/packages/andreyryabin/sprint.migration](https://packagist.org/packages/andreyryabin/sprint.migration)
 * Документация: [https://github.com/andreyryabin/sprint.migration/wiki](https://github.com/andreyryabin/sprint.migration/wiki)
 * Материалы: [https://dev.1c-bitrix.ru/community/webdev/user/39653/blog/](https://dev.1c-bitrix.ru/community/webdev/user/39653/blog/)
-* Группа в телеграм: [https://t-do.ru/sprint_migration_bitrix](https://t-do.ru/sprint_migration_bitrix)
+* Группа в телеграм: [https://t.me/sprint_migration_bitrix](https://t.me/sprint_migration_bitrix)
 
 Особая благодарность
 -------------------------

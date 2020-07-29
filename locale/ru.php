@@ -72,6 +72,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_version_schemas"             => "Схемы данных",
         "CONFIG_yes"                         => "да",
         "CONFIG_no"                          => "нет",
+        "CONFIG_version_name_template"       => "Шаблон названия миграции",
         "BUILDER_ERROR"                      => "Ошибка",
         "BUILDER_NEXT"                       => "Далее",
         "BUILDER_RESET"                      => "Сбросить",
@@ -214,7 +215,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "OLDER_VERSION"    => "Код миграции был создан в более поздней версии модуля #V1#\nВозможно, он использует возможности, которые не реализованы в текущей версии #V2#",
         "OLDER_LABEL"      => "!",
 
-        "TAG"          => "Миграция отмечена тегом",
+        "TAG"           => "Миграция отмечена тегом",
         "SETTAG"        => "Поставить тег",
         "SETTAG_OK"     => "Тег для миграции #VERSION# задан",
         "SETTAG_ERROR1" => "Миграций для установки тега не найдено",

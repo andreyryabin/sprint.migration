@@ -11,11 +11,8 @@ use Sprint\Migration\Module;
 abstract class AbstractTable
 {
     private $tableName = '';
-
     private $dbName = '';
-
     protected $tableVersion = 1;
-
     protected $connection;
 
     abstract protected function createTable();
@@ -34,7 +31,6 @@ abstract class AbstractTable
             $this->createTable();
             Module::setDbOption($uid, 1);
         }
-
     }
 
     public function deleteTable()
@@ -50,9 +46,11 @@ abstract class AbstractTable
     }
 
     /**
-     * @param $query
+     * @param        $query
      * @param string ...$vars
-     * @return Result|bool
+     *
+     * @throws SqlQueryException
+     * @return Result
      */
     protected function query($query, ...$vars)
     {
@@ -78,18 +76,13 @@ abstract class AbstractTable
         $queryReplace = array_values($search);
 
         $query = str_replace($querySearch, $queryReplace, $query);
-        try {
-            return $this->connection->query($query);
-        } catch (SqlQueryException $e) {
-            return false;
-        }
+        return $this->connection->query($query);
     }
 
     protected function forSql($query)
     {
         return $this->connection->getSqlHelper()->forSql($query);
     }
-
 }
 
 
