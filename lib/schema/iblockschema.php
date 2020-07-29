@@ -8,7 +8,6 @@ use Sprint\Migration\Locale;
 
 class IblockSchema extends AbstractSchema
 {
-
     private $iblockIds = [];
 
     /**
@@ -31,9 +30,11 @@ class IblockSchema extends AbstractSchema
 
     public function outDescription()
     {
-        $schemaTypes = $this->loadSchema('iblock_types', [
-            'items' => [],
-        ]);
+        $schemaTypes = $this->loadSchema(
+            'iblock_types', [
+                'items' => [],
+            ]
+        );
 
         $this->out(
             Locale::getMessage(
@@ -44,13 +45,15 @@ class IblockSchema extends AbstractSchema
             )
         );
 
-        $schemaIblocks = $this->loadSchemas('iblocks/', [
-            'iblock' => [],
-            'fields' => [],
-            'props' => [],
-            'element_form' => [],
-            'section_form' => [],
-        ]);
+        $schemaIblocks = $this->loadSchemas(
+            'iblocks/', [
+                'iblock'       => [],
+                'fields'       => [],
+                'props'        => [],
+                'element_form' => [],
+                'section_form' => [],
+            ]
+        );
 
         $this->out(
             Locale::getMessage(
@@ -65,8 +68,10 @@ class IblockSchema extends AbstractSchema
         $cntForms = 0;
         foreach ($schemaIblocks as $schemaIblock) {
             $cntProps += count($schemaIblock['props']);
-
-            if (!empty($schemaIblock['element_form']) || !empty($schemaIblock['section_form'])) {
+            if (!empty($schemaIblock['element_form'])) {
+                $cntForms++;
+            }
+            if (!empty($schemaIblock['section_form'])) {
                 $cntForms++;
             }
         }
@@ -103,37 +108,43 @@ class IblockSchema extends AbstractSchema
             $exportTypes[] = $helper->Iblock()->exportIblockType($type['ID']);
         }
 
-        $this->saveSchema('iblock_types', [
-            'items' => $exportTypes,
-        ]);
+        $this->saveSchema(
+            'iblock_types', [
+                'items' => $exportTypes,
+            ]
+        );
 
         $iblocks = $helper->Iblock()->getIblocks();
         foreach ($iblocks as $iblock) {
             if (!empty($iblock['CODE'])) {
-                $this->saveSchema('iblocks/' . strtolower($iblock['IBLOCK_TYPE_ID'] . '-' . $iblock['CODE']), [
-                    'iblock' => $helper->Iblock()->exportIblock($iblock['ID']),
-                    'fields' => $helper->Iblock()->exportIblockFields($iblock['ID']),
-                    'props' => $helper->Iblock()->exportProperties($iblock['ID']),
-                    'element_form' => $helper->UserOptions()->exportElementForm($iblock['ID']),
-                    'section_form' => $helper->UserOptions()->exportSectionForm($iblock['ID']),
-                ]);
+                $this->saveSchema(
+                    'iblocks/' . strtolower($iblock['IBLOCK_TYPE_ID'] . '-' . $iblock['CODE']), [
+                        'iblock'       => $helper->Iblock()->exportIblock($iblock['ID']),
+                        'fields'       => $helper->Iblock()->exportIblockFields($iblock['ID']),
+                        'props'        => $helper->Iblock()->exportProperties($iblock['ID']),
+                        'element_form' => $helper->UserOptions()->exportElementForm($iblock['ID']),
+                        'section_form' => $helper->UserOptions()->exportSectionForm($iblock['ID']),
+                    ]
+                );
             }
         }
-
     }
 
     public function import()
     {
-        $schemaTypes = $this->loadSchema('iblock_types', [
-            'items' => [],
-        ]);
+        $schemaTypes = $this->loadSchema(
+            'iblock_types', [
+                'items' => [],
+            ]
+        );
 
-        $schemaIblocks = $this->loadSchemas('iblocks/', [
-            'iblock' => [],
-            'fields' => [],
-            'props' => [],
-            'element_form' => [],
-        ]);
+        $schemaIblocks = $this->loadSchemas(
+            'iblocks/', [
+                'iblock'       => [],
+                'fields'       => [],
+                'props'        => [],
+            ]
+        );
 
         foreach ($schemaTypes['items'] as $type) {
             $this->addToQueue('saveIblockType', $type);
@@ -149,7 +160,9 @@ class IblockSchema extends AbstractSchema
         foreach ($schemaIblocks as $schemaIblock) {
             $iblockUid = $this->getUniqIblock($schemaIblock['iblock']);
             $this->addToQueue('saveProperties', $iblockUid, $schemaIblock['props']);
-            $this->addToQueue('saveElementForm', $iblockUid, $schemaIblock['element_form']);
+            if (isset($schemaIblock['element_form'])) {
+                $this->addToQueue('saveElementForm', $iblockUid, $schemaIblock['element_form']);
+            }
             if (isset($schemaIblock['section_form'])) {
                 $this->addToQueue('saveSectionForm', $iblockUid, $schemaIblock['section_form']);
             }
@@ -173,7 +186,6 @@ class IblockSchema extends AbstractSchema
 
         $this->addToQueue('cleanIblocks', $skip);
 
-
         $skip = [];
         foreach ($schemaTypes['items'] as $type) {
             $skip[] = $this->getUniqIblockType($type);
@@ -184,6 +196,7 @@ class IblockSchema extends AbstractSchema
 
     /**
      * @param array $fields
+     *
      * @throws HelperException
      */
     protected function saveIblockType($fields = [])
@@ -195,6 +208,7 @@ class IblockSchema extends AbstractSchema
 
     /**
      * @param $fields
+     *
      * @throws HelperException
      */
     protected function saveIblock($fields)
@@ -221,6 +235,7 @@ class IblockSchema extends AbstractSchema
     /**
      * @param $iblockUid
      * @param $properties
+     *
      * @throws HelperException
      */
     protected function saveProperties($iblockUid, $properties)
@@ -238,6 +253,7 @@ class IblockSchema extends AbstractSchema
     /**
      * @param $iblockUid
      * @param $elementForm
+     *
      * @throws HelperException
      */
     protected function saveElementForm($iblockUid, $elementForm)
@@ -253,6 +269,7 @@ class IblockSchema extends AbstractSchema
     /**
      * @param $iblockUid
      * @param $sectionForm
+     *
      * @throws HelperException
      */
     protected function saveSectionForm($iblockUid, $sectionForm)
@@ -266,8 +283,9 @@ class IblockSchema extends AbstractSchema
     }
 
     /**
-     * @param $iblockUid
+     * @param       $iblockUid
      * @param array $skip
+     *
      * @throws HelperException
      */
     protected function cleanProperties($iblockUid, $skip = [])
@@ -287,7 +305,7 @@ class IblockSchema extends AbstractSchema
                                 'IB_PROPERTY_DELETED',
                                 [
                                     '#IBLOCK_ID#' => $iblockId,
-                                    '#NAME#' => $this->getTitleProp($old),
+                                    '#NAME#'      => $this->getTitleProp($old),
                                 ]
                             )
                         );
@@ -299,6 +317,7 @@ class IblockSchema extends AbstractSchema
 
     /**
      * @param array $skip
+     *
      * @throws HelperException
      */
     protected function cleanIblockTypes($skip = [])
@@ -325,6 +344,7 @@ class IblockSchema extends AbstractSchema
 
     /**
      * @param array $skip
+     *
      * @throws HelperException
      */
     protected function cleanIblocks($skip = [])
@@ -351,7 +371,6 @@ class IblockSchema extends AbstractSchema
         }
     }
 
-
     protected function getTitleProp($prop)
     {
         return empty($prop['CODE']) ? $prop['ID'] : $prop['CODE'];
@@ -372,7 +391,6 @@ class IblockSchema extends AbstractSchema
         return $this->getHelperManager()->Iblock()->getIblockUid($iblock);
     }
 
-
     protected function getIblockId($iblockUid)
     {
         $helper = $this->getHelperManager();
@@ -382,10 +400,8 @@ class IblockSchema extends AbstractSchema
         }
 
         $this->iblockIds[$iblockUid] = $helper->Iblock()
-            ->getIblockIdByUid($iblockUid);
+                                              ->getIblockIdByUid($iblockUid);
 
         return $this->iblockIds[$iblockUid];
-
     }
-
 }
