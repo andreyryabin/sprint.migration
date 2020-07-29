@@ -150,7 +150,9 @@ class IblockSchema extends AbstractSchema
             $iblockUid = $this->getUniqIblock($schemaIblock['iblock']);
             $this->addToQueue('saveProperties', $iblockUid, $schemaIblock['props']);
             $this->addToQueue('saveElementForm', $iblockUid, $schemaIblock['element_form']);
-            $this->addToQueue('saveSectionForm', $iblockUid, $schemaIblock['section_form']);
+            if (isset($schemaIblock['section_form'])) {
+                $this->addToQueue('saveSectionForm', $iblockUid, $schemaIblock['section_form']);
+            }
         }
 
         foreach ($schemaIblocks as $schemaIblock) {
