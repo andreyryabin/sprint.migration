@@ -49,6 +49,7 @@ class IblockSchema extends AbstractSchema
             'fields' => [],
             'props' => [],
             'element_form' => [],
+            'section_form' => [],
         ]);
 
         $this->out(
@@ -65,7 +66,7 @@ class IblockSchema extends AbstractSchema
         foreach ($schemaIblocks as $schemaIblock) {
             $cntProps += count($schemaIblock['props']);
 
-            if (!empty($schemaIblock['element_form'])) {
+            if (!empty($schemaIblock['element_form']) || !empty($schemaIblock['section_form'])) {
                 $cntForms++;
             }
         }
@@ -114,6 +115,7 @@ class IblockSchema extends AbstractSchema
                     'fields' => $helper->Iblock()->exportIblockFields($iblock['ID']),
                     'props' => $helper->Iblock()->exportProperties($iblock['ID']),
                     'element_form' => $helper->UserOptions()->exportElementForm($iblock['ID']),
+                    'section_form' => $helper->UserOptions()->exportSectionForm($iblock['ID']),
                 ]);
             }
         }
@@ -148,6 +150,7 @@ class IblockSchema extends AbstractSchema
             $iblockUid = $this->getUniqIblock($schemaIblock['iblock']);
             $this->addToQueue('saveProperties', $iblockUid, $schemaIblock['props']);
             $this->addToQueue('saveElementForm', $iblockUid, $schemaIblock['element_form']);
+            $this->addToQueue('saveSectionForm', $iblockUid, $schemaIblock['section_form']);
         }
 
         foreach ($schemaIblocks as $schemaIblock) {
@@ -242,6 +245,21 @@ class IblockSchema extends AbstractSchema
             $helper = $this->getHelperManager();
             $helper->UserOptions()->setTestMode($this->testMode);
             $helper->UserOptions()->saveElementForm($iblockId, $elementForm);
+        }
+    }
+
+    /**
+     * @param $iblockUid
+     * @param $sectionForm
+     * @throws HelperException
+     */
+    protected function saveSectionForm($iblockUid, $sectionForm)
+    {
+        $iblockId = $this->getIblockId($iblockUid);
+        if (!empty($iblockId)) {
+            $helper = $this->getHelperManager();
+            $helper->UserOptions()->setTestMode($this->testMode);
+            $helper->UserOptions()->saveSectionForm($iblockId, $sectionForm);
         }
     }
 
