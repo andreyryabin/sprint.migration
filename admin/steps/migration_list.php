@@ -6,18 +6,22 @@ use Sprint\Migration\Module;
 use Sprint\Migration\Out;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
+use Bitrix\Main\Application;
+
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
+$request = Application::getInstance()->getContext()->getRequest();
+
 
 $listView = (
-    ($_POST["step_code"] == "migration_view_all") ||
-    ($_POST["step_code"] == "migration_view_new") ||
-    ($_POST["step_code"] == "migration_view_tag") ||
-    ($_POST["step_code"] == "migration_view_modified") ||
-    ($_POST["step_code"] == "migration_view_older") ||
-    ($_POST["step_code"] == "migration_view_installed")
+    ($request->getPost('step_code') == "migration_view_all") ||
+    ($request->getPost('step_code') == "migration_view_new") ||
+    ($request->getPost('step_code') == "migration_view_tag") ||
+    ($request->getPost('step_code') == "migration_view_modified") ||
+    ($request->getPost('step_code') == "migration_view_older") ||
+    ($request->getPost('step_code') == "migration_view_installed")
 );
 
 if ($listView && check_bitrix_sessid('send_sessid')) {
@@ -25,29 +29,29 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
 
-    $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
+    $search = !empty($request->getPost('search')) ? trim($request->getPost('search')) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
-    if ($_POST["step_code"] == "migration_view_new") {
+    if ($request->getPost('step_code') == "migration_view_new") {
         $versions = $versionManager->getVersions([
             'status' => VersionEnum::STATUS_NEW,
             'search' => $search,
         ]);
-    } elseif ($_POST["step_code"] == "migration_view_installed") {
+    } elseif ($request->getPost('step_code') == "migration_view_installed") {
         $versions = $versionManager->getVersions([
             'status' => VersionEnum::STATUS_INSTALLED,
             'search' => $search,
         ]);
-    } elseif ($_POST["step_code"] == "migration_view_tag") {
+    } elseif ($request->getPost('step_code') == "migration_view_tag") {
         $versions = $versionManager->getVersions([
             'tag' => $search,
         ]);
-    } elseif ($_POST["step_code"] == "migration_view_modified") {
+    } elseif ($request->getPost('step_code') == "migration_view_modified") {
         $versions = $versionManager->getVersions([
             'search' => $search,
             'modified' => 1,
         ]);
-    } elseif ($_POST["step_code"] == "migration_view_older") {
+    } elseif ($request->getPost('step_code') == "migration_view_older") {
         $versions = $versionManager->getVersions([
             'search' => $search,
             'older' => 1,

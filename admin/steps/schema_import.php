@@ -4,20 +4,22 @@ use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Out;
 use Sprint\Migration\SchemaManager;
 use Sprint\Migration\VersionConfig;
+use Bitrix\Main\Application;
+
 
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
     die();
 }
-
+$request = Application::getInstance()->getContext()->getRequest();
 $hasSteps = (
-    ($_POST['step_code'] == 'schema_import') ||
-    ($_POST['step_code'] == 'schema_test')
+    ($request->getPost('step_code') == 'schema_import') ||
+    ($request->getPost('step_code') == 'schema_test')
 );
 
 if ($hasSteps && check_bitrix_sessid('send_sessid')) {
-    $params = !empty($_POST['params']) ? $_POST['params'] : [];
-    $checked = !empty($_POST['schema_checked']) ? $_POST['schema_checked'] : [];
-    $stepCode = !empty($_POST['step_code']) ? $_POST['step_code'] : '';
+    $params = !empty($request->getPost('params')) ? $request->getPost('params') : [];
+    $checked = !empty($request->getPost('schema_checked')) ? $request->getPost('schema_checked') : [];
+    $stepCode = !empty($request->getPost('step_code')) ? $request->getPost('step_code') : '';
 
     /** @var $versionConfig VersionConfig */
     $schemaManager = new SchemaManager($versionConfig, $params);

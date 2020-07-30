@@ -2,28 +2,33 @@
 
 use Sprint\Migration\Locale;
 use Sprint\Migration\Out;
+use Bitrix\Main\Application;
+
+$request = Application::getInstance()->getContext()->getRequest();
+$requestArray = $request->getPostList()->toArray() + $request->getQueryList()->toArray();
+
 
 $APPLICATION->SetTitle(Locale::getMessage('TITLE'));
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($request->isPost()) {
     CUtil::JSPostUnescape();
 }
 
-if (isset($_REQUEST['schema'])) {
-    $versionConfig = new Sprint\Migration\VersionConfig($_REQUEST['schema']);
-} elseif (isset($_REQUEST['config'])) {
-    $versionConfig = new Sprint\Migration\VersionConfig($_REQUEST['config']);
+if (isset($requestArray['schema'])) {
+    $versionConfig = new Sprint\Migration\VersionConfig($requestArray['schema']);
+} elseif (isset($requestArray['config'])) {
+    $versionConfig = new Sprint\Migration\VersionConfig($requestArray['config']);
 } else {
     $versionConfig = new Sprint\Migration\VersionConfig();
 }
 
 if ($versionConfig->getVal('show_admin_interface')) {
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if ($request->isPost()) {
         /** @noinspection PhpIncludeInspection */
         require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
         try {
-            if (isset($_REQUEST['schema'])) {
+            if (isset($requestArray['schema'])) {
                 include __DIR__ . '/../steps/schema_list.php';
                 include __DIR__ . '/../steps/schema_export.php';
                 include __DIR__ . '/../steps/schema_import.php';
@@ -52,7 +57,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 CUtil::InitJSCore(["jquery"]);
 
 if ($versionConfig->getVal('show_admin_interface')) {
-    if (isset($_REQUEST['schema'])) {
+    if (isset($requestArray['schema'])) {
         include __DIR__ . '/../includes/schema.php';
         include __DIR__ . '/../assets/schema.php';
     } else {

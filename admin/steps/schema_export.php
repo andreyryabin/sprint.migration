@@ -4,15 +4,19 @@ use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Out;
 use Sprint\Migration\SchemaManager;
 use Sprint\Migration\VersionConfig;
+use Bitrix\Main\Application;
+
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
+$request = Application::getInstance()->getContext()->getRequest();
 
-if ($_POST["step_code"] == "schema_export" && check_bitrix_sessid('send_sessid')) {
 
-    $params = !empty($_POST['params']) ? $_POST['params'] : [];
-    $checked = !empty($_POST['schema_checked']) ? $_POST['schema_checked'] : [];
+if ($request->getPost('step_code') == "schema_export" && check_bitrix_sessid('send_sessid')) {
+
+    $params = !empty($request->getPost('params')) ? $request->getPost('params') : [];
+    $checked = !empty($request->getPost('schema_checked')) ? $request->getPost('schema_checked') : [];
 
 
     /** @var $versionConfig VersionConfig */

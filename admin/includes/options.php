@@ -4,19 +4,23 @@ use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\Out;
 use Sprint\Migration\VersionConfig;
+use Bitrix\Main\Application;
 
-if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
+$request = Application::getInstance()->getContext()->getRequest();
+$requestArray = $request->getPostList()->toArray() + $request->getQueryList()->toArray();
 
-    if (!empty($_REQUEST["options_remove"])) {
+if ($request->isPost() && check_bitrix_sessid()) {
+
+    if (!empty($requestArray["options_remove"])) {
         Module::removeDbOptions();
         Out::outSuccess(
             Locale::getMessage('OPTIONS_REMOVE_success')
         );
     }
 
-    if (!empty($_REQUEST["configuration_remove"])) {
+    if (!empty($requestArray["configuration_remove"])) {
         $versionConfig = new VersionConfig();
-        if ($versionConfig->deleteConfig($_REQUEST['configuration_name'])) {
+        if ($versionConfig->deleteConfig($requestArray['configuration_name'])) {
             Out::outSuccess(
                 Locale::getMessage('BUILDER_Cleaner_success')
             );
@@ -27,9 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         }
     }
 
-    if (!empty($_REQUEST["configuration_create"])) {
+    if (!empty($requestArray["configuration_create"])) {
         $versionConfig = new VersionConfig();
-        if ($versionConfig->createConfig($_REQUEST['configuration_name'])) {
+        if ($versionConfig->createConfig($requestArray['configuration_name'])) {
             Out::outSuccess(
                 Locale::getMessage('BUILDER_Configurator_success')
             );
@@ -40,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         }
     }
 
-    if (!empty($_REQUEST["gadgets_install"])) {
+    if (!empty($requestArray["gadgets_install"])) {
         /** @var $tmpmodule sprint_migration */
         $tmpmodule = CModule::CreateModuleObject('sprint.migration');
         $tmpmodule->installGadgets();

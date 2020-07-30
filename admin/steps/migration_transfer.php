@@ -2,19 +2,23 @@
 
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
+use Bitrix\Main\Application;
+
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
+$request = Application::getInstance()->getContext()->getRequest();
+
 
 $existsEvents = (
-($_POST["step_code"] == "migration_transfer")
+($request->getPost('step_code') == "migration_transfer")
 );
 
 if ($existsEvents && check_bitrix_sessid('send_sessid')) {
 
-    $version = !empty($_POST['version']) ? $_POST['version'] : '';
-    $transferTo = !empty($_POST['transfer_to']) ? $_POST['transfer_to'] : '';
+    $version = !empty($request->getPost('version')) ? $request->getPost('version') : '';
+    $transferTo = !empty($request->getPost('transfer_to')) ? $request->getPost('transfer_to') : '';
 
     /** @var $versionConfig VersionConfig */
     $vmFrom = new VersionManager($versionConfig);

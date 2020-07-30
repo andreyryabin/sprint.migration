@@ -3,12 +3,16 @@
 use Sprint\Migration\Locale;
 use Sprint\Migration\SchemaManager;
 use Sprint\Migration\VersionConfig;
+use Bitrix\Main\Application;
+
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
+$request = Application::getInstance()->getContext()->getRequest();
 
-if ($_POST["step_code"] == "schema_list" && check_bitrix_sessid('send_sessid')) {
+
+if ($request->getPost('step_code') == "schema_list" && check_bitrix_sessid('send_sessid')) {
     /** @var $versionConfig VersionConfig */
     $schemaManager = new SchemaManager($versionConfig);
 
@@ -19,7 +23,7 @@ if ($_POST["step_code"] == "schema_list" && check_bitrix_sessid('send_sessid')) 
 //        $defaultSchemas[] = $schema->getName();
 //    }
 
-    $schemaChecked = isset($_POST['schema_checked']) ? (array)$_POST['schema_checked'] : $defaultSchemas;
+    $schemaChecked = $request->getPost('schema_checked') != null ? (array)$request->getPost('schema_checked') : $defaultSchemas;
 
     ?>
     <table class="sp-list">

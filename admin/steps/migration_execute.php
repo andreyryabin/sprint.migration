@@ -3,30 +3,31 @@
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
+use Bitrix\Main\Application;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
+$request = Application::getInstance()->getContext()->getRequest();
 
-
-if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sessid')) {
+if ($request->getPost('step_code') == "migration_execute" && check_bitrix_sessid('send_sessid')) {
 
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
 
-    $params = !empty($_POST['params']) ? $_POST['params'] : [];
-    $restart = !empty($_POST['restart']) ? 1 : 0;
-    $version = isset($_POST['version']) ? $_POST['version'] : 0;
-    $action = !empty($_POST['action']) ? $_POST['action'] : 0;
-    $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
-    $skipVersions = !empty($_POST['skip_versions']) ? $_POST['skip_versions'] : [];
-    $settag = !empty($_POST['settag']) ? trim($_POST['settag']) : '';
+    $params = !empty($request->getPost('params')) ? $request->getPost('params') : [];
+    $restart = !empty($request->getPost('restart')) ? 1 : 0;
+    $version = $request->getPost('version') != null ? $request->getPost('version') : 0;
+    $action = !empty($request->getPost('action')) ? $request->getPost('action') : 0;
+    $nextAction = !empty($request->getPost('next_action')) ? $request->getPost('next_action') : 0;
+    $skipVersions = !empty($request->getPost('skip_versions')) ? $request->getPost('skip_versions') : [];
+    $settag = !empty($request->getPost('settag')) ? trim($request->getPost('settag')) : '';
 
 
-    $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
+    $search = !empty($request->getPost('search')) ? trim($request->getPost('search')) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
-    $filter = !empty($_POST['filter']) ? trim($_POST['filter']) : '';
+    $filter = !empty($request->getPost('filter')) ? trim($request->getPost('filter')) : '';
 
     $filterVersion = [
         'search' => $search,
