@@ -83,6 +83,14 @@ class VersionManager
 
             $meta = $this->getVersionByName($versionName);
 
+            if (!$meta || empty($meta['class'])) {
+                throw new MigrationException('failed to initialize migration');
+            }
+
+            if ($meta['older']) {
+                throw new MigrationException('unsupported version ' . $meta['older']);
+            }
+
             if (!$force) {
                 if ($action == VersionEnum::ACTION_UP && $meta['status'] != VersionEnum::STATUS_NEW) {
                     throw new MigrationException('migration already up');
@@ -91,14 +99,6 @@ class VersionManager
                 if ($action == VersionEnum::ACTION_DOWN && $meta['status'] != VersionEnum::STATUS_INSTALLED) {
                     throw new MigrationException('migration already down');
                 }
-            }
-
-            if (!$meta || empty($meta['class'])) {
-                throw new MigrationException('failed to initialize migration');
-            }
-
-            if ($meta['older']) {
-                throw new MigrationException('unsupported version ' . $meta['older']);
             }
 
             /** @var $versionInstance Version */
