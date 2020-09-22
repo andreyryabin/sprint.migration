@@ -31,17 +31,16 @@ abstract class AbstractExchange
     }
 
     protected $exchangeEntity;
-
     protected $exchangeHelper;
-
     protected $file;
-
     protected $limit = 10;
 
     /**
      * abstractexchange constructor.
+     *
      * @param ExchangeEntity $exchangeEntity
      * @param ExchangeHelper $exchangeHelper
+     *
      * @throws ExchangeException
      */
     public function __construct(
@@ -58,14 +57,13 @@ abstract class AbstractExchange
         );
 
         if (!$enabled) {
-            Throw new ExchangeException(
+            throw new ExchangeException(
                 Locale::getMessage(
                     'ERR_EXCHANGE_DISABLED'
                 )
             );
         }
     }
-
 
     public function setExchangeFile($file)
     {
@@ -75,6 +73,7 @@ abstract class AbstractExchange
 
     /**
      * @param $name
+     *
      * @throws ExchangeException
      * @return $this
      */
@@ -102,7 +101,7 @@ abstract class AbstractExchange
      */
     protected function restart()
     {
-        Throw new RestartException();
+        throw new RestartException();
     }
 
     protected function writeValue(XMLWriter $writer, $val, $attributes = [])
@@ -132,7 +131,8 @@ abstract class AbstractExchange
 
     /**
      * @param XMLWriter $writer
-     * @param $fileIds
+     * @param           $fileIds
+     *
      * @throws Exception
      */
     protected function writeFile(XMLWriter $writer, $fileIds)
@@ -148,7 +148,8 @@ abstract class AbstractExchange
 
     /**
      * @param XMLWriter $writer
-     * @param $fileId
+     * @param           $fileId
+     *
      * @throws Exception
      */
     protected function writeSingleFile(XMLWriter $writer, $fileId)
@@ -156,15 +157,17 @@ abstract class AbstractExchange
         $file = CFile::GetFileArray($fileId);
         if (!empty($file)) {
             $filePath = Module::getDocRoot() . $file['SRC'];
-            $newPath = $this->getExchangeDir() . '/' . $file['SUBDIR'] . '/' . $file['FILE_NAME'];
-
-            Module::createDir(dirname($newPath));
-
-            copy($filePath, $newPath);
-
-            $this->writeValue($writer, $file['SUBDIR'] . '/' . $file['FILE_NAME'], [
-                'description' => $file['DESCRIPTION'],
-            ]);
+            if (file_exists($filePath)) {
+                $newPath = $this->getExchangeDir() . '/' . $file['SUBDIR'] . '/' . $file['FILE_NAME'];
+                Module::createDir(dirname($newPath));
+                if (copy($filePath, $newPath)) {
+                    $this->writeValue(
+                        $writer, $file['SUBDIR'] . '/' . $file['FILE_NAME'], [
+                            'description' => $file['DESCRIPTION'],
+                        ]
+                    );
+                }
+            }
         }
     }
 
@@ -187,7 +190,6 @@ abstract class AbstractExchange
         $field = [];
 
         if ($this->isOpenTag($reader, $tag)) {
-
             if ($reader->hasAttributes) {
                 while ($reader->moveToNextAttribute()) {
                     $field[$reader->name] = $this->convertValue($reader->value);
@@ -212,7 +214,6 @@ abstract class AbstractExchange
 
                     $field['value'][] = $val;
                 }
-
             } while (!$this->isCloseTag($reader, $tag));
         }
         return $field;
@@ -239,17 +240,17 @@ abstract class AbstractExchange
     protected function isOpenTag(XMLReader $reader, $tag)
     {
         return (
-            $reader->nodeType == XMLReader::ELEMENT &&
-            $reader->name == $tag &&
-            !$reader->isEmptyElement
+            $reader->nodeType == XMLReader::ELEMENT
+            && $reader->name == $tag
+            && !$reader->isEmptyElement
         );
     }
 
     protected function isCloseTag(XMLReader $reader, $tag)
     {
         return (
-            $reader->nodeType == XMLReader::END_ELEMENT &&
-            $reader->name == $tag
+            $reader->nodeType == XMLReader::END_ELEMENT
+            && $reader->name == $tag
         );
     }
 
