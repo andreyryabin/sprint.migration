@@ -10,11 +10,12 @@ use Sprint\Migration\Locale;
 
 class UserTypeEntityHelper extends Helper
 {
-
     /**
      * Добавляет пользовательские поля к объекту
-     * @param $entityId
+     *
+     * @param       $entityId
      * @param array $fields
+     *
      * @throws HelperException
      */
     public function addUserTypeEntitiesIfNotExists($entityId, array $fields)
@@ -26,8 +27,10 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * Удаляет пользовательские поля у объекта
-     * @param $entityId
+     *
+     * @param       $entityId
      * @param array $fields
+     *
      * @throws HelperException
      */
     public function deleteUserTypeEntitiesIfExists($entityId, array $fields)
@@ -39,15 +42,20 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * Добавляет пользовательское поле к объекту если его не существует
+     *
      * @param $entityId
      * @param $fieldName
      * @param $fields
+     *
      * @throws HelperException
      * @return int
      */
     public function addUserTypeEntityIfNotExists($entityId, $fieldName, $fields)
     {
-        $item = $this->getUserTypeEntity($entityId, $fieldName);
+        $item = $this->getUserTypeEntity(
+            $this->revertEntityId($entityId),
+            $fieldName
+        );
         if ($item) {
             return $item['ID'];
         }
@@ -57,32 +65,34 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * Добавляет пользовательское поле к объекту
+     *
      * @param $entityId
      * @param $fieldName
      * @param $fields
+     *
      * @throws HelperException
      * @return int|void
      */
     public function addUserTypeEntity($entityId, $fieldName, $fields)
     {
         $default = [
-            "ENTITY_ID" => '',
-            "FIELD_NAME" => '',
-            "USER_TYPE_ID" => '',
-            "XML_ID" => '',
-            "SORT" => 500,
-            "MULTIPLE" => 'N',
-            "MANDATORY" => 'N',
-            "SHOW_FILTER" => 'I',
-            "SHOW_IN_LIST" => '',
-            "EDIT_IN_LIST" => '',
-            "IS_SEARCHABLE" => '',
-            "SETTINGS" => [],
-            "EDIT_FORM_LABEL" => ['ru' => '', 'en' => ''],
+            "ENTITY_ID"         => '',
+            "FIELD_NAME"        => '',
+            "USER_TYPE_ID"      => '',
+            "XML_ID"            => '',
+            "SORT"              => 500,
+            "MULTIPLE"          => 'N',
+            "MANDATORY"         => 'N',
+            "SHOW_FILTER"       => 'I',
+            "SHOW_IN_LIST"      => '',
+            "EDIT_IN_LIST"      => '',
+            "IS_SEARCHABLE"     => '',
+            "SETTINGS"          => [],
+            "EDIT_FORM_LABEL"   => ['ru' => '', 'en' => ''],
             "LIST_COLUMN_LABEL" => ['ru' => '', 'en' => ''],
             "LIST_FILTER_LABEL" => ['ru' => '', 'en' => ''],
-            "ERROR_MESSAGE" => '',
-            "HELP_MESSAGE" => '',
+            "ERROR_MESSAGE"     => '',
+            "HELP_MESSAGE"      => '',
         ];
 
         $fields = array_replace_recursive($default, $fields);
@@ -118,8 +128,10 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * Обновление пользовательского поля у объекта
+     *
      * @param $fieldId
      * @param $fields
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -158,34 +170,42 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * Обновление пользовательского поля у объекта если оно существует
+     *
      * @param $entityId
      * @param $fieldName
      * @param $fields
+     *
      * @throws HelperException
      * @return bool|mixed
      */
     public function updateUserTypeEntityIfExists($entityId, $fieldName, $fields)
     {
-        $item = $this->getUserTypeEntity($entityId, $fieldName);
+        $item = $this->getUserTypeEntity(
+            $this->revertEntityId($entityId),
+            $fieldName
+        );
         if (!$item) {
             return false;
         }
 
         return $this->updateUserTypeEntity($item['ID'], $fields);
-
     }
 
     /**
      * Получает пользовательские поля у объекта
+     *
      * @param bool $entityId
+     *
      * @return array
      */
     public function getUserTypeEntities($entityId = false)
     {
         if (!empty($entityId)) {
-            $filter = is_array($entityId) ? $entityId : [
-                'ENTITY_ID' => $entityId,
-            ];
+            $filter = is_array($entityId)
+                ? $entityId
+                : [
+                    'ENTITY_ID' => $entityId,
+                ];
         } else {
             $filter = [];
         }
@@ -194,7 +214,6 @@ class UserTypeEntityHelper extends Helper
         $result = [];
         while ($item = $dbres->Fetch()) {
             $result[] = $this->getUserTypeEntityById($item['ID']);
-
         }
         return $result;
     }
@@ -202,7 +221,9 @@ class UserTypeEntityHelper extends Helper
     /**
      * Получает пользовательское поле у объекта
      * Данные подготовлены для экспорта в миграцию или схему
+     *
      * @param $fieldId
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -215,7 +236,9 @@ class UserTypeEntityHelper extends Helper
     /**
      * Получает пользовательские поля у объекта
      * Данные подготовлены для экспорта в миграцию или схему
+     *
      * @param bool $entityId
+     *
      * @throws HelperException
      * @return array
      */
@@ -231,23 +254,30 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * Получает пользовательское поле у объекта
+     *
      * @param $entityId
      * @param $fieldName
+     *
      * @return array|bool
      */
     public function getUserTypeEntity($entityId, $fieldName)
     {
-        $item = CUserTypeEntity::GetList([], [
-            'ENTITY_ID' => $entityId,
-            'FIELD_NAME' => $fieldName,
-        ])->Fetch();
+        $item = CUserTypeEntity::GetList(
+            [],
+            [
+                'ENTITY_ID'  => $entityId,
+                'FIELD_NAME' => $fieldName,
+            ]
+        )->Fetch();
 
         return (!empty($item)) ? $this->getUserTypeEntityById($item['ID']) : false;
     }
 
     /**
      * Получает пользовательское поле у объекта
+     *
      * @param $fieldId
+     *
      * @return array|bool
      */
     public function getUserTypeEntityById($fieldId)
@@ -266,8 +296,10 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * Сохраняет значения списков для пользовательского поля
+     *
      * @param $fieldId
      * @param $newenums
+     *
      * @return bool
      */
     public function setUserTypeEntityEnumValues($fieldId, $newenums)
@@ -299,19 +331,24 @@ class UserTypeEntityHelper extends Helper
 
         $obEnum = new CUserFieldEnum();
         return $obEnum->SetEnumValues($fieldId, $updates);
-
     }
 
     /**
      * Удаляет пользовательское поле у объекта если оно существует
+     *
      * @param $entityId
      * @param $fieldName
+     *
      * @throws HelperException
      * @return bool|void
      */
     public function deleteUserTypeEntityIfExists($entityId, $fieldName)
     {
-        $item = $this->getUserTypeEntity($entityId, $fieldName);
+        $item = $this->getUserTypeEntity(
+            $this->revertEntityId($entityId),
+            $fieldName
+        );
+
         if (empty($item)) {
             return false;
         }
@@ -333,8 +370,10 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * Удаляет пользовательское поле у объекта
+     *
      * @param $entityId
      * @param $fieldName
+     *
      * @throws HelperException
      * @return bool
      */
@@ -345,7 +384,9 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * Декодирует название объекта в оригинальный вид
+     *
      * @param $entityId
+     *
      * @throws HelperException
      * @return string
      */
@@ -373,7 +414,9 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * Кодирует название объекта в вид удобный для экспорта в миграцию или схему
+     *
      * @param $entityId
+     *
      * @throws HelperException
      * @return string
      */
@@ -402,7 +445,9 @@ class UserTypeEntityHelper extends Helper
     /**
      * Сохраняет пользовательское поле
      * Создаст если не было, обновит если существует и отличается
+     *
      * @param array $fields , обязательные параметры - название объекта, название поля
+     *
      * @throws HelperException
      * @return bool|int|mixed
      */
@@ -426,11 +471,13 @@ class UserTypeEntityHelper extends Helper
         $fields = $this->prepareExportUserTypeEntity($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addUserTypeEntity(
-                $fields['ENTITY_ID'],
-                $fields['FIELD_NAME'],
-                $fields
-            );
+            $ok = $this->getMode('test')
+                ? true
+                : $this->addUserTypeEntity(
+                    $fields['ENTITY_ID'],
+                    $fields['FIELD_NAME'],
+                    $fields
+                );
 
             $this->outNoticeIf(
                 $ok,
@@ -475,11 +522,11 @@ class UserTypeEntityHelper extends Helper
             );
         }
         return $ok;
-
     }
 
     /**
      * @param $fields
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -492,11 +539,9 @@ class UserTypeEntityHelper extends Helper
         $this->transformSettings($fields);
         $this->transformEnums($fields);
 
-
         $fields['ENTITY_ID'] = $this->transformEntityId(
             $fields['ENTITY_ID']
         );
-
 
         unset($fields['ID']);
         return $fields;
@@ -504,6 +549,7 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * @param $fieldId
+     *
      * @return array
      */
     protected function getEnumValues($fieldId)
@@ -514,8 +560,9 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
-     * @param $enum
+     * @param       $enum
      * @param array $haystack
+     *
      * @return bool|mixed
      */
     protected function searchEnum($enum, $haystack = [])
@@ -530,6 +577,7 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * @param $fields
+     *
      * @throws HelperException
      */
     private function transformSettings(&$fields)
@@ -558,6 +606,7 @@ class UserTypeEntityHelper extends Helper
 
     /**
      * @param $fields
+     *
      * @throws HelperException
      */
     private function revertSettings(&$fields)
@@ -590,9 +639,9 @@ class UserTypeEntityHelper extends Helper
             $exportValues = [];
             foreach ($fields['ENUM_VALUES'] as $item) {
                 $exportValues[] = [
-                    'VALUE' => $item['VALUE'],
-                    'DEF' => $item['DEF'],
-                    'SORT' => $item['SORT'],
+                    'VALUE'  => $item['VALUE'],
+                    'DEF'    => $item['DEF'],
+                    'SORT'   => $item['SORT'],
                     'XML_ID' => $item['XML_ID'],
                 ];
             }
@@ -610,5 +659,4 @@ class UserTypeEntityHelper extends Helper
 
         return $enums;
     }
-
 }

@@ -7,47 +7,56 @@ use Sprint\Migration\Exceptions\HelperException;
 
 trait IblockElementTrait
 {
-
     /**
      * Получает элемент инфоблока
-     * @param $iblockId
-     * @param $code
+     *
+     * @param       $iblockId
+     * @param       $code
      * @param array $select
+     *
      * @return array
      */
     public function getElement($iblockId, $code, $select = [])
     {
         /** @compatibility filter or code */
-        $filter = is_array($code) ? $code : [
-            '=CODE' => $code,
-        ];
+        $filter = is_array($code)
+            ? $code
+            : [
+                '=CODE' => $code,
+            ];
 
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
 
-        $select = array_merge([
-            'ID',
-            'XML_ID',
-            'IBLOCK_ID',
-            'NAME',
-            'CODE',
-            'ACTIVE',
-        ], $select);
+        $select = array_merge(
+            [
+                'ID',
+                'XML_ID',
+                'IBLOCK_ID',
+                'NAME',
+                'CODE',
+                'ACTIVE',
+            ], $select
+        );
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $item = CIBlockElement::GetList([
-            'SORT' => 'ASC',
-        ], $filter, false, [
+        $item = CIBlockElement::GetList(
+            [
+                'SORT' => 'ASC',
+            ], $filter, false, [
             'nTopCount' => 1,
-        ], $select)->Fetch();
+        ], $select
+        )->Fetch();
 
         return $this->prepareElement($item);
     }
 
     /**
      * Получает id элемента инфоблока
+     *
      * @param $iblockId
      * @param $code
+     *
      * @return int|mixed
      */
     public function getElementId($iblockId, $code)
@@ -58,9 +67,11 @@ trait IblockElementTrait
 
     /**
      * Получает элементы инфоблока
-     * @param $iblockId
+     *
+     * @param       $iblockId
      * @param array $filter
      * @param array $select
+     *
      * @return array
      */
     public function getElements($iblockId, $filter = [], $select = [])
@@ -68,19 +79,23 @@ trait IblockElementTrait
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
 
-        $select = array_merge([
-            'ID',
-            'XML_ID',
-            'IBLOCK_ID',
-            'NAME',
-            'CODE',
-            'ACTIVE',
-        ], $select);
+        $select = array_merge(
+            [
+                'ID',
+                'XML_ID',
+                'IBLOCK_ID',
+                'NAME',
+                'CODE',
+                'ACTIVE',
+            ], $select
+        );
 
         /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbres = CIBlockElement::GetList([
-            'ID' => 'ASC',
-        ], $filter, false, false, $select);
+        $dbres = CIBlockElement::GetList(
+            [
+                'ID' => 'ASC',
+            ], $filter, false, false, $select
+        );
 
         $list = [];
         while ($item = $dbres->Fetch()) {
@@ -90,8 +105,9 @@ trait IblockElementTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $filter
+     *
      * @return int
      */
     public function getElementsCount($iblockId, $filter = [])
@@ -119,8 +135,9 @@ trait IblockElementTrait
     }
 
     /**
-     * @param $elementId
+     * @param       $elementId
      * @param array $sectionSelect
+     *
      * @return mixed
      */
     public function getElementSections($elementId, $sectionSelect = [])
@@ -131,6 +148,7 @@ trait IblockElementTrait
 
     /**
      * @param $elementId
+     *
      * @return array
      */
     public function getElementSectionIds($elementId)
@@ -140,10 +158,35 @@ trait IblockElementTrait
     }
 
     /**
-     * Добавляет элемент инфоблока если он не существует
-     * @param $iblockId
-     * @param $fields , обязательные параметры - код элемента
+     * Сохраняет элемент инфоблока
+     * Создаст если не было, обновит если существует (поиск по коду)
+     *
+     * @param       $iblockId
+     * @param array $fields
      * @param array $props
+     *
+     * @throws HelperException
+     * @return int|void
+     */
+    public function saveElement($iblockId, $fields = [], $props = [])
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
+
+        $item = $this->getElement($iblockId, $fields['CODE']);
+        if (!empty($item['ID'])) {
+            return $this->updateElement($item['ID'], $fields, $props);
+        }
+
+        return $this->addElement($iblockId, $fields, $props);
+    }
+
+    /**
+     * Добавляет элемент инфоблока если он не существует
+     *
+     * @param       $iblockId
+     * @param       $fields , обязательные параметры - код элемента
+     * @param array $props
+     *
      * @throws HelperException
      * @return bool|mixed
      */
@@ -161,20 +204,22 @@ trait IblockElementTrait
 
     /**
      * Добавляет элемент инфоблока
-     * @param $iblockId
+     *
+     * @param       $iblockId
      * @param array $fields - поля
-     * @param array $props - свойства
+     * @param array $props  - свойства
+     *
      * @throws HelperException
      * @return int|void
      */
     public function addElement($iblockId, $fields = [], $props = [])
     {
         $default = [
-            'NAME' => 'element',
+            'NAME'              => 'element',
             'IBLOCK_SECTION_ID' => false,
-            'ACTIVE' => 'Y',
-            'PREVIEW_TEXT' => '',
-            'DETAIL_TEXT' => '',
+            'ACTIVE'            => 'Y',
+            'PREVIEW_TEXT'      => '',
+            'DETAIL_TEXT'       => '',
         ];
 
         $fields = array_replace_recursive($default, $fields);
@@ -196,9 +241,11 @@ trait IblockElementTrait
 
     /**
      * Обновляет элемент инфоблока если он существует
-     * @param $iblockId
+     *
+     * @param       $iblockId
      * @param array $fields , обязательные параметры - код элемента
      * @param array $props
+     *
      * @throws HelperException
      * @return bool|int|void
      */
@@ -219,9 +266,11 @@ trait IblockElementTrait
 
     /**
      * Обновляет элемент инфоблока
-     * @param $elementId
+     *
+     * @param       $elementId
      * @param array $fields
      * @param array $props
+     *
      * @throws HelperException
      * @return int
      */
@@ -246,8 +295,10 @@ trait IblockElementTrait
 
     /**
      * Удаляет элемент инфоблока если он существует
+     *
      * @param $iblockId
      * @param $code
+     *
      * @throws HelperException
      * @return bool|void
      */
@@ -264,7 +315,9 @@ trait IblockElementTrait
 
     /**
      * Удаляет элемент инфоблока
+     *
      * @param $elementId
+     *
      * @throws HelperException
      * @return bool|void
      */
@@ -280,6 +333,7 @@ trait IblockElementTrait
 
     /**
      * @param $item
+     *
      * @return mixed
      */
     protected function prepareElement($item)

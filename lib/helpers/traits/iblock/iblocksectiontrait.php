@@ -8,19 +8,22 @@ use Sprint\Migration\Locale;
 
 trait IblockSectionTrait
 {
-
     /**
      * Получает секцию инфоблока
+     *
      * @param $iblockId
      * @param $code string|array - код или фильтр
+     *
      * @return array|false
      */
     public function getSection($iblockId, $code)
     {
         /** @compatibility filter or code */
-        $filter = is_array($code) ? $code : [
-            '=CODE' => $code,
-        ];
+        $filter = is_array($code)
+            ? $code
+            : [
+                '=CODE' => $code,
+            ];
 
         $sections = $this->getSections($iblockId, $filter);
         return (isset($sections[0])) ? $sections[0] : false;
@@ -28,8 +31,10 @@ trait IblockSectionTrait
 
     /**
      * Получает id секции инфоблока
+     *
      * @param $iblockId
      * @param $code string|array - код или фильтр
+     *
      * @return int|mixed
      */
     public function getSectionId($iblockId, $code)
@@ -40,8 +45,10 @@ trait IblockSectionTrait
 
     /**
      * Получает секции инфоблока
-     * @param $iblockId
+     *
+     * @param       $iblockId
      * @param array $filter
+     *
      * @return array
      */
     public function getSections($iblockId, $filter = [])
@@ -49,34 +56,59 @@ trait IblockSectionTrait
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
 
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbres = CIBlockSection::GetList([
-            'SORT' => 'ASC',
-        ], $filter, false, [
-            'ID',
-            'NAME',
-            'CODE',
-            'IBLOCK_SECTION_ID',
-            'SORT',
-            'ACTIVE',
-            'XML_ID',
-            'PICTURE',
-            'DESCRIPTION',
-            'DESCRIPTION_TYPE',
-            'LEFT_MARGIN',
-            'RIGHT_MARGIN',
-            'DEPTH_LEVEL',
-            'DETAIL_PICTURE',
-            'UF_*',
-        ]);
+        $dbres = CIBlockSection::GetList(
+            [
+                'SORT' => 'ASC',
+            ], $filter, false, [
+                'ID',
+                'NAME',
+                'CODE',
+                'IBLOCK_SECTION_ID',
+                'SORT',
+                'ACTIVE',
+                'XML_ID',
+                'PICTURE',
+                'DESCRIPTION',
+                'DESCRIPTION_TYPE',
+                'LEFT_MARGIN',
+                'RIGHT_MARGIN',
+                'DEPTH_LEVEL',
+                'DETAIL_PICTURE',
+                'UF_*',
+            ]
+        );
 
         return $this->fetchAll($dbres);
     }
 
     /**
-     * Добавляет секцию инфоблока если она не существует
+     * Сохраняет категорию инфоблока
+     * Создаст если не было, обновит если существует (поиск по коду)
+     *
      * @param $iblockId
      * @param $fields , обязательные параметры - код сеции
+     *
+     * @throws HelperException
+     * @return bool|int|mixed
+     */
+    public function saveSection($iblockId, $fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
+
+        $item = $this->getSection($iblockId, $fields['CODE']);
+        if (!empty($item['ID'])) {
+            return $this->updateSection($item['ID'], $fields);
+        }
+
+        return $this->addSection($iblockId, $fields);
+    }
+
+    /**
+     * Добавляет секцию инфоблока если она не существует
+     *
+     * @param $iblockId
+     * @param $fields , обязательные параметры - код сеции
+     *
      * @throws HelperException
      * @return bool|int|mixed
      */
@@ -90,27 +122,28 @@ trait IblockSectionTrait
         }
 
         return $this->addSection($iblockId, $fields);
-
     }
 
     /**
      * Добавляет секцию инфоблока
-     * @param $iblockId
+     *
+     * @param       $iblockId
      * @param array $fields
+     *
      * @throws HelperException
      * @return int|void
      */
     public function addSection($iblockId, $fields = [])
     {
         $default = [
-            'ACTIVE' => 'Y',
+            'ACTIVE'            => 'Y',
             'IBLOCK_SECTION_ID' => false,
-            'NAME' => 'section',
-            'CODE' => '',
-            'SORT' => 100,
-            'PICTURE' => false,
-            'DESCRIPTION' => '',
-            'DESCRIPTION_TYPE' => 'text',
+            'NAME'              => 'section',
+            'CODE'              => '',
+            'SORT'              => 100,
+            'PICTURE'           => false,
+            'DESCRIPTION'       => '',
+            'DESCRIPTION_TYPE'  => 'text',
         ];
 
         $fields = array_replace_recursive($default, $fields);
@@ -128,8 +161,10 @@ trait IblockSectionTrait
 
     /**
      * Обновляет секцию инфоблока если она существует
+     *
      * @param $iblockId
      * @param $fields , обязательные параметры - код секции
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -145,13 +180,14 @@ trait IblockSectionTrait
         unset($fields['CODE']);
 
         return $this->updateSection($item['ID'], $fields);
-
     }
 
     /**
      * Обновляет секцию инфоблока
+     *
      * @param $sectionId
      * @param $fields
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -167,8 +203,10 @@ trait IblockSectionTrait
 
     /**
      * Удаляет секцию инфоблока если она существует
+     *
      * @param $iblockId
      * @param $code
+     *
      * @throws HelperException
      * @return bool|void
      */
@@ -180,12 +218,13 @@ trait IblockSectionTrait
         }
 
         return $this->deleteSection($item['ID']);
-
     }
 
     /**
      * Удаляет секцию инфоблока
+     *
      * @param $sectionId
+     *
      * @throws HelperException
      * @return bool|void
      */
@@ -206,18 +245,21 @@ trait IblockSectionTrait
      * ищем Категория3 которая находится по пути Категория1/Категория2/Категория3
      * то $path = ['Категория1','Категория2','Категория3']
      *
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $path
+     *
      * @return int|mixed
      */
     public function getSectionIdByNamePath($iblockId, $path = [])
     {
         $sectionId = 0;
         foreach ($path as $name) {
-            $sectionId = $this->getSectionId($iblockId, [
-                '=NAME' => $name,
-                'SECTION_ID' => $sectionId,
-            ]);
+            $sectionId = $this->getSectionId(
+                $iblockId, [
+                    '=NAME'      => $name,
+                    'SECTION_ID' => $sectionId,
+                ]
+            );
         }
         return $sectionId;
     }
@@ -227,6 +269,7 @@ trait IblockSectionTrait
      *
      * @param $iblockId
      * @param $sectionId
+     *
      * @return array
      */
     public function getSectionNamePathById($iblockId, $sectionId)
@@ -241,9 +284,10 @@ trait IblockSectionTrait
     }
 
     /**
-     * @param $iblockId
-     * @param $tree
+     * @param      $iblockId
+     * @param      $tree
      * @param bool $parentId
+     *
      * @throws HelperException
      */
     public function addSectionsFromTree($iblockId, $tree, $parentId = false)
@@ -268,7 +312,7 @@ trait IblockSectionTrait
 
             $sectionId = $this->getSectionId(
                 $iblockId, [
-                    '=NAME' => $item['NAME'],
+                    '=NAME'      => $item['NAME'],
                     'SECTION_ID' => $parentId,
                 ]
             );
@@ -285,6 +329,7 @@ trait IblockSectionTrait
 
     /**
      * @param $iblockId
+     *
      * @return array
      */
     public function getSectionsTree($iblockId)
@@ -295,6 +340,7 @@ trait IblockSectionTrait
 
     /**
      * @param $iblockId
+     *
      * @return array
      */
     public function exportSectionsTree($iblockId)
@@ -308,7 +354,6 @@ trait IblockSectionTrait
         $branch = [];
         foreach ($sections as $section) {
             if ((int)$section['IBLOCK_SECTION_ID'] == $parentId) {
-
                 $childs = $this->buildSectionsTree($sections, $section['ID'], $export);
 
                 if ($export) {
@@ -329,5 +374,4 @@ trait IblockSectionTrait
         }
         return $branch;
     }
-
 }
