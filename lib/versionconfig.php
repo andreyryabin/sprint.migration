@@ -230,22 +230,22 @@ class VersionConfig
             $values['version_filter'] = [];
         }
 
-        if (isset($values['show_admin_interface']) && !$values['show_admin_interface']) {
-            $values['show_admin_interface'] = false;
+        if (isset($values['show_admin_interface'])) {
+            $values['show_admin_interface'] = (bool)$values['show_admin_interface'];
         } else {
             $values['show_admin_interface'] = true;
         }
 
-        if (isset($values['stop_on_errors']) && $values['stop_on_errors']) {
-            $values['stop_on_errors'] = true;
+        if (isset($values['stop_on_errors'])) {
+            $values['stop_on_errors'] = (bool)$values['stop_on_errors'];;
         } else {
             $values['stop_on_errors'] = false;
         }
 
-        if (isset($values['console_auth_events_disable']) && $values['console_auth_events_disable']) {
-            $values['console_auth_events_disable'] = true;
+        if (isset($values['console_auth_events_disable'])) {
+            $values['console_auth_events_disable'] = (bool)$values['console_auth_events_disable'];
         } else {
-            $values['console_auth_events_disable'] = false;
+            $values['console_auth_events_disable'] = true;
         }
 
         $cond1 = isset($values['console_user']);

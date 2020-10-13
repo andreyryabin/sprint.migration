@@ -5,4 +5,4 @@
     <li>$helper->Iblock()->saveElement()</li>
     <li>$helper->Iblock()->saveSection()</li>
 </ul> (автор Павел, Вор Колпаков)<br/>
-
+5) Отключены обработчики авторизации в консоли <br/>
