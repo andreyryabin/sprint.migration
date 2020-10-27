@@ -81,8 +81,8 @@ public function registerBundles()
 ```
 
 Классы модуля должны уже быть автозагружены, через `CModule::IncludeModule('sprint.migration')`
-или
-через библиотеку https://packagist.org/packages/webarchitect609/bitrix-neverinclude (рекомендую этот вариант)
+
+Или через библиотеку https://packagist.org/packages/webarchitect609/bitrix-neverinclude (рекомендую этот вариант)
 
 Примеры команд
 -------------------------
