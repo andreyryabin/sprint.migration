@@ -57,6 +57,32 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/tools
 
 ```
 
+
+Консоль symfony
+-------------------------
+Если у вас используется связка bitrix + symfony, то можно подключить 
+модуль как бандл симфони и запускать консольные команды модуля через 
+
+php bin/console sprint:migration
+
+Пример регистрации модуля:
+
+```
+// app/AppKernel.php
+use Sprint\Migration\SymfonyBundle\SprintMigrationBundle;
+
+public function registerBundles()
+{
+    $bundles = array(
+        new SprintMigrationBundle(),
+    );
+    return $bundles;
+}
+```
+
+Классы модуля должны уже быть автозагружены, через CModule::IncludeModule('sprint:migration')
+или через библиотеку https://packagist.org/packages/webarchitect609/bitrix-neverinclude (рекомендую этот вариант)
+
 Примеры команд
 -------------------------
 * php bin/migrate add (создать новую миграцию)
