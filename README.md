@@ -43,10 +43,10 @@
 Консоль
 -------------------------
 Для работы через консоль используется скрипт 
-/bitrix/modules/sprint.migration/tools/migrate.php
+`/bitrix/modules/sprint.migration/tools/migrate.php`
 
 Можно запускать его напрямую или сделать алиас, 
-создав файл в корне проекта, bin/migrate и прописав в нем:
+создав файл в корне проекта, `bin/migrate` и прописав в нем:
 
 ```
 #!/usr/bin/env php
@@ -63,7 +63,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/tools
 Если у вас используется связка bitrix + symfony, то можно подключить 
 модуль как бандл симфони и запускать консольные команды модуля через 
 
-php bin/console sprint:migration
+`php bin/console sprint:migration`
 
 Пример регистрации модуля:
 
@@ -80,8 +80,9 @@ public function registerBundles()
 }
 ```
 
-Классы модуля должны уже быть автозагружены, через CModule::IncludeModule('sprint:migration')
-или через библиотеку https://packagist.org/packages/webarchitect609/bitrix-neverinclude (рекомендую этот вариант)
+Классы модуля должны уже быть автозагружены, через `CModule::IncludeModule('sprint.migration')`
+или
+через библиотеку https://packagist.org/packages/webarchitect609/bitrix-neverinclude (рекомендую этот вариант)
 
 Примеры команд
 -------------------------
