@@ -4,6 +4,7 @@ namespace Sprint\Migration\SymfonyBundle\Command;
 
 use Exception;
 use Sprint\Migration\Console;
+use Sprint\Migration\Module;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -58,7 +59,7 @@ class ConsoleCommand extends Command
                 }
             }
         }
-
+        Module::checkHealth();
         $console = new Console($args);
         $console->executeConsoleCommand();
     }
