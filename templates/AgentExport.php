@@ -3,6 +3,7 @@
 /**
  * @var $version
  * @var $description
+ * @var $items
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion

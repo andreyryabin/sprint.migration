@@ -95,7 +95,6 @@ abstract class AbstractBuilder extends ExchangeEntity
         ]);
     }
 
-
     protected function getFieldValue($code, $default = '')
     {
         if (isset($this->fields[$code]) && $this->fields[$code]['bind'] == 1) {

@@ -41,12 +41,37 @@ class IblockElementsBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $this->addField('iblock_id', [
-            'title' => Locale::getMessage('BUILDER_IblockElementsExport_IblockId'),
-            'placeholder' => '',
-            'width' => 250,
-            'items' => $this->getIblocksStructure(),
-        ]);
+        $this->addField(
+            'iblock_id', [
+                'title'       => Locale::getMessage('BUILDER_IblockElementsExport_IblockId'),
+                'placeholder' => '',
+                'width'       => 250,
+                'items'       => $this->getIblocksStructure(),
+            ]
+        );
+
+        $this->addField(
+            'what', [
+                'title'       => Locale::getMessage('BUILDER_IblockElementsExport_What'),
+                'placeholder' => '',
+                'multiple'    => 1,
+                'width'       => 100,
+                'select'      => [
+                    [
+                        'title' => Locale::getMessage('BUILDER_IblockElementsExport_WhatUpdateExists'),
+                        'value' => 'replaceExists',
+                    ],
+                    [
+                        'title' => Locale::getMessage('BUILDER_IblockElementsExport_WhatIblockFields'),
+                        'value' => 'iblockFields',
+                    ],
+                    [
+                        'title' => Locale::getMessage('BUILDER_IblockElementsExport_WhatIblockProperties'),
+                        'value' => 'iblockProperties',
+                    ],
+                ],
+            ]
+        );
 
         $iblockId = $this->getFieldValue('iblock_id');
         if (empty($iblockId)) {
@@ -58,6 +83,61 @@ class IblockElementsBuilder extends VersionBuilder
             $this->rebuildField('iblock_id');
         }
 
+        $what = $this->getFieldValue('what');
+        if (!empty($what)) {
+            $what = is_array($what) ? $what : [$what];
+        } else {
+            $this->rebuildField('what');
+        }
+
+        if (in_array('iblockFields', $what)) {
+            $this->addField(
+                'export_fields', [
+                    'title'    => Locale::getMessage('BUILDER_IblockElementsExport_Fields'),
+                    'width'    => 250,
+                    'multiple' => 1,
+                    'value'    => [],
+                    'select'   => $this->getIblockElementFieldsStructure($iblockId),
+                ]
+            );
+        }
+
+        if (in_array('iblockProperties', $what)) {
+            $this->addField(
+                'export_props', [
+                    'title'    => Locale::getMessage('BUILDER_IblockElementsExport_Properties'),
+                    'width'    => 250,
+                    'multiple' => 1,
+                    'value'    => [],
+                    'select'   => $this->getIblockPropertiesStructure($iblockId),
+                ]
+            );
+        }
+
+        if (in_array('iblockFields', $what)) {
+            $exportFields = $this->getFieldValue('export_fields');
+            if (!empty($exportFields)) {
+                $exportFields = is_array($exportFields) ? $exportFields : [$exportFields];
+            } else {
+                $this->rebuildField('export_fields');
+            }
+        } else {
+            $exportFields = $this->getIblockElementFieldsStructure($iblockId);
+            $exportFields = array_column($exportFields, 'value');
+        }
+
+        if (in_array('iblockProperties', $what)) {
+            $exportProps = $this->getFieldValue('export_props');
+            if (!empty($exportProps)) {
+                $exportProps = is_array($exportProps) ? $exportProps : [$exportProps];
+            } else {
+                $this->rebuildField('export_props');
+            }
+        } else {
+            $exportProps = $this->getIblockPropertiesStructure($iblockId);
+            $exportProps = array_column($exportProps, 'value');
+        }
+
         if (!isset($this->params['~version_name'])) {
             $this->params['~version_name'] = $this->getVersionName();
         }
@@ -65,42 +145,23 @@ class IblockElementsBuilder extends VersionBuilder
         $versionName = $this->params['~version_name'];
 
         $this->getExchangeManager()
-            ->IblockElementsExport()
-            ->setExportFields([
-                'NAME',
-                'CODE',
-                'SORT',
-                'ACTIVE',
-                'XML_ID',
-                'TAGS',
-                'DATE_ACTIVE_FROM',
-                'DATE_ACTIVE_TO',
-                'PREVIEW_TEXT',
-                'PREVIEW_TEXT_TYPE',
-                'DETAIL_TEXT',
-                'DETAIL_TEXT_TYPE',
-                'PREVIEW_PICTURE',
-                'DETAIL_PICTURE',
-                'IBLOCK_SECTION',
-            ])
-            ->setExportProperties(
-                $this->getIblockPropertiesCodes($iblockId)
-            )
-            ->setIblockId($iblockId)
-            ->setLimit(20)
-            ->setExchangeFile(
-                $this->getVersionResourceFile($versionName, 'iblock_elements.xml')
-            )->execute();
+             ->IblockElementsExport()
+             ->setExportFields($exportFields)
+             ->setExportProperties($exportProps)
+             ->setIblockId($iblockId)
+             ->setLimit(20)
+             ->setExchangeFile(
+                 $this->getVersionResourceFile($versionName, 'iblock_elements.xml')
+             )->execute();
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockElementsExport.php',
             [
-                'version' => $versionName,
+                'version'       => $versionName,
+                'replaceExists' => $this->getFieldValue('replaceExists'),
             ]
         );
 
         unset($this->params['~version_name']);
     }
-
-
 }

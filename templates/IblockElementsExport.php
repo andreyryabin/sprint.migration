@@ -3,6 +3,7 @@
 /**
  * @var $version
  * @var $description
+ * @var $replaceExists
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion
@@ -34,6 +35,15 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
             ->setExchangeResource('iblock_elements.xml')
             ->setLimit(20)
             ->execute(function ($item) {
+<?php if ($replaceExists) { ?>
+                $this->getHelperManager()
+                    ->Iblock()
+                    ->saveElement(
+                        $item['iblock_id'],
+                        $item['fields'],
+                        $item['properties']
+                    );
+<?php } else { ?>
                 $this->getHelperManager()
                     ->Iblock()
                     ->addElement(
@@ -41,6 +51,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                         $item['fields'],
                         $item['properties']
                     );
+<?php } ?>
             });
     }
 

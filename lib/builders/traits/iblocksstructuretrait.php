@@ -6,15 +6,16 @@ use Sprint\Migration\HelperManager;
 
 /**
  * Trait IblocksStructureTrait
+ *
  * @package Sprint\Migration\Builders\Traits
  *
  * @method HelperManager getHelperManager()
  */
 trait IblocksStructureTrait
 {
-
     /**
      * Структура инфоблоков для построения выпадающего списка
+     *
      * @return array
      */
     public function getIblocksStructure()
@@ -42,17 +43,19 @@ trait IblocksStructureTrait
 
     /**
      * @param $iblockId
+     *
      * @return array
      */
     protected function getIblockPropertiesStructure($iblockId)
     {
-        $res = [];
         $helper = $this->getHelperManager();
-        $props = $helper->Iblock()->getProperties($iblockId);
+        $props = $helper->Iblock()->exportProperties($iblockId);
+
+        $res = [];
         foreach ($props as $prop) {
             $res[] = [
                 'title' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
-                'value' => $prop['ID'],
+                'value' => $prop['CODE'],
             ];
         }
         return $res;
@@ -60,17 +63,20 @@ trait IblocksStructureTrait
 
     /**
      * @param $iblockId
+     *
      * @return array
      */
-    protected function getIblockPropertiesCodes($iblockId)
+    protected function getIblockElementFieldsStructure($iblockId)
     {
-        $res = [];
         $helper = $this->getHelperManager();
-        $props = $helper->Iblock()->getProperties($iblockId);
-        foreach ($props as $prop) {
-            if (!empty($prop['CODE'])) {
-                $res[] = $prop['CODE'];
-            }
+        $fields = $helper->Iblock()->exportIblockElementFields($iblockId);
+
+        $res = [];
+        foreach ($fields as $fieldName => $field) {
+            $res[] = [
+                'title' => '[' . $fieldName . '] ' . $field['NAME'],
+                'value' => $fieldName,
+            ];
         }
         return $res;
     }

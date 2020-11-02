@@ -33,45 +33,49 @@ class IblockBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $this->addField('iblock_id', [
-            'title' => Locale::getMessage('BUILDER_IblockExport_IblockId'),
-            'placeholder' => '',
-            'width' => 250,
-            'items' => $this->getIblocksStructure(),
-        ]);
+        $this->addField(
+            'iblock_id', [
+                'title'       => Locale::getMessage('BUILDER_IblockExport_IblockId'),
+                'placeholder' => '',
+                'width'       => 250,
+                'items'       => $this->getIblocksStructure(),
+            ]
+        );
 
-        $this->addField('what', [
-            'title' => Locale::getMessage('BUILDER_IblockExport_What'),
-            'width' => 250,
-            'multiple' => 1,
-            'value' => [],
-            'select' => [
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockType'),
-                    'value' => 'iblockType',
+        $this->addField(
+            'what', [
+                'title'    => Locale::getMessage('BUILDER_IblockExport_What'),
+                'width'    => 250,
+                'multiple' => 1,
+                'value'    => [],
+                'select'   => [
+                    [
+                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockType'),
+                        'value' => 'iblockType',
+                    ],
+                    [
+                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblock'),
+                        'value' => 'iblock',
+                    ],
+                    [
+                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockFields'),
+                        'value' => 'iblockFields',
+                    ],
+                    [
+                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockProperties'),
+                        'value' => 'iblockProperties',
+                    ],
+                    [
+                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockUserOptions'),
+                        'value' => 'iblockUserOptions',
+                    ],
+                    [
+                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockPermissions'),
+                        'value' => 'iblockPermissions',
+                    ],
                 ],
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblock'),
-                    'value' => 'iblock',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockFields'),
-                    'value' => 'iblockFields',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockProperties'),
-                    'value' => 'iblockProperties',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockUserOptions'),
-                    'value' => 'iblockUserOptions',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockPermissions'),
-                    'value' => 'iblockPermissions',
-                ],
-            ],
-        ]);
+            ]
+        );
 
         $iblockId = $this->getFieldValue('iblock_id');
         if (empty($iblockId)) {
@@ -113,24 +117,30 @@ class IblockBuilder extends VersionBuilder
         }
 
         if (in_array('iblockProperties', $what)) {
-            $this->addField('property_ids', [
-                'title' => Locale::getMessage('BUILDER_IblockExport_PropertyIds'),
-                'width' => 250,
-                'multiple' => 1,
-                'value' => [],
-                'select' => $this->getIblockPropertiesStructure($iblockId),
-            ]);
+            $this->addField(
+                'export_props', [
+                    'title'    => Locale::getMessage('BUILDER_IblockExport_Properties'),
+                    'width'    => 250,
+                    'multiple' => 1,
+                    'value'    => [],
+                    'select'   => $this->getIblockPropertiesStructure($iblockId),
+                ]
+            );
 
-            $propertyIds = $this->getFieldValue('property_ids');
-            if (!empty($propertyIds)) {
-                $propertyIds = is_array($propertyIds) ? $propertyIds : [$propertyIds];
+            $exportProps = $this->getFieldValue('export_props');
+            if (!empty($exportProps)) {
+                $exportProps = is_array($exportProps) ? $exportProps : [$exportProps];
             } else {
-                $this->rebuildField('property_ids');
+                $this->rebuildField('export_props');
             }
 
-            $iblockProperties = $helper->Iblock()->exportProperties($iblockId, [
-                'ID' => $propertyIds,
-            ]);
+            $iblockProperties = $helper->Iblock()->exportProperties($iblockId);
+            $iblockProperties = array_filter(
+                $iblockProperties,
+                function ($item) use ($exportProps) {
+                    return in_array($item['CODE'], $exportProps);
+                }
+            );
         }
 
         if (in_array('iblockFields', $what)) {
@@ -158,12 +168,12 @@ class IblockBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockExport.php',
             [
-                'iblockExport' => $iblockExport,
-                'iblock' => $iblock,
-                'iblockType' => $iblockType,
-                'iblockFields' => $iblockFields,
+                'iblockExport'      => $iblockExport,
+                'iblock'            => $iblock,
+                'iblockType'        => $iblockType,
+                'iblockFields'      => $iblockFields,
                 'iblockPermissions' => $iblockPermissions,
-                'iblockProperties' => $iblockProperties,
+                'iblockProperties'  => $iblockProperties,
                 'exportElementForm' => $exportElementForm,
                 'exportSectionForm' => $exportSectionForm,
                 'exportElementList' => $exportElementList,

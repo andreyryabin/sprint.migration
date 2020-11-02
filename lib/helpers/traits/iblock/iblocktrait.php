@@ -252,16 +252,6 @@ trait IblockTrait
     }
 
     /**
-     * Получает список полей инфоблока
-     * @param $iblockId
-     * @return array|bool
-     */
-    public function getIblockFields($iblockId)
-    {
-        return CIBlock::GetFields($iblockId);
-    }
-
-    /**
      * Сохраняет инфоблок
      * Создаст если не было, обновит если существует и отличается
      * @param array $fields , обязательные параметры - код, тип инфоблока, id сайта
@@ -321,64 +311,6 @@ trait IblockTrait
     }
 
     /**
-     * Сохраняет поля инфоблока
-     * @param $iblockId
-     * @param array $fields
-     * @return bool
-     */
-    public function saveIblockFields($iblockId, $fields = [])
-    {
-        $exists = CIBlock::GetFields($iblockId);
-
-        $exportExists = $this->prepareExportIblockFields($exists);
-        $fields = $this->prepareExportIblockFields($fields);
-
-        $fields = array_replace_recursive($exportExists, $fields);
-
-        if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblockFields($iblockId, $fields);
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'IB_FIELDS_CREATED',
-                    [
-                        '#NAME#' => $iblockId,
-                    ]
-                )
-            );
-            return $ok;
-        }
-
-        if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblockFields($iblockId, $fields);
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'IB_FIELDS_UPDATED',
-                    [
-                        '#NAME#' => $iblockId,
-                    ]
-                )
-            );
-            $this->outDiffIf($ok, $exportExists, $fields);
-            return $ok;
-        }
-
-        if ($this->getMode('out_equal')) {
-            $this->out(
-                Locale::getMessage(
-                    'IB_FIELDS_EQUAL',
-                    [
-                        '#NAME#' => $iblockId,
-                    ]
-                )
-            );
-        }
-
-        return true;
-    }
-
-    /**
      * Получает инфоблок
      * Данные подготовлены для экспорта в миграцию или схему
      * @param $iblockId
@@ -419,34 +351,6 @@ trait IblockTrait
             }
         }
         return $exports;
-    }
-
-    /**
-     * Получает список полей инфоблока
-     * Данные подготовлены для экспорта в миграцию или схему
-     * @param $iblockId
-     * @return array
-     */
-    public function exportIblockFields($iblockId)
-    {
-        return $this->prepareExportIblockFields(
-            $this->getIblockFields($iblockId)
-        );
-    }
-
-    /**
-     * Обновляет поля инфоблока
-     * @param $iblockId
-     * @param $fields
-     * @return bool
-     */
-    public function updateIblockFields($iblockId, $fields)
-    {
-        if ($iblockId && !empty($fields)) {
-            CIBlock::SetFields($iblockId, $fields);
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -511,16 +415,6 @@ trait IblockTrait
     public function setGroupPermissions($iblockId, $permissions = [])
     {
         CIBlock::SetPermission($iblockId, $permissions);
-    }
-
-    /**
-     * @param $iblockId
-     * @param $fields
-     * @deprecated
-     */
-    public function mergeIblockFields($iblockId, $fields)
-    {
-        $this->saveIblockFields($iblockId, $fields);
     }
 
     /**
@@ -605,23 +499,6 @@ trait IblockTrait
         $messages = CIBlock::GetMessages($item['ID']);
         $item = array_merge($item, $messages);
         return $item;
-    }
-
-    protected function prepareExportIblockFields($fields)
-    {
-        if (empty($fields)) {
-            return $fields;
-        }
-
-        $exportFields = [];
-        foreach ($fields as $code => $field) {
-            if ($field['VISIBLE'] == 'N' || preg_match('/^(LOG_)/', $code)) {
-                continue;
-            }
-            $exportFields[$code] = $field;
-        }
-
-        return $exportFields;
     }
 
     protected function prepareExportIblock($iblock)
