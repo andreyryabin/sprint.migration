@@ -39,7 +39,6 @@ trait IblockElementTrait
             ], $select
         );
 
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $item = CIBlockElement::GetList(
             [
                 'SORT' => 'ASC',
@@ -90,7 +89,6 @@ trait IblockElementTrait
             ], $select
         );
 
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbres = CIBlockElement::GetList(
             [
                 'ID' => 'ASC',
@@ -124,7 +122,6 @@ trait IblockElementTrait
             'ACTIVE',
         ];
 
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         return (int)CIBlockElement::GetList(
             [],
             $filter,
@@ -173,6 +170,26 @@ trait IblockElementTrait
         $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
 
         $item = $this->getElement($iblockId, $fields['CODE']);
+        if (!empty($item['ID'])) {
+            return $this->updateElement($item['ID'], $fields, $props);
+        }
+
+        return $this->addElement($iblockId, $fields, $props);
+    }
+
+    /**
+     * @param       $iblockId
+     * @param array $fields
+     * @param array $props
+     *
+     * @throws HelperException
+     * @return int|void
+     */
+    public function saveElementByXmlId($iblockId, $fields = [], $props = [])
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['XML_ID']);
+
+        $item = $this->getElement($iblockId, ['=XML_ID' => $fields['XML_ID']]);
         if (!empty($item['ID'])) {
             return $this->updateElement($item['ID'], $fields, $props);
         }

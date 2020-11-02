@@ -3,7 +3,7 @@
 /**
  * @var $version
  * @var $description
- * @var $replaceExists
+ * @var $updateMode
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion
@@ -35,10 +35,18 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
             ->setExchangeResource('iblock_elements.xml')
             ->setLimit(20)
             ->execute(function ($item) {
-<?php if ($replaceExists) { ?>
+<?php if ($updateMode == 'code') { ?>
                 $this->getHelperManager()
                     ->Iblock()
                     ->saveElement(
+                        $item['iblock_id'],
+                        $item['fields'],
+                        $item['properties']
+                    );
+<?php } elseif($updateMode == 'xml_id') { ?>
+                $this->getHelperManager()
+                    ->Iblock()
+                    ->saveElementByXmlId(
                         $item['iblock_id'],
                         $item['fields'],
                         $item['properties']
