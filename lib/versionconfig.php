@@ -298,9 +298,8 @@ class VersionConfig
                 }
                 $val = implode(PHP_EOL, $fres);
             }
-            $values[$key] = $val;
+            $values[$key] = (string)$val;
         }
-
         return $values;
     }
 

@@ -50,7 +50,6 @@
  * @link     http://pear.php.net/package/Console_Table
  */
 
-
 /**
  * Добавил в неймспейс проекта
  * Перенес константы внутрь класса
@@ -66,90 +65,77 @@ namespace Sprint\Migration;
 
 class ConsoleGrid
 {
-
     const CONSOLE_TABLE_HORIZONTAL_RULE = 1;
-    const CONSOLE_TABLE_ALIGN_LEFT = -1;
-    const CONSOLE_TABLE_ALIGN_CENTER = 0;
-    const CONSOLE_TABLE_ALIGN_RIGHT = 1;
-    const CONSOLE_TABLE_BORDER_ASCII = -1;
-
+    const CONSOLE_TABLE_ALIGN_LEFT      = -1;
+    const CONSOLE_TABLE_ALIGN_CENTER    = 0;
+    const CONSOLE_TABLE_ALIGN_RIGHT     = 1;
+    const CONSOLE_TABLE_BORDER_ASCII    = -1;
     /**
      * The table headers.
      *
      * @var array
      */
     var $_headers = [];
-
     /**
      * The data of the table.
      *
      * @var array
      */
     var $_data = [];
-
     /**
      * The maximum number of columns in a row.
      *
      * @var integer
      */
     var $_max_cols = 0;
-
     /**
      * The maximum number of rows in the table.
      *
      * @var integer
      */
     var $_max_rows = 0;
-
     /**
      * Lengths of the columns, calculated when rows are added to the table.
      *
      * @var array
      */
     var $_cell_lengths = [];
-
     /**
      * Heights of the rows.
      *
      * @var array
      */
     var $_row_heights = [];
-
     /**
      * How many spaces to use to pad the table.
      *
      * @var integer
      */
     var $_padding = 1;
-
     /**
      * Columns to calculate totals for.
      *
      * @var array
      */
     var $_calculateTotals;
-
     /**
      * Alignment of the columns.
      *
      * @var array
      */
     var $_col_align = [];
-
     /**
      * Default alignment of columns.
      *
      * @var integer
      */
     var $_defaultAlign;
-
     /**
      * Character set of the data.
      *
      * @var string
      */
     var $_charset = 'utf-8';
-
     /**
      * Border characters.
      * Allowed keys:
@@ -161,10 +147,9 @@ class ConsoleGrid
      */
     var $_border = [
         'intersection' => '+',
-        'horizontal' => '-',
-        'vertical' => '|',
+        'horizontal'   => '-',
+        'vertical'     => '|',
     ];
-
     /**
      * If borders are shown or not
      * Allowed keys: top, right, bottom, left, inner: true and false
@@ -172,24 +157,24 @@ class ConsoleGrid
      * @var array
      */
     var $_borderVisibility = [
-        'top' => true,
-        'right' => true,
+        'top'    => true,
+        'right'  => true,
         'bottom' => true,
-        'left' => true,
-        'inner' => true,
+        'left'   => true,
+        'inner'  => true,
     ];
 
     /**
      * Constructor.
      *
-     * @param integer $align Default alignment. One of
+     * @param integer $align   Default alignment. One of
      *                         self::CONSOLE_TABLE_ALIGN_LEFT,
      *                         self::CONSOLE_TABLE_ALIGN_CENTER or
      *                         self::CONSOLE_TABLE_ALIGN_RIGHT.
-     * @param int $border The character used for table borders or
+     * @param int     $border  The character used for table borders or
      *                         self::CONSOLE_TABLE_BORDER_ASCII.
      * @param integer $padding How many spaces to use to pad the table.
-     * @param string $charset A charset supported by the mbstring PHP
+     * @param string  $charset A charset supported by the mbstring PHP
      *                         extension.
      */
     function __construct(
@@ -259,8 +244,8 @@ class ConsoleGrid
 
         $this->_border = [
             'intersection' => $intersection,
-            'horizontal' => $horizontal,
-            'vertical' => $vertical,
+            'horizontal'   => $horizontal,
+            'vertical'     => $vertical,
         ];
     }
 
@@ -288,7 +273,7 @@ class ConsoleGrid
      * Sets the alignment for the columns.
      *
      * @param integer $col_id The column number.
-     * @param integer $align Alignment to set for this column. One of
+     * @param integer $align  Alignment to set for this column. One of
      *                        self::CONSOLE_TABLE_ALIGN_LEFT
      *                        self::CONSOLE_TABLE_ALIGN_CENTER
      *                        self::CONSOLE_TABLE_ALIGN_RIGHT.
@@ -340,7 +325,7 @@ class ConsoleGrid
     /**
      * Adds a row to the table.
      *
-     * @param array $row The row data to add.
+     * @param array   $row    The row data to add.
      * @param boolean $append Whether to append or prepend the row.
      *
      * @return void
@@ -361,7 +346,7 @@ class ConsoleGrid
      *
      * If $row_id is not given it will prepend the row.
      *
-     * @param array $row The data to insert.
+     * @param array   $row    The data to insert.
      * @param integer $row_id Row number to insert before.
      *
      * @return void
@@ -376,9 +361,9 @@ class ConsoleGrid
     /**
      * Adds a column to the table.
      *
-     * @param array $col_data The data of the column.
-     * @param integer $col_id The column index to populate.
-     * @param integer $row_id If starting row is not zero, specify it here.
+     * @param array   $col_data The data of the column.
+     * @param integer $col_id   The column index to populate.
+     * @param integer $row_id   If starting row is not zero, specify it here.
      *
      * @return void
      */
@@ -395,7 +380,7 @@ class ConsoleGrid
     /**
      * Adds data to the table.
      *
-     * @param array $data A two dimensional array with the table data.
+     * @param array   $data   A two dimensional array with the table data.
      * @param integer $col_id Starting column number.
      * @param integer $row_id Starting row number.
      *
@@ -481,20 +466,18 @@ class ConsoleGrid
 
         for ($i = 0; $i < $this->_max_rows; $i++) {
             for ($j = 0; $j < $this->_max_cols; $j++) {
-                if (!isset($this->_data[$i][$j]) &&
-                    (!isset($this->_data[$i]) ||
-                        $this->_data[$i] !== self::CONSOLE_TABLE_HORIZONTAL_RULE)
+                if (!isset($this->_data[$i][$j])
+                    && (!isset($this->_data[$i])
+                        || $this->_data[$i] !== self::CONSOLE_TABLE_HORIZONTAL_RULE)
                 ) {
                     $this->_data[$i][$j] = '';
                 }
-
             }
             $this->_calculateRowHeight($i, $this->_data[$i]);
 
             if ($this->_data[$i] !== self::CONSOLE_TABLE_HORIZONTAL_RULE) {
                 ksort($this->_data[$i]);
             }
-
         }
 
         $this->_splitMultilineRows();
@@ -533,8 +516,10 @@ class ConsoleGrid
                     // Split column data into one-liners.
                     $split = [];
                     for ($j = 0; $j < $this->_max_cols; $j++) {
-                        $split[$j] = preg_split('/\r?\n|\r/',
-                            $sections[$s][$i][$j]);
+                        $split[$j] = preg_split(
+                            '/\r?\n|\r/',
+                            $sections[$s][$i][$j]
+                        );
                     }
 
                     $new_rows = [];
@@ -581,14 +566,16 @@ class ConsoleGrid
         $return = [];
         for ($i = 0; $i < count($this->_data); $i++) {
             for ($j = 0; $j < count($this->_data[$i]); $j++) {
-                if ($this->_data[$i] !== self::CONSOLE_TABLE_HORIZONTAL_RULE &&
-                    $this->_strlen($this->_data[$i][$j]) <
-                    $this->_cell_lengths[$j]
+                if ($this->_data[$i] !== self::CONSOLE_TABLE_HORIZONTAL_RULE
+                    && $this->_strlen($this->_data[$i][$j]) <
+                       $this->_cell_lengths[$j]
                 ) {
-                    $this->_data[$i][$j] = $this->_strpad($this->_data[$i][$j],
+                    $this->_data[$i][$j] = $this->_strpad(
+                        $this->_data[$i][$j],
                         $this->_cell_lengths[$j],
                         ' ',
-                        $this->_col_align[$j]);
+                        $this->_col_align[$j]
+                    );
                 }
             }
 
@@ -600,13 +587,12 @@ class ConsoleGrid
                     ? str_repeat(' ', $this->_padding) . $vertical
                     : '';
                 $implode_char = str_repeat(' ', $this->_padding) . $vertical
-                    . str_repeat(' ', $this->_padding);
+                                . str_repeat(' ', $this->_padding);
                 $return[] = $row_begin
-                    . implode($implode_char, $this->_data[$i]) . $row_end;
+                            . implode($implode_char, $this->_data[$i]) . $row_end;
             } elseif (!empty($separator)) {
                 $return[] = $separator;
             }
-
         }
 
         $return = implode(PHP_EOL, $return);
@@ -654,7 +640,7 @@ class ConsoleGrid
             ? str_repeat($horizontal, $this->_padding) . $intersection
             : '';
         $implode_char = str_repeat($horizontal, $this->_padding) . $intersection
-            . str_repeat($horizontal, $this->_padding);
+                        . str_repeat($horizontal, $this->_padding);
 
         return $row_begin . implode($implode_char, $return) . $row_end;
     }
@@ -681,10 +667,12 @@ class ConsoleGrid
                     $this->_cell_lengths[$i]
                 ) {
                     $this->_headers[$j][$i] =
-                        $this->_strpad($this->_headers[$j][$i],
+                        $this->_strpad(
+                            $this->_headers[$j][$i],
                             $this->_cell_lengths[$i],
                             ' ',
-                            $this->_col_align[$i]);
+                            $this->_col_align[$i]
+                        );
                 }
             }
         }
@@ -697,7 +685,7 @@ class ConsoleGrid
             ? str_repeat(' ', $this->_padding) . $vertical
             : '';
         $implode_char = str_repeat(' ', $this->_padding) . $vertical
-            . str_repeat(' ', $this->_padding);
+                        . str_repeat(' ', $this->_padding);
 
         $separator = $this->_getSeparator();
         $return = [];
@@ -707,7 +695,7 @@ class ConsoleGrid
         }
         for ($j = 0; $j < count($this->_headers); $j++) {
             $return[] = $row_begin
-                . implode($implode_char, $this->_headers[$j]) . $row_end;
+                        . implode($implode_char, $this->_headers[$j]) . $row_end;
         }
 
         return implode(PHP_EOL, $return);
@@ -722,8 +710,10 @@ class ConsoleGrid
      */
     function _updateRowsCols($rowdata = null)
     {
+        $cntData = is_array($rowdata) ? count($rowdata) : 0;
+
         // Update maximum columns.
-        $this->_max_cols = max($this->_max_cols, count($rowdata));
+        $this->_max_cols = max($this->_max_cols, $cntData);
 
         // Update maximum rows.
         ksort($this->_data);
@@ -763,8 +753,10 @@ class ConsoleGrid
             if (!isset($this->_cell_lengths[$i])) {
                 $this->_cell_lengths[$i] = 0;
             }
-            $this->_cell_lengths[$i] = max($this->_cell_lengths[$i],
-                $this->_strlen($row[$i]));
+            $this->_cell_lengths[$i] = max(
+                $this->_cell_lengths[$i],
+                $this->_strlen($row[$i])
+            );
         }
     }
 
@@ -772,7 +764,7 @@ class ConsoleGrid
      * Calculates the maximum height for all columns of a row.
      *
      * @param integer $row_number The row number.
-     * @param array $row The row data.
+     * @param array   $row        The row data.
      *
      * @return void
      */
@@ -789,8 +781,10 @@ class ConsoleGrid
 
         for ($i = 0, $c = count($row); $i < $c; ++$i) {
             $lines = preg_split('/\r?\n|\r/', $row[$i]);
-            $this->_row_heights[$row_number] = max($this->_row_heights[$row_number],
-                count($lines));
+            $this->_row_heights[$row_number] = max(
+                $this->_row_heights[$row_number],
+                count($lines)
+            );
         }
     }
 
@@ -820,8 +814,8 @@ class ConsoleGrid
     /**
      * Returns part of a string.
      *
-     * @param string $string The string to be converted.
-     * @param integer $start The part's start position, zero based.
+     * @param string  $string The string to be converted.
+     * @param integer $start  The part's start position, zero based.
      * @param integer $length The part's length.
      *
      * @return string  The string's part.
@@ -852,11 +846,11 @@ class ConsoleGrid
      *
      * This method behaves exactly like str_pad but is multibyte safe.
      *
-     * @param string $input The string to be padded.
+     * @param string  $input  The string to be padded.
      * @param integer $length The length of the resulting string.
-     * @param string $pad The string to pad the input string with. Must
+     * @param string  $pad    The string to pad the input string with. Must
      *                        be in the same charset like the input string.
-     * @param integer $type The padding type. One of STR_PAD_LEFT,
+     * @param integer $type   The padding type. One of STR_PAD_LEFT,
      *                        STR_PAD_RIGHT, or STR_PAD_BOTH.
      *
      * @return string  The padded string.
@@ -880,27 +874,34 @@ class ConsoleGrid
         switch ($type) {
             case STR_PAD_LEFT:
                 $left = $length - $mb_length;
-                $output = $this->_substr(str_repeat($pad, ceil($left / $pad_length)),
-                        0, $left) . $input;
+                $output = $this->_substr(
+                        str_repeat($pad, ceil($left / $pad_length)),
+                        0, $left
+                    ) . $input;
                 break;
             case STR_PAD_BOTH:
                 $left = floor(($length - $mb_length) / 2);
                 $right = ceil(($length - $mb_length) / 2);
-                $output = $this->_substr(str_repeat($pad, ceil($left / $pad_length)),
-                        0, $left) .
-                    $input .
-                    $this->_substr(str_repeat($pad, ceil($right / $pad_length)),
-                        0, $right);
+                $output = $this->_substr(
+                        str_repeat($pad, ceil($left / $pad_length)),
+                        0, $left
+                    ) .
+                          $input .
+                          $this->_substr(
+                              str_repeat($pad, ceil($right / $pad_length)),
+                              0, $right
+                          );
                 break;
             case STR_PAD_RIGHT:
                 $right = $length - $mb_length;
                 $output = $input .
-                    $this->_substr(str_repeat($pad, ceil($right / $pad_length)),
-                        0, $right);
+                          $this->_substr(
+                              str_repeat($pad, ceil($right / $pad_length)),
+                              0, $right
+                          );
                 break;
         }
 
         return $output;
     }
-
 }
