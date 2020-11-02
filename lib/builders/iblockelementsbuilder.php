@@ -83,11 +83,11 @@ class IblockElementsBuilder extends VersionBuilder
             $this->rebuildField('iblock_id');
         }
 
-        $what = $this->getFieldValue('what');
+        $what = $this->getFieldValue('what', []);
         if (!empty($what)) {
             $what = is_array($what) ? $what : [$what];
         } else {
-            $this->rebuildField('what');
+            $what = [];
         }
 
         if (in_array('iblockFields', $what)) {
@@ -138,6 +138,14 @@ class IblockElementsBuilder extends VersionBuilder
             $exportProps = array_column($exportProps, 'value');
         }
 
+        $replaceExists = false;
+        if (in_array('replaceExists', $what)) {
+            $replaceExists = true;
+            if (!in_array('CODE', $exportFields)) {
+                $exportFields[] = 'CODE';
+            }
+        }
+
         if (!isset($this->params['~version_name'])) {
             $this->params['~version_name'] = $this->getVersionName();
         }
@@ -158,7 +166,7 @@ class IblockElementsBuilder extends VersionBuilder
             Module::getModuleDir() . '/templates/IblockElementsExport.php',
             [
                 'version'       => $versionName,
-                'replaceExists' => $this->getFieldValue('replaceExists'),
+                'replaceExists' => $replaceExists,
             ]
         );
 
