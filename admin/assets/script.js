@@ -215,6 +215,14 @@ jQuery(document).ready(function ($) {
         migrationBuilder(postData);
     });
 
+    $('[data-builder]').on('reset', 'form', function (e) {
+        e.preventDefault();
+        var postData = $(this).serializeFormJSON();
+        migrationBuilder({
+            builder_name: postData['builder_name']
+        });
+    });
+
     $('#migration-container').on('click', '.sp-block_title', function () {
         var $block = $(this).closest('.sp-block');
 

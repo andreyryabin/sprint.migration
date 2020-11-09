@@ -116,5 +116,6 @@ use Sprint\Migration\Out;
     <? endif; ?>
     <div class="sp-field">
         <input type="submit" value="<?= Locale::getMessage('BUILDER_NEXT') ?>"/>
+        <input type="reset" value="<?= Locale::getMessage('BUILDER_RESET') ?>"/>
     </div>
 </form>

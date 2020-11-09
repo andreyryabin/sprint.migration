@@ -6,7 +6,6 @@ use CIBlockElement;
 use CIBlockSection;
 use Sprint\Migration\Exceptions\HelperException;
 
-
 class IblockExchangeHelper extends ExchangeHelper
 {
     protected $cachedProps = [];
@@ -14,22 +13,22 @@ class IblockExchangeHelper extends ExchangeHelper
     public function isEnabled()
     {
         return $this->getHelperManager()
-            ->Iblock()
-            ->isEnabled();
+                    ->Iblock()
+                    ->isEnabled();
     }
 
     public function getIblockIdByUid($iblockUid)
     {
         return $this->getHelperManager()
-            ->Iblock()
-            ->getIblockIdByUid($iblockUid);
+                    ->Iblock()
+                    ->getIblockIdByUid($iblockUid);
     }
 
     public function getIblockUid($iblockId)
     {
         return $this->getHelperManager()
-            ->Iblock()
-            ->getIblockUid($iblockId);
+                    ->Iblock()
+                    ->getIblockUid($iblockId);
     }
 
     public function getPropertyType($iblockId, $code)
@@ -60,49 +59,55 @@ class IblockExchangeHelper extends ExchangeHelper
     }
 
     /**
-     * @param $iblockId
-     * @param $offset
-     * @param $limit
+     * @param int   $iblockId
+     * @param int   $offset
+     * @param int   $limit
+     * @param array $filter
+     *
      * @return array
      */
-    public function getElements($iblockId, $offset, $limit)
+    public function getElements($iblockId, $offset, $limit, $filter = [])
     {
         $pageNum = $this->getPageNumberFromOffset($offset, $limit);
 
-        $dbres = CIBlockElement::GetList([
-            'ID' => 'ASC',
-        ], [
-            'IBLOCK_ID' => $iblockId,
-            'CHECK_PERMISSIONS' => 'N',
-        ], false, [
-            'nPageSize' => $limit,
-            'iNumPage' => $pageNum,
-            'checkOutOfRange' => true,
-        ]);
+        $filter['IBLOCK_ID'] = $iblockId;
+        $filter['CHECK_PERMISSIONS'] = 'N';
+
+        $dbres = CIBlockElement::GetList(
+            [
+                'ID' => 'ASC',
+            ], $filter,
+            false,
+            [
+                'nPageSize'       => $limit,
+                'iNumPage'        => $pageNum,
+                'checkOutOfRange' => true,
+            ]
+        );
 
         $result = [];
         while ($item = $dbres->GetNextElement(false, false)) {
-
             $fields = $item->GetFields();
             $props = $item->GetProperties();
 
-            $fields['IBLOCK_SECTION'] = $this->getHelperManager()
-                ->Iblock()
-                ->getElementSectionIds($fields['ID']);
+            $fields['IBLOCK_SECTION'] =
+                $this->getHelperManager()
+                     ->Iblock()
+                     ->getElementSectionIds($fields['ID']);
 
             $result[] = [
                 'FIELDS' => $fields,
-                'PROPS' => $props,
+                'PROPS'  => $props,
             ];
         }
         return $result;
     }
 
-    public function getElementsCount($iblockId)
+    public function getElementsCount($iblockId, $filter = [])
     {
         return $this->getHelperManager()
-            ->Iblock()
-            ->getElementsCount($iblockId);
+                    ->Iblock()
+                    ->getElementsCount($iblockId, $filter);
     }
 
     public function getSectionUniqNamesByIds($iblockId, $sectionIds = [])
@@ -118,7 +123,7 @@ class IblockExchangeHelper extends ExchangeHelper
                 $section = CIBlockSection::GetList(
                     [],
                     [
-                        'ID' => $sectionId,
+                        'ID'        => $sectionId,
                         'IBLOCK_ID' => $iblockId,
                     ]
                 )->Fetch();
@@ -146,7 +151,6 @@ class IblockExchangeHelper extends ExchangeHelper
         }
 
         foreach ($uniqNames as $uniqName) {
-
             if (is_numeric($uniqName)) {
                 $ids[] = $uniqName;
                 continue;
@@ -157,14 +161,14 @@ class IblockExchangeHelper extends ExchangeHelper
             $section = CIBlockSection::GetList(
                 [],
                 [
-                    'NAME' => $sectionName,
+                    'NAME'        => $sectionName,
                     'DEPTH_LEVEL' => $depthLevel,
-                    'IBLOCK_ID' => $iblockId,
+                    'IBLOCK_ID'   => $iblockId,
                 ]
             )->Fetch();
 
             if (empty($section['ID'])) {
-                Throw new HelperException(
+                throw new HelperException(
                     sprintf(
                         'Категория "%s" на уровне "%s"не найдена',
                         $sectionName,
@@ -184,8 +188,8 @@ class IblockExchangeHelper extends ExchangeHelper
 
         if (!isset($this->cachedProps[$key])) {
             $this->cachedProps[$key] = $this->getHelperManager()
-                ->Iblock()
-                ->getProperty($iblockId, $code);
+                                            ->Iblock()
+                                            ->getProperty($iblockId, $code);
         }
         return $this->cachedProps[$key];
     }

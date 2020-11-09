@@ -158,9 +158,6 @@ class IblockElementsImport extends AbstractExchange
         if (empty($item['iblock_id'])) {
             return false;
         }
-        if (empty($item['fields'])) {
-            return false;
-        }
 
         $convertedFields = [];
         foreach ($item['fields'] as $field) {
@@ -168,10 +165,6 @@ class IblockElementsImport extends AbstractExchange
             if (method_exists($this, $method)) {
                 $convertedFields[$field['name']] = $this->$method($item['iblock_id'], $field);
             }
-        }
-
-        if (empty($convertedFields)) {
-            return false;
         }
 
         $convertedProperties = [];
