@@ -135,6 +135,13 @@ function migrationBuilder(postData) {
     });
 }
 
+function migrationReset(postData) {
+    var $block = $('[data-builder="' + postData['builder_name'] + '"]');
+    migrationExecuteStep('migration_reset', postData, function (result) {
+        $block.html(result);
+    });
+}
+
 function migrationScrollList() {
     var $el = $('#migration_migrations');
     $el.scrollTop($el.prop("scrollHeight"));
@@ -218,9 +225,7 @@ jQuery(document).ready(function ($) {
     $('[data-builder]').on('reset', 'form', function (e) {
         e.preventDefault();
         var postData = $(this).serializeFormJSON();
-        migrationBuilder({
-            builder_name: postData['builder_name']
-        });
+        migrationReset(postData);
     });
 
     $('#migration-container').on('click', '.sp-block_title', function () {

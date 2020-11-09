@@ -7,8 +7,14 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
-if ($_POST["step_code"] == "migration_create" && check_bitrix_sessid('send_sessid')) {
+$stepCode = !empty($_POST["step_code"]) ? htmlspecialchars($_POST["step_code"]) : '';
+$hasSteps = (
+    ($stepCode == 'migration_create')
+    || ($stepCode == 'migration_reset')
 
+);
+
+if ($hasSteps && check_bitrix_sessid('send_sessid')) {
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
 
@@ -16,8 +22,7 @@ if ($_POST["step_code"] == "migration_create" && check_bitrix_sessid('send_sessi
 
     $builder = $versionManager->createBuilder($builderName, $_POST);
 
-    if ($builder) {
-
+    if ($builder && $stepCode == 'migration_create') {
         $builder->buildExecute();
         $builder->buildAfter();
 
@@ -27,11 +32,9 @@ if ($_POST["step_code"] == "migration_create" && check_bitrix_sessid('send_sessi
             $json = json_encode($builder->getRestartParams());
             ?>
             <script>migrationBuilder(<?=$json?>);</script><?
-
         } elseif ($builder->isRebuild()) {
             ?>
             <script>migrationEnableButtons(1);</script><?
-
         } else {
             ?>
             <script>
@@ -41,5 +44,11 @@ if ($_POST["step_code"] == "migration_create" && check_bitrix_sessid('send_sessi
                 });
             </script><?
         }
+    } elseif ($builder && $stepCode == 'migration_reset') {
+        $builder->renderHtml();
+        ?>
+        <script>
+            migrationEnableButtons(1);
+        </script><?
     }
 }
