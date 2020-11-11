@@ -256,11 +256,7 @@ class Out
 
         if ($field['multiple']) {
             $val = explode(' ', $val);
-            $val = array_filter(
-                $val, function ($a) {
-                return !empty($a);
-            }
-            );
+            $val = array_filter($val);
         }
 
         return $val;

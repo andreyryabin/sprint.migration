@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Adv\McdonaldsCmsBundle\Tools\IblockSectionTools;
 use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
@@ -21,7 +20,9 @@ class IblockElementsImport extends AbstractExchange
 
     /**
      * IblockElementsImport constructor.
+     *
      * @param ExchangeEntity $exchangeEntity
+     *
      * @throws ExchangeException
      */
     public function __construct(ExchangeEntity $exchangeEntity)
@@ -31,6 +32,7 @@ class IblockElementsImport extends AbstractExchange
 
     /**
      * @param callable $converter
+     *
      * @throws ExchangeException
      * @throws RestartException
      */
@@ -41,7 +43,6 @@ class IblockElementsImport extends AbstractExchange
         $params = $this->exchangeEntity->getRestartParams();
 
         if (!isset($params['total'])) {
-
             $this->exchangeEntity->exitIf(
                 !is_file($this->file),
                 Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND')
@@ -70,7 +71,6 @@ class IblockElementsImport extends AbstractExchange
             $this->exchangeEntity->exitIfEmpty(
                 $params['iblock_id'], 'iblockId not found'
             );
-
         }
 
         $reader = new XMLReader();
@@ -79,10 +79,9 @@ class IblockElementsImport extends AbstractExchange
 
         while ($reader->read()) {
             if ($this->isOpenTag($reader, 'item')) {
-
                 $collect = (
-                    $index >= $params['offset'] &&
-                    $index < $params['offset'] + $this->getLimit()
+                    $index >= $params['offset']
+                    && $index < $params['offset'] + $this->getLimit()
                 );
 
                 $finish = ($index >= $params['total'] - 1);
@@ -114,7 +113,7 @@ class IblockElementsImport extends AbstractExchange
 
     /**
      * @param XMLReader $reader
-     * @param $iblockId
+     * @param           $iblockId
      */
     protected function collectItem(XMLReader $reader, $iblockId)
     {
@@ -134,14 +133,15 @@ class IblockElementsImport extends AbstractExchange
                 if ($prop) {
                     $props[] = $prop;
                 }
-
             } while (!$this->isCloseTag($reader, 'item'));
 
-            $convertedItem = $this->convertItem([
-                'iblock_id' => $iblockId,
-                'fields' => $fields,
-                'properties' => $props,
-            ]);
+            $convertedItem = $this->convertItem(
+                [
+                    'iblock_id'  => $iblockId,
+                    'fields'     => $fields,
+                    'properties' => $props,
+                ]
+            );
 
             if ($convertedItem) {
                 call_user_func($this->converter, $convertedItem);
@@ -151,6 +151,7 @@ class IblockElementsImport extends AbstractExchange
 
     /**
      * @param $item
+     *
      * @return array|bool
      */
     protected function convertItem($item)
@@ -176,8 +177,8 @@ class IblockElementsImport extends AbstractExchange
         }
 
         return [
-            'iblock_id' => $item['iblock_id'],
-            'fields' => $convertedFields,
+            'iblock_id'  => $item['iblock_id'],
+            'fields'     => $convertedFields,
             'properties' => $convertedProperties,
         ];
     }
@@ -185,6 +186,7 @@ class IblockElementsImport extends AbstractExchange
     /**
      * @param $iblockId
      * @param $code
+     *
      * @return string
      */
     protected function getConvertFieldMethod($iblockId, $code)
@@ -201,6 +203,7 @@ class IblockElementsImport extends AbstractExchange
     /**
      * @param $iblockId
      * @param $field
+     *
      * @return mixed
      */
     protected function convertFieldS($iblockId, $field)
@@ -211,6 +214,7 @@ class IblockElementsImport extends AbstractExchange
     /**
      * @param $iblockId
      * @param $field
+     *
      * @throws HelperException
      * @return array
      */
@@ -227,6 +231,7 @@ class IblockElementsImport extends AbstractExchange
     /**
      * @param $iblockId
      * @param $field
+     *
      * @return array|bool|null
      */
     protected function convertFieldF($iblockId, $field)
@@ -238,7 +243,7 @@ class IblockElementsImport extends AbstractExchange
     {
         $type = $this->exchangeHelper->getPropertyType($iblockId, $code);
 
-        if (in_array($type, ['L', 'F'])) {
+        if (in_array($type, ['L', 'F', 'G'])) {
             return 'convertProperty' . ucfirst($type);
         } else {
             return 'convertPropertyS';
@@ -255,6 +260,26 @@ class IblockElementsImport extends AbstractExchange
             return $res;
         } else {
             return $prop['value'][0]['value'];
+        }
+    }
+
+    protected function convertPropertyG($iblockId, $prop)
+    {
+        $value = [];
+        foreach ($prop['value'] as $val) {
+            $value[] = $val['value'];
+        }
+
+        $linkIblockId = $this->exchangeHelper->getPropertyLinkIblockId($iblockId, $prop['name']);
+
+        if ($linkIblockId) {
+            $value = $this->exchangeHelper->getSectionIdsByUniqNames($linkIblockId, $value);
+        }
+
+        if ($this->exchangeHelper->isPropertyMultiple($iblockId, $prop['name'])) {
+            return $value;
+        } else {
+            return $value[0];
         }
     }
 

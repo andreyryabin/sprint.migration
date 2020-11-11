@@ -15,8 +15,8 @@ use XMLWriter;
 class IblockElementsExport extends AbstractExchange
 {
     protected $iblockId;
-    protected $exportFilter = [];
-    protected $exportFields = [];
+    protected $exportFilter     = [];
+    protected $exportFields     = [];
     protected $exportProperties = [];
 
     public function __construct(ExchangeEntity $exchangeEntity)
@@ -209,7 +209,7 @@ class IblockElementsExport extends AbstractExchange
 
     protected function getWritePropertyMethod($type)
     {
-        if (in_array($type, ['L', 'F'])) {
+        if (in_array($type, ['L', 'F', 'G'])) {
             return 'writeProperty' . ucfirst($type);
         } else {
             return 'writePropertyS';
@@ -218,6 +218,16 @@ class IblockElementsExport extends AbstractExchange
 
     protected function writePropertyS(XMLWriter $writer, $prop)
     {
+        $this->writeValue($writer, $prop['VALUE']);
+    }
+
+    protected function writePropertyG(XMLWriter $writer, $prop)
+    {
+        $prop['VALUE'] = is_array($prop['VALUE']) ? $prop['VALUE'] : [$prop['VALUE']];
+        $prop['VALUE'] = $this->exchangeHelper->getSectionUniqNamesByIds(
+            $prop['LINK_IBLOCK_ID'],
+            $prop['VALUE']
+        );
         $this->writeValue($writer, $prop['VALUE']);
     }
 

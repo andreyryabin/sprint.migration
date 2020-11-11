@@ -37,6 +37,12 @@ class IblockExchangeHelper extends ExchangeHelper
         return $prop['PROPERTY_TYPE'];
     }
 
+    public function getPropertyLinkIblockId($iblockId, $code)
+    {
+        $prop = $this->getCachedProperty($iblockId, $code);
+        return $prop['LINK_IBLOCK_ID'];
+    }
+
     public function isPropertyMultiple($iblockId, $code)
     {
         $prop = $this->getCachedProperty($iblockId, $code);
