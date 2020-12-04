@@ -129,6 +129,15 @@ abstract class AbstractExchange
         }
     }
 
+    protected function writeSerializedValue($writer, $value)
+    {
+        if (is_array($value)) {
+            $this->writeSingleValue($writer, serialize($value), ['type' => 'serialized']);
+        } else {
+            $this->writeSingleValue($writer, $value);
+        }
+    }
+
     /**
      * @param XMLWriter $writer
      * @param           $fileIds
@@ -185,6 +194,15 @@ abstract class AbstractExchange
         return false;
     }
 
+    protected function makeValue($value)
+    {
+        $type = isset($value['type']) ? $value['type'] : '';
+        if ($type == 'serialized') {
+            return unserialize($value['value']);
+        }
+        return $value['value'];
+    }
+
     protected function collectField(XMLReader $reader, $tag)
     {
         $field = [];
@@ -192,7 +210,7 @@ abstract class AbstractExchange
         if ($this->isOpenTag($reader, $tag)) {
             if ($reader->hasAttributes) {
                 while ($reader->moveToNextAttribute()) {
-                    $field[$reader->name] = $this->convertValue($reader->value);
+                    $field[$reader->name] = $this->purifyValue($reader->value);
                 }
             }
 
@@ -205,12 +223,12 @@ abstract class AbstractExchange
 
                     if ($reader->hasAttributes) {
                         while ($reader->moveToNextAttribute()) {
-                            $val[$reader->name] = $this->convertValue($reader->value);
+                            $val[$reader->name] = $this->purifyValue($reader->value);
                         }
                     }
 
                     $reader->read();
-                    $val['value'] = $this->convertValue($reader->value);
+                    $val['value'] = $this->purifyValue($reader->value);
 
                     $field['value'][] = $val;
                 }
@@ -219,7 +237,7 @@ abstract class AbstractExchange
         return $field;
     }
 
-    protected function convertValue($value)
+    protected function purifyValue($value)
     {
         $value = trim($value);
 

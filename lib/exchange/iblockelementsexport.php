@@ -218,7 +218,13 @@ class IblockElementsExport extends AbstractExchange
 
     protected function writePropertyS(XMLWriter $writer, $prop)
     {
-        $this->writeValue($writer, $prop['VALUE']);
+        if ($prop['MULTIPLE'] == 'Y') {
+            foreach ($prop['VALUE'] as $val1) {
+                $this->writeSerializedValue($writer, $val1);
+            }
+        } else {
+            $this->writeSerializedValue($writer, $prop['VALUE']);
+        }
     }
 
     protected function writePropertyG(XMLWriter $writer, $prop)

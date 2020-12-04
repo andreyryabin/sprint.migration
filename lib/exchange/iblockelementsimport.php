@@ -208,7 +208,7 @@ class IblockElementsImport extends AbstractExchange
      */
     protected function convertFieldS($iblockId, $field)
     {
-        return $field['value'][0]['value'];
+        return $this->makeFieldValue($field['value'][0]);
     }
 
     /**
@@ -222,7 +222,7 @@ class IblockElementsImport extends AbstractExchange
     {
         $value = [];
         foreach ($field['value'] as $val) {
-            $value[] = $val['value'];
+            $value[] = $this->makeFieldValue($val);
         }
 
         return $this->exchangeHelper->getSectionIdsByUniqNames($iblockId, $value);
@@ -255,11 +255,11 @@ class IblockElementsImport extends AbstractExchange
         if ($this->exchangeHelper->isPropertyMultiple($iblockId, $prop['name'])) {
             $res = [];
             foreach ($prop['value'] as $val) {
-                $res[] = $val['value'];
+                $res[] = $this->makePropertyValue($val);
             }
             return $res;
         } else {
-            return $prop['value'][0]['value'];
+            return $this->makePropertyValue($prop['value'][0]);
         }
     }
 
@@ -267,7 +267,7 @@ class IblockElementsImport extends AbstractExchange
     {
         $value = [];
         foreach ($prop['value'] as $val) {
-            $value[] = $val['value'];
+            $value[] = $this->makePropertyValue($val);
         }
 
         $linkIblockId = $this->exchangeHelper->getPropertyLinkIblockId($iblockId, $prop['name']);
@@ -304,7 +304,7 @@ class IblockElementsImport extends AbstractExchange
                 $res[] = $this->exchangeHelper->getPropertyEnumIdByXmlId(
                     $iblockId,
                     $prop['name'],
-                    $val['value']
+                    $this->makePropertyValue($val)
                 );
             }
             return $res;
@@ -312,8 +312,20 @@ class IblockElementsImport extends AbstractExchange
             return $this->exchangeHelper->getPropertyEnumIdByXmlId(
                 $iblockId,
                 $prop['name'],
-                $prop['value'][0]['value']
+                $this->makePropertyValue($prop['value'][0])
             );
         }
+    }
+
+    protected function makeFieldValue($val)
+    {
+        return $this->makeValue($val);
+    }
+
+    protected function makePropertyValue($val)
+    {
+        $val = $this->makeValue($val);
+
+        return is_array($val) ? ['VALUE' => $val] : $val;
     }
 }

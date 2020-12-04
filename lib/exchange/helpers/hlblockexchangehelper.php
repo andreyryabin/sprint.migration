@@ -78,7 +78,7 @@ class HlblockExchangeHelper extends ExchangeHelper
      */
     public function getFieldType($hlblockName, $fieldName)
     {
-        $field = $this->getCachedField($hlblockName, $fieldName);
+        $field = $this->getField($hlblockName, $fieldName);
         return $field['USER_TYPE_ID'];
     }
 
@@ -90,7 +90,7 @@ class HlblockExchangeHelper extends ExchangeHelper
      */
     public function isFieldMultiple($hlblockName, $fieldName)
     {
-        $field = $this->getCachedField($hlblockName, $fieldName);
+        $field = $this->getField($hlblockName, $fieldName);
         return ($field['MULTIPLE'] == 'Y');
     }
 
@@ -103,7 +103,7 @@ class HlblockExchangeHelper extends ExchangeHelper
      */
     public function getFieldEnumIdByXmlId($hlblockName, $fieldName, $xmlId)
     {
-        $field = $this->getCachedField($hlblockName, $fieldName);
+        $field = $this->getField($hlblockName, $fieldName);
         if (empty($field['ENUM_VALUES']) || !is_array($field['ENUM_VALUES'])) {
             return '';
         }
@@ -126,7 +126,7 @@ class HlblockExchangeHelper extends ExchangeHelper
      */
     public function getFieldEnumXmlIdById($hlblockName, $fieldName, $id)
     {
-        $field = $this->getCachedField($hlblockName, $fieldName);
+        $field = $this->getField($hlblockName, $fieldName);
         if (empty($field['ENUM_VALUES']) || !is_array($field['ENUM_VALUES'])) {
             return '';
         }
@@ -145,7 +145,7 @@ class HlblockExchangeHelper extends ExchangeHelper
      * @throws HelperException
      * @return mixed
      */
-    protected function getCachedField($hlblockName, $fieldName)
+    public function getField($hlblockName, $fieldName)
     {
         $key = $hlblockName . $fieldName;
 

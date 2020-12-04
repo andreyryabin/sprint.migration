@@ -33,25 +33,25 @@ class IblockExchangeHelper extends ExchangeHelper
 
     public function getPropertyType($iblockId, $code)
     {
-        $prop = $this->getCachedProperty($iblockId, $code);
+        $prop = $this->getProperty($iblockId, $code);
         return $prop['PROPERTY_TYPE'];
     }
 
     public function getPropertyLinkIblockId($iblockId, $code)
     {
-        $prop = $this->getCachedProperty($iblockId, $code);
+        $prop = $this->getProperty($iblockId, $code);
         return $prop['LINK_IBLOCK_ID'];
     }
 
     public function isPropertyMultiple($iblockId, $code)
     {
-        $prop = $this->getCachedProperty($iblockId, $code);
+        $prop = $this->getProperty($iblockId, $code);
         return ($prop['MULTIPLE'] == 'Y');
     }
 
     public function getPropertyEnumIdByXmlId($iblockId, $code, $xmlId)
     {
-        $prop = $this->getCachedProperty($iblockId, $code);
+        $prop = $this->getProperty($iblockId, $code);
         if (empty($prop['VALUES']) || !is_array($prop['VALUES'])) {
             return '';
         }
@@ -188,7 +188,7 @@ class IblockExchangeHelper extends ExchangeHelper
         return $ids;
     }
 
-    protected function getCachedProperty($iblockId, $code)
+    public function getProperty($iblockId, $code)
     {
         $key = $iblockId . $code;
 
