@@ -14,6 +14,15 @@ function migrationMigrationsDownConfirm() {
     }
 }
 
+function migrationMigrationsDeleteUnknownConfirm() {
+    if (confirm('Confirm delete migrations')) {
+        migrationExecuteStep('migration_mark', {
+            'version': 'unknown',
+            'status': 'new',
+        });
+    }
+}
+
 function migrationMigrationsUpWithTag() {
     var settag = prompt('Set migrations tag');
     if (settag !== null) {

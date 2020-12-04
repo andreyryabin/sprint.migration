@@ -23,6 +23,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "DOWN_START"                                   => "Rollback all",
         "UP_CONFIRM"                                   => "Install new migrations?",
         "DOWN_CONFIRM"                                 => "Rollback all installed migrations?",
+        "DELETE_UNKNOWN"                               => "Delete all unknown migrations",
+        "DELETE_UNKNOWN_CONFIRM"                       => "Delete all unknown migrations?",
         "VIEW_FILE"                                    => "View file",
         "TRANSFER_TO"                                  => "Transfer to",
         "TOGGLE_LIST"                                  => "All",

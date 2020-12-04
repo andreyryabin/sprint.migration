@@ -23,6 +23,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "DOWN_START"                                   => "Откатить все",
         "UP_CONFIRM"                                   => "Установить новые миграции?",
         "DOWN_CONFIRM"                                 => "Откатить все установленные миграции?",
+        "DELETE_UNKNOWN"                               => "Удалить все неизвестные мигиации",
+        "DELETE_UNKNOWN_CONFIRM"                       => "Удалить все неизвестные мигиации?",
         "VIEW_FILE"                                    => "Просмотреть",
         "TRANSFER_TO"                                  => "Перенести в",
         "TOGGLE_LIST"                                  => "Все",

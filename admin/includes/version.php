@@ -15,6 +15,10 @@ $getOnclickMenu = function ()  {
         'TEXT' => Locale::getMessage('DOWN_START'),
         'ONCLICK' => 'migrationMigrationsDownConfirm()',
     ];
+    $menu[] = [
+        'TEXT' => Locale::getMessage('DELETE_UNKNOWN'),
+        'ONCLICK' => 'migrationMigrationsDeleteUnknownConfirm()',
+    ];
     return CUtil::PhpToJSObject($menu);
 }
 ?>
