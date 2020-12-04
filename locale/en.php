@@ -21,7 +21,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "UP_START"                                     => "Install all",
         "UP_START_WITH_TAG"                            => "Install all with tag",
         "DOWN_START"                                   => "Rollback all",
-        "DELETE_UNKNOWN"                               => "Delete all unknown migrations",
+        "DELETE_UNKNOWN"                               => "Delete all unknown",
         "VIEW_FILE"                                    => "View file",
         "TRANSFER_TO"                                  => "Transfer to",
         "TOGGLE_LIST"                                  => "All",

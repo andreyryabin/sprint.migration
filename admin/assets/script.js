@@ -15,7 +15,7 @@ function migrationMigrationsDownConfirm() {
 }
 
 function migrationMigrationsDeleteUnknownConfirm() {
-    if (confirm('Confirm delete migrations')) {
+    if (confirm('Confirm delete unknown migrations')) {
         migrationExecuteStep('migration_mark', {
             'version': 'unknown',
             'status': 'new',

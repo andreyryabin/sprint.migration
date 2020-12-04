@@ -21,7 +21,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "UP_START"                                     => "Установить новые",
         "UP_START_WITH_TAG"                            => "Установить новые с тегом",
         "DOWN_START"                                   => "Откатить все",
-        "DELETE_UNKNOWN"                               => "Удалить все неизвестные миграции",
+        "DELETE_UNKNOWN"                               => "Удалить все неизвестные",
         "VIEW_FILE"                                    => "Просмотреть",
         "TRANSFER_TO"                                  => "Перенести в",
         "TOGGLE_LIST"                                  => "Все",
