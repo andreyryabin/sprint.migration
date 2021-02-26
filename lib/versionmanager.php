@@ -340,7 +340,7 @@ class VersionManager
     public function getVersionTimestamp($versionName)
     {
         $matches = [];
-        if (preg_match('/\d{14}/', $versionName, $matches)) {
+        if (preg_match('/20\d{12}/', $versionName, $matches)) {
             return end($matches);
         }
 

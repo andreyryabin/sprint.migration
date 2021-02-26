@@ -27,7 +27,7 @@ class Installer
     /**
      * @throws MigrationException
      */
-    public function install()
+    public function up()
     {
         $this->executeAll(
             [
@@ -39,7 +39,7 @@ class Installer
     /**
      * @throws MigrationException
      */
-    public function uninstall()
+    public function down()
     {
         $this->executeAll(
             [
