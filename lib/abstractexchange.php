@@ -129,10 +129,18 @@ abstract class AbstractExchange
         }
     }
 
+    protected function correctSerializeValueLength($value)
+    {
+        $htmlCodedLength = strlen($value['TEXT']);
+        $htmlDecodedLength = strlen(htmlspecialchars_decode($value['TEXT']));
+        return str_replace($htmlCodedLength, $htmlDecodedLength, serialize($value));
+    }
+
     protected function writeSerializedValue($writer, $value)
     {
         if (is_array($value)) {
-            $this->writeSingleValue($writer, serialize($value), ['type' => 'serialized']);
+            $serializedValue = $this->correctSerializeValueLength($value);
+            $this->writeSingleValue($writer, $serializedValue, ['type' => 'serialized']);
         } else {
             $this->writeSingleValue($writer, $value);
         }
