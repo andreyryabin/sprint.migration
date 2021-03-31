@@ -129,12 +129,12 @@ abstract class AbstractExchange
         }
     }
 
-    protected function writeSerializedValue($writer, $value)
+    protected function writeSerializedValue($writer, $value, $attributes = [])
     {
         if (is_array($value)) {
-            $this->writeSingleValue($writer, serialize($value), ['type' => 'serialized']);
+            $this->writeSingleValue($writer, serialize($value), array_merge($attributes, ['type' => 'serialized']));
         } else {
-            $this->writeSingleValue($writer, $value);
+            $this->writeSingleValue($writer, $value, $attributes);
         }
     }
 
