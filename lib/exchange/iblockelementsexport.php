@@ -220,7 +220,12 @@ class IblockElementsExport extends AbstractExchange
     {
         if ($prop['MULTIPLE'] == 'Y') {
             foreach ($prop['VALUE'] as $val1) {
-                $this->writeSerializedValue($writer, $val1);
+                $attributes = [];
+                if (isset($prop['DESCRIPTION'][$k])) {
+                    $attributes = ['description' => $prop['DESCRIPTION'][$k]];
+                }
+                
+                $this->writeSerializedValue($writer, $val1, $attributes);
             }
         } else {
             $this->writeSerializedValue($writer, $prop['VALUE']);
