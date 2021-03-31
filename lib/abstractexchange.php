@@ -229,7 +229,11 @@ abstract class AbstractExchange
 
                     $reader->read();
                     $val['value'] = $this->purifyValue($reader->value);
-
+                    
+                    if ($reader->description) {
+                        $val['description'] = $this->purifyValue($reader->description);
+                    }
+                    
                     $field['value'][] = $val;
                 }
             } while (!$this->isCloseTag($reader, $tag));
