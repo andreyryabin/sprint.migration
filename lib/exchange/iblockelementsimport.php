@@ -252,14 +252,15 @@ class IblockElementsImport extends AbstractExchange
 
     protected function convertPropertyS($iblockId, $prop)
     {
+        $description = ($prop['value'][$k]['description'] ?: '');
         if ($this->exchangeHelper->isPropertyMultiple($iblockId, $prop['name'])) {
             $res = [];
             foreach ($prop['value'] as $val) {
-                $res[] = $this->makePropertyValue($val);
+                $res[] = $this->makePropertyValue($val, $description);
             }
             return $res;
         } else {
-            return $this->makePropertyValue($prop['value'][0]);
+            return $this->makePropertyValue($prop['value'][0], $description);
         }
     }
 
@@ -325,7 +326,12 @@ class IblockElementsImport extends AbstractExchange
     protected function makePropertyValue($val)
     {
         $val = $this->makeValue($val);
+        $result = ['VALUE' => $val];
 
-        return is_array($val) ? ['VALUE' => $val] : $val;
+        if ($description) {
+            $result['DESCRIPTION'] = $description;
+        }
+        
+        return $result;
     }
 }
