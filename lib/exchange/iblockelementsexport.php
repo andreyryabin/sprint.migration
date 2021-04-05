@@ -126,6 +126,7 @@ class IblockElementsExport extends AbstractExchange
 
             foreach ($items as $item) {
                 $writer = new XMLWriter();
+                $writer->startDocument('1.0', 'UTF-8');
                 $writer->openMemory();
                 $writer->startElement('item');
 
@@ -143,7 +144,7 @@ class IblockElementsExport extends AbstractExchange
 
                 foreach ($item['PROPS'] as $prop) {
                     if (in_array($prop['CODE'], $this->getExportProperties())) {
-                        $method = $this->getWritePropertyMethod($prop['PROPERTY_TYPE']);
+                        $method = $this->getWritePropertyMethod($prop);
                         if (method_exists($this, $method)) {
                             $writer->startElement('property');
                             $writer->writeAttribute('name', $prop['CODE']);
@@ -207,8 +208,10 @@ class IblockElementsExport extends AbstractExchange
         $this->writeValue($writer, $val);
     }
 
-    protected function getWritePropertyMethod($type)
+    protected function getWritePropertyMethod($prop)
     {
+        $type = $prop['PROPERTY_TYPE'];
+
         if (in_array($type, ['L', 'F', 'G'])) {
             return 'writeProperty' . ucfirst($type);
         } else {

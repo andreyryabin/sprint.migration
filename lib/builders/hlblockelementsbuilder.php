@@ -20,7 +20,7 @@ class HlblockElementsBuilder extends VersionBuilder
      */
     protected function isBuilderEnabled()
     {
-        return $this->getHelperManager()->Hlblock()->isEnabled();
+        return (!Locale::isWin1251() && $this->getHelperManager()->Hlblock()->isEnabled());
     }
 
     protected function initialize()
@@ -38,12 +38,14 @@ class HlblockElementsBuilder extends VersionBuilder
      */
     protected function execute()
     {
-        $this->addField('hlblock_id', [
-            'title' => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
+        $this->addField(
+            'hlblock_id', [
+            'title'       => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
             'placeholder' => '',
-            'width' => 250,
-            'select' => $this->getHlblocksStructure(),
-        ]);
+            'width'       => 250,
+            'select'      => $this->getHlblocksStructure(),
+        ]
+        );
 
         $hlblockId = $this->getFieldValue('hlblock_id');
         if (empty($hlblockId)) {
@@ -57,16 +59,16 @@ class HlblockElementsBuilder extends VersionBuilder
         $versionName = $this->params['~version_name'];
 
         $this->getExchangeManager()
-            ->HlblockElementsExport()
-            ->setLimit(20)
-            ->setExportFields(
-                $this->getHlblockFieldsCodes($hlblockId)
-            )
-            ->setHlblockId($hlblockId)
-            ->setExchangeFile(
-                $this->getVersionResourceFile($versionName, 'hlblock_elements.xml')
-            )
-            ->execute();
+             ->HlblockElementsExport()
+             ->setLimit(20)
+             ->setExportFields(
+                 $this->getHlblockFieldsCodes($hlblockId)
+             )
+             ->setHlblockId($hlblockId)
+             ->setExchangeFile(
+                 $this->getVersionResourceFile($versionName, 'hlblock_elements.xml')
+             )
+             ->execute();
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/HlblockElementsExport.php',
