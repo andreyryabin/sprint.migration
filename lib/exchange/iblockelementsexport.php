@@ -227,14 +227,14 @@ class IblockElementsExport extends AbstractExchange
                 if (!empty($prop['DESCRIPTION'][$index])) {
                     $attributes = ['description' => $prop['DESCRIPTION'][$index]];
                 }
-                $this->writeSerializedValue($writer, $val1, $attributes);
+                $this->writeSingleValue($writer, $val1, $attributes);
             }
         } else {
             $attributes = [];
             if (!empty($prop['DESCRIPTION'])) {
                 $attributes = ['description' => $prop['DESCRIPTION']];
             }
-            $this->writeSerializedValue($writer, $prop['VALUE'], $attributes);
+            $this->writeSingleValue($writer, $prop['VALUE'], $attributes);
         }
     }
 

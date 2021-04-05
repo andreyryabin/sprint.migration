@@ -5,6 +5,7 @@ namespace Sprint\Migration;
 use CFile;
 use Exception;
 use Sprint\Migration\Exceptions\ExchangeException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\Helpers\ExchangeHelper;
 use XMLReader;
@@ -118,6 +119,12 @@ abstract class AbstractExchange
     protected function writeSingleValue(XMLWriter $writer, $val, $attributes = [])
     {
         if (!empty($val)) {
+            if (is_array($val)) {
+                $val = $this->purifyValue($val);
+                $val = json_encode($val, JSON_UNESCAPED_UNICODE);
+                $attributes['type'] = 'json';
+            }
+
             $writer->startElement('value');
             foreach ($attributes as $atcode => $atval) {
                 if (!empty($atval)) {
@@ -126,15 +133,6 @@ abstract class AbstractExchange
             }
             $writer->text($val);
             $writer->endElement();
-        }
-    }
-
-    protected function writeSerializedValue($writer, $value, $attributes = [])
-    {
-        if (is_array($value)) {
-            $this->writeSingleValue($writer, serialize($value), array_merge($attributes, ['type' => 'serialized']));
-        } else {
-            $this->writeSingleValue($writer, $value, $attributes);
         }
     }
 
@@ -180,7 +178,7 @@ abstract class AbstractExchange
         }
     }
 
-    protected function makeFile($value)
+    protected function makeFileValue($value)
     {
         if (!empty($value['value'])) {
             $path = $this->getExchangeDir() . '/' . $value['value'];
@@ -192,15 +190,6 @@ abstract class AbstractExchange
         }
 
         return false;
-    }
-
-    protected function makeValue($value)
-    {
-        $type = isset($value['type']) ? $value['type'] : '';
-        if ($type == 'serialized') {
-            return unserialize($value['value']);
-        }
-        return $value['value'];
     }
 
     protected function collectField(XMLReader $reader, $tag)
@@ -228,7 +217,12 @@ abstract class AbstractExchange
                     }
 
                     $reader->read();
-                    $val['value'] = $this->purifyValue($reader->value);
+
+                    if (isset($val['type']) && $val['type'] == 'json') {
+                        $val['value'] = json_decode($reader->value, true);
+                    } else {
+                        $val['value'] = $this->purifyValue($reader->value);
+                    }
 
                     $field['value'][] = $val;
                 }
@@ -237,22 +231,16 @@ abstract class AbstractExchange
         return $field;
     }
 
-    protected function purifyValue($value)
+    protected function purifyValue($data)
     {
-        $value = trim($value);
-
-        $search = ["'&(quot|#34);'i", "'&(lt|#60);'i", "'&(gt|#62);'i", "'&(amp|#38);'i"];
-        $replace = ["\"", "<", ">", "&"];
-
-        if (preg_match("/^\s*$/", $value)) {
-            $res = '';
-        } elseif (strpos($value, "&") === false) {
-            $res = $value;
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = $this->purifyValue($value);
+            }
         } else {
-            $res = preg_replace($search, $replace, $value);
+            $data = htmlspecialchars_decode($data);
         }
-
-        return $res;
+        return $data;
     }
 
     protected function isOpenTag(XMLReader $reader, $tag)

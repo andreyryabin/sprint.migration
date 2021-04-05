@@ -216,11 +216,11 @@ class HlblockElementsImport extends AbstractExchange
         if ($this->exchangeHelper->isFieldMultiple($hlblockId, $field['name'])) {
             $res = [];
             foreach ($field['value'] as $val) {
-                $res[] = $this->makeFile($val);
+                $res[] = $this->makeFileValue($val);
             }
             return $res;
         } else {
-            return $this->makeFile($field['value'][0]);
+            return $this->makeFileValue($field['value'][0]);
         }
     }
 

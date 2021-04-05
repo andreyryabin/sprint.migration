@@ -116,29 +116,90 @@ class IblockExchangeHelper extends ExchangeHelper
                     ->getElementsCount($iblockId, $filter);
     }
 
-    public function getSectionUniqNamesByIds($iblockId, $sectionIds = [])
+    public function getSectionUniqNameById($iblockId, $sectionId)
     {
-        $uniqName = [];
+        if (empty($sectionId)) {
+            throw new HelperException(
+                sprintf(
+                    'Категория в инфоблоке "%s" не заполнена',
+                    $iblockId
+                )
+            );
+        }
 
-        if (empty($sectionIds) || !is_array($sectionIds)) {
+        $section = CIBlockSection::GetList(
+            [],
+            [
+                'ID'        => $sectionId,
+                'IBLOCK_ID' => $iblockId,
+            ]
+        )->Fetch();
+
+        if (empty($section['ID'])) {
+            throw new HelperException(
+                sprintf(
+                    'Категория "%s" в инфоблоке "%s"не найдена',
+                    $sectionId,
+                    $iblockId
+                )
+            );
+        }
+
+        return $section['NAME'] . '|' . (int)$section['DEPTH_LEVEL'];
+    }
+
+    public function getSectionIdByUniqName($iblockId, $uniqName)
+    {
+        if (empty($uniqName)) {
+            throw new HelperException(
+                sprintf(
+                    'Категория в инфоблоке "%s" не заполнена',
+                    $iblockId
+                )
+            );
+        }
+
+        if (is_numeric($uniqName)) {
             return $uniqName;
         }
 
-        foreach ($sectionIds as $sectionId) {
-            if (!empty($sectionId)) {
-                $section = CIBlockSection::GetList(
-                    [],
-                    [
-                        'ID'        => $sectionId,
-                        'IBLOCK_ID' => $iblockId,
-                    ]
-                )->Fetch();
+        list($sectionName, $depthLevel) = explode('|', $uniqName);
 
-                $uniqName[] = $section['NAME'] . '|' . (int)$section['DEPTH_LEVEL'];
-            }
+        $section = CIBlockSection::GetList(
+            [],
+            [
+                'NAME'        => $sectionName,
+                'DEPTH_LEVEL' => $depthLevel,
+                'IBLOCK_ID'   => $iblockId,
+            ]
+        )->Fetch();
+
+        if (empty($section['ID'])) {
+            throw new HelperException(
+                sprintf(
+                    'Категория "%s" на уровне "%s"не найдена',
+                    $sectionName,
+                    $depthLevel
+                )
+            );
         }
 
-        return $uniqName;
+        return $section['ID'];
+    }
+
+    public function getSectionUniqNamesByIds($iblockId, $sectionIds = [])
+    {
+        $uniqNames = [];
+
+        if (empty($sectionIds) || !is_array($sectionIds)) {
+            return $uniqNames;
+        }
+
+        foreach ($sectionIds as $sectionId) {
+            $uniqNames[] = $this->getSectionUniqNameById($iblockId, $sectionId);
+        }
+
+        return $uniqNames;
     }
 
     /**
@@ -157,33 +218,7 @@ class IblockExchangeHelper extends ExchangeHelper
         }
 
         foreach ($uniqNames as $uniqName) {
-            if (is_numeric($uniqName)) {
-                $ids[] = $uniqName;
-                continue;
-            }
-
-            list($sectionName, $depthLevel) = explode('|', $uniqName);
-
-            $section = CIBlockSection::GetList(
-                [],
-                [
-                    'NAME'        => $sectionName,
-                    'DEPTH_LEVEL' => $depthLevel,
-                    'IBLOCK_ID'   => $iblockId,
-                ]
-            )->Fetch();
-
-            if (empty($section['ID'])) {
-                throw new HelperException(
-                    sprintf(
-                        'Категория "%s" на уровне "%s"не найдена',
-                        $sectionName,
-                        $depthLevel
-                    )
-                );
-            }
-
-            $ids[] = $section['ID'];
+            $ids[] = $this->getSectionIdByUniqName($iblockId, $uniqName);
         }
         return $ids;
     }
