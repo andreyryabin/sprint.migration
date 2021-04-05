@@ -324,8 +324,14 @@ class IblockElementsImport extends AbstractExchange
 
     protected function makePropertyValue($val)
     {
-        $val = $this->makeValue($val);
+        $result = [
+            'VALUE' => $this->makeValue($val),
+        ];
 
-        return is_array($val) ? ['VALUE' => $val] : $val;
+        if (!empty($val['description'])) {
+            $result['DESCRIPTION'] = $val['description'];
+        }
+
+        return $result;
     }
 }
