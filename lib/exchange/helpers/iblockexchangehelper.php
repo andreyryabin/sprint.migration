@@ -5,6 +5,7 @@ namespace Sprint\Migration\Exchange\Helpers;
 use CIBlockElement;
 use CIBlockSection;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 class IblockExchangeHelper extends ExchangeHelper
 {
@@ -116,13 +117,22 @@ class IblockExchangeHelper extends ExchangeHelper
                     ->getElementsCount($iblockId, $filter);
     }
 
+    /**
+     * @param $iblockId
+     * @param $sectionId
+     *
+     * @throws HelperException
+     * @return string
+     */
     public function getSectionUniqNameById($iblockId, $sectionId)
     {
         if (empty($sectionId)) {
             throw new HelperException(
-                sprintf(
-                    'Категория в инфоблоке "%s" не заполнена',
-                    $iblockId
+                Locale::getMessage(
+                    'ERR_IB_SECTION_ID_EMPTY',
+                    [
+                        '#IBLOCK_ID#' => $iblockId,
+                    ]
                 )
             );
         }
@@ -137,10 +147,12 @@ class IblockExchangeHelper extends ExchangeHelper
 
         if (empty($section['ID'])) {
             throw new HelperException(
-                sprintf(
-                    'Категория "%s" в инфоблоке "%s"не найдена',
-                    $sectionId,
-                    $iblockId
+                Locale::getMessage(
+                    'ERR_IB_SECTION_ID_NOT_FOUND',
+                    [
+                        '#IBLOCK_ID#'  => $iblockId,
+                        '#SECTION_ID#' => $sectionId,
+                    ]
                 )
             );
         }
@@ -148,13 +160,22 @@ class IblockExchangeHelper extends ExchangeHelper
         return $section['NAME'] . '|' . (int)$section['DEPTH_LEVEL'];
     }
 
+    /**
+     * @param $iblockId
+     * @param $uniqName
+     *
+     * @throws HelperException
+     * @return int|mixed|string
+     */
     public function getSectionIdByUniqName($iblockId, $uniqName)
     {
         if (empty($uniqName)) {
             throw new HelperException(
-                sprintf(
-                    'Категория в инфоблоке "%s" не заполнена',
-                    $iblockId
+                Locale::getMessage(
+                    'ERR_IB_SECTION_ID_EMPTY',
+                    [
+                        '#IBLOCK_ID#' => $iblockId,
+                    ]
                 )
             );
         }
@@ -176,10 +197,12 @@ class IblockExchangeHelper extends ExchangeHelper
 
         if (empty($section['ID'])) {
             throw new HelperException(
-                sprintf(
-                    'Категория "%s" на уровне "%s"не найдена',
-                    $sectionName,
-                    $depthLevel
+                Locale::getMessage(
+                    'ERR_IB_SECTION_ON_LEVEL_NOT_FOUND',
+                    [
+                        '#SECTION_NAME#' => $sectionName,
+                        '#DEPTH_LEVEL#'  => $depthLevel,
+                    ]
                 )
             );
         }
@@ -187,6 +210,13 @@ class IblockExchangeHelper extends ExchangeHelper
         return $section['ID'];
     }
 
+    /**
+     * @param       $iblockId
+     * @param array $sectionIds
+     *
+     * @throws HelperException
+     * @return array
+     */
     public function getSectionUniqNamesByIds($iblockId, $sectionIds = [])
     {
         $uniqNames = [];

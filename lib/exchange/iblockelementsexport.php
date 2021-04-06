@@ -113,7 +113,7 @@ class IblockElementsExport extends AbstractExchange
             );
 
             $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
-            $this->appendToExchangeFile('<items iblockUid="' . $iblockUid . '">');
+            $this->appendToExchangeFile('<items iblockUid="' . $iblockUid . '" exchangeVersion="' . self::EXCHANGE_VERSION . '">');
         }
 
         if ($params['offset'] <= $params['total'] - 1) {

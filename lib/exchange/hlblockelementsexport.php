@@ -47,7 +47,7 @@ class HlblockElementsExport extends AbstractExchange
             $hlblockUid = $this->exchangeHelper->getHlblockUid($this->hlblockId);
 
             $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
-            $this->appendToExchangeFile('<items hlblockUid="' . $hlblockUid . '">');
+            $this->appendToExchangeFile('<items hlblockUid="' . $hlblockUid . '" exchangeVersion="'.self::EXCHANGE_VERSION.'">');
         }
 
         if ($params['offset'] <= $params['total'] - 1) {

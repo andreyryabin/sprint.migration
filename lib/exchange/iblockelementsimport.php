@@ -53,15 +53,14 @@ class IblockElementsImport extends AbstractExchange
             $params['total'] = 0;
             $params['offset'] = 0;
             $params['iblock_id'] = 0;
-            $params['version'] = 0;
+            $exchangeVersion = 0;
 
             while ($reader->read()) {
                 if ($this->isOpenTag($reader, 'items')) {
+                    $exchangeVersion = (int)$reader->getAttribute('exchangeVersion');
                     $params['iblock_id'] = $this->exchangeHelper->getIblockIdByUid(
                         $reader->getAttribute('iblockUid')
                     );
-
-                    $params['version'] = $reader->getAttribute('version');
                 }
 
                 if ($this->isOpenTag($reader, 'item')) {
@@ -71,9 +70,13 @@ class IblockElementsImport extends AbstractExchange
 
             $reader->close();
 
-            $this->exchangeEntity->exitIfEmpty(
-                $params['iblock_id'], 'iblockId not found'
-            );
+            if (!$exchangeVersion || $exchangeVersion < self::EXCHANGE_VERSION) {
+                $this->exchangeEntity->exitWithMessage(
+                    Locale::getMessage('ERR_EXCHANGE_VERSION')
+                );
+            }
+
+            $this->exchangeEntity->exitIfEmpty($params['iblock_id'], Locale::getMessage('ERR_IB_NOT_FOUND'));
         }
 
         $reader = new XMLReader();

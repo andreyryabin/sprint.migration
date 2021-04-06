@@ -25,6 +25,7 @@ class HlblockElementsImport extends AbstractExchange
 
     /**
      * @param callable $converter
+     *
      * @throws ExchangeException
      * @throws RestartException
      * @throws HelperException
@@ -35,7 +36,6 @@ class HlblockElementsImport extends AbstractExchange
         $params = $this->exchangeEntity->getRestartParams();
 
         if (!isset($params['total'])) {
-
             $this->exchangeEntity->exitIf(
                 !is_file($this->file),
                 Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND')
@@ -46,9 +46,10 @@ class HlblockElementsImport extends AbstractExchange
             $params['total'] = 0;
             $params['offset'] = 0;
             $params['hlblock_id'] = 0;
-
+            $exchangeVersion = 0;
             while ($reader->read()) {
                 if ($this->isOpenTag($reader, 'items')) {
+                    $exchangeVersion = (int)$reader->getAttribute('exchangeVersion');
                     $params['hlblock_id'] = $this->exchangeHelper->getHlblockIdByUid(
                         $reader->getAttribute('hlblockUid')
                     );
@@ -61,9 +62,13 @@ class HlblockElementsImport extends AbstractExchange
 
             $reader->close();
 
-            $this->exchangeEntity->exitIfEmpty(
-                $params['hlblock_id'], 'hlblockId not found'
-            );
+            if (!$exchangeVersion || $exchangeVersion < self::EXCHANGE_VERSION) {
+                $this->exchangeEntity->exitWithMessage(
+                    Locale::getMessage('ERR_EXCHANGE_VERSION')
+                );
+            }
+
+            $this->exchangeEntity->exitIfEmpty($params['hlblock_id'], Locale::getMessage('ERR_HLB_NOT_FOUND'));
         }
 
         $reader = new XMLReader();
@@ -72,10 +77,9 @@ class HlblockElementsImport extends AbstractExchange
 
         while ($reader->read()) {
             if ($this->isOpenTag($reader, 'item')) {
-
                 $collect = (
-                    $index >= $params['offset'] &&
-                    $index < $params['offset'] + $this->getLimit()
+                    $index >= $params['offset']
+                    && $index < $params['offset'] + $this->getLimit()
                 );
 
                 $finish = ($index >= $params['total'] - 1);
@@ -107,7 +111,8 @@ class HlblockElementsImport extends AbstractExchange
 
     /**
      * @param XMLReader $reader
-     * @param $hlblockId
+     * @param           $hlblockId
+     *
      * @throws HelperException
      */
     protected function collectItem(XMLReader $reader, $hlblockId)
@@ -121,13 +126,14 @@ class HlblockElementsImport extends AbstractExchange
                 if ($field) {
                     $fields[] = $field;
                 }
-
             } while (!$this->isCloseTag($reader, 'item'));
 
-            $convertedItem = $this->convertItem([
-                'hlblock_id' => $hlblockId,
-                'fields' => $fields,
-            ]);
+            $convertedItem = $this->convertItem(
+                [
+                    'hlblock_id' => $hlblockId,
+                    'fields'     => $fields,
+                ]
+            );
 
             if ($convertedItem) {
                 call_user_func($this->converter, $convertedItem);
@@ -135,9 +141,9 @@ class HlblockElementsImport extends AbstractExchange
         }
     }
 
-
     /**
      * @param $item
+     *
      * @throws HelperException
      * @return array|bool
      */
@@ -164,13 +170,14 @@ class HlblockElementsImport extends AbstractExchange
 
         return [
             'hlblock_id' => $item['hlblock_id'],
-            'fields' => $convertedFields,
+            'fields'     => $convertedFields,
         ];
     }
 
     /**
      * @param $hlblockId
      * @param $fieldName
+     *
      * @throws HelperException
      * @return string
      */
@@ -185,10 +192,10 @@ class HlblockElementsImport extends AbstractExchange
         }
     }
 
-
     /**
      * @param $hlblockId
      * @param $field
+     *
      * @throws HelperException
      * @return array
      */
@@ -208,6 +215,7 @@ class HlblockElementsImport extends AbstractExchange
     /**
      * @param $hlblockId
      * @param $field
+     *
      * @throws HelperException
      * @return array|bool|null
      */
@@ -227,6 +235,7 @@ class HlblockElementsImport extends AbstractExchange
     /**
      * @param $hlblockId
      * @param $field
+     *
      * @throws HelperException
      * @return array
      */

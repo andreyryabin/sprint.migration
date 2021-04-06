@@ -5,7 +5,6 @@ namespace Sprint\Migration;
 use CFile;
 use Exception;
 use Sprint\Migration\Exceptions\ExchangeException;
-use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\Helpers\ExchangeHelper;
 use XMLReader;
@@ -13,6 +12,7 @@ use XMLWriter;
 
 abstract class AbstractExchange
 {
+    const EXCHANGE_VERSION = 2;
     use OutTrait {
         out as protected;
         outIf as protected;
