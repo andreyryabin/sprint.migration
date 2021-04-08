@@ -47,12 +47,10 @@ class IblockElementsImport extends AbstractExchange
                         $reader->getAttribute('iblockUid')
                     );
                 }
-
                 if ($this->isOpenTag($reader, 'item')) {
                     $params['total']++;
                 }
             }
-
             $reader->close();
 
             if (!$exchangeVersion || $exchangeVersion < self::EXCHANGE_VERSION) {
@@ -70,13 +68,9 @@ class IblockElementsImport extends AbstractExchange
 
         while ($reader->read()) {
             if ($this->isOpenTag($reader, 'item')) {
-                $collect = (
-                    $index >= $params['offset']
-                    && $index < $params['offset'] + $this->getLimit()
-                );
-
-                $finish = ($index >= $params['total'] - 1);
+                $collect = ($index >= $params['offset'] && $index < $params['offset'] + $this->getLimit());
                 $restart = ($index >= $params['offset'] + $this->getLimit());
+                $finish = ($index >= $params['total'] - 1);
 
                 if ($collect) {
                     $this->collectItem($reader, $params['iblock_id']);

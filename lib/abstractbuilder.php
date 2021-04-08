@@ -87,6 +87,13 @@ abstract class AbstractBuilder extends ExchangeEntity
         $this->fields[$code] = $param;
     }
 
+    /**
+     * @param string $code
+     * @param array  $param
+     *
+     * @throws RebuildException
+     * @return mixed
+     */
     protected function addFieldAndReturn($code, $param = [])
     {
         $this->addField($code, $param);

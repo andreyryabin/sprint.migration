@@ -37,8 +37,6 @@ class MedialibElementsExport extends AbstractExchange
 
     /**
      * @throws RestartException
-     * @throws HelperException
-     * @throws Exception
      */
     public function execute()
     {

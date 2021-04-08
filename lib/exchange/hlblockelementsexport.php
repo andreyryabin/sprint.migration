@@ -73,7 +73,6 @@ class HlblockElementsExport extends AbstractExchange
                     }
                 }
 
-                //item
                 $writer->endElement();
                 $this->appendToExchangeFile($writer->flush());
                 $params['offset']++;

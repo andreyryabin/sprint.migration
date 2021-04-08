@@ -7,6 +7,7 @@ use Sprint\Migration\Exchange\HlblockElementsImport;
 use Sprint\Migration\Exchange\IblockElementsExport;
 use Sprint\Migration\Exchange\IblockElementsImport;
 use Sprint\Migration\Exchange\MedialibElementsExport;
+use Sprint\Migration\Exchange\MedialibElementsImport;
 
 class ExchangeManager
 {
@@ -60,5 +61,14 @@ class ExchangeManager
     public function MedialibElementsExport()
     {
         return new MedialibElementsExport($this->exchangeEntity);
+    }
+
+    /**
+     * @throws Exceptions\ExchangeException
+     * @return MedialibElementsImport
+     */
+    public function MedialibElementsImport()
+    {
+        return new MedialibElementsImport($this->exchangeEntity);
     }
 }

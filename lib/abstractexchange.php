@@ -12,9 +12,8 @@ use XMLWriter;
 
 abstract class AbstractExchange
 {
-    use HelperManagerTrait;
-
     const EXCHANGE_VERSION = 2;
+    use HelperManagerTrait;
     use OutTrait {
         out as protected;
         outIf as protected;
@@ -126,7 +125,6 @@ abstract class AbstractExchange
                 $val = json_encode($val, JSON_UNESCAPED_UNICODE);
                 $attributes['type'] = 'json';
             }
-
             $writer->startElement('value');
             foreach ($attributes as $atcode => $atval) {
                 if (!empty($atval)) {
@@ -190,42 +188,34 @@ abstract class AbstractExchange
             }
             return $file;
         }
-
         return false;
     }
 
     protected function collectField(XMLReader $reader, $tag)
     {
         $field = [];
-
         if ($this->isOpenTag($reader, $tag)) {
             if ($reader->hasAttributes) {
                 while ($reader->moveToNextAttribute()) {
                     $field[$reader->name] = $this->purifyValue($reader->value);
                 }
             }
-
             $field['value'] = [];
-
             do {
                 $reader->read();
                 if ($this->isOpenTag($reader, 'value')) {
                     $val = [];
-
                     if ($reader->hasAttributes) {
                         while ($reader->moveToNextAttribute()) {
                             $val[$reader->name] = $this->purifyValue($reader->value);
                         }
                     }
-
                     $reader->read();
-
                     if (isset($val['type']) && $val['type'] == 'json') {
                         $val['value'] = json_decode($reader->value, true);
                     } else {
                         $val['value'] = $this->purifyValue($reader->value);
                     }
-
                     $field['value'][] = $val;
                 }
             } while (!$this->isCloseTag($reader, $tag));
