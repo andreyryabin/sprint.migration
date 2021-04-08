@@ -3,6 +3,8 @@
 namespace Sprint\Migration\Helpers;
 
 use Bitrix\Main\Application;
+use Bitrix\Main\Db\SqlQueryException;
+use CFile;
 use CMedialib;
 use CMedialibCollection;
 use CMedialibItem;
@@ -82,6 +84,13 @@ class MedialibHelper extends Helper
         $this->throwException(__METHOD__, 'collection not found');
     }
 
+    /**
+     * @param string|int $typeId
+     * @param array      $filter
+     *
+     * @throws HelperException
+     * @return array
+     */
     public function getCollections($typeId, $filter = [])
     {
         if (!is_numeric($typeId)) {
@@ -128,6 +137,13 @@ class MedialibHelper extends Helper
         $this->throwException(__METHOD__, 'collection not found');
     }
 
+    /**
+     * @param $typeId
+     * @param $name
+     *
+     * @throws HelperException
+     * @return int|mixed
+     */
     public function getCollectionId($typeId, $name)
     {
         $result = $this->getCollection($typeId, $name);
@@ -135,6 +151,13 @@ class MedialibHelper extends Helper
         return !empty($result['ID']) ? $result['ID'] : 0;
     }
 
+    /**
+     * @param array|int $collectionIds
+     * @param array     $params
+     *
+     * @throws HelperException
+     * @return array|void
+     */
     public function getElements($collectionIds, $params = [])
     {
         $connection = Application::getConnection();
@@ -153,7 +176,7 @@ class MedialibHelper extends Helper
         $whereQuery = $this->createWhereQuery($collectionIds, $params);
         $limitQuery = $this->createLimitQuery($collectionIds, $params);
 
-        $sqlQuery = <<<TAG
+        $sqlQuery /** @lang Text */ = <<<TAG
 SELECT MI.ID, MI.NAME, MI.DESCRIPTION, MI.KEYWORDS, MI.SOURCE_ID, MCI.COLLECTION_ID
         FROM 
             b_medialib_collection_item MCI
@@ -164,15 +187,26 @@ SELECT MI.ID, MI.NAME, MI.DESCRIPTION, MI.KEYWORDS, MI.SOURCE_ID, MCI.COLLECTION
         WHERE {$whereQuery} {$limitQuery} ;
 TAG;
 
-        return $connection->query($sqlQuery)->fetchAll();
+        try {
+            return $connection->query($sqlQuery)->fetchAll();
+        } catch (SqlQueryException $e) {
+            $this->throwException(__METHOD__, $e->getMessage());
+        }
     }
 
+    /**
+     * @param array $collectionIds
+     * @param array $params
+     *
+     * @throws SqlQueryException
+     * @return int
+     */
     public function getElementsCount($collectionIds, $params = [])
     {
         $connection = Application::getConnection();
 
         $where = $this->createWhereQuery($collectionIds, $params);
-        $sqlQuery = <<<TAG
+        $sqlQuery /** @lang Text */ = <<<TAG
 SELECT COUNT(*) CNT
         FROM 
             b_medialib_collection_item MCI
@@ -187,6 +221,7 @@ TAG;
         return (int)$result['CNT'];
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
     private function createLimitQuery($collectionIds, $params = [])
     {
         if ($params['limit'] > 0) {
@@ -195,13 +230,14 @@ TAG;
         return '';
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
     private function createWhereQuery($collectionIds, $params = [])
     {
         return 'MCI.COLLECTION_ID IN (' . implode(',', $collectionIds) . ')';
     }
 
     /**
-     * @param int          $collectionId
+     * @param array|int    $collectionId
      * @param array|string $name
      *
      * @throws HelperException
@@ -219,6 +255,13 @@ TAG;
         $this->throwException(__METHOD__, 'element not found');
     }
 
+    /**
+     * @param $collectionId
+     * @param $name
+     *
+     * @throws HelperException
+     * @return int|mixed
+     */
     public function getElementId($collectionId, $name)
     {
         $result = $this->getElement($collectionId, $name);
@@ -226,6 +269,13 @@ TAG;
         return !empty($result['ID']) ? $result['ID'] : 0;
     }
 
+    /**
+     * @param $typeId
+     * @param $fields
+     *
+     * @throws HelperException
+     * @return false|mixed
+     */
     public function addCollection($typeId, $fields)
     {
         $this->checkRequiredKeys(__METHOD__, $fields, ['NAME']);
@@ -252,6 +302,13 @@ TAG;
         return CMedialibCollection::Edit(['arFields' => $fields]);
     }
 
+    /**
+     * @param array|int $collectionId
+     * @param array     $fields
+     *
+     * @throws HelperException
+     * @return int|mixed
+     */
     public function addElement($collectionId, $fields = [])
     {
         $this->checkRequiredKeys(__METHOD__, $fields, ['NAME', 'PATH']);
@@ -268,7 +325,7 @@ TAG;
         );
 
         if (!is_array($fields['PATH'])) {
-            $fields['PATH'] = \CFile::MakeFileArray($fields['PATH']);
+            $fields['PATH'] = CFile::MakeFileArray($fields['PATH']);
         }
 
         $fields = [
