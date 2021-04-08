@@ -9,12 +9,13 @@ use Sprint\Migration\Locale;
 
 trait IblockPropertyTrait
 {
-
     /**
      * Сохраняет свойство инфоблока
      * Создаст если не было, обновит если существует и отличается
+     *
      * @param $iblockId
      * @param $fields , обязательные параметры - код свойства
+     *
      * @throws HelperException
      * @return bool|mixed
      */
@@ -34,7 +35,7 @@ trait IblockPropertyTrait
                     'IB_PROPERTY_CREATED',
                     [
                         '#IBLOCK_ID#' => $iblockId,
-                        '#NAME#' => $fields['CODE'],
+                        '#NAME#'      => $fields['CODE'],
                     ]
                 )
             );
@@ -49,7 +50,7 @@ trait IblockPropertyTrait
                     'IB_PROPERTY_UPDATED',
                     [
                         '#IBLOCK_ID#' => $iblockId,
-                        '#NAME#' => $fields['CODE'],
+                        '#NAME#'      => $fields['CODE'],
                     ]
                 )
             );
@@ -65,7 +66,7 @@ trait IblockPropertyTrait
                     'IB_PROPERTY_EQUAL',
                     [
                         '#IBLOCK_ID#' => $iblockId,
-                        '#NAME#' => $fields['CODE'],
+                        '#NAME#'      => $fields['CODE'],
                     ]
                 )
             );
@@ -75,16 +76,20 @@ trait IblockPropertyTrait
 
     /**
      * Получает свойство инфоблока
+     *
      * @param $iblockId
      * @param $code int|array - код или фильтр
+     *
      * @return array|bool
      */
     public function getProperty($iblockId, $code)
     {
         /** @compatibility filter or code */
-        $filter = is_array($code) ? $code : [
-            'CODE' => $code,
-        ];
+        $filter = is_array($code)
+            ? $code
+            : [
+                'CODE' => $code,
+            ];
 
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
@@ -95,16 +100,20 @@ trait IblockPropertyTrait
 
     /**
      * Получает значения списков для свойств инфоблоков
+     *
      * @param array $filter
+     *
      * @return array
      */
     public function getPropertyEnums($filter = [])
     {
         $result = [];
-        $dbres = CIBlockPropertyEnum::GetList([
-            'SORT' => 'ASC',
-            'VALUE' => 'ASC',
-        ], $filter);
+        $dbres = CIBlockPropertyEnum::GetList(
+            [
+                'SORT'  => 'ASC',
+                'VALUE' => 'ASC',
+            ], $filter
+        );
         while ($item = $dbres->Fetch()) {
             $result[] = $item;
         }
@@ -113,22 +122,28 @@ trait IblockPropertyTrait
 
     /**
      * Получает значения списков для свойства инфоблока
+     *
      * @param $iblockId
      * @param $propertyId
+     *
      * @return array
      */
     public function getPropertyEnumValues($iblockId, $propertyId)
     {
-        return $this->getPropertyEnums([
-            'IBLOCK_ID' => $iblockId,
-            'PROPERTY_ID' => $propertyId,
-        ]);
+        return $this->getPropertyEnums(
+            [
+                'IBLOCK_ID'   => $iblockId,
+                'PROPERTY_ID' => $propertyId,
+            ]
+        );
     }
 
     /**
      * Получает свойство инфоблока
+     *
      * @param $iblockId
      * @param $code int|array - код или фильтр
+     *
      * @return int
      */
     public function getPropertyId($iblockId, $code)
@@ -139,8 +154,10 @@ trait IblockPropertyTrait
 
     /**
      * Получает свойства инфоблока
-     * @param $iblockId
+     *
+     * @param       $iblockId
      * @param array $filter
+     *
      * @return array
      */
     public function getProperties($iblockId, $filter = [])
@@ -172,8 +189,10 @@ trait IblockPropertyTrait
 
     /**
      * Добавляет свойство инфоблока если его не существует
+     *
      * @param $iblockId
      * @param $fields , обязательные параметры - код свойства
+     *
      * @throws HelperException
      * @return bool
      */
@@ -187,32 +206,32 @@ trait IblockPropertyTrait
         }
 
         return $this->addProperty($iblockId, $fields);
-
     }
 
     /**
      * Добавляет свойство инфоблока
+     *
      * @param $iblockId
      * @param $fields
+     *
      * @throws HelperException
      * @return int|void
      */
     public function addProperty($iblockId, $fields)
     {
-
         $default = [
-            'NAME' => '',
-            'ACTIVE' => 'Y',
-            'SORT' => '500',
-            'CODE' => '',
-            'PROPERTY_TYPE' => 'S',
-            'USER_TYPE' => '',
-            'ROW_COUNT' => '1',
-            'COL_COUNT' => '30',
-            'LIST_TYPE' => 'L',
-            'MULTIPLE' => 'N',
-            'IS_REQUIRED' => 'N',
-            'FILTRABLE' => 'Y',
+            'NAME'           => '',
+            'ACTIVE'         => 'Y',
+            'SORT'           => '500',
+            'CODE'           => '',
+            'PROPERTY_TYPE'  => 'S',
+            'USER_TYPE'      => '',
+            'ROW_COUNT'      => '1',
+            'COL_COUNT'      => '30',
+            'LIST_TYPE'      => 'L',
+            'MULTIPLE'       => 'N',
+            'IS_REQUIRED'    => 'N',
+            'FILTRABLE'      => 'Y',
             'LINK_IBLOCK_ID' => 0,
         ];
 
@@ -250,8 +269,10 @@ trait IblockPropertyTrait
 
     /**
      * Удаляет свойство инфоблока если оно существует
+     *
      * @param $iblockId
      * @param $code
+     *
      * @throws HelperException
      * @return bool|void
      */
@@ -263,12 +284,13 @@ trait IblockPropertyTrait
         }
 
         return $this->deletePropertyById($property['ID']);
-
     }
 
     /**
      * Удаляет свойство инфоблока
+     *
      * @param $propertyId
+     *
      * @throws HelperException
      * @return bool|void
      */
@@ -284,9 +306,11 @@ trait IblockPropertyTrait
 
     /**
      * Обновляет свойство инфоблока если оно существует
+     *
      * @param $iblockId
      * @param $code
      * @param $fields
+     *
      * @throws HelperException
      * @return bool|int|void
      */
@@ -301,8 +325,10 @@ trait IblockPropertyTrait
 
     /**
      * Обновляет свойство инфоблока
+     *
      * @param $propertyId
      * @param $fields
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -327,9 +353,11 @@ trait IblockPropertyTrait
         }
 
         if (isset($fields['VALUES']) && is_array($fields['VALUES'])) {
-            $existsEnums = $this->getPropertyEnums([
-                'PROPERTY_ID' => $propertyId,
-            ]);
+            $existsEnums = $this->getPropertyEnums(
+                [
+                    'PROPERTY_ID' => $propertyId,
+                ]
+            );
 
             $newValues = [];
             foreach ($fields['VALUES'] as $index => $item) {
@@ -345,12 +373,10 @@ trait IblockPropertyTrait
                 } else {
                     $newValues['n' . $index] = $item;
                 }
-
             }
 
             $fields['VALUES'] = $newValues;
         }
-
 
         $ib = new CIBlockProperty();
         if ($ib->Update($propertyId, $fields)) {
@@ -363,8 +389,10 @@ trait IblockPropertyTrait
     /**
      * Получает свойство инфоблока
      * Данные подготовлены для экспорта в миграцию или схему
-     * @param $iblockId
+     *
+     * @param      $iblockId
      * @param bool $code
+     *
      * @throws HelperException
      * @return array|void
      */
@@ -389,8 +417,10 @@ trait IblockPropertyTrait
     /**
      * Получает свойства инфоблока
      * Данные подготовлены для экспорта в миграцию или схему
-     * @param $iblockId
+     *
+     * @param       $iblockId
      * @param array $filter
+     *
      * @return array
      */
     public function exportProperties($iblockId, $filter = [])
@@ -408,6 +438,7 @@ trait IblockPropertyTrait
     /**
      * @param $iblockId
      * @param $code
+     *
      * @throws HelperException
      * @return bool
      * @deprecated
@@ -421,6 +452,7 @@ trait IblockPropertyTrait
      * @param $iblockId
      * @param $code
      * @param $fields
+     *
      * @throws HelperException
      * @return bool|mixed
      * @deprecated
@@ -430,13 +462,48 @@ trait IblockPropertyTrait
         return $this->updatePropertyIfExists($iblockId, $code, $fields);
     }
 
+    public function getPropertyType($iblockId, $code)
+    {
+        $prop = $this->getProperty($iblockId, $code);
+        return $prop['PROPERTY_TYPE'];
+    }
+
+    public function getPropertyLinkIblockId($iblockId, $code)
+    {
+        $prop = $this->getProperty($iblockId, $code);
+        return $prop['LINK_IBLOCK_ID'];
+    }
+
+    public function isPropertyMultiple($iblockId, $code)
+    {
+        $prop = $this->getProperty($iblockId, $code);
+        return ($prop['MULTIPLE'] == 'Y');
+    }
+
+    public function getPropertyEnumIdByXmlId($iblockId, $code, $xmlId)
+    {
+        $prop = $this->getProperty($iblockId, $code);
+        if (empty($prop['VALUES']) || !is_array($prop['VALUES'])) {
+            return '';
+        }
+
+        foreach ($prop['VALUES'] as $val) {
+            if ($val['XML_ID'] == $xmlId) {
+                return $val['ID'];
+            }
+        }
+        return '';
+    }
+
     protected function prepareProperty($property)
     {
         if ($property && $property['PROPERTY_TYPE'] == 'L' && $property['IBLOCK_ID'] && $property['ID']) {
-            $property['VALUES'] = $this->getPropertyEnums([
-                'IBLOCK_ID' => $property['IBLOCK_ID'],
-                'PROPERTY_ID' => $property['ID'],
-            ]);
+            $property['VALUES'] = $this->getPropertyEnums(
+                [
+                    'IBLOCK_ID'   => $property['IBLOCK_ID'],
+                    'PROPERTY_ID' => $property['ID'],
+                ]
+            );
         }
         return $property;
     }
@@ -452,9 +519,9 @@ trait IblockPropertyTrait
 
             foreach ($prop['VALUES'] as $item) {
                 $exportValues[] = [
-                    'VALUE' => $item['VALUE'],
-                    'DEF' => $item['DEF'],
-                    'SORT' => $item['SORT'],
+                    'VALUE'  => $item['VALUE'],
+                    'DEF'    => $item['DEF'],
+                    'SORT'   => $item['SORT'],
                     'XML_ID' => $item['XML_ID'],
                 ];
             }

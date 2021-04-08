@@ -8,7 +8,9 @@ use Sprint\Migration\Helpers\AgentHelper;
 use Sprint\Migration\helpers\DeliveryServiceHelper;
 use Sprint\Migration\Helpers\EventHelper;
 use Sprint\Migration\Helpers\FormHelper;
+use Sprint\Migration\Helpers\HlblockExchangeHelper;
 use Sprint\Migration\Helpers\HlblockHelper;
+use Sprint\Migration\Helpers\IblockExchangeHelper;
 use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Helpers\LangHelper;
 use Sprint\Migration\Helpers\MedialibHelper;
@@ -34,16 +36,15 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  * @method DeliveryServiceHelper    DeliveryService()
  * @method SqlHelper                Sql()
  * @method MedialibHelper           Medialib()
+ * @method IblockExchangeHelper     IblockExchange()
+ * @method HlblockExchangeHelper    HlblockExchange()
  * @method AdminIblockHelper        AdminIblock()
  */
 class HelperManager
 {
-
-    private $cache = [];
-
-    private static $instance = null;
-
-    private $registered = [];
+    private        $cache      = [];
+    private static $instance   = null;
+    private        $registered = [];
 
     /**
      * @return HelperManager
@@ -59,6 +60,7 @@ class HelperManager
     /**
      * @param $name
      * @param $arguments
+     *
      * @throws HelperException
      * @return Helper
      */
@@ -74,6 +76,7 @@ class HelperManager
 
     /**
      * @param $name
+     *
      * @throws HelperException
      * @return Helper
      */
@@ -97,6 +100,6 @@ class HelperManager
             }
         }
 
-        Throw new HelperException("Helper $name not found");
+        throw new HelperException("Helper $name not found");
     }
 }

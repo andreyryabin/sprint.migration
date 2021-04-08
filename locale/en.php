@@ -3,7 +3,7 @@
 require_once __DIR__ . "/../lib/locale.php";
 
 \Sprint\Migration\Locale::loadLocale(
-    'en',
+    "en",
     [
         "MODULE_NAME"              => "Migrations for developers",
         "MODULE_DESCRIPTION"       => "Module for managing migration, creating, installing, rolling back migration",
@@ -62,10 +62,15 @@ require_once __DIR__ . "/../lib/locale.php";
         "CFG_TITLE"                => "Migrations",
         "SCH_TITLE"                => "Data schemas",
         "CONFIG"                   => "Configuration",
+        "BUILDER_ERROR"            => "Error",
+        "BUILDER_NEXT"             => "Next",
+        "BUILDER_RESET"            => "Reset",
+        "SELECT_ALL"               => "Select all",
+        "SELECT_ONE"               => "Select one",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
-    'en',
+    "en",
     [
         "CONFIG_archive"                     => "Archive",
         "CONFIG_migration_dir"               => "Directory for migration",
@@ -87,31 +92,31 @@ require_once __DIR__ . "/../lib/locale.php";
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
-    'en',
+    "en",
     [
-        "BUILDER_ERROR"                                => "Error",
-        "BUILDER_NEXT"                                 => "Next",
-        "BUILDER_RESET"                                => "Reset",
-        "SELECT_ALL"                                   => "Select all",
-        "SELECT_ONE"                                   => "Select one",
-        "BUILDER_Transfer1"                            => "Transfer migrations",
-        "BUILDER_TransferTo"                           => "Transfer в другую конфигурацию",
-        "BUILDER_TransferAll"                          => "All",
-        "BUILDER_TransferNew"                          => "New",
-        "BUILDER_TransferInstalled"                    => "Installed",
-        "BUILDER_TransferUnknown"                      => "Unknown",
-        "BUILDER_TransferSelect"                       => "Select migrations",
-        "BUILDER_EventExport1"                         => "Create migration for event types",
-        "BUILDER_EventExport2"                         => "",
-        "BUILDER_EventExport_event_types"              => "Select event types",
-        "BUILDER_AgentExport1"                         => "Create migration for agents",
-        "BUILDER_AgentExport2"                         => "",
-        "BUILDER_AgentExport_agent_id"                 => "Select agents",
-        "BUILDER_Version1"                             => "Create empty migration",
-        "BUILDER_Version2"                             => "",
-        "BUILDER_UserGroupExport1"                     => "Create migration for user groups",
-        "BUILDER_UserGroupExport2"                     => "",
-        "BUILDER_UserGroupExport_user_group"           => "Select user groups",
+        "BUILDER_Transfer1"                  => "Transfer migrations",
+        "BUILDER_TransferTo"                 => "Transfer в другую конфигурацию",
+        "BUILDER_TransferAll"                => "All",
+        "BUILDER_TransferNew"                => "New",
+        "BUILDER_TransferInstalled"          => "Installed",
+        "BUILDER_TransferUnknown"            => "Unknown",
+        "BUILDER_TransferSelect"             => "Select migrations",
+        "BUILDER_EventExport1"               => "Create migration for event types",
+        "BUILDER_EventExport2"               => "",
+        "BUILDER_EventExport_event_types"    => "Select event types",
+        "BUILDER_AgentExport1"               => "Create migration for agents",
+        "BUILDER_AgentExport2"               => "",
+        "BUILDER_AgentExport_agent_id"       => "Select agents",
+        "BUILDER_Version1"                   => "Create empty migration",
+        "BUILDER_Version2"                   => "",
+        "BUILDER_UserGroupExport1"           => "Create migration for user groups",
+        "BUILDER_UserGroupExport2"           => "",
+        "BUILDER_UserGroupExport_user_group" => "Select user groups",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "en",
+    [
         "BUILDER_IblockExport1"                        => "Create migration for information block",
         "BUILDER_IblockExport2"                        => "",
         "BUILDER_IblockExport_IblockId"                => "Select information block",
@@ -143,48 +148,65 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_IblockCategoryExport1"                => "Export information block categories",
         "BUILDER_IblockCategoryExport2"                => "Export information block categories without images",
         "BUILDER_IblockCategoryExport_IblockId"        => "Select information block",
-        "BUILDER_HlblockElementsExport1"               => "Export highload block elements",
-        "BUILDER_HlblockElementsExport2"               => "Export highload block elements\nExport images, files and lists",
-        "BUILDER_HlblockElementsExport_HlblockId"      => "Select highload block",
-        "BUILDER_UserOptionsExport_Title"              => "Create migration for user options",
-        "BUILDER_UserOptionsExport_Desc"               => "",
-        "BUILDER_UserOptionsExport_What"               => "Select export items",
-        "BUILDER_UserOptionsExport_WhatUserForm"       => "User form",
-        "BUILDER_UserOptionsExport_WhatUserList"       => "User list",
-        "BUILDER_UserOptionsExport_WhatGroupList"      => "User group list",
-        "BUILDER_HlblockExport1"                       => "Create migration for highload block",
-        "BUILDER_HlblockExport2"                       => "",
-        "BUILDER_HlblockExport_HlblockId"              => "Select highload blocks",
-        "BUILDER_UserTypeEntities1"                    => "Create migration for user type entities",
-        "BUILDER_UserTypeEntities2"                    => "",
-        "BUILDER_UserTypeEntities_EntityId"            => "Select entity id",
-        "BUILDER_FormExport1"                          => "Create migration for web form",
-        "BUILDER_FormExport2"                          => "",
-        "BUILDER_FormExport_FormId"                    => "Select web form",
-        "BUILDER_FormExport_What"                      => "Select export items",
-        "BUILDER_FormExport_Form"                      => "Form",
-        "BUILDER_FormExport_Fields"                    => "Form questionsn",
-        "BUILDER_FormExport_Statuses"                  => "Form statuses",
-        "BUILDER_OptionExport1"                        => "Create migration for module options",
-        "BUILDER_OptionExport2"                        => "",
-        "BUILDER_OptionExport_module_id"               => "Select modules",
-        "BUILDER_CacheCleaner1"                        => "Cache clean",
-        "BUILDER_CacheCleaner2"                        => "Execute BXClearCache(true)",
-        "BUILDER_Configurator"                         => "Create configuration",
-        "BUILDER_Configurator_config_name"             => "Name",
-        "BUILDER_Configurator_error"                   => "Error creating configuration",
-        "BUILDER_Configurator_success"                 => "Configuration created",
-        "BUILDER_Cleaner"                              => "Delete configuration",
-        "BUILDER_Cleaner_desc"                         => "Delete configuration file, migration files and migration records",
-        "BUILDER_Cleaner_config_name"                  => "Name",
-        "BUILDER_Cleaner_error"                        => "Error deleting configuration",
-        "BUILDER_Cleaner_success"                      => "Configuration deleted",
-        "BUILDER_SchemaImport"                         => "Install data schema",
-        "BUILDER_SchemaExport"                         => "Create data schema",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
-    'en',
+    "en",
+    [
+        "BUILDER_HlblockElementsExport1"          => "Export highload block elements",
+        "BUILDER_HlblockElementsExport2"          => "Export highload block elements\nExport images, files and lists",
+        "BUILDER_HlblockElementsExport_HlblockId" => "Select highload block",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "en",
+    [
+        "BUILDER_UserOptionsExport_Title"         => "Create migration for user options",
+        "BUILDER_UserOptionsExport_Desc"          => "",
+        "BUILDER_UserOptionsExport_What"          => "Select export items",
+        "BUILDER_UserOptionsExport_WhatUserForm"  => "User form",
+        "BUILDER_UserOptionsExport_WhatUserList"  => "User list",
+        "BUILDER_UserOptionsExport_WhatGroupList" => "User group list",
+        "BUILDER_HlblockExport1"                  => "Create migration for highload block",
+        "BUILDER_HlblockExport2"                  => "",
+        "BUILDER_HlblockExport_HlblockId"         => "Select highload blocks",
+        "BUILDER_UserTypeEntities1"               => "Create migration for user type entities",
+        "BUILDER_UserTypeEntities2"               => "",
+        "BUILDER_UserTypeEntities_EntityId"       => "Select entity id",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "en",
+    [
+        "BUILDER_FormExport1"              => "Create migration for web form",
+        "BUILDER_FormExport2"              => "",
+        "BUILDER_FormExport_FormId"        => "Select web form",
+        "BUILDER_FormExport_What"          => "Select export items",
+        "BUILDER_FormExport_Form"          => "Form",
+        "BUILDER_FormExport_Fields"        => "Form questionsn",
+        "BUILDER_FormExport_Statuses"      => "Form statuses",
+        "BUILDER_OptionExport1"            => "Create migration for module options",
+        "BUILDER_OptionExport2"            => "",
+        "BUILDER_OptionExport_module_id"   => "Select modules",
+        "BUILDER_CacheCleaner1"            => "Cache clean",
+        "BUILDER_CacheCleaner2"            => "Execute BXClearCache(true)",
+        "BUILDER_Configurator"             => "Create configuration",
+        "BUILDER_Configurator_config_name" => "Name",
+        "BUILDER_Configurator_error"       => "Error creating configuration",
+        "BUILDER_Configurator_success"     => "Configuration created",
+        "BUILDER_Cleaner"                  => "Delete configuration",
+        "BUILDER_Cleaner_desc"             => "Delete configuration file, migration files and migration records",
+        "BUILDER_Cleaner_config_name"      => "Name",
+        "BUILDER_Cleaner_error"            => "Error deleting configuration",
+        "BUILDER_Cleaner_success"          => "Configuration deleted",
+        "BUILDER_SchemaImport"             => "Install data schema",
+        "BUILDER_SchemaExport"             => "Create data schema",
+        "BUILDER_MedialibElements1"        => "BUILDER_MedialibElements1",
+        "BUILDER_MedialibElements2"        => "",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "en",
     [
         "GOTO_MIGRATION"         => "Admin interface",
         "GOTO_OPTIONS"           => "Settings",
@@ -231,7 +253,7 @@ require_once __DIR__ . "/../lib/locale.php";
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
-    'en',
+    "en",
     [
         "SCHEMA_DIFF"                  => "Show difference",
         "SCHEMA_IMPORT"                => "Install data schema",
@@ -258,7 +280,7 @@ require_once __DIR__ . "/../lib/locale.php";
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
-    'en',
+    "en",
     [
         "ERR_BUILDER_NOT_FOUND"             => "Builder not found",
         "ERR_CANT_CREATE_DIRECTORY"         => "Cant create directory #NAME#",
@@ -313,7 +335,7 @@ require_once __DIR__ . "/../lib/locale.php";
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
-    'en',
+    "en",
     [
         "AGENT_CREATED"            => "Agent \"#NAME#\" created",
         "AGENT_UPDATED"            => "Agent \"#NAME#\" updated",
@@ -366,7 +388,7 @@ require_once __DIR__ . "/../lib/locale.php";
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
-    'en',
+    "en",
     [
         "GD_INSTALL"          => "Install gadgets: \"Migration summary\"",
         "GD_INSTALL_success"  => "Gadgets installed",

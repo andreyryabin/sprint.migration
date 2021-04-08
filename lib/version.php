@@ -4,6 +4,7 @@ namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Traits\HelperManagerTrait;
 
 /**
  * Class Version
@@ -11,6 +12,8 @@ use Sprint\Migration\Exceptions\RestartException;
  */
 class Version extends ExchangeEntity
 {
+    use HelperManagerTrait;
+
     /**
      * @var string
      */
@@ -137,13 +140,6 @@ class Version extends ExchangeEntity
         return new ExchangeManager($this);
     }
 
-    /**
-     * @return HelperManager
-     */
-    protected function getHelperManager()
-    {
-        return HelperManager::getInstance();
-    }
 }
 
 

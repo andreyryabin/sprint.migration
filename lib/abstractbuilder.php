@@ -5,10 +5,12 @@ namespace Sprint\Migration;
 use Exception;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-
+use Sprint\Migration\Traits\HelperManagerTrait;
 
 abstract class AbstractBuilder extends ExchangeEntity
 {
+    use HelperManagerTrait;
+
     private $name;
 
     /** @var VersionConfig */
@@ -297,14 +299,6 @@ abstract class AbstractBuilder extends ExchangeEntity
     protected function getExchangeManager()
     {
         return new ExchangeManager($this);
-    }
-
-    /**
-     * @return HelperManager
-     */
-    protected function getHelperManager()
-    {
-        return HelperManager::getInstance();
     }
 
 }

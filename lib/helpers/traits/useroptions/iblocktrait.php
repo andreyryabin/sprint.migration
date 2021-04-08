@@ -6,9 +6,12 @@ use CIBlock;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\HelperManager;
 use Sprint\Migration\Locale;
+use Sprint\Migration\Traits\HelperManagerTrait;
 
 trait IblockTrait
 {
+    use HelperManagerTrait;
+
     private $titles = [];
     private $props = [];
     private $iblock = [];
@@ -298,7 +301,7 @@ trait IblockTrait
      */
     protected function initializeIblockVars($iblockId)
     {
-        $helper = HelperManager::getInstance();
+        $helper = $this->getHelperManager();
 
         /** @compability */
         if (empty($iblockId)) {

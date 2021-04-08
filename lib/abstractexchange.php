@@ -6,12 +6,14 @@ use CFile;
 use Exception;
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\Helpers\ExchangeHelper;
+use Sprint\Migration\Traits\HelperManagerTrait;
 use XMLReader;
 use XMLWriter;
 
 abstract class AbstractExchange
 {
+    use HelperManagerTrait;
+
     const EXCHANGE_VERSION = 2;
     use OutTrait {
         out as protected;
@@ -32,7 +34,6 @@ abstract class AbstractExchange
     }
 
     protected $exchangeEntity;
-    protected $exchangeHelper;
     protected $file;
     protected $limit = 10;
 
@@ -40,21 +41,17 @@ abstract class AbstractExchange
      * abstractexchange constructor.
      *
      * @param ExchangeEntity $exchangeEntity
-     * @param ExchangeHelper $exchangeHelper
      *
      * @throws ExchangeException
      */
-    public function __construct(
-        ExchangeEntity $exchangeEntity,
-        ExchangeHelper $exchangeHelper
-    ) {
+    public function __construct(ExchangeEntity $exchangeEntity)
+    {
         $this->exchangeEntity = $exchangeEntity;
-        $this->exchangeHelper = $exchangeHelper;
 
         $enabled = (
             class_exists('XMLReader')
             && class_exists('XMLWriter')
-            && $this->exchangeHelper->isEnabled()
+            && $this->isEnabled()
         );
 
         if (!$enabled) {
@@ -64,6 +61,11 @@ abstract class AbstractExchange
                 )
             );
         }
+    }
+
+    protected function isEnabled()
+    {
+        return true;
     }
 
     public function setExchangeFile($file)

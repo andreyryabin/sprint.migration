@@ -5,9 +5,12 @@ namespace Sprint\Migration;
 use DirectoryIterator;
 use Exception;
 use SplFileInfo;
+use Sprint\Migration\Traits\HelperManagerTrait;
 
 abstract class AbstractSchema extends ExchangeEntity
 {
+    use HelperManagerTrait;
+
     private $name;
 
     /** @var VersionConfig */
@@ -269,11 +272,4 @@ abstract class AbstractSchema extends ExchangeEntity
         return new ExchangeManager($this);
     }
 
-    /**
-     * @return HelperManager
-     */
-    protected function getHelperManager()
-    {
-        return HelperManager::getInstance();
-    }
 }
