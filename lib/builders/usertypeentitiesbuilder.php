@@ -11,12 +11,10 @@ use Sprint\Migration\VersionBuilder;
 
 class UserTypeEntitiesBuilder extends VersionBuilder
 {
-
     protected function isBuilderEnabled()
     {
         return true;
     }
-
 
     protected function initialize()
     {
@@ -34,24 +32,19 @@ class UserTypeEntitiesBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $this->addField('type_codes', [
-            'title' => Locale::getMessage('BUILDER_UserTypeEntities_EntityId'),
-            'placeholder' => '',
-            'width' => 250,
-            'multiple' => 1,
-            'items' => $this->getEntitiesStructure(),
-            'value' => [],
-        ]);
-
-        $typeCodes = $this->getFieldValue('type_codes');
-        if (empty($typeCodes)) {
-            $this->rebuildField('type_codes');
-        }
-
-        $typeCodes = is_array($typeCodes) ? $typeCodes : [$typeCodes];
+        $typeCodes = $this->addFieldAndReturn(
+            'type_codes',
+            [
+                'title'       => Locale::getMessage('BUILDER_UserTypeEntities_EntityId'),
+                'placeholder' => '',
+                'width'       => 250,
+                'multiple'    => 1,
+                'items'       => $this->getEntitiesStructure(),
+                'value'       => [],
+            ]
+        );
 
         $entities = [];
-
         foreach ($typeCodes as $fieldId) {
             $entity = $helper->UserTypeEntity()->exportUserTypeEntity($fieldId);
             if (!empty($entity)) {
@@ -66,7 +59,6 @@ class UserTypeEntitiesBuilder extends VersionBuilder
             ]
         );
     }
-
 
     protected function getEntitiesStructure()
     {

@@ -337,6 +337,7 @@ trait IblockSectionTrait
         $sections = $this->getSections($iblockId);
         return $this->buildSectionsTree($sections, 0, false);
     }
+
     /**
      * @param $iblockId
      * @param $sectionId
@@ -347,7 +348,8 @@ trait IblockSectionTrait
     public function getSectionUniqNameById($iblockId, $sectionId)
     {
         if (empty($sectionId)) {
-            throw new HelperException(
+            $this->throwException(
+                __METHOD__,
                 Locale::getMessage(
                     'ERR_IB_SECTION_ID_EMPTY',
                     [
@@ -366,7 +368,8 @@ trait IblockSectionTrait
         )->Fetch();
 
         if (empty($section['ID'])) {
-            throw new HelperException(
+            $this->throwException(
+                __METHOD__,
                 Locale::getMessage(
                     'ERR_IB_SECTION_ID_NOT_FOUND',
                     [
@@ -390,7 +393,8 @@ trait IblockSectionTrait
     public function getSectionIdByUniqName($iblockId, $uniqName)
     {
         if (empty($uniqName)) {
-            throw new HelperException(
+            $this->throwException(
+                __METHOD__,
                 Locale::getMessage(
                     'ERR_IB_SECTION_ID_EMPTY',
                     [
@@ -416,7 +420,8 @@ trait IblockSectionTrait
         )->Fetch();
 
         if (empty($section['ID'])) {
-            throw new HelperException(
+            $this->throwException(
+                __METHOD__,
                 Locale::getMessage(
                     'ERR_IB_SECTION_ON_LEVEL_NOT_FOUND',
                     [

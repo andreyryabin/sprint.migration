@@ -8,7 +8,6 @@ use Sprint\Migration\Locale;
 
 class HlblockSchema extends AbstractSchema
 {
-
     private $uniqs = [];
 
     protected function isBuilderEnabled()
@@ -28,10 +27,12 @@ class HlblockSchema extends AbstractSchema
 
     public function outDescription()
     {
-        $schemas = $this->loadSchemas('hlblocks/', [
+        $schemas = $this->loadSchemas(
+            'hlblocks/', [
             'hlblock' => [],
-            'fields' => [],
-        ]);
+            'fields'  => [],
+        ]
+        );
 
         $cntFields = 0;
         foreach ($schemas as $schema) {
@@ -67,10 +68,12 @@ class HlblockSchema extends AbstractSchema
         $exportItems = $helper->Hlblock()->exportHlblocks();
 
         foreach ($exportItems as $item) {
-            $this->saveSchema('hlblocks/' . strtolower($item['NAME']), [
+            $this->saveSchema(
+                'hlblocks/' . strtolower($item['NAME']), [
                 'hlblock' => $item,
-                'fields' => $helper->Hlblock()->exportFields($item['NAME']),
-            ]);
+                'fields'  => $helper->Hlblock()->exportFields($item['NAME']),
+            ]
+            );
         }
     }
 
@@ -79,10 +82,12 @@ class HlblockSchema extends AbstractSchema
      */
     public function import()
     {
-        $schemas = $this->loadSchemas('hlblocks/', [
+        $schemas = $this->loadSchemas(
+            'hlblocks/', [
             'hlblock' => [],
-            'fields' => [],
-        ]);
+            'fields'  => [],
+        ]
+        );
 
         foreach ($schemas as $schema) {
             $hlblockUid = $this->getUniqHlblock($schema['hlblock']);
@@ -113,9 +118,9 @@ class HlblockSchema extends AbstractSchema
         $this->addToQueue('cleanHlblocks', $skip);
     }
 
-
     /**
      * @param $item
+     *
      * @throws HelperException
      */
     protected function saveHlblock($item)
@@ -128,6 +133,7 @@ class HlblockSchema extends AbstractSchema
     /**
      * @param $hlblockUid
      * @param $field
+     *
      * @throws HelperException
      */
     protected function saveField($hlblockUid, $field)
@@ -142,6 +148,7 @@ class HlblockSchema extends AbstractSchema
 
     /**
      * @param array $skip
+     *
      * @throws HelperException
      */
     protected function cleanHlblocks($skip = [])
@@ -167,8 +174,9 @@ class HlblockSchema extends AbstractSchema
     }
 
     /**
-     * @param $hlblockUid
+     * @param       $hlblockUid
      * @param array $skip
+     *
      * @throws HelperException
      */
     protected function cleanFields($hlblockUid, $skip = [])
@@ -180,11 +188,12 @@ class HlblockSchema extends AbstractSchema
             foreach ($olds as $old) {
                 $uniq = $this->getUniqField($old);
                 if (!in_array($uniq, $skip)) {
-
-                    $ok = ($this->testMode) ? true : $helper->Hlblock()->deleteField(
-                        $hlblockId,
-                        $old['FIELD_NAME']
-                    );
+                    $ok = ($this->testMode)
+                        ? true
+                        : $helper->Hlblock()->deleteField(
+                            $hlblockId,
+                            $old['FIELD_NAME']
+                        );
 
                     $this->outWarningIf(
                         $ok,
@@ -207,6 +216,7 @@ class HlblockSchema extends AbstractSchema
 
     /**
      * @param $item
+     *
      * @throws HelperException
      * @return string
      */
@@ -217,6 +227,7 @@ class HlblockSchema extends AbstractSchema
 
     /**
      * @param $hlblockUid
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -229,9 +240,8 @@ class HlblockSchema extends AbstractSchema
         }
 
         $this->uniqs[$hlblockUid] = $helper->Hlblock()
-            ->getHlblockIdByUid($hlblockUid);
+                                           ->getHlblockIdByUid($hlblockUid);
 
         return $this->uniqs[$hlblockUid];
     }
-
 }

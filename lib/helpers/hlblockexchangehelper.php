@@ -24,4 +24,39 @@ class HlblockExchangeHelper extends HlblockHelper
         }
         return $this->cachedFields[$key];
     }
+
+    /**
+     * @throws HelperException
+     * @return array
+     */
+    public function getHlblocksStructure()
+    {
+        $res = [];
+        $hlblocks = $this->getHlblocks();
+        foreach ($hlblocks as $hlblock) {
+            $res[] = [
+                'title' => $hlblock['NAME'],
+                'value' => $hlblock['ID'],
+            ];
+        }
+        return $res;
+    }
+
+    /**
+     * @param $hlblockName
+     *
+     * @throws HelperException
+     * @return array
+     */
+    public function getHlblockFieldsCodes($hlblockName)
+    {
+        $res = [];
+        $items = $this->getFields($hlblockName);
+        foreach ($items as $item) {
+            if (!empty($item['FIELD_NAME'])) {
+                $res[] = $item['FIELD_NAME'];
+            }
+        }
+        return $res;
+    }
 }

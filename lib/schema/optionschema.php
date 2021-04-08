@@ -6,13 +6,13 @@ use Bitrix\Main\ArgumentException;
 use Bitrix\Main\ArgumentOutOfRangeException;
 use Bitrix\Main\ObjectPropertyException;
 use Bitrix\Main\SystemException;
+use Exception;
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
 
 class OptionSchema extends AbstractSchema
 {
-
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('SCHEMA_OPTION'));
@@ -33,9 +33,11 @@ class OptionSchema extends AbstractSchema
 
     public function outDescription()
     {
-        $schemas = $this->loadSchemas('options/', [
+        $schemas = $this->loadSchemas(
+            'options/', [
             'items' => [],
-        ]);
+        ]
+        );
 
         $cnt = 0;
 
@@ -56,7 +58,7 @@ class OptionSchema extends AbstractSchema
     /**
      * @throws ArgumentException
      * @throws SystemException
-     * @throws \Exception
+     * @throws Exception
      */
     public function export()
     {
@@ -65,30 +67,36 @@ class OptionSchema extends AbstractSchema
         $modules = $helper->Option()->getModules();
 
         foreach ($modules as $module) {
-            $exportItems = $helper->Option()->getOptions([
-                'MODULE_ID' => $module['ID'],
-            ]);
+            $exportItems = $helper->Option()->getOptions(
+                [
+                    'MODULE_ID' => $module['ID'],
+                ]
+            );
 
-            $this->saveSchema('options/' . $module['ID'], [
+            $this->saveSchema(
+                'options/' . $module['ID'], [
                 'items' => $exportItems,
-            ]);
+            ]
+            );
         }
     }
 
     public function import()
     {
-        $schemas = $this->loadSchemas('options/', [
+        $schemas = $this->loadSchemas(
+            'options/', [
             'items' => [],
-        ]);
+        ]
+        );
 
         foreach ($schemas as $schema) {
             $this->addToQueue('saveOptions', $schema['items']);
         }
     }
 
-
     /**
      * @param $items
+     *
      * @throws ArgumentException
      * @throws SystemException
      * @throws ArgumentOutOfRangeException
@@ -104,5 +112,4 @@ class OptionSchema extends AbstractSchema
             $helper->Option()->saveOption($item);
         }
     }
-
 }

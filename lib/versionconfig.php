@@ -506,7 +506,7 @@ class VersionConfig
             'CacheCleanerBuilder'     => CacheCleanerBuilder::class,
             'MarkerBuilder'           => MarkerBuilder::class,
             'TransferBuilder'         => TransferBuilder::class,
-            //'MedialibElementsBuilder' => MedialibElementsBuilder::class,
+            'MedialibElementsBuilder' => MedialibElementsBuilder::class,
         ];
     }
 

@@ -2,13 +2,13 @@
 
 namespace Sprint\Migration\Schema;
 
+use Exception;
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
 
 class GroupSchema extends AbstractSchema
 {
-
     protected function isBuilderEnabled()
     {
         return true;
@@ -26,9 +26,11 @@ class GroupSchema extends AbstractSchema
 
     public function outDescription()
     {
-        $schemaItems = $this->loadSchema('user_groups', [
-            'items' => [],
-        ]);
+        $schemaItems = $this->loadSchema(
+            'user_groups', [
+                'items' => [],
+            ]
+        );
 
         $this->out(
             Locale::getMessage(
@@ -41,7 +43,7 @@ class GroupSchema extends AbstractSchema
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function export()
     {
@@ -49,16 +51,20 @@ class GroupSchema extends AbstractSchema
 
         $exportItems = $helper->UserGroup()->exportGroups();
 
-        $this->saveSchema('user_groups', [
-            'items' => $exportItems,
-        ]);
+        $this->saveSchema(
+            'user_groups', [
+                'items' => $exportItems,
+            ]
+        );
     }
 
     public function import()
     {
-        $schemaItems = $this->loadSchema('user_groups', [
-            'items' => [],
-        ]);
+        $schemaItems = $this->loadSchema(
+            'user_groups', [
+                'items' => [],
+            ]
+        );
 
         foreach ($schemaItems['items'] as $item) {
             $this->addToQueue('saveGroup', $item);
@@ -72,9 +78,9 @@ class GroupSchema extends AbstractSchema
         $this->addToQueue('cleanGroups', $skip);
     }
 
-
     /**
      * @param $fields
+     *
      * @throws HelperException
      */
     protected function saveGroup($fields)
@@ -115,5 +121,4 @@ class GroupSchema extends AbstractSchema
     {
         return $item['STRING_ID'];
     }
-
 }

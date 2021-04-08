@@ -30,19 +30,12 @@ class EventBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $this->addField('event_types', [
+        $eventTypes = $this->addFieldAndReturn('event_types', [
             'title' => Locale::getMessage('BUILDER_EventExport_event_types'),
             'width' => 350,
             'select' => $this->getEventTypesStructure(),
             'multiple' => 1,
         ]);
-
-        $eventTypes = $this->getFieldValue('event_types');
-        if (empty($eventTypes)) {
-            $this->rebuildField('event_types');
-        }
-
-        $eventTypes = is_array($eventTypes) ? $eventTypes : [$eventTypes];
 
         $result = [];
         foreach ($eventTypes as $eventName) {

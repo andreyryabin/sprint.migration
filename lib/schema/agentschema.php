@@ -8,7 +8,6 @@ use Sprint\Migration\Locale;
 
 class AgentSchema extends AbstractSchema
 {
-
     protected function isBuilderEnabled()
     {
         return true;
@@ -17,7 +16,6 @@ class AgentSchema extends AbstractSchema
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('SCHEMA_AGENT'));
-
     }
 
     public function getMap()
@@ -27,9 +25,11 @@ class AgentSchema extends AbstractSchema
 
     public function outDescription()
     {
-        $schemaItems = $this->loadSchema('agents', [
-            'items' => [],
-        ]);
+        $schemaItems = $this->loadSchema(
+            'agents', [
+                'items' => [],
+            ]
+        );
 
         $this->out(
             Locale::getMessage(
@@ -41,23 +41,26 @@ class AgentSchema extends AbstractSchema
         );
     }
 
-
     public function export()
     {
         $helper = $this->getHelperManager();
 
         $exportItems = $helper->Agent()->exportAgents();
 
-        $this->saveSchema('agents', [
-            'items' => $exportItems,
-        ]);
+        $this->saveSchema(
+            'agents', [
+                'items' => $exportItems,
+            ]
+        );
     }
 
     public function import()
     {
-        $schemaItems = $this->loadSchema('agents', [
-            'items' => [],
-        ]);
+        $schemaItems = $this->loadSchema(
+            'agents', [
+                'items' => [],
+            ]
+        );
 
         foreach ($schemaItems['items'] as $item) {
             $this->addToQueue('saveAgent', $item);
@@ -71,9 +74,9 @@ class AgentSchema extends AbstractSchema
         $this->addToQueue('cleanAgents', $skip);
     }
 
-
     /**
      * @param $item
+     *
      * @throws HelperException
      */
     protected function saveAgent($item)
@@ -112,5 +115,4 @@ class AgentSchema extends AbstractSchema
     {
         return $item['MODULE_ID'] . $item['NAME'];
     }
-
 }

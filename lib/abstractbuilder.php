@@ -12,19 +12,15 @@ abstract class AbstractBuilder extends ExchangeEntity
     use HelperManagerTrait;
 
     private $name;
-
     /** @var VersionConfig */
     private $versionConfig = null;
-
-    private $info = [
-        'title' => '',
+    private $info          = [
+        'title'       => '',
         'description' => '',
-        'group' => 'default',
+        'group'       => 'default',
     ];
-
-    private $fields = [];
-
-    private $execStatus = '';
+    private $fields        = [];
+    private $execStatus    = '';
 
     public function __construct(VersionConfig $versionConfig, $name, $params = [])
     {
@@ -71,11 +67,13 @@ abstract class AbstractBuilder extends ExchangeEntity
             $value = '';
         }
 
-        $param = array_merge([
-            'title' => '',
-            'value' => $value,
-            'bind' => 0,
-        ], $param);
+        $param = array_merge(
+            [
+                'title' => '',
+                'value' => $value,
+                'bind'  => 0,
+            ], $param
+        );
 
         if (empty($param['title'])) {
             $param['title'] = $code;
@@ -89,12 +87,30 @@ abstract class AbstractBuilder extends ExchangeEntity
         $this->fields[$code] = $param;
     }
 
+    protected function addFieldAndReturn($code, $param = [])
+    {
+        $this->addField($code, $param);
+
+        $value = $this->getFieldValue($code);
+        if (empty($value)) {
+            $this->rebuildField($code);
+        }
+
+        if (isset($param['multiple']) && $param['multiple']) {
+            $value = is_array($value) ? $value : [$value];
+        }
+
+        return $value;
+    }
+
     protected function addFieldHidden($code, $val)
     {
         $this->params[$code] = $val;
-        $this->addField($code, [
-            'type' => 'hidden',
-        ]);
+        $this->addField(
+            $code, [
+                'type' => 'hidden',
+            ]
+        );
     }
 
     protected function getFieldValue($code, $default = '')
@@ -135,9 +151,11 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     public function renderHtml()
     {
-        echo $this->renderFile(Module::getModuleDir() . '/admin/includes/builder_form.php', [
-            'builder' => $this,
-        ]);
+        echo $this->renderFile(
+            Module::getModuleDir() . '/admin/includes/builder_form.php', [
+                'builder' => $this,
+            ]
+        );
     }
 
     public function renderConsole()
@@ -166,17 +184,13 @@ abstract class AbstractBuilder extends ExchangeEntity
         $this->execStatus = '';
 
         try {
-
             $this->execute();
-
         } catch (RestartException $e) {
             $this->execStatus = 'restart';
             return false;
-
         } catch (RebuildException $e) {
             $this->execStatus = 'rebuild';
             return false;
-
         } catch (Exception $e) {
             $this->execStatus = 'error';
             $this->outError('%s: %s', Locale::getMessage('BUILDER_ERROR'), $e->getMessage());
@@ -222,12 +236,13 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     /**
      * @param $code
+     *
      * @throws RebuildException
      */
     protected function rebuildField($code)
     {
         $this->unbindField($code);
-        Throw new RebuildException('rebuild form');
+        throw new RebuildException('rebuild form');
     }
 
     public function getName()
@@ -277,6 +292,7 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     /** @param $code
      * @param array $param
+     *
      * @deprecated
      */
     protected function requiredField($code, $param = [])
@@ -286,6 +302,7 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     /** @param $code
      * @param array $param
+     *
      * @deprecated
      */
     protected function setField($code, $param = [])
@@ -300,5 +317,4 @@ abstract class AbstractBuilder extends ExchangeEntity
     {
         return new ExchangeManager($this);
     }
-
 }

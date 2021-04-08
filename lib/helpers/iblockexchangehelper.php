@@ -2,59 +2,9 @@
 
 namespace Sprint\Migration\Helpers;
 
-use CIBlockElement;
-
 class IblockExchangeHelper extends IblockHelper
 {
     protected $cachedProps = [];
-
-    /**
-     * @param int   $iblockId
-     * @param array $params
-     *
-     * @return array
-     */
-    public function getElementsEx($iblockId, $params = [])
-    {
-        $params = array_merge(
-            [
-                'offset' => 0,
-                'limit'  => 0,
-                'filter' => [],
-                'order'  => ['ID' => 'ASC'],
-            ], $params
-        );
-
-        $pageNum = $this->getPageNumberFromOffset($params['offset'], $params['limit']);
-
-        $params['filter']['IBLOCK_ID'] = $iblockId;
-        $params['filter']['CHECK_PERMISSIONS'] = 'N';
-
-        $dbres = CIBlockElement::GetList(
-            $params['order'],
-            $params['filter'],
-            false,
-            [
-                'nPageSize'       => $params['limit'],
-                'iNumPage'        => $pageNum,
-                'checkOutOfRange' => true,
-            ]
-        );
-
-        $result = [];
-        while ($item = $dbres->GetNextElement(false, false)) {
-            $fields = $item->GetFields();
-            $props = $item->GetProperties();
-
-            $fields['IBLOCK_SECTION'] = $this->getElementSectionIds($fields['ID']);
-
-            $result[] = [
-                'FIELDS' => $fields,
-                'PROPS'  => $props,
-            ];
-        }
-        return $result;
-    }
 
     public function getProperty($iblockId, $code)
     {
@@ -66,21 +16,68 @@ class IblockExchangeHelper extends IblockHelper
         return $this->cachedProps[$key];
     }
 
-    protected function getPageCountFromElementsCount($total, $limit)
+    /**
+     * Структура инфоблоков для построения выпадающего списка
+     *
+     * @return array
+     */
+    public function getIblocksStructure()
     {
-        return (int)ceil($total / $limit);
+        $res = [];
+        $iblockTypes = $this->getIblockTypes();
+        foreach ($iblockTypes as $iblockType) {
+            $res[$iblockType['ID']] = [
+                'title' => '[' . $iblockType['ID'] . '] ' . $iblockType['LANG'][LANGUAGE_ID]['NAME'],
+                'items' => [],
+            ];
+        }
+
+        $iblocks = $this->getIblocks();
+        foreach ($iblocks as $iblock) {
+            $res[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
+                'title' => '[' . $iblock['CODE'] . '] ' . $iblock['NAME'],
+                'value' => $iblock['ID'],
+            ];
+        }
+
+        return $res;
     }
 
-    protected function getPageNumberFromOffset($offset, $limit)
+    /**
+     * @param $iblockId
+     *
+     * @return array
+     */
+    public function getIblockPropertiesStructure($iblockId)
     {
-        return (int)floor($offset / $limit) + 1;
+        $props = $this->exportProperties($iblockId);
+
+        $res = [];
+        foreach ($props as $prop) {
+            $res[] = [
+                'title' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
+                'value' => $prop['CODE'],
+            ];
+        }
+        return $res;
     }
 
-    protected function getOffsetFromPageNumber($pageNumber, $limit)
+    /**
+     * @param $iblockId
+     *
+     * @return array
+     */
+    public function getIblockElementFieldsStructure($iblockId)
     {
-        $pageNumber = (int)$pageNumber;
-        $pageNumber = ($pageNumber < 1) ? 1 : $pageNumber;
+        $fields = $this->exportIblockElementFields($iblockId);
 
-        return ($pageNumber - 1) * $limit;
+        $res = [];
+        foreach ($fields as $fieldName => $field) {
+            $res[] = [
+                'title' => '[' . $fieldName . '] ' . $field['NAME'],
+                'value' => $fieldName,
+            ];
+        }
+        return $res;
     }
 }

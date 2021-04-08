@@ -26,7 +26,7 @@ class AgentBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $this->addField('agent_id', [
+        $agentIds = $this->addFieldAndReturn('agent_id', [
             'title' => Locale::getMessage('BUILDER_AgentExport_agent_id'),
             'placeholder' => '',
             'multiple' => 1,
@@ -34,11 +34,6 @@ class AgentBuilder extends VersionBuilder
             'width' => 250,
             'select' => $this->getAgents(),
         ]);
-
-        $agentIds = $this->getFieldValue('agent_id');
-        if (empty($agentIds)) {
-            $this->rebuildField('agent_id');
-        }
 
         $agentIds = is_array($agentIds) ? $agentIds : [$agentIds];
 

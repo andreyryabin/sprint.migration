@@ -2,9 +2,9 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\Builders\Traits\HlblocksStructureTrait;
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
@@ -13,8 +13,6 @@ use Sprint\Migration\VersionBuilder;
 
 class HlblockElementsBuilder extends VersionBuilder
 {
-    use HlblocksStructureTrait;
-
     /**
      * @return bool
      */
@@ -31,38 +29,36 @@ class HlblockElementsBuilder extends VersionBuilder
     }
 
     /**
-     * @throws RebuildException
      * @throws ExchangeException
-     * @throws RestartException
      * @throws HelperException
+     * @throws RebuildException
+     * @throws RestartException
+     * @throws MigrationException
      */
     protected function execute()
     {
-        $this->addField(
-            'hlblock_id', [
-            'title'       => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
-            'placeholder' => '',
-            'width'       => 250,
-            'select'      => $this->getHlblocksStructure(),
-        ]
+        $hlblockId = $this->addFieldAndReturn(
+            'hlblock_id',
+            [
+                'title'       => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
+                'placeholder' => '',
+                'width'       => 250,
+                'select'      => $this->getHelperManager()->HlblockExchange()->getHlblocksStructure(),
+            ]
         );
-
-        $hlblockId = $this->getFieldValue('hlblock_id');
-        if (empty($hlblockId)) {
-            $this->rebuildField('hlblock_id');
-        }
 
         if (!isset($this->params['~version_name'])) {
             $this->params['~version_name'] = $this->getVersionName();
+            $versionName = $this->params['~version_name'];
+        } else {
+            $versionName = $this->params['~version_name'];
         }
-
-        $versionName = $this->params['~version_name'];
 
         $this->getExchangeManager()
              ->HlblockElementsExport()
              ->setLimit(20)
              ->setExportFields(
-                 $this->getHlblockFieldsCodes($hlblockId)
+                 $this->getHelperManager()->HlblockExchange()->getHlblockFieldsCodes($hlblockId)
              )
              ->setHlblockId($hlblockId)
              ->setExchangeFile(

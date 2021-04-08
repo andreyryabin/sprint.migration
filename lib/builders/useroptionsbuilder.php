@@ -9,7 +9,6 @@ use Sprint\Migration\VersionBuilder;
 
 class UserOptionsBuilder extends VersionBuilder
 {
-
     protected function isBuilderEnabled()
     {
         return true;
@@ -29,35 +28,29 @@ class UserOptionsBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $this->addField('what', [
-            'title' => Locale::getMessage('BUILDER_UserOptionsExport_What'),
-            'width' => 250,
-            'multiple' => 1,
-            'value' => [],
-            'select' => [
-                [
-                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserForm'),
-                    'value' => 'userForm',
+        $what = $this->addFieldAndReturn(
+            'what',
+            [
+                'title'    => Locale::getMessage('BUILDER_UserOptionsExport_What'),
+                'width'    => 250,
+                'multiple' => 1,
+                'value'    => [],
+                'select'   => [
+                    [
+                        'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserForm'),
+                        'value' => 'userForm',
+                    ],
+                    [
+                        'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserList'),
+                        'value' => 'userList',
+                    ],
+                    [
+                        'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatGroupList'),
+                        'value' => 'groupList',
+                    ],
                 ],
-                [
-                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserList'),
-                    'value' => 'userList',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatGroupList'),
-                    'value' => 'groupList',
-                ],
-            ],
-        ]);
-
-
-        $what = $this->getFieldValue('what');
-        if (!empty($what)) {
-            $what = is_array($what) ? $what : [$what];
-        } else {
-            $this->rebuildField('what');
-        }
-
+            ]
+        );
 
         $exportUserForm = [];
         $exportUserList = [];
@@ -84,10 +77,10 @@ class UserOptionsBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/UserOptionsExport.php',
             [
-                'exportUserForm' => $exportUserForm,
-                'exportUserList' => $exportUserList,
+                'exportUserForm'      => $exportUserForm,
+                'exportUserList'      => $exportUserList,
                 'exportUserGroupList' => $exportUserGroupList,
-                'exportUserGrid' => $exportUserGrid,
+                'exportUserGrid'      => $exportUserGrid,
                 'exportUserGroupGrid' => $exportUserGroupGrid,
             ]
         );

@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Helpers;
 
+use Bitrix\Main\Application;
 use CMedialib;
 use CMedialibCollection;
 use CMedialibItem;
@@ -134,25 +135,69 @@ class MedialibHelper extends Helper
         return !empty($result['ID']) ? $result['ID'] : 0;
     }
 
-    public function getElements($collectionId, $filter = [])
+    public function getElements($collectionIds, $params = [])
     {
-        $itemFilter = [
-            'arCollections' => [(int)$collectionId],
-        ];
+        $connection = Application::getConnection();
 
-        $result = CMedialibItem::GetList($itemFilter);
+        $collectionIds = is_array($collectionIds) ? $collectionIds : [$collectionIds];
+        $collectionIds = array_map('intval', $collectionIds);
 
-        if (isset($filter['NAME'])) {
-            //поиск по названию
-            $result = array_filter(
-                $result,
-                function ($item) use ($filter) {
-                    return ($item['NAME'] == $filter['NAME']);
-                }
-            );
+        $params = array_merge(
+            [
+                'offset' => 0,
+                'limit'  => 0,
+                'filter' => [],
+            ], $params
+        );
+
+        $whereQuery = $this->createWhereQuery($collectionIds, $params);
+        $limitQuery = $this->createLimitQuery($collectionIds, $params);
+
+        $sqlQuery = <<<TAG
+SELECT MI.ID, MI.NAME, MI.DESCRIPTION, MI.KEYWORDS, MI.SOURCE_ID, MCI.COLLECTION_ID
+        FROM 
+            b_medialib_collection_item MCI
+        INNER JOIN 
+            b_medialib_item MI ON (MI.ID=MCI.ITEM_ID)
+        INNER JOIN 
+            b_file F ON (F.ID=MI.SOURCE_ID) 
+        WHERE {$whereQuery} {$limitQuery} ;
+TAG;
+
+        return $connection->query($sqlQuery)->fetchAll();
+    }
+
+    public function getElementsCount($collectionIds, $params = [])
+    {
+        $connection = Application::getConnection();
+
+        $where = $this->createWhereQuery($collectionIds, $params);
+        $sqlQuery = <<<TAG
+SELECT COUNT(*) CNT
+        FROM 
+            b_medialib_collection_item MCI
+        INNER JOIN 
+            b_medialib_item MI ON (MI.ID=MCI.ITEM_ID)
+        INNER JOIN 
+            b_file F ON (F.ID=MI.SOURCE_ID) 
+        WHERE {$where};
+TAG;
+
+        $result = $connection->query($sqlQuery)->fetch();
+        return (int)$result['CNT'];
+    }
+
+    private function createLimitQuery($collectionIds, $params = [])
+    {
+        if ($params['limit'] > 0) {
+            return 'LIMIT ' . (int)$params['offset'] . ',' . (int)$params['limit'];
         }
+        return '';
+    }
 
-        return array_values($result);
+    private function createWhereQuery($collectionIds, $params = [])
+    {
+        return 'MCI.COLLECTION_ID IN (' . implode(',', $collectionIds) . ')';
     }
 
     /**

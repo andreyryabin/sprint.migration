@@ -11,8 +11,10 @@ trait IblockTrait
 {
     /**
      * Получает инфоблок, бросает исключение если его не существует
-     * @param $code string|array - код или фильтр
+     *
+     * @param        $code string|array - код или фильтр
      * @param string $typeId
+     *
      * @throws HelperException
      * @return array|void
      */
@@ -32,8 +34,10 @@ trait IblockTrait
 
     /**
      * Получает id инфоблока, бросает исключение если его не существует
-     * @param $code string|array - код или фильтр
+     *
+     * @param        $code string|array - код или фильтр
      * @param string $typeId
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -53,8 +57,10 @@ trait IblockTrait
 
     /**
      * Получает инфоблок
-     * @param $code int|string|array - id, код или фильтр
+     *
+     * @param        $code int|string|array - id, код или фильтр
      * @param string $typeId
+     *
      * @return array|false
      */
     public function getIblock($code, $typeId = '')
@@ -79,7 +85,9 @@ trait IblockTrait
 
     /**
      * Получает список сайтов для инфоблока
+     *
      * @param $iblockId
+     *
      * @return array
      */
     public function getIblockSites($iblockId)
@@ -90,8 +98,10 @@ trait IblockTrait
 
     /**
      * Получает id инфоблока
-     * @param $code string|array - код или фильтр
+     *
+     * @param        $code string|array - код или фильтр
      * @param string $typeId
+     *
      * @return int
      */
     public function getIblockId($code, $typeId = '')
@@ -102,7 +112,9 @@ trait IblockTrait
 
     /**
      * Получает список инфоблоков
+     *
      * @param array $filter
+     *
      * @return array
      */
     public function getIblocks($filter = [])
@@ -119,7 +131,9 @@ trait IblockTrait
 
     /**
      * Добавляет инфоблок если его не существует
+     *
      * @param array $fields , обязательные параметры - код, тип инфоблока, id сайта
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -142,7 +156,9 @@ trait IblockTrait
 
     /**
      * Добавляет инфоблок
+     *
      * @param $fields , обязательные параметры - код, тип инфоблока, id сайта
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -151,21 +167,21 @@ trait IblockTrait
         $this->checkRequiredKeys(__METHOD__, $fields, ['CODE', 'IBLOCK_TYPE_ID', 'LID']);
 
         $default = [
-            'ACTIVE' => 'Y',
-            'NAME' => '',
-            'CODE' => '',
-            'LIST_PAGE_URL' => '',
-            'DETAIL_PAGE_URL' => '',
+            'ACTIVE'           => 'Y',
+            'NAME'             => '',
+            'CODE'             => '',
+            'LIST_PAGE_URL'    => '',
+            'DETAIL_PAGE_URL'  => '',
             'SECTION_PAGE_URL' => '',
-            'IBLOCK_TYPE_ID' => 'main',
-            'LID' => ['s1'],
-            'SORT' => 500,
-            'GROUP_ID' => ['2' => 'R'],
-            'VERSION' => 2,
-            'BIZPROC' => 'N',
-            'WORKFLOW' => 'N',
-            'INDEX_ELEMENT' => 'N',
-            'INDEX_SECTION' => 'N',
+            'IBLOCK_TYPE_ID'   => 'main',
+            'LID'              => ['s1'],
+            'SORT'             => 500,
+            'GROUP_ID'         => ['2' => 'R'],
+            'VERSION'          => 2,
+            'BIZPROC'          => 'N',
+            'WORKFLOW'         => 'N',
+            'INDEX_ELEMENT'    => 'N',
+            'INDEX_SECTION'    => 'N',
         ];
 
         $fields = array_replace_recursive($default, $fields);
@@ -181,8 +197,10 @@ trait IblockTrait
 
     /**
      * Обновляет инфоблок
-     * @param $iblockId
+     *
+     * @param       $iblockId
      * @param array $fields
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -194,13 +212,14 @@ trait IblockTrait
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
-
     }
 
     /**
      * Обновляет инфоблок если он существует
-     * @param $code
+     *
+     * @param       $code
      * @param array $fields
+     *
      * @throws HelperException
      * @return bool|int|void
      */
@@ -215,8 +234,10 @@ trait IblockTrait
 
     /**
      * Удаляет инфоблок если он существует
-     * @param $code
+     *
+     * @param        $code
      * @param string $typeId
+     *
      * @throws HelperException
      * @return bool|void
      */
@@ -231,7 +252,9 @@ trait IblockTrait
 
     /**
      * Удаляет инфоблок
+     *
      * @param $iblockId
+     *
      * @throws HelperException
      * @return bool|void
      */
@@ -254,7 +277,9 @@ trait IblockTrait
     /**
      * Сохраняет инфоблок
      * Создаст если не было, обновит если существует и отличается
+     *
      * @param array $fields , обязательные параметры - код, тип инфоблока, id сайта
+     *
      * @throws HelperException
      * @return bool|mixed
      */
@@ -313,7 +338,9 @@ trait IblockTrait
     /**
      * Получает инфоблок
      * Данные подготовлены для экспорта в миграцию или схему
+     *
      * @param $iblockId
+     *
      * @throws HelperException
      * @return array|void
      */
@@ -338,7 +365,9 @@ trait IblockTrait
     /**
      * Получает список инфоблоков
      * Данные подготовлены для экспорта в миграцию или схему
+     *
      * @param array $filter
+     *
      * @return array
      */
     public function exportIblocks($filter = [])
@@ -358,6 +387,7 @@ trait IblockTrait
      * возвращает массив вида [$groupCode => $letter]
      *
      * @param $iblockId
+     *
      * @return array
      */
     public function getGroupPermissions($iblockId)
@@ -367,6 +397,7 @@ trait IblockTrait
 
     /**
      * @param $iblockId
+     *
      * @throws HelperException
      * @return array
      */
@@ -387,8 +418,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $permissions
+     *
      * @throws HelperException
      */
     public function saveGroupPermissions($iblockId, $permissions = [])
@@ -409,7 +441,7 @@ trait IblockTrait
      * предыдущие права сбрасываются
      * принимает массив вида [$groupCode => $letter]
      *
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $permissions
      */
     public function setGroupPermissions($iblockId, $permissions = [])
@@ -418,8 +450,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $code
+     * @param        $code
      * @param string $typeId
+     *
      * @throws HelperException
      * @return mixed
      * @deprecated
@@ -430,8 +463,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $code
+     * @param        $code
      * @param string $typeId
+     *
      * @throws HelperException
      * @return mixed
      * @deprecated
@@ -443,10 +477,11 @@ trait IblockTrait
 
     /**
      * @param $iblock int|array
-     * @param string $default
-     * @return string
+     *
+     * @throws HelperException
+     * @return string|void
      */
-    public function getIblockUid($iblock, $default = '')
+    public function getIblockUid($iblock)
     {
         if (!is_array($iblock)) {
             //на вход уже пришел uid
@@ -462,11 +497,12 @@ trait IblockTrait
             return $iblock['IBLOCK_TYPE_ID'] . ':' . $iblock['CODE'];
         }
 
-        return $default;
+        $this->throwException(__METHOD__, Locale::getMessage('ERR_IB_NOT_FOUND'));
     }
 
     /**
      * @param $iblockUid
+     *
      * @return int
      */
     public function getIblockIdByUid($iblockUid)
@@ -487,6 +523,7 @@ trait IblockTrait
 
     /**
      * @param $item
+     *
      * @return mixed
      */
     protected function prepareIblock($item)

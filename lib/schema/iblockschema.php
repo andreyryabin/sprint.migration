@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Schema;
 
+use Exception;
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
@@ -96,7 +97,7 @@ class IblockSchema extends AbstractSchema
 
     /**
      * @throws HelperException
-     * @throws \Exception
+     * @throws Exception
      */
     public function export()
     {
@@ -140,9 +141,9 @@ class IblockSchema extends AbstractSchema
 
         $schemaIblocks = $this->loadSchemas(
             'iblocks/', [
-                'iblock'       => [],
-                'fields'       => [],
-                'props'        => [],
+                'iblock' => [],
+                'fields' => [],
+                'props'  => [],
             ]
         );
 

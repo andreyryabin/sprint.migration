@@ -10,6 +10,26 @@ use XMLWriter;
 
 class MedialibElementsExport extends AbstractExchange
 {
+    protected $collectionIds = [];
+    protected $exportFields  = [
+        'NAME',
+        'DESCRIPTION',
+        'KEYWORDS',
+        'COLLECTION_ID',
+        'SOURCE_ID',
+    ];
+
+    public function setCollectionIds($collectionIds = [])
+    {
+        $this->collectionIds = $collectionIds;
+        return $this;
+    }
+
+    public function getCollectionIds()
+    {
+        return $this->collectionIds;
+    }
+
     /**
      * @throws RestartException
      * @throws HelperException
@@ -17,9 +37,11 @@ class MedialibElementsExport extends AbstractExchange
      */
     public function execute()
     {
+        $medialibHelper = $this->getHelperManager()->Medialib();
+
         $params = $this->exchangeEntity->getRestartParams();
         if (!isset($params['total'])) {
-            $params['total'] = 0;
+            $params['total'] = $medialibHelper->getElementsCount($this->getCollectionIds());
             $params['offset'] = 0;
 
             $this->createExchangeDir();
@@ -29,13 +51,31 @@ class MedialibElementsExport extends AbstractExchange
         }
 
         if ($params['offset'] <= $params['total'] - 1) {
-            $items = [];
+            $items = $medialibHelper->getElements(
+                $this->getCollectionIds(),
+                [
+                    'offset' => $params['offset'],
+                    'limit'  => $this->getLimit(),
+                ]
+            );
 
             foreach ($items as $item) {
                 $writer = new XMLWriter();
                 $writer->openMemory();
                 $writer->startElement('item');
-                //item
+                foreach ($item as $code => $val) {
+                    if (in_array($code, $this->getExportFields())) {
+                        $writer->startElement('field');
+                        if ($code == 'SOURCE_ID') {
+                            $writer->writeAttribute('name', 'PATH');
+                            $this->writeFile($writer, $val);
+                        } else {
+                            $writer->writeAttribute('name', $code);
+                            $this->writeValue($writer, $val);
+                        }
+                        $writer->endElement();
+                    }
+                }
                 $writer->endElement();
                 $this->appendToExchangeFile($writer->flush());
                 $params['offset']++;
@@ -53,19 +93,8 @@ class MedialibElementsExport extends AbstractExchange
         $this->exchangeEntity->setRestartParams($params);
     }
 
-    protected function writeFieldString(XMLWriter $writer, $field)
+    public function getExportFields()
     {
-        $this->writeValue($writer, $field['VALUE']);
-    }
-
-    /**
-     * @param XMLWriter $writer
-     * @param           $field
-     *
-     * @throws Exception
-     */
-    protected function writeFieldFile(XMLWriter $writer, $field)
-    {
-        $this->writeFile($writer, $field['VALUE']);
+        return $this->exportFields;
     }
 }

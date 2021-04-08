@@ -44,16 +44,11 @@ class FormBuilder extends VersionBuilder
             ];
         }
 
-        $this->addField('form_id', [
+        $formId = $this->addFieldAndReturn('form_id', [
             'title' => Locale::getMessage('BUILDER_FormExport_FormId'),
             'width' => 250,
             'select' => $structure,
         ]);
-
-        $formId = $this->getFieldValue('form_id');
-        if (empty($formId)) {
-            $this->rebuildField('form_id');
-        }
 
         $form = $helper->Form()->getFormById($formId);
         $this->exitIfEmpty($form, 'Form not found');
@@ -62,7 +57,7 @@ class FormBuilder extends VersionBuilder
         unset($form['TIMESTAMP_X']);
         unset($form['VARNAME']);
 
-        $this->addField('what_else', [
+        $what = $this->addFieldAndReturn('what_else', [
             'title' => Locale::getMessage('BUILDER_FormExport_What'),
             'width' => 250,
             'multiple' => 1,
@@ -82,14 +77,6 @@ class FormBuilder extends VersionBuilder
                 ],
             ],
         ]);
-
-        $what = $this->getFieldValue('what_else');
-        if (!empty($what)) {
-            $what = is_array($what) ? $what : [$what];
-        } else {
-            $this->rebuildField('what_else');
-        }
-
 
         $formExport = false;
         if (in_array('form', $what)) {
