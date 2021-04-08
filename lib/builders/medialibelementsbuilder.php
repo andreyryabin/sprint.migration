@@ -7,6 +7,7 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
+use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class MedialibElementsBuilder extends VersionBuilder
@@ -46,23 +47,21 @@ class MedialibElementsBuilder extends VersionBuilder
             ]
         );
 
-        if (!isset($this->params['~version_name'])) {
-            $this->params['~version_name'] = $this->getVersionName();
-            $versionName = $this->params['~version_name'];
-        } else {
-            $versionName = $this->params['~version_name'];
-        }
-
         $this->getExchangeManager()
              ->MedialibElementsExport()
              ->setLimit(20)
              ->setCollectionIds($collectionIds)
              ->setExchangeFile(
-                 $this->getVersionResourceFile($versionName, 'medialib_elements.xml')
+                 $this->getVersionResourceFile(
+                     $this->getVersionName(),
+                     'medialib_elements.xml'
+                 )
              )
              ->execute();
 
-        unset($this->params['~version_name']);
+        $this->createVersionFile(
+            Module::getModuleDir() . '/templates/IblockElementsExport.php'
+        );
     }
 
     protected function getCollectionStructure()

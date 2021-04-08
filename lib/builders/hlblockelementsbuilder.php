@@ -47,13 +47,6 @@ class HlblockElementsBuilder extends VersionBuilder
             ]
         );
 
-        if (!isset($this->params['~version_name'])) {
-            $this->params['~version_name'] = $this->getVersionName();
-            $versionName = $this->params['~version_name'];
-        } else {
-            $versionName = $this->params['~version_name'];
-        }
-
         $this->getExchangeManager()
              ->HlblockElementsExport()
              ->setLimit(20)
@@ -62,17 +55,15 @@ class HlblockElementsBuilder extends VersionBuilder
              )
              ->setHlblockId($hlblockId)
              ->setExchangeFile(
-                 $this->getVersionResourceFile($versionName, 'hlblock_elements.xml')
+                 $this->getVersionResourceFile(
+                     $this->getVersionName(),
+                     'hlblock_elements.xml'
+                 )
              )
              ->execute();
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/HlblockElementsExport.php',
-            [
-                'version' => $versionName,
-            ]
+            Module::getModuleDir() . '/templates/HlblockElementsExport.php'
         );
-
-        unset($this->params['~version_name']);
     }
 }

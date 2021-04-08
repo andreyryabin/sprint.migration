@@ -6,20 +6,23 @@ use Sprint\Migration\Enum\VersionEnum;
 
 abstract class VersionBuilder extends AbstractBuilder
 {
-
     protected function addVersionFields()
     {
-        $this->addField('prefix', [
-            'title' => Locale::getMessage('FORM_PREFIX'),
-            'value' => $this->getVersionConfig()->getVal('version_prefix'),
-            'width' => 250,
-        ]);
+        $this->addField(
+            'prefix', [
+                'title' => Locale::getMessage('FORM_PREFIX'),
+                'value' => $this->getVersionConfig()->getVal('version_prefix'),
+                'width' => 250,
+            ]
+        );
 
-        $this->addField('description', [
-            'title' => Locale::getMessage('FORM_DESCR'),
-            'width' => 350,
-            'height' => 40,
-        ]);
+        $this->addField(
+            'description', [
+                'title'  => Locale::getMessage('FORM_DESCR'),
+                'width'  => 350,
+                'height' => 40,
+            ]
+        );
     }
 
     protected function purifyPrefix($prefix = '')
@@ -68,16 +71,31 @@ abstract class VersionBuilder extends AbstractBuilder
 
     protected function getVersionName()
     {
-        return strtr($this->getVersionConfig()->getVal('version_name_template'), [
-            '#NAME#' => $this->purifyPrefix($this->getFieldValue('prefix')),
-            '#TIMESTAMP#' => $this->getTimestamp(),
-        ]);
+        if (!isset($this->params['~version_name'])) {
+            $this->params['~version_name'] = $this->createVersionName();
+            $versionName = $this->params['~version_name'];
+        } else {
+            $versionName = $this->params['~version_name'];
+        }
+        return $versionName;
+    }
+
+    protected function createVersionName()
+    {
+        return strtr(
+            $this->getVersionConfig()->getVal('version_name_template'),
+            [
+                '#NAME#'      => $this->purifyPrefix($this->getFieldValue('prefix')),
+                '#TIMESTAMP#' => $this->getTimestamp(),
+            ]
+        );
     }
 
     /**
      * @param string $templateFile
-     * @param array $templateVars
-     * @param bool $markAsInstalled
+     * @param array  $templateVars
+     * @param bool   $markAsInstalled
+     *
      * @throws Exceptions\MigrationException
      * @return bool|string
      */
@@ -102,11 +120,13 @@ abstract class VersionBuilder extends AbstractBuilder
             $extendUse = '';
         }
 
-        $tplVars = array_merge([
-            'extendUse' => $extendUse,
-            'extendClass' => $extendClass,
-            'moduleVersion' => Module::getVersion(),
-        ], $templateVars);
+        $tplVars = array_merge(
+            [
+                'extendUse'     => $extendUse,
+                'extendClass'   => $extendClass,
+                'moduleVersion' => Module::getVersion(),
+            ], $templateVars
+        );
 
         if (!is_file($templateFile)) {
             $templateFile = Module::getModuleDir() . '/templates/version.php';
@@ -119,7 +139,8 @@ abstract class VersionBuilder extends AbstractBuilder
 
         if (!is_file($fileName)) {
             Out::outError(
-                Locale::getMessage('ERR_CANT_CREATE_FILE', [
+                Locale::getMessage(
+                    'ERR_CANT_CREATE_FILE', [
                         '#NAME#' => $fileName,
                     ]
                 )

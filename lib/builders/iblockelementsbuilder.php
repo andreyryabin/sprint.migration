@@ -44,13 +44,6 @@ class IblockElementsBuilder extends VersionBuilder
         $exportFields = $this->getFieldValueExportFields($iblockId, $updateMode);
         $exportProps = $this->getFieldValueExportProps($iblockId);
 
-        if (!isset($this->params['~version_name'])) {
-            $this->params['~version_name'] = $this->getVersionName();
-            $versionName = $this->params['~version_name'];
-        } else {
-            $versionName = $this->params['~version_name'];
-        }
-
         $this->getExchangeManager()
              ->IblockElementsExport()
              ->setExportFilter($exportFilter)
@@ -59,18 +52,18 @@ class IblockElementsBuilder extends VersionBuilder
              ->setIblockId($iblockId)
              ->setLimit(20)
              ->setExchangeFile(
-                 $this->getVersionResourceFile($versionName, 'iblock_elements.xml')
+                 $this->getVersionResourceFile(
+                     $this->getVersionName(),
+                     'iblock_elements.xml'
+                 )
              )->execute();
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockElementsExport.php',
             [
-                'version'    => $versionName,
                 'updateMode' => $updateMode,
             ]
         );
-
-        unset($this->params['~version_name']);
     }
 
     /**

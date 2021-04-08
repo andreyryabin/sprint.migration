@@ -30,6 +30,11 @@ class MedialibElementsExport extends AbstractExchange
         return $this->collectionIds;
     }
 
+    public function getExportFields()
+    {
+        return $this->exportFields;
+    }
+
     /**
      * @throws RestartException
      * @throws HelperException
@@ -69,6 +74,9 @@ class MedialibElementsExport extends AbstractExchange
                         if ($code == 'SOURCE_ID') {
                             $writer->writeAttribute('name', 'PATH');
                             $this->writeFile($writer, $val);
+                        } elseif ($code == 'COLLECTION_ID') {
+                            $writer->writeAttribute('name', $code);
+                            $this->writeValue($writer, $val);
                         } else {
                             $writer->writeAttribute('name', $code);
                             $this->writeValue($writer, $val);
@@ -91,10 +99,5 @@ class MedialibElementsExport extends AbstractExchange
         unset($params['total']);
         unset($params['offset']);
         $this->exchangeEntity->setRestartParams($params);
-    }
-
-    public function getExportFields()
-    {
-        return $this->exportFields;
     }
 }
