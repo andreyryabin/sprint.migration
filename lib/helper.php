@@ -34,8 +34,8 @@ class Helper
      * @var string
      * @deprecated
      */
-    public $lastError = '';
-    private $mode = [
+    public  $lastError = '';
+    private $mode      = [
         'test'      => 0,
         'out_equal' => 0,
     ];
@@ -232,6 +232,18 @@ class Helper
         }
 
         return $res;
+    }
+
+    protected function filterByKey($items, $key, $value)
+    {
+        return array_values(
+            array_filter(
+                $items,
+                function ($item) use ($key, $value) {
+                    return ($item[$key] == $value);
+                }
+            )
+        );
     }
 
     private function getMethod($method)

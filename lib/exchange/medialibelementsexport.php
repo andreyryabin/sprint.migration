@@ -70,7 +70,7 @@ class MedialibElementsExport extends AbstractExchange
                     if (in_array($code, $this->getExportFields())) {
                         $writer->startElement('field');
                         if ($code == 'SOURCE_ID') {
-                            $writer->writeAttribute('name', 'PATH');
+                            $writer->writeAttribute('name', 'FILE');
                             $this->writeFile($writer, $val);
                         } elseif ($code == 'COLLECTION_ID') {
                             $writer->writeAttribute('name', $code);

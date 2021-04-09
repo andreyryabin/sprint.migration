@@ -120,7 +120,7 @@ class MedialibElementsImport extends AbstractExchange
 
         $convertedFields = [];
         foreach ($fields as $field) {
-            if ($field['name'] == 'PATH') {
+            if ($field['name'] == 'FILE') {
                 $convertedFields[$field['name']] = $this->convertFieldFile($field);
             } elseif ($field['name'] == 'COLLECTION_ID') {
                 $convertedFields[$field['name']] = $this->convertFieldCollection($field);
@@ -133,13 +133,7 @@ class MedialibElementsImport extends AbstractExchange
             return false;
         }
 
-        $collectionId = $convertedFields['COLLECTION_ID'];
-        unset($convertedFields['COLLECTION_ID']);
-
-        return [
-            'collection_id' => $collectionId,
-            'fields'        => $convertedFields,
-        ];
+        return $convertedFields;
     }
 
     protected function convertFieldFile($field)

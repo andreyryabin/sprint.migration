@@ -169,7 +169,10 @@ abstract class AbstractExchange
                 Module::createDir(dirname($newPath));
                 if (copy($filePath, $newPath)) {
                     $this->writeValue(
-                        $writer, $file['SUBDIR'] . '/' . $file['FILE_NAME'], [
+                        $writer,
+                        $file['SUBDIR'] . '/' . $file['FILE_NAME'],
+                        [
+                            'name'        => $file['ORIGINAL_NAME'],
                             'description' => $file['DESCRIPTION'],
                         ]
                     );
@@ -183,6 +186,9 @@ abstract class AbstractExchange
         if (!empty($value['value'])) {
             $path = $this->getExchangeDir() . '/' . $value['value'];
             $file = CFile::MakeFileArray($path);
+            if (!empty($value['name'])) {
+                $file['name'] = $value['name'];
+            }
             if (!empty($value['description'])) {
                 $file['description'] = $value['description'];
             }

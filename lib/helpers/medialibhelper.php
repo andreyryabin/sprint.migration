@@ -86,17 +86,24 @@ class MedialibHelper extends Helper
 
     /**
      * @param string|int $typeId
-     * @param array      $filter
+     * @param array      $params
      *
      * @throws HelperException
      * @return array
      */
-    public function getCollections($typeId, $filter = [])
+    public function getCollections($typeId, $params = [])
     {
+        $params = array_merge(
+            [
+                'filter' => [],
+            ], $params
+        );
+
         if (!is_numeric($typeId)) {
             $typeId = $this->getTypeIdByCode($typeId);
         }
 
+        $filter = $params['filter'];
         $filter['TYPES'] = [$typeId];
 
         $result = CMedialibCollection::GetList(
@@ -108,47 +115,9 @@ class MedialibHelper extends Helper
 
         if (isset($filter['NAME'])) {
             //чистим результаты нечеткого поиска
-            $result = array_filter(
-                $result,
-                function ($item) use ($filter) {
-                    return ($item['NAME'] == $filter['NAME']);
-                }
-            );
+            return $this->filterByKey($result, 'NAME', $filter['NAME']);
         }
-        return array_values($result);
-    }
-
-    /**
-     * @param mixed        $typeId
-     * @param array|string $name
-     *
-     * @throws HelperException
-     * @return array|void
-     */
-    public function getCollection($typeId, $name)
-    {
-        $filter = is_array($name) ? $name : ['NAME' => $name];
-
-        $result = $this->getCollections($typeId, $filter);
-
-        if (!empty($result[0])) {
-            return $result[0];
-        }
-        $this->throwException(__METHOD__, 'collection not found');
-    }
-
-    /**
-     * @param $typeId
-     * @param $name
-     *
-     * @throws HelperException
-     * @return int|mixed
-     */
-    public function getCollectionId($typeId, $name)
-    {
-        $result = $this->getCollection($typeId, $name);
-
-        return !empty($result['ID']) ? $result['ID'] : 0;
+        return $result;
     }
 
     /**
@@ -187,11 +156,24 @@ SELECT MI.ID, MI.NAME, MI.DESCRIPTION, MI.KEYWORDS, MI.SOURCE_ID, MCI.COLLECTION
         WHERE {$whereQuery} {$limitQuery} ;
 TAG;
 
+        $result = [];
         try {
-            return $connection->query($sqlQuery)->fetchAll();
+            $result = $connection->query($sqlQuery)->fetchAll();
         } catch (SqlQueryException $e) {
             $this->throwException(__METHOD__, $e->getMessage());
         }
+
+        foreach ($result as $index => $item) {
+            $item['FILE'] = CFile::GetFileArray($item['SOURCE_ID']);
+            $result[$index] = $item;
+        }
+
+        if (isset($params['filter']['NAME'])) {
+            //чистим результаты нечеткого поиска
+            $result = $this->filterByKey($result, 'NAME', $params['filter']['NAME']);
+        }
+
+        return $result;
     }
 
     /**
@@ -237,39 +219,6 @@ TAG;
     }
 
     /**
-     * @param array|int    $collectionId
-     * @param array|string $name
-     *
-     * @throws HelperException
-     * @return array|void
-     */
-    public function getElement($collectionId, $name)
-    {
-        $filter = is_array($name) ? $name : ['NAME' => $name];
-
-        $result = $this->getElements($collectionId, $filter);
-
-        if (!empty($result[0])) {
-            return $result[0];
-        }
-        $this->throwException(__METHOD__, 'element not found');
-    }
-
-    /**
-     * @param $collectionId
-     * @param $name
-     *
-     * @throws HelperException
-     * @return int|mixed
-     */
-    public function getElementId($collectionId, $name)
-    {
-        $result = $this->getElement($collectionId, $name);
-
-        return !empty($result['ID']) ? $result['ID'] : 0;
-    }
-
-    /**
      * @param $typeId
      * @param $fields
      *
@@ -303,46 +252,67 @@ TAG;
     }
 
     /**
-     * @param array|int $collectionId
-     * @param array     $fields
+     * @param array $fields
      *
      * @throws HelperException
      * @return int|mixed
      */
-    public function addElement($collectionId, $fields = [])
+    public function addElement($fields = [])
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME', 'PATH']);
+        $fields['ID'] = 0;
+        return $this->editElement($fields);
+    }
 
-        $collectionId = is_array($collectionId) ? $collectionId : [$collectionId];
+    /**
+     * @param $id
+     * @param $fields
+     *
+     * @throws HelperException
+     * @return int|mixed
+     */
+    public function updateElement($id, $fields)
+    {
+        $fields['ID'] = $id;
+        return $this->editElement($fields);
+    }
 
-        $fields = array_merge(
+    /**
+     * @param $collectionId
+     * @param $name
+     *
+     * @throws HelperException
+     * @return false|mixed
+     */
+    public function getElementByName($collectionId, $name)
+    {
+        $elements = $this->getElements(
+            $collectionId,
             [
-                'NAME'        => '',
-                'DESCRIPTION' => '',
-                'KEYWORDS'    => '',
-                'PATH'        => '',
-            ], $fields
+                'filter' => ['NAME' => $name],
+                'limit'  => 1,
+                'offset' => 0,
+            ]
         );
+        return !empty($elements) ? $elements[0] : false;
+    }
 
-        if (!is_array($fields['PATH'])) {
-            $fields['PATH'] = CFile::MakeFileArray($fields['PATH']);
+    /**
+     * @param array $fields
+     *
+     * @throws HelperException
+     * @return int|mixed
+     */
+    public function saveElement($fields = [])
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME', 'FILE', 'COLLECTION_ID']);
+
+        $exists = $this->getElementByName($fields['COLLECTION_ID'], $fields['NAME']);
+
+        if (empty($exists)) {
+            return $this->addElement($fields);
+        } else {
+            return $this->updateElement($exists['ID'], $fields);
         }
-
-        $fields = [
-            'file'          => $fields['PATH'],
-            'path'          => false,
-            'arFields'      => [
-                //'ID'          => 0, // ID элемента для обновления, 0 для добавления
-                'NAME'        => $fields['NAME'],
-                'DESCRIPTION' => $fields['DESCRIPTION'],
-                'KEYWORDS'    => $fields['KEYWORDS'],
-            ],
-            'arCollections' => $collectionId,
-        ];
-
-        $result = CMedialibItem::Edit($fields);
-
-        return !empty($result['ID']) ? $result['ID'] : 0;
     }
 
     public function deleteElement($id)
@@ -353,6 +323,56 @@ TAG;
     public function deleteCollection($id)
     {
         CMedialibCollection::Delete($id, true);
+    }
+
+    /**
+     * @param array $fields
+     *
+     * @throws HelperException
+     * @return int|mixed
+     */
+    protected function editElement($fields = [])
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME', 'FILE', 'COLLECTION_ID']);
+
+        $fields = array_merge(
+            [
+                'NAME'        => '',
+                'DESCRIPTION' => '',
+                'KEYWORDS'    => '',
+                'FILE'        => '',
+            ], $fields
+        );
+
+        if (empty($fields['ID'])) {
+            $fields['ID'] = 0;
+        }
+
+        if (!is_array($fields['COLLECTION_ID'])) {
+            $collectionId = [$fields['COLLECTION_ID']];
+        } else {
+            $collectionId = $fields['COLLECTION_ID'];
+        }
+
+        if (!is_array($fields['FILE'])) {
+            $fields['FILE'] = CFile::MakeFileArray($fields['FILE']);
+        }
+
+        $result = CMedialibItem::Edit(
+            [
+                'file'          => $fields['FILE'],
+                'path'          => false,
+                'arFields'      => [
+                    'ID'          => $fields['ID'],
+                    'NAME'        => $fields['NAME'],
+                    'DESCRIPTION' => $fields['DESCRIPTION'],
+                    'KEYWORDS'    => $fields['KEYWORDS'],
+                ],
+                'arCollections' => $collectionId,
+            ]
+        );
+
+        return !empty($result['ID']) ? $result['ID'] : 0;
     }
 
     /**

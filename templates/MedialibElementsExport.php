@@ -38,10 +38,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                  function ($item) {
                      $this->getHelperManager()
                           ->Medialib()
-                          ->addElement(
-                              $item['collection_id'],
-                              $item['fields']
-                          );
+                          ->saveElement($item);
                  }
              );
     }
