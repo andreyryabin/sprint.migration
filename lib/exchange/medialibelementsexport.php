@@ -38,11 +38,11 @@ class MedialibElementsExport extends AbstractExchange
      */
     public function execute()
     {
-        $medialibHelper = $this->getHelperManager()->Medialib();
+        $medialibExchange = $this->getHelperManager()->MedialibExchange();
 
         $params = $this->exchangeEntity->getRestartParams();
         if (!isset($params['total'])) {
-            $params['total'] = $medialibHelper->getElementsCount(
+            $params['total'] = $medialibExchange->getElementsCount(
                 $this->getCollectionIds()
             );
             $params['offset'] = 0;
@@ -54,7 +54,7 @@ class MedialibElementsExport extends AbstractExchange
         }
 
         if ($params['offset'] <= $params['total'] - 1) {
-            $items = $medialibHelper->getElements(
+            $items = $medialibExchange->getElements(
                 $this->getCollectionIds(),
                 [
                     'offset' => $params['offset'],
@@ -71,10 +71,10 @@ class MedialibElementsExport extends AbstractExchange
                         $writer->startElement('field');
                         if ($code == 'SOURCE_ID') {
                             $writer->writeAttribute('name', 'FILE');
-                            $this->writeFile($writer, $val);
+                            $this->writeFieldFile($writer, $val);
                         } elseif ($code == 'COLLECTION_ID') {
-                            $writer->writeAttribute('name', $code);
-                            $this->writeValue($writer, $val);
+                            $writer->writeAttribute('name', 'COLLECTION_PATH');
+                            $this->writeFieldCollection($writer, $val);
                         } else {
                             $writer->writeAttribute('name', $code);
                             $this->writeValue($writer, $val);
@@ -97,5 +97,16 @@ class MedialibElementsExport extends AbstractExchange
         unset($params['total']);
         unset($params['offset']);
         $this->exchangeEntity->setRestartParams($params);
+    }
+
+    private function writeFieldFile(XMLWriter $writer, $val)
+    {
+        $this->writeFile($writer, $val);
+    }
+
+    private function writeFieldCollection(XMLWriter $writer, $val)
+    {
+        $medialibExchange = $this->getHelperManager()->MedialibExchange();
+        $this->writeValue($writer, $medialibExchange->getCollectionPath($val));
     }
 }

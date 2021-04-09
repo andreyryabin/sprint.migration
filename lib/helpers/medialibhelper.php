@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Helpers;
 
-use Adv\McdonaldsCmsBundle\ExternalAdmin\Fields\ProductCategoryFields;
 use Bitrix\Main\Application;
 use Bitrix\Main\Db\SqlQueryException;
 use CFile;

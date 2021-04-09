@@ -13,6 +13,7 @@ use Sprint\Migration\Helpers\HlblockHelper;
 use Sprint\Migration\Helpers\IblockExchangeHelper;
 use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Helpers\LangHelper;
+use Sprint\Migration\Helpers\MedialibExchangeHelper;
 use Sprint\Migration\Helpers\MedialibHelper;
 use Sprint\Migration\Helpers\OptionHelper;
 use Sprint\Migration\Helpers\SiteHelper;
@@ -36,6 +37,7 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  * @method DeliveryServiceHelper    DeliveryService()
  * @method SqlHelper                Sql()
  * @method MedialibHelper           Medialib()
+ * @method MedialibExchangeHelper   MedialibExchange()
  * @method IblockExchangeHelper     IblockExchange()
  * @method HlblockExchangeHelper    HlblockExchange()
  * @method AdminIblockHelper        AdminIblock()

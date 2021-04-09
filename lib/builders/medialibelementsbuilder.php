@@ -18,7 +18,7 @@ class MedialibElementsBuilder extends VersionBuilder
      */
     protected function isBuilderEnabled()
     {
-        return (!Locale::isWin1251() && $this->getHelperManager()->Medialib()->isEnabled());
+        return (!Locale::isWin1251() && $this->getHelperManager()->MedialibExchange()->isEnabled());
     }
 
     protected function initialize()
@@ -44,7 +44,7 @@ class MedialibElementsBuilder extends VersionBuilder
                 'title'       => 'collection_id',
                 'placeholder' => '',
                 'width'       => 250,
-                'select'      => $this->getCollectionStructure(),
+                'select'      => $this->getHelperManager()->MedialibExchange()->getCollectionStructure(),
                 'multiple'    => true,
             ]
         );
@@ -65,19 +65,5 @@ class MedialibElementsBuilder extends VersionBuilder
         );
     }
 
-    protected function getCollectionStructure()
-    {
-        $helper = $this->getHelperManager()->Medialib();
 
-        $items = $helper->getCollectionsFlatTree($helper::TYPE_IMAGE);
-
-        $res = [];
-        foreach ($items as $item) {
-            $res[] = [
-                'title' => $item['DEPTH_NAME'],
-                'value' => $item['ID'],
-            ];
-        }
-        return $res;
-    }
 }
