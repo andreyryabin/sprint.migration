@@ -2,9 +2,7 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Exception;
 use Sprint\Migration\AbstractExchange;
-use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
 use XMLWriter;
 
@@ -44,7 +42,9 @@ class MedialibElementsExport extends AbstractExchange
 
         $params = $this->exchangeEntity->getRestartParams();
         if (!isset($params['total'])) {
-            $params['total'] = $medialibHelper->getElementsCount($this->getCollectionIds());
+            $params['total'] = $medialibHelper->getElementsCount(
+                $this->getCollectionIds()
+            );
             $params['offset'] = 0;
 
             $this->createExchangeDir();

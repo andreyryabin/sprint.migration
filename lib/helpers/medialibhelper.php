@@ -121,18 +121,15 @@ class MedialibHelper extends Helper
     }
 
     /**
-     * @param array|int $collectionIds
+     * @param array|int $collectionId
      * @param array     $params
      *
      * @throws HelperException
      * @return array|void
      */
-    public function getElements($collectionIds, $params = [])
+    public function getElements($collectionId, $params = [])
     {
         $connection = Application::getConnection();
-
-        $collectionIds = is_array($collectionIds) ? $collectionIds : [$collectionIds];
-        $collectionIds = array_map('intval', $collectionIds);
 
         $params = array_merge(
             [
@@ -142,8 +139,8 @@ class MedialibHelper extends Helper
             ], $params
         );
 
-        $whereQuery = $this->createWhereQuery($collectionIds, $params);
-        $limitQuery = $this->createLimitQuery($collectionIds, $params);
+        $whereQuery = $this->createWhereQuery($collectionId, $params);
+        $limitQuery = $this->createLimitQuery($collectionId, $params);
 
         $sqlQuery /** @lang Text */ = <<<TAG
 SELECT MI.ID, MI.NAME, MI.DESCRIPTION, MI.KEYWORDS, MI.SOURCE_ID, MCI.COLLECTION_ID
@@ -177,17 +174,17 @@ TAG;
     }
 
     /**
-     * @param array $collectionIds
-     * @param array $params
+     * @param array|int $collectionId
+     * @param array     $params
      *
      * @throws SqlQueryException
      * @return int
      */
-    public function getElementsCount($collectionIds, $params = [])
+    public function getElementsCount($collectionId, $params = [])
     {
         $connection = Application::getConnection();
 
-        $where = $this->createWhereQuery($collectionIds, $params);
+        $where = $this->createWhereQuery($collectionId, $params);
         $sqlQuery /** @lang Text */ = <<<TAG
 SELECT COUNT(*) CNT
         FROM 
@@ -204,7 +201,7 @@ TAG;
     }
 
     /** @noinspection PhpUnusedParameterInspection */
-    private function createLimitQuery($collectionIds, $params = [])
+    private function createLimitQuery($collectionId, $params = [])
     {
         if ($params['limit'] > 0) {
             return 'LIMIT ' . (int)$params['offset'] . ',' . (int)$params['limit'];
@@ -213,9 +210,13 @@ TAG;
     }
 
     /** @noinspection PhpUnusedParameterInspection */
-    private function createWhereQuery($collectionIds, $params = [])
+    private function createWhereQuery($collectionId, $params = [])
     {
-        return 'MCI.COLLECTION_ID IN (' . implode(',', $collectionIds) . ')';
+        if (is_array($collectionId)) {
+            $collectionId = array_map('intval', $collectionId);
+            return 'MCI.COLLECTION_ID IN (' . implode(',', $collectionId) . ')';
+        }
+        return 'MCI.COLLECTION_ID = "' . (int)$collectionId . '"';
     }
 
     /**
@@ -335,25 +336,6 @@ TAG;
     {
         $this->checkRequiredKeys(__METHOD__, $fields, ['NAME', 'FILE', 'COLLECTION_ID']);
 
-        $fields = array_merge(
-            [
-                'NAME'        => '',
-                'DESCRIPTION' => '',
-                'KEYWORDS'    => '',
-                'FILE'        => '',
-            ], $fields
-        );
-
-        if (empty($fields['ID'])) {
-            $fields['ID'] = 0;
-        }
-
-        if (!is_array($fields['COLLECTION_ID'])) {
-            $collectionId = [$fields['COLLECTION_ID']];
-        } else {
-            $collectionId = $fields['COLLECTION_ID'];
-        }
-
         if (!is_array($fields['FILE'])) {
             $fields['FILE'] = CFile::MakeFileArray($fields['FILE']);
         }
@@ -363,12 +345,12 @@ TAG;
                 'file'          => $fields['FILE'],
                 'path'          => false,
                 'arFields'      => [
-                    'ID'          => $fields['ID'],
-                    'NAME'        => $fields['NAME'],
-                    'DESCRIPTION' => $fields['DESCRIPTION'],
-                    'KEYWORDS'    => $fields['KEYWORDS'],
+                    'ID'          => !empty($fields['ID']) ? (int)$fields['ID'] : 0,
+                    'NAME'        => !empty($fields['NAME']) ? $fields['NAME'] : '',
+                    'DESCRIPTION' => !empty($fields['DESCRIPTION']) ? $fields['DESCRIPTION'] : '',
+                    'KEYWORDS'    => !empty($fields['KEYWORDS']) ? $fields['KEYWORDS'] : '',
                 ],
-                'arCollections' => $collectionId,
+                'arCollections' => [(int)$fields['COLLECTION_ID']],
             ]
         );
 
