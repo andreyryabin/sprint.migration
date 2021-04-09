@@ -69,12 +69,12 @@ class MedialibElementsBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager()->Medialib();
 
-        $items = $helper->getCollections($helper::TYPE_IMAGE);
+        $items = $helper->getCollectionsFlatTree($helper::TYPE_IMAGE);
 
         $res = [];
         foreach ($items as $item) {
             $res[] = [
-                'title' => '[' . $item['ID'] . '] ' . $item['NAME'],
+                'title' => $item['DEPTH_NAME'],
                 'value' => $item['ID'],
             ];
         }

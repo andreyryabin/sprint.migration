@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Helpers;
 
+use Adv\McdonaldsCmsBundle\ExternalAdmin\Fields\ProductCategoryFields;
 use Bitrix\Main\Application;
 use Bitrix\Main\Db\SqlQueryException;
 use CFile;
@@ -103,21 +104,56 @@ class MedialibHelper extends Helper
             $typeId = $this->getTypeIdByCode($typeId);
         }
 
-        $filter = $params['filter'];
-        $filter['TYPES'] = [$typeId];
+        $params['filter']['TYPES'] = [$typeId];
 
         $result = CMedialibCollection::GetList(
             [
-                'arFilter' => $filter,
+                'arFilter' => $params['filter'],
                 'arOrder'  => ['ID' => 'asc'],
             ]
         );
 
-        if (isset($filter['NAME'])) {
+        if (isset($params['filter']['NAME'])) {
             //чистим результаты нечеткого поиска
-            return $this->filterByKey($result, 'NAME', $filter['NAME']);
+            return $this->filterByKey($result, 'NAME', $params['filter']['NAME']);
         }
         return $result;
+    }
+
+    public function getCollectionsTree($typeId, $parentId = 0, $depth = 0, $path = [])
+    {
+        $result = $this->getCollections($typeId, ['filter' => ['PARENT_ID' => $parentId]]);
+        foreach ($result as $index => $item) {
+            $item['DEPTH_LEVEL'] = $depth;
+            $item['DEPTH_NAME'] = str_repeat(' . ', $depth) . $item['NAME'];
+            $item['PATH'] = array_merge($path, [$item['NAME']]);
+            $item['CHILDS'] = $this->getCollectionsTree($typeId, $item['ID'], $item['DEPTH_LEVEL'] + 1, $item['PATH']);
+            $result[$index] = $item;
+        }
+        return $result;
+    }
+
+    public function getCollectionsFlatTree($typeId)
+    {
+        $tree = $this->getCollectionsTree($typeId);
+        $flat = [];
+        foreach ($tree as $category) {
+            $this->flatTree($category, $flat);
+        }
+        return $flat;
+    }
+
+    protected function flatTree($collection, &$flat)
+    {
+        $childs = $collection['CHILDS'];
+        unset($collection['CHILDS']);
+
+        $flat[] = $collection;
+        if (!empty($childs)) {
+            foreach ($childs as $subcategory) {
+                $this->flatTree($subcategory, $flat);
+            }
+        }
     }
 
     /**
