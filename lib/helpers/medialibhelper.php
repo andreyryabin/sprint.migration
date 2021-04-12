@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Helpers;
 
-use Bitrix\Main\Application;
 use Bitrix\Main\Db\SqlQueryException;
 use CFile;
 use CMedialib;
@@ -122,7 +121,7 @@ class MedialibHelper extends Helper
      */
     public function getElements($collectionId, $params = [])
     {
-        $connection = Application::getConnection();
+        $sqlhelper = (new SqlHelper());
 
         $params = array_merge(
             [
@@ -148,7 +147,7 @@ TAG;
 
         $result = [];
         try {
-            $result = $connection->query($sqlQuery)->fetchAll();
+            $result = $sqlhelper->query($sqlQuery)->fetchAll();
         } catch (SqlQueryException $e) {
             $this->throwException(__METHOD__, $e->getMessage());
         }
@@ -156,11 +155,6 @@ TAG;
         foreach ($result as $index => $item) {
             $item['FILE'] = CFile::GetFileArray($item['SOURCE_ID']);
             $result[$index] = $item;
-        }
-
-        if (isset($params['filter']['NAME'])) {
-            //чистим результаты нечеткого поиска
-            $result = $this->filterByKey($result, 'NAME', $params['filter']['NAME']);
         }
 
         return $result;
@@ -175,7 +169,7 @@ TAG;
      */
     public function getElementsCount($collectionId, $params = [])
     {
-        $connection = Application::getConnection();
+        $sqlhelper = (new SqlHelper());
 
         $where = $this->createWhereQuery($collectionId, $params);
         $sqlQuery /** @lang Text */ = <<<TAG
@@ -189,7 +183,7 @@ SELECT COUNT(*) CNT
         WHERE {$where};
 TAG;
 
-        $result = $connection->query($sqlQuery)->fetch();
+        $result = $sqlhelper->query($sqlQuery)->fetch();
         return (int)$result['CNT'];
     }
 
@@ -462,14 +456,23 @@ TAG;
         return '';
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
     private function createWhereQuery($collectionId, $params = [])
     {
+        $sqlhelper = (new SqlHelper());
+
+        $parts = [];
         if (is_array($collectionId)) {
             $collectionId = array_map('intval', $collectionId);
-            return 'MCI.COLLECTION_ID IN (' . implode(',', $collectionId) . ')';
+            $parts[] = 'MCI.COLLECTION_ID IN (' . implode(',', $collectionId) . ')';
+        } else {
+            $parts[] = 'MCI.COLLECTION_ID = "' . (int)$collectionId . '"';
         }
-        return 'MCI.COLLECTION_ID = "' . (int)$collectionId . '"';
+
+        if (isset($params['filter']['NAME'])) {
+            $parts[] = 'MI.NAME = "' . $sqlhelper->forSql($params['filter']['NAME']) . '"';
+        }
+
+        return implode(' AND ', $parts);
     }
 
     private function flatTree($collection, &$flat)

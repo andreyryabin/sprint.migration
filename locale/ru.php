@@ -206,7 +206,7 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "ru", [
         "BUILDER_MedialibElements1"             => "Перенести изображения медиабиблиотеки",
-        "BUILDER_MedialibElements2"             => "",
+        "BUILDER_MedialibElements2"             => "Переносит изображения по коллекциям\nСоздает коллекции если их не было\nОбновляет изображения и коллекции с таким же названием",
         "BUILDER_MedialibElements_CollectionId" => "Выбрать коллекции",
     ]
 );
