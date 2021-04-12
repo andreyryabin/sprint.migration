@@ -201,8 +201,13 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_Cleaner_success"          => "Конфигурация удалена",
         "BUILDER_SchemaImport"             => "Установка схемы",
         "BUILDER_SchemaExport"             => "Создание схемы",
-        "BUILDER_MedialibElements1"        => "BUILDER_MedialibElements1",
-        "BUILDER_MedialibElements2"        => "",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "ru", [
+        "BUILDER_MedialibElements1"             => "Перенести изображения медиабиблиотеки",
+        "BUILDER_MedialibElements2"             => "",
+        "BUILDER_MedialibElements_CollectionId" => "Выбрать коллекции",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -333,6 +338,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_IB_SECTION_ID_EMPTY"           => "Категория в инфоблоке \"#IBLOCK_ID#\" не указана",
         "ERR_IB_SECTION_ID_NOT_FOUND"       => "Категория \"#SECTION_ID#\" в инфоблоке \"#IBLOCK_ID#\" не найдена",
         "ERR_IB_SECTION_ON_LEVEL_NOT_FOUND" => "Категория \"#SECTION_NAME#\" на уровне \"#DEPTH_LEVEL#\" не найдена",
+        "ERR_SAVE_COLLECTION_BY_PATH"       => "Не удалось сохранить коллекцию по пути \"#PATH#\"",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(

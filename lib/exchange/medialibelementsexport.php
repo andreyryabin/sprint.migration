@@ -107,6 +107,9 @@ class MedialibElementsExport extends AbstractExchange
     private function writeFieldCollection(XMLWriter $writer, $val)
     {
         $medialibExchange = $this->getHelperManager()->MedialibExchange();
-        $this->writeValue($writer, $medialibExchange->getCollectionPath($val));
+        $this->writeValue(
+            $writer,
+            $medialibExchange->getCollectionPath($medialibExchange::TYPE_IMAGE, $val)
+        );
     }
 }

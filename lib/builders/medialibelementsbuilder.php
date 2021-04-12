@@ -25,8 +25,7 @@ class MedialibElementsBuilder extends VersionBuilder
     {
         $this->setTitle(Locale::getMessage('BUILDER_MedialibElements1'));
         $this->setDescription(Locale::getMessage('BUILDER_MedialibElements2'));
-        //$this->addVersionFields();
-
+        $this->addVersionFields();
     }
 
     /**
@@ -38,13 +37,16 @@ class MedialibElementsBuilder extends VersionBuilder
      */
     protected function execute()
     {
+        $medialibExchange = $this->getHelperManager()->MedialibExchange();
         $collectionIds = $this->addFieldAndReturn(
             'collection_id',
             [
-                'title'       => 'collection_id',
+                'title'       => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
                 'placeholder' => '',
                 'width'       => 250,
-                'select'      => $this->getHelperManager()->MedialibExchange()->getCollectionStructure(),
+                'select'      => $medialibExchange->getCollectionStructure(
+                    $medialibExchange::TYPE_IMAGE
+                ),
                 'multiple'    => true,
             ]
         );

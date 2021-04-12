@@ -201,8 +201,13 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_Cleaner_success"          => "Configuration deleted",
         "BUILDER_SchemaImport"             => "Install data schema",
         "BUILDER_SchemaExport"             => "Create data schema",
-        "BUILDER_MedialibElements1"        => "BUILDER_MedialibElements1",
-        "BUILDER_MedialibElements2"        => "",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "en", [
+        "BUILDER_MedialibElements1"             => "Export media library images",
+        "BUILDER_MedialibElements2"             => "",
+        "BUILDER_MedialibElements_CollectionId" => "Select collections",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -333,6 +338,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_IB_SECTION_ID_EMPTY"           => "Section in iblock \"#IBLOCK_ID#\" empty",
         "ERR_IB_SECTION_ID_NOT_FOUND"       => "Section \"#SECTION_ID#\" in iblock \"#IBLOCK_ID#\" not found",
         "ERR_IB_SECTION_ON_LEVEL_NOT_FOUND" => "Section \"#SECTION_NAME#\" on level \"#DEPTH_LEVEL#\" not found",
+        "ERR_SAVE_COLLECTION_BY_PATH"       => "Collection by path \"#PATH#\" not created",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(

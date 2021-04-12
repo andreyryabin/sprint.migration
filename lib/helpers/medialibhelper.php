@@ -11,6 +11,7 @@ use CMedialibItem;
 use CTask;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
+use Sprint\Migration\Locale;
 
 /**
  * Class MedialibHelper
@@ -52,36 +53,6 @@ class MedialibHelper extends Helper
             }
         }
         $this->throwException(__METHOD__, 'type not found');
-    }
-
-    /**
-     * @param mixed $typeId
-     * @param array $path
-     *
-     * @throws HelperException
-     * @return int|void
-     */
-    public function getCollectionIdByNamePath($typeId, $path = [])
-    {
-        if (!is_numeric($typeId)) {
-            $typeId = $this->getTypeIdByCode($typeId);
-        }
-
-        $parentId = 0;
-        foreach ($path as $name) {
-            $parentId = $this->getCollectionId(
-                $typeId,
-                [
-                    'NAME'      => $name,
-                    'PARENT_ID' => $parentId,
-                ]
-            );
-        }
-        if ($parentId) {
-            return $parentId;
-        }
-
-        $this->throwException(__METHOD__, 'collection not found');
     }
 
     /**
@@ -140,19 +111,6 @@ class MedialibHelper extends Helper
             $this->flatTree($category, $flat);
         }
         return $flat;
-    }
-
-    protected function flatTree($collection, &$flat)
-    {
-        $childs = $collection['CHILDS'];
-        unset($collection['CHILDS']);
-
-        $flat[] = $collection;
-        if (!empty($childs)) {
-            foreach ($childs as $subcategory) {
-                $this->flatTree($subcategory, $flat);
-            }
-        }
     }
 
     /**
@@ -235,25 +193,6 @@ TAG;
         return (int)$result['CNT'];
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
-    private function createLimitQuery($collectionId, $params = [])
-    {
-        if ($params['limit'] > 0) {
-            return 'LIMIT ' . (int)$params['offset'] . ',' . (int)$params['limit'];
-        }
-        return '';
-    }
-
-    /** @noinspection PhpUnusedParameterInspection */
-    private function createWhereQuery($collectionId, $params = [])
-    {
-        if (is_array($collectionId)) {
-            $collectionId = array_map('intval', $collectionId);
-            return 'MCI.COLLECTION_ID IN (' . implode(',', $collectionId) . ')';
-        }
-        return 'MCI.COLLECTION_ID = "' . (int)$collectionId . '"';
-    }
-
     /**
      * @param $typeId
      * @param $fields
@@ -288,6 +227,74 @@ TAG;
     }
 
     /**
+     * @param $typeId
+     * @param $fields
+     *
+     * @throws HelperException
+     * @return false|mixed
+     */
+    public function saveCollection($typeId, $fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME']);
+
+        $parentId = !empty($fields['PARENT_ID']) ? (int)$fields['PARENT_ID'] : 0;
+        $name = (string)$fields['NAME'];
+
+        $collections = $this->getCollections(
+            $typeId,
+            [
+                'filter' => [
+                    'NAME'      => $name,
+                    'PARENT_ID' => $parentId,
+                ],
+            ]
+        );
+
+        $exists = !empty($collections) ? $collections[0] : false;
+
+        if (empty($exists)) {
+            return $this->addCollection(
+                $typeId,
+                [
+                    'NAME'      => $name,
+                    'PARENT_ID' => $parentId,
+                ]
+            );
+        } else {
+            return $exists['ID'];
+        }
+    }
+
+    /**
+     * @param $typeId
+     * @param $path
+     *
+     * @throws HelperException
+     * @return int|void
+     */
+    public function saveCollectionByPath($typeId, $path)
+    {
+        $parentId = 0;
+        foreach ($path as $name) {
+            $parentId = $this->saveCollection(
+                $typeId,
+                [
+                    'NAME'      => $name,
+                    'PARENT_ID' => $parentId,
+                ]
+            );
+        }
+        if ($parentId) {
+            return $parentId;
+        }
+
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage('ERR_SAVE_COLLECTION_BY_PATH', ['#PATH#' => $path])
+        );
+    }
+
+    /**
      * @param array $fields
      *
      * @throws HelperException
@@ -313,26 +320,6 @@ TAG;
     }
 
     /**
-     * @param $collectionId
-     * @param $name
-     *
-     * @throws HelperException
-     * @return false|mixed
-     */
-    public function getElementByName($collectionId, $name)
-    {
-        $elements = $this->getElements(
-            $collectionId,
-            [
-                'filter' => ['NAME' => $name],
-                'limit'  => 1,
-                'offset' => 0,
-            ]
-        );
-        return !empty($elements) ? $elements[0] : false;
-    }
-
-    /**
      * @param array $fields
      *
      * @throws HelperException
@@ -342,7 +329,16 @@ TAG;
     {
         $this->checkRequiredKeys(__METHOD__, $fields, ['NAME', 'FILE', 'COLLECTION_ID']);
 
-        $exists = $this->getElementByName($fields['COLLECTION_ID'], $fields['NAME']);
+        $elements = $this->getElements(
+            $fields['COLLECTION_ID'],
+            [
+                'filter' => ['NAME' => $fields['NAME']],
+                'limit'  => 1,
+                'offset' => 0,
+            ]
+        );
+
+        $exists = !empty($elements) ? $elements[0] : false;
 
         if (empty($exists)) {
             return $this->addElement($fields);
@@ -359,37 +355,6 @@ TAG;
     public function deleteCollection($id)
     {
         CMedialibCollection::Delete($id, true);
-    }
-
-    /**
-     * @param array $fields
-     *
-     * @throws HelperException
-     * @return int|mixed
-     */
-    protected function editElement($fields = [])
-    {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME', 'FILE', 'COLLECTION_ID']);
-
-        if (!is_array($fields['FILE'])) {
-            $fields['FILE'] = CFile::MakeFileArray($fields['FILE']);
-        }
-
-        $result = CMedialibItem::Edit(
-            [
-                'file'          => $fields['FILE'],
-                'path'          => false,
-                'arFields'      => [
-                    'ID'          => !empty($fields['ID']) ? (int)$fields['ID'] : 0,
-                    'NAME'        => !empty($fields['NAME']) ? $fields['NAME'] : '',
-                    'DESCRIPTION' => !empty($fields['DESCRIPTION']) ? $fields['DESCRIPTION'] : '',
-                    'KEYWORDS'    => !empty($fields['KEYWORDS']) ? $fields['KEYWORDS'] : '',
-                ],
-                'arCollections' => [(int)$fields['COLLECTION_ID']],
-            ]
-        );
-
-        return !empty($result['ID']) ? $result['ID'] : 0;
     }
 
     /**
@@ -455,5 +420,68 @@ TAG;
         }
 
         CMedialib::SaveAccessPermissions($collectionId, $accessRights);
+    }
+
+    /**
+     * @param array $fields
+     *
+     * @throws HelperException
+     * @return int|mixed
+     */
+    private function editElement($fields = [])
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME', 'FILE', 'COLLECTION_ID']);
+
+        if (!is_array($fields['FILE'])) {
+            $fields['FILE'] = CFile::MakeFileArray($fields['FILE']);
+        }
+
+        $result = CMedialibItem::Edit(
+            [
+                'file'          => $fields['FILE'],
+                'path'          => false,
+                'arFields'      => [
+                    'ID'          => !empty($fields['ID']) ? (int)$fields['ID'] : 0,
+                    'NAME'        => !empty($fields['NAME']) ? $fields['NAME'] : '',
+                    'DESCRIPTION' => !empty($fields['DESCRIPTION']) ? $fields['DESCRIPTION'] : '',
+                    'KEYWORDS'    => !empty($fields['KEYWORDS']) ? $fields['KEYWORDS'] : '',
+                ],
+                'arCollections' => [(int)$fields['COLLECTION_ID']],
+            ]
+        );
+
+        return !empty($result['ID']) ? $result['ID'] : 0;
+    }
+
+    /** @noinspection PhpUnusedParameterInspection */
+    private function createLimitQuery($collectionId, $params = [])
+    {
+        if ($params['limit'] > 0) {
+            return 'LIMIT ' . (int)$params['offset'] . ',' . (int)$params['limit'];
+        }
+        return '';
+    }
+
+    /** @noinspection PhpUnusedParameterInspection */
+    private function createWhereQuery($collectionId, $params = [])
+    {
+        if (is_array($collectionId)) {
+            $collectionId = array_map('intval', $collectionId);
+            return 'MCI.COLLECTION_ID IN (' . implode(',', $collectionId) . ')';
+        }
+        return 'MCI.COLLECTION_ID = "' . (int)$collectionId . '"';
+    }
+
+    private function flatTree($collection, &$flat)
+    {
+        $childs = $collection['CHILDS'];
+        unset($collection['CHILDS']);
+
+        $flat[] = $collection;
+        if (!empty($childs)) {
+            foreach ($childs as $subcategory) {
+                $this->flatTree($subcategory, $flat);
+            }
+        }
     }
 }

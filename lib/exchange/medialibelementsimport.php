@@ -122,8 +122,8 @@ class MedialibElementsImport extends AbstractExchange
         foreach ($fields as $field) {
             if ($field['name'] == 'FILE') {
                 $convertedFields[$field['name']] = $this->convertFieldFile($field);
-            } elseif ($field['name'] == 'COLLECTION_ID') {
-                $convertedFields[$field['name']] = $this->convertFieldCollection($field);
+            } elseif ($field['name'] == 'COLLECTION_PATH') {
+                $convertedFields['COLLECTION_ID'] = $this->convertFieldCollectionPath($field);
             } else {
                 $convertedFields[$field['name']] = $this->convertFieldString($field);
             }
@@ -146,8 +146,10 @@ class MedialibElementsImport extends AbstractExchange
         return $field['value'][0]['value'];
     }
 
-    protected function convertFieldCollection($field)
+    protected function convertFieldCollectionPath($field)
     {
-        return $field['value'][0]['value'];
+        $medialibExchange = $this->getHelperManager()->MedialibExchange();
+        $paths = array_column($field['value'], 'value');
+        return $medialibExchange->saveCollectionByPath($medialibExchange::TYPE_IMAGE, $paths);
     }
 }
