@@ -5,6 +5,7 @@ namespace Sprint\Migration\Helpers;
 use Bitrix\Highloadblock\HighloadBlockLangTable;
 use Bitrix\Highloadblock\HighloadBlockRightsTable;
 use Bitrix\Highloadblock\HighloadBlockTable;
+use Bitrix\Main\Entity\DataManager;
 use Bitrix\Main\Entity\ExpressionField;
 use CTask;
 use Exception;
@@ -12,12 +13,11 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
 
-
 class HlblockHelper extends Helper
 {
-
     /**
      * HlblockHelper constructor.
+     *
      * @return bool
      */
     public function isEnabled()
@@ -27,7 +27,9 @@ class HlblockHelper extends Helper
 
     /**
      * Получает список highload-блоков
+     *
      * @param array $filter
+     *
      * @throws HelperException
      * @return array
      */
@@ -56,7 +58,9 @@ class HlblockHelper extends Helper
     /**
      * Получает список highload-блоков
      * Данные подготовлены для экспорта в миграцию или схему
+     *
      * @param array $filter
+     *
      * @throws HelperException
      * @return array
      */
@@ -74,7 +78,9 @@ class HlblockHelper extends Helper
 
     /**
      * Получает список полей highload-блока
+     *
      * @param $hlblockName int|string|array - id, имя или фильтр
+     *
      * @throws HelperException
      * @return array
      */
@@ -92,6 +98,7 @@ class HlblockHelper extends Helper
      *
      * @param $hlblockName
      * @param $fieldName
+     *
      * @throws HelperException
      * @return array|bool
      */
@@ -109,8 +116,9 @@ class HlblockHelper extends Helper
     /**
      * @param $hlblockName
      * @param $field
+     *
      * @throws HelperException
-     * @return mixed|string
+     * @return string|void
      */
     public function getFieldUid($hlblockName, $field)
     {
@@ -128,13 +136,90 @@ class HlblockHelper extends Helper
                 );
             }
         }
-        return !empty($field['FIELD_NAME']) ? $field['FIELD_NAME'] : '';
+
+        if (!empty($field['FIELD_NAME'])) {
+            return $field['FIELD_NAME'];
+        }
+        $this->throwException(__METHOD__, Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND'));
     }
 
+    /**
+     * @param $hlblockName
+     * @param $fieldName
+     *
+     * @throws HelperException
+     * @return mixed
+     */
+    public function getFieldType($hlblockName, $fieldName)
+    {
+        $field = $this->getField($hlblockName, $fieldName);
+        return $field['USER_TYPE_ID'];
+    }
+
+    /**
+     * @param $hlblockName
+     * @param $fieldName
+     *
+     * @throws HelperException
+     * @return mixed
+     */
+    public function isFieldMultiple($hlblockName, $fieldName)
+    {
+        $field = $this->getField($hlblockName, $fieldName);
+        return ($field['MULTIPLE'] == 'Y');
+    }
+
+    /**
+     * @param $hlblockName
+     * @param $fieldName
+     * @param $xmlId
+     *
+     * @throws HelperException
+     * @return mixed|string
+     */
+    public function getFieldEnumIdByXmlId($hlblockName, $fieldName, $xmlId)
+    {
+        $field = $this->getField($hlblockName, $fieldName);
+        if (empty($field['ENUM_VALUES']) || !is_array($field['ENUM_VALUES'])) {
+            return '';
+        }
+
+        foreach ($field['ENUM_VALUES'] as $val) {
+            if ($val['XML_ID'] == $xmlId) {
+                return $val['ID'];
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * @param $hlblockName
+     * @param $fieldName
+     * @param $id
+     *
+     * @throws HelperException
+     * @return mixed|string
+     */
+    public function getFieldEnumXmlIdById($hlblockName, $fieldName, $id)
+    {
+        $field = $this->getField($hlblockName, $fieldName);
+        if (empty($field['ENUM_VALUES']) || !is_array($field['ENUM_VALUES'])) {
+            return '';
+        }
+
+        foreach ($field['ENUM_VALUES'] as $val) {
+            if ($val['ID'] == $id) {
+                return $val['XML_ID'];
+            }
+        }
+        return '';
+    }
 
     /**
      * @param $hlblockName
      * @param $fieldUid
+     *
      * @throws HelperException
      * @return int
      */
@@ -157,6 +242,7 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockName
+     *
      * @throws HelperException
      * @return string
      */
@@ -169,8 +255,10 @@ class HlblockHelper extends Helper
     /**
      * Сохраняет поле highload-блока
      * Создаст если не было, обновит если существует и отличается
-     * @param $hlblockName int|string|array - id, имя или фильтр
+     *
+     * @param       $hlblockName int|string|array - id, имя или фильтр
      * @param array $field
+     *
      * @throws HelperException
      * @return bool|int|mixed
      */
@@ -186,7 +274,9 @@ class HlblockHelper extends Helper
     /**
      * Сохраняет highload-блок
      * Создаст если не было, обновит если существует и отличается
+     *
      * @param $fields , обязательные параметры - название сущности
+     *
      * @throws HelperException
      * @return bool|int|mixed
      */
@@ -230,7 +320,6 @@ class HlblockHelper extends Helper
             return $ok;
         }
 
-
         $ok = $this->getMode('test') ? true : $exists['ID'];
         if ($this->getMode('out_equal')) {
             $this->outNoticeIf(
@@ -242,16 +331,16 @@ class HlblockHelper extends Helper
                     ]
                 )
             );
-
         }
         return $ok;
     }
 
-
     /**
      * Удаляет поле highload-блока
+     *
      * @param $hlblockName
      * @param $fieldName
+     *
      * @throws HelperException
      * @return bool
      */
@@ -268,7 +357,9 @@ class HlblockHelper extends Helper
     /**
      * Получает список полей highload-блока
      * Данные подготовлены для экспорта в миграцию или схему
+     *
      * @param $hlblockName
+     *
      * @throws HelperException
      * @return array
      */
@@ -292,7 +383,9 @@ class HlblockHelper extends Helper
     /**
      * Получает highload-блок
      * Данные подготовлены для экспорта в миграцию или схему
+     *
      * @param $hlblockName
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -305,7 +398,9 @@ class HlblockHelper extends Helper
 
     /**
      * Получает highload-блок
+     *
      * @param $hlblockName - id, имя или фильтр
+     *
      * @throws HelperException
      * @return array|false
      */
@@ -328,12 +423,8 @@ class HlblockHelper extends Helper
             )->fetch();
 
             return $this->prepareHlblock($hlblock);
-
         } catch (Exception $e) {
-            $this->throwException(
-                __METHOD__,
-                $e->getMessage()
-            );
+            $this->throwException(__METHOD__, $e->getMessage());
         }
 
         return false;
@@ -341,6 +432,7 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockName
+     *
      * @throws HelperException
      * @return array|false|void
      */
@@ -351,17 +443,14 @@ class HlblockHelper extends Helper
             return $item;
         }
 
-        $this->throwException(
-            __METHOD__,
-            Locale::getMessage(
-                'ERR_HLBLOCK_NOT_FOUND'
-            )
-        );
+        $this->throwException(__METHOD__, Locale::getMessage('ERR_HLBLOCK_NOT_FOUND'));
     }
 
     /**
      * Получает highload-блок, бросает исключение если его не существует
+     *
      * @param $hlblockName - id, имя или фильтр
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -372,17 +461,14 @@ class HlblockHelper extends Helper
             return $item['ID'];
         }
 
-        $this->throwException(
-            __METHOD__,
-            Locale::getMessage(
-                'ERR_HLBLOCK_NOT_FOUND'
-            )
-        );
+        $this->throwException(__METHOD__, Locale::getMessage('ERR_HLBLOCK_NOT_FOUND'));
     }
 
     /**
      * Получает id highload-блока
+     *
      * @param $hlblockName - id, имя или фильтр
+     *
      * @throws HelperException
      * @return int|mixed
      */
@@ -394,7 +480,9 @@ class HlblockHelper extends Helper
 
     /**
      * Добавляет highload-блок
+     *
      * @param $fields , обязательные параметры - название сущности, название таблицы в БД
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -416,19 +504,17 @@ class HlblockHelper extends Helper
                 return $result->getId();
             }
 
-            throw new HelperException($result->getErrors());
-
+            $this->throwException(__METHOD__, $result->getErrors());
         } catch (Exception $e) {
-            $this->throwException(
-                __METHOD__,
-                $e->getMessage()
-            );
+            $this->throwException(__METHOD__, $e->getMessage());
         }
     }
 
     /**
      * Добавляет highload-блок, если его не существует
+     *
      * @param $fields , обязательные параметры - название сущности
+     *
      * @throws HelperException
      * @return int|mixed
      */
@@ -446,8 +532,10 @@ class HlblockHelper extends Helper
 
     /**
      * Обновляет highload-блок
+     *
      * @param $hlblockId
      * @param $fields
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -467,20 +555,18 @@ class HlblockHelper extends Helper
                 return $hlblockId;
             }
 
-            throw new HelperException($result->getErrors());
-
+            $this->throwException(__METHOD__, $result->getErrors());
         } catch (Exception $e) {
-            $this->throwException(
-                __METHOD__,
-                $e->getMessage()
-            );
+            $this->throwException(__METHOD__, $e->getMessage());
         }
     }
 
     /**
      * Обновляет highload-блок, если существует
+     *
      * @param $hlblockName
      * @param $fields
+     *
      * @throws HelperException
      * @return bool|mixed
      */
@@ -496,7 +582,9 @@ class HlblockHelper extends Helper
 
     /**
      * Удаляет highload-блок
+     *
      * @param $hlblockId
+     *
      * @throws HelperException
      * @return bool|void
      */
@@ -508,19 +596,17 @@ class HlblockHelper extends Helper
                 return true;
             }
 
-            throw new HelperException($result->getErrors());
-
+            $this->throwException(__METHOD__, $result->getErrors());
         } catch (Exception $e) {
-            $this->throwException(
-                __METHOD__,
-                $e->getMessage()
-            );
+            $this->throwException(__METHOD__, $e->getMessage());
         }
     }
 
     /**
      * Удаляет highload-блок, если существует
+     *
      * @param $hlblockName
+     *
      * @throws HelperException
      * @return bool
      */
@@ -537,6 +623,7 @@ class HlblockHelper extends Helper
     /**
      * @param $hlblockName
      * @param $fields
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -551,13 +638,9 @@ class HlblockHelper extends Helper
                 return $result->getId();
             }
 
-            Throw new HelperException($result->getErrors());
-
+            $this->throwException(__METHOD__, $result->getErrors());
         } catch (Exception $e) {
-            $this->throwException(
-                __METHOD__,
-                $e->getMessage()
-            );
+            $this->throwException(__METHOD__, $e->getMessage());
         }
     }
 
@@ -566,6 +649,7 @@ class HlblockHelper extends Helper
      * возвращает массив вида [$groupId => $letter]
      *
      * @param $hlblockId
+     *
      * @return array
      */
     public function getGroupPermissions($hlblockId)
@@ -580,6 +664,7 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockId
+     *
      * @throws HelperException
      * @return array
      */
@@ -616,8 +701,9 @@ class HlblockHelper extends Helper
      * предыдущие права сбрасываются
      * принимает массив вида [$groupId => $letter]
      *
-     * @param $hlblockId
+     * @param       $hlblockId
      * @param array $permissions
+     *
      * @return bool
      */
     public function setGroupPermissions($hlblockId, $permissions = [])
@@ -629,7 +715,6 @@ class HlblockHelper extends Helper
         $rights = $this->getGroupRights($hlblockId);
 
         try {
-
             foreach ($rights as $right) {
                 HighloadBlockRightsTable::delete($right['ID']);
             }
@@ -640,8 +725,8 @@ class HlblockHelper extends Helper
                 if (!empty($taskId)) {
                     HighloadBlockRightsTable::add(
                         [
-                            'HL_ID' => $hlblockId,
-                            'TASK_ID' => $taskId,
+                            'HL_ID'       => $hlblockId,
+                            'TASK_ID'     => $taskId,
                             'ACCESS_CODE' => 'G' . $groupId,
                         ]
                     );
@@ -656,6 +741,7 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockName
+     *
      * @throws HelperException
      * @return DataManager|void
      */
@@ -666,16 +752,14 @@ class HlblockHelper extends Helper
             $entity = HighloadBlockTable::compileEntity($hlblock);
             return $entity->getDataClass();
         } catch (Exception $e) {
-            $this->throwException(
-                __METHOD__,
-                $e->getMessage()
-            );
+            $this->throwException(__METHOD__, $e->getMessage());
         }
     }
 
     /**
-     * @param $hlblockName
+     * @param       $hlblockName
      * @param array $params
+     *
      * @throws HelperException
      * @return array|void
      */
@@ -685,16 +769,14 @@ class HlblockHelper extends Helper
         try {
             return $dataManager::getList($params)->fetchAll();
         } catch (Exception $e) {
-            $this->throwException(
-                __METHOD__,
-                $e->getMessage()
-            );
+            $this->throwException(__METHOD__, $e->getMessage());
         }
     }
 
     /**
-     * @param $hlblockName
+     * @param       $hlblockName
      * @param array $filter
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -702,31 +784,29 @@ class HlblockHelper extends Helper
     {
         $dataManager = $this->getDataManager($hlblockName);
         try {
-            $item = $dataManager::getList([
-                'select' => ['CNT'],
-                'filter' => $filter,
-                'runtime' => [
-                    new ExpressionField('CNT', 'COUNT(*)'),
-                ],
-            ])->fetch();
+            $item = $dataManager::getList(
+                [
+                    'select'  => ['CNT'],
+                    'filter'  => $filter,
+                    'runtime' => [
+                        new ExpressionField('CNT', 'COUNT(*)'),
+                    ],
+                ]
+            )->fetch();
 
             return ($item) ? $item['CNT'] : 0;
-
         } catch (Exception $e) {
-            $this->throwException(
-                __METHOD__,
-                $e->getMessage()
-            );
+            $this->throwException(__METHOD__, $e->getMessage());
         }
     }
 
     /**
-     * @param $hlblock
-     * @param string $default
+     * @param        $hlblock
+     *
      * @throws HelperException
-     * @return string
+     * @return string|void
      */
-    public function getHlblockUid($hlblock, $default = '')
+    public function getHlblockUid($hlblock)
     {
         if (!is_array($hlblock)) {
             $hlblock = $this->getHlblock($hlblock);
@@ -736,11 +816,12 @@ class HlblockHelper extends Helper
             return $hlblock['NAME'];
         }
 
-        return $default;
+        $this->throwException(__METHOD__, Locale::getMessage('ERR_HLBLOCK_NOT_FOUND'));
     }
 
     /**
      * @param $hlblockUid
+     *
      * @throws HelperException
      * @return int
      */
@@ -756,6 +837,7 @@ class HlblockHelper extends Helper
 
     /**
      * @param $item
+     *
      * @return mixed
      */
     protected function prepareHlblock($item)
@@ -774,6 +856,7 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockId
+     *
      * @return array
      */
     protected function getGroupRights($hlblockId)
@@ -791,7 +874,6 @@ class HlblockHelper extends Helper
                     ],
                 ]
             )->fetchAll();
-
         } catch (Exception $e) {
             $items = [];
         }
@@ -833,6 +915,7 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockId
+     *
      * @return array
      */
     protected function getHblockLangs($hlblockId)
@@ -844,9 +927,11 @@ class HlblockHelper extends Helper
         }
 
         try {
-            $dbres = HighloadBlockLangTable::getList([
-                'filter' => ['ID' => $hlblockId],
-            ]);
+            $dbres = HighloadBlockLangTable::getList(
+                [
+                    'filter' => ['ID' => $hlblockId],
+                ]
+            );
 
             while ($item = $dbres->fetch()) {
                 $result[$item['LID']] = [
@@ -854,7 +939,6 @@ class HlblockHelper extends Helper
                 ];
             }
         } catch (Exception $e) {
-
         }
 
         return $result;
@@ -862,6 +946,7 @@ class HlblockHelper extends Helper
 
     /**
      * @param $hlblockId
+     *
      * @throws Exception
      * @return int
      */
@@ -874,9 +959,11 @@ class HlblockHelper extends Helper
         }
 
         try {
-            $items = HighloadBlockLangTable::getList([
-                'filter' => ['ID' => $hlblockId],
-            ])->fetchAll();
+            $items = HighloadBlockLangTable::getList(
+                [
+                    'filter' => ['ID' => $hlblockId],
+                ]
+            )->fetchAll();
         } catch (Exception $e) {
             $items = [];
         }
@@ -890,8 +977,9 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param $hlblockId
+     * @param       $hlblockId
      * @param array $lang
+     *
      * @throws Exception
      * @return int
      */
@@ -905,11 +993,13 @@ class HlblockHelper extends Helper
 
         foreach ($lang as $lid => $item) {
             if (!empty($item['NAME'])) {
-                HighloadBlockLangTable::add([
-                    'ID' => $hlblockId,
-                    'LID' => $lid,
-                    'NAME' => $item['NAME'],
-                ]);
+                HighloadBlockLangTable::add(
+                    [
+                        'ID'   => $hlblockId,
+                        'LID'  => $lid,
+                        'NAME' => $item['NAME'],
+                    ]
+                );
 
                 $add++;
             }
@@ -919,8 +1009,9 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param $hlblockId
+     * @param       $hlblockId
      * @param array $lang
+     *
      * @throws Exception
      */
     protected function replaceHblockLangs($hlblockId, $lang = [])
@@ -930,5 +1021,4 @@ class HlblockHelper extends Helper
             $this->addHblockLangs($hlblockId, $lang);
         }
     }
-
 }

@@ -2,8 +2,8 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\Builders\Traits\HlblocksStructureTrait;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -11,8 +11,6 @@ use Sprint\Migration\VersionBuilder;
 
 class HlblockBuilder extends VersionBuilder
 {
-    use HlblocksStructureTrait;
-
     protected function isBuilderEnabled()
     {
         return $this->getHelperManager()->Hlblock()->isEnabled();
@@ -28,22 +26,21 @@ class HlblockBuilder extends VersionBuilder
     /**
      * @throws HelperException
      * @throws RebuildException
+     * @throws MigrationException
      */
     protected function execute()
     {
         $helper = $this->getHelperManager();
 
-        $this->addField('hlblock_id', [
-            'title' => Locale::getMessage('BUILDER_HlblockExport_HlblockId'),
-            'placeholder' => '',
-            'width' => 250,
-            'select' => $this->getHlblocksStructure(),
-        ]);
-
-        $hlblockId = $this->getFieldValue('hlblock_id');
-        if (empty($hlblockId)) {
-            $this->rebuildField('hlblock_id');
-        }
+        $hlblockId = $this->addFieldAndReturn(
+            'hlblock_id',
+            [
+                'title'       => Locale::getMessage('BUILDER_HlblockExport_HlblockId'),
+                'placeholder' => '',
+                'width'       => 250,
+                'select'      => $this->getHelperManager()->HlblockExchange()->getHlblocksStructure(),
+            ]
+        );
 
         $hlblock = $helper->Hlblock()->exportHlblock($hlblockId);
         if (empty($hlblockId)) {
@@ -57,11 +54,10 @@ class HlblockBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/HlblockExport.php',
             [
-                'hlblock' => $hlblock,
-                'hlblockFields' => $hlblockFields,
+                'hlblock'            => $hlblock,
+                'hlblockFields'      => $hlblockFields,
                 'hlblockPermissions' => $hlblockPermissions,
             ]
         );
-
     }
 }

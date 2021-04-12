@@ -11,58 +11,61 @@ use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
-class HlblockElementsBuilder extends VersionBuilder
+class MedialibElementsBuilder extends VersionBuilder
 {
     /**
      * @return bool
      */
     protected function isBuilderEnabled()
     {
-        return (!Locale::isWin1251() && $this->getHelperManager()->Hlblock()->isEnabled());
+        return (!Locale::isWin1251() && $this->getHelperManager()->MedialibExchange()->isEnabled());
     }
 
     protected function initialize()
     {
-        $this->setTitle(Locale::getMessage('BUILDER_HlblockElementsExport1'));
-        $this->setDescription(Locale::getMessage('BUILDER_HlblockElementsExport2'));
+        $this->setTitle(Locale::getMessage('BUILDER_MedialibElements1'));
+        $this->setDescription(Locale::getMessage('BUILDER_MedialibElements2'));
         $this->addVersionFields();
     }
 
     /**
-     * @throws ExchangeException
-     * @throws HelperException
      * @throws RebuildException
+     * @throws ExchangeException
      * @throws RestartException
+     * @throws HelperException
      * @throws MigrationException
      */
     protected function execute()
     {
-        $hlblockId = $this->addFieldAndReturn(
-            'hlblock_id',
+        $medialibExchange = $this->getHelperManager()->MedialibExchange();
+        $collectionIds = $this->addFieldAndReturn(
+            'collection_id',
             [
-                'title'       => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
+                'title'       => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
                 'placeholder' => '',
                 'width'       => 250,
-                'select'      => $this->getHelperManager()->HlblockExchange()->getHlblocksStructure(),
+                'select'      => $medialibExchange->getCollectionStructure(
+                    $medialibExchange::TYPE_IMAGE
+                ),
+                'multiple'    => true,
             ]
         );
 
         $this->getExchangeManager()
-             ->HlblockElementsExport()
+             ->MedialibElementsExport()
              ->setLimit(20)
-             ->setExportFields(
-                 $this->getHelperManager()->HlblockExchange()->getHlblockFieldsCodes($hlblockId)
-             )
-             ->setHlblockId($hlblockId)
+             ->setCollectionIds($collectionIds)
              ->setExchangeFile(
                  $this->getVersionResourceFile(
                      $this->getVersionName(),
-                     'hlblock_elements.xml'
+                     'medialib_elements.xml'
                  )
              )->execute();
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/HlblockElementsExport.php'
+            Module::getModuleDir() . '/templates/MedialibElementsExport.php'
         );
     }
+
+
 }

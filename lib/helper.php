@@ -12,7 +12,6 @@ use Sprint\Migration\Exceptions\HelperException;
 
 class Helper
 {
-
     use OutTrait {
         out as protected;
         outIf as protected;
@@ -32,18 +31,18 @@ class Helper
     }
 
     /**
-     * @deprecated
      * @var string
+     * @deprecated
      */
-    public $lastError = '';
-
-    private $mode = [
-        'test' => 0,
+    public  $lastError = '';
+    private $mode      = [
+        'test'      => 0,
         'out_equal' => 0,
     ];
 
     /**
      * Helper constructor.
+     *
      * @throws HelperException
      */
     public function __construct()
@@ -101,6 +100,7 @@ class Helper
 
     /**
      * @param array $names
+     *
      * @return bool
      */
     protected function checkModules($names = [])
@@ -119,9 +119,10 @@ class Helper
     }
 
     /**
-     * @param $method
-     * @param $msg
+     * @param        $method
+     * @param        $msg
      * @param string ...$vars
+     *
      * @throws HelperException
      */
     protected function throwException($method, $msg, ...$vars)
@@ -134,11 +135,12 @@ class Helper
 
         $this->lastError = $msg;
 
-        Throw new HelperException($msg);
+        throw new HelperException($msg);
     }
 
     /**
      * @param $method
+     *
      * @throws HelperException
      */
     protected function throwApplicationExceptionIfExists($method)
@@ -152,7 +154,6 @@ class Helper
             );
         }
     }
-
 
     protected function getHelperName()
     {
@@ -172,6 +173,7 @@ class Helper
     /**
      * @param $exists
      * @param $fields
+     *
      * @return bool
      */
     protected function hasDiffStrict($exists, $fields)
@@ -180,9 +182,10 @@ class Helper
     }
 
     /**
-     * @param $method
-     * @param $fields
+     * @param       $method
+     * @param       $fields
      * @param array $reqKeys
+     *
      * @throws HelperException
      */
     protected function checkRequiredKeys($method, $fields, $reqKeys = [])
@@ -204,8 +207,9 @@ class Helper
 
     /**
      * @param CDBResult $dbres
-     * @param bool $indexKey
-     * @param bool $valueKey
+     * @param bool      $indexKey
+     * @param bool      $valueKey
+     *
      * @return array
      */
     protected function fetchAll(CDBResult $dbres, $indexKey = false, $valueKey = false)
@@ -230,11 +234,22 @@ class Helper
         return $res;
     }
 
+    protected function filterByKey($items, $key, $value)
+    {
+        return array_values(
+            array_filter(
+                $items,
+                function ($item) use ($key, $value) {
+                    return ($item[$key] == $value);
+                }
+            )
+        );
+    }
+
     private function getMethod($method)
     {
         $path = explode('\\', $method);
         $short = array_pop($path);
         return $short;
     }
-
 }

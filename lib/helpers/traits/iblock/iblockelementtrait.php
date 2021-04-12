@@ -103,6 +103,58 @@ trait IblockElementTrait
     }
 
     /**
+     * @param int   $iblockId
+     * @param array $params
+     *
+     * @return array
+     */
+    public function getElementsEx($iblockId, $params = [])
+    {
+        $params = array_merge(
+            [
+                'offset' => 0,
+                'limit'  => 0,
+                'filter' => [],
+                'order'  => ['ID' => 'ASC'],
+            ], $params
+        );
+
+        if ($params['limit'] > 0) {
+            $pageNum = (int)floor($params['offset'] / $params['limit']) + 1;
+        } else {
+            $pageNum = 1;
+        }
+
+        $params['filter']['IBLOCK_ID'] = $iblockId;
+        $params['filter']['CHECK_PERMISSIONS'] = 'N';
+
+        $dbres = CIBlockElement::GetList(
+            $params['order'],
+            $params['filter'],
+            false,
+            [
+                'nPageSize'       => $params['limit'],
+                'iNumPage'        => $pageNum,
+                'checkOutOfRange' => true,
+            ]
+        );
+
+        $result = [];
+        while ($item = $dbres->GetNextElement(false, false)) {
+            $fields = $item->GetFields();
+            $props = $item->GetProperties();
+
+            $fields['IBLOCK_SECTION'] = $this->getElementSectionIds($fields['ID']);
+
+            $result[] = [
+                'FIELDS' => $fields,
+                'PROPS'  => $props,
+            ];
+        }
+        return $result;
+    }
+
+    /**
      * @param       $iblockId
      * @param array $filter
      *

@@ -6,13 +6,14 @@ use CFile;
 use Exception;
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\Helpers\ExchangeHelper;
+use Sprint\Migration\Traits\HelperManagerTrait;
 use XMLReader;
 use XMLWriter;
 
 abstract class AbstractExchange
 {
     const EXCHANGE_VERSION = 2;
+    use HelperManagerTrait;
     use OutTrait {
         out as protected;
         outIf as protected;
@@ -32,7 +33,6 @@ abstract class AbstractExchange
     }
 
     protected $exchangeEntity;
-    protected $exchangeHelper;
     protected $file;
     protected $limit = 10;
 
@@ -40,21 +40,17 @@ abstract class AbstractExchange
      * abstractexchange constructor.
      *
      * @param ExchangeEntity $exchangeEntity
-     * @param ExchangeHelper $exchangeHelper
      *
      * @throws ExchangeException
      */
-    public function __construct(
-        ExchangeEntity $exchangeEntity,
-        ExchangeHelper $exchangeHelper
-    ) {
+    public function __construct(ExchangeEntity $exchangeEntity)
+    {
         $this->exchangeEntity = $exchangeEntity;
-        $this->exchangeHelper = $exchangeHelper;
 
         $enabled = (
             class_exists('XMLReader')
             && class_exists('XMLWriter')
-            && $this->exchangeHelper->isEnabled()
+            && $this->isEnabled()
         );
 
         if (!$enabled) {
@@ -64,6 +60,11 @@ abstract class AbstractExchange
                 )
             );
         }
+    }
+
+    protected function isEnabled()
+    {
+        return true;
     }
 
     public function setExchangeFile($file)
@@ -124,7 +125,6 @@ abstract class AbstractExchange
                 $val = json_encode($val, JSON_UNESCAPED_UNICODE);
                 $attributes['type'] = 'json';
             }
-
             $writer->startElement('value');
             foreach ($attributes as $atcode => $atval) {
                 if (!empty($atval)) {
@@ -169,7 +169,10 @@ abstract class AbstractExchange
                 Module::createDir(dirname($newPath));
                 if (copy($filePath, $newPath)) {
                     $this->writeValue(
-                        $writer, $file['SUBDIR'] . '/' . $file['FILE_NAME'], [
+                        $writer,
+                        $file['SUBDIR'] . '/' . $file['FILE_NAME'],
+                        [
+                            'name'        => $file['ORIGINAL_NAME'],
                             'description' => $file['DESCRIPTION'],
                         ]
                     );
@@ -183,47 +186,42 @@ abstract class AbstractExchange
         if (!empty($value['value'])) {
             $path = $this->getExchangeDir() . '/' . $value['value'];
             $file = CFile::MakeFileArray($path);
+            if (!empty($value['name'])) {
+                $file['name'] = $value['name'];
+            }
             if (!empty($value['description'])) {
                 $file['description'] = $value['description'];
             }
             return $file;
         }
-
         return false;
     }
 
     protected function collectField(XMLReader $reader, $tag)
     {
         $field = [];
-
         if ($this->isOpenTag($reader, $tag)) {
             if ($reader->hasAttributes) {
                 while ($reader->moveToNextAttribute()) {
                     $field[$reader->name] = $this->purifyValue($reader->value);
                 }
             }
-
             $field['value'] = [];
-
             do {
                 $reader->read();
                 if ($this->isOpenTag($reader, 'value')) {
                     $val = [];
-
                     if ($reader->hasAttributes) {
                         while ($reader->moveToNextAttribute()) {
                             $val[$reader->name] = $this->purifyValue($reader->value);
                         }
                     }
-
                     $reader->read();
-
                     if (isset($val['type']) && $val['type'] == 'json') {
                         $val['value'] = json_decode($reader->value, true);
                     } else {
                         $val['value'] = $this->purifyValue($reader->value);
                     }
-
                     $field['value'][] = $val;
                 }
             } while (!$this->isCloseTag($reader, $tag));

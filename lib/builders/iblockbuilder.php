@@ -2,8 +2,8 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\Builders\Traits\IblocksStructureTrait;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -11,8 +11,6 @@ use Sprint\Migration\VersionBuilder;
 
 class IblockBuilder extends VersionBuilder
 {
-    use IblocksStructureTrait;
-
     protected function isBuilderEnabled()
     {
         return $this->getHelperManager()->Iblock()->isEnabled();
@@ -28,21 +26,27 @@ class IblockBuilder extends VersionBuilder
     /**
      * @throws HelperException
      * @throws RebuildException
+     * @throws MigrationException
      */
     protected function execute()
     {
         $helper = $this->getHelperManager();
 
-        $this->addField(
+        $iblockId = $this->addFieldAndReturn(
             'iblock_id', [
                 'title'       => Locale::getMessage('BUILDER_IblockExport_IblockId'),
                 'placeholder' => '',
                 'width'       => 250,
-                'items'       => $this->getIblocksStructure(),
+                'items'       => $this->getHelperManager()->IblockExchange()->getIblocksStructure(),
             ]
         );
 
-        $this->addField(
+        $iblock = $helper->Iblock()->exportIblock($iblockId);
+        if (empty($iblock)) {
+            $this->rebuildField('iblock_id');
+        }
+
+        $what = $this->addFieldAndReturn(
             'what', [
                 'title'    => Locale::getMessage('BUILDER_IblockExport_What'),
                 'width'    => 250,
@@ -77,23 +81,6 @@ class IblockBuilder extends VersionBuilder
             ]
         );
 
-        $iblockId = $this->getFieldValue('iblock_id');
-        if (empty($iblockId)) {
-            $this->rebuildField('iblock_id');
-        }
-
-        $iblock = $helper->Iblock()->exportIblock($iblockId);
-        if (empty($iblock)) {
-            $this->rebuildField('iblock_id');
-        }
-
-        $what = $this->getFieldValue('what');
-        if (!empty($what)) {
-            $what = is_array($what) ? $what : [$what];
-        } else {
-            $this->rebuildField('what');
-        }
-
         $iblockExport = false;
         $iblockType = [];
         $iblockProperties = [];
@@ -117,22 +104,15 @@ class IblockBuilder extends VersionBuilder
         }
 
         if (in_array('iblockProperties', $what)) {
-            $this->addField(
+            $exportProps = $this->addFieldAndReturn(
                 'export_props', [
                     'title'    => Locale::getMessage('BUILDER_IblockExport_Properties'),
                     'width'    => 250,
                     'multiple' => 1,
                     'value'    => [],
-                    'select'   => $this->getIblockPropertiesStructure($iblockId),
+                    'select'   => $this->getHelperManager()->IblockExchange()->getIblockPropertiesStructure($iblockId),
                 ]
             );
-
-            $exportProps = $this->getFieldValue('export_props');
-            if (!empty($exportProps)) {
-                $exportProps = is_array($exportProps) ? $exportProps : [$exportProps];
-            } else {
-                $this->rebuildField('export_props');
-            }
 
             $iblockProperties = $helper->Iblock()->exportProperties($iblockId);
             $iblockProperties = array_filter(

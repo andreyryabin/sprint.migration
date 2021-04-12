@@ -6,23 +6,12 @@ use Exception;
 use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\Helpers\HlblockExchangeHelper;
-use Sprint\Migration\ExchangeEntity;
 use XMLWriter;
 
-/**
- * @property  HlblockExchangeHelper $exchangeHelper
- */
 class HlblockElementsExport extends AbstractExchange
 {
     protected $hlblockId;
-
     protected $exportFields = [];
-
-    public function __construct(ExchangeEntity $exchangeEntity)
-    {
-        parent::__construct($exchangeEntity, new HlblockExchangeHelper());
-    }
 
     public function setHlblockId($hlblockId)
     {
@@ -37,24 +26,29 @@ class HlblockElementsExport extends AbstractExchange
      */
     public function execute()
     {
+        $hblockExchange = $this->getHelperManager()->HlblockExchange();
+
         $params = $this->exchangeEntity->getRestartParams();
         if (!isset($params['total'])) {
-            $params['total'] = $this->exchangeHelper->getElementsCount($this->hlblockId);
+            $params['total'] = $hblockExchange->getElementsCount($this->hlblockId);
             $params['offset'] = 0;
 
             $this->createExchangeDir();
 
-            $hlblockUid = $this->exchangeHelper->getHlblockUid($this->hlblockId);
+            $hlblockUid = $hblockExchange->getHlblockUid($this->hlblockId);
 
             $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
-            $this->appendToExchangeFile('<items hlblockUid="' . $hlblockUid . '" exchangeVersion="'.self::EXCHANGE_VERSION.'">');
+            $this->appendToExchangeFile('<items hlblockUid="' . $hlblockUid . '" exchangeVersion="' . self::EXCHANGE_VERSION . '">');
         }
 
         if ($params['offset'] <= $params['total'] - 1) {
-            $items = $this->exchangeHelper->getElements(
+            $items = $hblockExchange->getElements(
                 $this->hlblockId,
-                $params['offset'],
-                $this->getLimit()
+                [
+                    'order'  => ['ID' => 'ASC'],
+                    'offset' => $params['offset'],
+                    'limit'  => $this->getLimit(),
+                ]
             );
 
             foreach ($items as $item) {
@@ -68,16 +62,17 @@ class HlblockElementsExport extends AbstractExchange
                         if (method_exists($this, $method)) {
                             $writer->startElement('field');
                             $writer->writeAttribute('name', $code);
-                            $this->$method($writer, [
-                                'FIELD_NAME' => $code,
-                                'VALUE' => $val,
-                            ]);
+                            $this->$method(
+                                $writer, [
+                                    'FIELD_NAME' => $code,
+                                    'VALUE'      => $val,
+                                ]
+                            );
                             $writer->endElement();
                         }
                     }
                 }
 
-                //item
                 $writer->endElement();
                 $this->appendToExchangeFile($writer->flush());
                 $params['offset']++;
@@ -97,12 +92,15 @@ class HlblockElementsExport extends AbstractExchange
 
     /**
      * @param $code
+     *
      * @throws HelperException
      * @return string
      */
     protected function getWriteFieldMethod($code)
     {
-        $type = $this->exchangeHelper->getFieldType($this->hlblockId, $code);
+        $hblockExchange = $this->getHelperManager()->HlblockExchange();
+
+        $type = $hblockExchange->getFieldType($this->hlblockId, $code);
 
         if (in_array($type, ['enumeration', 'file'])) {
             return 'writeField' . ucfirst($type);
@@ -118,7 +116,8 @@ class HlblockElementsExport extends AbstractExchange
 
     /**
      * @param XMLWriter $writer
-     * @param $field
+     * @param           $field
+     *
      * @throws Exception
      */
     protected function writeFieldFile(XMLWriter $writer, $field)
@@ -128,15 +127,18 @@ class HlblockElementsExport extends AbstractExchange
 
     /**
      * @param XMLWriter $writer
-     * @param $field
+     * @param           $field
+     *
      * @throws HelperException
      */
     protected function writeFieldEnumeration(XMLWriter $writer, $field)
     {
+        $hblockExchange = $this->getHelperManager()->HlblockExchange();
+
         $idValues = is_array($field['VALUE']) ? $field['VALUE'] : [$field['VALUE']];
         $xmlValues = [];
         foreach ($idValues as $id) {
-            $xmlId = $this->exchangeHelper->getFieldEnumXmlIdById(
+            $xmlId = $hblockExchange->getFieldEnumXmlIdById(
                 $this->hlblockId,
                 $field['FIELD_NAME'],
                 $id
@@ -151,6 +153,7 @@ class HlblockElementsExport extends AbstractExchange
 
     /**
      * @param array $exportFields
+     *
      * @return $this
      */
     public function setExportFields(array $exportFields)

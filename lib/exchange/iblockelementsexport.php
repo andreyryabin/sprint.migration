@@ -5,24 +5,14 @@ namespace Sprint\Migration\Exchange;
 use Exception;
 use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\Helpers\IblockExchangeHelper;
-use Sprint\Migration\ExchangeEntity;
 use XMLWriter;
 
-/**
- * @property  IblockExchangeHelper $exchangeHelper
- */
 class IblockElementsExport extends AbstractExchange
 {
     protected $iblockId;
     protected $exportFilter     = [];
     protected $exportFields     = [];
     protected $exportProperties = [];
-
-    public function __construct(ExchangeEntity $exchangeEntity)
-    {
-        parent::__construct($exchangeEntity, new IblockExchangeHelper());
-    }
 
     /**
      * @return array
@@ -98,9 +88,11 @@ class IblockElementsExport extends AbstractExchange
      */
     public function execute()
     {
+        $iblockExchange = $this->getHelperManager()->IblockExchange();
+
         $params = $this->exchangeEntity->getRestartParams();
         if (!isset($params['total'])) {
-            $params['total'] = $this->exchangeHelper->getElementsCount(
+            $params['total'] = $iblockExchange->getElementsCount(
                 $this->getIblockId(),
                 $this->getExportFilter()
             );
@@ -108,7 +100,7 @@ class IblockElementsExport extends AbstractExchange
 
             $this->createExchangeDir();
 
-            $iblockUid = $this->exchangeHelper->getIblockUid(
+            $iblockUid = $iblockExchange->getIblockUid(
                 $this->getIblockId()
             );
 
@@ -117,11 +109,14 @@ class IblockElementsExport extends AbstractExchange
         }
 
         if ($params['offset'] <= $params['total'] - 1) {
-            $items = $this->exchangeHelper->getElements(
+            $items = $iblockExchange->getElementsEx(
                 $this->getIblockId(),
-                $params['offset'],
-                $this->getLimit(),
-                $this->getExportFilter()
+                [
+                    'order'  => ['ID' => 'ASC'],
+                    'offset' => $params['offset'],
+                    'limit'  => $this->getLimit(),
+                    'filter' => $this->getExportFilter(),
+                ]
             );
 
             foreach ($items as $item) {
@@ -154,7 +149,6 @@ class IblockElementsExport extends AbstractExchange
                     }
                 }
 
-                //item
                 $writer->endElement();
                 $this->appendToExchangeFile($writer->flush());
                 $params['offset']++;
@@ -196,7 +190,9 @@ class IblockElementsExport extends AbstractExchange
 
     protected function writeFieldSection(XMLWriter $writer, $val)
     {
-        $val = $this->exchangeHelper->getSectionUniqNamesByIds(
+        $iblockExchange = $this->getHelperManager()->IblockExchange();
+
+        $val = $iblockExchange->getSectionUniqNamesByIds(
             $this->getIblockId(),
             $val
         );
@@ -240,8 +236,10 @@ class IblockElementsExport extends AbstractExchange
 
     protected function writePropertyG(XMLWriter $writer, $prop)
     {
+        $iblockExchange = $this->getHelperManager()->IblockExchange();
+
         $prop['VALUE'] = is_array($prop['VALUE']) ? $prop['VALUE'] : [$prop['VALUE']];
-        $prop['VALUE'] = $this->exchangeHelper->getSectionUniqNamesByIds(
+        $prop['VALUE'] = $iblockExchange->getSectionUniqNamesByIds(
             $prop['LINK_IBLOCK_ID'],
             $prop['VALUE']
         );

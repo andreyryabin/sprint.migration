@@ -5,7 +5,6 @@ namespace Sprint\Migration\Helpers;
 use Bitrix\Main\Application;
 use Bitrix\Main\DB\Result;
 use Bitrix\Main\Db\SqlQueryException;
-use CMain;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
@@ -18,9 +17,9 @@ use Throwable;
  */
 class SqlHelper extends Helper
 {
-
     /**
      * @param callable $func
+     *
      * @throws HelperException
      * @throws SqlQueryException
      */
@@ -34,17 +33,16 @@ class SqlHelper extends Helper
             $this->throwApplicationExceptionIfExists(__METHOD__);
 
             if ($ok === false) {
-                throw new HelperException('transaction return false');
+                $this->throwException(__METHOD__, 'transaction return false');
             }
 
             $connection->commitTransaction();
         } catch (Exception $ex) {
             $connection->rollbackTransaction();
-            throw new HelperException($ex->getMessage());
-
+            $this->throwException(__METHOD__, $ex->getMessage());
         } catch (Throwable $ex) {
             $connection->rollbackTransaction();
-            throw new HelperException($ex->getMessage());
+            $this->throwException(__METHOD__, $ex->getMessage());
         }
     }
 
@@ -125,8 +123,8 @@ class SqlHelper extends Helper
     }
 
     /**
-     * @param string $table
-     * @param string $name
+     * @param string       $table
+     * @param string       $name
      * @param string|array $columns
      *
      * @throws SqlQueryException
@@ -139,8 +137,8 @@ class SqlHelper extends Helper
     }
 
     /**
-     * @param string $table
-     * @param string $name
+     * @param string       $table
+     * @param string       $name
      * @param string|array $columns
      *
      * @throws SqlQueryException

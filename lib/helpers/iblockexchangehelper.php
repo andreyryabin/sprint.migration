@@ -1,18 +1,21 @@
 <?php
 
-namespace Sprint\Migration\Builders\Traits;
+namespace Sprint\Migration\Helpers;
 
-use Sprint\Migration\HelperManager;
-
-/**
- * Trait IblocksStructureTrait
- *
- * @package Sprint\Migration\Builders\Traits
- *
- * @method HelperManager getHelperManager()
- */
-trait IblocksStructureTrait
+class IblockExchangeHelper extends IblockHelper
 {
+    protected $cachedProps = [];
+
+    public function getProperty($iblockId, $code)
+    {
+        $key = $iblockId . $code;
+
+        if (!isset($this->cachedProps[$key])) {
+            $this->cachedProps[$key] = parent::getProperty($iblockId, $code);
+        }
+        return $this->cachedProps[$key];
+    }
+
     /**
      * Структура инфоблоков для построения выпадающего списка
      *
@@ -21,8 +24,7 @@ trait IblocksStructureTrait
     public function getIblocksStructure()
     {
         $res = [];
-        $helper = $this->getHelperManager();
-        $iblockTypes = $helper->Iblock()->getIblockTypes();
+        $iblockTypes = $this->getIblockTypes();
         foreach ($iblockTypes as $iblockType) {
             $res[$iblockType['ID']] = [
                 'title' => '[' . $iblockType['ID'] . '] ' . $iblockType['LANG'][LANGUAGE_ID]['NAME'],
@@ -30,7 +32,7 @@ trait IblocksStructureTrait
             ];
         }
 
-        $iblocks = $helper->Iblock()->getIblocks();
+        $iblocks = $this->getIblocks();
         foreach ($iblocks as $iblock) {
             $res[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
                 'title' => '[' . $iblock['CODE'] . '] ' . $iblock['NAME'],
@@ -46,10 +48,9 @@ trait IblocksStructureTrait
      *
      * @return array
      */
-    protected function getIblockPropertiesStructure($iblockId)
+    public function getIblockPropertiesStructure($iblockId)
     {
-        $helper = $this->getHelperManager();
-        $props = $helper->Iblock()->exportProperties($iblockId);
+        $props = $this->exportProperties($iblockId);
 
         $res = [];
         foreach ($props as $prop) {
@@ -66,10 +67,9 @@ trait IblocksStructureTrait
      *
      * @return array
      */
-    protected function getIblockElementFieldsStructure($iblockId)
+    public function getIblockElementFieldsStructure($iblockId)
     {
-        $helper = $this->getHelperManager();
-        $fields = $helper->Iblock()->exportIblockElementFields($iblockId);
+        $fields = $this->exportIblockElementFields($iblockId);
 
         $res = [];
         foreach ($fields as $fieldName => $field) {

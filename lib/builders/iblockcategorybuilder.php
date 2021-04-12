@@ -2,19 +2,15 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\Builders\Traits\IblocksStructureTrait;
-use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
-use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class IblockCategoryBuilder extends VersionBuilder
 {
-    use IblocksStructureTrait;
-
     /**
      * @return bool
      */
@@ -31,26 +27,23 @@ class IblockCategoryBuilder extends VersionBuilder
     }
 
     /**
-     * @throws RebuildException
-     * @throws ExchangeException
-     * @throws RestartException
      * @throws HelperException
+     * @throws RebuildException
+     * @throws MigrationException
      */
     protected function execute()
     {
         $helper = $this->getHelperManager();
 
-        $this->addField('iblock_id', [
-            'title' => Locale::getMessage('BUILDER_IblockCategoryExport_IblockId'),
-            'placeholder' => '',
-            'width' => 250,
-            'items' => $this->getIblocksStructure(),
-        ]);
-
-        $iblockId = $this->getFieldValue('iblock_id');
-        if (empty($iblockId)) {
-            $this->rebuildField('iblock_id');
-        }
+        $iblockId = $this->addFieldAndReturn(
+            'iblock_id',
+            [
+                'title'       => Locale::getMessage('BUILDER_IblockCategoryExport_IblockId'),
+                'placeholder' => '',
+                'width'       => 250,
+                'items'       => $this->getHelperManager()->IblockExchange()->getIblocksStructure(),
+            ]
+        );
 
         $iblock = $helper->Iblock()->exportIblock($iblockId);
         if (empty($iblock)) {

@@ -2,14 +2,13 @@
 
 namespace Sprint\Migration\Schema;
 
+use Exception;
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
 
 class EventSchema extends AbstractSchema
 {
-
-
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('SCHEMA_EVENT'));
@@ -27,11 +26,13 @@ class EventSchema extends AbstractSchema
 
     public function outDescription()
     {
-        $schemas = $this->loadSchemas('events/', [
-            'event' => '',
-            'type' => [],
-            'messages' => [],
-        ]);
+        $schemas = $this->loadSchemas(
+            'events/', [
+                'event'    => '',
+                'type'     => [],
+                'messages' => [],
+            ]
+        );
 
         $ctnTypes = 0;
         $cntMessages = 0;
@@ -60,7 +61,7 @@ class EventSchema extends AbstractSchema
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function export()
     {
@@ -80,22 +81,25 @@ class EventSchema extends AbstractSchema
                 $messages[$index] = $message;
             }
 
-            $this->saveSchema('events/' . $eventUid, [
-                'event' => $eventName,
-                'type' => $eventType,
-                'messages' => $messages,
-            ]);
+            $this->saveSchema(
+                'events/' . $eventUid, [
+                    'event'    => $eventName,
+                    'type'     => $eventType,
+                    'messages' => $messages,
+                ]
+            );
         }
     }
 
     public function import()
     {
-        $schemas = $this->loadSchemas('events/', [
-            'event' => '',
-            'type' => [],
-            'messages' => [],
-        ]);
-
+        $schemas = $this->loadSchemas(
+            'events/', [
+                'event'    => '',
+                'type'     => [],
+                'messages' => [],
+            ]
+        );
 
         foreach ($schemas as $schema) {
             $this->addToQueue('saveEventType', $schema['event'], $schema['type']);
@@ -103,7 +107,6 @@ class EventSchema extends AbstractSchema
                 $this->addToQueue('saveEventMessage', $schema['event'], $message);
             }
         }
-
 
         foreach ($schemas as $schema) {
             $skip = [];
@@ -120,12 +123,12 @@ class EventSchema extends AbstractSchema
         }
 
         $this->addToQueue('cleanEventTypes', $skip);
-
     }
 
     /**
      * @param $eventName
      * @param $fields
+     *
      * @throws HelperException
      */
     protected function saveEventType($eventName, $fields)
@@ -143,6 +146,7 @@ class EventSchema extends AbstractSchema
     /**
      * @param $eventName
      * @param $fields
+     *
      * @throws HelperException
      */
     protected function saveEventMessage($eventName, $fields)
@@ -159,6 +163,7 @@ class EventSchema extends AbstractSchema
 
     /**
      * @param array $skip
+     *
      * @throws HelperException
      */
     protected function cleanEventTypes($skip = [])
@@ -184,8 +189,9 @@ class EventSchema extends AbstractSchema
     }
 
     /**
-     * @param $eventName
+     * @param       $eventName
      * @param array $skip
+     *
      * @throws HelperException
      */
     protected function cleanEventMessages($eventName, $skip = [])

@@ -11,7 +11,6 @@ use Sprint\Migration\VersionBuilder;
 
 class OptionBuilder extends VersionBuilder
 {
-
     protected function isBuilderEnabled()
     {
         return $this->getHelperManager()->Option()->isEnabled();
@@ -34,27 +33,25 @@ class OptionBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $this->addField('module_id', [
-            'title' => Locale::getMessage('BUILDER_OptionExport_module_id'),
-            'placeholder' => '',
-            'multiple' => 1,
-            'value' => [],
-            'width' => 250,
-            'select' => $this->getModules(),
-        ]);
-
-        $moduleIds = $this->getFieldValue('module_id');
-        if (empty($moduleIds)) {
-            $this->rebuildField('module_id');
-        }
-
-        $moduleIds = is_array($moduleIds) ? $moduleIds : [$moduleIds];
+        $moduleIds = $this->addFieldAndReturn(
+            'module_id',
+            [
+                'title'       => Locale::getMessage('BUILDER_OptionExport_module_id'),
+                'placeholder' => '',
+                'multiple'    => 1,
+                'value'       => [],
+                'width'       => 250,
+                'select'      => $this->getModules(),
+            ]
+        );
 
         $items = [];
         foreach ($moduleIds as $moduleId) {
-            $options = $helper->Option()->getOptions([
-                'MODULE_ID' => $moduleId,
-            ]);
+            $options = $helper->Option()->getOptions(
+                [
+                    'MODULE_ID' => $moduleId,
+                ]
+            );
 
             foreach ($options as $option) {
                 $items[] = $option;
@@ -71,7 +68,6 @@ class OptionBuilder extends VersionBuilder
                 'items' => $items,
             ]
         );
-
     }
 
     protected function getModules()
@@ -86,10 +82,8 @@ class OptionBuilder extends VersionBuilder
                 'title' => $item['ID'],
                 'value' => $item['ID'],
             ];
-
         }
 
         return $result;
-
     }
 }

@@ -6,22 +6,12 @@ use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\Helpers\HlblockExchangeHelper;
-use Sprint\Migration\ExchangeEntity;
 use Sprint\Migration\Locale;
 use XMLReader;
 
-/**
- * @property  HlblockExchangeHelper $exchangeHelper
- */
 class HlblockElementsImport extends AbstractExchange
 {
     protected $converter;
-
-    public function __construct(ExchangeEntity $exchangeEntity)
-    {
-        parent::__construct($exchangeEntity, new HlblockExchangeHelper());
-    }
 
     /**
      * @param callable $converter
@@ -32,6 +22,8 @@ class HlblockElementsImport extends AbstractExchange
      */
     public function execute(callable $converter)
     {
+        $hblockExchange = $this->getHelperManager()->HlblockExchange();
+
         $this->converter = $converter;
         $params = $this->exchangeEntity->getRestartParams();
 
@@ -50,16 +42,14 @@ class HlblockElementsImport extends AbstractExchange
             while ($reader->read()) {
                 if ($this->isOpenTag($reader, 'items')) {
                     $exchangeVersion = (int)$reader->getAttribute('exchangeVersion');
-                    $params['hlblock_id'] = $this->exchangeHelper->getHlblockIdByUid(
+                    $params['hlblock_id'] = $hblockExchange->getHlblockIdByUid(
                         $reader->getAttribute('hlblockUid')
                     );
                 }
-
                 if ($this->isOpenTag($reader, 'item')) {
                     $params['total']++;
                 }
             }
-
             $reader->close();
 
             if (!$exchangeVersion || $exchangeVersion < self::EXCHANGE_VERSION) {
@@ -77,13 +67,9 @@ class HlblockElementsImport extends AbstractExchange
 
         while ($reader->read()) {
             if ($this->isOpenTag($reader, 'item')) {
-                $collect = (
-                    $index >= $params['offset']
-                    && $index < $params['offset'] + $this->getLimit()
-                );
-
-                $finish = ($index >= $params['total'] - 1);
+                $collect = ($index >= $params['offset'] && $index < $params['offset'] + $this->getLimit());
                 $restart = ($index >= $params['offset'] + $this->getLimit());
+                $finish = ($index >= $params['total'] - 1);
 
                 if ($collect) {
                     $this->collectItem($reader, $params['hlblock_id']);
@@ -183,7 +169,8 @@ class HlblockElementsImport extends AbstractExchange
      */
     protected function getConvertFieldMethod($hlblockId, $fieldName)
     {
-        $type = $this->exchangeHelper->getFieldType($hlblockId, $fieldName);
+        $hblockExchange = $this->getHelperManager()->HlblockExchange();
+        $type = $hblockExchange->getFieldType($hlblockId, $fieldName);
 
         if (in_array($type, ['enumeration', 'file'])) {
             return 'convertField' . ucfirst($type);
@@ -201,7 +188,8 @@ class HlblockElementsImport extends AbstractExchange
      */
     protected function convertFieldString($hlblockId, $field)
     {
-        if ($this->exchangeHelper->isFieldMultiple($hlblockId, $field['name'])) {
+        $hblockExchange = $this->getHelperManager()->HlblockExchange();
+        if ($hblockExchange->isFieldMultiple($hlblockId, $field['name'])) {
             $res = [];
             foreach ($field['value'] as $val) {
                 $res[] = $val['value'];
@@ -221,7 +209,8 @@ class HlblockElementsImport extends AbstractExchange
      */
     protected function convertFieldFile($hlblockId, $field)
     {
-        if ($this->exchangeHelper->isFieldMultiple($hlblockId, $field['name'])) {
+        $hblockExchange = $this->getHelperManager()->HlblockExchange();
+        if ($hblockExchange->isFieldMultiple($hlblockId, $field['name'])) {
             $res = [];
             foreach ($field['value'] as $val) {
                 $res[] = $this->makeFileValue($val);
@@ -241,10 +230,11 @@ class HlblockElementsImport extends AbstractExchange
      */
     protected function convertFieldEnumeration($hlblockId, $field)
     {
-        if ($this->exchangeHelper->isFieldMultiple($hlblockId, $field['name'])) {
+        $hblockExchange = $this->getHelperManager()->HlblockExchange();
+        if ($hblockExchange->isFieldMultiple($hlblockId, $field['name'])) {
             $res = [];
             foreach ($field['value'] as $val) {
-                $res[] = $this->exchangeHelper->getFieldEnumIdByXmlId(
+                $res[] = $hblockExchange->getFieldEnumIdByXmlId(
                     $hlblockId,
                     $field['name'],
                     $val['value']
@@ -252,7 +242,7 @@ class HlblockElementsImport extends AbstractExchange
             }
             return $res;
         } else {
-            return $this->exchangeHelper->getFieldEnumIdByXmlId(
+            return $hblockExchange->getFieldEnumIdByXmlId(
                 $hlblockId,
                 $field['name'],
                 $field['value'][0]['value']

@@ -10,7 +10,6 @@ use Sprint\Migration\VersionBuilder;
 
 class UserGroupBuilder extends VersionBuilder
 {
-
     protected function isBuilderEnabled()
     {
         return true;
@@ -31,21 +30,17 @@ class UserGroupBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $this->addField('user_group', [
-            'title' => Locale::getMessage('BUILDER_UserGroupExport_user_group'),
-            'placeholder' => '',
-            'multiple' => 1,
-            'value' => [],
-            'width' => 250,
-            'select' => $this->getUserGroups(),
-        ]);
-
-        $userGroups = $this->getFieldValue('user_group');
-        if (empty($userGroups)) {
-            $this->rebuildField('user_group');
-        }
-
-        $userGroups = is_array($userGroups) ? $userGroups : [$userGroups];
+        $userGroups = $this->addFieldAndReturn(
+            'user_group',
+            [
+                'title'       => Locale::getMessage('BUILDER_UserGroupExport_user_group'),
+                'placeholder' => '',
+                'multiple'    => 1,
+                'value'       => [],
+                'width'       => 250,
+                'select'      => $this->getUserGroups(),
+            ]
+        );
 
         $items = [];
         foreach ($userGroups as $groupId) {
@@ -54,7 +49,7 @@ class UserGroupBuilder extends VersionBuilder
                 unset($fields['STRING_ID']);
                 $items[] = [
                     'STRING_ID' => $item['STRING_ID'],
-                    'FIELDS' => $fields,
+                    'FIELDS'    => $fields,
                 ];
             }
         }
@@ -88,6 +83,5 @@ class UserGroupBuilder extends VersionBuilder
         }
 
         return $result;
-
     }
 }

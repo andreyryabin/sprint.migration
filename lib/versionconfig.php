@@ -15,6 +15,7 @@ use Sprint\Migration\Builders\IblockBuilder;
 use Sprint\Migration\Builders\IblockCategoryBuilder;
 use Sprint\Migration\Builders\IblockElementsBuilder;
 use Sprint\Migration\Builders\MarkerBuilder;
+use Sprint\Migration\Builders\MedialibElementsBuilder;
 use Sprint\Migration\Builders\OptionBuilder;
 use Sprint\Migration\Builders\TransferBuilder;
 use Sprint\Migration\Builders\UserGroupBuilder;
@@ -505,6 +506,7 @@ class VersionConfig
             'CacheCleanerBuilder'     => CacheCleanerBuilder::class,
             'MarkerBuilder'           => MarkerBuilder::class,
             'TransferBuilder'         => TransferBuilder::class,
+            'MedialibElementsBuilder' => MedialibElementsBuilder::class,
         ];
     }
 
