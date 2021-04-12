@@ -445,11 +445,11 @@ trait IblockSectionTrait
     public function getSectionUniqNamesByIds($iblockId, $sectionIds = [])
     {
         $uniqNames = [];
+        $sectionIds = is_array($sectionIds) ? array_filter($sectionIds) : [];
 
-        if (empty($sectionIds) || !is_array($sectionIds)) {
+        if (empty($sectionIds)) {
             return $uniqNames;
         }
-
         foreach ($sectionIds as $sectionId) {
             $uniqNames[] = $this->getSectionUniqNameById($iblockId, $sectionId);
         }
@@ -467,8 +467,9 @@ trait IblockSectionTrait
     public function getSectionIdsByUniqNames($iblockId, $uniqNames = [])
     {
         $ids = [];
+        $uniqNames = is_array($uniqNames) ? array_filter($uniqNames) : [];
 
-        if (empty($uniqNames) || !is_array($uniqNames)) {
+        if (empty($uniqNames)) {
             return $ids;
         }
 
