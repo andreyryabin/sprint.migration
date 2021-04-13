@@ -153,8 +153,12 @@ TAG;
         }
 
         foreach ($result as $index => $item) {
-            $item['FILE'] = CFile::GetFileArray($item['SOURCE_ID']);
-            $result[$index] = $item;
+            if (!empty($item['SOURCE_ID'])) {
+                $item['FILE'] = CFile::GetFileArray($item['SOURCE_ID']);
+                if (!empty($item['FILE'])) {
+                    $result[$index] = $item;
+                }
+            }
         }
 
         return $result;
