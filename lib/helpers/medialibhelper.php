@@ -239,9 +239,9 @@ TAG;
             ]
         );
 
-        $exists = !empty($collections) ? $collections[0] : false;
-
-        if (empty($exists)) {
+        if (!empty($collections[0]['ID'])) {
+            return $collections[0]['ID'];
+        } else {
             return $this->addCollection(
                 $typeId,
                 [
@@ -249,8 +249,6 @@ TAG;
                     'PARENT_ID' => $parentId,
                 ]
             );
-        } else {
-            return $exists['ID'];
         }
     }
 
@@ -279,7 +277,12 @@ TAG;
 
         $this->throwException(
             __METHOD__,
-            Locale::getMessage('ERR_SAVE_COLLECTION_BY_PATH', ['#PATH#' => $path])
+            Locale::getMessage(
+                'ERR_SAVE_COLLECTION_BY_PATH',
+                [
+                    '#PATH#' => implode(' - ', $path),
+                ]
+            )
         );
     }
 
@@ -327,12 +330,10 @@ TAG;
             ]
         );
 
-        $exists = !empty($elements) ? $elements[0] : false;
-
-        if (empty($exists)) {
-            return $this->addElement($fields);
+        if (!empty($elements[0]['ID'])) {
+            return $this->updateElement($elements[0]['ID'], $fields);
         } else {
-            return $this->updateElement($exists['ID'], $fields);
+            return $this->addElement($fields);
         }
     }
 
