@@ -334,7 +334,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_SCHEMA_EMPTY"                  => "Схема \"#NAME#\" не содержит данных",
         "ERR_SCHEMA_CREATED"                => "Схема \"#NAME#\" сохранена",
         "ERR_EXCHANGE_FILE_NOT_FOUND"       => "Файл с данными не найден",
-        "ERR_EXCHANGE_VERSION"              => "Файл для переноса данных был создан в более ранней версии модуля, пожалуйста создайте его заново.",
+        "ERR_EXCHANGE_VERSION"              => "Файл для переноса данных \"#NAME#\" не поддерживается текущей версией модуля.\nПожалуйста создайте его заново.",
         "ERR_IB_SECTION_ID_EMPTY"           => "Категория в инфоблоке \"#IBLOCK_ID#\" не указана",
         "ERR_IB_SECTION_ID_NOT_FOUND"       => "Категория \"#SECTION_ID#\" в инфоблоке \"#IBLOCK_ID#\" не найдена",
         "ERR_IB_SECTION_ON_LEVEL_NOT_FOUND" => "Категория \"#SECTION_NAME#\" на уровне \"#DEPTH_LEVEL#\" не найдена",

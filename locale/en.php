@@ -334,7 +334,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_SCHEMA_EMPTY"                  => "Data schema \"#NAME#\" empty",
         "ERR_SCHEMA_CREATED"                => "Data schema \"#NAME#\" saved",
         "ERR_EXCHANGE_FILE_NOT_FOUND"       => "Exchange file not found",
-        "ERR_EXCHANGE_VERSION"              => "Exchange file was created in a older version of module, please recreate it",
+        "ERR_EXCHANGE_VERSION"              => "Exchange file \"#NAME#\" not supported in this version of module.\nPlease recreate it",
         "ERR_IB_SECTION_ID_EMPTY"           => "Section in iblock \"#IBLOCK_ID#\" empty",
         "ERR_IB_SECTION_ID_NOT_FOUND"       => "Section \"#SECTION_ID#\" in iblock \"#IBLOCK_ID#\" not found",
         "ERR_IB_SECTION_ON_LEVEL_NOT_FOUND" => "Section \"#SECTION_NAME#\" on level \"#DEPTH_LEVEL#\" not found",

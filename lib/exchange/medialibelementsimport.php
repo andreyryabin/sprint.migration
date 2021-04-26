@@ -46,7 +46,7 @@ class MedialibElementsImport extends AbstractExchange
 
             if (!$exchangeVersion || $exchangeVersion < self::EXCHANGE_VERSION) {
                 $this->exchangeEntity->exitWithMessage(
-                    Locale::getMessage('ERR_EXCHANGE_VERSION')
+                    Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->getExchangeFile()])
                 );
             }
         }
