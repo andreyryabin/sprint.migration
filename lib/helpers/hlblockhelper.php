@@ -504,7 +504,7 @@ class HlblockHelper extends Helper
                 return $result->getId();
             }
 
-            $this->throwException(__METHOD__, implode(PHP_EOL, $result->getErrorMessages()));
+            throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
             $this->throwException(__METHOD__, $e->getMessage());
         }
@@ -555,7 +555,7 @@ class HlblockHelper extends Helper
                 return $hlblockId;
             }
 
-            $this->throwException(__METHOD__, implode(PHP_EOL, $result->getErrorMessages()));
+            throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
             $this->throwException(__METHOD__, $e->getMessage());
         }
@@ -596,7 +596,7 @@ class HlblockHelper extends Helper
                 return true;
             }
 
-            $this->throwException(__METHOD__, implode(PHP_EOL, $result->getErrorMessages()));
+            throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
             $this->throwException(__METHOD__, $e->getMessage());
         }
@@ -638,7 +638,7 @@ class HlblockHelper extends Helper
                 return $result->getId();
             }
 
-            $this->throwException(__METHOD__, implode(PHP_EOL, $result->getErrorMessages()));
+            throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
             $this->throwException(__METHOD__, $e->getMessage());
         }
