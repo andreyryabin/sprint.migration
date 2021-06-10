@@ -7,6 +7,7 @@
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion
+ * @formatter:off
  */
 
 ?><?php echo "<?php\n" ?>
@@ -30,9 +31,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     {
         $helper = $this->getHelperManager();
 
-<?foreach ($items as $item):?>
+<?php foreach ($items as $item):?>
         $helper->UserGroup()->saveGroup('<?php echo $item['STRING_ID'] ?>',<?php echo var_export($item['FIELDS'], 1) ?>);
-<? endforeach; ?>
+<?php endforeach; ?>
     }
 
     public function down()

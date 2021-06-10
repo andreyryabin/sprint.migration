@@ -53,19 +53,19 @@ $getOnclickMenu = function ()  {
                        class="adm-input"
                        name="migration_search"/>
                 <select name="migration_filter">
-                    <option <? if ($listview == 'migration_view_all'): ?>selected="selected"<? endif ?>
+                    <option <?php if ($listview == 'migration_view_all'): ?>selected="selected"<?php endif ?>
                             value="migration_view_all"><?= Locale::getMessage('TOGGLE_LIST') ?></option>
-                    <option <? if ($listview == 'migration_view_new'): ?>selected="selected"<? endif ?>
+                    <option <?php if ($listview == 'migration_view_new'): ?>selected="selected"<?php endif ?>
                             value="migration_view_new"><?= Locale::getMessage('TOGGLE_NEW') ?></option>
-                    <option <? if ($listview == 'migration_view_installed'): ?>selected="selected"<? endif ?>
+                    <option <?php if ($listview == 'migration_view_installed'): ?>selected="selected"<?php endif ?>
                             value="migration_view_installed"><?= Locale::getMessage('TOGGLE_INSTALLED') ?></option>
-                    <option <? if ($listview == 'migration_view_tag'): ?>selected="selected"<? endif ?>
+                    <option <?php if ($listview == 'migration_view_tag'): ?>selected="selected"<?php endif ?>
                             value="migration_view_tag"><?= Locale::getMessage('TOGGLE_TAG') ?></option>
-                    <option <? if ($listview == 'migration_view_modified'): ?>selected="selected"<? endif ?>
+                    <option <?php if ($listview == 'migration_view_modified'): ?>selected="selected"<?php endif ?>
                             value="migration_view_modified"><?= Locale::getMessage('TOGGLE_MODIFIED') ?></option>
-                    <option <? if ($listview == 'migration_view_older'): ?>selected="selected"<? endif ?>
+                    <option <?php if ($listview == 'migration_view_older'): ?>selected="selected"<?php endif ?>
                             value="migration_view_older"><?= Locale::getMessage('TOGGLE_OLDER') ?></option>
-                    <option <? if ($listview == 'migration_view_status'): ?>selected="selected"<? endif ?>
+                    <option <?php if ($listview == 'migration_view_status'): ?>selected="selected"<?php endif ?>
                             value="migration_view_status"><?= Locale::getMessage('TOGGLE_STATUS') ?></option>
                 </select>
                 <input type="button" value="<?= Locale::getMessage('SEARCH') ?>" class="sp-search"/>
@@ -74,9 +74,9 @@ $getOnclickMenu = function ()  {
         </div>
     </div>
     <div class="sp-separator"></div>
-    <? foreach (['default', 'configurator'] as $builderGroup): ?>
-        <? include __DIR__ . '/builder_group.php' ?>
-    <? endforeach ?>
+    <?php foreach (['default', 'configurator'] as $builderGroup): ?>
+        <?php include __DIR__ . '/builder_group.php' ?>
+    <?php endforeach ?>
 
     <div class="sp-separator"></div>
 </div>

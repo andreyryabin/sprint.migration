@@ -13,7 +13,7 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     private $name;
     /** @var VersionConfig */
-    private $versionConfig = null;
+    private $versionConfig;
     private $info          = [
         'title'       => '',
         'description' => '',
@@ -33,6 +33,10 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     abstract protected function initialize();
 
+    /**
+     * @throws RestartException|RebuildException|Exception
+     * @return mixed
+     */
     abstract protected function execute();
 
     protected function isBuilderEnabled()
@@ -151,9 +155,7 @@ abstract class AbstractBuilder extends ExchangeEntity
             include $file;
         }
 
-        $html = ob_get_clean();
-
-        return $html;
+        return ob_get_clean();
     }
 
     public function renderHtml()

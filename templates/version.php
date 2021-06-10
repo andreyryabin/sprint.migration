@@ -6,6 +6,7 @@
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion
+ * @formatter:off
  */
 
 ?><?php echo "<?php\n" ?>

@@ -19,6 +19,7 @@ if ($_POST["step_code"] == "schema_export" && check_bitrix_sessid('send_sessid')
     $schemaManager = new SchemaManager($versionConfig, $params);
 
     $ok = false;
+    $error = true;
 
     try {
         $schemaManager->export(['name' => $checked]);
@@ -36,7 +37,7 @@ if ($_POST["step_code"] == "schema_export" && check_bitrix_sessid('send_sessid')
         <script>
             schemaExecuteStep('schema_export', <?=$json?>);
         </script>
-        <?
+        <?php
     } catch (Exception $e) {
         Out::outError($e->getMessage());
         $error = true;
@@ -52,7 +53,7 @@ if ($_POST["step_code"] == "schema_export" && check_bitrix_sessid('send_sessid')
         <script>
             schemaProgress('<?=$type?>',<?=$val?>);
         </script>
-        <?
+        <?php
     }
 
     if ($ok) {
@@ -61,7 +62,7 @@ if ($_POST["step_code"] == "schema_export" && check_bitrix_sessid('send_sessid')
             schemaProgressReset();
             schemaRefresh();
         </script>
-        <?
+        <?php
     }
 
     if ($error) {
@@ -69,7 +70,7 @@ if ($_POST["step_code"] == "schema_export" && check_bitrix_sessid('send_sessid')
         <script>
             schemaRefresh();
         </script>
-        <?
+        <?php
     }
 
 }

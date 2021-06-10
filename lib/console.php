@@ -13,8 +13,8 @@ use Throwable;
 class Console
 {
 
-    private $script = 'migrate.php';
-    private $command = '';
+    private $script;
+    private $command;
 
     private $arguments = [];
 
@@ -109,6 +109,7 @@ class Console
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws MigrationException
      */
     public function commandRun()
@@ -141,6 +142,7 @@ class Console
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws MigrationException
      */
     public function commandMark()
@@ -170,6 +172,7 @@ class Console
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws MigrationException
      */
     public function commandDel()
@@ -222,7 +225,7 @@ class Console
             'Description',
         ]);
 
-        foreach ($versions as $index => $item) {
+        foreach ($versions as $item) {
             if ($item['modified']) {
                 $item['version'] .= ' (' . Locale::getMessage('MODIFIED_LABEL') . ')';
             }
@@ -257,6 +260,7 @@ class Console
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws MigrationException
      */
     public function commandUp()
@@ -283,6 +287,7 @@ class Console
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws MigrationException
      */
     public function commandDown()
@@ -309,6 +314,7 @@ class Console
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws MigrationException
      */
     public function commandRedo()
@@ -324,6 +330,9 @@ class Console
         }
     }
 
+    /**
+     *
+     */
     public function commandInfo()
     {
         global $USER;
@@ -358,6 +367,9 @@ class Console
 
     }
 
+    /**
+     * @noinspection PhpUnused
+     */
     public function commandHelp()
     {
         if (Locale::getLang() == 'en') {
@@ -395,6 +407,7 @@ class Console
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws MigrationException
      */
     public function commandLs()
@@ -403,6 +416,7 @@ class Console
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws MigrationException
      */
     public function commandAdd()
@@ -411,6 +425,7 @@ class Console
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws MigrationException
      */
     public function commandMigrate()
@@ -427,6 +442,7 @@ class Console
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws MigrationException
      */
     public function commandMi()
@@ -466,6 +482,7 @@ class Console
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws Exception
      * @return bool
      */
@@ -597,7 +614,7 @@ class Console
      * @param string $action
      * @throws MigrationException
      */
-    protected function executeOnce($version, $action = VersionEnum::ACTION_UP)
+    protected function executeOnce($version, $action)
     {
         $ok = $this->executeVersion($version, $action);
 
@@ -608,7 +625,7 @@ class Console
         }
     }
 
-    protected function executeVersion($version, $action = VersionEnum::ACTION_UP)
+    protected function executeVersion($version, $action)
     {
 
         $tag = $this->getArg('--add-tag=', '');

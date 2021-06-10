@@ -31,10 +31,10 @@ if ($hasSteps && check_bitrix_sessid('send_sessid')) {
         if ($builder->isRestart()) {
             $json = json_encode($builder->getRestartParams());
             ?>
-            <script>migrationBuilder(<?=$json?>);</script><?
+            <script>migrationBuilder(<?=$json?>);</script><?php
         } elseif ($builder->isRebuild()) {
             ?>
-            <script>migrationEnableButtons(1);</script><?
+            <script>migrationEnableButtons(1);</script><?php
         } else {
             ?>
             <script>
@@ -42,13 +42,13 @@ if ($hasSteps && check_bitrix_sessid('send_sessid')) {
                     migrationScrollList();
                     migrationEnableButtons(1);
                 });
-            </script><?
+            </script><?php
         }
     } elseif ($builder && $stepCode == 'migration_reset') {
         $builder->renderHtml();
         ?>
         <script>
             migrationEnableButtons(1);
-        </script><?
+        </script><?php
     }
 }

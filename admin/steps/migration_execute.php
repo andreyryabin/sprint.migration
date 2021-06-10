@@ -108,7 +108,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
             ]);
 
             ?>
-            <script>migrationExecuteStep('migration_execute', <?=$json?>);</script><?
+            <script>migrationExecuteStep('migration_execute', <?=$json?>);</script><?php
         } elseif ($nextAction) {
             $json = json_encode([
                 'next_action' => $nextAction,
@@ -123,18 +123,18 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
                 migrationMigrationRefresh(function () {
                     migrationExecuteStep('migration_execute', <?=$json?>);
                 });
-            </script><?
+            </script><?php
         } else {
             ?>
             <script>
                 migrationMigrationRefresh();
-            </script><?
+            </script><?php
         }
     } else {
         ?>
         <script>
             migrationMigrationRefresh();
-        </script><?
+        </script><?php
     }
 
 }

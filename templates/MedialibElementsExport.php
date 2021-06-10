@@ -7,6 +7,7 @@
  * @var $extendClass
  * @var $moduleVersion
  * @var $iblockElementsFile
+ * @formatter:off
  */
 
 ?><?php echo "<?php\n" ?>

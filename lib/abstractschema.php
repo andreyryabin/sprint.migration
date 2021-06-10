@@ -14,7 +14,7 @@ abstract class AbstractSchema extends ExchangeEntity
     private $name;
 
     /** @var VersionConfig */
-    private $versionConfig = null;
+    private $versionConfig;
 
     private $queue = [];
 

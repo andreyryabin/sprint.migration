@@ -9,6 +9,7 @@
  * @var $hlblock
  * @var $hlblockFields
  * @var $hlblockPermissions
+ * @formatter:off
  */
 
 ?><?php echo "<?php\n" ?>
@@ -32,14 +33,14 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     {
         $helper = $this->getHelperManager();
         $hlblockId = $helper->Hlblock()->saveHlblock(<?php echo var_export($hlblock, 1) ?>);
-<? if (!empty($hlblockPermissions)): ?>
+<?php if (!empty($hlblockPermissions)): ?>
     $helper->Hlblock()->saveGroupPermissions($hlblockId, <?php echo var_export($hlblockPermissions, 1) ?>);
-<?endif?>
-<? if (!empty($hlblockFields)): ?>
+<?php endif?>
+<?php if (!empty($hlblockFields)): ?>
 <?php foreach ($hlblockFields as $field): ?>
         $helper->Hlblock()->saveField($hlblockId, <?php echo var_export($field, 1) ?>);
-<? endforeach; ?>
-<?endif?>
+    <?php endforeach; ?>
+<?php endif?>
     }
 
     public function down()

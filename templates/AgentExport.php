@@ -7,6 +7,7 @@
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion
+ * @formatter:off
  */
 
 ?><?php echo "<?php\n" ?>
@@ -29,9 +30,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     public function up()
     {
         $helper = $this->getHelperManager();
-<?foreach ($items as $item):?>
+<?php foreach ($items as $item):?>
         $helper->Agent()->saveAgent(<?php echo var_export($item, 1) ?>);
-<? endforeach; ?>
+<?php endforeach; ?>
     }
 
     public function down()

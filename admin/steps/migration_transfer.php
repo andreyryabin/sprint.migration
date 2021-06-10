@@ -32,5 +32,5 @@ if ($existsEvents && check_bitrix_sessid('send_sessid')) {
             migrationScrollList();
             migrationEnableButtons(1);
         });
-    </script><?
+    </script><?php
 }

@@ -429,6 +429,13 @@ trait IblockPropertyTrait
         $items = $this->getProperties($iblockId, $filter);
         foreach ($items as $item) {
             if (!empty($item['CODE'])) {
+                if (!empty($item['LINK_IBLOCK_ID'])) {
+                    try {
+                        $item['LINK_IBLOCK_ID'] = $this->getIblockUid($item['LINK_IBLOCK_ID']);
+                    } catch (HelperException $e) {
+                        continue;
+                    }
+                }
                 $exports[] = $this->prepareExportProperty($item);
             }
         }

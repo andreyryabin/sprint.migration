@@ -6,6 +6,7 @@
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion
+ * @formatter:off
  */
 
 ?><?php echo "<?php\n" ?>
@@ -24,21 +25,21 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     public function up()
     {
         $helper = $this->getHelperManager();
-<? if (!empty($exportUserForm)): ?>
+<?php if (!empty($exportUserForm)): ?>
         $helper->UserOptions()->saveUserForm(<?php echo var_export($exportUserForm, 1) ?>);
-<? endif; ?>
-<? if (!empty($exportUserList)): ?>
+<?php endif; ?>
+<?php if (!empty($exportUserList)): ?>
         $helper->UserOptions()->saveUserList(<?php echo var_export($exportUserList, 1) ?>);
-<? endif; ?>
-<? if (!empty($exportUserGroupList)): ?>
+<?php endif; ?>
+<?php if (!empty($exportUserGroupList)): ?>
         $helper->UserOptions()->saveUserGroupList(<?php echo var_export($exportUserGroupList, 1) ?>);
-<? endif; ?>
-<? if (!empty($exportUserGrid)): ?>
+<?php endif; ?>
+<?php if (!empty($exportUserGrid)): ?>
     $helper->UserOptions()->saveUserGrid(<?php echo var_export($exportUserGrid, 1) ?>);
-<? endif; ?>
-<? if (!empty($exportUserGroupGrid)): ?>
+<?php endif; ?>
+<?php if (!empty($exportUserGroupGrid)): ?>
     $helper->UserOptions()->saveUserGroupGrid(<?php echo var_export($exportUserGroupGrid, 1) ?>);
-<? endif; ?>
+<?php endif; ?>
 
     }
 

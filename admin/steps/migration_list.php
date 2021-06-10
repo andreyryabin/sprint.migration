@@ -137,9 +137,9 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
     }
 
     ?>
-    <? if (!empty($versions)): ?>
+    <?php if (!empty($versions)): ?>
         <table class="sp-list">
-            <? foreach ($versions as $item): ?>
+            <?php foreach ($versions as $item): ?>
                 <tr>
                     <td class="sp-list-td__buttons">
                         <a onclick="this.blur();BX.adminShowMenu(this, <?= $getOnclickMenu($item) ?>, {active_class: 'adm-btn-active',public_frame: '0'}); return false;"
@@ -149,44 +149,44 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
                     </td>
                     <td class="sp-list-td__content">
                         <span class="sp-item-<?= $item['status'] ?>"><?= $item['version'] ?></span>
-                        <? if ($item['modified']): ?>
+                        <?php if ($item['modified']): ?>
                             <span class="sp-modified" title="<?= Locale::getMessage('MODIFIED_VERSION') ?>">
                                 <?= Locale::getMessage('MODIFIED_LABEL') ?>
                             </span>
-                        <? endif; ?>
-                        <? if ($item['older']): ?>
+                        <?php endif; ?>
+                        <?php if ($item['older']): ?>
                             <span class="sp-older" title="<?= Locale::getMessage('OLDER_VERSION', [
                                 '#V1#' => $item['older'],
                                 '#V2#' => Module::getVersion(),
                             ]) ?>">
                                 <?= Locale::getMessage('OLDER_LABEL') ?>
                             </span>
-                        <? endif; ?>
-                        <? if ($item['tag']): ?>
+                        <?php endif; ?>
+                        <?php if ($item['tag']): ?>
                             <span class="sp-tag" title="<?= Locale::getMessage('TAG') ?>">
                                 <?= $item['tag'] ?>
                             </span>
-                        <? endif; ?>
-                        <? if ($item['status'] == VersionEnum::STATUS_NEW) { ?>
-                            <? Out::out(Locale::getMessage('VERSION_NEW')) ?>
-                        <? } ?>
-                        <? if ($item['status'] == VersionEnum::STATUS_INSTALLED) { ?>
-                            <? Out::out(Locale::getMessage('VERSION_INSTALLED')) ?>
-                        <? } ?>
-                        <? if (!empty($item['description'])): ?>
+                        <?php endif; ?>
+                        <?php if ($item['status'] == VersionEnum::STATUS_NEW) { ?>
+                            <?php Out::out(Locale::getMessage('VERSION_NEW')) ?>
+                        <?php } ?>
+                        <?php if ($item['status'] == VersionEnum::STATUS_INSTALLED) { ?>
+                            <?php Out::out(Locale::getMessage('VERSION_INSTALLED')) ?>
+                        <?php } ?>
+                        <?php if (!empty($item['description'])): ?>
                             <?= Out::prepareToHtml(
                                 $item['description'],
                                 [
                                     'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),
                                 ]
                             ) ?>
-                        <? endif ?>
+                        <?php endif ?>
                     </td>
                 </tr>
-            <? endforeach ?>
+            <?php endforeach ?>
         </table>
-    <? else: ?>
+    <?php else: ?>
         <?= Locale::getMessage('LIST_EMPTY') ?>
-    <? endif ?>
-    <?
+    <?php endif ?>
+    <?php
 }

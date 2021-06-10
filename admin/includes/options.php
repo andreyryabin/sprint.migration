@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 }
 ?>
 
-<? include __DIR__ . '/help.php' ?>
+<?php include __DIR__ . '/help.php' ?>
     <div class="sp-separator"></div>
 
     <div class="sp-group">
@@ -103,4 +103,4 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
     <div class="sp-separator"></div>
 
-<? include __DIR__ . '/config_list.php' ?>
+<?php include __DIR__ . '/config_list.php' ?>

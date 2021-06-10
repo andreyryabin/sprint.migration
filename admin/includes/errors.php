@@ -1,9 +1,7 @@
-<?
-
-?><? if (isset($sperrors) && is_array($sperrors)): ?>
-    <? foreach ($sperrors as $sperror): ?>
+<?php if (isset($sperrors) && is_array($sperrors)): ?>
+    <?php foreach ($sperrors as $sperror): ?>
         <div class="sp-block">
             <?= $sperror ?>
         </div>
-    <? endforeach; ?>
-<? endif; ?>
+    <?php endforeach; ?>
+<?php endif; ?>

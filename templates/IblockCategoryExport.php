@@ -7,6 +7,7 @@
  * @var $moduleVersion
  * @var $iblock
  * @var $sectionTree
+ * @formatter:off
  */
 
 ?><?php echo "<?php\n" ?>

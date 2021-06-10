@@ -34,10 +34,12 @@ class IblockExchangeHelper extends IblockHelper
 
         $iblocks = $this->getIblocks();
         foreach ($iblocks as $iblock) {
-            $res[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
-                'title' => '[' . $iblock['CODE'] . '] ' . $iblock['NAME'],
-                'value' => $iblock['ID'],
-            ];
+            if (!empty($iblock['CODE'])) {
+                $res[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
+                    'title' => '[' . $iblock['CODE'] . '] ' . $iblock['NAME'],
+                    'value' => $iblock['ID'],
+                ];
+            }
         }
 
         return $res;

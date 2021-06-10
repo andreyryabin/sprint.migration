@@ -10,6 +10,7 @@
  * @var $statuses
  * @var $fields
  * @var $validators
+ * @formatter:off
  */
 
 ?><?php echo "<?php\n" ?>
@@ -33,17 +34,17 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     {
         $helper = $this->getHelperManager();
         $formHelper = $helper->Form();
-<? if (!empty($formExport)): ?>
+<?php if (!empty($formExport)): ?>
         $formId = $formHelper->saveForm(<?= var_export($form, 1)?>);
-<?else:?>
+<?php else:?>
         $formId = $formHelper->getFormIdIfExists('<?= $form['SID']?>');
-<?endif?>
-<? if (!empty($statuses)): ?>
+<?php endif?>
+<?php if (!empty($statuses)): ?>
         $formHelper->saveStatuses($formId, <?= var_export($statuses, 1)?>);
-<?endif;?>
-<? if (!empty($fields)): ?>
+<?php endif;?>
+<?php if (!empty($fields)): ?>
         $formHelper->saveFields($formId, <?= var_export($fields, 1)?>);
-<?endif;?>
+<?php endif;?>
     }
 
     public function down()

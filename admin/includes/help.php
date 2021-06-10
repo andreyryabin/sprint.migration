@@ -1,8 +1,9 @@
 <?php
 
+use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
-use Sprint\Migration\Enum\VersionEnum;
+
 global $APPLICATION;
 $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
 ?>
@@ -10,14 +11,14 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
     <div class="sp-group-row2">
         <div class="sp-block">
             <div style="margin-bottom: 10px;">
-                <?= Locale::getMessage('MODULE_VERSION') ?>: <?=Module::getVersion()?>
+                <?= Locale::getMessage('MODULE_VERSION') ?>: <?= Module::getVersion() ?>
             </div>
             <div style="margin-bottom: 10px;">
-            <? if ($isSettinsPage): ?>
-                <a href="/bitrix/admin/sprint_migrations.php?config=<?=VersionEnum::CONFIG_DEFAULT?>&lang=<?= LANGUAGE_ID ?>"><?= Locale::getMessage('GOTO_MIGRATION') ?></a>
-            <? else: ?>
-                <a href="/bitrix/admin/settings.php?mid=sprint.migration&mid_menu=1&lang=<?= LANGUAGE_ID ?>"><?= Locale::getMessage('GOTO_OPTIONS') ?></a>
-            <? endif; ?>
+                <?php if ($isSettinsPage): ?>
+                    <a href="/bitrix/admin/sprint_migrations.php?config=<?= VersionEnum::CONFIG_DEFAULT ?>&lang=<?= LANGUAGE_ID ?>"><?= Locale::getMessage('GOTO_MIGRATION') ?></a>
+                <?php else: ?>
+                    <a href="/bitrix/admin/settings.php?mid=sprint.migration&mid_menu=1&lang=<?= LANGUAGE_ID ?>"><?= Locale::getMessage('GOTO_OPTIONS') ?></a>
+                <?php endif; ?>
             </div>
         </div>
         <div class="sp-block">

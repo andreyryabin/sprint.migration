@@ -46,7 +46,7 @@ if ($hasSteps && check_bitrix_sessid('send_sessid')) {
         <script>
             schemaExecuteStep('<?=$stepCode?>', <?=$json?>);
         </script>
-        <?
+        <?php
     } catch (Exception $e) {
         Out::outError($e->getMessage());
         $error = true;
@@ -62,7 +62,7 @@ if ($hasSteps && check_bitrix_sessid('send_sessid')) {
         <script>
             schemaProgress('<?=$type?>', <?=$val?>);
         </script>
-        <?
+        <?php
     }
 
     if ($ok) {
@@ -71,7 +71,7 @@ if ($hasSteps && check_bitrix_sessid('send_sessid')) {
             schemaProgressReset();
             schemaRefresh();
         </script>
-        <?
+        <?php
     }
 
     if ($error) {
@@ -79,6 +79,6 @@ if ($hasSteps && check_bitrix_sessid('send_sessid')) {
         <script>
             schemaRefresh();
         </script>
-        <?
+        <?php
     }
 }

@@ -2,7 +2,7 @@
 
 use Sprint\Migration\Locale;
 use Sprint\Migration\Out;
-
+global $APPLICATION;
 $APPLICATION->SetTitle(Locale::getMessage('TITLE'));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
