@@ -59,7 +59,10 @@ class IblockElementsImport extends AbstractExchange
                 );
             }
 
-            $this->exchangeEntity->exitIfEmpty($params['iblock_id'], Locale::getMessage('ERR_IB_NOT_FOUND'));
+            $this->exchangeEntity->exitIfEmpty(
+                $params['iblock_id'],
+                Locale::getMessage('ERR_IB_NOT_FOUND', ['#IBLOCK#' => $params['iblock_id']])
+            );
         }
 
         $reader = new XMLReader();

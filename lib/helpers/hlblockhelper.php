@@ -443,7 +443,13 @@ class HlblockHelper extends Helper
             return $item;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage('ERR_HLBLOCK_NOT_FOUND'));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_HLBLOCK_NOT_FOUND',
+                ['#HLBLOCK#' => is_array($hlblockName) ? var_export($hlblockName, true) : $hlblockName]
+            )
+        );
     }
 
     /**
@@ -461,7 +467,13 @@ class HlblockHelper extends Helper
             return $item['ID'];
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage('ERR_HLBLOCK_NOT_FOUND'));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_HLBLOCK_NOT_FOUND',
+                ['#HLBLOCK#' => is_array($hlblockName) ? var_export($hlblockName, true) : $hlblockName]
+            )
+        );
     }
 
     /**
@@ -809,14 +821,33 @@ class HlblockHelper extends Helper
     public function getHlblockUid($hlblock)
     {
         if (!is_array($hlblock)) {
-            $hlblock = $this->getHlblock($hlblock);
+            // если хайлоадблок не найден, надо показать что искали
+            $getHlblock = $this->getHlblock($hlblock);
+
+            if (false === $getHlblock) {
+                $this->throwException(
+                    __METHOD__,
+                    Locale::getMessage(
+                        'ERR_HLBLOCK_NOT_FOUND',
+                        ['#HLBLOCK#' => $hlblock]
+                    )
+                );
+            }
+
+            $hlblock = $getHlblock;
         }
 
         if (!empty($hlblock['NAME'])) {
             return $hlblock['NAME'];
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage('ERR_HLBLOCK_NOT_FOUND'));
+        $this->throwException(
+            __METHOD__,
+            Locale::getMessage(
+                'ERR_HLBLOCK_NOT_FOUND',
+                ['#HLBLOCK#' => is_array($hlblock) ? var_export($hlblock, true) : $hlblock]
+            )
+        );
     }
 
     /**

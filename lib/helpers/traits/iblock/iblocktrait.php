@@ -27,7 +27,8 @@ trait IblockTrait
         $this->throwException(
             __METHOD__,
             Locale::getMessage(
-                'ERR_IB_NOT_FOUND'
+                'ERR_IB_NOT_FOUND',
+                ['#IBLOCK#' => is_array($code) ? var_export($code, true) : $code]
             )
         );
     }
@@ -50,7 +51,8 @@ trait IblockTrait
         $this->throwException(
             __METHOD__,
             Locale::getMessage(
-                'ERR_IB_NOT_FOUND'
+                'ERR_IB_NOT_FOUND',
+                ['#IBLOCK#' => is_array($code) ? var_export($code, true) : $code]
             )
         );
     }
@@ -357,7 +359,8 @@ trait IblockTrait
         $this->throwException(
             __METHOD__,
             Locale::getMessage(
-                'ERR_IB_CODE_NOT_FOUND'
+                'ERR_IB_CODE_NOT_FOUND',
+                ['#IBLOCK_ID#' => $iblockId]
             )
         );
     }
@@ -490,14 +493,43 @@ trait IblockTrait
             }
 
             //на вход пришел id или код инфоблока
-            $iblock = $this->getIblock($iblock);
+            $getIblock = $this->getIblock($iblock);
+
+            //если инфоблок не найден, надо показать что искали
+            if (false === $getIblock) {
+                $this->throwException(
+                    __METHOD__,
+                    Locale::getMessage(
+                        'ERR_IB_NOT_FOUND',
+                        ['#IBLOCK#' => $iblock]
+                    )
+                );
+            }
+
+            $iblock = $getIblock;
         }
 
-        if (!empty($iblock['IBLOCK_TYPE_ID']) && !empty($iblock['CODE'])) {
-            return $iblock['IBLOCK_TYPE_ID'] . ':' . $iblock['CODE'];
+        if (empty($iblock['IBLOCK_TYPE_ID'])) {
+            $this->throwException(
+                __METHOD__,
+                Locale::getMessage(
+                    'ERR_TYPE_OF_IB_NOT_FOUND',
+                    ['#IBLOCK_ID#' => $iblock['ID']]
+                ),
+            );
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage('ERR_IB_NOT_FOUND'));
+        if (empty($iblock['CODE'])) {
+            $this->throwException(
+                __METHOD__,
+                Locale::getMessage(
+                    'ERR_IB_CODE_NOT_FOUND',
+                    ['#IBLOCK_ID#' => $iblock['ID']]
+                ),
+            );
+        }
+
+        return $iblock['IBLOCK_TYPE_ID'] . ':' . $iblock['CODE'];
     }
 
     /**

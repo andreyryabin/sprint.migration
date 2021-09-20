@@ -58,7 +58,10 @@ class HlblockElementsImport extends AbstractExchange
                 );
             }
 
-            $this->exchangeEntity->exitIfEmpty($params['hlblock_id'], Locale::getMessage('ERR_HLB_NOT_FOUND'));
+            $this->exchangeEntity->exitIfEmpty(
+                $params['hlblock_id'],
+                Locale::getMessage('ERR_HLBLOCK_NOT_FOUND', ['#HLBLOCK#' => $params['hlblock_id']])
+            );
         }
 
         $reader = new XMLReader();

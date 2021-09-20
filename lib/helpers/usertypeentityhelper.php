@@ -536,12 +536,22 @@ class UserTypeEntityHelper extends Helper
             return $fields;
         }
 
-        $this->transformSettings($fields);
-        $this->transformEnums($fields);
+        // Расширенные ошибки экспорта пользовательских полей
+        try {
+            $this->transformSettings($fields);
+            $this->transformEnums($fields);
 
-        $fields['ENTITY_ID'] = $this->transformEntityId(
-            $fields['ENTITY_ID']
-        );
+            $fields['ENTITY_ID'] = $this->transformEntityId($fields['ENTITY_ID']);
+        } catch (HelperException $e) {
+            $userTypeMessage = Locale::getMessage(
+                'ERR_USERTYPE_EXPORT',
+                ['#USER_TYPE_ID#' => $fields['ID']]
+            );
+
+            $extendedMessage = $userTypeMessage . PHP_EOL . $e->getMessage();
+
+            $this->throwException(__METHOD__, $extendedMessage);
+        }
 
         unset($fields['ID']);
         return $fields;
