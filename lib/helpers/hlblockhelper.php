@@ -161,7 +161,7 @@ class HlblockHelper extends Helper
      * @param $fieldName
      *
      * @throws HelperException
-     * @return mixed
+     * @return bool
      */
     public function isFieldMultiple($hlblockName, $fieldName)
     {
@@ -434,7 +434,7 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      *
      * @throws HelperException
-     * @return array|false|void
+     * @return array|void
      */
     public function getHlblockIfExists($hlblockName)
     {
@@ -580,7 +580,7 @@ class HlblockHelper extends Helper
      * @param $fields
      *
      * @throws HelperException
-     * @return bool|mixed
+     * @return bool|int
      */
     public function updateHlblockIfExists($hlblockName, $fields)
     {
@@ -886,7 +886,7 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param $hlblockId
+     * @param int $hlblockId
      *
      * @return array
      */
@@ -945,7 +945,7 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param $hlblockId
+     * @param int $hlblockId
      *
      * @return array
      */
@@ -976,7 +976,7 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param $hlblockId
+     * @param int $hlblockId
      *
      * @throws Exception
      * @return int
@@ -1008,7 +1008,7 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param       $hlblockId
+     * @param int   $hlblockId
      * @param array $lang
      *
      * @throws Exception
@@ -1040,7 +1040,7 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param       $hlblockId
+     * @param int   $hlblockId
      * @param array $lang
      *
      * @throws Exception

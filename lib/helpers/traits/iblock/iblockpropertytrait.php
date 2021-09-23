@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration\Helpers\Traits\Iblock;
 
+use Bitrix\Iblock\Model\PropertyFeature;
+use Bitrix\Iblock\PropertyFeatureTable;
 use CIBlockProperty;
 use CIBlockPropertyEnum;
 use Sprint\Migration\Exceptions\HelperException;
@@ -118,6 +120,22 @@ trait IblockPropertyTrait
             $result[] = $item;
         }
         return $result;
+    }
+
+    public function getPropertyFeatures($propertyId)
+    {
+        $features = [];
+        try {
+            if (PropertyFeature::isEnabledFeatures()) {
+                $features = PropertyFeatureTable::getList([
+                    'select' => ['ID', 'MODULE_ID', 'FEATURE_ID', 'IS_ENABLED'],
+                    'filter' => ['=PROPERTY_ID' => (int)$propertyId],
+                ])->fetchAll();
+            }
+        } catch (\Exception $e) {
+        }
+
+        return $features;
     }
 
     /**
@@ -504,14 +522,22 @@ trait IblockPropertyTrait
 
     protected function prepareProperty($property)
     {
-        if ($property && $property['PROPERTY_TYPE'] == 'L' && $property['IBLOCK_ID'] && $property['ID']) {
-            $property['VALUES'] = $this->getPropertyEnums(
-                [
-                    'IBLOCK_ID'   => $property['IBLOCK_ID'],
-                    'PROPERTY_ID' => $property['ID'],
-                ]
-            );
+        if (!empty($property['ID']) && !empty($property['IBLOCK_ID'])) {
+            if ($property['PROPERTY_TYPE'] == 'L') {
+                $property['VALUES'] = $this->getPropertyEnums(
+                    [
+                        'IBLOCK_ID'   => $property['IBLOCK_ID'],
+                        'PROPERTY_ID' => $property['ID'],
+                    ]
+                );
+            }
+
+            $features = $this->getPropertyFeatures($property['ID']);
+            if (!empty($features)) {
+                $property['FEATURES'] = $features;
+            }
         }
+
         return $property;
     }
 
@@ -534,6 +560,19 @@ trait IblockPropertyTrait
             }
 
             $prop['VALUES'] = $exportValues;
+        }
+
+        if (!empty($prop['FEATURES']) && is_array($prop['FEATURES'])) {
+            $exportFeatures = [];
+            foreach ($prop['FEATURES'] as $item) {
+                $exportFeatures[] = [
+                    'MODULE_ID'  => $item['MODULE_ID'],
+                    'FEATURE_ID' => $item['FEATURE_ID'],
+                    'IS_ENABLED' => $item['IS_ENABLED'],
+                ];
+            }
+
+            $prop['FEATURES'] = $exportFeatures;
         }
 
         if (!empty($prop['LINK_IBLOCK_ID'])) {
