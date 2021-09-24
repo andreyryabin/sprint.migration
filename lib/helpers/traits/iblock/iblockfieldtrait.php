@@ -37,7 +37,7 @@ trait IblockFieldTrait
         $fields = array_replace_recursive($exportExists, $fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblockFields($iblockId, $fields);
+            $ok = $this->getMode('test') || $this->updateIblockFields($iblockId, $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -51,7 +51,7 @@ trait IblockFieldTrait
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblockFields($iblockId, $fields);
+            $ok = $this->getMode('test') || $this->updateIblockFields($iblockId, $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(

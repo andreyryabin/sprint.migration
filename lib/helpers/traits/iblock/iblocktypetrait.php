@@ -222,8 +222,11 @@ trait IblockTypeTrait
      */
     public function getIblockTypeLangs($typeId)
     {
+        $lby = 'sort';
+        $lorder = 'asc';
+
         $result = [];
-        $dbres = CLanguage::GetList($lby = 'sort', $lorder = 'asc');
+        $dbres = CLanguage::GetList($lby, $lorder);
         while ($item = $dbres->GetNext()) {
             $values = CIBlockType::GetByIDLang($typeId, $item['LID'], false);
             if (!empty($values)) {

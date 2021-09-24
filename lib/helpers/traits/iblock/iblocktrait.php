@@ -134,7 +134,7 @@ trait IblockTrait
     /**
      * Добавляет инфоблок если его не существует
      *
-     * @param array $fields , обязательные параметры - код, тип инфоблока, id сайта
+     * @param array $fields Обязательные параметры - код, тип инфоблока, id сайта
      *
      * @throws HelperException
      * @return int|void
@@ -401,7 +401,6 @@ trait IblockTrait
     /**
      * @param $iblockId
      *
-     * @throws HelperException
      * @return array
      */
     public function exportGroupPermissions($iblockId)
@@ -423,8 +422,6 @@ trait IblockTrait
     /**
      * @param       $iblockId
      * @param array $permissions
-     *
-     * @throws HelperException
      */
     public function saveGroupPermissions($iblockId, $permissions = [])
     {
@@ -515,7 +512,7 @@ trait IblockTrait
                 Locale::getMessage(
                     'ERR_TYPE_OF_IB_NOT_FOUND',
                     ['#IBLOCK_ID#' => $iblock['ID']]
-                ),
+                )
             );
         }
 
@@ -525,7 +522,7 @@ trait IblockTrait
                 Locale::getMessage(
                     'ERR_IB_CODE_NOT_FOUND',
                     ['#IBLOCK_ID#' => $iblock['ID']]
-                ),
+                )
             );
         }
 
@@ -566,8 +563,7 @@ trait IblockTrait
         $item['LID'] = $this->getIblockSites($item['ID']);
 
         $messages = CIBlock::GetMessages($item['ID']);
-        $item = array_merge($item, $messages);
-        return $item;
+        return array_merge($item, $messages);
     }
 
     protected function prepareExportIblock($iblock)

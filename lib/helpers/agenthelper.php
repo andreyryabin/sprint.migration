@@ -112,7 +112,7 @@ class AgentHelper extends Helper
     /**
      * Сохраняет агента
      * Создаст если не было, обновит если существует и отличается
-     * @param array $fields , обязательные параметры - id модуля, функция агента
+     * @param array $fields
      * @throws HelperException
      * @return bool|mixed
      */
@@ -184,7 +184,7 @@ class AgentHelper extends Helper
 
     /**
      * Обновление агента, бросает исключение в случае неудачи
-     * @param $fields , обязательные параметры - id модуля, функция агента
+     * @param $fields
      * @throws HelperException
      * @return bool
      */
@@ -197,7 +197,7 @@ class AgentHelper extends Helper
 
     /**
      * Создание агента, бросает исключение в случае неудачи
-     * @param $fields , обязательные параметры - id модуля, функция агента
+     * @param $fields
      * @throws HelperException
      * @return bool
      */

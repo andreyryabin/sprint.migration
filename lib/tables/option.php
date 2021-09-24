@@ -4,6 +4,9 @@ namespace Sprint\Migration\Tables;
 
 use Bitrix\Main\Entity\DataManager;
 
+/**
+ * @deprecated Класс больше не используется
+ */
 class OptionTable extends DataManager
 {
 

@@ -2,27 +2,19 @@
 
 namespace Sprint\Migration\Helpers;
 
-use Bitrix\Main\ArgumentException;
-use Bitrix\Main\ArgumentNullException;
-use Bitrix\Main\ArgumentOutOfRangeException;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\ModuleManager;
-use Bitrix\Main\ObjectPropertyException;
-use Bitrix\Main\SystemException;
+use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
-use Sprint\Migration\Tables\OptionTable;
 
 class OptionHelper extends Helper
 {
-
     public function isEnabled()
     {
         return (
-            class_exists('\Bitrix\Main\ModuleManager') &&
-            class_exists('\Bitrix\Main\Entity\DataManager') &&
-            class_exists('\Bitrix\Main\Config\Option')
+            class_exists('\Bitrix\Main\ModuleManager') && class_exists('\Bitrix\Main\Entity\DataManager') && class_exists('\Bitrix\Main\Config\Option')
         );
     }
 
@@ -36,49 +28,58 @@ class OptionHelper extends Helper
 
     /**
      * @param array $filter
-     * @throws ArgumentException
-     * @throws SystemException
+     *
+     * @throws HelperException
      * @return array
      */
     public function getOptions($filter = [])
     {
-        $dbres = OptionTable::getList([
-            'filter' => $filter,
-        ]);
+        $this->checkRequiredKeys(__METHOD__, $filter, ['MODULE_ID']);
+
+        try {
+            $values = Option::getForModule($filter['MODULE_ID']);
+        } catch (Exception $e) {
+            $values = [];
+        }
 
         $result = [];
-        while ($item = $dbres->fetch()) {
-            $result[] = $this->prepareOption($item);
+        foreach ($values as $optionName => $value) {
+            $result[] = $this->prepareOption([
+                'MODULE_ID' => $filter['MODULE_ID'],
+                'NAME'      => $optionName,
+                'VALUE'     => $value,
+            ]);
         }
 
         return $result;
     }
 
     /**
-     * @param array $filter , обязательные параметры - id модуля, функция агента
-     * @throws ArgumentException
-     * @throws SystemException
-     * @throws ObjectPropertyException
+     * @param array $filter
+     *
      * @throws HelperException
-     * @return mixed
+     * @return array|false
      */
     public function getOption($filter = [])
     {
         $this->checkRequiredKeys(__METHOD__, $filter, ['MODULE_ID', 'NAME']);
 
-        $item = OptionTable::getList([
-            'filter' => $filter,
-        ])->fetch();
+        try {
+            $value = Option::get($filter['MODULE_ID'], $filter['NAME']);
+            return $this->prepareOption([
+                'MODULE_ID' => $filter['MODULE_ID'],
+                'NAME'      => $filter['NAME'],
+                'VALUE'     => $value,
+            ]);
+        } catch (Exception $e) {
+        }
 
-        return $this->prepareOption($item);
+        return false;
     }
 
     /**
-     * @param $fields , обязательные параметры - id модуля, функция агента
-     * @throws ArgumentException
-     * @throws ArgumentOutOfRangeException
-     * @throws SystemException
-     * @throws ObjectPropertyException
+     * @param $fields
+     *
      * @throws HelperException
      * @return bool
      */
@@ -88,12 +89,11 @@ class OptionHelper extends Helper
 
         $exists = $this->getOption([
             'MODULE_ID' => $fields['MODULE_ID'],
-            'NAME' => $fields['NAME'],
-            'SITE_ID' => $fields['SITE_ID'],
+            'NAME'      => $fields['NAME'],
         ]);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->setOption($fields);
+            $ok = $this->getMode('test') || $this->setOption($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -107,7 +107,7 @@ class OptionHelper extends Helper
         }
 
         if ($this->hasDiff($exists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->setOption($fields);
+            $ok = $this->getMode('test') || $this->setOption($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -120,7 +120,6 @@ class OptionHelper extends Helper
             $this->outDiffIf($ok, $exists, $fields);
             return $ok;
         }
-
 
         $ok = true;
         if ($this->getMode('out_equal')) {
@@ -135,12 +134,11 @@ class OptionHelper extends Helper
             );
         }
         return $ok;
-
     }
 
     /**
-     * @param array $filter , обязательные параметры - id модуля
-     * @throws ArgumentNullException
+     * @param array $filter Обязательные параметры - id модуля
+     *
      * @throws HelperException
      * @return bool
      */
@@ -154,70 +152,36 @@ class OptionHelper extends Helper
             $params['name'] = $filter['NAME'];
         }
 
-        if (isset($filter['SITE_ID'])) {
-            $params['site_id'] = $filter['SITE_ID'];
+        try {
+            Option::delete($filter['MODULE_ID'], $params);
+            return true;
+        } catch (Exception $e) {
         }
 
-        Option::delete($filter['MODULE_ID'], $params);
-        return true;
-    }
-
-    /**
-     * @param array $filter
-     * @throws ArgumentException
-     * @throws SystemException
-     * @return array
-     */
-    public function exportOptions($filter = [])
-    {
-        $agents = $this->getOptions($filter);
-
-        $exportAgents = [];
-        foreach ($agents as $agent) {
-            $exportAgents[] = $this->prepareExportOption($agent);
-        }
-
-        return $exportAgents;
-    }
-
-    /**
-     * @param array $filter
-     * @throws ArgumentException
-     * @throws SystemException
-     * @throws ObjectPropertyException
-     * @throws HelperException
-     * @return bool
-     */
-    public function exportOption($filter = [])
-    {
-        $item = $this->getOption($filter);
-        if (empty($item)) {
-            return false;
-        }
-
-        return $this->prepareExportOption($item);
+        return false;
     }
 
     /**
      * @param $fields
-     * @throws ArgumentOutOfRangeException
+     *
      * @return bool
      */
     protected function setOption($fields)
     {
         $fields = $this->revertOption($fields);
-        Option::set($fields['MODULE_ID'], $fields['NAME'], $fields['VALUE'], $fields['SITE_ID']);
-        return true;
-    }
-
-    protected function prepareExportOption($item)
-    {
-        if (empty($item)) {
-            return $item;
+        try {
+            Option::set($fields['MODULE_ID'], $fields['NAME'], $fields['VALUE']);
+            return true;
+        } catch (Exception $e) {
         }
-        return $item;
+        return false;
     }
 
+    /**
+     * @param $item
+     *
+     * @return array
+     */
     protected function prepareOption($item)
     {
         if (!empty($item['VALUE']) && !is_numeric($item['VALUE'])) {
@@ -226,8 +190,6 @@ class OptionHelper extends Helper
             } elseif ($this->isJson($item['VALUE'])) {
                 $item['VALUE'] = json_decode($item['VALUE'], true);
                 $item['TYPE'] = 'json';
-            } elseif (is_int($item['VALUE'])) {
-                $item['VALUE'] = intval($item['VALUE']);
             }
         }
         return $item;
@@ -247,8 +209,6 @@ class OptionHelper extends Helper
             } else {
                 $item['VALUE'] = serialize($item['VALUE']);
             }
-        } elseif (is_int($item['VALUE'])) {
-            $item['VALUE'] = intval($item['VALUE']);
         }
 
         return $item;
