@@ -9,10 +9,11 @@ use Sprint\Migration\Locale;
 
 class AgentHelper extends Helper
 {
-
     /**
      * Получает список агентов по фильтру
+     *
      * @param array $filter
+     *
      * @return array
      */
     public function getList($filter = [])
@@ -28,7 +29,9 @@ class AgentHelper extends Helper
     /**
      * Получает список агентов по фильтру
      * Данные подготовлены для экспорта в миграцию или схему
+     *
      * @param array $filter
+     *
      * @return array
      */
     public function exportAgents($filter = [])
@@ -46,8 +49,10 @@ class AgentHelper extends Helper
     /**
      * Получает агента
      * Данные подготовлены для экспорта в миграцию или схему
-     * @param $moduleId
+     *
+     * @param        $moduleId
      * @param string $name
+     *
      * @return bool
      */
     public function exportAgent($moduleId, $name = '')
@@ -62,15 +67,19 @@ class AgentHelper extends Helper
 
     /**
      * Получает агента
-     * @param $moduleId
+     *
+     * @param        $moduleId
      * @param string $name
+     *
      * @return array
      */
     public function getAgent($moduleId, $name = '')
     {
-        $filter = is_array($moduleId) ? $moduleId : [
-            'MODULE_ID' => $moduleId,
-        ];
+        $filter = is_array($moduleId)
+            ? $moduleId
+            : [
+                'MODULE_ID' => $moduleId,
+            ];
 
         if (!empty($name)) {
             $filter['NAME'] = $name;
@@ -83,8 +92,10 @@ class AgentHelper extends Helper
 
     /**
      * Удаляет агента
+     *
      * @param $moduleId
      * @param $name
+     *
      * @return bool
      */
     public function deleteAgent($moduleId, $name)
@@ -95,8 +106,10 @@ class AgentHelper extends Helper
 
     /**
      * Удаляет агента если существует
+     *
      * @param $moduleId
      * @param $name
+     *
      * @return bool
      */
     public function deleteAgentIfExists($moduleId, $name)
@@ -112,7 +125,9 @@ class AgentHelper extends Helper
     /**
      * Сохраняет агента
      * Создаст если не было, обновит если существует и отличается
+     *
      * @param array $fields
+     *
      * @throws HelperException
      * @return bool|mixed
      */
@@ -122,14 +137,14 @@ class AgentHelper extends Helper
 
         $exists = $this->getAgent([
             'MODULE_ID' => $fields['MODULE_ID'],
-            'NAME' => $fields['NAME'],
+            'NAME'      => $fields['NAME'],
         ]);
 
         $exportExists = $this->prepareExportAgent($exists);
         $fields = $this->prepareExportAgent($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addAgent($fields);
+            $ok = $this->getMode('test') || $this->addAgent($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -148,7 +163,7 @@ class AgentHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateAgent($fields);
+            $ok = $this->getMode('test') || $this->updateAgent($fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -164,8 +179,8 @@ class AgentHelper extends Helper
             return $ok;
         }
 
+        $ok = $this->getMode('test') || $exists['ID'];
 
-        $ok = $this->getMode('test') ? true : $exists['ID'];
         if ($this->getMode('out_equal')) {
             $this->outIf(
                 $ok,
@@ -176,15 +191,15 @@ class AgentHelper extends Helper
                     ]
                 )
             );
-
         }
         return $ok;
     }
 
-
     /**
      * Обновление агента, бросает исключение в случае неудачи
+     *
      * @param $fields
+     *
      * @throws HelperException
      * @return bool
      */
@@ -197,7 +212,9 @@ class AgentHelper extends Helper
 
     /**
      * Создание агента, бросает исключение в случае неудачи
+     *
      * @param $fields
+     *
      * @throws HelperException
      * @return bool
      */
@@ -209,9 +226,9 @@ class AgentHelper extends Helper
 
         $fields = array_merge([
             'AGENT_INTERVAL' => 86400,
-            'ACTIVE' => 'Y',
-            'IS_PERIOD' => 'N',
-            'NEXT_EXEC' => $DB->GetNowDate(),
+            'ACTIVE'         => 'Y',
+            'IS_PERIOD'      => 'N',
+            'NEXT_EXEC'      => $DB->GetNowDate(),
         ], $fields);
 
         $agentId = CAgent::AddAgent(
@@ -246,6 +263,7 @@ class AgentHelper extends Helper
      * @param $name
      * @param $interval
      * @param $nextExec
+     *
      * @throws HelperException
      * @return bool|mixed
      * @deprecated
@@ -253,10 +271,10 @@ class AgentHelper extends Helper
     public function replaceAgent($moduleId, $name, $interval, $nextExec)
     {
         return $this->saveAgent([
-            'MODULE_ID' => $moduleId,
-            'NAME' => $name,
+            'MODULE_ID'      => $moduleId,
+            'NAME'           => $name,
             'AGENT_INTERVAL' => $interval,
-            'NEXT_EXEC' => $nextExec,
+            'NEXT_EXEC'      => $nextExec,
         ]);
     }
 
@@ -265,6 +283,7 @@ class AgentHelper extends Helper
      * @param $name
      * @param $interval
      * @param $nextExec
+     *
      * @throws HelperException
      * @return bool|mixed
      * @deprecated
@@ -272,10 +291,10 @@ class AgentHelper extends Helper
     public function addAgentIfNotExists($moduleId, $name, $interval, $nextExec)
     {
         return $this->saveAgent([
-            'MODULE_ID' => $moduleId,
-            'NAME' => $name,
+            'MODULE_ID'      => $moduleId,
+            'NAME'           => $name,
             'AGENT_INTERVAL' => $interval,
-            'NEXT_EXEC' => $nextExec,
+            'NEXT_EXEC'      => $nextExec,
         ]);
     }
 

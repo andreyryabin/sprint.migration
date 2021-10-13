@@ -6,6 +6,7 @@ use Bitrix\Iblock\Model\PropertyFeature;
 use Bitrix\Iblock\PropertyFeatureTable;
 use CIBlockProperty;
 use CIBlockPropertyEnum;
+use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
 
@@ -15,8 +16,8 @@ trait IblockPropertyTrait
      * Сохраняет свойство инфоблока
      * Создаст если не было, обновит если существует и отличается
      *
-     * @param $iblockId
-     * @param $fields , обязательные параметры - код свойства
+     * @param       $iblockId
+     * @param array $fields
      *
      * @throws HelperException
      * @return bool|mixed
@@ -30,7 +31,7 @@ trait IblockPropertyTrait
         $fields = $this->prepareExportProperty($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addProperty($iblockId, $fields);
+            $ok = $this->getMode('test') || $this->addProperty($iblockId, $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -45,7 +46,7 @@ trait IblockPropertyTrait
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updatePropertyById($exists['ID'], $fields);
+            $ok = $this->getMode('test') || $this->updatePropertyById($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -60,7 +61,7 @@ trait IblockPropertyTrait
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $exists['ID'];
+        $ok = $this->getMode('test') || $exists['ID'];
         if ($this->getMode('out_equal')) {
             $this->outIf(
                 $ok,
@@ -124,6 +125,13 @@ trait IblockPropertyTrait
 
     public function getPropertyFeatures($propertyId)
     {
+        if (!class_exists('\Bitrix\Iblock\Model\PropertyFeature')) {
+            return [];
+        }
+        if (!class_exists('\Bitrix\Iblock\PropertyFeatureTable')) {
+            return [];
+        }
+
         $features = [];
         try {
             if (PropertyFeature::isEnabledFeatures()) {
@@ -132,7 +140,7 @@ trait IblockPropertyTrait
                     'filter' => ['=PROPERTY_ID' => (int)$propertyId],
                 ])->fetchAll();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         return $features;
@@ -208,8 +216,8 @@ trait IblockPropertyTrait
     /**
      * Добавляет свойство инфоблока если его не существует
      *
-     * @param $iblockId
-     * @param $fields , обязательные параметры - код свойства
+     * @param int   $iblockId
+     * @param array $fields
      *
      * @throws HelperException
      * @return bool

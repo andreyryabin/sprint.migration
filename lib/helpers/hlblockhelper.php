@@ -275,7 +275,7 @@ class HlblockHelper extends Helper
      * Сохраняет highload-блок
      * Создаст если не было, обновит если существует и отличается
      *
-     * @param $fields , обязательные параметры - название сущности
+     * @param array $fields
      *
      * @throws HelperException
      * @return bool|int|mixed
@@ -289,7 +289,7 @@ class HlblockHelper extends Helper
         $fields = $this->prepareExportHlblock($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addHlblock($fields);
+            $ok = $this->getMode('test') || $this->addHlblock($fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -305,7 +305,7 @@ class HlblockHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateHlblock($exists['ID'], $fields);
+            $ok = $this->getMode('test') || $this->updateHlblock($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -320,7 +320,7 @@ class HlblockHelper extends Helper
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $exists['ID'];
+        $ok = $this->getMode('test') || $exists['ID'];
         if ($this->getMode('out_equal')) {
             $this->outNoticeIf(
                 $ok,
@@ -493,7 +493,7 @@ class HlblockHelper extends Helper
     /**
      * Добавляет highload-блок
      *
-     * @param $fields , обязательные параметры - название сущности, название таблицы в БД
+     * @param array $fields
      *
      * @throws HelperException
      * @return int|void
@@ -525,7 +525,7 @@ class HlblockHelper extends Helper
     /**
      * Добавляет highload-блок, если его не существует
      *
-     * @param $fields , обязательные параметры - название сущности
+     * @param array $fields
      *
      * @throws HelperException
      * @return int|mixed

@@ -170,7 +170,7 @@ class UserOptionsHelper extends Helper
     {
         $exists = $this->exportList($params);
         if ($this->hasDiff($exists, $data)) {
-            $ok = $this->getMode('test') ? true : $this->buildList($data, $params);
+            $ok = $this->getMode('test') || $this->buildList($data, $params);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -243,7 +243,7 @@ class UserOptionsHelper extends Helper
     {
         $exists = $this->exportGrid($gridId);
         if ($this->hasDiff($exists, $params)) {
-            $ok = $this->getMode('test') ? true : $this->buildGrid($gridId, $params);
+            $ok = $this->getMode('test') || $this->buildGrid($gridId, $params);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -438,7 +438,7 @@ class UserOptionsHelper extends Helper
     {
         $exists = $this->exportForm($params);
         if ($this->hasDiffStrict($exists, $formData)) {
-            $ok = $this->getMode('test') ? true : $this->buildForm($formData, $params);
+            $ok = $this->getMode('test') || $this->buildForm($formData, $params);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(

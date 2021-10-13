@@ -141,7 +141,7 @@ class EventHelper extends Helper
     /**
      * Добавляет тип почтового события если его не существует
      * @param $eventName
-     * @param $fields , обязательные параметры - id сайта
+     * @param array $fields
      * @throws HelperException
      * @return bool|int|mixed
      */
@@ -164,7 +164,7 @@ class EventHelper extends Helper
     /**
      * Добавляет почтовый шаблон если его не существует
      * @param $eventName
-     * @param $fields , обязательные параметры - тема сообщения, id сайта
+     * @param array $fields
      * @throws HelperException
      * @return bool|int
      */
@@ -270,7 +270,7 @@ class EventHelper extends Helper
      * Сохраняет почтовый шаблон
      * Создаст если не было, обновит если существует и отличается
      * @param $eventName
-     * @param $fields , обязательные параметры - тема сообщения, id сайта
+     * @param array $fields
      * @throws HelperException
      * @return bool|int|mixed
      */
@@ -287,7 +287,7 @@ class EventHelper extends Helper
         $fields = $this->prepareExportEventMessage($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addEventMessage($eventName, $fields);
+            $ok = $this->getMode('test') || $this->addEventMessage($eventName, $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -301,7 +301,7 @@ class EventHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateEventMessageById($exists['ID'], $fields);
+            $ok = $this->getMode('test') || $this->updateEventMessageById($exists['ID'], $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -317,7 +317,8 @@ class EventHelper extends Helper
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $eventName;
+        $ok = $this->getMode('test') || $eventName;
+
         if ($this->getMode('out_equal')) {
             $this->outNoticeIf(
                 $ok,
@@ -336,7 +337,7 @@ class EventHelper extends Helper
      * Сохраняет тип почтового события
      * Создаст если не было, обновит если существует и отличается
      * @param $eventName
-     * @param $fields , обязательные параметры - id языка
+     * @param array $fields
      * @throws HelperException
      * @return bool|int|mixed
      */
@@ -353,7 +354,7 @@ class EventHelper extends Helper
         $fields = $this->prepareExportEventType($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addEventType($eventName, $fields);
+            $ok = $this->getMode('test') || $this->addEventType($eventName, $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -369,7 +370,7 @@ class EventHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateEventTypeById($exists['ID'], $fields);
+            $ok = $this->getMode('test') || $this->updateEventTypeById($exists['ID'], $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -385,7 +386,7 @@ class EventHelper extends Helper
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $eventName;
+        $ok = $this->getMode('test') || $eventName;
         if ($this->getMode('out_equal')) {
             $this->outNoticeIf(
                 $ok,
@@ -402,7 +403,7 @@ class EventHelper extends Helper
 
     /**
      * Удаляет тип почтового события
-     * @param $fields , обязательные параметры - id языка, тип события
+     * @param array $fields
      * @throws HelperException
      * @return bool
      */
@@ -437,7 +438,7 @@ class EventHelper extends Helper
 
     /**
      * Удаляет почтовый шаблон
-     * @param $fields , обязательные параметры - тема сообщения языка, тип события
+     * @param array $fields
      * @throws HelperException
      * @return bool
      */
@@ -473,7 +474,7 @@ class EventHelper extends Helper
     /**
      * Добавляет тип почтового события
      * @param $eventName
-     * @param $fields , обязательные параметры - id языка, название события
+     * @param array $fields
      * @throws HelperException
      * @return bool|int
      */
@@ -505,7 +506,7 @@ class EventHelper extends Helper
     /**
      * Добавляет почтовый шаблон
      * @param $eventName
-     * @param $fields , обязательные параметры - id сайта, тема сообщения
+     * @param array $fields
      * @throws HelperException
      * @return bool|int
      */

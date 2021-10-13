@@ -106,7 +106,7 @@ trait IblockTypeTrait
 
     /**
      * Добавляет тип инфоблока, если его не существует
-     * @param array $fields , обязательные параметры - id типа инфоблока
+     * @param array $fields
      * @throws HelperException
      * @return mixed
      */
@@ -243,7 +243,7 @@ trait IblockTypeTrait
     /**
      * Сохраняет тип инфоблока
      * Создаст если не было, обновит если существует и отличается
-     * @param array $fields , обязательные параметры - тип инфоблока
+     * @param array $fields
      * @throws HelperException
      * @return bool|mixed
      */
@@ -256,7 +256,7 @@ trait IblockTypeTrait
         $fields = $this->prepareExportIblockType($fields);
 
         if (empty($item)) {
-            $ok = $this->getMode('test') ? true : $this->addIblockType($fields);
+            $ok = $this->getMode('test') || $this->addIblockType($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -271,7 +271,7 @@ trait IblockTypeTrait
 
 
         if ($this->hasDiff($exists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblockType($item['ID'], $fields);
+            $ok = $this->getMode('test') || $this->updateIblockType($item['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -286,7 +286,7 @@ trait IblockTypeTrait
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $fields['ID'];
+        $ok = $this->getMode('test') || $fields['ID'];
         if ($this->getMode('out_equal')) {
             $this->outIf(
                 $ok,

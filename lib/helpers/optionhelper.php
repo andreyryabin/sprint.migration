@@ -137,7 +137,7 @@ class OptionHelper extends Helper
     }
 
     /**
-     * @param array $filter Обязательные параметры - id модуля
+     * @param array $filter
      *
      * @throws HelperException
      * @return bool

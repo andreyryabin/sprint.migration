@@ -22,9 +22,9 @@ class EventBuilder extends VersionBuilder
         $this->addVersionFields();
     }
 
-
     /**
      * @throws RebuildException
+     * @throws \Sprint\Migration\Exceptions\MigrationException
      */
     protected function execute()
     {

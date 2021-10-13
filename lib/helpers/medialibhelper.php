@@ -89,6 +89,15 @@ class MedialibHelper extends Helper
         return $result;
     }
 
+    /**
+     * @param       $typeId
+     * @param int   $parentId
+     * @param int   $depth
+     * @param array $path
+     *
+     * @throws HelperException
+     * @return array
+     */
     public function getCollectionsTree($typeId, $parentId = 0, $depth = 0, $path = [])
     {
         $result = $this->getCollections($typeId, ['filter' => ['PARENT_ID' => $parentId]]);
@@ -382,7 +391,7 @@ TAG;
 
     /**
      * Устанавливает права доступа к медиабиблиотеке для групп
-     * предыдущие права сбрасываются
+     * предыдущие права сбрасываются,
      * принимает массив вида [$groupId => $letter]
      * при $collectionId = 0 права устанавливаются для всех коллекций
      *

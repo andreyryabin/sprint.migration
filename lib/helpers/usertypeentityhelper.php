@@ -446,7 +446,7 @@ class UserTypeEntityHelper extends Helper
      * Сохраняет пользовательское поле
      * Создаст если не было, обновит если существует и отличается
      *
-     * @param array $fields , обязательные параметры - название объекта, название поля
+     * @param array $fields
      *
      * @throws HelperException
      * @return bool|int|mixed
@@ -471,13 +471,7 @@ class UserTypeEntityHelper extends Helper
         $fields = $this->prepareExportUserTypeEntity($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test')
-                ? true
-                : $this->addUserTypeEntity(
-                    $fields['ENTITY_ID'],
-                    $fields['FIELD_NAME'],
-                    $fields
-                );
+            $ok = $this->getMode('test') || $this->addUserTypeEntity($fields['ENTITY_ID'], $fields['FIELD_NAME'], $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -495,7 +489,7 @@ class UserTypeEntityHelper extends Helper
         unset($fields['MULTIPLE']);
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateUserTypeEntity($exists['ID'], $fields);
+            $ok = $this->getMode('test') || $this->updateUserTypeEntity($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -509,7 +503,7 @@ class UserTypeEntityHelper extends Helper
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $exists['ID'];
+        $ok = $this->getMode('test') || $exists['ID'];
         if ($this->getMode('out_equal')) {
             $this->outIf(
                 $ok,

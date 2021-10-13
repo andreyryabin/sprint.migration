@@ -134,7 +134,7 @@ trait IblockTrait
     /**
      * Добавляет инфоблок если его не существует
      *
-     * @param array $fields Обязательные параметры - код, тип инфоблока, id сайта
+     * @param array $fields
      *
      * @throws HelperException
      * @return int|void
@@ -159,7 +159,7 @@ trait IblockTrait
     /**
      * Добавляет инфоблок
      *
-     * @param $fields , обязательные параметры - код, тип инфоблока, id сайта
+     * @param array $fields
      *
      * @throws HelperException
      * @return int|void
@@ -280,7 +280,7 @@ trait IblockTrait
      * Сохраняет инфоблок
      * Создаст если не было, обновит если существует и отличается
      *
-     * @param array $fields , обязательные параметры - код, тип инфоблока, id сайта
+     * @param array $fields
      *
      * @throws HelperException
      * @return bool|mixed
@@ -294,7 +294,7 @@ trait IblockTrait
         $fields = $this->prepareExportIblock($fields);
 
         if (empty($item)) {
-            $ok = $this->getMode('test') ? true : $this->addIblock($fields);
+            $ok = $this->getMode('test') || $this->addIblock($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -308,7 +308,7 @@ trait IblockTrait
         }
 
         if ($this->hasDiff($exists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblock($item['ID'], $fields);
+            $ok = $this->getMode('test') || $this->updateIblock($item['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -322,7 +322,7 @@ trait IblockTrait
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $item['ID'];
+        $ok = $this->getMode('test') || $item['ID'];
         if ($this->getMode('out_equal')) {
             $this->outIf(
                 $ok,

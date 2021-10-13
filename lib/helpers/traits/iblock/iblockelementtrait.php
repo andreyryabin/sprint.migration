@@ -252,8 +252,8 @@ trait IblockElementTrait
     /**
      * Добавляет элемент инфоблока если он не существует
      *
-     * @param       $iblockId
-     * @param       $fields , обязательные параметры - код элемента
+     * @param int   $iblockId
+     * @param array $fields
      * @param array $props
      *
      * @throws HelperException
@@ -311,8 +311,8 @@ trait IblockElementTrait
     /**
      * Обновляет элемент инфоблока если он существует
      *
-     * @param       $iblockId
-     * @param array $fields , обязательные параметры - код элемента
+     * @param int   $iblockId
+     * @param array $fields
      * @param array $props
      *
      * @throws HelperException

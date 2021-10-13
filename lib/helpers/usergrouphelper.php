@@ -12,10 +12,11 @@ use Sprint\Migration\Locale;
 
 class UserGroupHelper extends Helper
 {
-
     /**
      * Получает список групп пользователей
+     *
      * @param array $filter
+     *
      * @return array
      */
     public function getGroups($filter = [])
@@ -31,13 +32,14 @@ class UserGroupHelper extends Helper
         }
 
         return $res;
-
     }
 
     /**
      * Получает группу пользователей
      * Данные подготовлены для экспорта в миграцию или схему
+     *
      * @param $code
+     *
      * @throws HelperException
      * @return array|void
      */
@@ -62,7 +64,9 @@ class UserGroupHelper extends Helper
     /**
      * Получает список групп пользователей
      * Данные подготовлены для экспорта в миграцию или схему
+     *
      * @param array $filter
+     *
      * @return array
      */
     public function exportGroups($filter = [])
@@ -73,16 +77,17 @@ class UserGroupHelper extends Helper
             if (!empty($item['STRING_ID'])) {
                 $exports[] = $this->prepareExportGroup($item);
             }
-
         }
         return $exports;
     }
 
     /**
      * Получает код группы пользователей по id
-     * @param $id
-     * @param bool $default
-     * @return bool
+     *
+     * @param int|string  $id
+     * @param bool|string $default
+     *
+     * @return bool|string
      */
     public function getGroupCode($id, $default = false)
     {
@@ -92,9 +97,11 @@ class UserGroupHelper extends Helper
 
     /**
      * Получает id группы пользователей по id
-     * @param $code
-     * @param bool $default
-     * @return bool
+     *
+     * @param int|string  $code
+     * @param bool|string $default
+     *
+     * @return bool|string
      */
     public function getGroupId($code, $default = false)
     {
@@ -104,7 +111,9 @@ class UserGroupHelper extends Helper
 
     /**
      * Получает группу пользователей
+     *
      * @param $code int|string - id или код группы
+     *
      * @return array|bool
      */
     public function getGroup($code)
@@ -132,15 +141,15 @@ class UserGroupHelper extends Helper
         }
 
         return $item;
-
     }
-
 
     /**
      * Сохраняет группу
      * Создаст если не было, обновит если существует и отличается
-     * @param $code
-     * @param array $fields , обязательные параметры - название групы
+     *
+     * @param string $code
+     * @param array  $fields
+     *
      * @throws HelperException
      * @return bool|int|mixed
      */
@@ -154,7 +163,7 @@ class UserGroupHelper extends Helper
         $fields = $this->prepareExportGroup($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addGroup($fields['STRING_ID'], $fields);
+            $ok = $this->getMode('test') || $this->addGroup($fields['STRING_ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -168,7 +177,7 @@ class UserGroupHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateGroup($exists['ID'], $fields);
+            $ok = $this->getMode('test') || $this->updateGroup($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -182,8 +191,7 @@ class UserGroupHelper extends Helper
             return $ok;
         }
 
-
-        $ok = $this->getMode('test') ? true : $exists['ID'];
+        $ok = $this->getMode('test') || $exists['ID'];
         if ($this->getMode('out_equal')) {
             $this->outNoticeIf(
                 $ok,
@@ -200,8 +208,10 @@ class UserGroupHelper extends Helper
 
     /**
      * Добаляет группу пользователей если она не существует
-     * @param $code
+     *
+     * @param       $code
      * @param array $fields
+     *
      * @throws HelperException
      * @return int
      */
@@ -217,8 +227,10 @@ class UserGroupHelper extends Helper
 
     /**
      * Обновляет группу пользователей если она существует
-     * @param $code
+     *
+     * @param       $code
      * @param array $fields
+     *
      * @throws HelperException
      * @return bool|int
      */
@@ -234,8 +246,10 @@ class UserGroupHelper extends Helper
 
     /**
      * Добавляет группу пользователей
-     * @param $code
+     *
+     * @param       $code
      * @param array $fields , , обязательные параметры - название групы
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -256,8 +270,10 @@ class UserGroupHelper extends Helper
 
     /**
      * Обновляет группу пользователей
-     * @param $groupId
+     *
+     * @param       $groupId
      * @param array $fields
+     *
      * @throws HelperException
      * @return int|void
      */
@@ -282,7 +298,9 @@ class UserGroupHelper extends Helper
 
     /**
      * Удаляет группу пользователей
+     *
      * @param $code
+     *
      * @return bool
      */
     public function deleteGroup($code)
@@ -299,6 +317,7 @@ class UserGroupHelper extends Helper
 
     /**
      * @param array $filter
+     *
      * @return array
      * @deprecated
      */
@@ -309,6 +328,7 @@ class UserGroupHelper extends Helper
 
     /**
      * Cброс настроек доступа группы
+     *
      * @param $groupId
      */
     public function deleteGroupPermissions($groupId)
@@ -321,8 +341,11 @@ class UserGroupHelper extends Helper
             $moduleIds[] = $item['ID'];
         }
 
+        $by = "sort";
+        $order = "asc";
+
         $siteIds = [];
-        $dbres = CSite::GetList($by = "sort", $order = "asc", ["ACTIVE" => "Y"]);
+        $dbres = CSite::GetList($by, $order, ["ACTIVE" => "Y"]);
         while ($item = $dbres->GetNext()) {
             $siteIds[] = $item["ID"];
         }
@@ -362,6 +385,4 @@ class UserGroupHelper extends Helper
 
         return $fields;
     }
-
-
 }
