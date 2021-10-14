@@ -287,7 +287,7 @@ class EventHelper extends Helper
         $fields = $this->prepareExportEventMessage($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') || $this->addEventMessage($eventName, $fields);
+            $ok = $this->getMode('test') ? true : $this->addEventMessage($eventName, $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -301,7 +301,7 @@ class EventHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') || $this->updateEventMessageById($exists['ID'], $fields);
+            $ok = $this->getMode('test') ? true : $this->updateEventMessageById($exists['ID'], $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -317,8 +317,7 @@ class EventHelper extends Helper
             return $ok;
         }
 
-        $ok = $this->getMode('test') || $eventName;
-
+        $ok = $this->getMode('test') ? true : $eventName;
         if ($this->getMode('out_equal')) {
             $this->outNoticeIf(
                 $ok,
@@ -354,7 +353,7 @@ class EventHelper extends Helper
         $fields = $this->prepareExportEventType($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') || $this->addEventType($eventName, $fields);
+            $ok = $this->getMode('test') ? true : $this->addEventType($eventName, $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -370,7 +369,7 @@ class EventHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') || $this->updateEventTypeById($exists['ID'], $fields);
+            $ok = $this->getMode('test') ? true : $this->updateEventTypeById($exists['ID'], $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -386,7 +385,7 @@ class EventHelper extends Helper
             return $ok;
         }
 
-        $ok = $this->getMode('test') || $eventName;
+        $ok = $this->getMode('test') ? true : $eventName;
         if ($this->getMode('out_equal')) {
             $this->outNoticeIf(
                 $ok,

@@ -289,7 +289,7 @@ class HlblockHelper extends Helper
         $fields = $this->prepareExportHlblock($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') || $this->addHlblock($fields);
+            $ok = $this->getMode('test') ? true : $this->addHlblock($fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -305,7 +305,7 @@ class HlblockHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') || $this->updateHlblock($exists['ID'], $fields);
+            $ok = $this->getMode('test') ? true : $this->updateHlblock($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -320,7 +320,7 @@ class HlblockHelper extends Helper
             return $ok;
         }
 
-        $ok = $this->getMode('test') || $exists['ID'];
+        $ok = $this->getMode('test') ? true : $exists['ID'];
         if ($this->getMode('out_equal')) {
             $this->outNoticeIf(
                 $ok,

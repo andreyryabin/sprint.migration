@@ -163,7 +163,7 @@ class UserGroupHelper extends Helper
         $fields = $this->prepareExportGroup($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') || $this->addGroup($fields['STRING_ID'], $fields);
+            $ok = $this->getMode('test') ? true : $this->addGroup($fields['STRING_ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -177,7 +177,7 @@ class UserGroupHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') || $this->updateGroup($exists['ID'], $fields);
+            $ok = $this->getMode('test') ? true : $this->updateGroup($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -191,7 +191,7 @@ class UserGroupHelper extends Helper
             return $ok;
         }
 
-        $ok = $this->getMode('test') || $exists['ID'];
+        $ok = $this->getMode('test') ? true : $exists['ID'];
         if ($this->getMode('out_equal')) {
             $this->outNoticeIf(
                 $ok,
