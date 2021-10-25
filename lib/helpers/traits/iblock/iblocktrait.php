@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Helpers\Traits\Iblock;
 
+use Bitrix\Iblock\InheritedProperty\IblockTemplates;
 use CIBlock;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helpers\UserGroupHelper;
@@ -324,8 +325,6 @@ trait IblockTrait
 
         $ok = $this->getMode('test') ? true : $item['ID'];
 
-
-
         if ($this->getMode('out_equal')) {
             $this->outIf(
                 $ok,
@@ -566,6 +565,15 @@ trait IblockTrait
         $item['LID'] = $this->getIblockSites($item['ID']);
 
         $messages = CIBlock::GetMessages($item['ID']);
+
+        $iblockTemlates = new IblockTemplates($item['ID']);
+
+        $item['IPROPERTY_TEMPLATES'] = array_column(
+            $iblockTemlates->findTemplates(),
+            'TEMPLATE',
+            'CODE'
+        );
+
         return array_merge($item, $messages);
     }
 
