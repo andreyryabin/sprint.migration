@@ -1,36 +1,43 @@
 <?php
-/** @var $builderGroup */
 
+use Sprint\Migration\Locale;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 
+/** @var $versionConfig VersionConfig */
+$versionManager = new VersionManager($versionConfig);
+
+$builderList = $versionConfig->getVal('version_builders', []);
+
+$builderTree = [];
+foreach ($builderList as $builderName => $builderClass) {
+    $builder = $versionManager->createBuilder($builderName);
+    $builderGroup = $builder->getGroup();
+
+    if (!isset($builderTree[$builderGroup])) {
+        $builderTree[$builderGroup] = [];
+    }
+    $builderTree[$builderGroup][] = [
+        'NAME'  => $builder->getName(),
+        'TITLE' => $builder->getTitle(),
+    ];
+}
+
 ?>
-<div class="sp-group"><?php
-    /** @var $versionConfig VersionConfig */
-    $versionManager = new VersionManager($versionConfig);
-
-    $colIndex = 0;
-    $builders = $versionManager->createBuilders(['group' => $builderGroup]); ?>
-    <?php foreach ($builders as $bIndex => $builder): ?>
-        <?php if ($colIndex == 0): ?>
-            <div class="sp-group-row2">
-        <?php endif; ?>
-        <div class="sp-block">
-            <div class="sp-block_title">
-                <?= $builder->getTitle() ?>
-            </div>
-            <div class="sp-block_body" data-builder="<?= $builder->getName() ?>">
-                <?php $builder->renderHtml() ?>
-            </div>
+<div class="sp-group">
+    <div class="sp-group-row2">
+        <div class="sp-block sp-block_builders">
+            <?php foreach ($builderTree as $groupName => $groupItems) { ?>
+                <div class="sp-builder_group">
+                    <?= Locale::getMessage('BUILDER_GROUP_' . $groupName) ?>
+                </div>
+                <?php foreach ($groupItems as $item) { ?>
+                    <div class="sp-builder_title" data-builder="<?= $item['NAME'] ?>"><?= $item['TITLE'] ?></div>
+                <?php } ?>
+            <?php } ?>
         </div>
-
-        <?php if ($colIndex == 0 && empty($builders[$bIndex + 1])):$colIndex = 1 ?>
-            <div class="sp-block"></div>
-        <?php endif; ?>
-
-        <?php if ($colIndex == 1): $colIndex = 0; ?>
-            </div>
-        <?php else: $colIndex++; ?>
-        <?php endif; ?>
-    <?php endforeach; ?>
+        <div class="sp-block" style="position: relative">
+            <div class="sp-builder_body" style="position: sticky;top: 10px"></div>
+        </div>
+    </div>
 </div>

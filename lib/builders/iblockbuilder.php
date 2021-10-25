@@ -19,7 +19,8 @@ class IblockBuilder extends VersionBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_IblockExport1'));
-        $this->setDescription(Locale::getMessage('BUILDER_IblockExport2'));
+        $this->setGroup('Iblock');
+
         $this->addVersionFields();
     }
 

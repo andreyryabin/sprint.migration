@@ -138,16 +138,18 @@ function migrationMigrationRefresh(callbackAfterRefresh) {
 }
 
 function migrationBuilder(postData) {
-    var $block = $('[data-builder="' + postData['builder_name'] + '"]');
     migrationExecuteStep('migration_create', postData, function (result) {
-        $block.html(result);
+        $('.sp-builder_body').html(result);
     });
 }
 
 function migrationReset(postData) {
-    var $block = $('[data-builder="' + postData['builder_name'] + '"]');
     migrationExecuteStep('migration_reset', postData, function (result) {
-        $block.html(result);
+        var $body = $('.sp-builder_body');
+
+        $body.html(result);
+
+        //$body.get(0).scrollIntoView({block: "center", inline: "nearest"});
     });
 }
 
@@ -176,16 +178,13 @@ jQuery(document).ready(function ($) {
     };
 
 
-    var openblockIx = 0;
-
     (function () {
+        $('.sp-builder_title').removeClass('sp-active');
         if (localStorage) {
-            openblockIx = localStorage.getItem('migrations_open_block');
-            openblockIx = (openblockIx) ? parseInt(openblockIx, 10) : 0;
+            var builderName = localStorage.getItem('migrations_open_builder');
+            $('[data-builder="' + builderName + '"]').addClass('sp-active');
+            migrationReset({builder_name: builderName});
         }
-
-        var $block = $('.sp-block_title').eq(openblockIx).closest('.sp-block');
-        $block.addClass('sp-active');
     })();
 
     migrationMigrationRefresh(function () {
@@ -225,34 +224,30 @@ jQuery(document).ready(function ($) {
         e.preventDefault();
     });
 
-    $('[data-builder]').on('submit', 'form', function (e) {
+    $('.sp-builder_body').on('submit', 'form', function (e) {
         e.preventDefault();
         var postData = $(this).serializeFormJSON();
         migrationBuilder(postData);
     });
 
-    $('[data-builder]').on('reset', 'form', function (e) {
+    $('.sp-builder_body').on('reset', 'form', function (e) {
         e.preventDefault();
         var postData = $(this).serializeFormJSON();
         migrationReset(postData);
     });
 
-    $('#migration-container').on('click', '.sp-block_title', function () {
-        var $block = $(this).closest('.sp-block');
+    $('#migration-container').on('click', '.sp-builder_title', function () {
 
-        $('.sp-block').not($block).removeClass('sp-active');
-        $block.addClass('sp-active');
+        var builderName = $(this).data('builder');
+
+        $('.sp-builder_title').not(this).removeClass('sp-active');
+
+        $(this).addClass('sp-active');
 
         if (localStorage) {
-            openblockIx = $('.sp-block_title').index(this);
-            localStorage.setItem('migrations_open_block', '' + parseInt(openblockIx, 10));
+            localStorage.setItem('migrations_open_builder', builderName);
         }
-
-        var docViewTop = $(window).scrollTop();
-        var elemTop = $block.offset().top;
-        if (elemTop <= docViewTop) {
-            $(document).scrollTop(elemTop - 25);
-        }
+        migrationReset({builder_name: builderName});
     });
 
 

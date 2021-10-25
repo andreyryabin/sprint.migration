@@ -20,7 +20,7 @@ class TransferBuilder extends AbstractBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_Transfer1'));
-        $this->setGroup('configurator');
+        $this->setGroup('Tools');
 
         $configFrom = $this->getVersionConfig()->getName();
         $items = $this->getVersionConfig()->getList();

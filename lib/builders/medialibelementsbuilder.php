@@ -25,6 +25,8 @@ class MedialibElementsBuilder extends VersionBuilder
     {
         $this->setTitle(Locale::getMessage('BUILDER_MedialibElements1'));
         $this->setDescription(Locale::getMessage('BUILDER_MedialibElements2'));
+        $this->setGroup('Medialib');
+
         $this->addVersionFields();
     }
 

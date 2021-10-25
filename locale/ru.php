@@ -102,15 +102,11 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_TransferUnknown"            => "Неизвестные",
         "BUILDER_TransferSelect"             => "Выбрать миграции",
         "BUILDER_EventExport1"               => "Создать миграцию для почтовых событий",
-        "BUILDER_EventExport2"               => "",
         "BUILDER_EventExport_event_types"    => "Выберите типы почтовых событий",
         "BUILDER_AgentExport1"               => "Создать миграцию для агентов",
-        "BUILDER_AgentExport2"               => "",
         "BUILDER_AgentExport_agent_id"       => "Выберите агенты",
         "BUILDER_Version1"                   => "Создать простую миграцию",
-        "BUILDER_Version2"                   => "",
         "BUILDER_UserGroupExport1"           => "Создать миграцию для групп пользователей",
-        "BUILDER_UserGroupExport2"           => "",
         "BUILDER_UserGroupExport_user_group" => "Выберите группы",
     ]
 );
@@ -118,7 +114,6 @@ require_once __DIR__ . "/../lib/locale.php";
     "ru",
     [
         "BUILDER_IblockExport1"                        => "Создать миграцию для инфоблока",
-        "BUILDER_IblockExport2"                        => "",
         "BUILDER_IblockExport_IblockId"                => "Выберите инфоблок",
         "BUILDER_IblockExport_Properties"              => "Выберите свойства",
         "BUILDER_IblockExport_What"                    => "Что переносим",
@@ -162,16 +157,13 @@ require_once __DIR__ . "/../lib/locale.php";
     "ru",
     [
         "BUILDER_UserOptionsExport_Title"         => "Создать миграцию для пользовательских настроек",
-        "BUILDER_UserOptionsExport_Desc"          => "",
         "BUILDER_UserOptionsExport_What"          => "Что переносим",
         "BUILDER_UserOptionsExport_WhatUserForm"  => "Настрока формы редактирования пользователей",
         "BUILDER_UserOptionsExport_WhatUserList"  => "Настрока списка пользователей",
         "BUILDER_UserOptionsExport_WhatGroupList" => "Настрока списка групп",
         "BUILDER_HlblockExport1"                  => "Создать миграцию для highload-блока",
-        "BUILDER_HlblockExport2"                  => "",
         "BUILDER_HlblockExport_HlblockId"         => "Выберите highload-блоки",
         "BUILDER_UserTypeEntities1"               => "Создать миграцию для пользовательских полей",
-        "BUILDER_UserTypeEntities2"               => "",
         "BUILDER_UserTypeEntities_EntityId"       => "Укажите поле для выгрузки",
     ]
 );
@@ -179,14 +171,12 @@ require_once __DIR__ . "/../lib/locale.php";
     "ru",
     [
         "BUILDER_FormExport1"              => "Создать миграцию для веб-формы",
-        "BUILDER_FormExport2"              => "",
         "BUILDER_FormExport_FormId"        => "Выберите форму",
         "BUILDER_FormExport_What"          => "Что переносим?",
         "BUILDER_FormExport_Form"          => "Форму",
         "BUILDER_FormExport_Fields"        => "Поля формы",
         "BUILDER_FormExport_Statuses"      => "Статусы",
         "BUILDER_OptionExport1"            => "Создать миграцию для настроек модулей",
-        "BUILDER_OptionExport2"            => "",
         "BUILDER_OptionExport_module_id"   => "Выберите модули",
         "BUILDER_CacheCleaner1"            => "Очистка кеша",
         "BUILDER_CacheCleaner2"            => "Выполнить BXClearCache(true)",
@@ -415,5 +405,17 @@ require_once __DIR__ . "/../lib/locale.php";
         "GD_SCHEMAS"          => "Схемы данных",
         "GD_SCHEMA_RED"       => "Не установлена",
         "GD_SCHEMA_GREEN"     => "Установлена",
+    ]
+);
+
+\Sprint\Migration\Locale::loadLocale(
+    "ru",
+    [
+        "BUILDER_GROUP_Main"     => "Главный модуль",
+        "BUILDER_GROUP_Iblock"   => "Инфоблоки",
+        "BUILDER_GROUP_Hlblock"  => "Highload-блоки",
+        "BUILDER_GROUP_Form"     => "Веб-формы",
+        "BUILDER_GROUP_Medialib" => "Медиабиблиотека",
+        "BUILDER_GROUP_Tools"    => "Инструменты",
     ]
 );

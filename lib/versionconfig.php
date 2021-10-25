@@ -311,15 +311,11 @@ class VersionConfig
 
         $values['console_user'] = ($cond2 || $cond3) ? $values['console_user'] : 'admin';
 
-        if (!empty($values['version_builders']) && is_array($values['version_builders'])) {
-            $values['version_builders'] = array_merge($this->getDefaultBuilders(), $values['version_builders']);
-        } else {
+        if (empty($values['version_builders']) || !is_array($values['version_builders'])) {
             $values['version_builders'] = $this->getDefaultBuilders();
         }
 
-        if (!empty($values['version_schemas']) && is_array($values['version_schemas'])) {
-            $values['version_schemas'] = array_merge($this->getDefaultSchemas(), $values['version_schemas']);
-        } else {
+        if (!empty($values['version_schemas']) || !is_array($values['version_schemas'])) {
             $values['version_schemas'] = $this->getDefaultSchemas();
         }
 
@@ -490,7 +486,6 @@ class VersionConfig
     protected function getDefaultBuilders()
     {
         return [
-            'BlankBuilder'            => BlankBuilder::class,
             'UserGroupBuilder'        => UserGroupBuilder::class,
             'IblockBuilder'           => IblockBuilder::class,
             'HlblockBuilder'          => HlblockBuilder::class,
@@ -503,10 +498,11 @@ class VersionConfig
             'FormBuilder'             => FormBuilder::class,
             'EventBuilder'            => EventBuilder::class,
             'UserOptionsBuilder'      => UserOptionsBuilder::class,
+            'MedialibElementsBuilder' => MedialibElementsBuilder::class,
+            'BlankBuilder'            => BlankBuilder::class,
             'CacheCleanerBuilder'     => CacheCleanerBuilder::class,
             'MarkerBuilder'           => MarkerBuilder::class,
             'TransferBuilder'         => TransferBuilder::class,
-            'MedialibElementsBuilder' => MedialibElementsBuilder::class,
         ];
     }
 

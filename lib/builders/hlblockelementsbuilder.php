@@ -25,6 +25,8 @@ class HlblockElementsBuilder extends VersionBuilder
     {
         $this->setTitle(Locale::getMessage('BUILDER_HlblockElementsExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_HlblockElementsExport2'));
+        $this->setGroup('Hlblock');
+
         $this->addVersionFields();
     }
 

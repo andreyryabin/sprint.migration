@@ -25,6 +25,8 @@ class IblockElementsBuilder extends VersionBuilder
     {
         $this->setTitle(Locale::getMessage('BUILDER_IblockElementsExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_IblockElementsExport2'));
+        $this->setGroup('Iblock');
+
         $this->addVersionFields();
     }
 

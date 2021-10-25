@@ -16,7 +16,7 @@ class Module
 
     public static function setDbOption($name, $value)
     {
-        if ($value != COption::GetOptionString('sprint.migration', $name, '')) {
+        if ($value != COption::GetOptionString('sprint.migration', $name)) {
             COption::SetOptionString('sprint.migration', $name, $value);
         }
     }
@@ -31,12 +31,12 @@ class Module
         COption::RemoveOption('sprint.migration');
     }
 
-    public static function getDocRoot()
+    public static function getDocRoot(): string
     {
         return rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
     }
 
-    public static function getPhpInterfaceDir()
+    public static function getPhpInterfaceDir(): string
     {
         if (is_dir(self::getDocRoot() . '/local/php_interface')) {
             return self::getDocRoot() . '/local/php_interface';
@@ -45,7 +45,7 @@ class Module
         }
     }
 
-    public static function getModuleDir()
+    public static function getModuleDir(): string
     {
         if (is_file(self::getDocRoot() . '/local/modules/sprint.migration/include.php')) {
             return self::getDocRoot() . '/local/modules/sprint.migration';
@@ -96,7 +96,7 @@ class Module
             $arModuleVersion = [];
             /** @noinspection PhpIncludeInspection */
             include self::getModuleDir() . '/install/version.php';
-            self::$version = isset($arModuleVersion['VERSION']) ? $arModuleVersion['VERSION'] : '';
+            self::$version = $arModuleVersion['VERSION'] ?? '';
         }
         return self::$version;
     }
@@ -122,7 +122,7 @@ class Module
             );
         }
 
-        if (version_compare(PHP_VERSION, '5.6', '<')) {
+        if (version_compare(PHP_VERSION, '7.0', '<')) {
             Throw new Exception(
                 Locale::getMessage(
                     'ERR_PHP_NOT_SUPPORTED',
@@ -139,16 +139,6 @@ class Module
         ) {
             Throw new Exception('module installed to bitrix and local folder');
         }
-    }
-
-    public static function getDefaultAdminLang()
-    {
-        return COption::GetOptionString('main', 'admin_lid');
-    }
-
-    public static function setDefaultAdminLang($lang)
-    {
-        COption::SetOptionString('main', 'admin_lid', $lang);
     }
 }
 

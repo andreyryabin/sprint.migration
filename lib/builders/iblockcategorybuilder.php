@@ -23,6 +23,8 @@ class IblockCategoryBuilder extends VersionBuilder
     {
         $this->setTitle(Locale::getMessage('BUILDER_IblockCategoryExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_IblockCategoryExport2'));
+        $this->setGroup('Iblock');
+
         $this->addVersionFields();
     }
 

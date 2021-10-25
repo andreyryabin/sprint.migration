@@ -102,15 +102,11 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_TransferUnknown"            => "Unknown",
         "BUILDER_TransferSelect"             => "Select migrations",
         "BUILDER_EventExport1"               => "Create migration for event types",
-        "BUILDER_EventExport2"               => "",
         "BUILDER_EventExport_event_types"    => "Select event types",
         "BUILDER_AgentExport1"               => "Create migration for agents",
-        "BUILDER_AgentExport2"               => "",
         "BUILDER_AgentExport_agent_id"       => "Select agents",
         "BUILDER_Version1"                   => "Create empty migration",
-        "BUILDER_Version2"                   => "",
         "BUILDER_UserGroupExport1"           => "Create migration for user groups",
-        "BUILDER_UserGroupExport2"           => "",
         "BUILDER_UserGroupExport_user_group" => "Select user groups",
     ]
 );
@@ -118,7 +114,6 @@ require_once __DIR__ . "/../lib/locale.php";
     "en",
     [
         "BUILDER_IblockExport1"                        => "Create migration for information block",
-        "BUILDER_IblockExport2"                        => "",
         "BUILDER_IblockExport_IblockId"                => "Select information block",
         "BUILDER_IblockExport_Properties"              => "Select properties",
         "BUILDER_IblockExport_What"                    => "Select export items",
@@ -162,16 +157,13 @@ require_once __DIR__ . "/../lib/locale.php";
     "en",
     [
         "BUILDER_UserOptionsExport_Title"         => "Create migration for user options",
-        "BUILDER_UserOptionsExport_Desc"          => "",
         "BUILDER_UserOptionsExport_What"          => "Select export items",
         "BUILDER_UserOptionsExport_WhatUserForm"  => "User form",
         "BUILDER_UserOptionsExport_WhatUserList"  => "User list",
         "BUILDER_UserOptionsExport_WhatGroupList" => "User group list",
         "BUILDER_HlblockExport1"                  => "Create migration for highload block",
-        "BUILDER_HlblockExport2"                  => "",
         "BUILDER_HlblockExport_HlblockId"         => "Select highload blocks",
         "BUILDER_UserTypeEntities1"               => "Create migration for user type entities",
-        "BUILDER_UserTypeEntities2"               => "",
         "BUILDER_UserTypeEntities_EntityId"       => "Select entity id",
     ]
 );
@@ -179,14 +171,12 @@ require_once __DIR__ . "/../lib/locale.php";
     "en",
     [
         "BUILDER_FormExport1"              => "Create migration for web form",
-        "BUILDER_FormExport2"              => "",
         "BUILDER_FormExport_FormId"        => "Select web form",
         "BUILDER_FormExport_What"          => "Select export items",
         "BUILDER_FormExport_Form"          => "Form",
         "BUILDER_FormExport_Fields"        => "Form questionsn",
         "BUILDER_FormExport_Statuses"      => "Form statuses",
         "BUILDER_OptionExport1"            => "Create migration for module options",
-        "BUILDER_OptionExport2"            => "",
         "BUILDER_OptionExport_module_id"   => "Select modules",
         "BUILDER_CacheCleaner1"            => "Cache clean",
         "BUILDER_CacheCleaner2"            => "Execute BXClearCache(true)",
@@ -206,7 +196,6 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "en", [
         "BUILDER_MedialibElements1"             => "Export media library images",
-        "BUILDER_MedialibElements2"             => "",
         "BUILDER_MedialibElements_CollectionId" => "Select collections",
     ]
 );
@@ -415,5 +404,17 @@ require_once __DIR__ . "/../lib/locale.php";
         "GD_SCHEMAS"          => "Data schemas",
         "GD_SCHEMA_RED"       => "Not installed",
         "GD_SCHEMA_GREEN"     => "Installed",
+    ]
+);
+
+\Sprint\Migration\Locale::loadLocale(
+    "en",
+    [
+        "BUILDER_GROUP_Main"     => "Main module",
+        "BUILDER_GROUP_Iblock"   => "Information blocks",
+        "BUILDER_GROUP_Hlblock"  => "Highload information blocks",
+        "BUILDER_GROUP_Form"     => "Web Forms",
+        "BUILDER_GROUP_Medialib" => "Media Library",
+        "BUILDER_GROUP_Tools"    => "Tools",
     ]
 );

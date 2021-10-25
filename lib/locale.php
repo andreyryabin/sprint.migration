@@ -52,6 +52,7 @@ class Locale
 
     public static function getMessage($shortName, $replaces = [])
     {
-        return GetMessage(self::getMessageName($shortName), $replaces);
+        $msg = GetMessage(self::getMessageName($shortName), $replaces);
+        return ($msg) ? : $shortName;
     }
 }

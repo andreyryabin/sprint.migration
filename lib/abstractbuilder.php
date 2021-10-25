@@ -17,7 +17,7 @@ abstract class AbstractBuilder extends ExchangeEntity
     private $info          = [
         'title'       => '',
         'description' => '',
-        'group'       => 'default',
+        'group'       => 'Tools',
     ];
     private $fields        = [];
     private $execStatus    = '';

@@ -18,7 +18,8 @@ class EventBuilder extends VersionBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_EventExport1'));
-        $this->setDescription(Locale::getMessage('BUILDER_EventExport2'));
+        $this->setGroup('Main');
+
         $this->addVersionFields();
     }
 

@@ -20,7 +20,8 @@ class FormBuilder extends VersionBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_FormExport1'));
-        $this->setDescription(Locale::getMessage('BUILDER_FormExport2'));
+        $this->setGroup('Form');
+
         $this->addVersionFields();
     }
 

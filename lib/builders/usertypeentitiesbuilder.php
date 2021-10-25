@@ -19,7 +19,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_UserTypeEntities1'));
-        $this->setDescription(Locale::getMessage('BUILDER_UserTypeEntities2'));
+        $this->setGroup('Main');
 
         $this->addVersionFields();
     }

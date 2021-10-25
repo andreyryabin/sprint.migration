@@ -18,7 +18,8 @@ class UserGroupBuilder extends VersionBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_UserGroupExport1'));
-        $this->setDescription(Locale::getMessage('BUILDER_UserGroupExport2'));
+        $this->setGroup('Main');
+
         $this->addVersionFields();
     }
 

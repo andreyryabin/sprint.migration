@@ -69,14 +69,10 @@ $getOnclickMenu = function ()  {
                             value="migration_view_status"><?= Locale::getMessage('TOGGLE_STATUS') ?></option>
                 </select>
                 <input type="button" value="<?= Locale::getMessage('SEARCH') ?>" class="sp-search"/>
-
             </div>
         </div>
     </div>
     <div class="sp-separator"></div>
-    <?php foreach (['default', 'configurator'] as $builderGroup): ?>
-        <?php include __DIR__ . '/builder_group.php' ?>
-    <?php endforeach ?>
-
+    <?php include __DIR__ . '/builder_group.php' ?>
     <div class="sp-separator"></div>
 </div>

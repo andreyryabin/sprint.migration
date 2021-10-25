@@ -255,27 +255,6 @@ class VersionManager
     }
 
     /**
-     * @param array $filter
-     *
-     * @return AbstractBuilder[]
-     */
-    public function createBuilders($filter = [])
-    {
-        $group = !empty($filter['group']) ? $filter['group'] : 'default';
-
-        $res = [];
-        $builders = $this->getVersionConfig()->getVal('version_builders', []);
-        foreach ($builders as $builderName => $builderClass) {
-            if ($builder = $this->createBuilder($builderName)) {
-                if ($builder->getGroup() == $group) {
-                    $res[] = $builder;
-                }
-            }
-        }
-        return $res;
-    }
-
-    /**
      * @param $search
      * @param $status
      *
