@@ -103,7 +103,12 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
         data: postData,
         success: function (result) {
             if (succesCallback) {
-                succesCallback(result)
+                succesCallback(result);
+                if ($('select').length > 0) {
+                    $('select').map(function (index,item) {
+                        $(item).select2();
+                    });
+                }
             } else {
                 migrationOutLog(result);
             }

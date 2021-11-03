@@ -50,6 +50,9 @@ if ($versionConfig->getVal('show_admin_interface')) {
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 CUtil::InitJSCore(["jquery"]);
+Asset::getInstance()->addJs('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js');
+Asset::getInstance()->addString('<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet">');
+
 
 if ($versionConfig->getVal('show_admin_interface')) {
     if (isset($_REQUEST['schema'])) {
