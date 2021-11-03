@@ -104,10 +104,14 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
         success: function (result) {
             if (succesCallback) {
                 succesCallback(result);
-                if ($('select').length > 0) {
-                    $('select').map(function (index,item) {
-                        $(item).select2();
-                    });
+                try{
+                    if ($('select').length > 0) {
+                        $('select').map(function (index,item) {
+                            $(item).select2();
+                        });
+                    }
+                }catch (e) {
+                    console.error('Ошибка инициализации select2');
                 }
             } else {
                 migrationOutLog(result);
