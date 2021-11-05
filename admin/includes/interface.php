@@ -68,3 +68,4 @@ if (!$versionConfig->getValBool('show_admin_interface')) {
 include __DIR__ . '/../includes/errors.php';
 include __DIR__ . '/../includes/help.php';
 include __DIR__ . '/../assets/style.php';
+include __DIR__ . '/../assets/plugins.php';
