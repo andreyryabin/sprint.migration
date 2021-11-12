@@ -143,6 +143,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_IblockCategoryExport1"                => "Перенести категории инфоблоков",
         "BUILDER_IblockCategoryExport2"                => "Переносит категории инфоблоков без изображений",
         "BUILDER_IblockCategoryExport_IblockId"        => "Выберите инфоблок",
+        "BUILDER_IblockallExport_Title"          => "Создать полную миграцию для инфоблока",
+        "BUILDER_IblockallExport_Descr"          => "Создает миграции для структуры, разделов и элементов"
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
