@@ -11,6 +11,7 @@ use Sprint\Migration\Builders\EventBuilder;
 use Sprint\Migration\Builders\FormBuilder;
 use Sprint\Migration\Builders\HlblockBuilder;
 use Sprint\Migration\Builders\HlblockElementsBuilder;
+use Sprint\Migration\Builders\IblockallBuilder;
 use Sprint\Migration\Builders\IblockBuilder;
 use Sprint\Migration\Builders\IblockCategoryBuilder;
 use Sprint\Migration\Builders\IblockElementsBuilder;
@@ -491,6 +492,7 @@ class VersionConfig
             'HlblockBuilder'          => HlblockBuilder::class,
             'IblockElementsBuilder'   => IblockElementsBuilder::class,
             'IblockCategoryBuilder'   => IblockCategoryBuilder::class,
+            'IblockallBuilder'        => IblockallBuilder::class,
             'HlblockElementsBuilder'  => HlblockElementsBuilder::class,
             'UserTypeEntitiesBuilder' => UserTypeEntitiesBuilder::class,
             'AgentBuilder'            => AgentBuilder::class,

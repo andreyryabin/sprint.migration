@@ -143,6 +143,9 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_IblockCategoryExport1"                => "Export information block categories",
         "BUILDER_IblockCategoryExport2"                => "Export information block categories without images",
         "BUILDER_IblockCategoryExport_IblockId"        => "Select information block",
+        "BUILDER_IblockallExport_Title"                => "Create full IBlock structure",
+        "BUILDER_IblockallExport_Descr"                => "Creates migration for structures, sections and elements"
+
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
