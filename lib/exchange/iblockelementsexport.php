@@ -121,7 +121,6 @@ class IblockElementsExport extends AbstractExchange
 
             foreach ($items as $item) {
                 $writer = new XMLWriter();
-                $writer->startDocument('1.0', 'UTF-8');
                 $writer->openMemory();
                 $writer->startElement('item');
 
