@@ -12,15 +12,17 @@ $builderList = $versionConfig->getVal('version_builders', []);
 $builderTree = [];
 foreach ($builderList as $builderName => $builderClass) {
     $builder = $versionManager->createBuilder($builderName);
-    $builderGroup = $builder->getGroup();
+    if ($builder) {
+        $builderGroup = $builder->getGroup();
 
-    if (!isset($builderTree[$builderGroup])) {
-        $builderTree[$builderGroup] = [];
+        if (!isset($builderTree[$builderGroup])) {
+            $builderTree[$builderGroup] = [];
+        }
+        $builderTree[$builderGroup][] = [
+            'NAME'  => $builder->getName(),
+            'TITLE' => $builder->getTitle(),
+        ];
     }
-    $builderTree[$builderGroup][] = [
-        'NAME'  => $builder->getName(),
-        'TITLE' => $builder->getTitle(),
-    ];
 }
 
 ?>
