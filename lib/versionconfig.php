@@ -481,9 +481,10 @@ class VersionConfig
     }
 
     /**
+     * Метод должен быть публичным для работы со сторонним кодом
      * @return string[]
      */
-    protected function getDefaultBuilders()
+    public function getDefaultBuilders()
     {
         return [
             'UserGroupBuilder'        => UserGroupBuilder::class,
@@ -507,9 +508,10 @@ class VersionConfig
     }
 
     /**
+     * Метод должен быть публичным для работы со сторонним кодом
      * @return string[]
      */
-    protected function getDefaultSchemas()
+    public function getDefaultSchemas()
     {
         return [
             'IblockSchema'           => IblockSchema::class,
