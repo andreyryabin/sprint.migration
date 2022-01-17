@@ -312,11 +312,11 @@ class VersionConfig
         $values['console_user'] = ($cond2 || $cond3) ? $values['console_user'] : 'admin';
 
         if (empty($values['version_builders']) || !is_array($values['version_builders'])) {
-            $values['version_builders'] = $this->getDefaultBuilders();
+            $values['version_builders'] = VersionConfig::getDefaultBuilders();
         }
 
         if (!empty($values['version_schemas']) || !is_array($values['version_schemas'])) {
-            $values['version_schemas'] = $this->getDefaultSchemas();
+            $values['version_schemas'] = VersionConfig::getDefaultSchemas();
         }
 
         if (empty($values['tracker_task_url'])) {
@@ -484,7 +484,7 @@ class VersionConfig
      * Метод должен быть публичным для работы со сторонним кодом
      * @return string[]
      */
-    public function getDefaultBuilders()
+    public static function getDefaultBuilders()
     {
         return [
             'UserGroupBuilder'        => UserGroupBuilder::class,
@@ -511,7 +511,7 @@ class VersionConfig
      * Метод должен быть публичным для работы со сторонним кодом
      * @return string[]
      */
-    public function getDefaultSchemas()
+    public static function getDefaultSchemas()
     {
         return [
             'IblockSchema'           => IblockSchema::class,
