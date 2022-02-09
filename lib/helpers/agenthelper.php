@@ -228,6 +228,7 @@ class AgentHelper extends Helper
             'ACTIVE'         => 'Y',
             'IS_PERIOD'      => 'N',
             'NEXT_EXEC'      => $DB->GetNowDate(),
+            'SORT'           => 100,
         ], $fields);
 
         $agentId = CAgent::AddAgent(
@@ -237,7 +238,8 @@ class AgentHelper extends Helper
             $fields['AGENT_INTERVAL'],
             '',
             $fields['ACTIVE'],
-            $fields['NEXT_EXEC']
+            $fields['NEXT_EXEC'],
+            $fields['SORT']
         );
 
         if ($agentId) {
@@ -254,7 +256,6 @@ class AgentHelper extends Helper
                 ]
             )
         );
-        return false;
     }
 
     /**
