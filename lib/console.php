@@ -85,6 +85,9 @@ class Console
     {
         global $USER;
 
+        $by = 'c_sort';
+        $order = 'asc';
+
         $groupitem = CGroup::GetList($by, $order, [
             'ADMIN' => 'Y',
             'ACTIVE' => 'Y',
@@ -92,7 +95,6 @@ class Console
 
         if (!empty($groupitem)) {
             $by = 'id';
-            $order = 'asc';
 
             $useritem = CUser::GetList($by, $order, [
                 'GROUPS_ID' => [$groupitem['ID']],
