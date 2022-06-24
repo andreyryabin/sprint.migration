@@ -202,7 +202,7 @@ abstract class AbstractBuilder extends ExchangeEntity
             return false;
         } catch (Exception $e) {
             $this->execStatus = 'error';
-            $this->outError('%s: %s', Locale::getMessage('BUILDER_ERROR'), $e->getMessage());
+            $this->outException($e);
             $this->params = [];
             return false;
         }

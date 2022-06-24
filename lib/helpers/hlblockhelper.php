@@ -47,10 +47,7 @@ class HlblockHelper extends Helper
                 $result[] = $this->prepareHlblock($hlblock);
             }
         } catch (Exception $e) {
-            $this->throwException(
-                __METHOD__,
-                $e->getMessage()
-            );
+            $this->throwException(__METHOD__, $e);
         }
         return $result;
     }
@@ -424,7 +421,7 @@ class HlblockHelper extends Helper
 
             return $this->prepareHlblock($hlblock);
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(__METHOD__, $e);
         }
 
         return false;
@@ -518,7 +515,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(__METHOD__, $e);
         }
     }
 
@@ -569,7 +566,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(__METHOD__, $e);
         }
     }
 
@@ -610,7 +607,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(__METHOD__, $e);
         }
     }
 
@@ -652,7 +649,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(__METHOD__, $e);
         }
     }
 
@@ -764,7 +761,7 @@ class HlblockHelper extends Helper
             $entity = HighloadBlockTable::compileEntity($hlblock);
             return $entity->getDataClass();
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(__METHOD__, $e);
         }
     }
 
@@ -781,7 +778,7 @@ class HlblockHelper extends Helper
         try {
             return $dataManager::getList($params)->fetchAll();
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(__METHOD__, $e);
         }
     }
 
@@ -808,7 +805,7 @@ class HlblockHelper extends Helper
 
             return ($item) ? $item['CNT'] : 0;
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(__METHOD__, $e);
         }
     }
 

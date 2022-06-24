@@ -158,7 +158,7 @@ TAG;
         try {
             $result = $sqlhelper->query($sqlQuery)->fetchAll();
         } catch (SqlQueryException $e) {
-            $this->throwException(__METHOD__, $e->getMessage());
+            $this->throwException(__METHOD__, $e);
         }
 
         return $result;

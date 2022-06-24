@@ -158,31 +158,7 @@ class SchemaManager extends ExchangeEntity
 
         $schema->export();
 
-        $files = $schema->getSchemaFiles();
-        if (!empty($files)) {
-            $this->outNotice(
-                Locale::getMessage(
-                    'ERR_SCHEMA_CREATED',
-                    [
-                        '#NAME#' => $schema->getTitle(),
-
-                    ]
-                )
-            );
-            foreach ($files as $file) {
-                $this->out($file);
-            }
-        } else {
-            $this->outWarning(
-                Locale::getMessage(
-                    'ERR_SCHEMA_EMPTY',
-                    [
-                        '#NAME#' => $schema->getTitle(),
-
-                    ]
-                )
-            );
-        }
+        $schema->outSchemaFiles();
 
         if (!$this->testMode) {
             $schema->setModified();
@@ -299,7 +275,7 @@ class SchemaManager extends ExchangeEntity
     protected function getQueueFile($name)
     {
         $name = 'queue__' . strtolower($name);
-        return Module::getDocRoot() . '/bitrix/tmp/sprint.migration/' . $name . '.php';
+        return Module::getDocRoot() . '/bitrix/tmp/'.Module::ID.'/' . $name . '.php';
     }
 
     /**

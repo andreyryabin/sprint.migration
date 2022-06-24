@@ -12,23 +12,7 @@ use Sprint\Migration\Exceptions\HelperException;
 
 class Helper
 {
-    use OutTrait {
-        out as protected;
-        outIf as protected;
-        outProgress as protected;
-        outNotice as protected;
-        outNoticeIf as protected;
-        outInfo as protected;
-        outInfoIf as protected;
-        outSuccess as protected;
-        outSuccessIf as protected;
-        outWarning as protected;
-        outWarningIf as protected;
-        outError as protected;
-        outErrorIf as protected;
-        outDiff as protected;
-        outDiffIf as protected;
-    }
+    use OutTrait;
 
     /**
      * @var string
@@ -72,7 +56,7 @@ class Helper
     public function getMode($key = false)
     {
         if ($key) {
-            return isset($this->mode[$key]) ? $this->mode[$key] : 0;
+            return $this->mode[$key] ?? 0;
         } else {
             return $this->mode;
         }
@@ -129,9 +113,15 @@ class Helper
     {
         $args = func_get_args();
         $method = array_shift($args);
-        $msg = call_user_func_array('sprintf', $args);
 
-        $msg = $this->getMethod($method) . ': ' . strip_tags($msg);
+        if ($msg instanceof \Throwable) {
+            $msg = Out::getExceptionAsString($msg);
+        } else {
+            $msg = call_user_func_array('sprintf', $args);
+            $msg = strip_tags($msg);
+        }
+
+        $msg = $this->getMethod($method) . ': ' . $msg;
 
         $this->lastError = $msg;
 

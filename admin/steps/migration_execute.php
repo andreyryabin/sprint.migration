@@ -81,12 +81,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
         }
 
         if (!$success && !$restart) {
-            Sprint\Migration\Out::outError(
-                '%s (%s) error: %s',
-                $version,
-                $action,
-                $versionManager->getLastException()->getMessage()
-            );
+            Sprint\Migration\Out::outException($versionManager->getLastException());
 
             if ($versionConfig->getVal('stop_on_errors')) {
                 $nextAction = false;

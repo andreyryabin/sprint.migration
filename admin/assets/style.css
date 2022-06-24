@@ -283,3 +283,8 @@ a.sp-item-unknown:visited {
 #bx-admin-prefix #migration-container .sp-progress .adm-info-message-buttons {
     display: none;
 }
+
+.sp-disabled {
+    pointer-events: none;
+    opacity: 0.7;
+}

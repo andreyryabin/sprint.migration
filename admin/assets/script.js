@@ -115,11 +115,11 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
 }
 
 function migrationEnableButtons(enable) {
-    var buttons = $('#migration-container').find('input,select');
+    var buttons = $('#migration-container').find('input,select,.adm-btn');
     if (enable) {
-        buttons.removeAttr('disabled');
+        buttons.removeAttr('disabled').removeClass('sp-disabled');
     } else {
-        buttons.attr('disabled', 'disabled');
+        buttons.attr('disabled', 'disabled').addClass('sp-disabled');
     }
 }
 

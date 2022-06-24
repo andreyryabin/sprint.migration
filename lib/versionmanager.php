@@ -119,8 +119,6 @@ class VersionManager
             return true;
         } catch (RestartException $e) {
             $this->restarts[$versionName] = isset($versionInstance) ? $versionInstance->getRestartParams() : [];
-        } catch (Exception $e) {
-            $this->lastException = $e;
         } catch (Throwable $e) {
             $this->lastException = $e;
         }
@@ -700,7 +698,6 @@ class VersionManager
         $meta['location'] = $file['location'];
 
         try {
-            /** @noinspection PhpIncludeInspection */
             require_once($file['location']);
 
             $class = 'Sprint\Migration\\' . $versionName;
@@ -729,7 +726,6 @@ class VersionManager
             if (!empty($record['hash'])) {
                 $meta['modified'] = ($meta['hash'] != $record['hash']);
             }
-        } catch (Exception $e) {
         } catch (Throwable $e) {
         }
 

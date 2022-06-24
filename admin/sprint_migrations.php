@@ -27,19 +27,6 @@ try {
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");
 
-} catch (Exception $e) {
-    /** @noinspection PhpIncludeInspection */
-    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
-
-    $sperrors = [];
-    $sperrors[] = $e->getMessage();
-
-    include __DIR__ . '/includes/errors.php';
-    include __DIR__ . '/includes/help.php';
-    include __DIR__ . '/assets/style.php';
-
-    /** @noinspection PhpIncludeInspection */
-    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");
 } catch (Throwable $e) {
     /** @noinspection PhpIncludeInspection */
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");

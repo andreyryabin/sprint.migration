@@ -37,12 +37,9 @@ class SqlHelper extends Helper
             }
 
             $connection->commitTransaction();
-        } catch (Exception $ex) {
-            $connection->rollbackTransaction();
-            $this->throwException(__METHOD__, $ex->getMessage());
         } catch (Throwable $ex) {
             $connection->rollbackTransaction();
-            $this->throwException(__METHOD__, $ex->getMessage());
+            $this->throwException(__METHOD__, $ex);
         }
     }
 

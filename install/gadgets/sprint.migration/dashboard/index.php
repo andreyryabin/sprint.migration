@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * @var $arGadgetParams array
  */
@@ -13,7 +13,7 @@ use Sprint\Migration\VersionManager;
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
-
+global $APPLICATION;
 try {
 
     if (!Loader::includeModule('sprint.migration')) {
@@ -102,7 +102,7 @@ try {
     include __DIR__ . '/includes/style.php';
     include __DIR__ . '/includes/interface.php';
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
     include __DIR__ . '/includes/style.php';
     include __DIR__ . '/includes/errors.php';
 }

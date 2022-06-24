@@ -21,6 +21,7 @@ use Sprint\Migration\Builders\TransferBuilder;
 use Sprint\Migration\Builders\UserGroupBuilder;
 use Sprint\Migration\Builders\UserOptionsBuilder;
 use Sprint\Migration\Builders\UserTypeEntitiesBuilder;
+use Sprint\Migration\Enum\EventsEnum;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Schema\AgentSchema;
@@ -95,21 +96,17 @@ class VersionConfig
      */
     protected function initializeByName($configName)
     {
-        $this->configList = $this->searchConfigs();
+        $this->configList = $this->searchConfigs(Module::getPhpInterfaceDir());
+
+        $events = GetModuleEvents(Module::ID, EventsEnum::ON_SEARCH_CONFIG_FILES, true);
+
+        foreach ($events as $aEvent) {
+            $customPath = (string)ExecuteModuleEventEx($aEvent);
+            $this->configList = array_merge($this->configList, $this->searchConfigs($customPath));
+        }
 
         if (!isset($this->configList[VersionEnum::CONFIG_DEFAULT])) {
             $this->configList[VersionEnum::CONFIG_DEFAULT] = $this->prepare(VersionEnum::CONFIG_DEFAULT);
-        }
-
-        if (!isset($this->configList[VersionEnum::CONFIG_ARCHIVE])) {
-            $this->configList[VersionEnum::CONFIG_ARCHIVE] = $this->prepare(
-                VersionEnum::CONFIG_ARCHIVE,
-                [
-                    'title'           => Locale::getMessage('CONFIG_archive'),
-                    'migration_dir'   => $this->getSiblingDir('archive', true),
-                    'migration_table' => 'sprint_migration_archive',
-                ]
-            );
         }
 
         uasort(
@@ -151,14 +148,10 @@ class VersionConfig
         return $this->configList[$this->configCurrent]['name'];
     }
 
-    /**
-     * @throws MigrationException
-     * @return array
-     */
-    protected function searchConfigs()
+    protected function searchConfigs($directory)
     {
         $result = [];
-        $directory = new DirectoryIterator(Module::getPhpInterfaceDir());
+        $directory = new DirectoryIterator($directory);
         foreach ($directory as $item) {
             if (!$item->isFile()) {
                 continue;
@@ -169,7 +162,6 @@ class VersionConfig
                 continue;
             }
 
-            /** @noinspection PhpIncludeInspection */
             $values = include $item->getPathname();
             if (!$this->isValuesValid($values)) {
                 continue;
@@ -383,8 +375,8 @@ class VersionConfig
     }
 
     /**
-     * @param       $configName
-     * @param array $configValues
+     * @param string $configName
+     * @param array  $configValues
      *
      * @return bool
      */
@@ -482,6 +474,7 @@ class VersionConfig
 
     /**
      * Метод должен быть публичным для работы со сторонним кодом
+     *
      * @return string[]
      */
     public static function getDefaultBuilders()
@@ -509,6 +502,7 @@ class VersionConfig
 
     /**
      * Метод должен быть публичным для работы со сторонним кодом
+     *
      * @return string[]
      */
     public static function getDefaultSchemas()

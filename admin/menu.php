@@ -59,22 +59,6 @@ try {
 
     return $aMenu;
 
-} catch (Exception $e) {
-    $aMenu = [
-        'parent_menu' => 'global_menu_settings',
-        'section' => 'Sprint',
-        'sort' => 50,
-        'text' => Locale::getMessage('MENU_SPRINT'),
-        'icon' => 'sys_menu_icon',
-        'page_icon' => 'sys_page_icon',
-        'items_id' => 'sprint_migrations',
-        'url' => 'sprint_migrations.php?' . http_build_query([
-                'config' => VersionEnum::CONFIG_DEFAULT,
-                'lang' => LANGUAGE_ID,
-            ]),
-    ];
-
-    return $aMenu;
 } catch (Throwable $e) {
     $aMenu = [
         'parent_menu' => 'global_menu_settings',

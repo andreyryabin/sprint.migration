@@ -17,7 +17,7 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
                 <?php if ($isSettinsPage): ?>
                     <a href="/bitrix/admin/sprint_migrations.php?config=<?= VersionEnum::CONFIG_DEFAULT ?>&lang=<?= LANGUAGE_ID ?>"><?= Locale::getMessage('GOTO_MIGRATION') ?></a>
                 <?php else: ?>
-                    <a href="/bitrix/admin/settings.php?mid=sprint.migration&mid_menu=1&lang=<?= LANGUAGE_ID ?>"><?= Locale::getMessage('GOTO_OPTIONS') ?></a>
+                    <a href="/bitrix/admin/settings.php?mid=<?=Module::ID?>&mid_menu=1&lang=<?= LANGUAGE_ID ?>"><?= Locale::getMessage('GOTO_OPTIONS') ?></a>
                 <?php endif; ?>
             </div>
         </div>

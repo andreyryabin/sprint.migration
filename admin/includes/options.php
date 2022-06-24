@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
     if (!empty($_REQUEST["gadgets_install"])) {
         /** @var $tmpmodule sprint_migration */
-        $tmpmodule = CModule::CreateModuleObject('sprint.migration');
+        $tmpmodule = CModule::CreateModuleObject(Module::ID);
         $tmpmodule->installGadgets();
         Out::outSuccess(
             Locale::getMessage('GD_INSTALL_success')

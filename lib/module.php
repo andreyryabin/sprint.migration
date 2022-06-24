@@ -8,27 +8,28 @@ use Exception;
 class Module
 {
     private static $version = '';
+    const ID = 'sprint.migration';
 
     public static function getDbOption($name, $default = '')
     {
-        return COption::GetOptionString('sprint.migration', $name, $default);
+        return COption::GetOptionString(Module::ID, $name, $default);
     }
 
     public static function setDbOption($name, $value)
     {
-        if ($value != COption::GetOptionString('sprint.migration', $name)) {
-            COption::SetOptionString('sprint.migration', $name, $value);
+        if ($value != COption::GetOptionString(Module::ID, $name)) {
+            COption::SetOptionString(Module::ID, $name, $value);
         }
     }
 
     public static function removeDbOption($name)
     {
-        COption::RemoveOption('sprint.migration', $name);
+        COption::RemoveOption(Module::ID, $name);
     }
 
     public static function removeDbOptions()
     {
-        COption::RemoveOption('sprint.migration');
+        COption::RemoveOption(Module::ID);
     }
 
     public static function getDocRoot(): string
@@ -47,10 +48,10 @@ class Module
 
     public static function getModuleDir(): string
     {
-        if (is_file(self::getDocRoot() . '/local/modules/sprint.migration/include.php')) {
-            return self::getDocRoot() . '/local/modules/sprint.migration';
+        if (is_file(self::getDocRoot() . '/local/modules/' . Module::ID . '/include.php')) {
+            return self::getDocRoot() . '/local/modules/' . Module::ID;
         } else {
-            return self::getDocRoot() . '/bitrix/modules/sprint.migration';
+            return self::getDocRoot() . '/bitrix/modules/' . Module::ID;
         }
     }
 
@@ -67,6 +68,7 @@ class Module
 
     /**
      * @param $dir
+     *
      * @throws Exception
      * @return mixed
      */
@@ -77,7 +79,7 @@ class Module
         }
 
         if (!is_dir($dir)) {
-            Throw new Exception(
+            throw new Exception(
                 Locale::getMessage(
                     'ERR_CANT_CREATE_DIRECTORY',
                     [
@@ -107,7 +109,7 @@ class Module
     public static function checkHealth()
     {
         if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql') {
-            Throw new Exception(
+            throw new Exception(
                 Locale::getMessage(
                     'ERR_MSSQL_NOT_SUPPORTED'
                 )
@@ -115,7 +117,7 @@ class Module
         }
 
         if (!function_exists('json_encode')) {
-            Throw new Exception(
+            throw new Exception(
                 Locale::getMessage(
                     'ERR_JSON_NOT_SUPPORTED'
                 )
@@ -123,7 +125,7 @@ class Module
         }
 
         if (version_compare(PHP_VERSION, '7.0', '<')) {
-            Throw new Exception(
+            throw new Exception(
                 Locale::getMessage(
                     'ERR_PHP_NOT_SUPPORTED',
                     [
@@ -134,10 +136,10 @@ class Module
         }
 
         if (
-            is_file($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/include.php') &&
-            is_file($_SERVER['DOCUMENT_ROOT'] . '/local/modules/sprint.migration/include.php')
+            is_file($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . Module::ID . '/include.php')
+            && is_file($_SERVER['DOCUMENT_ROOT'] . '/local/modules/' . Module::ID . '/include.php')
         ) {
-            Throw new Exception('module installed to bitrix and local folder');
+            throw new Exception('module installed to bitrix and local folder');
         }
     }
 }

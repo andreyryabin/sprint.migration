@@ -43,24 +43,14 @@ try {
 
     require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php");
 
-} catch (Exception $e) {
+} catch (Throwable $exception) {
     fwrite(STDOUT, sprintf(
-        "[%s] %s (%s)\n%s\n",
-        get_class($e),
-        $e->getMessage(),
-        $e->getCode(),
-        $e->getTraceAsString()
-    ));
-
-    die(1);
-
-} catch (Throwable $e) {
-    fwrite(STDOUT, sprintf(
-        "[%s] %s (%s)\n%s\n",
-        get_class($e),
-        $e->getMessage(),
-        $e->getCode(),
-        $e->getTraceAsString()
+        "[%s] %s (%s) in %s:%d",
+        get_class($exception),
+        $exception->getMessage(),
+        $exception->getCode(),
+        $exception->getFile(),
+        $exception->getLine()
     ));
 
     die(1);

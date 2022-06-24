@@ -13,7 +13,7 @@ class sprint_migration extends CModule
     var $PARTNER_URI;
     var $MODULE_GROUP_RIGHTS = "Y";
 
-    function sprint_migration()
+    public function __construct()
     {
         $arModuleVersion = [];
 
@@ -31,7 +31,7 @@ class sprint_migration extends CModule
         $this->PARTNER_URI = GetMessage("SPRINT_MIGRATION_RU_PARTNER_URI");
     }
 
-    function DoInstall()
+    public function DoInstall()
     {
         RegisterModule($this->MODULE_ID);
 
@@ -39,7 +39,7 @@ class sprint_migration extends CModule
         $this->installGadgets();
     }
 
-    function DoUninstall()
+    public function DoUninstall()
     {
         DeleteDirFiles(__DIR__ . "/admin", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin");
         $this->unnstallGadgets();
@@ -47,17 +47,17 @@ class sprint_migration extends CModule
         UnRegisterModule($this->MODULE_ID);
     }
 
-    function installGadgets()
+    public function installGadgets()
     {
         CopyDirFiles(__DIR__ . "/gadgets", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/gadgets", true, true);
     }
 
-    function unnstallGadgets()
+    public function unnstallGadgets()
     {
         DeleteDirFiles(__DIR__ . "/gadgets", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/gadgets");
     }
 
-    function GetModuleRightList()
+    public function GetModuleRightList()
     {
         $arr = [
             "reference_id" => ["D", "W"],

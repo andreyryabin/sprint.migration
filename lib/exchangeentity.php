@@ -7,27 +7,10 @@ use ReflectionException;
 use Sprint\Migration\Exceptions\ExchangeException;
 use Sprint\Migration\Exceptions\RestartException;
 
-
 abstract class ExchangeEntity
 {
-    use OutTrait {
-        out as protected;
-        outIf as protected;
-        outProgress as protected;
-        outNotice as protected;
-        outNoticeIf as protected;
-        outInfo as protected;
-        outInfoIf as protected;
-        outSuccess as protected;
-        outSuccessIf as protected;
-        outWarning as protected;
-        outWarningIf as protected;
-        outError as protected;
-        outErrorIf as protected;
-        outDiff as protected;
-        outDiffIf as protected;
-        outMessages as protected;
-    }
+    use OutTrait;
+
     /**
      * @var array
      */
@@ -38,7 +21,7 @@ abstract class ExchangeEntity
      */
     public function restart()
     {
-        Throw new RestartException();
+        throw new RestartException();
     }
 
     /**
@@ -59,17 +42,14 @@ abstract class ExchangeEntity
 
     /**
      * @param $name
+     *
      * @throws ExchangeException
      * @return string
      */
     public function getResourceFile($name)
     {
-        try {
-            $classInfo = new ReflectionClass($this);
-            return dirname($classInfo->getFileName()) . '/' . $classInfo->getShortName() . '_files/' . $name;
-        } catch (ReflectionException $e) {
-            $this->exitWithMessage($e->getMessage());
-        }
+        $classInfo = new ReflectionClass($this);
+        return dirname($classInfo->getFileName()) . '/' . $classInfo->getShortName() . '_files/' . $name;
     }
 
     /**
@@ -78,12 +58,8 @@ abstract class ExchangeEntity
      */
     public function getClassName()
     {
-        try {
-            $classInfo = new ReflectionClass($this);
-            $name = $classInfo->getShortName();
-        } catch (ReflectionException $e) {
-            $name = '';
-        }
+        $classInfo = new ReflectionClass($this);
+        $name = $classInfo->getShortName();
 
         $this->exitIfEmpty(
             $name,
@@ -97,37 +73,39 @@ abstract class ExchangeEntity
         return $name;
     }
 
-
     /**
      * @param $msg
+     *
      * @throws ExchangeException
      */
     public function exitWithMessage($msg)
     {
-        Throw new ExchangeException($msg);
+        throw new ExchangeException($msg);
     }
 
     /**
      * @param $cond
      * @param $msg
+     *
      * @throws ExchangeException
      */
     public function exitIf($cond, $msg)
     {
         if ($cond) {
-            Throw new ExchangeException($msg);
+            throw new ExchangeException($msg);
         }
     }
 
     /**
      * @param $var
      * @param $msg
+     *
      * @throws ExchangeException
      */
     public function exitIfEmpty($var, $msg)
     {
         if (empty($var)) {
-            Throw new ExchangeException($msg);
+            throw new ExchangeException($msg);
         }
     }
 }
