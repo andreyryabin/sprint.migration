@@ -13,7 +13,7 @@ class sprint_migration extends CModule
     var $PARTNER_URI;
     var $MODULE_GROUP_RIGHTS = "Y";
 
-    function sprint_migration()
+    public function __constructor()
     {
         $arModuleVersion = [];
 
