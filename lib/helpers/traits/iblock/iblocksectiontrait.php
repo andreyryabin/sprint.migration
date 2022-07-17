@@ -85,7 +85,7 @@ trait IblockSectionTrait
      * Сохраняет категорию инфоблока
      * Создаст если не было, обновит если существует (поиск по коду)
      *
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $fields
      *
      * @throws HelperException
@@ -106,7 +106,7 @@ trait IblockSectionTrait
     /**
      * Добавляет секцию инфоблока если она не существует
      *
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $fields
      *
      * @throws HelperException
@@ -162,7 +162,7 @@ trait IblockSectionTrait
     /**
      * Обновляет секцию инфоблока если она существует
      *
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $fields
      *
      * @throws HelperException
@@ -380,7 +380,7 @@ trait IblockSectionTrait
             );
         }
 
-        return $section['NAME'] . '|' . (int)$section['DEPTH_LEVEL'];
+        return $section['NAME'] . '|' . (int)$section['DEPTH_LEVEL'] . '|' . $section['CODE'];
     }
 
     /**
@@ -408,16 +408,19 @@ trait IblockSectionTrait
             return $uniqName;
         }
 
-        list($sectionName, $depthLevel) = explode('|', $uniqName);
+        list($sectionName, $depthLevel, $code) = explode('|', $uniqName);
 
-        $section = CIBlockSection::GetList(
-            [],
-            [
-                'NAME'        => $sectionName,
-                'DEPTH_LEVEL' => $depthLevel,
-                'IBLOCK_ID'   => $iblockId,
-            ]
-        )->Fetch();
+        $filter = [
+            'NAME'        => $sectionName,
+            'DEPTH_LEVEL' => $depthLevel,
+            'IBLOCK_ID'   => $iblockId,
+        ];
+
+        if ($code) {
+            $filter['CODE'] = $code;
+        }
+
+        $section = CIBlockSection::GetList([], $filter)->Fetch();
 
         if (empty($section['ID'])) {
             $this->throwException(

@@ -31,13 +31,15 @@ abstract class AbstractExchange
     {
         $this->exchangeEntity = $exchangeEntity;
 
-        $enabled = (
-            class_exists('XMLReader')
-            && class_exists('XMLWriter')
-            && $this->isEnabled()
-        );
+        if (!class_exists('XMLReader') || !class_exists('XMLWriter')) {
+            throw new ExchangeException(
+                Locale::getMessage(
+                    'ERR_EXCHANGE_DISABLED_XML'
+                )
+            );
+        }
 
-        if (!$enabled) {
+        if (!$this->isEnabled()) {
             throw new ExchangeException(
                 Locale::getMessage(
                     'ERR_EXCHANGE_DISABLED'
