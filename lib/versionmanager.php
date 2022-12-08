@@ -18,16 +18,17 @@ class VersionManager
     /** @var VersionConfig */
     private $versionConfig = null;
     /** @var VersionTable */
-    private $versionTable = null;
-    private $restarts = [];
-    private $lastException = null;
+    private $versionTable      = null;
+    private $isRestart         = false;
+    private $lastRestartParams = [];
+    private $lastException     = null;
 
     /**
      * VersionManager constructor.
      *
      * @param string $configName
      *
-     * @throws Exception
+     * @throws MigrationException
      */
     public function __construct($configName = '')
     {
@@ -57,10 +58,9 @@ class VersionManager
     }
 
     /**
-     * @param        $versionName
+     * @param string $versionName
      * @param string $action
      * @param array  $params
-     * @param bool   $force
      * @param string $tag
      *
      * @return bool
@@ -69,13 +69,10 @@ class VersionManager
         $versionName,
         $action = VersionEnum::ACTION_UP,
         $params = [],
-        $force = false,
         $tag = ''
     ) {
-        if (isset($this->restarts[$versionName])) {
-            unset($this->restarts[$versionName]);
-        }
-
+        $this->isRestart = false;
+        $this->lastRestartParams = [];
         $this->lastException = new Exception();
 
         try {
@@ -89,19 +86,17 @@ class VersionManager
                 throw new MigrationException('unsupported version ' . $meta['older']);
             }
 
-            if (!$force) {
-                if ($action == VersionEnum::ACTION_UP && $meta['status'] != VersionEnum::STATUS_NEW) {
-                    throw new MigrationException('migration already up');
-                }
+            if ($action == VersionEnum::ACTION_UP && $meta['status'] != VersionEnum::STATUS_NEW) {
+                throw new MigrationException('migration already up');
+            }
 
-                if ($action == VersionEnum::ACTION_DOWN && $meta['status'] != VersionEnum::STATUS_INSTALLED) {
-                    throw new MigrationException('migration already down');
-                }
+            if ($action == VersionEnum::ACTION_DOWN && $meta['status'] != VersionEnum::STATUS_INSTALLED) {
+                throw new MigrationException('migration already down');
             }
 
             /** @var $versionInstance Version */
             $versionInstance = new $meta['class'];
-
+            $versionInstance->setVersionConfig($this->versionConfig);
             $versionInstance->setRestartParams($params);
 
             if ($action == VersionEnum::ACTION_UP) {
@@ -116,14 +111,15 @@ class VersionManager
                 $this->getVersionTable()->removeRecord($meta);
             }
 
-            return true;
         } catch (RestartException $e) {
-            $this->restarts[$versionName] = isset($versionInstance) ? $versionInstance->getRestartParams() : [];
+            $this->isRestart = true;
+            $this->lastRestartParams = isset($versionInstance) ? $versionInstance->getRestartParams() : [];
         } catch (Throwable $e) {
             $this->lastException = $e;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -140,6 +136,19 @@ class VersionManager
                 $this->getFileIfExists($versionName),
                 $this->getRecordIfExists($versionName)
             );
+        }
+        return false;
+    }
+
+    /**
+     * @param $versionName
+     *
+     * @return bool
+     */
+    public function isVersionInstalled($versionName)
+    {
+        if ($this->checkVersionName($versionName)) {
+            return (bool)$this->getRecordIfExists($versionName);
         }
         return false;
     }
@@ -186,8 +195,8 @@ class VersionManager
 
         $result = [];
         foreach ($merge as $version => $ts) {
-            $record = isset($records[$version]) ? $records[$version] : 0;
-            $file = isset($files[$version]) ? $files[$version] : 0;
+            $record = $records[$version] ?? 0;
+            $file = $files[$version] ?? 0;
 
             $meta = $this->prepVersionMeta($version, $file, $record);
 
@@ -206,14 +215,14 @@ class VersionManager
         return $result;
     }
 
-    public function needRestart($version)
+    public function needRestart()
     {
-        return (isset($this->restarts[$version])) ? 1 : 0;
+        return $this->isRestart;
     }
 
-    public function getRestartParams($version)
+    public function getRestartParams()
     {
-        return $this->restarts[$version];
+        return $this->lastRestartParams;
     }
 
     public function getLastException()
@@ -270,9 +279,9 @@ class VersionManager
         $result = [];
         if (in_array(
             $status, [
-            VersionEnum::STATUS_NEW,
-            VersionEnum::STATUS_INSTALLED,
-        ]
+                VersionEnum::STATUS_NEW,
+                VersionEnum::STATUS_INSTALLED,
+            ]
         )) {
             if ($this->checkVersionName($search)) {
                 $meta = $this->getVersionByName($search);
@@ -311,7 +320,7 @@ class VersionManager
 
     public function checkVersionName($versionName)
     {
-        return $this->getVersionTimestamp($versionName) ? true : false;
+        return (bool)$this->getVersionTimestamp($versionName);
     }
 
     public function getVersionTimestamp($versionName)
@@ -423,10 +432,10 @@ class VersionManager
 
         if (in_array(
             $versionName, [
-            VersionEnum::STATUS_NEW,
-            VersionEnum::STATUS_INSTALLED,
-            VersionEnum::STATUS_UNKNOWN,
-        ]
+                VersionEnum::STATUS_NEW,
+                VersionEnum::STATUS_INSTALLED,
+                VersionEnum::STATUS_UNKNOWN,
+            ]
         )) {
             $metas = $this->getVersions(['status' => $versionName]);
         } elseif ($meta = $this->getVersionByName($versionName)) {
@@ -460,9 +469,9 @@ class VersionManager
 
         if (in_array(
             $versionName, [
-            VersionEnum::STATUS_INSTALLED,
-            VersionEnum::STATUS_UNKNOWN,
-        ]
+                VersionEnum::STATUS_INSTALLED,
+                VersionEnum::STATUS_UNKNOWN,
+            ]
         )) {
             $metas = $this->getVersions(['status' => $versionName]);
         } elseif ($meta = $this->getVersionByName($versionName)) {
@@ -504,10 +513,10 @@ class VersionManager
 
         if (in_array(
             $versionName, [
-            VersionEnum::STATUS_NEW,
-            VersionEnum::STATUS_INSTALLED,
-            VersionEnum::STATUS_UNKNOWN,
-        ]
+                VersionEnum::STATUS_NEW,
+                VersionEnum::STATUS_INSTALLED,
+                VersionEnum::STATUS_UNKNOWN,
+            ]
         )) {
             $metas = $this->getVersions(['status' => $versionName]);
         } elseif ($versionName == 'all') {

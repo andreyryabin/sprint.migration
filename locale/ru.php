@@ -74,12 +74,14 @@ require_once __DIR__ . "/../lib/locale.php";
     [
         "CONFIG_archive"                     => "Архив",
         "CONFIG_migration_dir"               => "Директория для миграций",
+        "CONFIG_migration_dir_absolute"      => "Абсолютный путь до migration_dir",
+        "CONFIG_exchange_dir"                => "Директория для файлов данных",
+        "CONFIG_exchange_dir_absolute"       => "Абсолютный путь до exchange_dir",
         "CONFIG_migration_extend_class"      => "Класс, наследуемый миграциями",
         "CONFIG_migration_table"             => "Таблица в бд с миграциями",
         "CONFIG_version_prefix"              => "Заголовок класса миграции",
         "CONFIG_version_builders"            => "Конструкторы",
         "CONFIG_version_filter"              => "Фильтр списка миграций",
-        "CONFIG_stop_on_errors"              => "Останавливать выполнение миграций при ошибках",
         "CONFIG_show_admin_interface"        => "Показывать сервис миграций в админке",
         "CONFIG_console_user"                => "Пользователь, от которого запускаются миграции в консоли",
         "CONFIG_console_auth_events_disable" => "Отключить обработчики авторизации в консоли",
@@ -89,6 +91,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_yes"                         => "да",
         "CONFIG_no"                          => "нет",
         "CONFIG_version_name_template"       => "Шаблон названия миграции",
+        "CONFIG_tracker_task_url"            => "Шаблон ссылки на трекер задач",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -326,7 +329,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_IB_FORM_OPTIONS_NOT_FOUND"     => "Не найдены настройки формы элемента инфоблока",
         "ERR_SCHEMA_EMPTY"                  => "Схема \"#NAME#\" не содержит данных",
         "ERR_SCHEMA_CREATED"                => "Схема \"#NAME#\" сохранена",
-        "ERR_EXCHANGE_FILE_NOT_FOUND"       => "Файл с данными не найден",
+        "ERR_EXCHANGE_FILE_NOT_FOUND"       => "Файл с данными не найден:  #FILE#",
         "ERR_EXCHANGE_VERSION"              => "Файл для переноса данных \"#NAME#\" не поддерживается текущей версией модуля.\nПожалуйста создайте его заново.",
         "ERR_IB_SECTION_ID_EMPTY"           => "Категория в инфоблоке \"#IBLOCK_ID#\" не указана",
         "ERR_IB_SECTION_ID_NOT_FOUND"       => "Категория \"#SECTION_ID#\" в инфоблоке \"#IBLOCK_ID#\" не найдена",

@@ -74,12 +74,14 @@ require_once __DIR__ . "/../lib/locale.php";
     [
         "CONFIG_archive"                     => "Archive",
         "CONFIG_migration_dir"               => "Directory for migration",
+        "CONFIG_migration_dir_absolute"      => "Is absolute path migration_dir",
+        "CONFIG_exchange_dir"                => "Directory for exchange files",
+        "CONFIG_exchange_dir_absolute"       => "Is absolute path exchange_dir",
         "CONFIG_migration_extend_class"      => "Class to inherit by migrations",
         "CONFIG_migration_table"             => "Table in the database with migrations",
         "CONFIG_version_prefix"              => "Name prefix for migrations",
         "CONFIG_version_builders"            => "Builders",
         "CONFIG_version_filter"              => "Migrations filter",
-        "CONFIG_stop_on_errors"              => "Stop error migrations",
         "CONFIG_show_admin_interface"        => "Show admin interface",
         "CONFIG_console_user"                => "User who run migrations from console",
         "CONFIG_console_auth_events_disable" => "Disable auth events in console",
@@ -89,6 +91,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_yes"                         => "yes",
         "CONFIG_no"                          => "no",
         "CONFIG_version_name_template"       => "Version name template",
+        "CONFIG_tracker_task_url"            => "Task url template",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -325,7 +328,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_IB_FORM_OPTIONS_NOT_FOUND"     => "Information block form options not found",
         "ERR_SCHEMA_EMPTY"                  => "Data schema \"#NAME#\" empty",
         "ERR_SCHEMA_CREATED"                => "Data schema \"#NAME#\" saved",
-        "ERR_EXCHANGE_FILE_NOT_FOUND"       => "Exchange file not found",
+        "ERR_EXCHANGE_FILE_NOT_FOUND"       => "Exchange file not found: #FILE#",
         "ERR_EXCHANGE_VERSION"              => "Exchange file \"#NAME#\" not supported in this version of module.\nPlease recreate it",
         "ERR_IB_SECTION_ID_EMPTY"           => "Section in iblock \"#IBLOCK_ID#\" empty",
         "ERR_IB_SECTION_ID_NOT_FOUND"       => "Section \"#SECTION_ID#\" in iblock \"#IBLOCK_ID#\" not found",

@@ -38,8 +38,8 @@ if ($hasSteps && check_bitrix_sessid('send_sessid')) {
         } else {
             ?>
             <script>
-                migrationMigrationRefresh(function () {
-                    migrationScrollList();
+                migrationListRefresh(function () {
+                    migrationListScroll();
                     migrationEnableButtons(1);
                 });
             </script><?php

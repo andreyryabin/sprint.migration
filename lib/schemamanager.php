@@ -10,28 +10,20 @@ class SchemaManager extends ExchangeEntity
 {
     use HelperManagerTrait;
 
-    /** @var VersionConfig */
-    protected $versionConfig = null;
-
     private $progress = [];
 
     protected $testMode = 0;
 
     /**
      * SchemaManager constructor.
-     * @param string $configName
+     * @param VersionConfig $configName
      * @param array $params
      * @throws Exception
      */
-    public function __construct($configName = '', $params = [])
+    public function __construct(VersionConfig $versionConfig, $params = [])
     {
-        if ($configName instanceof VersionConfig) {
-            $this->versionConfig = $configName;
-        } else {
-            $this->versionConfig = new VersionConfig(
-                $configName
-            );
-        }
+        $this->setVersionConfig($versionConfig);
+        $this->setRestartParams($params);
         $this->params = $params;
     }
 
@@ -215,12 +207,6 @@ class SchemaManager extends ExchangeEntity
 
         return true;
     }
-
-    protected function getVersionConfig()
-    {
-        return $this->versionConfig;
-    }
-
     /**
      * @param $name
      * @return AbstractSchema
@@ -278,11 +264,4 @@ class SchemaManager extends ExchangeEntity
         return Module::getDocRoot() . '/bitrix/tmp/'.Module::ID.'/' . $name . '.php';
     }
 
-    /**
-     * @return ExchangeManager
-     */
-    protected function getExchangeManager()
-    {
-        return new ExchangeManager($this);
-    }
 }

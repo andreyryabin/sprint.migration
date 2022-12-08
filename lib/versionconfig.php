@@ -39,9 +39,10 @@ class VersionConfig
     private $availablekeys = [
         'migration_table',
         'migration_extend_class',
-        'stop_on_errors',
         'migration_dir',
         'migration_dir_absolute',
+        'exchange_dir',
+        'exchange_dir_absolute',
         'version_prefix',
         'version_filter',
         'version_builders',
@@ -260,6 +261,15 @@ class VersionConfig
             $values['migration_dir'] = realpath($values['migration_dir']);
         }
 
+        if (empty($values['exchange_dir'])) {
+            $values['exchange_dir'] = $values['migration_dir'];
+        } else {
+            $values['exchange_dir'] = rtrim($values['exchange_dir'], DIRECTORY_SEPARATOR);
+            if (empty($values['exchange_dir_absolute'])) {
+                $values['exchange_dir'] = Module::getDocRoot() . $values['exchange_dir'];
+            }
+        }
+
         if (empty($values['version_prefix'])) {
             $values['version_prefix'] = 'Version';
         }
@@ -272,12 +282,6 @@ class VersionConfig
             $values['show_admin_interface'] = (bool)$values['show_admin_interface'];
         } else {
             $values['show_admin_interface'] = true;
-        }
-
-        if (isset($values['stop_on_errors'])) {
-            $values['stop_on_errors'] = (bool)$values['stop_on_errors'];
-        } else {
-            $values['stop_on_errors'] = false;
         }
 
         if (isset($values['console_auth_events_disable'])) {
@@ -431,7 +435,9 @@ class VersionConfig
 
         $configFile = $this->configList[$configName]['file'];
 
-        $vmFrom = new VersionManager($configName);
+        $vmFrom = new VersionManager(
+            new VersionConfig($configName)
+        );
         $vmFrom->clean();
 
         if (!empty($configFile) && is_file($configFile)) {

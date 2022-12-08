@@ -19,7 +19,7 @@ class ExchangeManager
     }
 
     /**
-     * @throws Exceptions\ExchangeException
+     * @throws Exceptions\MigrationException
      * @return IblockElementsExport
      */
     public function IblockElementsExport()
@@ -28,7 +28,7 @@ class ExchangeManager
     }
 
     /**
-     * @throws Exceptions\ExchangeException
+     * @throws Exceptions\MigrationException
      * @return IblockElementsImport
      */
     public function IblockElementsImport()
@@ -37,7 +37,7 @@ class ExchangeManager
     }
 
     /**
-     * @throws Exceptions\ExchangeException
+     * @throws Exceptions\MigrationException
      * @return HlblockElementsImport
      */
     public function HlblockElementsImport()
@@ -46,7 +46,7 @@ class ExchangeManager
     }
 
     /**
-     * @throws Exceptions\ExchangeException
+     * @throws Exceptions\MigrationException
      * @return HlblockElementsExport
      */
     public function HlblockElementsExport()
@@ -55,7 +55,7 @@ class ExchangeManager
     }
 
     /**
-     * @throws Exceptions\ExchangeException
+     * @throws Exceptions\MigrationException
      * @return MedialibElementsExport
      */
     public function MedialibElementsExport()
@@ -64,7 +64,7 @@ class ExchangeManager
     }
 
     /**
-     * @throws Exceptions\ExchangeException
+     * @throws Exceptions\MigrationException
      * @return MedialibElementsImport
      */
     public function MedialibElementsImport()

@@ -26,7 +26,7 @@ class VersionTable extends AbstractTable
     public function getRecord($versionName)
     {
         return $this->query(
-            'SELECT * FROM `#TABLE1#` WHERE `version` = "%s"',
+            'SELECT * FROM `#TABLE1#` WHERE `version` = "%s" LIMIT 1',
             $this->forSql($versionName)
         )->fetch();
     }

@@ -30,6 +30,7 @@ $getOnclickMenu = function ()  {
             </div>
             <div class="sp-block sp-block-scroll">
                 <div id="migration_progress" class="sp-scroll"></div>
+                <div id="migration_actions"></div>
             </div>
         </div>
     </div>

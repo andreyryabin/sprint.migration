@@ -2,9 +2,8 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\Exceptions\ExchangeException;
-use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
@@ -32,7 +31,7 @@ class IblockElementsBuilder extends VersionBuilder
 
     /**
      * @throws RebuildException
-     * @throws ExchangeException
+     * @throws MigrationException
      * @throws RestartException
      * @throws HelperException
      * @throws MigrationException

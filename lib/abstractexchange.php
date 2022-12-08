@@ -4,7 +4,7 @@ namespace Sprint\Migration;
 
 use CFile;
 use Exception;
-use Sprint\Migration\Exceptions\ExchangeException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use XMLReader;
@@ -25,14 +25,14 @@ abstract class AbstractExchange
      *
      * @param ExchangeEntity $exchangeEntity
      *
-     * @throws ExchangeException
+     * @throws MigrationException
      */
     public function __construct(ExchangeEntity $exchangeEntity)
     {
         $this->exchangeEntity = $exchangeEntity;
 
         if (!class_exists('XMLReader') || !class_exists('XMLWriter')) {
-            throw new ExchangeException(
+            throw new MigrationException(
                 Locale::getMessage(
                     'ERR_EXCHANGE_DISABLED_XML'
                 )
@@ -40,7 +40,7 @@ abstract class AbstractExchange
         }
 
         if (!$this->isEnabled()) {
-            throw new ExchangeException(
+            throw new MigrationException(
                 Locale::getMessage(
                     'ERR_EXCHANGE_DISABLED'
                 )
@@ -62,13 +62,14 @@ abstract class AbstractExchange
     /**
      * @param $name
      *
-     * @throws ExchangeException
      * @return $this
      */
     public function setExchangeResource($name)
     {
         $this->setExchangeFile(
-            $this->exchangeEntity->getResourceFile($name)
+            $this->exchangeEntity->getVersionConfig()->getVal('exchange_dir') . '/' .
+            $this->exchangeEntity->getClassName() . '_files/' .
+            $name
         );
         return $this;
     }

@@ -2,12 +2,15 @@
 
 namespace Sprint\Migration;
 
+use ReflectionClass;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Traits\HelperManagerTrait;
 
 /**
  * Class Version
+ *
  * @package Sprint\Migration
  */
 class Version extends ExchangeEntity
@@ -33,6 +36,7 @@ class Version extends ExchangeEntity
 
     /**
      * your code for up
+     *
      * @throws RestartException
      * @throws HelperException
      * @return bool
@@ -44,6 +48,7 @@ class Version extends ExchangeEntity
 
     /**
      * your code for down
+     *
      * @throws RestartException
      * @throws HelperException
      * @return bool
@@ -59,15 +64,6 @@ class Version extends ExchangeEntity
     public function isVersionEnabled()
     {
         return true;
-    }
-
-    /**
-     * @throws Exceptions\ExchangeException
-     * @return string
-     */
-    public function getVersionName()
-    {
-        return $this->getClassName();
     }
 
     /**
@@ -97,31 +93,11 @@ class Version extends ExchangeEntity
     /**
      * @param $name
      * @param $data
-     * @throws Exceptions\ExchangeException
+     *
      */
     public function saveData($name, $data)
     {
-        $this->getStorageManager()->saveData($this->getVersionName(), $name, $data);
-    }
-
-    /**
-     * @param $name
-     * @throws Exceptions\ExchangeException
-     * @return mixed|string
-     *
-     */
-    public function getSavedData($name)
-    {
-        return $this->getStorageManager()->getSavedData($this->getVersionName(), $name);
-    }
-
-    /**
-     * @param bool $name
-     * @throws Exceptions\ExchangeException
-     */
-    public function deleteSavedData($name = false)
-    {
-        $this->getStorageManager()->deleteSavedData($this->getVersionName(), $name);
+        $this->getStorageManager()->saveData($this->getClassName(), $name, $data);
     }
 
     /**
@@ -131,13 +107,48 @@ class Version extends ExchangeEntity
     {
         return new StorageManager($this->storageName);
     }
-
     /**
      * @return ExchangeManager
      */
     protected function getExchangeManager()
     {
         return new ExchangeManager($this);
+    }
+    /**
+     * @param $name
+     *
+     * @return mixed|string
+     *
+     */
+    public function getSavedData($name)
+    {
+        return $this->getStorageManager()->getSavedData($this->getClassName(), $name);
+    }
+
+    /**
+     * @param bool $name
+     *
+     */
+    public function deleteSavedData($name = false)
+    {
+        $this->getStorageManager()->deleteSavedData($this->getClassName(), $name);
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function exitIfVersionNotInstalled($versionName)
+    {
+        if (class_exists($versionName)) {
+            $versionName = (new ReflectionClass($versionName))->getShortName();
+        }
+        $ok =  (new VersionManager(
+            $this->getVersionConfig()
+        ))->isVersionInstalled(
+            $versionName
+        );
+
+        $this->exitIf(!$ok,sprintf('Version "%s" not installed', $versionName));
     }
 
 }

@@ -72,7 +72,7 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[1], $msg);
         }
 
-        if (isset($options['tracker_task_url'])) {
+        if (!empty($options['tracker_task_url'])) {
             $msg = self::makeTaskUrl($msg, $options['tracker_task_url']);
         }
 
@@ -107,7 +107,7 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
 
-        if (isset($options['tracker_task_url'])) {
+        if (!empty($options['tracker_task_url'])) {
             $msg = self::makeTaskUrl($msg, $options['tracker_task_url']);
         }
 
@@ -271,11 +271,11 @@ class Out
 
         foreach ($diff as $k => $v) {
             if (isset($diff1[$k]) && isset($diff2[$k])) {
-                self::out($k . ': [red]' . $diff2[$k] . '[/] -> [green]' . $diff1[$k] . '[/]');
+                self::out($k . ': [red]' . htmlspecialchars($diff2[$k]) . '[/] -> [green]' . htmlspecialchars($diff1[$k]) . '[/]');
             } elseif (isset($diff1[$k])) {
-                self::out($k . ': [green]' . $diff1[$k] . '[/]');
+                self::out($k . ': [green]' . htmlspecialchars($diff1[$k]) . '[/]');
             } else {
-                self::out($k . ': [red]' . $diff2[$k] . '[/]');
+                self::out($k . ': [red]' . htmlspecialchars($diff2[$k]) . '[/]');
             }
         }
     }

@@ -5,8 +5,9 @@ namespace Sprint\Migration\Builders;
 use Exception;
 use Sprint\Migration\AbstractBuilder;
 use Sprint\Migration\Enum\VersionEnum;
-use Sprint\Migration\Exceptions\ExchangeException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Locale;
+use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 
 class TransferBuilder extends AbstractBuilder
@@ -67,17 +68,17 @@ class TransferBuilder extends AbstractBuilder
     }
 
     /**
-     * @throws ExchangeException
+     * @throws MigrationException
      * @throws Exception
      */
     protected function execute()
     {
         $vmFrom = new VersionManager(
-            $this->getVersionConfig()->getName()
+            $this->getVersionConfig()
         );
 
         $vmTo = new VersionManager(
-            $this->getFieldValue('transfer_to')
+            new VersionConfig($this->getFieldValue('transfer_to'))
         );
 
         $transferresult = $vmFrom->transferMigration(

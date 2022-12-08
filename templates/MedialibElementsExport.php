@@ -24,7 +24,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     protected $moduleVersion = "<?php echo $moduleVersion ?>";
 
     /**
-     * @throws Exceptions\ExchangeException
+     * @throws Exceptions\MigrationException
      * @throws Exceptions\RestartException
      * @throws Exceptions\HelperException
      * @return bool|void

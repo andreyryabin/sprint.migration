@@ -12,21 +12,20 @@ abstract class AbstractBuilder extends ExchangeEntity
     use HelperManagerTrait;
 
     private $name;
-    /** @var VersionConfig */
-    private $versionConfig;
-    private $info          = [
+    private $info       = [
         'title'       => '',
         'description' => '',
         'group'       => 'Tools',
     ];
-    private $fields        = [];
-    private $execStatus    = '';
+    private $fields     = [];
+    private $execStatus = '';
 
     public function __construct(VersionConfig $versionConfig, $name, $params = [])
     {
-        $this->versionConfig = $versionConfig;
         $this->name = $name;
-        $this->params = $params;
+
+        $this->setVersionConfig($versionConfig);
+        $this->setRestartParams($params);
 
         $this->addFieldHidden('builder_name', $this->getName());
     }
@@ -49,11 +48,6 @@ abstract class AbstractBuilder extends ExchangeEntity
         $this->initialize();
     }
 
-    public function getVersionConfig()
-    {
-        return $this->versionConfig;
-    }
-
     public function isEnabled()
     {
         try {
@@ -61,6 +55,14 @@ abstract class AbstractBuilder extends ExchangeEntity
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * @return ExchangeManager
+     */
+    protected function getExchangeManager()
+    {
+        return new ExchangeManager($this);
     }
 
     protected function addField($code, $param = [])
@@ -151,7 +153,6 @@ abstract class AbstractBuilder extends ExchangeEntity
         ob_start();
 
         if (is_file($file)) {
-            /** @noinspection PhpIncludeInspection */
             include $file;
         }
 
@@ -319,13 +320,5 @@ abstract class AbstractBuilder extends ExchangeEntity
     protected function setField($code, $param = [])
     {
         $this->addField($code, $param);
-    }
-
-    /**
-     * @return ExchangeManager
-     */
-    protected function getExchangeManager()
-    {
-        return new ExchangeManager($this);
     }
 }

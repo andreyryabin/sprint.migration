@@ -41,7 +41,7 @@ try {
         }
 
         $versionManager = new VersionManager(
-            $config['name']
+            new VersionConfig($config['name'])
         );
         $hasNewVersions = count($versionManager->getVersions([
             'status' => 'new',
@@ -66,7 +66,7 @@ try {
         if (!empty($arGadgetParams['CHECK_SCHEMAS'])) {
 
             $schemaManager = new SchemaManager(
-                $config['name']
+                new VersionConfig($config['name'])
             );
 
             $modifiedCnt = 0;

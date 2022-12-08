@@ -123,7 +123,8 @@ function migrationEnableButtons(enable) {
     }
 }
 
-function migrationMigrationRefresh(callbackAfterRefresh) {
+function migrationListRefresh(callbackAfterRefresh) {
+    $('#migration_actions').empty();
     migrationExecuteStep(
         $('select[name=migration_filter]').val(),
         {},
@@ -153,7 +154,7 @@ function migrationReset(postData) {
     });
 }
 
-function migrationScrollList() {
+function migrationListScroll() {
     var $el = $('#migration_migrations');
     $el.scrollTop($el.prop("scrollHeight"));
 }
@@ -187,33 +188,33 @@ jQuery(document).ready(function ($) {
         }
     })();
 
-    migrationMigrationRefresh(function () {
+    migrationListRefresh(function () {
         migrationEnableButtons(1);
-        migrationScrollList();
+        migrationListScroll();
     });
 
     $('#migration-container').on('change', 'select[name=migration_filter]', function () {
-        migrationMigrationRefresh(function () {
+        migrationListRefresh(function () {
             migrationEnableButtons(1);
-            migrationScrollList();
+            migrationListScroll();
             $('#tab_cont_tab1').click();
         });
     });
 
     $('#migration-container').on('keypress', 'input[name=migration_search]', function (e) {
         if (e.keyCode === 13) {
-            migrationMigrationRefresh(function () {
+            migrationListRefresh(function () {
                 migrationEnableButtons(1);
-                migrationScrollList();
+                migrationListScroll();
                 $('#tab_cont_tab1').click();
             });
         }
     });
 
     $('#migration-container').on('click', '.sp-search', function () {
-        migrationMigrationRefresh(function () {
+        migrationListRefresh(function () {
             migrationEnableButtons(1);
-            migrationScrollList();
+            migrationListScroll();
             $('#tab_cont_tab1').click();
         });
     });

@@ -131,35 +131,15 @@ trait IblockFieldTrait
 
     protected function prepareExportIblockFields($fields)
     {
-        if (empty($fields)) {
-            return $fields;
-        }
-
-        $exportFields = [];
-        foreach ($fields as $code => $field) {
-            if ($field['VISIBLE'] == 'N' || preg_match('/^(LOG_)/', $code)) {
-                continue;
-            }
-            $exportFields[$code] = $field;
-        }
-
-        return $exportFields;
+        return array_filter($fields, function ($field, $code) {
+            return ($field['VISIBLE'] != 'N');
+        }, ARRAY_FILTER_USE_BOTH);
     }
 
     protected function prepareExportIblockElementFields($fields)
     {
-        if (empty($fields)) {
-            return $fields;
-        }
-
-        $exportFields = [];
-        foreach ($fields as $code => $field) {
-            if ($field['VISIBLE'] == 'N' || preg_match('/^(SECTION_|LOG_)/', $code)) {
-                continue;
-            }
-            $exportFields[$code] = $field;
-        }
-
-        return $exportFields;
+        return array_filter($fields, function ($field, $code) {
+            return !($field['VISIBLE'] == 'N' || preg_match('/^(SECTION_|LOG_)/', $code));
+        },ARRAY_FILTER_USE_BOTH);
     }
 }
