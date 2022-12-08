@@ -5,11 +5,14 @@ namespace Sprint\Migration;
 use Exception;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Traits\ExitMessageTrait;
 use Sprint\Migration\Traits\HelperManagerTrait;
 
 abstract class AbstractBuilder extends ExchangeEntity
 {
     use HelperManagerTrait;
+    use ExitMessageTrait;
+    use OutTrait;
 
     private $name;
     private $info       = [

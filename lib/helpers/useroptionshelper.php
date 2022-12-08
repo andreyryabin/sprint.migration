@@ -210,6 +210,7 @@ class UserOptionsHelper extends Helper
 
             foreach ($options['views'] as $viewCode => $view) {
                 $view['columns'] = $this->revertCodesFromColumns($view['columns']);
+                $view['custom_names'] = $this->revertCustomNames($view['custom_names']);
                 $options['views'][$viewCode] = $view;
             }
 
@@ -222,6 +223,7 @@ class UserOptionsHelper extends Helper
     {
         foreach ($options['views'] as $viewCode => $view) {
             $view['columns'] = $this->transformCodesToColumns($view['columns']);
+            $view['custom_names'] = $this->transformCustomNames($view['custom_names']);
             $options['views'][$viewCode] = $view;
         }
 

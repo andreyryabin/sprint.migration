@@ -32,17 +32,17 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     public function up()
     {
         $this->getExchangeManager()
-            ->HlblockElementsImport()
-            ->setExchangeResource('hlblock_elements.xml')
-            ->setLimit(20)
-            ->execute(function ($item) {
-                $this->getHelperManager()
-                    ->Hlblock()
-                    ->addElement(
-                        $item['hlblock_id'],
-                        $item['fields']
-                    );
-            });
+             ->HlblockElementsImport()
+             ->setExchangeResource('hlblock_elements.xml')
+             ->setLimit(20)
+             ->execute(function ($item) {
+                 $this->getHelperManager()
+                      ->Hlblock()
+                      ->addElement(
+                          $item['hlblock_id'],
+                          $item['fields']
+                      );
+             });
     }
 
     public function down()

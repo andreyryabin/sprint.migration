@@ -24,7 +24,7 @@ class MedialibElementsImport extends AbstractExchange
         $params = $this->exchangeEntity->getRestartParams();
 
         if (!isset($params['total'])) {
-            $this->exchangeEntity->exitIf(
+            $this->exitIf(
                 !is_file($this->file),
                 Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->file])
             );
@@ -45,7 +45,7 @@ class MedialibElementsImport extends AbstractExchange
             $reader->close();
 
             if (!$exchangeVersion || $exchangeVersion < self::EXCHANGE_VERSION) {
-                $this->exchangeEntity->exitWithMessage(
+                $this->exitWithMessage(
                     Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->getExchangeFile()])
                 );
             }

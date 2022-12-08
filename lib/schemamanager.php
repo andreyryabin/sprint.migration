@@ -9,6 +9,7 @@ use Sprint\Migration\Traits\HelperManagerTrait;
 class SchemaManager extends ExchangeEntity
 {
     use HelperManagerTrait;
+    use OutTrait;
 
     private $progress = [];
 

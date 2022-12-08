@@ -4,7 +4,6 @@ namespace Sprint\Migration\Helpers\Traits\UserOptions;
 
 use CIBlock;
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\HelperManager;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Traits\HelperManagerTrait;
 
@@ -12,13 +11,14 @@ trait IblockTrait
 {
     use HelperManagerTrait;
 
-    private $titles = [];
-    private $props = [];
-    private $iblock = [];
+    private $titles       = [];
+    private $props        = [];
+    private $iblock       = [];
     private $lastIblockId = 0;
 
     /**
      * @param $iblockId
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -40,8 +40,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $formData
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -63,8 +64,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $formData
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -86,8 +88,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $params
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -97,8 +100,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $params
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -109,6 +113,7 @@ trait IblockTrait
 
     /**
      * @param $iblockId
+     *
      * @throws HelperException
      * @return string
      */
@@ -127,6 +132,7 @@ trait IblockTrait
 
     /**
      * @param $iblockId
+     *
      * @throws HelperException
      * @return string
      */
@@ -138,6 +144,7 @@ trait IblockTrait
 
     /**
      * @param $iblockId
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -150,6 +157,7 @@ trait IblockTrait
 
     /**
      * @param $iblockId
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -159,8 +167,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $listData
+     *
      * @throws HelperException
      */
     public function buildElementList($iblockId, $listData = [])
@@ -171,8 +180,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $listData
+     *
      * @throws HelperException
      */
     public function saveElementList($iblockId, $listData = [])
@@ -184,6 +194,7 @@ trait IblockTrait
 
     /**
      * @param $iblockId
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -197,8 +208,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $formData
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -212,8 +224,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $formData
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -228,6 +241,7 @@ trait IblockTrait
 
     /**
      * @param $iblockId
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -241,8 +255,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $listData
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -256,8 +271,9 @@ trait IblockTrait
     }
 
     /**
-     * @param $iblockId
+     * @param       $iblockId
      * @param array $listData
+     *
      * @throws HelperException
      * @return mixed
      */
@@ -270,9 +286,9 @@ trait IblockTrait
         ]);
     }
 
-
     /**
      * @param $iblockId
+     *
      * @throws HelperException
      * @return array|void
      * @deprecated
@@ -293,9 +309,9 @@ trait IblockTrait
         );
     }
 
-
     /**
      * @param $iblockId
+     *
      * @throws HelperException
      * @return bool
      */
@@ -406,5 +422,27 @@ trait IblockTrait
             return implode(',', $columns);
         }
         return $columns;
+    }
+
+    protected function transformCustomNames($customNames)
+    {
+        $result = [];
+        if (is_array($customNames)) {
+            foreach ($customNames as $code => $title) {
+                $result[$this->transformCode($code)] = $title;
+            }
+        }
+        return $result;
+    }
+
+    protected function revertCustomNames($customNames)
+    {
+        $result = [];
+        if (is_array($customNames)) {
+            foreach ($customNames as $code => $title) {
+                $result[$this->revertCode($code)] = $title;
+            }
+        }
+        return $result;
     }
 }

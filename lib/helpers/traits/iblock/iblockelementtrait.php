@@ -363,6 +363,34 @@ trait IblockElementTrait
     }
 
     /**
+     * @throws HelperException
+     */
+    public function deleteElementByCode($iblockId, $code)
+    {
+        if (!empty($code)) {
+            $item = $this->getElement($iblockId, ['=CODE' => $code]);
+            if ($item) {
+                return $this->deleteElement($item['ID']);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function deleteElementByXmlId($iblockId, $xmlId)
+    {
+        if (!empty($xmlId)) {
+            $item = $this->getElement($iblockId, ['=XML_ID' => $xmlId]);
+            if ($item) {
+                return $this->deleteElement($item['ID']);
+            }
+        }
+        return false;
+    }
+
+    /**
      * Удаляет элемент инфоблока если он существует
      *
      * @param $iblockId
@@ -373,13 +401,7 @@ trait IblockElementTrait
      */
     public function deleteElementIfExists($iblockId, $code)
     {
-        $item = $this->getElement($iblockId, $code);
-
-        if (!$item) {
-            return false;
-        }
-
-        return $this->deleteElement($item['ID']);
+        return $this->deleteElementByCode($iblockId, $code);
     }
 
     /**

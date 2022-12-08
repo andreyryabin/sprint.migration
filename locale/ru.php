@@ -67,6 +67,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_RESET"            => "Сбросить",
         "SELECT_ALL"               => "Выбрать все",
         "SELECT_ONE"               => "Выбрать",
+        "RESTART_AGAIN"            => "Запустить снова",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(

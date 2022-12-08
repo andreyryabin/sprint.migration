@@ -8,8 +8,6 @@ use Sprint\Migration\Exceptions\RestartException;
 
 abstract class ExchangeEntity
 {
-    use OutTrait;
-
     /**
      * @var array
      */
@@ -62,41 +60,5 @@ abstract class ExchangeEntity
     public function setRestartParams($params = [])
     {
         $this->params = $params;
-    }
-
-    /**
-     * @param $msg
-     *
-     * @throws MigrationException
-     */
-    public function exitWithMessage($msg)
-    {
-        throw new MigrationException($msg);
-    }
-
-    /**
-     * @param $cond
-     * @param $msg
-     *
-     * @throws MigrationException
-     */
-    public function exitIf($cond, $msg)
-    {
-        if ($cond) {
-            throw new MigrationException($msg);
-        }
-    }
-
-    /**
-     * @param $var
-     * @param $msg
-     *
-     * @throws MigrationException
-     */
-    public function exitIfEmpty($var, $msg)
-    {
-        if (empty($var)) {
-            throw new MigrationException($msg);
-        }
     }
 }

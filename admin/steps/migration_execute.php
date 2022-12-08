@@ -3,6 +3,7 @@
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
+use Sprint\Migration\Locale;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
@@ -129,7 +130,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
             ?>
             <script>
                 (function () {
-                    let $btn = $('<input type="button" value="Запустить снова">');
+                    let $btn = $('<input type="button" value="<?= Locale::getMessage('RESTART_AGAIN') ?>">');
                     $btn.bind('click', function(){
                         migrationExecuteStep('migration_execute', <?=$json?>);
                     })

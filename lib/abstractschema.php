@@ -10,6 +10,7 @@ use Sprint\Migration\Traits\HelperManagerTrait;
 abstract class AbstractSchema extends ExchangeEntity
 {
     use HelperManagerTrait;
+    use OutTrait;
 
     private $name;
     /** @var VersionConfig */

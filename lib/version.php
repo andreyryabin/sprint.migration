@@ -6,6 +6,7 @@ use ReflectionClass;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Traits\ExitMessageTrait;
 use Sprint\Migration\Traits\HelperManagerTrait;
 
 /**
@@ -16,6 +17,8 @@ use Sprint\Migration\Traits\HelperManagerTrait;
 class Version extends ExchangeEntity
 {
     use HelperManagerTrait;
+    use ExitMessageTrait;
+    use OutTrait;
 
     /**
      * @var string
