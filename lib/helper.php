@@ -7,7 +7,6 @@ use Bitrix\Main\LoaderException;
 use CDBResult;
 use CMain;
 use ReflectionClass;
-use ReflectionException;
 use Sprint\Migration\Exceptions\HelperException;
 
 class Helper
@@ -21,7 +20,6 @@ class Helper
     public  $lastError = '';
     private $mode      = [
         'test'      => 0,
-        'out_equal' => 0,
     ];
 
     /**
@@ -147,12 +145,7 @@ class Helper
 
     protected function getHelperName()
     {
-        try {
-            $classInfo = new ReflectionClass($this);
-            return $classInfo->getShortName();
-        } catch (ReflectionException $e) {
-            return 'Helper';
-        }
+        return (new ReflectionClass($this))->getShortName();
     }
 
     protected function hasDiff($exists, $fields)

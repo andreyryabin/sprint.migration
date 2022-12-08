@@ -2,8 +2,8 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
@@ -48,12 +48,17 @@ class HlblockElementsBuilder extends VersionBuilder
             ]
         );
 
+        $fields = $this->getHelperManager()->HlblockExchange()->getHlblockFieldsCodes($hlblockId);
+        $updateMode = $this->getFieldValueUpdateMode();
+
+        if ($updateMode == 'xml_id') {
+            $this->exitIf(!in_array('UF_XML_ID', $fields), 'Field UF_XML_ID not found');
+        }
+
         $this->getExchangeManager()
              ->HlblockElementsExport()
              ->setLimit(20)
-             ->setExportFields(
-                 $this->getHelperManager()->HlblockExchange()->getHlblockFieldsCodes($hlblockId)
-             )
+             ->setExportFields($fields)
              ->setHlblockId($hlblockId)
              ->setExchangeFile(
                  $this->getVersionResourceFile(
@@ -63,7 +68,37 @@ class HlblockElementsBuilder extends VersionBuilder
              )->execute();
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/HlblockElementsExport.php'
+            Module::getModuleDir() . '/templates/HlblockElementsExport.php',
+            [
+                'updateMode' => $updateMode,
+            ]
         );
+    }
+
+    /**
+     * @throws RebuildException
+     * @return string
+     */
+    protected function getFieldValueUpdateMode()
+    {
+        $updateMode = $this->addFieldAndReturn(
+            'update_mode', [
+                'title'       => Locale::getMessage('BUILDER_IblockElementsExport_UpdateMode'),
+                'placeholder' => '',
+                'width'       => 250,
+                'select'      => [
+                    [
+                        'title' => Locale::getMessage('BUILDER_IblockElementsExport_NotUpdate'),
+                        'value' => 'not',
+                    ],
+                    [
+                        'title' => Locale::getMessage('BUILDER_IblockElementsExport_UpdateByXmlId'),
+                        'value' => 'xml_id',
+                    ],
+                ],
+            ]
+        );
+
+        return $updateMode;
     }
 }

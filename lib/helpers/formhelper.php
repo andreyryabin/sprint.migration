@@ -112,9 +112,23 @@ class FormHelper extends Helper
             $arGroup = [];
             foreach ($form['arGROUP'] as $groupCode => $permissionValue) {
                 $groupId = $userGroupHelper->getGroupId($groupCode);
-                $arGroup[$groupId] = $permissionValue;
+                if ($groupId) {
+                    $arGroup[$groupId] = $permissionValue;
+                }
             }
             $form['arGROUP'] = $arGroup;
+        }
+
+        $eventHelper = new EventHelper();
+        if (isset($form['arMAIL_TEMPLATE']) && is_array($form['arMAIL_TEMPLATE'])) {
+            $arTemplates = [];
+            foreach ($form['arMAIL_TEMPLATE'] as $templateId) {
+                $templateId = $eventHelper->getEventMessageIdByUid($templateId);
+                if ($templateId){
+                    $arTemplates[] = $templateId;
+                }
+            }
+            $form['arMAIL_TEMPLATE'] = $arTemplates;
         }
 
         $formId = $this->getFormId($form['SID']);
@@ -371,7 +385,13 @@ class FormHelper extends Helper
      */
     protected function exportMailTemplates($formId)
     {
-        return CForm::GetMailTemplateArray($formId);
+        $templateIds = CForm::GetMailTemplateArray($formId);
+        $templates = [];
+        foreach ($templateIds as $templateId) {
+            $templates[] = (new EventHelper())->getEventMessageUidById($templateId);
+        }
+
+        return $templates;
     }
 
     /**

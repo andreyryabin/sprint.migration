@@ -323,20 +323,7 @@ trait IblockTrait
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $item['ID'];
-
-        if ($this->getMode('out_equal')) {
-            $this->outIf(
-                $ok,
-                Locale::getMessage(
-                    'IB_EQUAL',
-                    [
-                        '#NAME#' => $fields['CODE'],
-                    ]
-                )
-            );
-        }
-        return $ok;
+        return $this->getMode('test') ? true : $item['ID'];
     }
 
     /**

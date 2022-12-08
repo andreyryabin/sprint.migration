@@ -61,20 +61,7 @@ trait IblockPropertyTrait
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $exists['ID'];
-        if ($this->getMode('out_equal')) {
-            $this->outIf(
-                $ok,
-                Locale::getMessage(
-                    'IB_PROPERTY_EQUAL',
-                    [
-                        '#IBLOCK_ID#' => $iblockId,
-                        '#NAME#'      => $fields['CODE'],
-                    ]
-                )
-            );
-        }
-        return $ok;
+        return $this->getMode('test') ? true : $exists['ID'];
     }
 
     /**

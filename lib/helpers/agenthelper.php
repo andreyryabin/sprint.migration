@@ -179,19 +179,7 @@ class AgentHelper extends Helper
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $exists['ID'];
-        if ($this->getMode('out_equal')) {
-            $this->outIf(
-                $ok,
-                Locale::getMessage(
-                    'AGENT_EQUAL',
-                    [
-                        '#NAME#' => $fields['NAME'],
-                    ]
-                )
-            );
-        }
-        return $ok;
+        return $this->getMode('test') ? true : $exists['ID'];
     }
 
     /**

@@ -509,19 +509,7 @@ class UserTypeEntityHelper extends Helper
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $exists['ID'];
-        if ($this->getMode('out_equal')) {
-            $this->outIf(
-                $ok,
-                Locale::getMessage(
-                    'USER_TYPE_ENTITY_EQUAL',
-                    [
-                        '#NAME#' => $fields['FIELD_NAME'],
-                    ]
-                )
-            );
-        }
-        return $ok;
+        return $this->getMode('test') ? true : $exists['ID'];
     }
 
     /**

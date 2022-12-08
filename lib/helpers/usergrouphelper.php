@@ -191,19 +191,7 @@ class UserGroupHelper extends Helper
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $exists['ID'];
-        if ($this->getMode('out_equal')) {
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'USER_GROUP_EQUAL',
-                    [
-                        '#NAME#' => $fields['NAME'],
-                    ]
-                )
-            );
-        }
-        return $ok;
+        return $this->getMode('test') ? true : $exists['ID'];
     }
 
     /**

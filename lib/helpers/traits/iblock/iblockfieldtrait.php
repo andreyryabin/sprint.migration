@@ -65,17 +65,6 @@ trait IblockFieldTrait
             return $ok;
         }
 
-        if ($this->getMode('out_equal')) {
-            $this->out(
-                Locale::getMessage(
-                    'IB_FIELDS_EQUAL',
-                    [
-                        '#NAME#' => $iblockId,
-                    ]
-                )
-            );
-        }
-
         return true;
     }
 

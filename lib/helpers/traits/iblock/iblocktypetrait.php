@@ -286,19 +286,7 @@ trait IblockTypeTrait
             return $ok;
         }
 
-        $ok = $this->getMode('test') ? true : $fields['ID'];
-        if ($this->getMode('out_equal')) {
-            $this->outIf(
-                $ok,
-                Locale::getMessage(
-                    'IB_TYPE_EQUAL',
-                    [
-                        '#NAME#' => $fields['ID'],
-                    ]
-                )
-            );
-        }
-        return $ok;
+        return $this->getMode('test') ? true : $fields['ID'];
     }
 
     /**

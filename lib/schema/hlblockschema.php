@@ -29,9 +29,9 @@ class HlblockSchema extends AbstractSchema
     {
         $schemas = $this->loadSchemas(
             'hlblocks/', [
-            'hlblock' => [],
-            'fields'  => [],
-        ]
+                'hlblock' => [],
+                'fields'  => [],
+            ]
         );
 
         $cntFields = 0;
@@ -70,9 +70,9 @@ class HlblockSchema extends AbstractSchema
         foreach ($exportItems as $item) {
             $this->saveSchema(
                 'hlblocks/' . strtolower($item['NAME']), [
-                'hlblock' => $item,
-                'fields'  => $helper->Hlblock()->exportFields($item['NAME']),
-            ]
+                    'hlblock' => $item,
+                    'fields'  => $helper->Hlblock()->exportFields($item['NAME']),
+                ]
             );
         }
     }
@@ -84,9 +84,9 @@ class HlblockSchema extends AbstractSchema
     {
         $schemas = $this->loadSchemas(
             'hlblocks/', [
-            'hlblock' => [],
-            'fields'  => [],
-        ]
+                'hlblock' => [],
+                'fields'  => [],
+            ]
         );
 
         foreach ($schemas as $schema) {
@@ -239,8 +239,9 @@ class HlblockSchema extends AbstractSchema
             return $this->uniqs[$hlblockUid];
         }
 
-        $this->uniqs[$hlblockUid] = $helper->Hlblock()
-                                           ->getHlblockIdByUid($hlblockUid);
+        $this->uniqs[$hlblockUid] = $helper
+            ->Hlblock()
+            ->getHlblockIdByUid($hlblockUid);
 
         return $this->uniqs[$hlblockUid];
     }

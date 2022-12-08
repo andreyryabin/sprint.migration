@@ -182,20 +182,9 @@ class UserOptionsHelper extends Helper
             );
             $this->outDiffIf($ok, $exists, $data);
             return $ok;
-        } else {
-            if ($this->getMode('out_equal')) {
-
-                $this->out(
-                    Locale::getMessage(
-                        'USER_OPTION_LIST_EQUAL',
-                        [
-                            '#NAME#' => $params['name'],
-                        ]
-                    )
-                );
-            }
-            return true;
         }
+
+        return true;
     }
 
     public function exportGrid($gridId)
@@ -257,19 +246,9 @@ class UserOptionsHelper extends Helper
             );
             $this->outDiffIf($ok, $exists, $params);
             return $ok;
-        } else {
-            if ($this->getMode('out_equal')) {
-                $this->out(
-                    Locale::getMessage(
-                        'USER_OPTION_GRID_EQUAL',
-                        [
-                            '#NAME#' => $gridId,
-                        ]
-                    )
-                );
-            }
-            return true;
         }
+
+        return true;
     }
 
     /**
@@ -452,18 +431,7 @@ class UserOptionsHelper extends Helper
             );
             $this->outDiffIf($ok, $exists, $formData);
             return $ok;
-        } else {
-            if ($this->getMode('out_equal')) {
-                $this->out(
-                    Locale::getMessage(
-                        'USER_OPTION_FORM_EQUAL',
-                        [
-                            '#NAME#' => $params['name'],
-                        ]
-                    )
-                );
-            }
-            return true;
         }
+        return true;
     }
 }

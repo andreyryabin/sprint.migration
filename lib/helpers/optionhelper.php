@@ -121,19 +121,7 @@ class OptionHelper extends Helper
             return $ok;
         }
 
-        $ok = true;
-        if ($this->getMode('out_equal')) {
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'OPTION_EQUAL',
-                    [
-                        '#NAME#' => $fields['MODULE_ID'] . ':' . $fields['NAME'],
-                    ]
-                )
-            );
-        }
-        return $ok;
+        return true;
     }
 
     /**
