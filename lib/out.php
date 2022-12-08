@@ -76,10 +76,11 @@ class Out
             $msg = self::makeTaskUrl($msg, $options['tracker_task_url']);
         }
 
-        $msg = self::makeLinksHtml($msg);
+        if (!empty($options['make_links'])) {
+            $msg = self::makeLinksHtml($msg);
+        }
 
-        $msg = Locale::convertToWin1251IfNeed($msg);
-        return $msg;
+        return Locale::convertToWin1251IfNeed($msg);
     }
 
     protected static function makeTaskUrl($msg, $taskUrl = '')
@@ -111,8 +112,7 @@ class Out
             $msg = self::makeTaskUrl($msg, $options['tracker_task_url']);
         }
 
-        $msg = Locale::convertToUtf8IfNeed($msg);
-        return $msg;
+        return Locale::convertToUtf8IfNeed($msg);
     }
 
     public static function outInfo($msg, ...$vars)

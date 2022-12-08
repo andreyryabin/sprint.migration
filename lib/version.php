@@ -2,9 +2,8 @@
 
 namespace Sprint\Migration;
 
-use ReflectionClass;
-use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Traits\ExitMessageTrait;
 use Sprint\Migration\Traits\HelperManagerTrait;
@@ -20,22 +19,11 @@ class Version extends ExchangeEntity
     use ExitMessageTrait;
     use OutTrait;
 
-    /**
-     * @var string
-     */
-    protected $description = "";
-    /**
-     * @var string
-     */
-    protected $moduleVersion = "";
-    /**
-     * @var array
-     */
-    protected $versionFilter = [];
-    /**
-     * @var string
-     */
-    protected $storageName = 'default';
+    protected $description      = "";
+    protected $moduleVersion    = "";
+    protected $versionFilter    = [];
+    protected $storageName      = 'default';
+    protected $requiredVersions = [];
 
     /**
      * your code for up
@@ -88,6 +76,14 @@ class Version extends ExchangeEntity
     /**
      * @return array
      */
+    public function getRequiredVersions()
+    {
+        return $this->requiredVersions;
+    }
+
+    /**
+     * @return array
+     */
     public function getVersionFilter()
     {
         return $this->versionFilter;
@@ -110,6 +106,7 @@ class Version extends ExchangeEntity
     {
         return new StorageManager($this->storageName);
     }
+
     /**
      * @return ExchangeManager
      */
@@ -117,6 +114,7 @@ class Version extends ExchangeEntity
     {
         return new ExchangeManager($this);
     }
+
     /**
      * @param $name
      *
@@ -140,20 +138,10 @@ class Version extends ExchangeEntity
     /**
      * @throws MigrationException
      */
-    public function exitIfVersionNotInstalled($versionName)
+    public function checkRequiredVersions($versionNames)
     {
-        if (class_exists($versionName)) {
-            $versionName = (new ReflectionClass($versionName))->getShortName();
-        }
-        $ok =  (new VersionManager(
-            $this->getVersionConfig()
-        ))->isVersionInstalled(
-            $versionName
-        );
-
-        $this->exitIf(!$ok,sprintf('Version "%s" not installed', $versionName));
+        (new VersionManager($this->getVersionConfig()))->checkRequiredVersions($versionNames);
     }
-
 }
 
 

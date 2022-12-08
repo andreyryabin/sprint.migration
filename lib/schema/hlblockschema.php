@@ -188,12 +188,7 @@ class HlblockSchema extends AbstractSchema
             foreach ($olds as $old) {
                 $uniq = $this->getUniqField($old);
                 if (!in_array($uniq, $skip)) {
-                    $ok = ($this->testMode)
-                        ? true
-                        : $helper->Hlblock()->deleteField(
-                            $hlblockId,
-                            $old['FIELD_NAME']
-                        );
+                    $ok = ($this->testMode) ? true : $helper->Hlblock()->deleteField($hlblockId, $old['FIELD_NAME']);
 
                     $this->outWarningIf(
                         $ok,
