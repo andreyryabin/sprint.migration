@@ -123,7 +123,7 @@ class FormHelper extends Helper
         if (isset($form['arMAIL_TEMPLATE']) && is_array($form['arMAIL_TEMPLATE'])) {
             $arTemplates = [];
             foreach ($form['arMAIL_TEMPLATE'] as $templateId) {
-                $templateId = $eventHelper->getEventMessageIdByUid($templateId);
+                $templateId = $eventHelper->getEventMessageIdByUidFilter($templateId);
                 if ($templateId){
                     $arTemplates[] = $templateId;
                 }
@@ -388,7 +388,7 @@ class FormHelper extends Helper
         $templateIds = CForm::GetMailTemplateArray($formId);
         $templates = [];
         foreach ($templateIds as $templateId) {
-            $templates[] = (new EventHelper())->getEventMessageUidById($templateId);
+            $templates[] = (new EventHelper())->getEventMessageUidFilterById($templateId);
         }
 
         return $templates;

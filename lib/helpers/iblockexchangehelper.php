@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration\Helpers;
 
+use Sprint\Migration\Exceptions\HelperException;
+
 class IblockExchangeHelper extends IblockHelper
 {
     protected $cachedProps = [];
@@ -81,5 +83,75 @@ class IblockExchangeHelper extends IblockHelper
             ];
         }
         return $res;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getSectionIdByUniqName($iblockId, $uniqName)
+    {
+        if (is_numeric($uniqName)) {
+            return $uniqName;
+        }
+
+        if (is_string($uniqName)) {
+            list($sectionName, $depthLevel, $code) = explode('|', $uniqName);
+            $uniqName = [];
+            if ($sectionName) {
+                $uniqName['NAME'] = $sectionName;
+            }
+            if ($depthLevel) {
+                $uniqName['DEPTH_LEVEL'] = $depthLevel;
+            }
+            if ($code) {
+                $uniqName['CODE'] = $code;
+            }
+        }
+
+        return $this->getSectionIdByUniqFilter($iblockId, $uniqName);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getElementIdByUniqName($iblockId, $uniqName)
+    {
+        if (is_numeric($uniqName)) {
+            return $uniqName;
+        }
+
+        if (is_string($uniqName)) {
+            list($elementName, $xmlId, $code) = explode('|', $uniqName);
+            $uniqName = [];
+            if ($elementName) {
+                $uniqName['NAME'] = $elementName;
+            }
+            if ($xmlId) {
+                $uniqName['XML_ID'] = $xmlId;
+            }
+            if ($code) {
+                $uniqName['CODE'] = $code;
+            }
+        }
+
+        return $this->getElementIdByUniqFilter($iblockId, $uniqName);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getSectionUniqNameById($iblockId, $sectionId)
+    {
+        $filter = $this->getSectionUniqFilterById($iblockId, $sectionId);
+        return $filter['NAME'] . '|' . $filter['DEPTH_LEVEL'] . '|' . $filter['CODE'];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getElementUniqNameById($iblockId, $elementId)
+    {
+        $filter = $this->getElementUniqFilterById($iblockId, $elementId);
+        return $filter['NAME'] . '|' . $filter['XML_ID'] . '|' . $filter['CODE'];
     }
 }

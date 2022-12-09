@@ -333,8 +333,12 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_EXCHANGE_VERSION"              => "Exchange file \"#NAME#\" not supported in this version of module.\nPlease recreate it",
         "ERR_IB_SECTION_ID_EMPTY"           => "Section in iblock \"#IBLOCK_ID#\" empty",
         "ERR_IB_SECTION_ID_NOT_FOUND"       => "Section \"#SECTION_ID#\" in iblock \"#IBLOCK_ID#\" not found",
-        "ERR_IB_SECTION_ON_LEVEL_NOT_FOUND" => "Section \"#SECTION_NAME#\" on level \"#DEPTH_LEVEL#\" not found",
+        "ERR_IB_SECTION_BY_FILTER_NOT_FOUND" => "Section \"#NAME#\" on level \"#DEPTH_LEVEL#\" in iblock \"#IBLOCK_ID#\" not found",
         "ERR_SAVE_COLLECTION_BY_PATH"       => "Collection by path \"#PATH#\" not created",
+        "ERR_IB_ELEMENT_ID_EMPTY"            => "Element in iblock \"#IBLOCK_ID#\" empty",
+        "ERR_IB_ELEMENT_ID_NOT_FOUND"        => "Element \"#ELEMENT_ID#\" in iblock \"#IBLOCK_ID#\" not found",
+        "ERR_IB_ELEMENT_BY_FILTER_NOT_FOUND" => "Element \"#NAME#\" in iblock \"#IBLOCK_ID#\" not found",
+
     ]
 );
 \Sprint\Migration\Locale::loadLocale(

@@ -187,17 +187,6 @@ class IblockElementsExport extends AbstractExchange
         $this->writeFile($writer, $val);
     }
 
-    protected function writeFieldSection(XMLWriter $writer, $val)
-    {
-        $iblockExchange = $this->getHelperManager()->IblockExchange();
-
-        $val = $iblockExchange->getSectionUniqNamesByIds(
-            $this->getIblockId(),
-            $val
-        );
-        $this->writeValue($writer, $val);
-    }
-
     protected function writeFieldS(XMLWriter $writer, $val)
     {
         $this->writeValue($writer, $val);
@@ -207,7 +196,7 @@ class IblockElementsExport extends AbstractExchange
     {
         $type = $prop['PROPERTY_TYPE'];
 
-        if (in_array($type, ['L', 'F', 'G'])) {
+        if (in_array($type, ['L', 'F', 'G', 'E'])) {
             return 'writeProperty' . ucfirst($type);
         } else {
             return 'writePropertyS';
@@ -233,16 +222,54 @@ class IblockElementsExport extends AbstractExchange
         }
     }
 
-    protected function writePropertyG(XMLWriter $writer, $prop)
+    protected function writeFieldSection(XMLWriter $writer, $val)
     {
         $iblockExchange = $this->getHelperManager()->IblockExchange();
 
-        $prop['VALUE'] = is_array($prop['VALUE']) ? $prop['VALUE'] : [$prop['VALUE']];
-        $prop['VALUE'] = $iblockExchange->getSectionUniqNamesByIds(
-            $prop['LINK_IBLOCK_ID'],
-            $prop['VALUE']
-        );
-        $this->writeValue($writer, $prop['VALUE']);
+        $val = array_filter(is_array($val) ? $val : [$val]);
+
+        foreach ($val as $sectionId) {
+            $uniqName = $iblockExchange->getSectionUniqNameById(
+                $this->getIblockId(),
+                $sectionId
+            );
+            if (!empty($uniqName)) {
+                $this->writeValue($writer, $uniqName);
+            }
+        }
+    }
+
+    protected function writePropertyG(XMLWriter $writer, $prop)
+    {
+        $iblockExchange = $this->getHelperManager()->IblockExchange();
+        $prop['VALUE'] = array_filter(is_array($prop['VALUE']) ? $prop['VALUE'] : [$prop['VALUE']]);
+
+        foreach ($prop['VALUE'] as $sectionId) {
+            $uniqName = $iblockExchange->getSectionUniqNameById(
+                $prop['LINK_IBLOCK_ID'],
+                $sectionId
+            );
+            if (!empty($uniqName)) {
+                $this->writeValue($writer, $uniqName);
+            }
+        }
+    }
+
+    protected function writePropertyE(XMLWriter $writer, $prop)
+    {
+        $iblockExchange = $this->getHelperManager()->IblockExchange();
+
+        $prop['VALUE'] = array_filter(is_array($prop['VALUE']) ? $prop['VALUE'] : [$prop['VALUE']]);
+
+        foreach ($prop['VALUE'] as $elementId) {
+            $uniqName = $iblockExchange->getElementUniqNameById(
+                $prop['LINK_IBLOCK_ID'],
+                $elementId
+            );
+            if (!empty($uniqName)) {
+                $this->writeValue($writer, $uniqName);
+            }
+        }
     }
 
     protected function writePropertyL(XMLWriter $writer, $prop)

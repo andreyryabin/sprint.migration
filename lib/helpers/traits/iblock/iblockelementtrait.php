@@ -4,6 +4,7 @@ namespace Sprint\Migration\Helpers\Traits\Iblock;
 
 use CIBlockElement;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 trait IblockElementTrait
 {
@@ -420,6 +421,86 @@ trait IblockElementTrait
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
+    }
+
+    /**
+     * @param $iblockId
+     * @param $elementId
+     *
+     * @throws HelperException
+     * @return array
+     */
+    public function getElementUniqFilterById($iblockId, $elementId)
+    {
+        if (empty($elementId)) {
+            $this->throwException(
+                __METHOD__,
+                Locale::getMessage(
+                    'ERR_IB_ELEMENT_ID_EMPTY',
+                    [
+                        '#IBLOCK_ID#' => $iblockId,
+                    ]
+                )
+            );
+        }
+
+        $element = $this->getElement($iblockId, ['ID' => $elementId]);
+
+        if (empty($element['ID'])) {
+            $this->throwException(
+                __METHOD__,
+                Locale::getMessage(
+                    'ERR_IB_ELEMENT_ID_NOT_FOUND',
+                    [
+                        '#IBLOCK_ID#'  => $iblockId,
+                        '#ELEMENT_ID#' => $elementId,
+                    ]
+                )
+            );
+        }
+
+        return [
+            'NAME'   => $element['NAME'],
+            'XML_ID' => $element['XML_ID'],
+            'CODE'   => $element['CODE'],
+        ];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getElementIdByUniqFilter($iblockId, $uniqFilter)
+    {
+        if (empty($uniqFilter)) {
+            $this->throwException(
+                __METHOD__,
+                Locale::getMessage(
+                    'ERR_IB_ELEMENT_ID_EMPTY',
+                    [
+                        '#IBLOCK_ID#' => $iblockId,
+                    ]
+                )
+            );
+        }
+
+        $uniqFilter['IBLOCK_ID'] = $iblockId;
+
+        $element = $this->getElement($iblockId, $uniqFilter);
+
+        if (empty($element['ID'])) {
+            $this->throwException(
+                __METHOD__,
+                Locale::getMessage(
+                    'ERR_IB_ELEMENT_BY_FILTER_NOT_FOUND',
+                    [
+                        '#IBLOCK_ID#' => $iblockId,
+                        '#NAME#'      => $uniqFilter['NAME'],
+                    ]
+                )
+            );
+        }
+
+        return $element['ID'];
     }
 
     /**

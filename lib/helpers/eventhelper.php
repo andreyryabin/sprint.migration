@@ -119,16 +119,19 @@ class EventHelper extends Helper
         return false;
     }
 
-    public function getEventMessageUidById($messageId)
+    public function getEventMessageUidFilterById($messageId)
     {
         $item = CEventMessage::GetByID($messageId)->Fetch();
         if ($item) {
-            return $item['EVENT_NAME'] . ':' . $item['SUBJECT'];
+            return [
+                'EVENT_NAME' => $item['EVENT_NAME'],
+                'SUBJECT'    => $item['SUBJECT'],
+            ];
         }
         return $messageId;
     }
 
-    public function getEventMessageIdByUid($templateId)
+    public function getEventMessageIdByUidFilter($templateId)
     {
         if (empty($templateId)) {
             return false;
@@ -138,16 +141,13 @@ class EventHelper extends Helper
             return $templateId;
         }
 
-        list($eventName, $subject) = explode(':', $templateId);
-        $item = $this->getEventMessage(
-            [
-                'EVENT_NAME' => $eventName,
-                'SUBJECT'    => $subject,
-            ]
-        );
-        if ($item) {
-            return $item['ID'];
+        if (is_array($templateId) && isset($templateId['EVENT_NAME'])) {
+            $item = $this->getEventMessage($templateId);
+            if ($item) {
+                return $item['ID'];
+            }
         }
+
         return false;
     }
 
