@@ -23,6 +23,12 @@ class Version extends ExchangeEntity
     protected $moduleVersion    = "";
     protected $versionFilter    = [];
     protected $storageName      = 'default';
+    /**
+     * Миграции, которые должны быть установлены перед установкой текущей
+     * $this->requiredVersions = ['Version1','Version1']
+     * или
+     * $this->requiredVersions = [Version1::class,Version2::class]
+     */
     protected $requiredVersions = [];
 
     /**

@@ -685,7 +685,7 @@ class VersionManager
         try {
             require_once($file['location']);
 
-            $class = 'Sprint\Migration\\' . $versionName;
+            $class = __NAMESPACE__ . '\\' . $versionName;
             if (!class_exists($class)) {
                 return $meta;
             }
@@ -841,8 +841,8 @@ class VersionManager
     public function checkRequiredVersions(array $versionNames)
     {
         foreach ($versionNames as $versionName) {
-            if (class_exists($versionName)) {
-                $versionName = (new ReflectionClass($versionName))->getShortName();
+            if (strpos($versionName, '\\') !== false) {
+                $versionName = substr(strrchr($versionName, '\\'), 1);
             }
             if ($this->checkVersionName($versionName)) {
                 if (!$this->getRecordIfExists($versionName)) {
