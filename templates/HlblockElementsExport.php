@@ -10,6 +10,8 @@
  * @formatter:off
  */
 
+use Sprint\Migration\Exchange\HlblockElementsExport;
+
 ?><?php echo "<?php\n" ?>
 
 namespace Sprint\Migration;
@@ -35,7 +37,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
              ->setExchangeResource('hlblock_elements.xml')
              ->setLimit(20)
              ->execute(function ($item) {
-<?php if ($updateMode == 'xml_id') { ?>
+<?php if ($updateMode == HlblockElementsExport::UPDATE_MODE_XML_ID) { ?>
                  $this->getHelperManager()
                       ->Hlblock()
                       ->saveElementByXmlId(
@@ -61,7 +63,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function down()
     {
-<?php if ($updateMode == 'xml_id') { ?>
+<?php if ($updateMode == HlblockElementsExport::UPDATE_MODE_XML_ID) { ?>
         $this->getExchangeManager()
              ->HlblockElementsImport()
              ->setExchangeResource('hlblock_elements.xml')

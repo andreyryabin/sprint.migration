@@ -18,3 +18,6 @@
         добавлено свойство $requiredVersions=[VersionName1, VersionName2], не дающее установить миграцию, если не установлены заданные
     </li>
 </ul>
+13) Убраны параметр в конфиге version_filter и метод в классе миграции $this->isVersionEnabled(),
+некоректно фильтровавший список миграций <br>
+14) Методы в классе миграции saveData, getSavedData, deleteSavedData, перенесены внутрь объекта $this->getStorageManager()<br>

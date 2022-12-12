@@ -44,7 +44,6 @@ class VersionConfig
         'exchange_dir',
         'exchange_dir_absolute',
         'version_prefix',
-        'version_filter',
         'version_builders',
         'version_schemas',
         'show_admin_interface',
@@ -272,10 +271,6 @@ class VersionConfig
 
         if (empty($values['version_prefix'])) {
             $values['version_prefix'] = 'Version';
-        }
-
-        if (!isset($values['version_filter']) || !is_array($values['version_filter'])) {
-            $values['version_filter'] = [];
         }
 
         if (isset($values['show_admin_interface'])) {

@@ -10,9 +10,19 @@ use XMLWriter;
 class IblockElementsExport extends AbstractExchange
 {
     protected $iblockId;
+    protected $updateMode;
     protected $exportFilter     = [];
     protected $exportFields     = [];
     protected $exportProperties = [];
+    const UPDATE_MODE_NOT    = 'not';
+    const UPDATE_MODE_CODE   = 'code';
+    const UPDATE_MODE_XML_ID = 'xml_id';
+
+    public function setUpdateMode(string $updateMode)
+    {
+        $this->updateMode = $updateMode;
+        return $this;
+    }
 
     /**
      * @return array

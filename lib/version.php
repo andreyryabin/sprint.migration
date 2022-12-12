@@ -19,10 +19,9 @@ class Version extends ExchangeEntity
     use ExitMessageTrait;
     use OutTrait;
 
-    protected $description      = "";
-    protected $moduleVersion    = "";
-    protected $versionFilter    = [];
-    protected $storageName      = 'default';
+    protected $description   = "";
+    protected $moduleVersion = "";
+
     /**
      * Миграции, которые должны быть установлены перед установкой текущей
      * $this->requiredVersions = ['Version1','Version1']
@@ -56,14 +55,6 @@ class Version extends ExchangeEntity
     }
 
     /**
-     * @return bool
-     */
-    public function isVersionEnabled()
-    {
-        return true;
-    }
-
-    /**
      * @return string
      */
     public function getDescription()
@@ -88,29 +79,24 @@ class Version extends ExchangeEntity
     }
 
     /**
-     * @return array
+     * @throws MigrationException
      */
-    public function getVersionFilter()
+    public function checkRequiredVersions($versionNames)
     {
-        return $this->versionFilter;
+        (new VersionManager($this->getVersionConfig()))->checkRequiredVersions($versionNames);
     }
 
     /**
-     * @param $name
-     * @param $data
-     *
-     */
-    public function saveData($name, $data)
-    {
-        $this->getStorageManager()->saveData($this->getClassName(), $name, $data);
-    }
-
-    /**
+     * @throws MigrationException
      * @return StorageManager
      */
-    protected function getStorageManager()
+    protected function getStorageManager($versionName = '')
     {
-        return new StorageManager($this->storageName);
+        if (empty($versionName)) {
+            $versionName = $this->getClassName();
+        }
+
+        return new StorageManager('default', $versionName);
     }
 
     /**
@@ -119,34 +105,6 @@ class Version extends ExchangeEntity
     protected function getExchangeManager()
     {
         return new ExchangeManager($this);
-    }
-
-    /**
-     * @param $name
-     *
-     * @return mixed|string
-     *
-     */
-    public function getSavedData($name)
-    {
-        return $this->getStorageManager()->getSavedData($this->getClassName(), $name);
-    }
-
-    /**
-     * @param bool $name
-     *
-     */
-    public function deleteSavedData($name = false)
-    {
-        $this->getStorageManager()->deleteSavedData($this->getClassName(), $name);
-    }
-
-    /**
-     * @throws MigrationException
-     */
-    public function checkRequiredVersions($versionNames)
-    {
-        (new VersionManager($this->getVersionConfig()))->checkRequiredVersions($versionNames);
     }
 }
 

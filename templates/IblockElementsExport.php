@@ -10,6 +10,8 @@
  * @formatter:off
  */
 
+use Sprint\Migration\Exchange\IblockElementsExport;
+
 ?><?php echo "<?php\n" ?>
 
 namespace Sprint\Migration;
@@ -33,7 +35,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
              ->setExchangeResource('iblock_elements.xml')
              ->setLimit(20)
              ->execute(function ($item) {
-<?php if ($updateMode == 'code') { ?>
+<?php if ($updateMode == IblockElementsExport::UPDATE_MODE_CODE) { ?>
                  $this->getHelperManager()
                       ->Iblock()
                       ->saveElement(
@@ -41,7 +43,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                           $item['fields'],
                           $item['properties']
                       );
-<?php } elseif($updateMode == 'xml_id') { ?>
+<?php } elseif($updateMode == IblockElementsExport::UPDATE_MODE_XML_ID) { ?>
                  $this->getHelperManager()
                       ->Iblock()
                       ->saveElementByXmlId(
@@ -68,7 +70,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function down()
     {
-<?php if ($updateMode == 'code') { ?>
+<?php if ($updateMode == IblockElementsExport::UPDATE_MODE_CODE) { ?>
         $this->getExchangeManager()
              ->IblockElementsImport()
              ->setExchangeResource('iblock_elements.xml')
@@ -79,9 +81,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                       ->deleteElementByCode(
                           $item['iblock_id'],
                           $item['fields']['CODE']
-                      );
+                 );
              });
-<?php } elseif($updateMode == 'xml_id') { ?>
+<?php } elseif($updateMode == IblockElementsExport::UPDATE_MODE_XML_ID) { ?>
         $this->getExchangeManager()
              ->IblockElementsImport()
              ->setExchangeResource('iblock_elements.xml')

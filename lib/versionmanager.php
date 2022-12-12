@@ -153,8 +153,6 @@ class VersionManager
      */
     public function getVersions($filter = [])
     {
-        $configFilter = $this->getVersionConfig()->getVal('version_filter', []);
-
         $filter = array_merge(['status' => ''], $filter);
         $merge = [];
 
@@ -183,13 +181,11 @@ class VersionManager
             $meta = $this->prepVersionMeta($version, $file, $record);
 
             if (
-                $this->isVersionEnabled($meta)
-                && $this->containsFilterStatus($meta, $filter)
+                $this->containsFilterStatus($meta, $filter)
                 && $this->containsFilterSearch($meta, $filter)
                 && $this->containsFilterTag($meta, $filter)
                 && $this->containsFilterModified($meta, $filter)
                 && $this->containsFilterOlder($meta, $filter)
-                && $this->containsFilterVersion($meta, $configFilter)
             ) {
                 $result[] = $meta;
             }
@@ -561,22 +557,6 @@ class VersionManager
         ];
     }
 
-    protected function isVersionEnabled($meta)
-    {
-        return (isset($meta['enabled']) && $meta['enabled']);
-    }
-
-    protected function containsFilterVersion($meta, $filter)
-    {
-        foreach ($filter as $k => $v) {
-            if (empty($meta['version_filter'][$k]) || $meta['version_filter'][$k] != $v) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     protected function containsFilterTag($meta, $filter)
     {
         if (empty($filter['tag'])) {
@@ -655,7 +635,6 @@ class VersionManager
             'is_file'   => $isFile,
             'is_record' => $isRecord,
             'version'   => $versionName,
-            'enabled'   => true,
             'modified'  => false,
             'older'     => false,
             'hash'      => '',
@@ -698,8 +677,6 @@ class VersionManager
                 $versionInstance->getDescription()
             );
             $meta['required_versions'] = $versionInstance->getRequiredVersions();
-            $meta['version_filter'] = $versionInstance->getVersionFilter();
-            $meta['enabled'] = $versionInstance->isVersionEnabled();
 
             $v1 = $versionInstance->getModuleVersion();
             $v2 = Module::getVersion();
@@ -844,10 +821,11 @@ class VersionManager
             if (strpos($versionName, '\\') !== false) {
                 $versionName = substr(strrchr($versionName, '\\'), 1);
             }
-            if ($this->checkVersionName($versionName)) {
-                if (!$this->getRecordIfExists($versionName)) {
-                    throw new MigrationException(sprintf('Required "%s" not installed', $versionName));
-                }
+            if (!$this->checkVersionName($versionName)) {
+                throw new MigrationException(sprintf('Required "%s" not found', $versionName));
+            }
+            if (!$this->getRecordIfExists($versionName)) {
+                throw new MigrationException(sprintf('Required "%s" not installed', $versionName));
             }
         }
     }
