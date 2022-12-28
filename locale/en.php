@@ -380,6 +380,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "IB_PROPERTY_UPDATED"      => "Information block \"#IBLOCK_ID#\": property \"#NAME#\" updated",
         "IB_PROPERTY_EQUAL"        => "Information block \"#IBLOCK_ID#\": property \"#NAME#\" equivalent",
         "IB_PROPERTY_DELETED"      => "Information block \"#IBLOCK_ID#\": property \"#NAME#\" deleted",
+        "IB_PROPERTY_LINK_SAVED"      => "Information block \"#IBLOCK_ID#\": property link saved",
         "IB_CREATED"               => "Information block \"#NAME#\" created",
         "IB_UPDATED"               => "Information block \"#NAME#\" updated",
         "IB_EQUAL"                 => "Information block \"#NAME#\" equivalent",

@@ -8,6 +8,7 @@ use Bitrix\Iblock\SectionPropertyTable;
 use CIBlockProperty;
 use CIBlockPropertyEnum;
 use Exception;
+use CIBlockSectionPropertyLink;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
 
@@ -43,6 +44,11 @@ trait IblockPropertyTrait
                     ]
                 )
             );
+
+            if(isset($fields['PROPERTY_LINK'])) {
+                $this->savePropertyLink($iblockId, $ok, $fields['PROPERTY_LINK']);
+            }
+
             return $ok;
         }
 
@@ -59,6 +65,11 @@ trait IblockPropertyTrait
                 )
             );
             $this->outDiffIf($ok, $exportExists, $fields);
+
+            if(isset($fields['PROPERTY_LINK'])) {
+                $this->savePropertyLink($iblockId, $exists['ID'], $fields['PROPERTY_LINK']);
+            }
+
             return $ok;
         }
 
@@ -392,6 +403,10 @@ trait IblockPropertyTrait
             $fields['VALUES'] = $newValues;
         }
 
+        if(isset($fields['PROPERTY_LINK'])) {
+
+        }
+
         $ib = new CIBlockProperty();
         if ($ib->Update($propertyId, $fields)) {
             return $propertyId;
@@ -601,5 +616,37 @@ trait IblockPropertyTrait
         unset($prop['TMP_ID']);
 
         return $prop;
+    }
+
+    /**
+     * Сохраняет связи свойств
+     * Чтобы свойство было использованно в умном фильтре
+     *
+     * @param       $iblockId
+     * @param       $propertyId
+     * @param array $fields
+     */
+    protected function savePropertyLink($iblockId, $propertyId, $fields)
+    {
+        $default = [
+            'IBLOCK_ID' => $iblockId,
+            'SECTION_ID' => 0,
+            'SMART_FILTER' => 'N',
+            'DISPLAY_TYPE' => 'F',
+            'DISPLAY_EXPANDED' => 'N'
+        ];
+
+        $fields = array_replace_recursive($default, $fields);
+        CIBlockSectionPropertyLink::Set($fields['SECTION_ID'], $propertyId, $fields);
+
+        $this->outNoticeIf(
+            true,
+            Locale::getMessage(
+                'IB_PROPERTY_LINK_SAVED',
+                [
+                    '#IBLOCK_ID#' => $iblockId,
+                ]
+            )
+        );
     }
 }
