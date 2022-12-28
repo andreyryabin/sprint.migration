@@ -4,6 +4,7 @@ namespace Sprint\Migration\Helpers\Traits\Iblock;
 
 use Bitrix\Iblock\Model\PropertyFeature;
 use Bitrix\Iblock\PropertyFeatureTable;
+use Bitrix\Iblock\SectionPropertyTable;
 use CIBlockProperty;
 use CIBlockPropertyEnum;
 use Exception;
@@ -572,6 +573,26 @@ trait IblockPropertyTrait
 
         if (!empty($prop['LINK_IBLOCK_ID'])) {
             $prop['LINK_IBLOCK_ID'] = $this->getIblockUid($prop['LINK_IBLOCK_ID']);
+        }
+
+        if(\CIBlockSectionPropertyLink::HasIBlockLinks($prop['IBLOCK_ID'])) {
+            $arLinks = SectionPropertyTable::getList([
+                'filter' => [
+                    'IBLOCK_ID' => $prop['IBLOCK_ID'],
+                    'PROPERTY_ID' => $prop['ID']
+                ]
+            ])->fetchAll();
+            foreach($arLinks as $link) {
+                if($link['PROPERTY_ID'] == $prop['ID']) {
+                    $prop['PROPERTY_LINK'] = [
+                        'SECTION_ID' => $link['SECTION_ID'],
+                        'SMART_FILTER' => $link['SMART_FILTER'],
+                        'DISPLAY_TYPE' => $link['DISPLAY_TYPE'],
+                        'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'],
+                        'FILTER_HINT' => $link['FILTER_HINT']
+                    ];
+                }
+            }
         }
 
         unset($prop['ID']);
