@@ -590,7 +590,7 @@ trait IblockPropertyTrait
             $prop['LINK_IBLOCK_ID'] = $this->getIblockUid($prop['LINK_IBLOCK_ID']);
         }
 
-        if(\CIBlockSectionPropertyLink::HasIBlockLinks($prop['IBLOCK_ID'])) {
+        if(CIBlockSectionPropertyLink::HasIBlockLinks($prop['IBLOCK_ID'])) {
             $arLinks = SectionPropertyTable::getList([
                 'filter' => [
                     'IBLOCK_ID' => $prop['IBLOCK_ID'],
