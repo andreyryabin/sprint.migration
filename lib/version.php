@@ -35,7 +35,7 @@ class Version extends ExchangeEntity
      *
      * @throws RestartException
      * @throws HelperException
-     * @return bool
+     * @return bool|void
      */
     public function up()
     {
@@ -47,7 +47,7 @@ class Version extends ExchangeEntity
      *
      * @throws RestartException
      * @throws HelperException
-     * @return bool
+     * @return bool|void
      */
     public function down()
     {
