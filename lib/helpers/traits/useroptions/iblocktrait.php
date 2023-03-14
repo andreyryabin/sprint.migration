@@ -408,7 +408,7 @@ trait IblockTrait
             foreach ($columns as $index => $columnCode) {
                 $columns[$index] = $this->revertCode($columnCode);
             }
-            return $columns;
+            return array_values($columns);
         }
         return $columns;
     }

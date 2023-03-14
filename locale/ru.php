@@ -164,10 +164,25 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_UserOptionsExport_WhatUserForm"  => "Настрока формы редактирования пользователей",
         "BUILDER_UserOptionsExport_WhatUserList"  => "Настрока списка пользователей",
         "BUILDER_UserOptionsExport_WhatGroupList" => "Настрока списка групп",
-        "BUILDER_HlblockExport1"                  => "Создать миграцию для highload-блока",
-        "BUILDER_HlblockExport_HlblockId"         => "Выберите highload-блоки",
-        "BUILDER_UserTypeEntities1"               => "Создать миграцию для пользовательских полей",
-        "BUILDER_UserTypeEntities_EntityId"       => "Укажите поле для выгрузки",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "ru",
+    [
+        "BUILDER_HlblockExport1"                       => "Создать миграцию для highload-блока",
+        "BUILDER_HlblockExport_HlblockId"              => "Выберите highload-блоки",
+        "BUILDER_HlblockExport_What"                   => "Что переносим",
+        "BUILDER_HlblockExport_WhatHlblock"            => "Highload-блок",
+        "BUILDER_HlblockExport_WhatHlblockFields"      => "Поля highload-блока",
+        "BUILDER_HlblockExport_WhatHlblockUserOptions" => "Настройки формы редактирования и списка",
+        "BUILDER_HlblockExport_WhatHlblockPermissions" => "Доступ к highload-блоку",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "ru",
+    [
+        "BUILDER_UserTypeEntities1"         => "Создать миграцию для пользовательских полей",
+        "BUILDER_UserTypeEntities_EntityId" => "Укажите поле для выгрузки",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
