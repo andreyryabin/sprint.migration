@@ -6,6 +6,7 @@ use CGridOptions;
 use CUserOptions;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
+use Sprint\Migration\Helpers\Traits\UserOptions\HlblockTrait;
 use Sprint\Migration\Helpers\Traits\UserOptions\IblockTrait;
 use Sprint\Migration\Helpers\Traits\UserOptions\UserGroupTrait;
 use Sprint\Migration\Helpers\Traits\UserOptions\UserTrait;
@@ -52,6 +53,7 @@ class UserOptionsHelper extends Helper
     use IblockTrait;
     use UserTrait;
     use UserGroupTrait;
+    use HlblockTrait;
 
     /**
      * @param array $params
@@ -298,7 +300,7 @@ class UserOptionsHelper extends Helper
                     continue;
                 }
 
-                list($fieldCode, $fieldTitle) = explode('#', $fieldString);
+                [$fieldCode, $fieldTitle] = explode('#', $fieldString);
 
                 $fieldCode = str_replace('--', '', strval($fieldCode));
                 $fieldTitle = str_replace('--', '', strval($fieldTitle));
@@ -356,7 +358,7 @@ class UserOptionsHelper extends Helper
         $tabVals = [];
 
         foreach ($formData as $tabTitle => $fields) {
-            list($tabTitle, $tabId) = explode('|', $tabTitle);
+            [$tabTitle, $tabId] = explode('|', $tabTitle);
 
             if (!$tabId) {
                 $tabId = 'edit' . ($tabIndex + 1);
@@ -369,7 +371,7 @@ class UserOptionsHelper extends Helper
             foreach ($fields as $fieldKey => $fieldValue) {
                 if (is_numeric($fieldKey)) {
                     /** @compability */
-                    list($fcode, $ftitle) = explode('|', $fieldValue);
+                    [$fcode, $ftitle] = explode('|', $fieldValue);
                 } else {
                     $fcode = $fieldKey;
                     $ftitle = $fieldValue;

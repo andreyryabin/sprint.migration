@@ -474,7 +474,11 @@ class HlblockHelper extends Helper
         $item = $this->getHlblock($hlblockName);
         return ($item && isset($item['ID'])) ? $item['ID'] : 0;
     }
-
+    public function getHlblockTableName($hlblockName)
+    {
+        $item = $this->getHlblock($hlblockName);
+        return ($item && isset($item['TABLE_NAME'])) ? $item['TABLE_NAME'] : '';
+    }
     /**
      * Добавляет highload-блок
      *
