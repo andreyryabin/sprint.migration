@@ -59,6 +59,7 @@ class HlblockElementsBuilder extends VersionBuilder
         $this->getExchangeManager()
              ->HlblockElementsExport()
              ->setLimit(20)
+             ->setCopyFiles(true)
              ->setUpdateMode($updateMode)
              ->setExportFields($fields)
              ->setHlblockId($hlblockId)

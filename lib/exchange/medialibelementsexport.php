@@ -2,11 +2,11 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Module;
 use XMLWriter;
 
-class MedialibElementsExport extends AbstractExchange
+class MedialibElementsExport extends AbstractWriter
 {
     protected $collectionIds = [];
     protected $exportFields  = [
@@ -50,7 +50,7 @@ class MedialibElementsExport extends AbstractExchange
             $this->createExchangeDir();
 
             $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
-            $this->appendToExchangeFile('<items exchangeVersion="' . self::EXCHANGE_VERSION . '">');
+            $this->appendToExchangeFile('<items exchangeVersion="' . Module::getExchangeVersion() . '">');
         }
 
         if ($params['offset'] <= $params['total'] - 1) {
@@ -90,7 +90,7 @@ class MedialibElementsExport extends AbstractExchange
             $this->outProgress('', $params['offset'], $params['total']);
 
             $this->exchangeEntity->setRestartParams($params);
-            $this->restart();
+            $this->exchangeEntity->restart();
         }
 
         $this->appendToExchangeFile('</items>');

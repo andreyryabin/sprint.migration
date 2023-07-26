@@ -86,7 +86,8 @@ abstract class VersionBuilder extends AbstractBuilder
             $this->getVersionConfig()->getVal('version_name_template'),
             [
                 '#NAME#'      => $this->purifyPrefix($this->getFieldValue('prefix')),
-                '#TIMESTAMP#' => $this->getTimestamp(),
+                '#TIMESTAMP#' => $this->getTimestamp('YmdHis'),
+                '#TIME_STAMP#' => $this->getTimestamp('Y_m_d_His'),
             ]
         );
     }
@@ -165,11 +166,11 @@ abstract class VersionBuilder extends AbstractBuilder
         return $templateVars['version'];
     }
 
-    protected function getTimestamp()
+    protected function getTimestamp($mask)
     {
         $originTz = date_default_timezone_get();
         date_default_timezone_set('Europe/Moscow');
-        $ts = date('YmdHis');
+        $ts = date($mask);
         date_default_timezone_set($originTz);
         return $ts;
     }

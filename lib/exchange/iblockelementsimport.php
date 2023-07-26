@@ -2,14 +2,14 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
+use Sprint\Migration\Module;
 use XMLReader;
 
-class IblockElementsImport extends AbstractExchange
+class IblockElementsImport extends AbstractReader
 {
     protected $converter;
 
@@ -53,7 +53,7 @@ class IblockElementsImport extends AbstractExchange
             }
             $reader->close();
 
-            if (!$exchangeVersion || $exchangeVersion < self::EXCHANGE_VERSION) {
+            if (!$exchangeVersion || $exchangeVersion < Module::getExchangeVersion()) {
                 $this->exitWithMessage(
                     Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->getExchangeFile()])
                 );
@@ -86,7 +86,7 @@ class IblockElementsImport extends AbstractExchange
                 if ($restart) {
                     $params['offset'] = $index;
                     $this->exchangeEntity->setRestartParams($params);
-                    $this->restart();
+                    $this->exchangeEntity->restart();
                 }
                 $index++;
             }
@@ -287,6 +287,7 @@ class IblockElementsImport extends AbstractExchange
 
         return ($isMultiple) ? $res : $res[0];
     }
+
     protected function convertPropertyF($iblockId, $prop)
     {
         $iblockExchange = $this->getHelperManager()->IblockExchange();

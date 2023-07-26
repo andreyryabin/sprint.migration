@@ -78,7 +78,7 @@ class VersionManager
         try {
             $meta = $this->getVersionByName($versionName);
 
-            if (!$meta || empty($meta['class'])) {
+            if (!$meta || !isset($meta['instance'])) {
                 throw new MigrationException('failed to initialize migration');
             }
 
@@ -101,7 +101,7 @@ class VersionManager
             }
 
             /** @var $versionInstance Version */
-            $versionInstance = new $meta['class'];
+            $versionInstance = $meta['instance'];
             $versionInstance->setVersionConfig($this->versionConfig);
             $versionInstance->setRestartParams($params);
 
@@ -235,7 +235,7 @@ class VersionManager
             return false;
         }
 
-        $builder->initializeBuilder();
+        $builder->buildInit();
         return $builder;
     }
 
@@ -307,7 +307,9 @@ class VersionManager
         if (preg_match('/20\d{12}/', $versionName, $matches)) {
             return end($matches);
         }
-
+        if (preg_match('/20\d{2}_\d{2}_\d{2}_\d{6}/', $versionName, $matches)) {
+            return end($matches);
+        }
         return false;
     }
 
@@ -662,17 +664,20 @@ class VersionManager
         $meta['location'] = $file['location'];
 
         try {
-            require_once($file['location']);
+            $versionInstance = require_once($file['location']);
+            if (!is_object($versionInstance)) {
+                $class = __NAMESPACE__ . '\\' . $versionName;
+                if (class_exists($class)) {
+                    $versionInstance = (new ReflectionClass($class))
+                        ->newInstanceWithoutConstructor();
+                }
+            }
 
-            $class = __NAMESPACE__ . '\\' . $versionName;
-            if (!class_exists($class)) {
+            if (!($versionInstance instanceof Version)) {
                 return $meta;
             }
 
-            /** @var $versionInstance Version */
-            $versionInstance = (new ReflectionClass($class))
-                ->newInstanceWithoutConstructor();
-            $meta['class'] = $class;
+            $meta['instance'] = $versionInstance;
             $meta['description'] = $this->purifyDescriptionForMeta(
                 $versionInstance->getDescription()
             );

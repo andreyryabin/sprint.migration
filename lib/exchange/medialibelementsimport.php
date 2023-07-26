@@ -2,13 +2,13 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
+use Sprint\Migration\Module;
 use XMLReader;
 
-class MedialibElementsImport extends AbstractExchange
+class MedialibElementsImport extends AbstractReader
 {
     protected $converter;
 
@@ -44,7 +44,7 @@ class MedialibElementsImport extends AbstractExchange
             }
             $reader->close();
 
-            if (!$exchangeVersion || $exchangeVersion < self::EXCHANGE_VERSION) {
+            if (!$exchangeVersion || $exchangeVersion < Module::getExchangeVersion()) {
                 $this->exitWithMessage(
                     Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->getExchangeFile()])
                 );
@@ -72,7 +72,7 @@ class MedialibElementsImport extends AbstractExchange
                 if ($restart) {
                     $params['offset'] = $index;
                     $this->exchangeEntity->setRestartParams($params);
-                    $this->restart();
+                    $this->exchangeEntity->restart();
                 }
                 $index++;
             }

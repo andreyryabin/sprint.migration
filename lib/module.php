@@ -96,11 +96,15 @@ class Module
     {
         if (!self::$version) {
             $arModuleVersion = [];
-            /** @noinspection PhpIncludeInspection */
             include self::getModuleDir() . '/install/version.php';
             self::$version = $arModuleVersion['VERSION'] ?? '';
         }
         return self::$version;
+    }
+
+    public static function getExchangeVersion()
+    {
+        return 2;
     }
 
     /**
