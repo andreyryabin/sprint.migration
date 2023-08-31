@@ -7,8 +7,8 @@ use Bitrix\Iblock\PropertyFeatureTable;
 use Bitrix\Iblock\SectionPropertyTable;
 use CIBlockProperty;
 use CIBlockPropertyEnum;
-use Exception;
 use CIBlockSectionPropertyLink;
+use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
 
@@ -45,7 +45,7 @@ trait IblockPropertyTrait
                 )
             );
 
-            if(isset($fields['PROPERTY_LINK'])) {
+            if (isset($fields['PROPERTY_LINK'])) {
                 $this->savePropertyLink($iblockId, $ok, $fields['PROPERTY_LINK']);
             }
 
@@ -66,7 +66,7 @@ trait IblockPropertyTrait
             );
             $this->outDiffIf($ok, $exportExists, $fields);
 
-            if(isset($fields['PROPERTY_LINK'])) {
+            if (isset($fields['PROPERTY_LINK'])) {
                 $this->savePropertyLink($iblockId, $exists['ID'], $fields['PROPERTY_LINK']);
             }
 
@@ -271,7 +271,7 @@ trait IblockPropertyTrait
         $fields = array_replace_recursive($default, $fields);
 
         if (false !== strpos($fields['PROPERTY_TYPE'], ':')) {
-            list($ptype, $utype) = explode(':', $fields['PROPERTY_TYPE']);
+            [$ptype, $utype] = explode(':', $fields['PROPERTY_TYPE']);
             $fields['PROPERTY_TYPE'] = $ptype;
             $fields['USER_TYPE'] = $utype;
         }
@@ -368,7 +368,7 @@ trait IblockPropertyTrait
         }
 
         if (false !== strpos($fields['PROPERTY_TYPE'], ':')) {
-            list($ptype, $utype) = explode(':', $fields['PROPERTY_TYPE']);
+            [$ptype, $utype] = explode(':', $fields['PROPERTY_TYPE']);
             $fields['PROPERTY_TYPE'] = $ptype;
             $fields['USER_TYPE'] = $utype;
         }
@@ -401,10 +401,6 @@ trait IblockPropertyTrait
             }
 
             $fields['VALUES'] = $newValues;
-        }
-
-        if(isset($fields['PROPERTY_LINK'])) {
-
         }
 
         $ib = new CIBlockProperty();
@@ -590,21 +586,21 @@ trait IblockPropertyTrait
             $prop['LINK_IBLOCK_ID'] = $this->getIblockUid($prop['LINK_IBLOCK_ID']);
         }
 
-        if(CIBlockSectionPropertyLink::HasIBlockLinks($prop['IBLOCK_ID'])) {
+        if (CIBlockSectionPropertyLink::HasIBlockLinks($prop['IBLOCK_ID'])) {
             $arLinks = SectionPropertyTable::getList([
                 'filter' => [
-                    'IBLOCK_ID' => $prop['IBLOCK_ID'],
-                    'PROPERTY_ID' => $prop['ID']
-                ]
+                    'IBLOCK_ID'   => $prop['IBLOCK_ID'],
+                    'PROPERTY_ID' => $prop['ID'],
+                ],
             ])->fetchAll();
-            foreach($arLinks as $link) {
-                if($link['PROPERTY_ID'] == $prop['ID']) {
+            foreach ($arLinks as $link) {
+                if ($link['PROPERTY_ID'] == $prop['ID']) {
                     $prop['PROPERTY_LINK'] = [
-                        'SECTION_ID' => $link['SECTION_ID'],
-                        'SMART_FILTER' => $link['SMART_FILTER'],
-                        'DISPLAY_TYPE' => $link['DISPLAY_TYPE'],
+                        'SECTION_ID'       => $link['SECTION_ID'],
+                        'SMART_FILTER'     => $link['SMART_FILTER'],
+                        'DISPLAY_TYPE'     => $link['DISPLAY_TYPE'],
                         'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'],
-                        'FILTER_HINT' => $link['FILTER_HINT']
+                        'FILTER_HINT'      => $link['FILTER_HINT'],
                     ];
                 }
             }
@@ -629,11 +625,11 @@ trait IblockPropertyTrait
     protected function savePropertyLink($iblockId, $propertyId, $fields)
     {
         $default = [
-            'IBLOCK_ID' => $iblockId,
-            'SECTION_ID' => 0,
-            'SMART_FILTER' => 'N',
-            'DISPLAY_TYPE' => 'F',
-            'DISPLAY_EXPANDED' => 'N'
+            'IBLOCK_ID'        => $iblockId,
+            'SECTION_ID'       => 0,
+            'SMART_FILTER'     => 'N',
+            'DISPLAY_TYPE'     => 'F',
+            'DISPLAY_EXPANDED' => 'N',
         ];
 
         $fields = array_replace_recursive($default, $fields);
