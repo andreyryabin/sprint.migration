@@ -7,7 +7,6 @@ use Bitrix\Iblock\PropertyFeatureTable;
 use Bitrix\Iblock\SectionPropertyTable;
 use CIBlockProperty;
 use CIBlockPropertyEnum;
-use CIBlockSectionPropertyLink;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
@@ -45,15 +44,14 @@ trait IblockPropertyTrait
                 )
             );
 
-            if (isset($fields['PROPERTY_LINK'])) {
-                $this->savePropertyLink($iblockId, $ok, $fields['PROPERTY_LINK']);
-            }
-
             return $ok;
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updatePropertyById($exists['ID'], $fields);
+            $ok = $this->getMode('test') ? true : $this->updatePropertyById(
+                $exists['ID'],
+                array_merge($fields, ['IBLOCK_ID' => $iblockId])
+            );
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -65,10 +63,6 @@ trait IblockPropertyTrait
                 )
             );
             $this->outDiffIf($ok, $exportExists, $fields);
-
-            if (isset($fields['PROPERTY_LINK'])) {
-                $this->savePropertyLink($iblockId, $exists['ID'], $fields['PROPERTY_LINK']);
-            }
 
             return $ok;
         }
@@ -98,6 +92,32 @@ trait IblockPropertyTrait
         /* do not use =CODE in filter */
         $property = CIBlockProperty::GetList(['SORT' => 'ASC'], $filter)->Fetch();
         return $this->prepareProperty($property);
+    }
+
+    protected function prepareProperty($property)
+    {
+        if (!empty($property['ID']) && !empty($property['IBLOCK_ID'])) {
+            if ($property['PROPERTY_TYPE'] == 'L') {
+                $property['VALUES'] = $this->getPropertyEnums(
+                    [
+                        'IBLOCK_ID'   => $property['IBLOCK_ID'],
+                        'PROPERTY_ID' => $property['ID'],
+                    ]
+                );
+            }
+
+            $features = $this->getPropertyFeatures($property['ID']);
+            if (!empty($features)) {
+                $property['FEATURES'] = $features;
+            }
+
+            $sectionProperty = $this->getSectionProperty($property['ID']);
+            if (!empty($sectionProperty)) {
+                $property = array_merge($property, $sectionProperty);
+            }
+        }
+
+        return $property;
     }
 
     /**
@@ -145,92 +165,70 @@ trait IblockPropertyTrait
         return $features;
     }
 
-    /**
-     * Получает значения списков для свойства инфоблока
-     *
-     * @param $iblockId
-     * @param $propertyId
-     *
-     * @return array
-     */
-    public function getPropertyEnumValues($iblockId, $propertyId)
+    public function getSectionProperty($propertyId)
     {
-        return $this->getPropertyEnums(
-            [
-                'IBLOCK_ID'   => $iblockId,
-                'PROPERTY_ID' => $propertyId,
-            ]
-        );
+        try {
+            $link = SectionPropertyTable::getList([
+                'filter' => [
+                    'PROPERTY_ID' => $propertyId,
+                ],
+            ])->fetch();
+
+            return $link ? [
+                'SMART_FILTER'     => $link['SMART_FILTER'],
+                'DISPLAY_TYPE'     => $link['DISPLAY_TYPE'],
+                'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'],
+                'FILTER_HINT'      => $link['FILTER_HINT'],
+            ] : [];
+        } catch (Exception $e) {
+        }
+        return [];
     }
 
-    /**
-     * Получает свойство инфоблока
-     *
-     * @param $iblockId
-     * @param $code int|array - код или фильтр
-     *
-     * @return int
-     */
-    public function getPropertyId($iblockId, $code)
+    protected function prepareExportProperty($prop)
     {
-        $item = $this->getProperty($iblockId, $code);
-        return ($item && isset($item['ID'])) ? $item['ID'] : 0;
-    }
-
-    /**
-     * Получает свойства инфоблока
-     *
-     * @param       $iblockId
-     * @param array $filter
-     *
-     * @return array
-     */
-    public function getProperties($iblockId, $filter = [])
-    {
-        $filter['IBLOCK_ID'] = $iblockId;
-        $filter['CHECK_PERMISSIONS'] = 'N';
-
-        $filterIds = false;
-        if (isset($filter['ID']) && is_array($filter['ID'])) {
-            $filterIds = $filter['ID'];
-            unset($filter['ID']);
+        if (empty($prop)) {
+            return $prop;
         }
 
-        $dbres = CIBlockProperty::GetList(['SORT' => 'ASC'], $filter);
+        if (!empty($prop['VALUES']) && is_array($prop['VALUES'])) {
+            $exportValues = [];
 
-        $result = [];
-
-        while ($property = $dbres->Fetch()) {
-            if ($filterIds) {
-                if (in_array($property['ID'], $filterIds)) {
-                    $result[] = $this->prepareProperty($property);
-                }
-            } else {
-                $result[] = $this->prepareProperty($property);
+            foreach ($prop['VALUES'] as $item) {
+                $exportValues[] = [
+                    'VALUE'  => $item['VALUE'],
+                    'DEF'    => $item['DEF'],
+                    'SORT'   => $item['SORT'],
+                    'XML_ID' => $item['XML_ID'],
+                ];
             }
-        }
-        return $result;
-    }
 
-    /**
-     * Добавляет свойство инфоблока если его не существует
-     *
-     * @param int   $iblockId
-     * @param array $fields
-     *
-     * @throws HelperException
-     * @return bool
-     */
-    public function addPropertyIfNotExists($iblockId, $fields)
-    {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
-
-        $property = $this->getProperty($iblockId, $fields['CODE']);
-        if ($property) {
-            return $property['ID'];
+            $prop['VALUES'] = $exportValues;
         }
 
-        return $this->addProperty($iblockId, $fields);
+        if (!empty($prop['FEATURES']) && is_array($prop['FEATURES'])) {
+            $exportFeatures = [];
+            foreach ($prop['FEATURES'] as $item) {
+                $exportFeatures[] = [
+                    'MODULE_ID'  => $item['MODULE_ID'],
+                    'FEATURE_ID' => $item['FEATURE_ID'],
+                    'IS_ENABLED' => $item['IS_ENABLED'],
+                ];
+            }
+
+            $prop['FEATURES'] = $exportFeatures;
+        }
+
+        if (!empty($prop['LINK_IBLOCK_ID'])) {
+            $prop['LINK_IBLOCK_ID'] = $this->getIblockUid($prop['LINK_IBLOCK_ID']);
+        }
+
+        unset($prop['ID']);
+        unset($prop['IBLOCK_ID']);
+        unset($prop['TIMESTAMP_X']);
+        unset($prop['TMP_ID']);
+
+        return $prop;
     }
 
     /**
@@ -290,62 +288,6 @@ trait IblockPropertyTrait
         }
 
         $this->throwException(__METHOD__, $ib->LAST_ERROR);
-    }
-
-    /**
-     * Удаляет свойство инфоблока если оно существует
-     *
-     * @param $iblockId
-     * @param $code
-     *
-     * @throws HelperException
-     * @return bool|void
-     */
-    public function deletePropertyIfExists($iblockId, $code)
-    {
-        $property = $this->getProperty($iblockId, $code);
-        if (!$property) {
-            return false;
-        }
-
-        return $this->deletePropertyById($property['ID']);
-    }
-
-    /**
-     * Удаляет свойство инфоблока
-     *
-     * @param $propertyId
-     *
-     * @throws HelperException
-     * @return bool|void
-     */
-    public function deletePropertyById($propertyId)
-    {
-        $ib = new CIBlockProperty;
-        if ($ib->Delete($propertyId)) {
-            return true;
-        }
-
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
-    }
-
-    /**
-     * Обновляет свойство инфоблока если оно существует
-     *
-     * @param $iblockId
-     * @param $code
-     * @param $fields
-     *
-     * @throws HelperException
-     * @return bool|int|void
-     */
-    public function updatePropertyIfExists($iblockId, $code, $fields)
-    {
-        $property = $this->getProperty($iblockId, $code);
-        if (!$property) {
-            return false;
-        }
-        return $this->updatePropertyById($property['ID'], $fields);
     }
 
     /**
@@ -412,6 +354,59 @@ trait IblockPropertyTrait
     }
 
     /**
+     * Получает значения списков для свойства инфоблока
+     *
+     * @param $iblockId
+     * @param $propertyId
+     *
+     * @return array
+     */
+    public function getPropertyEnumValues($iblockId, $propertyId)
+    {
+        return $this->getPropertyEnums(
+            [
+                'IBLOCK_ID'   => $iblockId,
+                'PROPERTY_ID' => $propertyId,
+            ]
+        );
+    }
+
+    /**
+     * Получает свойство инфоблока
+     *
+     * @param $iblockId
+     * @param $code int|array - код или фильтр
+     *
+     * @return int
+     */
+    public function getPropertyId($iblockId, $code)
+    {
+        $item = $this->getProperty($iblockId, $code);
+        return ($item && isset($item['ID'])) ? $item['ID'] : 0;
+    }
+
+    /**
+     * Добавляет свойство инфоблока если его не существует
+     *
+     * @param int   $iblockId
+     * @param array $fields
+     *
+     * @throws HelperException
+     * @return bool
+     */
+    public function addPropertyIfNotExists($iblockId, $fields)
+    {
+        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
+
+        $property = $this->getProperty($iblockId, $fields['CODE']);
+        if ($property) {
+            return $property['ID'];
+        }
+
+        return $this->addProperty($iblockId, $fields);
+    }
+
+    /**
      * Получает свойство инфоблока
      * Данные подготовлены для экспорта в миграцию или схему
      *
@@ -468,6 +463,41 @@ trait IblockPropertyTrait
     }
 
     /**
+     * Получает свойства инфоблока
+     *
+     * @param       $iblockId
+     * @param array $filter
+     *
+     * @return array
+     */
+    public function getProperties($iblockId, $filter = [])
+    {
+        $filter['IBLOCK_ID'] = $iblockId;
+        $filter['CHECK_PERMISSIONS'] = 'N';
+
+        $filterIds = false;
+        if (isset($filter['ID']) && is_array($filter['ID'])) {
+            $filterIds = $filter['ID'];
+            unset($filter['ID']);
+        }
+
+        $dbres = CIBlockProperty::GetList(['SORT' => 'ASC'], $filter);
+
+        $result = [];
+
+        while ($property = $dbres->Fetch()) {
+            if ($filterIds) {
+                if (in_array($property['ID'], $filterIds)) {
+                    $result[] = $this->prepareProperty($property);
+                }
+            } else {
+                $result[] = $this->prepareProperty($property);
+            }
+        }
+        return $result;
+    }
+
+    /**
      * @param $iblockId
      * @param $code
      *
@@ -478,6 +508,43 @@ trait IblockPropertyTrait
     public function deleteProperty($iblockId, $code)
     {
         return $this->deletePropertyIfExists($iblockId, $code);
+    }
+
+    /**
+     * Удаляет свойство инфоблока если оно существует
+     *
+     * @param $iblockId
+     * @param $code
+     *
+     * @throws HelperException
+     * @return bool|void
+     */
+    public function deletePropertyIfExists($iblockId, $code)
+    {
+        $property = $this->getProperty($iblockId, $code);
+        if (!$property) {
+            return false;
+        }
+
+        return $this->deletePropertyById($property['ID']);
+    }
+
+    /**
+     * Удаляет свойство инфоблока
+     *
+     * @param $propertyId
+     *
+     * @throws HelperException
+     * @return bool|void
+     */
+    public function deletePropertyById($propertyId)
+    {
+        $ib = new CIBlockProperty;
+        if ($ib->Delete($propertyId)) {
+            return true;
+        }
+
+        $this->throwException(__METHOD__, $ib->LAST_ERROR);
     }
 
     /**
@@ -492,6 +559,29 @@ trait IblockPropertyTrait
     public function updateProperty($iblockId, $code, $fields)
     {
         return $this->updatePropertyIfExists($iblockId, $code, $fields);
+    }
+
+    /**
+     * Обновляет свойство инфоблока если оно существует
+     *
+     * @param $iblockId
+     * @param $code
+     * @param $fields
+     *
+     * @throws HelperException
+     * @return bool|int|void
+     */
+    public function updatePropertyIfExists($iblockId, $code, $fields)
+    {
+        $property = $this->getProperty($iblockId, $code);
+        if (!$property) {
+            return false;
+        }
+
+        return $this->updatePropertyById(
+            $property['ID'],
+            array_merge($fields, ['IBLOCK_ID' => $iblockId])
+        );
     }
 
     public function getPropertyType($iblockId, $code)
@@ -525,124 +615,5 @@ trait IblockPropertyTrait
             }
         }
         return '';
-    }
-
-    protected function prepareProperty($property)
-    {
-        if (!empty($property['ID']) && !empty($property['IBLOCK_ID'])) {
-            if ($property['PROPERTY_TYPE'] == 'L') {
-                $property['VALUES'] = $this->getPropertyEnums(
-                    [
-                        'IBLOCK_ID'   => $property['IBLOCK_ID'],
-                        'PROPERTY_ID' => $property['ID'],
-                    ]
-                );
-            }
-
-            $features = $this->getPropertyFeatures($property['ID']);
-            if (!empty($features)) {
-                $property['FEATURES'] = $features;
-            }
-        }
-
-        return $property;
-    }
-
-    protected function prepareExportProperty($prop)
-    {
-        if (empty($prop)) {
-            return $prop;
-        }
-
-        if (!empty($prop['VALUES']) && is_array($prop['VALUES'])) {
-            $exportValues = [];
-
-            foreach ($prop['VALUES'] as $item) {
-                $exportValues[] = [
-                    'VALUE'  => $item['VALUE'],
-                    'DEF'    => $item['DEF'],
-                    'SORT'   => $item['SORT'],
-                    'XML_ID' => $item['XML_ID'],
-                ];
-            }
-
-            $prop['VALUES'] = $exportValues;
-        }
-
-        if (!empty($prop['FEATURES']) && is_array($prop['FEATURES'])) {
-            $exportFeatures = [];
-            foreach ($prop['FEATURES'] as $item) {
-                $exportFeatures[] = [
-                    'MODULE_ID'  => $item['MODULE_ID'],
-                    'FEATURE_ID' => $item['FEATURE_ID'],
-                    'IS_ENABLED' => $item['IS_ENABLED'],
-                ];
-            }
-
-            $prop['FEATURES'] = $exportFeatures;
-        }
-
-        if (!empty($prop['LINK_IBLOCK_ID'])) {
-            $prop['LINK_IBLOCK_ID'] = $this->getIblockUid($prop['LINK_IBLOCK_ID']);
-        }
-
-        if (CIBlockSectionPropertyLink::HasIBlockLinks($prop['IBLOCK_ID'])) {
-            $arLinks = SectionPropertyTable::getList([
-                'filter' => [
-                    'IBLOCK_ID'   => $prop['IBLOCK_ID'],
-                    'PROPERTY_ID' => $prop['ID'],
-                ],
-            ])->fetchAll();
-            foreach ($arLinks as $link) {
-                if ($link['PROPERTY_ID'] == $prop['ID']) {
-                    $prop['PROPERTY_LINK'] = [
-                        'SECTION_ID'       => $link['SECTION_ID'],
-                        'SMART_FILTER'     => $link['SMART_FILTER'],
-                        'DISPLAY_TYPE'     => $link['DISPLAY_TYPE'],
-                        'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'],
-                        'FILTER_HINT'      => $link['FILTER_HINT'],
-                    ];
-                }
-            }
-        }
-
-        unset($prop['ID']);
-        unset($prop['IBLOCK_ID']);
-        unset($prop['TIMESTAMP_X']);
-        unset($prop['TMP_ID']);
-
-        return $prop;
-    }
-
-    /**
-     * Сохраняет связи свойств
-     * Чтобы свойство было использованно в умном фильтре
-     *
-     * @param       $iblockId
-     * @param       $propertyId
-     * @param array $fields
-     */
-    protected function savePropertyLink($iblockId, $propertyId, $fields)
-    {
-        $default = [
-            'IBLOCK_ID'        => $iblockId,
-            'SECTION_ID'       => 0,
-            'SMART_FILTER'     => 'N',
-            'DISPLAY_TYPE'     => 'F',
-            'DISPLAY_EXPANDED' => 'N',
-        ];
-
-        $fields = array_replace_recursive($default, $fields);
-        CIBlockSectionPropertyLink::Set($fields['SECTION_ID'], $propertyId, $fields);
-
-        $this->outNoticeIf(
-            true,
-            Locale::getMessage(
-                'IB_PROPERTY_LINK_SAVED',
-                [
-                    '#IBLOCK_ID#' => $iblockId,
-                ]
-            )
-        );
     }
 }
