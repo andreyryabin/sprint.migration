@@ -295,7 +295,7 @@ class VersionConfig
             $values['version_builders'] = VersionConfig::getDefaultBuilders();
         }
 
-        if (!empty($values['version_schemas']) || !is_array($values['version_schemas'])) {
+        if (empty($values['version_schemas']) || !is_array($values['version_schemas'])) {
             $values['version_schemas'] = VersionConfig::getDefaultSchemas();
         }
 
