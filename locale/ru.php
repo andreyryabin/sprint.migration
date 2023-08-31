@@ -395,6 +395,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "IB_PROPERTY_UPDATED"      => "Инфоблок \"#IBLOCK_ID#\": свойство \"#NAME#\" обновлено",
         "IB_PROPERTY_EQUAL"        => "Инфоблок \"#IBLOCK_ID#\": свойство \"#NAME#\" совпадает",
         "IB_PROPERTY_DELETED"      => "Инфоблок \"#IBLOCK_ID#\": свойство \"#NAME#\" удалено",
+        "IB_PROPERTY_LINK_SAVED"   => "Инфоблок \"#IBLOCK_ID#\": ссылка для свойства сохранена",
         "IB_CREATED"               => "Инфоблок \"#NAME#\" добавлен",
         "IB_UPDATED"               => "Инфоблок \"#NAME#\" обновлен",
         "IB_EQUAL"                 => "Инфоблок \"#NAME#\" совпадает",
