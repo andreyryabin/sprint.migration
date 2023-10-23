@@ -36,22 +36,6 @@ class VersionConfig
 {
     private $configCurrent = '';
     private $configList    = [];
-    private $availablekeys = [
-        'migration_table',
-        'migration_extend_class',
-        'migration_dir',
-        'migration_dir_absolute',
-        'exchange_dir',
-        'exchange_dir_absolute',
-        'version_prefix',
-        'version_builders',
-        'version_schemas',
-        'show_admin_interface',
-        'version_name_template',
-        'console_user',
-        'console_auth_events_disable',
-        'tracker_task_url',
-    ];
 
     /**
      * VersionConfig constructor.
@@ -157,7 +141,7 @@ class VersionConfig
             }
 
             $values = include $item->getPathname();
-            if (!$this->isValuesValid($values)) {
+            if (!is_array($values)) {
                 continue;
             }
 
@@ -178,16 +162,6 @@ class VersionConfig
             return $matches[1];
         }
         return '';
-    }
-
-    protected function isValuesValid($values): bool
-    {
-        foreach ($this->availablekeys as $key) {
-            if (isset($values[$key])) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -312,6 +286,14 @@ class VersionConfig
             || (strpos($values['version_name_template'], '#NAME#') === false)
         ) {
             throw new MigrationException("Config version_name_template format error");
+        }
+
+        if (empty($values['version_timestamp_pattern'])) {
+            $values['version_timestamp_pattern'] = '/20\d{12}/';
+        }
+
+        if (empty($values['version_timestamp_format'])) {
+            $values['version_timestamp_format'] = 'YmdHis';
         }
 
         ksort($values);

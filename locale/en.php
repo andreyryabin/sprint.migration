@@ -92,6 +92,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_no"                          => "no",
         "CONFIG_version_name_template"       => "Version name template",
         "CONFIG_tracker_task_url"            => "Task url template",
+        "CONFIG_version_timestamp_format"    => "Timestamp format for creating migration file",
+        "CONFIG_version_timestamp_pattern"   => "Timestamp pattern for search migration files by timestamp format",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -107,9 +109,11 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_EventExport1"               => "Create migration for event types",
         "BUILDER_EventExport_event_types"    => "Select event types",
         "BUILDER_AgentExport1"               => "Create migration for agents",
+        "BUILDER_AgentExport2"               => "Set agent module and name (MODULE_ID, NAME), to see it in the list",
         "BUILDER_AgentExport_agent_id"       => "Select agents",
         "BUILDER_Version1"                   => "Create empty migration",
         "BUILDER_UserGroupExport1"           => "Create migration for user groups",
+        "BUILDER_UserGroupExport2"           => "Set group code (STRING_ID), to see it in the list",
         "BUILDER_UserGroupExport_user_group" => "Select user groups",
     ]
 );
@@ -117,6 +121,9 @@ require_once __DIR__ . "/../lib/locale.php";
     "en",
     [
         "BUILDER_IblockExport1"                        => "Create migration for information block",
+        "BUILDER_IblockExport2"                        => implode(PHP_EOL, [
+            "Set iblock codes and property codes to see them in the list",
+        ]),
         "BUILDER_IblockExport_IblockId"                => "Select information block",
         "BUILDER_IblockExport_Properties"              => "Select properties",
         "BUILDER_IblockExport_What"                    => "Select export items",
@@ -127,7 +134,11 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_IblockExport_WhatIblockUserOptions"   => "User options for form and list",
         "BUILDER_IblockExport_WhatIblockPermissions"   => "Information block permissions",
         "BUILDER_IblockElementsExport1"                => "Export information block elements",
-        "BUILDER_IblockElementsExport2"                => "Export elements with fields and properties\nExport images, files and lists",
+        "BUILDER_IblockElementsExport2"                => implode(PHP_EOL, [
+            "Export elements with fields and properties",
+            "Export images, files and lists",
+            "Set iblock codes and property codes to see them in the list",
+        ]),
         "BUILDER_IblockElementsExport_IblockId"        => "Select information block",
         "BUILDER_IblockElementsExport_Properties"      => "Select properties",
         "BUILDER_IblockElementsExport_Fields"          => "Select fields",
@@ -144,7 +155,10 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_IblockElementsExport_UpdateByCode"    => "Update existing elements by CODE",
         "BUILDER_IblockElementsExport_UpdateByXmlId"   => "Update existing elements by XML_ID",
         "BUILDER_IblockCategoryExport1"                => "Export information block categories",
-        "BUILDER_IblockCategoryExport2"                => "Export information block categories without images",
+        "BUILDER_IblockCategoryExport2"                => implode(PHP_EOL, [
+            "Export information block categories without images",
+            "Set iblock codes to see them in the list",
+        ]),
         "BUILDER_IblockCategoryExport_IblockId"        => "Select information block",
     ]
 );

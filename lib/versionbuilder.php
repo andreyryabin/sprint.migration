@@ -33,18 +33,9 @@ abstract class VersionBuilder extends AbstractBuilder
             $prefix = trim($prefix);
         }
 
-        $default = 'Version';
-        if (empty($prefix)) {
-            return $default;
-        }
-
         $prefix = preg_replace("/[^a-z0-9_]/i", '', $prefix);
-        if (empty($prefix)) {
-            return $default;
-        }
-
-        if (preg_match('/^\d/', $prefix)) {
-            return $default;
+        if (empty($prefix) || preg_match('/^\d/', $prefix)) {
+            return 'Version';
         }
 
         return $prefix;
@@ -86,7 +77,9 @@ abstract class VersionBuilder extends AbstractBuilder
             $this->getVersionConfig()->getVal('version_name_template'),
             [
                 '#NAME#'      => $this->purifyPrefix($this->getFieldValue('prefix')),
-                '#TIMESTAMP#' => $this->getTimestamp(),
+                '#TIMESTAMP#' => $this->getTimestamp(
+                    $this->getVersionConfig()->getVal('version_timestamp_format')
+                ),
             ]
         );
     }
@@ -109,7 +102,7 @@ abstract class VersionBuilder extends AbstractBuilder
             $templateVars['version'] = $this->getVersionName();
         }
 
-        list($extendUse, $extendClass) = explode(' as ', $this->getVersionConfig()->getVal('migration_extend_class'));
+        [$extendUse, $extendClass] = explode(' as ', $this->getVersionConfig()->getVal('migration_extend_class'));
         $extendUse = trim($extendUse);
         $extendClass = trim($extendClass);
 
@@ -165,11 +158,11 @@ abstract class VersionBuilder extends AbstractBuilder
         return $templateVars['version'];
     }
 
-    protected function getTimestamp()
+    protected function getTimestamp($versionTimestampFormat)
     {
         $originTz = date_default_timezone_get();
         date_default_timezone_set('Europe/Moscow');
-        $ts = date('YmdHis');
+        $ts = date($versionTimestampFormat);
         date_default_timezone_set($originTz);
         return $ts;
     }

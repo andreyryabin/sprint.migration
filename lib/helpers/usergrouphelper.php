@@ -367,7 +367,7 @@ class UserGroupHelper extends Helper
 
     protected function prepareFields($fields)
     {
-        if (!empty($fields['SECURITY_POLICY']) && is_array($fields['SECURITY_POLICY'])) {
+        if (is_array($fields['SECURITY_POLICY'])) {
             $fields['SECURITY_POLICY'] = serialize($fields['SECURITY_POLICY']);
         }
 

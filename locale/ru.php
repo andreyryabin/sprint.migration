@@ -92,6 +92,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_no"                          => "нет",
         "CONFIG_version_name_template"       => "Шаблон названия миграции",
         "CONFIG_tracker_task_url"            => "Шаблон ссылки на трекер задач",
+        "CONFIG_version_timestamp_format"    => "Формат даты для создания файла миграции",
+        "CONFIG_version_timestamp_pattern"   => "Регулярное выражение для поиска миграций по формату даты",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -107,9 +109,11 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_EventExport1"               => "Создать миграцию для почтовых событий",
         "BUILDER_EventExport_event_types"    => "Выберите типы почтовых событий",
         "BUILDER_AgentExport1"               => "Создать миграцию для агентов",
+        "BUILDER_AgentExport2"               => "Задайте модуль и функцию агента (MODULE_ID, NAME), чтобы увидеть его в списке",
         "BUILDER_AgentExport_agent_id"       => "Выберите агенты",
         "BUILDER_Version1"                   => "Создать простую миграцию",
         "BUILDER_UserGroupExport1"           => "Создать миграцию для групп пользователей",
+        "BUILDER_UserGroupExport2"           => "Задайте символьный идентификатор группы (STRING_ID), чтобы увидеть её в списке",
         "BUILDER_UserGroupExport_user_group" => "Выберите группы",
     ]
 );
@@ -117,6 +121,9 @@ require_once __DIR__ . "/../lib/locale.php";
     "ru",
     [
         "BUILDER_IblockExport1"                        => "Создать миграцию для инфоблока",
+        "BUILDER_IblockExport2"                        => implode(PHP_EOL, [
+            "Задайте символьные коды у инфоблоков и свойств, чтобы увидеть их в списке",
+        ]),
         "BUILDER_IblockExport_IblockId"                => "Выберите инфоблок",
         "BUILDER_IblockExport_Properties"              => "Выберите свойства",
         "BUILDER_IblockExport_What"                    => "Что переносим",
@@ -127,7 +134,11 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_IblockExport_WhatIblockUserOptions"   => "Настройки формы редактирования и списка",
         "BUILDER_IblockExport_WhatIblockPermissions"   => "Доступ к инфоблоку",
         "BUILDER_IblockElementsExport1"                => "Перенести элементы инфоблоков",
-        "BUILDER_IblockElementsExport2"                => "Переносит элементы с полями и свойствами\nПереносит изображения, файлы и списки",
+        "BUILDER_IblockElementsExport2"                => implode(PHP_EOL, [
+            "Переносит элементы с полями и свойствами",
+            "Переносит изображения, файлы и списки",
+            "Задайте символьные коды у инфоблоков и свойств, чтобы увидеть их в списке",
+        ]),
         "BUILDER_IblockElementsExport_IblockId"        => "Выберите инфоблок",
         "BUILDER_IblockElementsExport_Properties"      => "Выберите свойства",
         "BUILDER_IblockElementsExport_Fields"          => "Выберите поля",
@@ -144,7 +155,10 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_IblockElementsExport_UpdateByCode"    => "Добавить или обновить элементы с такими же CODE",
         "BUILDER_IblockElementsExport_UpdateByXmlId"   => "Добавить или обновить элементы с такими же XML_ID",
         "BUILDER_IblockCategoryExport1"                => "Перенести категории инфоблоков",
-        "BUILDER_IblockCategoryExport2"                => "Переносит категории инфоблоков без изображений",
+        "BUILDER_IblockCategoryExport2"                => implode(PHP_EOL, [
+            "Переносит категории инфоблоков без изображений",
+            "Задайте символьные коды у инфоблоков, чтобы увидеть их в списке",
+        ]),
         "BUILDER_IblockCategoryExport_IblockId"        => "Выберите инфоблок",
     ]
 );

@@ -22,6 +22,7 @@ class VersionManager
     private $isRestart         = false;
     private $lastRestartParams = [];
     private $lastException     = null;
+    private $versionTimestampPattern;
 
     /**
      * VersionManager constructor.
@@ -40,8 +41,11 @@ class VersionManager
             );
         }
 
+        $this->versionTimestampPattern = $this
+            ->versionConfig->getVal('version_timestamp_pattern');
+
         $this->versionTable = new VersionTable(
-            $this->getVersionConfig()->getVal('migration_table')
+            $this->versionConfig->getVal('migration_table')
         );
 
         $this->lastException = new Exception();
@@ -304,7 +308,7 @@ class VersionManager
     public function getVersionTimestamp($versionName)
     {
         $matches = [];
-        if (preg_match('/20\d{12}/', $versionName, $matches)) {
+        if (preg_match($this->versionTimestampPattern, $versionName, $matches)) {
             return end($matches);
         }
 

@@ -573,6 +573,7 @@ trait IblockTrait
         unset($iblock['ID']);
         unset($iblock['TIMESTAMP_X']);
         unset($iblock['TMP_ID']);
+        unset($iblock['SERVER_NAME']);
 
         return $iblock;
     }
