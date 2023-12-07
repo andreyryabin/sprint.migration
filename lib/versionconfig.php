@@ -94,9 +94,10 @@ class VersionConfig
         }
 
         uasort(
-            $this->configList, function ($a, $b) {
-            return ($a['sort'] <=> $b['sort']);
-        }
+            $this->configList,
+            function ($a, $b) {
+                return ($a['sort'] <=> $b['sort']);
+            }
         );
 
         if (isset($this->configList[$configName])) {
