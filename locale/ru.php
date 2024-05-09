@@ -43,6 +43,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "UNKNOWN"                  => "Неизвестные",
         "VERSION_NEW"              => "Новая",
         "VERSION_INSTALLED"        => "Установленная",
+        "VERSION_UNKNOWN"          => "Файл миграции не найден",
         "DESC_NEW"                 => "(только файл)",
         "DESC_INSTALLED"           => "(файл + запись об установке)",
         "DESC_UNKNOWN"             => "(только запись об установке)",
@@ -65,9 +66,18 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_ERROR"            => "Ошибка",
         "BUILDER_NEXT"             => "Далее",
         "BUILDER_RESET"            => "Сбросить",
+        "BUILDER_CREATE"           => "Создать",
+        "BUILDER_RUN"              => "Выполнить",
+        "BUILDER_SAVE"             => "Сохранить",
         "SELECT_ALL"               => "Выбрать все",
         "SELECT_ONE"               => "Выбрать",
         "RESTART_AGAIN"            => "Запустить снова",
+        "MENU_SUPPORT"             => "Поддержка проекта",
+        "SHOW_SUPPORT"             => "Показывать раздел с поддержкой проекта",
+        "SHOW_SCHEMAS"             => "Показывать раздел с схемами данных",
+        "PAGE_SUPPORT_DESC"        => "На этой странице можно поддержать улучшения, предложенные пользователями модуля, которые вы хотели бы видеть обновлениях.",
+        "SUPPORT_DISABLE"          => "Отказаться от поддержки",
+        "SUPPORT_CONFIRM"          => "Участвовать в поддержке",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -224,6 +234,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_Cleaner_success"          => "Конфигурация удалена",
         "BUILDER_SchemaImport"             => "Установка схемы",
         "BUILDER_SchemaExport"             => "Создание схемы",
+        "BUILDER_CommonSettings"           => "Общие настройки",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -240,6 +251,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "GOTO_OPTIONS"           => "Настройки модуля",
         "OPTIONS_REMOVE"         => "Сбросить настройки модуля",
         "OPTIONS_REMOVE_success" => "Настройки сброшены",
+        "OPTIONS_SAVE_success"   => "Настройки сохранены",
         "MARK"                   => "Отметить миграцию",
         "MARK_FIELD1"            => "Выбрать миграцию",
         "MARK_FIELD2"            => "Отметить как",

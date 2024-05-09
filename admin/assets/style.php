@@ -1,3 +1,3 @@
-<style type="text/css">
+<style>
     <?php include __DIR__ . '/style.css' ?>
 </style>

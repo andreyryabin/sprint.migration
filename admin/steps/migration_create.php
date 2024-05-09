@@ -8,11 +8,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
 }
 
 $stepCode = !empty($_POST["step_code"]) ? htmlspecialchars($_POST["step_code"]) : '';
-$hasSteps = (
-    ($stepCode == 'migration_create')
-    || ($stepCode == 'migration_reset')
-
-);
+$hasSteps = (($stepCode == 'migration_create') || ($stepCode == 'migration_reset'));
 
 if ($hasSteps && check_bitrix_sessid('send_sessid')) {
     /** @var $versionConfig VersionConfig */

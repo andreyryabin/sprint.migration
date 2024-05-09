@@ -44,9 +44,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     $helper->Hlblock()->saveGroupPermissions($hlblockId, <?php echo var_export($hlblockPermissions, 1) ?>);
 <?php endif?>
 <?php if (!empty($hlblockFields)): ?>
-<?php foreach ($hlblockFields as $field): ?>
+<?php foreach ($hlblockFields as $field) { ?>
         $helper->Hlblock()->saveField($hlblockId, <?php echo var_export($field, 1) ?>);
-    <?php endforeach; ?>
+    <?php } ?>
 <?php endif?>
 <?php if (!empty($exportElementForm)): ?>
     $helper->UserOptions()->saveHlblockForm($hlblockId, <?php echo var_export($exportElementForm, 1) ?>);

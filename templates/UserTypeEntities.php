@@ -30,9 +30,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     public function up()
     {
         $helper = $this->getHelperManager();
-<?php foreach ($entities as $entity): ?>
+<?php foreach ($entities as $entity){ ?>
         $helper->UserTypeEntity()->saveUserTypeEntity(<?php echo var_export($entity, 1) ?>);
-<?php endforeach; ?>
+<?php } ?>
     }
 
     public function down()

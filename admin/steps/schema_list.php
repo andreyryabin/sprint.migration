@@ -23,7 +23,7 @@ if ($_POST["step_code"] == "schema_list" && check_bitrix_sessid('send_sessid')) 
 
     ?>
     <table class="sp-list">
-        <?php foreach ($schemas as $schema): ?>
+        <?php foreach ($schemas as $schema) { ?>
             <tr>
                 <td class="sp-list-td__buttons">
                     <input data-id="<?= $schema->getName() ?>"
@@ -38,7 +38,7 @@ if ($_POST["step_code"] == "schema_list" && check_bitrix_sessid('send_sessid')) 
                     <?php $schema->outDescription() ?>
                 </td>
             </tr>
-        <?php endforeach; ?>
+        <?php } ?>
     </table>
     <?php
 }

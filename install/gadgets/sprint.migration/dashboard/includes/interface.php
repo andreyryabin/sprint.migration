@@ -1,9 +1,9 @@
-<?
+<?php
 /** @var $results array */
 ?>
 <div class="sp-db-wrap">
     <table class="sp-db-table">
-        <? foreach ($results as $item): ?>
+        <?php foreach ($results as $item) { ?>
             <tr>
                 <td class="sp-db-col-type"><?= $item['title'] ?></td>
                 <td class="sp-db-col-value">
@@ -11,13 +11,13 @@
                 </td>
                 <td class="sp-db-col-text"><?= $item['text'] ?></td>
                 <td>
-                    <? foreach ($item['buttons'] as $button): ?>
+                    <?php foreach ($item['buttons'] as $button) { ?>
                         <a href="<?= $button['url'] ?>" class="adm-btn" title="<?= $button['title'] ?>">
                             <?= $button['text'] ?>
                         </a>
-                    <? endforeach; ?>
+                    <?php } ?>
                 </td>
             </tr>
-        <? endforeach ?>
+        <?php } ?>
     </table>
 </div>

@@ -137,7 +137,7 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
     ?>
     <?php if (!empty($versions)): ?>
         <table class="sp-list">
-            <?php foreach ($versions as $item): ?>
+            <?php foreach ($versions as $item) { ?>
                 <tr>
                     <td class="sp-list-td__buttons">
                         <a onclick="this.blur();BX.adminShowMenu(this, <?= $getOnclickMenu($item) ?>, {active_class: 'adm-btn-active',public_frame: '0'}); return false;"
@@ -171,6 +171,9 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
                         <?php if ($item['status'] == VersionEnum::STATUS_INSTALLED) { ?>
                             <?php Out::out(Locale::getMessage('VERSION_INSTALLED')) ?>
                         <?php } ?>
+                        <?php if ($item['status'] == VersionEnum::STATUS_UNKNOWN) { ?>
+                            <?php Out::out(Locale::getMessage('VERSION_UNKNOWN')) ?>
+                        <?php } ?>
                         <?php if (!empty($item['description'])): ?>
                             <?= Out::prepareToHtml(
                                 $item['description'],
@@ -182,7 +185,7 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
                         <?php endif ?>
                     </td>
                 </tr>
-            <?php endforeach ?>
+            <?php } ?>
         </table>
     <?php else: ?>
         <?= Locale::getMessage('LIST_EMPTY') ?>

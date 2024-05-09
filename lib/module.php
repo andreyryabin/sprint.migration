@@ -7,8 +7,13 @@ use Exception;
 
 class Module
 {
-    private static $version = '';
     const ID = 'sprint.migration';
+    private static string $version        = '';
+    private static array  $defaultOptions = [
+        'show_schemas'    => 'Y',
+        'show_support'    => 'Y',
+        'confirm_support' => 'N',
+    ];
 
     public static function getDbOption($name, $default = '')
     {
@@ -30,6 +35,16 @@ class Module
     public static function removeDbOptions()
     {
         COption::RemoveOption(Module::ID);
+    }
+
+    public static function checkDbOption(string $name, bool $checked)
+    {
+        self::setDbOption($name, $checked ? 'Y' : 'N');
+    }
+
+    public static function isDbOptionChecked(string $name)
+    {
+        return self::getDbOption($name, self::$defaultOptions[$name]) == 'Y';
     }
 
     public static function getDocRoot(): string
@@ -92,13 +107,12 @@ class Module
         return $dir;
     }
 
-    public static function getVersion()
+    public static function getVersion(): string
     {
         if (!self::$version) {
             $arModuleVersion = [];
-            /** @noinspection PhpIncludeInspection */
             include self::getModuleDir() . '/install/version.php';
-            self::$version = $arModuleVersion['VERSION'] ?? '';
+            self::$version = (string)($arModuleVersion['VERSION'] ?? '');
         }
         return self::$version;
     }
@@ -124,7 +138,7 @@ class Module
             );
         }
 
-        if (version_compare(PHP_VERSION, '7.0', '<')) {
+        if (version_compare(PHP_VERSION, '7.4', '<')) {
             throw new Exception(
                 Locale::getMessage(
                     'ERR_PHP_NOT_SUPPORTED',

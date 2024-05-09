@@ -232,7 +232,6 @@ class SchemaManager extends ExchangeEntity
     {
         $file = $this->getQueueFile($schema->getName());
         if (is_file($file)) {
-            /** @noinspection PhpIncludeInspection */
             $items = include $file;
             if (
                 $items &&

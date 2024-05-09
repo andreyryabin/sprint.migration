@@ -2,8 +2,13 @@
 
 use Sprint\Migration\Locale;
 use Sprint\Migration\Out;
+
 global $APPLICATION;
-$APPLICATION->SetTitle(Locale::getMessage('TITLE'));
+if (isset($_REQUEST['schema'])) {
+    $APPLICATION->SetTitle(Locale::getMessage('MENU_SCHEMAS'));
+} else {
+    $APPLICATION->SetTitle(Locale::getMessage('TITLE'));
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();

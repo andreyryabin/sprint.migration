@@ -43,6 +43,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "UNKNOWN"                  => "Unknown",
         "VERSION_NEW"              => "New",
         "VERSION_INSTALLED"        => "Installed",
+        "VERSION_UNKNOWN"          => "Migration file not found",
         "DESC_NEW"                 => "(file only)",
         "DESC_INSTALLED"           => "(file + database record)",
         "DESC_UNKNOWN"             => "(database record)",
@@ -65,9 +66,18 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_ERROR"            => "Error",
         "BUILDER_NEXT"             => "Next",
         "BUILDER_RESET"            => "Reset",
+        "BUILDER_CREATE"           => "Create",
+        "BUILDER_RUN"              => "Run",
+        "BUILDER_SAVE"             => "Save",
         "SELECT_ALL"               => "Select all",
         "SELECT_ONE"               => "Select one",
         "RESTART_AGAIN"            => "Restart again",
+        "MENU_SUPPORT"             => "Support",
+        "SHOW_SUPPORT"             => "Show support page",
+        "SHOW_SCHEMAS"             => "Show schemas page",
+        "PAGE_SUPPORT_DESC"        => "On this page you can support updates proposed by users",
+        "SUPPORT_DISABLE"          => "Disable support",
+        "SUPPORT_CONFIRM"          => "Confirm support",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -115,6 +125,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_UserGroupExport1"           => "Create migration for user groups",
         "BUILDER_UserGroupExport2"           => "Set group code (STRING_ID), to see it in the list",
         "BUILDER_UserGroupExport_user_group" => "Select user groups",
+        "BUILDER_CommonSettings"             => "Common settings",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -239,6 +250,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "GOTO_OPTIONS"           => "Settings",
         "OPTIONS_REMOVE"         => "Reset module options",
         "OPTIONS_REMOVE_success" => "Options reset",
+        "OPTIONS_SAVE_success"   => "Options saved",
         "MARK"                   => "Mark migration",
         "MARK_FIELD1"            => "Select migration",
         "MARK_FIELD2"            => "Marks as",

@@ -40,7 +40,7 @@ class Locale
 
     public static function getMessageName($shortName, $lang = false)
     {
-        $lang = ($lang) ? $lang : self::getLang();
+        $lang = ($lang) ?: self::getLang();
 
         return strtoupper('SPRINT_MIGRATION_' . $lang . '_' . $shortName);
     }
@@ -53,6 +53,6 @@ class Locale
     public static function getMessage($shortName, $replaces = [])
     {
         $msg = GetMessage(self::getMessageName($shortName), $replaces);
-        return ($msg) ? : $shortName;
+        return ($msg) ?: $shortName;
     }
 }

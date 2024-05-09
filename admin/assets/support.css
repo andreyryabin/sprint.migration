@@ -1,0 +1,57 @@
+
+/* support page */
+.sp-support {
+    margin-bottom: 15px;
+}
+
+.sp-support.sp-table {
+    display: table;
+}
+
+.sp-support.sp-table .sp-row {
+    display: table-row;
+}
+
+.sp-support.sp-table .sp-col {
+    display: table-cell;
+}
+
+.sp-support.sp-table {
+    width: 100%;
+}
+
+.sp-support .sp-col-tabs {
+    width: 40%;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    vertical-align: top;
+}
+
+.sp-support .sp-col-contents {
+    width: 60%;
+    vertical-align: top;
+}
+
+.sp-support .sp-support-link {
+    display: block;
+    background-color: inherit;
+    /*color: black;*/
+    padding: 22px 16px;
+    border: none;
+    outline: none;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.sp-support .sp-support-link:hover {
+    background-color: #ddd;
+}
+
+.sp-support .sp-support-link.active {
+    background-color: #ccc;
+}
+
+.sp-support .sp-support-content {
+    display: none;
+}

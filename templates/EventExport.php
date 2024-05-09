@@ -30,14 +30,14 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     public function up()
     {
         $helper = $this->getHelperManager();
-<?php foreach ($result as $eventName => $item):?>
-<?php foreach ($item['types'] as $fields): ?>
+<?php foreach ($result as $eventName => $item) { ?>
+<?php foreach ($item['types'] as $fields) { ?>
         $helper->Event()->saveEventType('<?php echo $eventName ?>', <?php echo var_export($fields, 1) ?>);
-    <?php endforeach; ?>
-<?php foreach ($item['messages'] as $fields): ?>
+    <?php } ?>
+<?php foreach ($item['messages'] as $fields) { ?>
         $helper->Event()->saveEventMessage('<?php echo $eventName ?>', <?php echo var_export($fields, 1) ?>);
-    <?php endforeach; ?>
-<?php endforeach; ?>
+    <?php } ?>
+<?php } ?>
     }
 
     public function down()
