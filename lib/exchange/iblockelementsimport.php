@@ -17,6 +17,7 @@ class IblockElementsImport extends AbstractExchange
      * @param callable $converter
      *
      * @throws MigrationException
+     * @throws HelperException
      * @throws RestartException
      */
     public function execute(callable $converter)
@@ -28,10 +29,11 @@ class IblockElementsImport extends AbstractExchange
         $params = $this->exchangeEntity->getRestartParams();
 
         if (!isset($params['total'])) {
-            $this->exitIf(
-                !is_file($this->file),
-                Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->file])
-            );
+            if (!is_file($this->file)){
+                throw new HelperException(
+                    Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->file])
+                );
+            }
 
             $reader = new XMLReader();
             $reader->open($this->getExchangeFile());

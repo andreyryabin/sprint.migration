@@ -22,6 +22,7 @@ class Out
         'red'          => ["\x1b[0;31m", '<span style="color:#a00">'],
         'down'         => ["\x1b[0;31m", '<span style="color:#a00">'],
         'yellow'       => ["\x1b[1;33m", '<span style="color:#aa0">'],
+        'tab'          => ["", '<span style="display: inline-block; margin-left: 10px">'],
         'b'            => ["\x1b[1m", '<span style="font-weight:bold;color:#000">'],
     ];
     protected static $needEol = false;
@@ -481,15 +482,6 @@ class Out
     protected static function outExceptionTrace(array $trace)
     {
         foreach ($trace as $index => $err) {
-            $args = [];
-            foreach ($err['args'] as $text) {
-                $args[] = var_export($text, 1);
-            }
-
-            if (count($args) > 0) {
-                $args = "\n" . implode(", \n", $args);
-            }
-
             $name = '';
             if ($err['class'] && $err['function']) {
                 $name = '[b]' . $err['class'] . '[/]::' . $err['function'];
@@ -497,7 +489,14 @@ class Out
                 $name = '[b]' . $err['function'] . '[/]';
             }
 
-            self::out('[b]#' . $index . '[/] ' . $name . '(' . $args . ');');
+            $cntArgs = count($err['args']);
+
+            self::out('[b]#' . $index . '[/] ' . $name . '(');
+            foreach ($err['args'] as $argi => $argval) {
+                $del = $argi < $cntArgs - 1 ? ', ' : '';
+                self::out('[tab]' . var_export($argval, 1) . $del . '[/]');
+            }
+            self::out(');');
         }
     }
 }
