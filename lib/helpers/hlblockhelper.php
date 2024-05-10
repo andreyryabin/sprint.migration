@@ -449,10 +449,16 @@ class HlblockHelper extends Helper
             return $item['ID'];
         }
 
+        if (is_array($hlblockName)) {
+            $hlblockUid = var_export($hlblockName, true);
+        } else {
+            $hlblockUid = $hlblockName;
+        }
+
         throw new HelperException(
             Locale::getMessage(
                 'ERR_HLBLOCK_NOT_FOUND',
-                ['#HLBLOCK#' => is_array($hlblockName) ? var_export($hlblockName, true) : $hlblockName]
+                ['#HLBLOCK#' => $hlblockUid]
             )
         );
     }
@@ -929,12 +935,11 @@ class HlblockHelper extends Helper
      */
     public function getHlblockIdByUid($hlblockUid)
     {
-        $hlblockId = 0;
         if (empty($hlblockUid)) {
-            return $hlblockId;
+            return 0;
         }
 
-        return $this->getHlblockId($hlblockUid);
+        return $this->getHlblockIdIfExists($hlblockUid);
     }
 
     /**

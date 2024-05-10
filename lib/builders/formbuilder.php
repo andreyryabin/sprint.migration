@@ -3,8 +3,8 @@
 namespace Sprint\Migration\Builders;
 
 use Bitrix\Main\Db\SqlQueryException;
-use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -46,24 +46,26 @@ class FormBuilder extends VersionBuilder
         }
 
         $formId = $this->addFieldAndReturn('form_id', [
-            'title' => Locale::getMessage('BUILDER_FormExport_FormId'),
-            'width' => 250,
+            'title'  => Locale::getMessage('BUILDER_FormExport_FormId'),
+            'width'  => 250,
             'select' => $structure,
         ]);
 
         $form = $helper->Form()->getFormById($formId);
-        $this->exitIfEmpty($form, 'Form not found');
+        if (empty($form)) {
+            $this->rebuildField('form_id');
+        }
 
         unset($form['ID']);
         unset($form['TIMESTAMP_X']);
         unset($form['VARNAME']);
 
         $what = $this->addFieldAndReturn('what_else', [
-            'title' => Locale::getMessage('BUILDER_FormExport_What'),
-            'width' => 250,
+            'title'    => Locale::getMessage('BUILDER_FormExport_What'),
+            'width'    => 250,
             'multiple' => 1,
-            'value' => [],
-            'select' => [
+            'value'    => [],
+            'select'   => [
                 [
                     'title' => Locale::getMessage('BUILDER_FormExport_Form'),
                     'value' => 'form',
@@ -116,7 +118,6 @@ class FormBuilder extends VersionBuilder
                     }
                 }
 
-
                 if (is_array($field['VALIDATORS'])) {
                     foreach ($field['VALIDATORS'] as $validatorIndex => $validator) {
                         unset($validator['ID']);
@@ -137,9 +138,9 @@ class FormBuilder extends VersionBuilder
             Module::getModuleDir() . '/templates/FormExport.php',
             [
                 'formExport' => $formExport,
-                'form' => $form,
-                'statuses' => $statuses,
-                'fields' => $fields,
+                'form'       => $form,
+                'statuses'   => $statuses,
+                'fields'     => $fields,
             ]
         );
     }

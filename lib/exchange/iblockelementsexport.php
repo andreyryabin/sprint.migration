@@ -102,6 +102,10 @@ class IblockElementsExport extends AbstractExchange
 
         $params = $this->exchangeEntity->getRestartParams();
         if (!isset($params['total'])) {
+            $iblockUid = $iblockExchange->getIblockUid(
+                $this->getIblockId()
+            );
+
             $params['total'] = $iblockExchange->getElementsCount(
                 $this->getIblockId(),
                 $this->getExportFilter()
@@ -109,10 +113,6 @@ class IblockElementsExport extends AbstractExchange
             $params['offset'] = 0;
 
             $this->createExchangeDir();
-
-            $iblockUid = $iblockExchange->getIblockUid(
-                $this->getIblockId()
-            );
 
             $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
             $this->appendToExchangeFile('<items iblockUid="' . $iblockUid . '" exchangeVersion="' . self::EXCHANGE_VERSION . '">');

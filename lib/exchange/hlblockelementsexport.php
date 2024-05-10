@@ -39,12 +39,12 @@ class HlblockElementsExport extends AbstractExchange
 
         $params = $this->exchangeEntity->getRestartParams();
         if (!isset($params['total'])) {
+            $hlblockUid = $hblockExchange->getHlblockUid($this->hlblockId);
+
             $params['total'] = $hblockExchange->getElementsCount($this->hlblockId);
             $params['offset'] = 0;
 
             $this->createExchangeDir();
-
-            $hlblockUid = $hblockExchange->getHlblockUid($this->hlblockId);
 
             $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
             $this->appendToExchangeFile('<items hlblockUid="' . $hlblockUid . '" exchangeVersion="' . self::EXCHANGE_VERSION . '">');

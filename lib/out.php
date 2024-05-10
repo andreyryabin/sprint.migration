@@ -4,6 +4,7 @@ namespace Sprint\Migration;
 
 use CAdminMessage;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Throwable;
 
 class Out
@@ -433,6 +434,7 @@ class Out
         }
 
         self::outWarning(self::getExceptionAsString($exception));
+        self::outExceptionTrace($exception->getTrace());
     }
 
     protected static function getExceptionAsString(Throwable $exception): string
@@ -463,6 +465,7 @@ class Out
         });
 
         $last = end($trace);
+
         self::outWarning(
             sprintf(
                 "[%s] %s (%s) in %s:%d",
@@ -473,7 +476,11 @@ class Out
                 $last['line']
             )
         );
+        self::outExceptionTrace($trace);
+    }
 
+    protected static function outExceptionTrace(array $trace)
+    {
         foreach ($trace as $index => $err) {
             $args = [];
             foreach ($err['args'] as $text) {
@@ -484,7 +491,14 @@ class Out
                 $args = "\n" . implode(", \n", $args);
             }
 
-            self::out('[b]#' . $index . ' ' . $err['class'] . '[/]::' . $err['function'] . '(' . $args . ');');
+            $name = '';
+            if ($err['class'] && $err['function']) {
+                $name = '[b]' . $err['class'] . '[/]::' . $err['function'];
+            } elseif ($err['function']) {
+                $name = '[b]' . $err['function'] . '[/]';
+            }
+
+            self::out('[b]#' . $index . '[/] ' . $name . '(' . $args . ');');
         }
     }
 }

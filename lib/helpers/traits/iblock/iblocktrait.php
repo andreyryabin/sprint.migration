@@ -48,10 +48,19 @@ trait IblockTrait
         if ($item && isset($item['ID'])) {
             return $item['ID'];
         }
+
+        if (is_array($code)) {
+            $iblockUid = var_export($code, true);
+        } elseif ($typeId) {
+            $iblockUid = $typeId . ':' . $code;
+        } else {
+            $iblockUid = $code;
+        }
+
         throw new HelperException(
             Locale::getMessage(
                 'ERR_IB_NOT_FOUND',
-                ['#IBLOCK#' => is_array($code) ? var_export($code, true) : $code]
+                ['#IBLOCK#' => $iblockUid]
             )
         );
     }
@@ -514,6 +523,7 @@ trait IblockTrait
     /**
      * @param $iblockUid
      *
+     * @throws HelperException
      * @return int
      */
     public function getIblockIdByUid($iblockUid)
@@ -524,9 +534,9 @@ trait IblockTrait
             return $iblockId;
         }
 
-        list($type, $code) = explode(':', $iblockUid);
+        [$type, $code] = explode(':', $iblockUid);
         if (!empty($type) && !empty($code)) {
-            $iblockId = $this->getIblockId($code, $type);
+            $iblockId = $this->getIblockIdIfExists($code, $type);
         }
 
         return $iblockId;

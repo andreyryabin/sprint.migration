@@ -3,8 +3,8 @@
 namespace Sprint\Migration\Exchange;
 
 use Sprint\Migration\AbstractExchange;
-use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
 use XMLReader;
@@ -37,14 +37,12 @@ class HlblockElementsImport extends AbstractExchange
             $reader->open($this->getExchangeFile());
             $params['total'] = 0;
             $params['offset'] = 0;
-            $params['hlblock_id'] = 0;
+            $hlblockUid = '';
             $exchangeVersion = 0;
             while ($reader->read()) {
                 if ($this->isOpenTag($reader, 'items')) {
                     $exchangeVersion = (int)$reader->getAttribute('exchangeVersion');
-                    $params['hlblock_id'] = $hblockExchange->getHlblockIdByUid(
-                        $reader->getAttribute('hlblockUid')
-                    );
+                    $hlblockUid = $reader->getAttribute('hlblockUid');
                 }
                 if ($this->isOpenTag($reader, 'item')) {
                     $params['total']++;
@@ -58,11 +56,8 @@ class HlblockElementsImport extends AbstractExchange
                 );
             }
 
-            $this->exitIfEmpty(
-                $params['hlblock_id'],
-                Locale::getMessage('ERR_HLBLOCK_NOT_FOUND', ['#HLBLOCK#' => $params['hlblock_id']])
-            );
-        }
+            $params['hlblock_id'] = $hblockExchange->getHlblockIdByUid($hlblockUid);
+       }
 
         $reader = new XMLReader();
         $reader->open($this->getExchangeFile());
