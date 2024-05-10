@@ -4,7 +4,6 @@ namespace Sprint\Migration;
 
 use CAdminMessage;
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exceptions\MigrationException;
 use Throwable;
 
 class Out
