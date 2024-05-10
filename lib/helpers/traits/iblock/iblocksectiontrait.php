@@ -93,7 +93,7 @@ trait IblockSectionTrait
      */
     public function saveSection($iblockId, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
+        $this->checkRequiredKeys($fields, ['CODE']);
 
         $item = $this->getSection($iblockId, $fields['CODE']);
         if (!empty($item['ID'])) {
@@ -114,7 +114,7 @@ trait IblockSectionTrait
      */
     public function addSectionIfNotExists($iblockId, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
+        $this->checkRequiredKeys($fields, ['CODE']);
 
         $item = $this->getSection($iblockId, $fields['CODE']);
         if ($item) {
@@ -156,7 +156,7 @@ trait IblockSectionTrait
             return $id;
         }
 
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
@@ -170,7 +170,7 @@ trait IblockSectionTrait
      */
     public function updateSectionIfExists($iblockId, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
+        $this->checkRequiredKeys($fields, ['CODE']);
 
         $item = $this->getSection($iblockId, $fields['CODE']);
         if (!$item) {
@@ -198,7 +198,7 @@ trait IblockSectionTrait
             return $sectionId;
         }
 
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
@@ -235,7 +235,7 @@ trait IblockSectionTrait
             return true;
         }
 
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
@@ -294,8 +294,7 @@ trait IblockSectionTrait
     {
         foreach ($tree as $item) {
             if (empty($item['NAME'])) {
-                $this->throwException(
-                    __METHOD__,
+                throw new HelperException(
                     Locale::getMessage(
                         'ERR_IB_SECTION_NAME_NOT_FOUND'
                     )
@@ -348,8 +347,7 @@ trait IblockSectionTrait
     public function getSectionUniqFilterById($iblockId, $sectionId)
     {
         if (empty($sectionId)) {
-            $this->throwException(
-                __METHOD__,
+            throw new HelperException(
                 Locale::getMessage(
                     'ERR_IB_SECTION_ID_EMPTY',
                     [
@@ -368,8 +366,7 @@ trait IblockSectionTrait
         )->Fetch();
 
         if (empty($section['ID'])) {
-            $this->throwException(
-                __METHOD__,
+            throw new HelperException(
                 Locale::getMessage(
                     'ERR_IB_SECTION_ID_NOT_FOUND',
                     [
@@ -393,8 +390,7 @@ trait IblockSectionTrait
     public function getSectionIdByUniqFilter($iblockId, $uniqFilter)
     {
         if (empty($uniqFilter)) {
-            $this->throwException(
-                __METHOD__,
+            throw new HelperException(
                 Locale::getMessage(
                     'ERR_IB_SECTION_ID_EMPTY',
                     [
@@ -409,8 +405,7 @@ trait IblockSectionTrait
         $section = CIBlockSection::GetList([], $uniqFilter)->Fetch();
 
         if (empty($section['ID'])) {
-            $this->throwException(
-                __METHOD__,
+            throw new HelperException(
                 Locale::getMessage(
                     'ERR_IB_SECTION_BY_FILTER_NOT_FOUND',
                     [

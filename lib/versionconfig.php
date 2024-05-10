@@ -467,9 +467,9 @@ class VersionConfig
         return [
             'UserGroupBuilder'        => UserGroupBuilder::class,
             'IblockBuilder'           => IblockBuilder::class,
-            'HlblockBuilder'          => HlblockBuilder::class,
-            'IblockElementsBuilder'   => IblockElementsBuilder::class,
             'IblockCategoryBuilder'   => IblockCategoryBuilder::class,
+            'IblockElementsBuilder'   => IblockElementsBuilder::class,
+            'HlblockBuilder'          => HlblockBuilder::class,
             'HlblockElementsBuilder'  => HlblockElementsBuilder::class,
             'UserTypeEntitiesBuilder' => UserTypeEntitiesBuilder::class,
             'AgentBuilder'            => AgentBuilder::class,

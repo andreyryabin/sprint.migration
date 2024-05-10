@@ -220,7 +220,7 @@ trait IblockElementTrait
      */
     public function saveElement($iblockId, $fields = [], $props = [])
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
+        $this->checkRequiredKeys($fields, ['CODE']);
 
         $item = $this->getElement($iblockId, $fields['CODE']);
         if (!empty($item['ID'])) {
@@ -240,7 +240,7 @@ trait IblockElementTrait
      */
     public function saveElementByXmlId($iblockId, $fields = [], $props = [])
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['XML_ID']);
+        $this->checkRequiredKeys($fields, ['XML_ID']);
 
         $item = $this->getElement($iblockId, ['=XML_ID' => $fields['XML_ID']]);
         if (!empty($item['ID'])) {
@@ -262,7 +262,7 @@ trait IblockElementTrait
      */
     public function addElementIfNotExists($iblockId, $fields, $props = [])
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
+        $this->checkRequiredKeys($fields, ['CODE']);
 
         $item = $this->getElement($iblockId, $fields['CODE']);
         if ($item) {
@@ -306,7 +306,7 @@ trait IblockElementTrait
             return $id;
         }
 
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
@@ -321,7 +321,7 @@ trait IblockElementTrait
      */
     public function updateElementIfExists($iblockId, $fields = [], $props = [])
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
+        $this->checkRequiredKeys($fields, ['CODE']);
 
         $item = $this->getElement($iblockId, $fields['CODE']);
         if (!$item) {
@@ -352,7 +352,7 @@ trait IblockElementTrait
         if (!empty($fields)) {
             $ib = new CIBlockElement;
             if (!$ib->Update($elementId, $fields)) {
-                $this->throwException(__METHOD__, $ib->LAST_ERROR);
+                throw new HelperException($ib->LAST_ERROR);
             }
         }
 
@@ -420,7 +420,7 @@ trait IblockElementTrait
             return true;
         }
 
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
@@ -433,8 +433,7 @@ trait IblockElementTrait
     public function getElementUniqFilterById($iblockId, $elementId)
     {
         if (empty($elementId)) {
-            $this->throwException(
-                __METHOD__,
+            throw new HelperException(
                 Locale::getMessage(
                     'ERR_IB_ELEMENT_ID_EMPTY',
                     [
@@ -447,8 +446,7 @@ trait IblockElementTrait
         $element = $this->getElement($iblockId, ['ID' => $elementId]);
 
         if (empty($element['ID'])) {
-            $this->throwException(
-                __METHOD__,
+            throw new HelperException(
                 Locale::getMessage(
                     'ERR_IB_ELEMENT_ID_NOT_FOUND',
                     [
@@ -472,8 +470,7 @@ trait IblockElementTrait
     public function getElementIdByUniqFilter($iblockId, $uniqFilter)
     {
         if (empty($uniqFilter)) {
-            $this->throwException(
-                __METHOD__,
+            throw new HelperException(
                 Locale::getMessage(
                     'ERR_IB_ELEMENT_ID_EMPTY',
                     [
@@ -488,8 +485,7 @@ trait IblockElementTrait
         $element = $this->getElement($iblockId, $uniqFilter);
 
         if (empty($element['ID'])) {
-            $this->throwException(
-                __METHOD__,
+            throw new HelperException(
                 Locale::getMessage(
                     'ERR_IB_ELEMENT_BY_FILTER_NOT_FOUND',
                     [

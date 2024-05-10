@@ -14,9 +14,9 @@ $configList = $versionConfig->getList();
     $configValues = $versionConfig->humanValues($configItem['values']);
 
     ?>
-    <div class="sp-group">
-        <div class="sp-group-row">
-            <div class="sp-block sp-white">
+    <div class="sp-table">
+        <div class="sp-row">
+            <div class="sp-col sp-white">
                 <h3><?= Locale::getMessage('CONFIG') ?>: <?= $configItem['title'] ?></h3>
                 <table class="sp-config">
                     <?php foreach ($configValues as $key => $val) { ?>

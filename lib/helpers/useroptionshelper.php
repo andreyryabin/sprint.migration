@@ -62,7 +62,7 @@ class UserOptionsHelper extends Helper
      */
     public function exportList($params = [])
     {
-        $this->checkRequiredKeys(__METHOD__, $params, ['name']);
+        $this->checkRequiredKeys($params, ['name']);
 
         $params = array_merge(
             [
@@ -105,7 +105,7 @@ class UserOptionsHelper extends Helper
      */
     public function buildList($data = [], $params = [])
     {
-        $this->checkRequiredKeys(__METHOD__, $params, ['name']);
+        $this->checkRequiredKeys($params, ['name']);
 
         /** @compability with old format */
         if (!isset($data['columns'])) {
@@ -262,7 +262,7 @@ class UserOptionsHelper extends Helper
     {
         /** @compability */
         if (isset($params['name_prefix'])) {
-            $this->throwException(__METHOD__, 'name_prefix is no longer supported, see examples');
+            throw new HelperException('name_prefix is no longer supported, see examples');
         }
 
         $params = array_merge(
@@ -335,7 +335,7 @@ class UserOptionsHelper extends Helper
     {
         /** @compability */
         if (isset($params['name_prefix'])) {
-            $this->throwException(__METHOD__, 'name_prefix is no longer supported, see examples');
+            throw new HelperException('name_prefix is no longer supported, see examples');
         }
 
         $params = array_merge(

@@ -30,16 +30,16 @@ class SqlHelper extends Helper
         try {
             $ok = call_user_func($func);
 
-            $this->throwApplicationExceptionIfExists(__METHOD__);
+            $this->throwApplicationExceptionIfExists();
 
             if ($ok === false) {
-                $this->throwException(__METHOD__, 'transaction return false');
+                throw new HelperException('transaction return false');
             }
 
             $connection->commitTransaction();
         } catch (Throwable $ex) {
             $connection->rollbackTransaction();
-            $this->throwException(__METHOD__, $ex);
+            throw new HelperException($ex);
         }
     }
 

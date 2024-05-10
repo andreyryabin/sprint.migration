@@ -77,9 +77,9 @@ if ($request->isPost() && check_bitrix_sessid()) {
 <?php include __DIR__ . '/help.php' ?>
 <div class="sp-separator"></div>
 
-<div class="sp-group">
-    <div class="sp-group-row2">
-        <div class="sp-block">
+<div class="sp-table">
+    <div class="sp-row2">
+        <div class="sp-col">
             <form method="post" action="">
                 <p><?= Locale::getMessage('BUILDER_CommonSettings') ?></p>
                 <label>
@@ -101,7 +101,7 @@ if ($request->isPost() && check_bitrix_sessid()) {
                 <?= bitrix_sessid_post(); ?>
             </form>
         </div>
-        <div class="sp-block">
+        <div class="sp-col">
             <form method="post" action="">
                 <p><?= Locale::getMessage('OPTIONS_REMOVE') ?></p>
                 <p><input type="submit" name="options_remove"
@@ -112,9 +112,9 @@ if ($request->isPost() && check_bitrix_sessid()) {
     </div>
 </div>
 
-<div class="sp-group">
-    <div class="sp-group-row2">
-        <div class="sp-block">
+<div class="sp-table">
+    <div class="sp-row2">
+        <div class="sp-col">
             <form method="post" action="">
                 <p><?= Locale::getMessage('BUILDER_Configurator') ?></p>
                 <p><input size="30" type="text" name="configuration_name" value=""
@@ -124,7 +124,7 @@ if ($request->isPost() && check_bitrix_sessid()) {
                 <?= bitrix_sessid_post(); ?>
             </form>
         </div>
-        <div class="sp-block">
+        <div class="sp-col">
             <form method="post" action="">
                 <p><?= Locale::getMessage('BUILDER_Archive') ?></p>
                 <p><input type="submit" name="archive_create"
@@ -135,9 +135,9 @@ if ($request->isPost() && check_bitrix_sessid()) {
     </div>
 </div>
 
-<div class="sp-group">
-    <div class="sp-group-row">
-        <div class="sp-block">
+<div class="sp-table">
+    <div class="sp-row">
+        <div class="sp-col">
             <form method="post" action="">
                 <p><?= Locale::getMessage('BUILDER_Cleaner_desc') ?></p>
                 <p><input size="30" type="text" name="configuration_name" value=""
@@ -150,9 +150,9 @@ if ($request->isPost() && check_bitrix_sessid()) {
     </div>
 </div>
 
-<div class="sp-group">
-    <div class="sp-group-row">
-        <div class="sp-block">
+<div class="sp-table">
+    <div class="sp-row">
+        <div class="sp-col">
             <form method="post" action="">
                 <p><?= Locale::getMessage('GD_INSTALL') ?></p>
                 <p><input type="submit" name="gadgets_install"

@@ -180,6 +180,7 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
                                 [
                                     'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),
                                     'make_links'       => true,
+                                    'br'               => true,
                                 ]
                             ) ?>
                         <?php endif ?>

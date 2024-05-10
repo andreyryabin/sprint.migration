@@ -15,8 +15,7 @@ trait HlblockTrait
         $tableName = (new HlblockHelper())->getHlblockTableName($hlblockId);
 
         if (empty($tableName)) {
-            $this->throwException(
-                __METHOD__,
+            throw new HelperException(
                 sprintf('Highload-block "%s" not found', $hlblockId)
             );
         }
@@ -30,8 +29,7 @@ trait HlblockTrait
     public function getHlblockFormId($hlblockId): string
     {
         if (empty($hlblockId)) {
-            $this->throwException(
-                __METHOD__,
+            throw new HelperException(
                 sprintf('Highload-block "%s" not found', $hlblockId)
             );
         }

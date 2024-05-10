@@ -25,7 +25,7 @@ trait IblockPropertyTrait
      */
     public function saveProperty($iblockId, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
+        $this->checkRequiredKeys($fields, ['CODE']);
 
         $exists = $this->getProperty($iblockId, $fields['CODE']);
         $exportExists = $this->prepareExportProperty($exists);
@@ -287,7 +287,7 @@ trait IblockPropertyTrait
             return $propertyId;
         }
 
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
@@ -350,7 +350,7 @@ trait IblockPropertyTrait
             return $propertyId;
         }
 
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
@@ -396,7 +396,7 @@ trait IblockPropertyTrait
      */
     public function addPropertyIfNotExists($iblockId, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['CODE']);
+        $this->checkRequiredKeys($fields, ['CODE']);
 
         $property = $this->getProperty($iblockId, $fields['CODE']);
         if ($property) {
@@ -426,8 +426,7 @@ trait IblockPropertyTrait
             return $export;
         }
 
-        $this->throwException(
-            __METHOD__,
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_IB_PROPERTY_CODE_NOT_FOUND'
             )
@@ -481,7 +480,7 @@ trait IblockPropertyTrait
             unset($filter['ID']);
         }
 
-        $dbres = CIBlockProperty::GetList(['SORT' => 'ASC'], $filter);
+        $dbres = CIBlockProperty::GetList(['SORT' => 'ASC', 'ID' => 'ASC'], $filter);
 
         $result = [];
 
@@ -544,7 +543,7 @@ trait IblockPropertyTrait
             return true;
         }
 
-        $this->throwException(__METHOD__, $ib->LAST_ERROR);
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**

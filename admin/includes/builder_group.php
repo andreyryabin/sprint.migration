@@ -26,9 +26,9 @@ foreach ($builderList as $builderName => $builderClass) {
 }
 
 ?>
-<div class="sp-group">
-    <div class="sp-group-row2">
-        <div class="sp-block sp-block_builders">
+<div class="sp-table">
+    <div class="sp-row2">
+        <div class="sp-col sp-col_builders">
             <?php foreach ($builderTree as $groupName => $groupItems) { ?>
                 <div class="sp-builder_group">
                     <?= Locale::getMessage('BUILDER_GROUP_' . $groupName) ?>
@@ -38,7 +38,7 @@ foreach ($builderList as $builderName => $builderClass) {
                 <?php } ?>
             <?php } ?>
         </div>
-        <div class="sp-block" style="position: relative">
+        <div class="sp-col" style="position: relative">
             <div class="sp-builder_body" style="position: sticky;top: 10px"></div>
         </div>
     </div>

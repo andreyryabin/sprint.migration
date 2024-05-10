@@ -29,7 +29,7 @@ trait IblockTrait
          * @deprecated
          */
         if (func_num_args() > 1) {
-            $this->throwException(__METHOD__, '$params is no longer supported, see examples');
+            throw new HelperException('$params is no longer supported, see examples');
         }
 
         $this->initializeIblockVars($iblockId);
@@ -53,7 +53,7 @@ trait IblockTrait
          * @deprecated
          */
         if (func_num_args() > 2) {
-            $this->throwException(__METHOD__, '$params is no longer supported, see examples');
+            throw new HelperException('$params is no longer supported, see examples');
         }
 
         $this->initializeIblockVars($iblockId);
@@ -77,7 +77,7 @@ trait IblockTrait
          * @deprecated
          */
         if (func_num_args() > 2) {
-            $this->throwException(__METHOD__, '$params is no longer supported, see examples');
+            throw new HelperException('$params is no longer supported, see examples');
         }
 
         $this->initializeIblockVars($iblockId);
@@ -301,8 +301,7 @@ trait IblockTrait
             return $result;
         }
 
-        $this->throwException(
-            __METHOD__,
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_IB_FORM_OPTIONS_NOT_FOUND'
             )
@@ -321,7 +320,7 @@ trait IblockTrait
 
         /** @compability */
         if (empty($iblockId)) {
-            $this->throwException(__METHOD__, 'empty param $iblockId is no longer supported, see examples');
+            throw new HelperException('empty param $iblockId is no longer supported, see examples');
         }
 
         if ($this->lastIblockId == $iblockId) {

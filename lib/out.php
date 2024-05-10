@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use CAdminMessage;
+use Sprint\Migration\Exceptions\HelperException;
 use Throwable;
 
 class Out
@@ -44,7 +45,7 @@ class Out
 
             echo '<div class="sp-progress">' . (new CAdminMessage($mess))->Show() . '</div>';
         } elseif (self::canOutAsHtml()) {
-            $msg = self::prepareToHtml($msg);
+            $msg = self::prepareToHtml($msg, ['br' => true]);
             echo '<div class="sp-progress">' . "$msg $val/$total" . '</div>';
         } else {
             $msg = self::prepareToConsole($msg);
@@ -64,7 +65,9 @@ class Out
 
     public static function prepareToHtml($msg, $options = [])
     {
-        $msg = nl2br($msg);
+        if ($options['br']) {
+            $msg = nl2br($msg);
+        }
 
         $msg = str_replace('[t]', '&rarr;', $msg);
 
@@ -132,7 +135,7 @@ class Out
 
     protected static function outToHtml($msg)
     {
-        $msg = self::prepareToHtml($msg);
+        $msg = self::prepareToHtml($msg, ['br' => false]);
         echo '<div class="sp-out">' . $msg . '</div>';
     }
 
@@ -357,7 +360,7 @@ class Out
         if (self::canOutAsAdminMessage()) {
             echo (new CAdminMessage(
                 [
-                    "MESSAGE" => self::prepareToHtml($msg),
+                    "MESSAGE" => self::prepareToHtml($msg, ['br' => true]),
                     'HTML'    => true,
                     'TYPE'    => 'OK',
                 ]
@@ -397,7 +400,7 @@ class Out
         if (self::canOutAsAdminMessage()) {
             echo (new CAdminMessage(
                 [
-                    "MESSAGE" => self::prepareToHtml($msg),
+                    "MESSAGE" => self::prepareToHtml($msg, ['br' => true]),
                     'HTML'    => true,
                     'TYPE'    => 'ERROR',
                 ]
@@ -424,10 +427,15 @@ class Out
 
     public static function outException(Throwable $exception)
     {
+        if ($exception instanceof HelperException) {
+            self::outHelperException($exception);
+            return;
+        }
+
         self::outWarning(self::getExceptionAsString($exception));
     }
 
-    public static function getExceptionAsString(Throwable $exception): string
+    protected static function getExceptionAsString(Throwable $exception): string
     {
         return sprintf(
             "[%s] %s (%s) in %s:%d",
@@ -437,5 +445,46 @@ class Out
             $exception->getFile(),
             $exception->getLine()
         );
+    }
+
+    protected static function outHelperException(Throwable $exception)
+    {
+        $trace = array_filter($exception->getTrace(), function ($item) {
+            $skipClass = in_array($item['class'], [
+                VersionManager::class,
+                Console::class,
+            ]);
+
+            $skipMethod = in_array($item['function'], [
+                'up',
+                'down',
+            ]);
+            return ($item['class'] && $item['function'] && !$skipClass && !$skipMethod);
+        });
+
+        $last = end($trace);
+        self::outWarning(
+            sprintf(
+                "[%s] %s (%s) in %s:%d",
+                get_class($exception),
+                $exception->getMessage(),
+                $exception->getCode(),
+                $last['file'],
+                $last['line']
+            )
+        );
+
+        foreach ($trace as $index => $err) {
+            $args = [];
+            foreach ($err['args'] as $text) {
+                $args[] = var_export($text, 1);
+            }
+
+            if (count($args) > 0) {
+                $args = "\n" . implode(", \n", $args);
+            }
+
+            self::out('[b]#' . $index . ' ' . $err['class'] . '[/]::' . $err['function'] . '(' . $args . ');');
+        }
     }
 }

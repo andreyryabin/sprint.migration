@@ -19,21 +19,17 @@ class LangHelper extends Helper
         $by = 'def';
         $order = 'desc';
 
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $item = CLanguage::GetList($by, $order, ['ACTIVE' => 'Y'])->Fetch();
 
         if ($item) {
             return $item['LID'];
         }
 
-        $this->throwException(
-            __METHOD__,
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_DEFAULT_LANGUAGE_NOT_FOUND'
             )
         );
-
-        return false;
     }
 
     /**
@@ -66,12 +62,10 @@ class LangHelper extends Helper
             return $items;
         }
 
-        $this->throwException(
-            __METHOD__,
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_ACTIVE_LANGUAGES_NOT_FOUND'
             )
         );
-        return [];
     }
 }

@@ -133,7 +133,7 @@ class AgentHelper extends Helper
      */
     public function saveAgent($fields = [])
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['MODULE_ID', 'NAME']);
+        $this->checkRequiredKeys($fields, ['MODULE_ID', 'NAME']);
 
         $exists = $this->getAgent([
             'MODULE_ID' => $fields['MODULE_ID'],
@@ -192,7 +192,7 @@ class AgentHelper extends Helper
      */
     public function updateAgent($fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['MODULE_ID', 'NAME']);
+        $this->checkRequiredKeys($fields, ['MODULE_ID', 'NAME']);
         $this->deleteAgent($fields['MODULE_ID'], $fields['NAME']);
         return $this->addAgent($fields);
     }
@@ -207,7 +207,7 @@ class AgentHelper extends Helper
      */
     public function addAgent($fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['MODULE_ID', 'NAME']);
+        $this->checkRequiredKeys($fields, ['MODULE_ID', 'NAME']);
 
         global $DB;
 
@@ -234,9 +234,8 @@ class AgentHelper extends Helper
             return $agentId;
         }
 
-        $this->throwApplicationExceptionIfExists(__METHOD__);
-        $this->throwException(
-            __METHOD__,
+        $this->throwApplicationExceptionIfExists();
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_AGENT_NOT_ADDED',
                 [

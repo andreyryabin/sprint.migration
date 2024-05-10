@@ -19,7 +19,7 @@ class Helper
      */
     public  $lastError = '';
     private $mode      = [
-        'test'      => 0,
+        'test' => 0,
     ];
 
     /**
@@ -30,8 +30,7 @@ class Helper
     public function __construct()
     {
         if (!$this->isEnabled()) {
-            $this->throwException(
-                __METHOD__,
+            throw new HelperException(
                 Locale::getMessage(
                     'ERR_HELPER_DISABLED',
                     [
@@ -101,11 +100,13 @@ class Helper
     }
 
     /**
+     *
      * @param        $method
      * @param        $msg
      * @param string ...$vars
      *
      * @throws HelperException
+     * @deprecated
      */
     protected function throwException($method, $msg, ...$vars)
     {
@@ -113,7 +114,7 @@ class Helper
         $method = array_shift($args);
 
         if ($msg instanceof \Throwable) {
-            $msg = Out::getExceptionAsString($msg);
+            $msg = $msg->getMessage();
         } else {
             $msg = call_user_func_array('sprintf', $args);
             $msg = strip_tags($msg);
@@ -127,17 +128,14 @@ class Helper
     }
 
     /**
-     * @param $method
-     *
      * @throws HelperException
      */
-    protected function throwApplicationExceptionIfExists($method)
+    protected function throwApplicationExceptionIfExists()
     {
         /* @global $APPLICATION CMain */
         global $APPLICATION;
         if ($APPLICATION->GetException()) {
-            $this->throwException(
-                $method,
+            throw new HelperException(
                 $APPLICATION->GetException()->GetString()
             );
         }
@@ -165,18 +163,20 @@ class Helper
     }
 
     /**
-     * @param       $method
      * @param       $fields
      * @param array $reqKeys
      *
      * @throws HelperException
      */
-    protected function checkRequiredKeys($method, $fields, $reqKeys = [])
+    protected function checkRequiredKeys($fields, $reqKeys = [])
     {
+        if (is_string($fields)){
+            throw new HelperException('Old format for checkRequiredKeys');
+        }
+
         foreach ($reqKeys as $name) {
             if (empty($fields[$name])) {
-                $this->throwException(
-                    $method,
+                throw new HelperException(
                     Locale::getMessage(
                         'ERR_EMPTY_REQ_FIELD',
                         [

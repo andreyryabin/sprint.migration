@@ -47,7 +47,7 @@ class HlblockHelper extends Helper
                 $result[] = $this->prepareHlblock($hlblock);
             }
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e);
         }
         return $result;
     }
@@ -137,7 +137,7 @@ class HlblockHelper extends Helper
         if (!empty($field['FIELD_NAME'])) {
             return $field['FIELD_NAME'];
         }
-        $this->throwException(__METHOD__, Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND'));
+        throw new HelperException(Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND'));
     }
 
     /**
@@ -279,7 +279,7 @@ class HlblockHelper extends Helper
      */
     public function saveHlblock($fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME']);
+        $this->checkRequiredKeys($fields, ['NAME']);
 
         $exists = $this->getHlblock($fields['NAME']);
         $exportExists = $this->prepareExportHlblock($exists);
@@ -409,10 +409,8 @@ class HlblockHelper extends Helper
 
             return $this->prepareHlblock($hlblock);
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e->getMessage());
         }
-
-        return false;
     }
 
     /**
@@ -428,8 +426,7 @@ class HlblockHelper extends Helper
             return $item;
         }
 
-        $this->throwException(
-            __METHOD__,
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_HLBLOCK_NOT_FOUND',
                 ['#HLBLOCK#' => is_array($hlblockName) ? var_export($hlblockName, true) : $hlblockName]
@@ -452,8 +449,7 @@ class HlblockHelper extends Helper
             return $item['ID'];
         }
 
-        $this->throwException(
-            __METHOD__,
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_HLBLOCK_NOT_FOUND',
                 ['#HLBLOCK#' => is_array($hlblockName) ? var_export($hlblockName, true) : $hlblockName]
@@ -474,11 +470,13 @@ class HlblockHelper extends Helper
         $item = $this->getHlblock($hlblockName);
         return ($item && isset($item['ID'])) ? $item['ID'] : 0;
     }
+
     public function getHlblockTableName($hlblockName)
     {
         $item = $this->getHlblock($hlblockName);
         return ($item && isset($item['TABLE_NAME'])) ? $item['TABLE_NAME'] : '';
     }
+
     /**
      * Добавляет highload-блок
      *
@@ -489,7 +487,7 @@ class HlblockHelper extends Helper
      */
     public function addHlblock($fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME', 'TABLE_NAME']);
+        $this->checkRequiredKeys($fields, ['NAME', 'TABLE_NAME']);
         $fields['NAME'] = ucfirst($fields['NAME']);
 
         $lang = [];
@@ -507,7 +505,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e->getMessage());
         }
     }
 
@@ -521,7 +519,7 @@ class HlblockHelper extends Helper
      */
     public function addHlblockIfNotExists($fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['NAME']);
+        $this->checkRequiredKeys($fields, ['NAME']);
 
         $item = $this->getHlblock($fields['NAME']);
         if ($item) {
@@ -558,7 +556,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e->getMessage());
         }
     }
 
@@ -599,7 +597,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e->getMessage());
         }
     }
 
@@ -641,7 +639,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e->getMessage());
         }
     }
 
@@ -666,7 +664,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e->getMessage());
         }
     }
 
@@ -682,13 +680,13 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e->getMessage());
         }
     }
 
     public function saveElementByXmlId($hlblockName, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['UF_XML_ID']);
+        $this->checkRequiredKeys($fields, ['UF_XML_ID']);
 
         $item = $this->getElementByXmlId($hlblockName, $fields['UF_XML_ID']);
 
@@ -818,7 +816,7 @@ class HlblockHelper extends Helper
             $entity = HighloadBlockTable::compileEntity($hlblock);
             return $entity->getDataClass();
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e->getMessage());
         }
     }
 
@@ -835,7 +833,7 @@ class HlblockHelper extends Helper
         try {
             return $dataManager::getList($params)->fetchAll();
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e->getMessage());
         }
     }
 
@@ -856,7 +854,7 @@ class HlblockHelper extends Helper
                 'limit'  => 1,
             ])->fetch();
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e->getMessage());
         }
     }
 
@@ -883,7 +881,7 @@ class HlblockHelper extends Helper
 
             return ($item) ? $item['CNT'] : 0;
         } catch (Exception $e) {
-            $this->throwException(__METHOD__, $e);
+            throw new HelperException($e->getMessage());
         }
     }
 
@@ -900,8 +898,7 @@ class HlblockHelper extends Helper
             $getHlblock = $this->getHlblock($hlblock);
 
             if (false === $getHlblock) {
-                $this->throwException(
-                    __METHOD__,
+                throw new HelperException(
                     Locale::getMessage(
                         'ERR_HLBLOCK_NOT_FOUND',
                         ['#HLBLOCK#' => $hlblock]
@@ -916,8 +913,7 @@ class HlblockHelper extends Helper
             return $hlblock['NAME'];
         }
 
-        $this->throwException(
-            __METHOD__,
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_HLBLOCK_NOT_FOUND',
                 ['#HLBLOCK#' => is_array($hlblock) ? var_export($hlblock, true) : $hlblock]

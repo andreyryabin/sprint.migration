@@ -92,7 +92,7 @@ class FormHelper extends Helper
             return $formId;
         }
 
-        $this->throwException(__METHOD__, Locale::getMessage('ERR_FORM_NOT_FOUND', ['#NAME#' => $sid]));
+        throw new HelperException(Locale::getMessage('ERR_FORM_NOT_FOUND', ['#NAME#' => $sid]));
     }
 
     /**
@@ -103,7 +103,7 @@ class FormHelper extends Helper
      */
     public function saveForm($form)
     {
-        $this->checkRequiredKeys(__METHOD__, $form, ['SID']);
+        $this->checkRequiredKeys($form, ['SID']);
 
         $form['VARNAME'] = $form['SID'];
 
@@ -124,7 +124,7 @@ class FormHelper extends Helper
             $arTemplates = [];
             foreach ($form['arMAIL_TEMPLATE'] as $templateId) {
                 $templateId = $eventHelper->getEventMessageIdByUidFilter($templateId);
-                if ($templateId){
+                if ($templateId) {
                     $arTemplates[] = $templateId;
                 }
             }
@@ -139,7 +139,7 @@ class FormHelper extends Helper
             return $formId;
         }
 
-        $this->throwException(__METHOD__, $GLOBALS['strError']);
+        throw new HelperException($GLOBALS['strError']);
     }
 
     /**
@@ -184,10 +184,9 @@ class FormHelper extends Helper
                     break;
                 }
             }
-            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             $fieldId = CFormField::Set($field, $fieldId, 'N');
             if (empty($fieldId)) {
-                $this->throwException(__METHOD__, $GLOBALS['strError']);
+                throw new HelperException($GLOBALS['strError']);
             }
 
             $this->saveFieldAnswers($fieldId, $answers);
@@ -196,7 +195,6 @@ class FormHelper extends Helper
 
         foreach ($currentFields as $currentField) {
             if (!in_array($currentField['ID'], $updatedIds)) {
-                /** @noinspection PhpDynamicAsStaticMethodCallInspection */
                 CFormField::Delete($currentField['ID'], 'N');
             }
         }
@@ -237,16 +235,14 @@ class FormHelper extends Helper
             $status['arPERMISSION_EDIT'] = $status['arPERMISSION_EDIT'] ? $status['arPERMISSION_EDIT'] : [0];
             $status['arPERMISSION_DELETE'] = $status['arPERMISSION_DELETE'] ? $status['arPERMISSION_DELETE'] : [0];
 
-            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             $statusId = CFormStatus::Set($status, $statusId, 'N');
             if (empty($statusId)) {
-                $this->throwException(__METHOD__, $GLOBALS['strError']);
+                throw new HelperException($GLOBALS['strError']);
             }
         }
 
         foreach ($currentStatuses as $currentStatus) {
             if (!in_array($currentStatus['ID'], $updatedIds)) {
-                /** @noinspection PhpDynamicAsStaticMethodCallInspection */
                 CFormStatus::Delete($currentStatus['ID'], 'N');
             }
         }
@@ -262,7 +258,7 @@ class FormHelper extends Helper
         $isFiltered = false;
         $by = 's_sort';
         $order = 'asc';
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+
         $dbres = CFormStatus::GetList($formId, $by, $order, [], $isFiltered);
         return $this->fetchAll($dbres);
     }
@@ -277,7 +273,7 @@ class FormHelper extends Helper
         $isFiltered = false;
         $by = 's_sort';
         $order = 'asc';
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+
         $dbres = CFormField::GetList($formId, 'ALL', $by, $order, [], $isFiltered);
         $fields = $this->fetchAll($dbres);
         foreach ($fields as $index => $field) {
@@ -304,8 +300,7 @@ class FormHelper extends Helper
             return true;
         }
 
-        $this->throwException(
-            __METHOD__,
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_CANT_DELETE_FORM', [
                     '#NAME#' => $sid,
@@ -324,7 +319,6 @@ class FormHelper extends Helper
         $isFiltered = false;
         $by = 's_sort';
         $order = 'asc';
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         $dbres = CFormAnswer::GetList($fieldId, $by, $order, [], $isFiltered);
         return $this->fetchAll($dbres);
     }
@@ -338,7 +332,7 @@ class FormHelper extends Helper
     {
         $by = 's_sort';
         $order = 'asc';
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+
         $dbres = CFormValidator::GetList($fieldId, [], $by, $order);
         return $this->fetchAll($dbres);
     }
@@ -437,19 +431,17 @@ class FormHelper extends Helper
 
             $answer['FIELD_ID'] = $fieldId;
 
-            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
             $answerId = CFormAnswer::Set(
                 $answer,
                 $answerId
             );
             if (empty($answerId)) {
-                $this->throwException(__METHOD__, $GLOBALS['strError']);
+                throw new HelperException($GLOBALS['strError']);
             }
         }
 
         foreach ($currentAnswers as $currentAnswer) {
             if (!in_array($currentAnswer['ID'], $updatedIds)) {
-                /** @noinspection PhpDynamicAsStaticMethodCallInspection */
                 CFormAnswer::Delete($currentAnswer['ID'], $fieldId);
             }
         }
@@ -464,11 +456,9 @@ class FormHelper extends Helper
      */
     protected function saveFieldValidators($formId, $fieldId, $validators)
     {
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
         CFormValidator::Clear($fieldId);
 
-        foreach ($validators as $index => $validator) {
-            /** @noinspection PhpDynamicAsStaticMethodCallInspection */
+        foreach ($validators as $validator) {
             $validatorId = CFormValidator::Set(
                 $formId,
                 $fieldId,
@@ -478,7 +468,7 @@ class FormHelper extends Helper
             );
 
             if (empty($validatorId)) {
-                $this->throwException(__METHOD__, $GLOBALS['strError']);
+                throw new HelperException($GLOBALS['strError']);
             }
         }
     }

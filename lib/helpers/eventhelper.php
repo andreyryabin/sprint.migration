@@ -211,7 +211,7 @@ class EventHelper extends Helper
      */
     public function addEventTypeIfNotExists($eventName, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['LID']);
+        $this->checkRequiredKeys($fields, ['LID']);
 
         $item = $this->getEventType([
             'EVENT_NAME' => $eventName,
@@ -236,7 +236,7 @@ class EventHelper extends Helper
      */
     public function addEventMessageIfNotExists($eventName, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['SUBJECT', 'LID']);
+        $this->checkRequiredKeys($fields, ['SUBJECT', 'LID']);
 
         $item = $this->getEventMessage(
             [
@@ -307,8 +307,7 @@ class EventHelper extends Helper
             return $id;
         }
 
-        $this->throwException(__METHOD__, $event->LAST_ERROR);
-        return false;
+        throw new HelperException($event->LAST_ERROR);
     }
 
     /**
@@ -327,14 +326,11 @@ class EventHelper extends Helper
             return $id;
         }
 
-        $this->throwException(
-            __METHOD__,
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_EVENT_TYPE_NOT_UPDATED'
             )
         );
-
-        return false;
     }
 
     /**
@@ -349,7 +345,7 @@ class EventHelper extends Helper
      */
     public function saveEventMessage($eventName, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['SUBJECT', 'LID']);
+        $this->checkRequiredKeys($fields, ['SUBJECT', 'LID']);
 
         $exists = $this->getEventMessage(
             [
@@ -407,7 +403,7 @@ class EventHelper extends Helper
      */
     public function saveEventType($eventName, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['LID']);
+        $this->checkRequiredKeys($fields, ['LID']);
 
         $exists = $this->getEventType([
             'EVENT_NAME' => $eventName,
@@ -463,7 +459,7 @@ class EventHelper extends Helper
      */
     public function deleteEventType($fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['LID', 'EVENT_NAME']);
+        $this->checkRequiredKeys($fields, ['LID', 'EVENT_NAME']);
 
         $exists = $this->getEventType([
             'EVENT_NAME' => $fields['EVENT_NAME'],
@@ -478,8 +474,7 @@ class EventHelper extends Helper
             return true;
         }
 
-        $this->throwException(
-            __METHOD__,
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_CANT_DELETE_EVENT_TYPE',
                 [
@@ -487,7 +482,6 @@ class EventHelper extends Helper
                 ]
             )
         );
-        return false;
     }
 
     /**
@@ -500,7 +494,7 @@ class EventHelper extends Helper
      */
     public function deleteEventMessage($fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['SUBJECT', 'EVENT_NAME']);
+        $this->checkRequiredKeys($fields, ['SUBJECT', 'EVENT_NAME']);
 
         $exists = $this->getEventMessage(
             [
@@ -517,8 +511,7 @@ class EventHelper extends Helper
             return true;
         };
 
-        $this->throwException(
-            __METHOD__,
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_CANT_DELETE_EVENT_MESSAGE',
                 [
@@ -526,7 +519,6 @@ class EventHelper extends Helper
                 ]
             )
         );
-        return false;
     }
 
     /**
@@ -540,7 +532,7 @@ class EventHelper extends Helper
      */
     public function addEventType($eventName, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['LID', 'NAME']);
+        $this->checkRequiredKeys($fields, ['LID', 'NAME']);
         $fields['EVENT_NAME'] = $eventName;
 
         $event = new CEventType;
@@ -550,9 +542,8 @@ class EventHelper extends Helper
             return $id;
         }
 
-        $this->throwApplicationExceptionIfExists(__METHOD__);
-        $this->throwException(
-            __METHOD__,
+        $this->throwApplicationExceptionIfExists();
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_EVENT_TYPE_NOT_ADDED',
                 [
@@ -560,7 +551,6 @@ class EventHelper extends Helper
                 ]
             )
         );
-        return false;
     }
 
     /**
@@ -574,7 +564,7 @@ class EventHelper extends Helper
      */
     public function addEventMessage($eventName, $fields)
     {
-        $this->checkRequiredKeys(__METHOD__, $fields, ['LID', 'SUBJECT']);
+        $this->checkRequiredKeys($fields, ['LID', 'SUBJECT']);
 
         $default = [
             'ACTIVE'     => 'Y',
@@ -595,9 +585,8 @@ class EventHelper extends Helper
             return $id;
         }
 
-        $this->throwApplicationExceptionIfExists(__METHOD__);
-        $this->throwException(
-            __METHOD__,
+        $this->throwApplicationExceptionIfExists();
+        throw new HelperException(
             Locale::getMessage(
                 'ERR_EVENT_MESSAGE_NOT_ADDED',
                 [
@@ -605,7 +594,6 @@ class EventHelper extends Helper
                 ]
             )
         );
-        return false;
     }
 
     /**

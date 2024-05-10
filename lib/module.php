@@ -12,7 +12,6 @@ class Module
     private static array  $defaultOptions = [
         'show_schemas'    => 'Y',
         'show_support'    => 'Y',
-        'confirm_support' => 'N',
     ];
 
     public static function getDbOption($name, $default = '')
