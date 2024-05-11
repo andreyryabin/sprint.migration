@@ -3,12 +3,12 @@
 namespace Sprint\Migration\Exchange;
 
 use Exception;
-use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Module;
 use XMLWriter;
 
-class HlblockElementsExport extends AbstractExchange
+class HlblockElementsExport extends AbstractWriter
 {
     protected $hlblockId;
     protected $updateMode;
@@ -47,7 +47,7 @@ class HlblockElementsExport extends AbstractExchange
             $this->createExchangeDir();
 
             $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
-            $this->appendToExchangeFile('<items hlblockUid="' . $hlblockUid . '" exchangeVersion="' . self::EXCHANGE_VERSION . '">');
+            $this->appendToExchangeFile('<items hlblockUid="' . $hlblockUid . '" exchangeVersion="' . Module::getExchangeVersion() . '">');
         }
 
         if ($params['offset'] <= $params['total'] - 1) {
@@ -90,7 +90,7 @@ class HlblockElementsExport extends AbstractExchange
             $this->outProgress('', $params['offset'], $params['total']);
 
             $this->exchangeEntity->setRestartParams($params);
-            $this->restart();
+            $this->exchangeEntity->restart();
         }
 
         $this->appendToExchangeFile('</items>');
@@ -125,7 +125,7 @@ class HlblockElementsExport extends AbstractExchange
 
     /**
      * @param XMLWriter $writer
-     * @param           $field
+     * @param array     $field
      *
      * @throws Exception
      */
@@ -136,7 +136,7 @@ class HlblockElementsExport extends AbstractExchange
 
     /**
      * @param XMLWriter $writer
-     * @param           $field
+     * @param array     $field
      *
      * @throws HelperException
      */

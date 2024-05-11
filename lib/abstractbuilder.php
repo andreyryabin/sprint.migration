@@ -46,11 +46,6 @@ abstract class AbstractBuilder extends ExchangeEntity
         return false;
     }
 
-    public function initializeBuilder()
-    {
-        $this->initialize();
-    }
-
     public function isEnabled()
     {
         try {
@@ -186,7 +181,10 @@ abstract class AbstractBuilder extends ExchangeEntity
     {
         return ($this->execStatus == 'restart');
     }
-
+    public function buildInit()
+    {
+        $this->initialize();
+    }
     public function buildExecute()
     {
         $this->execStatus = '';

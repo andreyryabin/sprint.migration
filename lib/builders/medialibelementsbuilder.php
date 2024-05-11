@@ -53,6 +53,7 @@ class MedialibElementsBuilder extends VersionBuilder
         $this->getExchangeManager()
              ->MedialibElementsExport()
              ->setLimit(20)
+             ->setCopyFiles(true)
              ->setCollectionIds($collectionIds)
              ->setExchangeFile(
                  $this->getVersionResourceFile(

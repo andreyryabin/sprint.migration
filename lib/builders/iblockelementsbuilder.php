@@ -48,6 +48,7 @@ class IblockElementsBuilder extends VersionBuilder
         $this->getExchangeManager()
              ->IblockElementsExport()
              ->setUpdateMode($updateMode)
+             ->setCopyFiles(true)
              ->setExportFilter($exportFilter)
              ->setExportFields($exportFields)
              ->setExportProperties($exportProps)

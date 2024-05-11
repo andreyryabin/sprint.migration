@@ -650,7 +650,6 @@ class Console
                     Locale::getMessage('ERR_BUILDER_NOT_FOUND')
                 );
             }
-
             $builder->renderConsole();
 
             $builder->buildExecute();
