@@ -16,14 +16,10 @@ class AgentHelper extends Helper
      *
      * @return array
      */
-    public function getList($filter = [])
+    public function getList(array $filter = [])
     {
-        $res = [];
         $dbres = CAgent::GetList(["MODULE_ID" => "ASC"], $filter);
-        while ($item = $dbres->Fetch()) {
-            $res[] = $item;
-        }
-        return $res;
+        return $this->fetchAll($dbres);
     }
 
     /**

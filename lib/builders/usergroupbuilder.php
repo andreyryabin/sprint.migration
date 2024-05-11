@@ -40,7 +40,7 @@ class UserGroupBuilder extends VersionBuilder
                 'multiple'    => 1,
                 'value'       => [],
                 'width'       => 250,
-                'select'      => $this->getUserGroups(),
+                'select'      => $this->getUserGroupsSelect(),
             ]
         );
 
@@ -68,22 +68,23 @@ class UserGroupBuilder extends VersionBuilder
         );
     }
 
-    protected function getUserGroups()
+    protected function getUserGroupsSelect(): array
     {
         $helper = $this->getHelperManager();
 
-        $groups = $helper->UserGroup()->getGroups();
+        $items = $helper->UserGroup()->getGroups([
+            '!STRING_ID' => false,
+        ]);
 
-        $result = [];
-        foreach ($groups as $group) {
-            if (!empty($group['STRING_ID'])) {
-                $result[] = [
-                    'title' => '[' . $group['STRING_ID'] . '] ' . $group['NAME'],
-                    'value' => $group['ID'],
-                ];
-            }
-        }
+        $items = array_map(function ($item) {
+            $item['NAME'] = '[' . $item['STRING_ID'] . '] ' . $item['NAME'];
+            return $item;
+        }, $items);
 
-        return $result;
+        return $this->createSelect(
+            $items,
+            'ID',
+            'NAME'
+        );
     }
 }

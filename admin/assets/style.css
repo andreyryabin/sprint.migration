@@ -64,6 +64,10 @@
     background: #ccc;
 }
 
+.sp-optgroup-item {
+    display: block;
+}
+
 .sp-table {
     display: table;
     width: 100%;
@@ -232,8 +236,12 @@ a.sp-item-unknown:visited {
     cursor: default;
 }
 
-.sp-optgroup {
+.sp-optgroup-group {
     margin-bottom: 10px;
+}
+
+.sp-optgroup-title {
+    font-weight: bold;
 }
 
 .sp-field {
@@ -284,11 +292,11 @@ a.sp-item-unknown:visited {
     width: 0;
 }
 
-#bx-admin-prefix #migration-container .adm-info-message {
+#bx-admin-prefix #migration_container .adm-info-message {
     margin: 5px 0 5px 0;
 }
 
-#bx-admin-prefix #migration-container .sp-progress .adm-info-message-buttons {
+#bx-admin-prefix #migration_container .sp-progress .adm-info-message-buttons {
     display: none;
 }
 
@@ -296,6 +304,7 @@ a.sp-item-unknown:visited {
     pointer-events: none;
     opacity: 0.7;
 }
+
 .sp-out {
     white-space: pre-wrap;
 }

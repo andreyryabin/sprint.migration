@@ -35,20 +35,14 @@ class FormBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $forms = $helper->Form()->getList();
-
-        $structure = [];
-        foreach ($forms as $item) {
-            $structure[] = [
-                'title' => '[' . $item['ID'] . '] ' . $item['NAME'],
-                'value' => $item['ID'],
-            ];
-        }
-
         $formId = $this->addFieldAndReturn('form_id', [
             'title'  => Locale::getMessage('BUILDER_FormExport_FormId'),
             'width'  => 250,
-            'select' => $structure,
+            'select' => $this->createSelect(
+                $helper->Form()->getList(),
+                'ID',
+                'NAME'
+            ),
         ]);
 
         $form = $helper->Form()->getFormById($formId);

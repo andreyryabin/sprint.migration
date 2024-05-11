@@ -41,7 +41,11 @@ class OptionBuilder extends VersionBuilder
                 'multiple'    => 1,
                 'value'       => [],
                 'width'       => 250,
-                'select'      => $this->getModules(),
+                'select'      => $this->createSelect(
+                    $helper->Option()->getModules(),
+                    'ID',
+                    'ID'
+                ),
             ]
         );
 
@@ -68,22 +72,5 @@ class OptionBuilder extends VersionBuilder
                 'items' => $items,
             ]
         );
-    }
-
-    protected function getModules()
-    {
-        $helper = $this->getHelperManager();
-
-        $items = $helper->Option()->getModules();
-
-        $result = [];
-        foreach ($items as $item) {
-            $result[] = [
-                'title' => $item['ID'],
-                'value' => $item['ID'],
-            ];
-        }
-
-        return $result;
     }
 }

@@ -208,12 +208,15 @@ class UserTypeEntityHelper extends Helper
             $filter = [];
         }
 
+        return array_map(function ($item) {
+            return $this->getUserTypeEntityById($item['ID']);
+        }, $this->getList($filter));
+    }
+
+    public function getList(array $filter = []): array
+    {
         $dbres = CUserTypeEntity::GetList([], $filter);
-        $result = [];
-        while ($item = $dbres->Fetch()) {
-            $result[] = $this->getUserTypeEntityById($item['ID']);
-        }
-        return $result;
+        return $this->fetchAll($dbres);
     }
 
     /**
@@ -452,7 +455,7 @@ class UserTypeEntityHelper extends Helper
     {
         if (func_num_args() > 1) {
             /** @compability */
-            list($entityId, $fieldName, $fields) = func_get_args();
+            [$entityId, $fieldName, $fields] = func_get_args();
             $fields['ENTITY_ID'] = $entityId;
             $fields['FIELD_NAME'] = $fieldName;
         }

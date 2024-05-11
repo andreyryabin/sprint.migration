@@ -8,7 +8,6 @@ use Sprint\Migration\VersionBuilder;
 
 class AgentBuilder extends VersionBuilder
 {
-
     protected function isBuilderEnabled()
     {
         return true;
@@ -23,18 +22,17 @@ class AgentBuilder extends VersionBuilder
         $this->addVersionFields();
     }
 
-
     protected function execute()
     {
         $helper = $this->getHelperManager();
 
         $agentIds = $this->addFieldAndReturn('agent_id', [
-            'title' => Locale::getMessage('BUILDER_AgentExport_agent_id'),
+            'title'       => Locale::getMessage('BUILDER_AgentExport_agent_id'),
             'placeholder' => '',
-            'multiple' => 1,
-            'value' => [],
-            'width' => 250,
-            'select' => $this->getAgents(),
+            'multiple'    => 1,
+            'value'       => [],
+            'width'       => 250,
+            'items'       => $this->getAgentsSelect(),
         ]);
 
         $agentIds = is_array($agentIds) ? $agentIds : [$agentIds];
@@ -60,24 +58,15 @@ class AgentBuilder extends VersionBuilder
                 'items' => $items,
             ]
         );
-
     }
 
-    protected function getAgents()
+    protected function getAgentsSelect(): array
     {
-        $helper = $this->getHelperManager();
-
-        $agents = $helper->Agent()->getList([]);
-
-        $result = [];
-        foreach ($agents as $agent) {
-            $result[] = [
-                'title' => '[' . $agent['MODULE_ID'] . '] ' . $agent['NAME'],
-                'value' => $agent['ID'],
-            ];
-        }
-
-        return $result;
-
+        return $this->createSelectWithGroups(
+            $this->getHelperManager()->Agent()->getList(),
+            'MODULE_ID',
+            'ID',
+            'NAME',
+        );
     }
 }

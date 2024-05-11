@@ -3,27 +3,21 @@
 namespace Sprint\Migration;
 
 use ReflectionClass;
-use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 
 abstract class ExchangeEntity
 {
-    /**
-     * @var array
-     */
     protected $params = [];
     private   $versionConfig;
 
-    /**
-     * @return VersionConfig
-     */
-    public function getVersionConfig()
+    public function getVersionConfig(): VersionConfig
     {
         return $this->versionConfig;
     }
 
     /**
      * Не использовать
+     *
      * @param VersionConfig $versionConfig
      *
      * @return void
@@ -33,7 +27,7 @@ abstract class ExchangeEntity
         $this->versionConfig = $versionConfig;
     }
 
-    public function getClassName()
+    public function getClassName(): string
     {
         return (new ReflectionClass($this))->getShortName();
     }
@@ -46,18 +40,12 @@ abstract class ExchangeEntity
         throw new RestartException();
     }
 
-    /**
-     * @return array
-     */
-    public function getRestartParams()
+    public function getRestartParams(): array
     {
         return $this->params;
     }
 
-    /**
-     * @param array $params
-     */
-    public function setRestartParams($params = [])
+    public function setRestartParams(array $params = [])
     {
         $this->params = $params;
     }

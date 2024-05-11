@@ -39,7 +39,7 @@ foreach ($builderList as $builderName => $builderClass) {
             <?php } ?>
         </div>
         <div class="sp-col" style="position: relative">
-            <div class="sp-builder_body" style="position: sticky;top: 10px"></div>
+            <div id="migration_builder" style="position: sticky;top: 10px"></div>
         </div>
     </div>
 </div>

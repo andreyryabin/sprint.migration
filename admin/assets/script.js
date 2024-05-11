@@ -78,9 +78,9 @@ function migrationMigrationDelete(version) {
 }
 
 function migrationOutLog(result) {
-    var $el = $('#migration_progress');
+    var $el = jQuery('#migration_progress');
     var lastOutElem = $el.children('div').last();
-    if (lastOutElem.hasClass('sp-progress') && $(result).first().hasClass('sp-progress')) {
+    if (lastOutElem.hasClass('sp-progress') && jQuery(result).first().hasClass('sp-progress')) {
         lastOutElem.replaceWith(result);
     } else {
         $el.append(result);
@@ -91,9 +91,9 @@ function migrationOutLog(result) {
 function migrationExecuteStep(step_code, postData, succesCallback) {
     postData = postData || {};
     postData['step_code'] = step_code;
-    postData['send_sessid'] = $('#migration-container').data('sessid');
-    postData['search'] = $('input[name=migration_search]').val();
-    postData['filter'] = $('select[name=migration_filter]').val();
+    postData['send_sessid'] = jQuery('#migration_container').data('sessid');
+    postData['search'] = jQuery('input[name=migration_search]').val();
+    postData['filter'] = jQuery('select[name=migration_filter]').val();
 
     migrationEnableButtons(0);
 
@@ -115,7 +115,7 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
 }
 
 function migrationEnableButtons(enable) {
-    var buttons = $('#migration-container').find('input,select,.adm-btn');
+    var buttons = jQuery('#migration_container').find('input,select,.adm-btn');
     if (enable) {
         buttons.removeAttr('disabled').removeClass('sp-disabled');
     } else {
@@ -124,12 +124,12 @@ function migrationEnableButtons(enable) {
 }
 
 function migrationListRefresh(callbackAfterRefresh) {
-    $('#migration_actions').empty();
+    jQuery('#migration_actions').empty();
     migrationExecuteStep(
-        $('select[name=migration_filter]').val(),
+        jQuery('select[name=migration_filter]').val(),
         {},
         function (data) {
-            $('#migration_migrations').empty().html(data);
+            jQuery('#migration_migrations').empty().html(data);
             if (callbackAfterRefresh) {
                 callbackAfterRefresh()
             } else {
@@ -138,33 +138,39 @@ function migrationListRefresh(callbackAfterRefresh) {
         });
 }
 
-function migrationBuilder(postData) {
+function migrationBuilder(postData, formAttrs) {
     migrationExecuteStep('migration_create', postData, function (result) {
-        $('.sp-builder_body').html(result);
+        migrationBuilderRender(result, formAttrs)
     });
 }
 
 function migrationReset(postData) {
     migrationExecuteStep('migration_reset', postData, function (result) {
-        var $body = $('.sp-builder_body');
-
-        $body.html(result);
-
-        //$body.get(0).scrollIntoView({block: "center", inline: "nearest"});
+        migrationBuilderRender(result, {})
     });
 }
 
 function migrationListScroll() {
-    var $el = $('#migration_migrations');
+    var $el = jQuery('#migration_migrations');
     $el.scrollTop($el.prop("scrollHeight"));
+}
+
+function migrationBuilderRender(html, formAttrs) {
+    jQuery('#migration_builder').html(html);
+
+    jQuery.each(formAttrs, function (name, value) {
+        let $el = jQuery('#migration_builder').find('[data-attrs=' + name + ']');
+        if ($el.length > 0) {
+            $el.val(value).trigger('input');
+        }
+    });
 }
 
 jQuery(document).ready(function ($) {
 
     $.fn.serializeFormJSON = function () {
-
-        var o = {};
-        var a = this.serializeArray();
+        let o = {};
+        let a = this.serializeArray();
         $.each(a, function () {
             if (o[this.name]) {
                 if (!o[this.name].push) {
@@ -177,23 +183,33 @@ jQuery(document).ready(function ($) {
         });
         return o;
     };
-
+    $.fn.serializeFormAttrs = function () {
+        let o = {};
+        $(this).find('[data-attrs]').each(function () {
+            let name = $(this).data('attrs');
+            let val = $(this).val();
+            if (val) {
+                o[name] = val;
+            }
+        });
+        return o;
+    };
 
     (function () {
         $('.sp-builder_title').removeClass('sp-active');
         if (localStorage) {
-            var builderName = localStorage.getItem('migrations_open_builder');
+            let builderName = localStorage.getItem('migrations_open_builder');
             $('[data-builder="' + builderName + '"]').addClass('sp-active');
             migrationReset({builder_name: builderName});
         }
-    })();
+    })($);
 
     migrationListRefresh(function () {
         migrationEnableButtons(1);
         migrationListScroll();
     });
 
-    $('#migration-container').on('change', 'select[name=migration_filter]', function () {
+    $('#migration_container').on('change', 'select[name=migration_filter]', function () {
         migrationListRefresh(function () {
             migrationEnableButtons(1);
             migrationListScroll();
@@ -201,7 +217,7 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    $('#migration-container').on('keypress', 'input[name=migration_search]', function (e) {
+    $('#migration_container').on('keypress', 'input[name=migration_search]', function (e) {
         if (e.keyCode === 13) {
             migrationListRefresh(function () {
                 migrationEnableButtons(1);
@@ -211,33 +227,60 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    $('#migration-container').on('click', '.sp-search', function () {
+    $('#migration_container').on('click', '.sp-search', function () {
         migrationListRefresh(function () {
             migrationEnableButtons(1);
             migrationListScroll();
-            $('#tab_cont_tab1').click();
+            jQuery('#tab_cont_tab1').click();
         });
     });
 
-    $('#migration-container').on('click', '.sp-optgroup-check', function (e) {
-        var checkboxes = $(this).closest('.sp-optgroup').find(':checkbox');
-        checkboxes.attr("checked", !checkboxes.attr("checked"));
+    $('#migration_builder').on('click', '.sp-optgroup-check', function (e) {
         e.preventDefault();
+        var checkboxes = $(this).closest('.sp-optgroup').find('[type=checkbox]').not(':hidden');
+        checkboxes.prop("checked", !checkboxes.prop("checked"));
     });
 
-    $('.sp-builder_body').on('submit', 'form', function (e) {
+    $('#migration_builder').on('input', '.sp-optgroup-search', function (e) {
         e.preventDefault();
-        var postData = $(this).serializeFormJSON();
-        migrationBuilder(postData);
+        let text = $(this).val();
+
+        $(this).closest('.sp-optgroup').find('.sp-optgroup-group').each(function () {
+            let all = 0;
+            let hide = 0;
+
+            $(this).find('label').each(function () {
+                all++;
+                if ($(this).text().includes(text)) {
+                    $(this).show()
+                } else {
+                    hide++;
+                    $(this).hide()
+                }
+            });
+
+            if (hide > 0 && all === hide) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
     });
 
-    $('.sp-builder_body').on('reset', 'form', function (e) {
+    $('#migration_builder').on('submit', 'form', function (e) {
         e.preventDefault();
-        var postData = $(this).serializeFormJSON();
+        let postData = $(this).serializeFormJSON();
+        let formAttrs = $(this).serializeFormAttrs();
+        migrationBuilder(postData, formAttrs);
+    });
+
+    $('#migration_builder').on('reset', 'form', function (e) {
+        e.preventDefault();
+        let postData = $(this).serializeFormJSON();
         migrationReset(postData);
     });
 
-    $('#migration-container').on('click', '.sp-builder_title', function () {
+    $('#migration_container').on('click', '.sp-builder_title', function () {
 
         var builderName = $(this).data('builder');
 

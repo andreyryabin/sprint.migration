@@ -122,11 +122,7 @@ abstract class AbstractBuilder extends ExchangeEntity
     protected function addFieldHidden($code, $val)
     {
         $this->params[$code] = $val;
-        $this->addField(
-            $code, [
-                'type' => 'hidden',
-            ]
-        );
+        $this->addField($code, ['type' => 'hidden']);
     }
 
     protected function getFieldValue($code, $default = '')
@@ -138,7 +134,7 @@ abstract class AbstractBuilder extends ExchangeEntity
         }
     }
 
-    public function bindField($code, $val)
+    protected function bindField($code, $val)
     {
         if (isset($this->fields[$code])) {
             $this->fields[$code]['bind'] = 1;
@@ -173,8 +169,7 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     public function renderConsole()
     {
-        $fields = $this->getFields();
-        foreach ($fields as $code => $field) {
+        foreach ($this->getFields() as $code => $field) {
             if (empty($field['bind'])) {
                 $val = Out::input($field);
                 $this->bindField($code, $val);
@@ -323,5 +318,47 @@ abstract class AbstractBuilder extends ExchangeEntity
     protected function setField($code, $param = [])
     {
         $this->addField($code, $param);
+    }
+
+    protected function createSelect(
+        array $items,
+        string $idKey,
+        string $titleKey
+    ): array {
+        $select = [];
+        foreach ($items as $item) {
+            $itemId = $item[$idKey];
+            $select[$itemId] = [
+                'value' => $itemId,
+                'title' => $item[$titleKey],
+            ];
+        }
+        return $select;
+    }
+
+    protected function createSelectWithGroups(
+        array $items,
+        string $groupKey,
+        string $idKey,
+        string $titleKey
+    ): array {
+        $select = [];
+        foreach ($items as $item) {
+            $groupId = $item[$groupKey];
+
+            if (!isset($select[$groupId])) {
+                $select[$groupId] = [
+                    'title' => $groupId,
+                    'items' => [],
+                ];
+            }
+
+            $select[$groupId]['items'][] = [
+                'title' => $item[$titleKey],
+                'value' => $item[$idKey],
+            ];
+        }
+
+        return $select;
     }
 }

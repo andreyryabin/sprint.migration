@@ -22,7 +22,7 @@ $getOnclickMenu = function ()  {
     return CUtil::PhpToJSObject($menu);
 }
 ?>
-<div id="migration-container" data-sessid="<?= bitrix_sessid() ?>">
+<div id="migration_container" data-sessid="<?= bitrix_sessid() ?>">
     <div class="sp-table">
         <div class="sp-row2">
             <div class="sp-col sp-col-scroll sp-white">

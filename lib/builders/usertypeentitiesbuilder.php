@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Builders;
 
-use CUserTypeEntity;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Locale;
@@ -39,7 +38,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
                 'placeholder' => '',
                 'width'       => 250,
                 'multiple'    => 1,
-                'items'       => $this->getEntitiesStructure(),
+                'items'       => $this->getEntitiesSelect(),
                 'value'       => [],
             ]
         );
@@ -60,28 +59,13 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         );
     }
 
-    protected function getEntitiesStructure()
+    protected function getEntitiesSelect(): array
     {
-        /** @noinspection PhpDynamicAsStaticMethodCallInspection */
-        $dbRes = CUserTypeEntity::GetList([], []);
-
-        $structure = [];
-        while ($item = $dbRes->Fetch()) {
-            $entId = $item['ENTITY_ID'];
-
-            if (!isset($structure[$entId])) {
-                $structure[$entId] = [
-                    'title' => $entId,
-                    'items' => [],
-                ];
-            }
-
-            $structure[$entId]['items'][] = [
-                'title' => $item['FIELD_NAME'],
-                'value' => $item['ID'],
-            ];
-        }
-
-        return $structure;
+        return $this->createSelectWithGroups(
+            $this->getHelperManager()->UserTypeEntity()->getList(),
+            'ENTITY_ID',
+            'ID',
+            'FIELD_NAME'
+        );
     }
 }
