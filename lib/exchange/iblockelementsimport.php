@@ -4,7 +4,6 @@ namespace Sprint\Migration\Exchange;
 
 use Sprint\Migration\AbstractExchange;
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
 use XMLReader;
@@ -16,7 +15,6 @@ class IblockElementsImport extends AbstractExchange
     /**
      * @param callable $converter
      *
-     * @throws MigrationException
      * @throws HelperException
      * @throws RestartException
      */
@@ -29,7 +27,7 @@ class IblockElementsImport extends AbstractExchange
         $params = $this->exchangeEntity->getRestartParams();
 
         if (!isset($params['total'])) {
-            if (!is_file($this->file)){
+            if (!is_file($this->file)) {
                 throw new HelperException(
                     Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->file])
                 );
@@ -55,7 +53,7 @@ class IblockElementsImport extends AbstractExchange
             $reader->close();
 
             if (!$exchangeVersion || $exchangeVersion < self::EXCHANGE_VERSION) {
-                $this->exitWithMessage(
+                throw new HelperException(
                     Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->getExchangeFile()])
                 );
             }

@@ -4,9 +4,13 @@ namespace Sprint\Migration\Traits;
 
 use Sprint\Migration\Exceptions\MigrationException;
 
+/**
+ * @deprecated
+ */
 trait ExitMessageTrait
 {
     /**
+     * @deprecated
      * @param $cond
      * @param $msg
      *
@@ -20,6 +24,7 @@ trait ExitMessageTrait
     }
 
     /**
+     * @deprecated
      * @param $msg
      *
      * @throws MigrationException
@@ -30,6 +35,7 @@ trait ExitMessageTrait
     }
 
     /**
+     * @deprecated
      * @param $var
      * @param $msg
      *

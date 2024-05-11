@@ -45,7 +45,7 @@ try {
 
 } catch (Throwable $exception) {
     fwrite(STDOUT, sprintf(
-        "[%s] %s (%s) in %s:%d",
+        "[%s] %s (%s) in %s:%d \n",
         get_class($exception),
         $exception->getMessage(),
         $exception->getCode(),

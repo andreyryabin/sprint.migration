@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Builders;
 
-use Bitrix\Main\Db\SqlQueryException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
@@ -28,7 +27,6 @@ class FormBuilder extends VersionBuilder
     /**
      * @throws MigrationException
      * @throws RebuildException
-     * @throws SqlQueryException
      * @throws HelperException
      */
     protected function execute()

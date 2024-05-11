@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Builders;
 
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -24,7 +25,7 @@ class EventBuilder extends VersionBuilder
 
     /**
      * @throws RebuildException
-     * @throws \Sprint\Migration\Exceptions\MigrationException
+     * @throws MigrationException
      */
     protected function execute()
     {

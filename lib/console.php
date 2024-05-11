@@ -7,25 +7,24 @@ use CGroup;
 use CUser;
 use Exception;
 use Sprint\Migration\Enum\VersionEnum;
+use Sprint\Migration\Exceptions\ConsoleException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Throwable;
 
 class Console
 {
-
     private $script;
     private $command;
-
     private $arguments = [];
-
     private $versionConfig;
     private $versionManager;
-
     private $argoptions = [];
 
     /**
      * Console constructor.
+     *
      * @param $args
+     *
      * @throws Exception
      */
     public function __construct($args)
@@ -46,7 +45,6 @@ class Console
             $userlogin = substr($userlogin, 6);
             $this->authorizeAsLogin($userlogin);
         }
-
     }
 
     /**
@@ -56,12 +54,10 @@ class Console
     {
         if (empty($this->command)) {
             $this->commandInfo();
-
         } elseif (method_exists($this, $this->command)) {
             call_user_func([$this, $this->command]);
-
         } else {
-            $this->exitWithMessage(
+            throw new ConsoleException(
                 Locale::getMessage(
                     'ERR_COMMAND_NOT_FOUND', [
                         '#NAME#' => $this->command,
@@ -89,7 +85,7 @@ class Console
         $order = 'asc';
 
         $groupitem = CGroup::GetList($by, $order, [
-            'ADMIN' => 'Y',
+            'ADMIN'  => 'Y',
             'ACTIVE' => 'Y',
         ])->Fetch();
 
@@ -98,7 +94,7 @@ class Console
 
             $useritem = CUser::GetList($by, $order, [
                 'GROUPS_ID' => [$groupitem['ID']],
-                'ACTIVE' => 'Y',
+                'ACTIVE'    => 'Y',
             ], [
                 'NAV_PARAMS' => ['nTopCount' => 1],
             ])->Fetch();
@@ -107,7 +103,6 @@ class Console
                 $USER->Authorize($useritem['ID']);
             }
         }
-
     }
 
     /**
@@ -139,7 +134,7 @@ class Console
 
         $this->executeBuilder($from, [
             'description' => $descr,
-            'prefix' => $prefix,
+            'prefix'      => $prefix,
         ]);
     }
 
@@ -157,7 +152,7 @@ class Console
                 $this->versionManager->markMigration($search, $status)
             );
         } else {
-            $this->exitWithMessage(
+            throw new ConsoleException(
                 Locale::getMessage('ERR_INVALID_ARGUMENTS')
             );
         }
@@ -196,11 +191,11 @@ class Console
         }
 
         $versions = $this->versionManager->getVersions([
-            'status' => $status,
-            'search' => $this->getArg('--search='),
-            'tag' => $this->getArg('--tag='),
+            'status'   => $status,
+            'search'   => $this->getArg('--search='),
+            'tag'      => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
-            'older' => $this->getArg('--older'),
+            'older'    => $this->getArg('--older'),
         ]);
 
         if ($status) {
@@ -208,15 +203,15 @@ class Console
             $summary[$status] = 0;
         } else {
             $summary = [
-                VersionEnum::STATUS_NEW => 0,
+                VersionEnum::STATUS_NEW       => 0,
                 VersionEnum::STATUS_INSTALLED => 0,
-                VersionEnum::STATUS_UNKNOWN => 0,
+                VersionEnum::STATUS_UNKNOWN   => 0,
             ];
         }
 
         $grid = new ConsoleGrid(-1, [
-            'horizontal' => '=',
-            'vertical' => '',
+            'horizontal'   => '=',
+            'vertical'     => '',
             'intersection' => '',
         ], 1, 'UTF-8');
 
@@ -258,7 +253,6 @@ class Console
         }
 
         Out::out($grid->build());
-
     }
 
     /**
@@ -273,17 +267,17 @@ class Console
             if ($this->versionManager->checkVersionName($versionName)) {
                 $this->executeOnce($versionName, VersionEnum::ACTION_UP);
             } else {
-                $this->exitWithMessage(
+                throw new ConsoleException(
                     Locale::getMessage('ERR_VERSION_NOT_FOUND')
                 );
             }
         } else {
             $this->executeAll([
-                'status' => VersionEnum::STATUS_NEW,
-                'search' => $this->getArg('--search='),
-                'tag' => $this->getArg('--tag='),
+                'status'   => VersionEnum::STATUS_NEW,
+                'search'   => $this->getArg('--search='),
+                'tag'      => $this->getArg('--tag='),
                 'modified' => $this->getArg('--modified'),
-                'older' => $this->getArg('--older'),
+                'older'    => $this->getArg('--older'),
             ]);
         }
     }
@@ -300,17 +294,17 @@ class Console
             if ($this->versionManager->checkVersionName($versionName)) {
                 $this->executeOnce($versionName, VersionEnum::ACTION_DOWN);
             } else {
-                $this->exitWithMessage(
+                throw new ConsoleException(
                     Locale::getMessage('ERR_VERSION_NOT_FOUND')
                 );
             }
         } else {
             $this->executeAll([
-                'status' => VersionEnum::STATUS_INSTALLED,
-                'search' => $this->getArg('--search='),
-                'tag' => $this->getArg('--tag='),
+                'status'   => VersionEnum::STATUS_INSTALLED,
+                'search'   => $this->getArg('--search='),
+                'tag'      => $this->getArg('--tag='),
                 'modified' => $this->getArg('--modified'),
-                'older' => $this->getArg('--older'),
+                'older'    => $this->getArg('--older'),
             ]);
         }
     }
@@ -326,7 +320,7 @@ class Console
             $this->executeVersion($versionName, VersionEnum::ACTION_DOWN);
             $this->executeVersion($versionName, VersionEnum::ACTION_UP);
         } else {
-            $this->exitWithMessage(
+            throw new ConsoleException(
                 Locale::getMessage('ERR_VERSION_NOT_FOUND')
             );
         }
@@ -360,13 +354,18 @@ class Console
             }
         }
         Out::out('');
-        Out::out(Locale::getMessage('COMMAND_CONFIG') . ':' . PHP_EOL . '  php %s config' . PHP_EOL,
-            $this->script);
-        Out::out(Locale::getMessage('COMMAND_RUN') . ':' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL,
-            $this->script);
-        Out::out(Locale::getMessage('COMMAND_HELP') . ':' . PHP_EOL . '  php %s help' . PHP_EOL,
-            $this->script);
-
+        Out::out(
+            Locale::getMessage('COMMAND_CONFIG') . ':' . PHP_EOL . '  php %s config' . PHP_EOL,
+            $this->script
+        );
+        Out::out(
+            Locale::getMessage('COMMAND_RUN') . ':' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL,
+            $this->script
+        );
+        Out::out(
+            Locale::getMessage('COMMAND_HELP') . ':' . PHP_EOL . '  php %s help' . PHP_EOL,
+            $this->script
+        );
     }
 
     /**
@@ -388,14 +387,15 @@ class Console
 
         $configValues = $this->versionConfig->humanValues($configValues);
 
-        Out::out('%s: %s',
+        Out::out(
+            '%s: %s',
             Locale::getMessage('CONFIG'),
             $configTitle
         );
 
         $grid = new ConsoleGrid(-1, [
-            'horizontal' => '=',
-            'vertical' => '',
+            'horizontal'   => '=',
+            'vertical'     => '',
             'intersection' => '',
         ], 1, 'UTF-8');
 
@@ -435,11 +435,11 @@ class Console
         /** @compability */
         $status = $this->getArg('--down') ? VersionEnum::STATUS_INSTALLED : VersionEnum::STATUS_NEW;
         $this->executeAll([
-            'status' => $status,
-            'search' => $this->getArg('--search='),
-            'tag' => $this->getArg('--tag='),
+            'status'   => $status,
+            'search'   => $this->getArg('--search='),
+            'tag'      => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
-            'older' => $this->getArg('--older'),
+            'older'    => $this->getArg('--older'),
         ]);
     }
 
@@ -467,7 +467,7 @@ class Console
                 $this->executeOnce($version, VersionEnum::ACTION_UP);
             }
         } else {
-            $this->exitWithMessage(
+            throw new ConsoleException(
                 Locale::getMessage('ERR_VERSION_NOT_FOUND')
             );
         }
@@ -510,43 +510,34 @@ class Console
             });
         } else {
             $select = Out::input([
-                'title' => 'select schemas',
-                'select' => $selectValues,
+                'title'    => 'select schemas',
+                'select'   => $selectValues,
                 'multiple' => 1,
             ]);
         }
 
-
         $params = [];
 
         do {
-
             $schemaManager = new SchemaManager($this->versionConfig, $params);
             $restart = 0;
 
             try {
-
                 if ($action == 'diff') {
                     $schemaManager->setTestMode(1);
                     $schemaManager->import(['name' => $select]);
-
                 } elseif ($action == 'import') {
                     $schemaManager->setTestMode(0);
                     $schemaManager->import(['name' => $select]);
-
                 } elseif ($action == 'export') {
                     $schemaManager->export(['name' => $select]);
                 }
-
-
             } catch (Exceptions\RestartException $e) {
                 $params = $schemaManager->getRestartParams();
                 $restart = 1;
-
             } catch (Throwable $e) {
                 Out::outException($e);
             }
-
         } while ($restart == 1);
 
         return true;
@@ -554,6 +545,7 @@ class Console
 
     /**
      * @param $filter
+     *
      * @throws MigrationException
      */
     protected function executeAll($filter)
@@ -566,7 +558,6 @@ class Console
         $action = ($filter['status'] == VersionEnum::STATUS_NEW) ? VersionEnum::ACTION_UP : VersionEnum::ACTION_DOWN;
 
         foreach ($versions as $item) {
-
             $ok = $this->executeVersion($item['version'], $action);
 
             if ($ok) {
@@ -578,21 +569,21 @@ class Console
             if ($fails) {
                 break;
             }
-
         }
 
         Out::out('migrations (%s): %d', $action, $success);
 
         if ($fails) {
-            $this->exitWithMessage(
+            throw new ConsoleException(
                 Locale::getMessage('ERR_SOME_MIGRATIONS_FAILS')
             );
         }
     }
 
     /**
-     * @param $version
+     * @param        $version
      * @param string $action
+     *
      * @throws MigrationException
      */
     protected function executeOnce($version, $action)
@@ -600,7 +591,7 @@ class Console
         $ok = $this->executeVersion($version, $action);
 
         if (!$ok) {
-            $this->exitWithMessage(
+            throw new ConsoleException(
                 Locale::getMessage('ERR_MIGRATION_FAIL')
             );
         }
@@ -608,7 +599,6 @@ class Console
 
     protected function executeVersion($version, $action)
     {
-
         $tag = $this->getArg('--add-tag=', '');
 
         $params = [];
@@ -639,25 +629,24 @@ class Console
             if (!$success && !$restart) {
                 Out::outException($this->versionManager->getLastException());
             }
-
         } while ($exec == 1);
 
         return $success;
     }
 
     /**
-     * @param $from
+     * @param       $from
      * @param array $postvars
+     *
      * @throws MigrationException
      */
     protected function executeBuilder($from, $postvars = [])
     {
         do {
-
             $builder = $this->versionManager->createBuilder($from, $postvars);
 
             if (!$builder) {
-                $this->exitWithMessage(
+                throw new ConsoleException(
                     Locale::getMessage('ERR_BUILDER_NOT_FOUND')
                 );
             }
@@ -670,10 +659,8 @@ class Console
             $builder->renderConsole();
 
             $postvars = $builder->getRestartParams();
-
         } while ($builder->isRestart() || $builder->isRebuild());
     }
-
 
     protected function initializeArgs($args)
     {
@@ -694,7 +681,6 @@ class Console
             }
 
             $command = 'command' . implode('', $tmp);
-
         }
 
         return $command;
@@ -702,7 +688,7 @@ class Console
 
     protected function addArg($arg)
     {
-        list($name, $val) = explode('=', $arg);
+        [$name, $val] = explode('=', $arg);
         $isoption = (0 === strpos($name, '--')) ? 1 : 0;
         if ($isoption) {
             if (!is_null($val)) {
@@ -722,17 +708,6 @@ class Console
         } else {
             return isset($this->argoptions[$name]) ? $this->argoptions[$name] : $default;
         }
-    }
-
-    /**
-     * @param $msg
-     * @throws MigrationException
-     */
-    protected function exitWithMessage($msg)
-    {
-        Out::outError($msg);
-
-        Throw new MigrationException();
     }
 
     private function disableAuthHandlersIfNeed()

@@ -35,7 +35,6 @@ class IblockElementsBuilder extends VersionBuilder
      * @throws MigrationException
      * @throws RestartException
      * @throws HelperException
-     * @throws MigrationException
      */
     protected function execute()
     {

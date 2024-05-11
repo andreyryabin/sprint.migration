@@ -481,6 +481,8 @@ class Out
 
     protected static function outExceptionTrace(array $trace)
     {
+        $isBrowser = self::canOutAsHtml();
+
         foreach ($trace as $index => $err) {
             $name = '';
             if ($err['class'] && $err['function']) {
@@ -494,7 +496,11 @@ class Out
             self::out('[b]#' . $index . '[/] ' . $name . '(');
             foreach ($err['args'] as $argi => $argval) {
                 $del = $argi < $cntArgs - 1 ? ', ' : '';
-                self::out('[tab]' . var_export($argval, 1) . $del . '[/]');
+                $argval = var_export($argval, 1);
+                if ($isBrowser) {
+                    $argval = htmlspecialchars($argval);
+                }
+                self::out('[tab]' . $argval . $del . '[/]');
             }
             self::out(');');
         }

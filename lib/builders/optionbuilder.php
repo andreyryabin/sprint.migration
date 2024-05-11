@@ -4,6 +4,8 @@ namespace Sprint\Migration\Builders;
 
 use Bitrix\Main\ArgumentException;
 use Bitrix\Main\SystemException;
+use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -25,9 +27,9 @@ class OptionBuilder extends VersionBuilder
     }
 
     /**
-     * @throws ArgumentException
-     * @throws SystemException
      * @throws RebuildException
+     * @throws HelperException
+     * @throws MigrationException
      */
     protected function execute()
     {

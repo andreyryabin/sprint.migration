@@ -35,7 +35,6 @@ class HlblockElementsBuilder extends VersionBuilder
      * @throws HelperException
      * @throws RebuildException
      * @throws RestartException
-     * @throws MigrationException
      */
     protected function execute()
     {
@@ -53,7 +52,9 @@ class HlblockElementsBuilder extends VersionBuilder
         $updateMode = $this->getFieldValueUpdateMode();
 
         if ($updateMode == HlblockElementsExport::UPDATE_MODE_XML_ID) {
-            $this->exitIf(!in_array('UF_XML_ID', $fields), 'Field UF_XML_ID not found');
+            if (!in_array('UF_XML_ID', $fields)) {
+                throw new HelperException('Field UF_XML_ID not found');
+            }
         }
 
         $this->getExchangeManager()

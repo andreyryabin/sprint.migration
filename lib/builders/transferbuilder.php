@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Builders;
 
-use Exception;
 use Sprint\Migration\AbstractBuilder;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
@@ -12,7 +11,6 @@ use Sprint\Migration\VersionManager;
 
 class TransferBuilder extends AbstractBuilder
 {
-
     protected function isBuilderEnabled()
     {
         return true;
@@ -36,10 +34,10 @@ class TransferBuilder extends AbstractBuilder
         }
 
         $this->addField('transfer_filter', [
-            'title' => Locale::getMessage('BUILDER_TransferSelect'),
+            'title'       => Locale::getMessage('BUILDER_TransferSelect'),
             'placeholder' => '',
-            'width' => 250,
-            'select' => [
+            'width'       => 250,
+            'select'      => [
                 [
                     'title' => Locale::getMessage('BUILDER_TransferInstalled'),
                     'value' => VersionEnum::STATUS_INSTALLED,
@@ -60,16 +58,15 @@ class TransferBuilder extends AbstractBuilder
         ]);
 
         $this->addField('transfer_to', [
-            'title' => Locale::getMessage('BUILDER_TransferTo'),
+            'title'       => Locale::getMessage('BUILDER_TransferTo'),
             'placeholder' => '',
-            'width' => 250,
-            'select' => $structure,
+            'width'       => 250,
+            'select'      => $structure,
         ]);
     }
 
     /**
      * @throws MigrationException
-     * @throws Exception
      */
     protected function execute()
     {
@@ -85,7 +82,6 @@ class TransferBuilder extends AbstractBuilder
             $this->getFieldValue('transfer_filter'),
             $vmTo
         );
-
 
         $cnt = 0;
         foreach ($transferresult as $item) {

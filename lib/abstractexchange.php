@@ -6,7 +6,6 @@ use CFile;
 use Exception;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Traits\ExitMessageTrait;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use XMLReader;
 use XMLWriter;
@@ -15,7 +14,6 @@ abstract class AbstractExchange
 {
     const EXCHANGE_VERSION = 2;
     use HelperManagerTrait;
-    use ExitMessageTrait;
     use OutTrait;
 
     protected $exchangeEntity;

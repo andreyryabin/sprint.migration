@@ -3,7 +3,6 @@
 namespace Sprint\Migration\Helpers;
 
 use Bitrix\Main\Application;
-use Bitrix\Main\Db\SqlQueryException;
 use CForm;
 use CFormAnswer;
 use CFormField;
@@ -45,7 +44,6 @@ class FormHelper extends Helper
      * @param $formId
      *
      * @throws HelperException
-     * @throws SqlQueryException
      * @return array|bool
      */
     public function getFormById($formId)
@@ -341,16 +339,19 @@ class FormHelper extends Helper
      * @param int $formId
      *
      * @throws HelperException
-     * @throws SqlQueryException
      * @return array
      */
     protected function exportRights($formId)
     {
         $userGroupHelper = new UserGroupHelper();
 
-        $dbres = Application::getConnection()->query(
-            "SELECT GROUP_ID, PERMISSION FROM b_form_2_group WHERE FORM_ID = {$formId}"
-        );
+        try {
+            $dbres = Application::getConnection()->query(
+                "SELECT GROUP_ID, PERMISSION FROM b_form_2_group WHERE FORM_ID = {$formId}"
+            );
+        } catch (Exception $e) {
+            throw new HelperException($e->getMessage());
+        }
 
         $rights = [];
         while ($group = $dbres->fetch()) {

@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -25,8 +26,9 @@ class UserGroupBuilder extends VersionBuilder
     }
 
     /**
-     * @throws HelperException
      * @throws RebuildException
+     * @throws HelperException
+     * @throws MigrationException
      */
     protected function execute()
     {

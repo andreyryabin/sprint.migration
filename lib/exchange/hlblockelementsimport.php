@@ -16,7 +16,6 @@ class HlblockElementsImport extends AbstractExchange
     /**
      * @param callable $converter
      *
-     * @throws MigrationException
      * @throws RestartException
      * @throws HelperException
      */
@@ -52,7 +51,7 @@ class HlblockElementsImport extends AbstractExchange
             $reader->close();
 
             if (!$exchangeVersion || $exchangeVersion < self::EXCHANGE_VERSION) {
-                $this->exitWithMessage(
+                throw new HelperException(
                     Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->getExchangeFile()])
                 );
             }

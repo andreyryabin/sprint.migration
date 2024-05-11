@@ -21,7 +21,6 @@ class Version extends ExchangeEntity
 
     protected $description   = "";
     protected $moduleVersion = "";
-
     /**
      * Миграции, которые должны быть установлены перед установкой текущей
      * $this->requiredVersions = ['Version1','Version1']

@@ -2,12 +2,12 @@
 
 namespace Sprint\Migration\Helpers;
 
-use Bitrix\Main\Db\SqlQueryException;
 use CFile;
 use CMedialib;
 use CMedialibCollection;
 use CMedialibItem;
 use CTask;
+use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
@@ -154,21 +154,18 @@ SELECT MI.ID, MI.NAME, MI.DESCRIPTION, MI.KEYWORDS, MI.SOURCE_ID, MCI.COLLECTION
         WHERE {$whereQuery} {$limitQuery} ;
 TAG;
 
-        $result = [];
         try {
-            $result = $sqlhelper->query($sqlQuery)->fetchAll();
-        } catch (SqlQueryException $e) {
+            return $sqlhelper->query($sqlQuery)->fetchAll();
+        } catch (Exception $e) {
             throw new HelperException($e->getMessage());
         }
-
-        return $result;
     }
 
     /**
      * @param array|int $collectionId
      * @param array     $params
      *
-     * @throws SqlQueryException
+     * @throws HelperException
      * @return int
      */
     public function getElementsCount($collectionId, $params = [])
@@ -187,7 +184,11 @@ SELECT COUNT(*) CNT
         WHERE {$where};
 TAG;
 
-        $result = $sqlhelper->query($sqlQuery)->fetch();
+        try {
+            $result = $sqlhelper->query($sqlQuery)->fetch();
+        } catch (Exception $e) {
+            throw new HelperException($e->getMessage());
+        }
         return (int)$result['CNT'];
     }
 
