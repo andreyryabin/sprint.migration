@@ -325,7 +325,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_CANT_CREATE_DIRECTORY"          => "Cant create directory #NAME#",
         "ERR_MSSQL_NOT_SUPPORTED"            => "MSSQL not supported",
         "ERR_JSON_NOT_SUPPORTED"             => "Install php-ext json",
-        "ERR_PHP_NOT_SUPPORTED"              => "\"#NAME#\" not supported",
+        "ERR_PHP_NOT_SUPPORTED"              => "PHP #NAME# not supported",
         "ERR_EXCHANGE_DISABLED"              => "Exchange disabled, install required bitrix modules",
         "ERR_EXCHANGE_DISABLED_XML"          => "Exchange disabled, install php-ext XMLReader and XMLWriter",
         "ERR_CLASS_NOT_FOUND"                => "Class \"#NAME#\" not found",

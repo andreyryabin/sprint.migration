@@ -5,13 +5,25 @@ namespace Sprint\Migration;
 use COption;
 use Exception;
 
+/**
+ *
+ * В этом классе у свойств не надо указывать тип
+ *  ради совместимости с php < 7.4, чтобы админка
+ *  могла корректно показать фразу PHP 7.3 не поддерживается
+ */
 class Module
 {
     const ID = 'sprint.migration';
-    private static string $version        = '';
-    private static array  $defaultOptions = [
-        'show_schemas'    => 'Y',
-        'show_support'    => 'Y',
+    /**
+     * @var string
+     */
+    private static $version = '';
+    /**
+     * @var array
+     */
+    private static $defaultOptions = [
+        'show_schemas' => 'Y',
+        'show_support' => 'Y',
     ];
 
     public static function getDbOption($name, $default = '')
