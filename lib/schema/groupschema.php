@@ -79,32 +79,30 @@ class GroupSchema extends AbstractSchema
     }
 
     /**
-     * @param $fields
-     *
      * @throws HelperException
      */
     protected function saveGroup($fields)
     {
-        $helper = $this->getHelperManager();
-        $helper->UserGroup()->setTestMode($this->testMode);
-        $helper->UserGroup()->saveGroup($fields['STRING_ID'], $fields);
+        $userGroupHelper = $this->getHelperManager()->UserGroup()->setTestMode(
+            $this->isTestMode()
+        );
+
+        $userGroupHelper->saveGroup($fields['STRING_ID'], $fields);
     }
 
-    /**
-     * @param array $skip
-     */
-    protected function cleanGroups($skip = [])
+    protected function cleanGroups($skip)
     {
-        $helper = $this->getHelperManager();
+        $userGroupHelper = $this->getHelperManager()->UserGroup()->setTestMode(
+            $this->isTestMode()
+        );
 
-        $olds = $helper->UserGroup()->getGroups();
+        $olds = $userGroupHelper->getGroups();
         foreach ($olds as $old) {
             if (!empty($old['STRING_ID'])) {
                 $uniq = $this->getUniqGroup($old);
                 if (!in_array($uniq, $skip)) {
-                    $ok = ($this->testMode) ? true : $helper->UserGroup()->deleteGroup($old['STRING_ID']);
                     $this->outWarningIf(
-                        $ok,
+                        $userGroupHelper->deleteGroup($old['STRING_ID']),
                         Locale::getMessage(
                             'USER_GROUP_DELETED',
                             [

@@ -283,6 +283,10 @@ class EventHelper extends Helper
      */
     public function updateEventMessageById($id, $fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $event = new CEventMessage;
 
         //Удаление "лишних" значений из массива, наличие которых вызовет ошибку при \CAllEventMessage::Update() (bitrix\modules\main\classes\general\event.php#355)
@@ -321,6 +325,10 @@ class EventHelper extends Helper
      */
     public function updateEventTypeById($id, $fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $event = new CEventType();
         if ($event->Update(['ID' => $id], $fields)) {
             return $id;
@@ -358,7 +366,7 @@ class EventHelper extends Helper
         $fields = $this->prepareExportEventMessage($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addEventMessage($eventName, $fields);
+            $ok = $this->addEventMessage($eventName, $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -372,7 +380,7 @@ class EventHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateEventMessageById($exists['ID'], $fields);
+            $ok = $this->updateEventMessageById($exists['ID'], $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -388,7 +396,7 @@ class EventHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $eventName;
+        return $this->isTestMode() ? true : $eventName;
     }
 
     /**
@@ -414,7 +422,7 @@ class EventHelper extends Helper
         $fields = $this->prepareExportEventType($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addEventType($eventName, $fields);
+            $ok = $this->addEventType($eventName, $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -430,7 +438,7 @@ class EventHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateEventTypeById($exists['ID'], $fields);
+            $ok = $this->updateEventTypeById($exists['ID'], $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -446,7 +454,7 @@ class EventHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $eventName;
+        return $this->isTestMode() ? true : $eventName;
     }
 
     /**
@@ -459,6 +467,10 @@ class EventHelper extends Helper
      */
     public function deleteEventType($fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $this->checkRequiredKeys($fields, ['LID', 'EVENT_NAME']);
 
         $exists = $this->getEventType([
@@ -494,6 +506,10 @@ class EventHelper extends Helper
      */
     public function deleteEventMessage($fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $this->checkRequiredKeys($fields, ['SUBJECT', 'EVENT_NAME']);
 
         $exists = $this->getEventMessage(
@@ -532,6 +548,10 @@ class EventHelper extends Helper
      */
     public function addEventType($eventName, $fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $this->checkRequiredKeys($fields, ['LID', 'NAME']);
         $fields['EVENT_NAME'] = $eventName;
 
@@ -564,6 +584,10 @@ class EventHelper extends Helper
      */
     public function addEventMessage($eventName, $fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $this->checkRequiredKeys($fields, ['LID', 'SUBJECT']);
 
         $default = [

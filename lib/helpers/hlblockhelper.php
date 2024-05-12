@@ -84,7 +84,8 @@ class HlblockHelper extends Helper
     public function getFields($hlblockName)
     {
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
+        $entityHelper->setTestMode($this->isTestMode());
+
         return $entityHelper->getUserTypeEntities(
             $this->getEntityId($hlblockName)
         );
@@ -102,7 +103,7 @@ class HlblockHelper extends Helper
     public function getField($hlblockName, $fieldName)
     {
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
+        $entityHelper->setTestMode($this->isTestMode());
 
         return $entityHelper->getUserTypeEntity(
             $this->getEntityId($hlblockName),
@@ -120,7 +121,7 @@ class HlblockHelper extends Helper
     public function getFieldUid($hlblockName, $field)
     {
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
+        $entityHelper->setTestMode($this->isTestMode());
 
         if (!is_array($field)) {
             //на вход пришел id или название поля
@@ -264,7 +265,8 @@ class HlblockHelper extends Helper
         $field['ENTITY_ID'] = $this->getEntityId($hlblockName);
 
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
+        $entityHelper->setTestMode($this->isTestMode());
+
         return $entityHelper->saveUserTypeEntity($field);
     }
 
@@ -286,7 +288,7 @@ class HlblockHelper extends Helper
         $fields = $this->prepareExportHlblock($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addHlblock($fields);
+            $ok = $this->addHlblock($fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -302,7 +304,7 @@ class HlblockHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateHlblock($exists['ID'], $fields);
+            $ok = $this->updateHlblock($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -317,7 +319,7 @@ class HlblockHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $exists['ID'];
+        return $this->isTestMode() ? true : $exists['ID'];
     }
 
     /**
@@ -331,8 +333,13 @@ class HlblockHelper extends Helper
      */
     public function deleteField($hlblockName, $fieldName)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
+        $entityHelper->setTestMode($this->isTestMode());
+
         return $entityHelper->deleteUserTypeEntity(
             $this->getEntityId($hlblockName),
             $fieldName
@@ -351,7 +358,7 @@ class HlblockHelper extends Helper
     public function exportFields($hlblockName)
     {
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
+        $entityHelper->setTestMode($this->isTestMode());
 
         $fields = $entityHelper->exportUserTypeEntities(
             $this->getEntityId($hlblockName)
@@ -493,6 +500,10 @@ class HlblockHelper extends Helper
      */
     public function addHlblock($fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $this->checkRequiredKeys($fields, ['NAME', 'TABLE_NAME']);
         $fields['NAME'] = ucfirst($fields['NAME']);
 
@@ -546,6 +557,10 @@ class HlblockHelper extends Helper
      */
     public function updateHlblock($hlblockId, $fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $lang = [];
         if (isset($fields['LANG'])) {
             $lang = $fields['LANG'];
@@ -595,6 +610,10 @@ class HlblockHelper extends Helper
      */
     public function deleteHlblock($hlblockId)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         try {
             $result = HighloadBlockTable::delete($hlblockId);
             if ($result->isSuccess()) {

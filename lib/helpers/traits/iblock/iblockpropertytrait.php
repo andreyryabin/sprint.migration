@@ -32,7 +32,7 @@ trait IblockPropertyTrait
         $fields = $this->prepareExportProperty($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addProperty($iblockId, $fields);
+            $ok = $this->addProperty($iblockId, $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -48,10 +48,10 @@ trait IblockPropertyTrait
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updatePropertyById(
-                $exists['ID'],
-                array_merge($fields, ['IBLOCK_ID' => $iblockId])
-            );
+            $ok = $this->updatePropertyById(
+                    $exists['ID'],
+                    array_merge($fields, ['IBLOCK_ID' => $iblockId])
+                );
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -67,7 +67,7 @@ trait IblockPropertyTrait
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $exists['ID'];
+        return $this->isTestMode() ? true : $exists['ID'];
     }
 
     /**
@@ -242,6 +242,10 @@ trait IblockPropertyTrait
      */
     public function addProperty($iblockId, $fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $default = [
             'NAME'           => '',
             'ACTIVE'         => 'Y',
@@ -301,6 +305,10 @@ trait IblockPropertyTrait
      */
     public function updatePropertyById($propertyId, $fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         if (!empty($fields['VALUES']) && !isset($fields['PROPERTY_TYPE'])) {
             $fields['PROPERTY_TYPE'] = 'L';
         }
@@ -534,10 +542,14 @@ trait IblockPropertyTrait
      * @param $propertyId
      *
      * @throws HelperException
-     * @return bool|void
+     * @return bool
      */
     public function deletePropertyById($propertyId)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $ib = new CIBlockProperty;
         if ($ib->Delete($propertyId)) {
             return true;

@@ -57,6 +57,7 @@ class UserOptionsHelper extends Helper
 
     /**
      * @param array $params
+     *
      * @throws HelperException
      * @return array|bool|mixed
      */
@@ -66,7 +67,7 @@ class UserOptionsHelper extends Helper
 
         $params = array_merge(
             [
-                'name' => '',
+                'name'     => '',
                 'category' => 'list',
             ],
             $params
@@ -86,8 +87,8 @@ class UserOptionsHelper extends Helper
         $option = array_merge(
             [
                 'page_size' => 20,
-                'order' => 'desc',
-                'by' => 'timestamp_x',
+                'order'     => 'desc',
+                'by'        => 'timestamp_x',
             ],
             $option
         );
@@ -100,26 +101,31 @@ class UserOptionsHelper extends Helper
     /**
      * @param array $data
      * @param array $params
+     *
      * @throws HelperException
      * @return bool
      */
     public function buildList($data = [], $params = [])
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $this->checkRequiredKeys($params, ['name']);
 
         /** @compability with old format */
         if (!isset($data['columns'])) {
             $data = [
-                'columns' => is_array($data) ? $data : [],
+                'columns'   => is_array($data) ? $data : [],
                 'page_size' => isset($params['page_size']) ? $params['page_size'] : '',
-                'order' => isset($params['order']) ? $params['order'] : '',
-                'by' => isset($params['by']) ? $params['by'] : '',
+                'order'     => isset($params['order']) ? $params['order'] : '',
+                'by'        => isset($params['by']) ? $params['by'] : '',
             ];
         }
 
         $params = array_merge(
             [
-                'name' => '',
+                'name'     => '',
                 'category' => 'list',
             ],
             $params
@@ -127,10 +133,10 @@ class UserOptionsHelper extends Helper
 
         $data = array_merge(
             [
-                'columns' => [],
+                'columns'   => [],
                 'page_size' => 20,
-                'order' => 'desc',
-                'by' => 'timestamp_x',
+                'order'     => 'desc',
+                'by'        => 'timestamp_x',
             ],
             $data
         );
@@ -141,10 +147,10 @@ class UserOptionsHelper extends Helper
         }
 
         $value = [
-            'columns' => $this->transformCodesToColumns($data['columns']),
+            'columns'   => $this->transformCodesToColumns($data['columns']),
             'page_size' => $params['page_size'],
-            'order' => $params['order'],
-            'by' => $params['by'],
+            'order'     => $params['order'],
+            'by'        => $params['by'],
         ];
 
         CUserOptions::DeleteOptionsByName(
@@ -165,6 +171,7 @@ class UserOptionsHelper extends Helper
     /**
      * @param array $data
      * @param array $params
+     *
      * @throws HelperException
      * @return bool
      */
@@ -172,7 +179,7 @@ class UserOptionsHelper extends Helper
     {
         $exists = $this->exportList($params);
         if ($this->hasDiff($exists, $data)) {
-            $ok = $this->getMode('test') ? true : $this->buildList($data, $params);
+            $ok = $this->buildList($data, $params);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -212,6 +219,10 @@ class UserOptionsHelper extends Helper
 
     public function buildGrid($gridId, $options = [])
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         foreach ($options['views'] as $viewCode => $view) {
             $view['columns'] = $this->transformCodesToColumns($view['columns']);
             $view['custom_names'] = $this->transformCustomNames($view['custom_names']);
@@ -236,7 +247,8 @@ class UserOptionsHelper extends Helper
     {
         $exists = $this->exportGrid($gridId);
         if ($this->hasDiff($exists, $params)) {
-            $ok = $this->getMode('test') ? true : $this->buildGrid($gridId, $params);
+            $ok = $this->buildGrid($gridId, $params);
+
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -255,6 +267,7 @@ class UserOptionsHelper extends Helper
 
     /**
      * @param array $params
+     *
      * @throws HelperException
      * @return array
      */
@@ -267,7 +280,7 @@ class UserOptionsHelper extends Helper
 
         $params = array_merge(
             [
-                'name' => '',
+                'name'     => '',
                 'category' => 'form',
             ],
             $params
@@ -328,11 +341,16 @@ class UserOptionsHelper extends Helper
     /**
      * @param array $formData
      * @param array $params
+     *
      * @throws HelperException
      * @return bool
      */
     public function buildForm($formData = [], $params = [])
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         /** @compability */
         if (isset($params['name_prefix'])) {
             throw new HelperException('name_prefix is no longer supported, see examples');
@@ -340,7 +358,7 @@ class UserOptionsHelper extends Helper
 
         $params = array_merge(
             [
-                'name' => '',
+                'name'     => '',
                 'category' => 'form',
             ],
             $params
@@ -414,6 +432,7 @@ class UserOptionsHelper extends Helper
     /**
      * @param array $formData
      * @param array $params
+     *
      * @throws HelperException
      * @return bool
      */
@@ -421,7 +440,8 @@ class UserOptionsHelper extends Helper
     {
         $exists = $this->exportForm($params);
         if ($this->hasDiffStrict($exists, $formData)) {
-            $ok = $this->getMode('test') ? true : $this->buildForm($formData, $params);
+            $ok = $this->buildForm($formData, $params);
+
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(

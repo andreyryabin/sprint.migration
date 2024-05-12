@@ -5,6 +5,7 @@ namespace Sprint\Migration;
 use Exception;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Traits\HelperManagerTrait;
+use Sprint\Migration\Traits\OutTrait;
 
 class SchemaManager extends ExchangeEntity
 {
@@ -13,24 +14,16 @@ class SchemaManager extends ExchangeEntity
 
     private $progress = [];
 
-    protected $testMode = 0;
-
     /**
-     * SchemaManager constructor.
-     * @param VersionConfig $configName
-     * @param array $params
+     * @param VersionConfig $versionConfig
+     * @param array         $params
+     *
      * @throws Exception
      */
     public function __construct(VersionConfig $versionConfig, $params = [])
     {
         $this->setVersionConfig($versionConfig);
         $this->setRestartParams($params);
-        $this->params = $params;
-    }
-
-    public function setTestMode($testMode = 1)
-    {
-        $this->testMode = $testMode;
     }
 
     /**
@@ -71,11 +64,9 @@ class SchemaManager extends ExchangeEntity
         }
 
         return $filtered;
-
     }
 
     /**
-     * @param array $filter
      * @throws RestartException
      */
     public function export($filter = [])
@@ -101,9 +92,10 @@ class SchemaManager extends ExchangeEntity
 
     /**
      * @param array $filter
+     *
      * @throws RestartException
      */
-    public function import($filter = [])
+    public function import($filter = [], $testMode = 0)
     {
         $this->progress = [];
 
@@ -116,7 +108,7 @@ class SchemaManager extends ExchangeEntity
 
         if (isset($schemas[$this->params['schema']])) {
             $name = $schemas[$this->params['schema']];
-            $this->importSchema($name);
+            $this->importSchema($name, $testMode);
 
             $this->setProgress('full', $this->params['schema'] + 1, count($schemas));
             $this->params['schema']++;
@@ -153,29 +145,25 @@ class SchemaManager extends ExchangeEntity
 
         $schema->outSchemaFiles();
 
-        if (!$this->testMode) {
-            $schema->setModified();
-        }
+        $schema->setModified();
 
         return true;
     }
 
     /**
-     * @param $name
      * @throws RestartException
      * @throws Exception
-     * @return bool
      */
-    protected function importSchema($name)
+    protected function importSchema($name, $testMode)
     {
         $schema = $this->createSchema($name);
         if (!$schema->isEnabled()) {
             return false;
         }
 
-        $schema->setTestMode($this->testMode);
+        $schema->setTestMode($testMode);
 
-        $title = $this->testMode ? 'diff' : 'import';
+        $title = $testMode ? 'diff' : 'import';
 
         if (!isset($this->params['index'])) {
             $this->outInfo('%s (%s) start', $schema->getTitle(), $title);
@@ -199,7 +187,7 @@ class SchemaManager extends ExchangeEntity
 
         unset($this->params['index']);
 
-        if (!$this->testMode) {
+        if (!$testMode) {
             $schema->setModified();
         }
 
@@ -208,8 +196,10 @@ class SchemaManager extends ExchangeEntity
 
         return true;
     }
+
     /**
      * @param $name
+     *
      * @return AbstractSchema
      */
     protected function createSchema($name)
@@ -234,9 +224,9 @@ class SchemaManager extends ExchangeEntity
         if (is_file($file)) {
             $items = include $file;
             if (
-                $items &&
-                isset($items['items']) &&
-                is_array($items['items'])
+                $items
+                && isset($items['items'])
+                && is_array($items['items'])
             ) {
                 return $items['items'];
             }
@@ -247,6 +237,7 @@ class SchemaManager extends ExchangeEntity
 
     /**
      * @param AbstractSchema $schema
+     *
      * @throws Exception
      */
     protected function saveQueue(AbstractSchema $schema)
@@ -261,7 +252,6 @@ class SchemaManager extends ExchangeEntity
     protected function getQueueFile($name)
     {
         $name = 'queue__' . strtolower($name);
-        return Module::getDocRoot() . '/bitrix/tmp/'.Module::ID.'/' . $name . '.php';
+        return Module::getDocRoot() . '/bitrix/tmp/' . Module::ID . '/' . $name . '.php';
     }
-
 }

@@ -96,6 +96,10 @@ class AgentHelper extends Helper
      */
     public function deleteAgent($moduleId, $name)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         CAgent::RemoveAgent($name, $moduleId);
         return true;
     }
@@ -140,7 +144,7 @@ class AgentHelper extends Helper
         $fields = $this->prepareExportAgent($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addAgent($fields);
+            $ok = $this->addAgent($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -159,7 +163,7 @@ class AgentHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateAgent($fields);
+            $ok = $this->updateAgent($fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -175,7 +179,7 @@ class AgentHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $exists['ID'];
+        return $this->isTestMode() ? true : $exists['ID'];
     }
 
     /**
@@ -188,6 +192,10 @@ class AgentHelper extends Helper
      */
     public function updateAgent($fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $this->checkRequiredKeys($fields, ['MODULE_ID', 'NAME']);
         $this->deleteAgent($fields['MODULE_ID'], $fields['NAME']);
         return $this->addAgent($fields);
@@ -203,15 +211,16 @@ class AgentHelper extends Helper
      */
     public function addAgent($fields)
     {
-        $this->checkRequiredKeys($fields, ['MODULE_ID', 'NAME']);
+        if ($this->isTestMode()) {
+            return true;
+        }
 
-        global $DB;
+        $this->checkRequiredKeys($fields, ['MODULE_ID', 'NAME']);
 
         $fields = array_merge([
             'AGENT_INTERVAL' => 86400,
             'ACTIVE'         => 'Y',
             'IS_PERIOD'      => 'N',
-            'NEXT_EXEC'      => $DB->GetNowDate(),
             'SORT'           => 100,
         ], $fields);
 

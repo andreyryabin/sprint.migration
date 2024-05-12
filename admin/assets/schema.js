@@ -118,7 +118,7 @@ jQuery(document).ready(function ($) {
 
         $('#schema_log').empty();
         schemaProgressReset();
-        schemaExecuteStep('schema_test');
+        schemaExecuteStep('schema_diff');
     });
 
     $container.on('click', '.sp-schema-import', function (e) {

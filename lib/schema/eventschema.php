@@ -126,21 +126,19 @@ class EventSchema extends AbstractSchema
     }
 
     /**
-     * @param $eventName
-     * @param $fields
-     *
      * @throws HelperException
      */
     protected function saveEventType($eventName, $fields)
     {
-        $helper = $this->getHelperManager();
-        $helper->Event()->setTestMode($this->testMode);
+        $eventHelper = $this->getHelperManager()->Event()->setTestMode(
+            $this->isTestMode()
+        );
 
         if (isset($fields['DESCRIPTION']) && is_array($fields['DESCRIPTION'])) {
             $fields['DESCRIPTION'] = $this->implodeText($fields['DESCRIPTION']);
         }
 
-        $helper->Event()->saveEventType($eventName, $fields);
+        $eventHelper->saveEventType($eventName, $fields);
     }
 
     /**
@@ -151,32 +149,32 @@ class EventSchema extends AbstractSchema
      */
     protected function saveEventMessage($eventName, $fields)
     {
-        $helper = $this->getHelperManager();
-        $helper->Event()->setTestMode($this->testMode);
+        $eventHelper = $this->getHelperManager()->Event()->setTestMode(
+            $this->isTestMode()
+        );
 
         if (isset($fields['MESSAGE']) && is_array($fields['MESSAGE'])) {
             $fields['MESSAGE'] = $this->implodeText($fields['MESSAGE']);
         }
 
-        $helper->Event()->saveEventMessage($eventName, $fields);
+        $eventHelper->saveEventMessage($eventName, $fields);
     }
 
     /**
-     * @param array $skip
-     *
      * @throws HelperException
      */
-    protected function cleanEventTypes($skip = [])
+    protected function cleanEventTypes($skip)
     {
-        $helper = $this->getHelperManager();
+        $eventHelper = $this->getHelperManager()->Event()->setTestMode(
+            $this->isTestMode()
+        );
 
-        $olds = $helper->Event()->getEventTypes([]);
+        $olds = $eventHelper->getEventTypes([]);
         foreach ($olds as $old) {
             $uniq = $this->getUniqType($old['EVENT_NAME'], $old);
             if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $helper->Event()->deleteEventType($old);
                 $this->outWarningIf(
-                    $ok,
+                    $eventHelper->deleteEventType($old),
                     Locale::getMessage(
                         'EVENT_TYPE_DELETED',
                         [
@@ -194,17 +192,18 @@ class EventSchema extends AbstractSchema
      *
      * @throws HelperException
      */
-    protected function cleanEventMessages($eventName, $skip = [])
+    protected function cleanEventMessages($eventName, $skip)
     {
-        $helper = $this->getHelperManager();
+        $eventHelper = $this->getHelperManager()->Event()->setTestMode(
+            $this->isTestMode()
+        );
 
-        $olds = $helper->Event()->getEventMessages($eventName);
+        $olds = $eventHelper->getEventMessages($eventName);
         foreach ($olds as $old) {
             $uniq = $this->getUniqMessage($old['EVENT_NAME'], $old);
             if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $helper->Event()->deleteEventMessage($old);
                 $this->outWarningIf(
-                    $ok,
+                    $eventHelper->deleteEventMessage($old),
                     Locale::getMessage(
                         'EVENT_MESSAGE_DELETED',
                         [

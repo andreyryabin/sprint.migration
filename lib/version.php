@@ -2,11 +2,13 @@
 
 namespace Sprint\Migration;
 
+use ReflectionClass;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Traits\ExitMessageTrait;
 use Sprint\Migration\Traits\HelperManagerTrait;
+use Sprint\Migration\Traits\OutTrait;
 
 /**
  * Class Version
@@ -92,7 +94,7 @@ class Version extends ExchangeEntity
     protected function getStorageManager($versionName = '')
     {
         if (empty($versionName)) {
-            $versionName = $this->getClassName();
+            $versionName = (new ReflectionClass($this))->getShortName();
         }
 
         return new StorageManager('default', $versionName);

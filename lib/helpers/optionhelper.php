@@ -93,7 +93,7 @@ class OptionHelper extends Helper
         ]);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') || $this->setOption($fields);
+            $ok = $this->isTestMode() || $this->setOption($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -107,7 +107,7 @@ class OptionHelper extends Helper
         }
 
         if ($this->hasDiff($exists, $fields)) {
-            $ok = $this->getMode('test') || $this->setOption($fields);
+            $ok = $this->isTestMode() || $this->setOption($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(

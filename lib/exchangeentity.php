@@ -27,11 +27,6 @@ abstract class ExchangeEntity
         $this->versionConfig = $versionConfig;
     }
 
-    public function getClassName(): string
-    {
-        return (new ReflectionClass($this))->getShortName();
-    }
-
     /**
      * @throws RestartException
      */

@@ -56,9 +56,7 @@ class OptionSchema extends AbstractSchema
     }
 
     /**
-     * @throws ArgumentException
-     * @throws SystemException
-     * @throws Exception
+     * @throws HelperException
      */
     public function export()
     {
@@ -97,19 +95,16 @@ class OptionSchema extends AbstractSchema
     /**
      * @param $items
      *
-     * @throws ArgumentException
-     * @throws SystemException
-     * @throws ArgumentOutOfRangeException
-     * @throws ObjectPropertyException
      * @throws HelperException
      */
     protected function saveOptions($items)
     {
-        $helper = $this->getHelperManager();
-        $helper->Option()->setTestMode($this->testMode);
+        $optionHelper = $this->getHelperManager()->Option()->setTestMode(
+            $this->isTestMode()
+        );
 
         foreach ($items as $item) {
-            $helper->Option()->saveOption($item);
+            $optionHelper->saveOption($item);
         }
     }
 }

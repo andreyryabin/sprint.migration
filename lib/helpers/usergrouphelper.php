@@ -162,7 +162,8 @@ class UserGroupHelper extends Helper
         $fields = $this->prepareExportGroup($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addGroup($fields['STRING_ID'], $fields);
+            $ok = $this->addGroup($fields['STRING_ID'], $fields);
+
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -176,7 +177,7 @@ class UserGroupHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateGroup($exists['ID'], $fields);
+            $ok = $this->updateGroup($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -190,7 +191,7 @@ class UserGroupHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $exists['ID'];
+        return $this->isTestMode() ? true : $exists['ID'];
     }
 
     /**
@@ -242,6 +243,10 @@ class UserGroupHelper extends Helper
      */
     public function addGroup($code, $fields = [])
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $fields['STRING_ID'] = $code;
         $this->checkRequiredKeys($fields, ['STRING_ID', 'NAME']);
 
@@ -266,6 +271,10 @@ class UserGroupHelper extends Helper
      */
     public function updateGroup($groupId, $fields = [])
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         if (empty($fields)) {
             throw new HelperException(
                 Locale::getMessage(
@@ -291,6 +300,9 @@ class UserGroupHelper extends Helper
      */
     public function deleteGroup($code)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
         $groupId = $this->getGroupId($code);
         if (empty($groupId)) {
             return false;

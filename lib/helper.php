@@ -6,72 +6,34 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
 use CDBResult;
 use CMain;
-use ReflectionClass;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Traits\OutTrait;
 
 class Helper
 {
     use OutTrait;
 
-    /**
-     * @var string
-     * @deprecated
-     */
-    public  $lastError = '';
-    private $mode      = [
-        'test' => 0,
-    ];
+    private int $testMode = 0;
 
     /**
-     * Helper constructor.
-     *
      * @throws HelperException
      */
     public function __construct()
     {
         if (!$this->isEnabled()) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_HELPER_DISABLED',
-                    [
-                        '#NAME#' => $this->getHelperName(),
-                    ]
-                )
-            );
+            throw new HelperException(Locale::getMessage('ERR_HELPER_DISABLED'));
         }
     }
 
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function getLastError()
+    public function setTestMode(int $val = 1): Helper
     {
-        return $this->lastError;
+        $this->testMode = $val;
+        return $this;
     }
 
-    public function getMode($key = false)
+    public function isTestMode(): bool
     {
-        if ($key) {
-            return $this->mode[$key] ?? 0;
-        } else {
-            return $this->mode;
-        }
-    }
-
-    public function setMode($key, $val = 1)
-    {
-        if ($key instanceof Helper) {
-            $this->mode = $key->getMode();
-        } else {
-            $val = ($val) ? 1 : 0;
-            $this->mode[$key] = $val;
-        }
-    }
-
-    public function setTestMode($val = 1)
-    {
-        $this->setMode('test', $val);
+        return $this->testMode;
     }
 
     public function isEnabled()
@@ -79,12 +41,7 @@ class Helper
         return true;
     }
 
-    /**
-     * @param array $names
-     *
-     * @return bool
-     */
-    protected function checkModules($names = [])
+    protected function checkModules(array $names = []): bool
     {
         $names = is_array($names) ? $names : [$names];
         foreach ($names as $name) {
@@ -100,31 +57,12 @@ class Helper
     }
 
     /**
-     *
-     * @param        $method
-     * @param        $msg
-     * @param string ...$vars
-     *
      * @throws HelperException
      * @deprecated
      */
-    protected function throwException($method, $msg, ...$vars)
+    protected function throwException()
     {
-        $args = func_get_args();
-        $method = array_shift($args);
-
-        if ($msg instanceof \Throwable) {
-            $msg = $msg->getMessage();
-        } else {
-            $msg = call_user_func_array('sprintf', $args);
-            $msg = strip_tags($msg);
-        }
-
-        $msg = $this->getMethod($method) . ': ' . $msg;
-
-        $this->lastError = $msg;
-
-        throw new HelperException($msg);
+        throw new HelperException();
     }
 
     /**
@@ -141,12 +79,7 @@ class Helper
         }
     }
 
-    protected function getHelperName()
-    {
-        return (new ReflectionClass($this))->getShortName();
-    }
-
-    protected function hasDiff($exists, $fields)
+    protected function hasDiff($exists, $fields): bool
     {
         return ($exists != $fields);
     }
@@ -157,20 +90,20 @@ class Helper
      *
      * @return bool
      */
-    protected function hasDiffStrict($exists, $fields)
+    protected function hasDiffStrict($exists, $fields): bool
     {
         return ($exists !== $fields);
     }
 
     /**
-     * @param       $fields
+     * @param array $fields
      * @param array $reqKeys
      *
      * @throws HelperException
      */
     protected function checkRequiredKeys($fields, $reqKeys = [])
     {
-        if (is_string($fields)){
+        if (is_string($fields)) {
             throw new HelperException('Old format for checkRequiredKeys');
         }
 
@@ -227,12 +160,5 @@ class Helper
                 }
             )
         );
-    }
-
-    private function getMethod($method)
-    {
-        $path = explode('\\', $method);
-        $short = array_pop($path);
-        return $short;
     }
 }

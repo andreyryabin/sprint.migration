@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Schema;
 
+use Exception;
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
@@ -59,7 +60,7 @@ class HlblockSchema extends AbstractSchema
 
     /**
      * @throws HelperException
-     * @throws \Exception
+     * @throws Exception
      */
     public function export()
     {
@@ -119,30 +120,29 @@ class HlblockSchema extends AbstractSchema
     }
 
     /**
-     * @param $item
-     *
      * @throws HelperException
      */
     protected function saveHlblock($item)
     {
-        $helper = $this->getHelperManager();
-        $helper->Hlblock()->setTestMode($this->testMode);
-        $helper->Hlblock()->saveHlblock($item);
+        $hlblockHelper = $this->getHelperManager()->Hlblock()->setTestMode(
+            $this->isTestMode()
+        );
+
+        $hlblockHelper->saveHlblock($item);
     }
 
     /**
-     * @param $hlblockUid
-     * @param $field
-     *
      * @throws HelperException
      */
     protected function saveField($hlblockUid, $field)
     {
+        $hlblockHelper = $this->getHelperManager()->Hlblock()->setTestMode(
+            $this->isTestMode()
+        );
+
         $hlblockId = $this->getHlblockId($hlblockUid);
         if (!empty($hlblockId)) {
-            $helper = $this->getHelperManager();
-            $helper->Hlblock()->setTestMode($this->testMode);
-            $helper->Hlblock()->saveField($hlblockId, $field);
+            $hlblockHelper->saveField($hlblockId, $field);
         }
     }
 
@@ -153,15 +153,16 @@ class HlblockSchema extends AbstractSchema
      */
     protected function cleanHlblocks($skip = [])
     {
-        $helper = $this->getHelperManager();
+        $hlblockHelper = $this->getHelperManager()->Hlblock()->setTestMode(
+            $this->isTestMode()
+        );
 
-        $olds = $helper->Hlblock()->getHlblocks();
+        $olds = $hlblockHelper->getHlblocks();
         foreach ($olds as $old) {
             $uniq = $this->getUniqHlblock($old);
             if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $helper->Hlblock()->deleteHlblock($old['ID']);
                 $this->outWarningIf(
-                    $ok,
+                    $hlblockHelper->deleteHlblock($old['ID']),
                     Locale::getMessage(
                         'HLBLOCK_DELETED',
                         [
@@ -174,24 +175,23 @@ class HlblockSchema extends AbstractSchema
     }
 
     /**
-     * @param       $hlblockUid
-     * @param array $skip
-     *
      * @throws HelperException
      */
-    protected function cleanFields($hlblockUid, $skip = [])
+    protected function cleanFields($hlblockUid, $skip)
     {
+        $hlblockHelper = $this->getHelperManager()->Hlblock()->setTestMode(
+            $this->isTestMode()
+        );
+
         $hlblockId = $this->getHlblockId($hlblockUid);
         if (!empty($hlblockId)) {
-            $helper = $this->getHelperManager();
-            $olds = $helper->Hlblock()->getFields($hlblockId);
+
+            $olds = $hlblockHelper->getFields($hlblockId);
             foreach ($olds as $old) {
                 $uniq = $this->getUniqField($old);
                 if (!in_array($uniq, $skip)) {
-                    $ok = ($this->testMode) ? true : $helper->Hlblock()->deleteField($hlblockId, $old['FIELD_NAME']);
-
                     $this->outWarningIf(
-                        $ok,
+                        $hlblockHelper->deleteField($hlblockId, $old['FIELD_NAME']),
                         Locale::getMessage(
                             'USER_TYPE_ENTITY_DELETED',
                             [

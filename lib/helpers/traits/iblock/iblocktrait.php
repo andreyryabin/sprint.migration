@@ -174,6 +174,10 @@ trait IblockTrait
      */
     public function addIblock($fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $this->checkRequiredKeys($fields, ['CODE', 'IBLOCK_TYPE_ID', 'LID']);
 
         $default = [
@@ -216,6 +220,10 @@ trait IblockTrait
      */
     public function updateIblock($iblockId, $fields = [])
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $ib = new CIBlock;
         if ($ib->Update($iblockId, $fields)) {
             return $iblockId;
@@ -266,10 +274,14 @@ trait IblockTrait
      * @param $iblockId
      *
      * @throws HelperException
-     * @return bool|void
+     * @return bool
      */
     public function deleteIblock($iblockId)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         if (CIBlock::Delete($iblockId)) {
             return true;
         }
@@ -301,7 +313,7 @@ trait IblockTrait
         $fields = $this->prepareExportIblock($fields);
 
         if (empty($item)) {
-            $ok = $this->getMode('test') ? true : $this->addIblock($fields);
+            $ok = $this->addIblock($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -315,7 +327,7 @@ trait IblockTrait
         }
 
         if ($this->hasDiff($exists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblock($item['ID'], $fields);
+            $ok = $this->updateIblock($item['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -329,7 +341,7 @@ trait IblockTrait
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $item['ID'];
+        return $this->isTestMode() ? true : $item['ID'];
     }
 
     /**

@@ -75,29 +75,28 @@ class AgentSchema extends AbstractSchema
     }
 
     /**
-     * @param $item
-     *
      * @throws HelperException
      */
     protected function saveAgent($item)
     {
-        $helper = $this->getHelperManager();
-        $helper->Agent()->setTestMode($this->testMode);
-        $helper->Agent()->saveAgent($item);
+        $agentHelper = $this->getHelperManager()->Agent()->setTestMode(
+            $this->isTestMode()
+        );
+
+        $agentHelper->saveAgent($item);
     }
 
-    /**
-     * @param array $skip
-     */
-    protected function cleanAgents($skip = [])
+    protected function cleanAgents($skip)
     {
-        $helper = $this->getHelperManager();
+        $agentHelper = $this->getHelperManager()->Agent()->setTestMode(
+            $this->isTestMode()
+        );
 
-        $olds = $helper->Agent()->getList();
+        $olds = $agentHelper->getList();
         foreach ($olds as $old) {
             $uniq = $this->getUniqAgent($old);
             if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $helper->Agent()->deleteAgent($old['MODULE_ID'], $old['NAME']);
+                $ok = $agentHelper->deleteAgent($old['MODULE_ID'], $old['NAME']);
                 $this->outWarningIf(
                     $ok,
                     Locale::getMessage(

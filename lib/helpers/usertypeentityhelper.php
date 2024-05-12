@@ -136,6 +136,10 @@ class UserTypeEntityHelper extends Helper
      */
     public function updateUserTypeEntity($fieldId, $fields)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         unset($fields["ENTITY_ID"]);
         unset($fields["FIELD_NAME"]);
         unset($fields["MULTIPLE"]);
@@ -341,10 +345,14 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldName
      *
      * @throws HelperException
-     * @return bool|void
+     * @return bool
      */
     public function deleteUserTypeEntityIfExists($entityId, $fieldName)
     {
+        if ($this->isTestMode()) {
+            return true;
+        }
+
         $item = $this->getUserTypeEntity(
             $this->revertEntityId($entityId),
             $fieldName
@@ -471,7 +479,7 @@ class UserTypeEntityHelper extends Helper
         $fields = $this->prepareExportUserTypeEntity($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test')
+            $ok = $this->isTestMode()
                 ? true
                 : $this->addUserTypeEntity(
                     $fields['ENTITY_ID'],
@@ -495,7 +503,8 @@ class UserTypeEntityHelper extends Helper
         unset($fields['MULTIPLE']);
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateUserTypeEntity($exists['ID'], $fields);
+            $ok = $this->updateUserTypeEntity($exists['ID'], $fields);
+
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -509,7 +518,7 @@ class UserTypeEntityHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $exists['ID'];
+        return $this->isTestMode() ? true : $exists['ID'];
     }
 
     /**

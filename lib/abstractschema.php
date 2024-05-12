@@ -6,6 +6,7 @@ use DirectoryIterator;
 use Exception;
 use SplFileInfo;
 use Sprint\Migration\Traits\HelperManagerTrait;
+use Sprint\Migration\Traits\OutTrait;
 
 abstract class AbstractSchema extends ExchangeEntity
 {
@@ -49,9 +50,15 @@ abstract class AbstractSchema extends ExchangeEntity
         return false;
     }
 
-    public function setTestMode($testMode = 1)
+    public function setTestMode($testMode = 1): AbstractSchema
     {
         $this->testMode = ($testMode) ? 1 : 0;
+        return $this;
+    }
+
+    public function isTestMode()
+    {
+        return $this->testMode;
     }
 
     public function getName()
@@ -280,5 +287,4 @@ abstract class AbstractSchema extends ExchangeEntity
             );
         }
     }
-
 }

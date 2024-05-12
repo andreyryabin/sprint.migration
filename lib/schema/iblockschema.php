@@ -202,9 +202,11 @@ class IblockSchema extends AbstractSchema
      */
     protected function saveIblockType($fields = [])
     {
-        $helper = $this->getHelperManager();
-        $helper->Iblock()->setTestMode($this->testMode);
-        $helper->Iblock()->saveIblockType($fields);
+        $iblockHelper = $this->getHelperManager()->Iblock()->setTestMode(
+            $this->isTestMode()
+        );
+
+        $iblockHelper->saveIblockType($fields);
     }
 
     /**
@@ -214,9 +216,10 @@ class IblockSchema extends AbstractSchema
      */
     protected function saveIblock($fields)
     {
-        $helper = $this->getHelperManager();
-        $helper->Iblock()->setTestMode($this->testMode);
-        $helper->Iblock()->saveIblock($fields);
+        $iblockHelper = $this->getHelperManager()->Iblock()->setTestMode(
+            $this->isTestMode()
+        );
+        $iblockHelper->saveIblock($fields);
     }
 
     /**
@@ -225,11 +228,13 @@ class IblockSchema extends AbstractSchema
      */
     protected function saveIblockFields($iblockUid, $fields)
     {
+        $iblockHelper = $this->getHelperManager()->Iblock()->setTestMode(
+            $this->isTestMode()
+        );
+
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = $this->getHelperManager();
-            $helper->Iblock()->setTestMode($this->testMode);
-            $helper->Iblock()->saveIblockFields($iblockId, $fields);
+            $iblockHelper->saveIblockFields($iblockId, $fields);
         }
     }
 
@@ -241,12 +246,14 @@ class IblockSchema extends AbstractSchema
      */
     protected function saveProperties($iblockUid, $properties)
     {
+        $iblockHelper = $this->getHelperManager()->Iblock()->setTestMode(
+            $this->isTestMode()
+        );
+
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = $this->getHelperManager();
-            $helper->Iblock()->setTestMode($this->testMode);
             foreach ($properties as $property) {
-                $helper->Iblock()->saveProperty($iblockId, $property);
+                $iblockHelper->saveProperty($iblockId, $property);
             }
         }
     }
@@ -259,11 +266,13 @@ class IblockSchema extends AbstractSchema
      */
     protected function saveElementForm($iblockUid, $elementForm)
     {
+        $userOptionsHelper = $this->getHelperManager()->UserOptions()->setTestMode(
+            $this->isTestMode()
+        );
+
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = $this->getHelperManager();
-            $helper->UserOptions()->setTestMode($this->testMode);
-            $helper->UserOptions()->saveElementForm($iblockId, $elementForm);
+            $userOptionsHelper->saveElementForm($iblockId, $elementForm);
         }
     }
 
@@ -275,11 +284,13 @@ class IblockSchema extends AbstractSchema
      */
     protected function saveSectionForm($iblockUid, $sectionForm)
     {
+        $userOptionsHelper = $this->getHelperManager()->UserOptions()->setTestMode(
+            $this->isTestMode()
+        );
+
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = $this->getHelperManager();
-            $helper->UserOptions()->setTestMode($this->testMode);
-            $helper->UserOptions()->saveSectionForm($iblockId, $sectionForm);
+            $userOptionsHelper->saveSectionForm($iblockId, $sectionForm);
         }
     }
 
@@ -289,19 +300,21 @@ class IblockSchema extends AbstractSchema
      *
      * @throws HelperException
      */
-    protected function cleanProperties($iblockUid, $skip = [])
+    protected function cleanProperties($iblockUid, $skip)
     {
+        $iblockHelper = $this->getHelperManager()->Iblock()->setTestMode(
+            $this->isTestMode()
+        );
+
         $iblockId = $this->getIblockId($iblockUid);
         if (!empty($iblockId)) {
-            $helper = $this->getHelperManager();
-            $olds = $helper->Iblock()->getProperties($iblockId);
+            $olds = $iblockHelper->getProperties($iblockId);
             foreach ($olds as $old) {
                 if (!empty($old['CODE'])) {
                     $uniq = $this->getUniqProp($old);
                     if (!in_array($uniq, $skip)) {
-                        $ok = ($this->testMode) ? true : $helper->Iblock()->deletePropertyById($old['ID']);
                         $this->outWarningIf(
-                            $ok,
+                            $iblockHelper->deletePropertyById($old['ID']),
                             Locale::getMessage(
                                 'IB_PROPERTY_DELETED',
                                 [
@@ -317,21 +330,20 @@ class IblockSchema extends AbstractSchema
     }
 
     /**
-     * @param array $skip
-     *
      * @throws HelperException
      */
     protected function cleanIblockTypes($skip = [])
     {
-        $helper = $this->getHelperManager();
+        $iblockHelper = $this->getHelperManager()->Iblock()->setTestMode(
+            $this->isTestMode()
+        );
 
-        $olds = $helper->Iblock()->getIblockTypes();
+        $olds = $iblockHelper->getIblockTypes();
         foreach ($olds as $old) {
             $uniq = $this->getUniqIblockType($old);
             if (!in_array($uniq, $skip)) {
-                $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblockType($old['ID']);
                 $this->outWarningIf(
-                    $ok,
+                    $iblockHelper->deleteIblockType($old['ID']),
                     Locale::getMessage(
                         'IB_TYPE_DELETED',
                         [
@@ -350,16 +362,17 @@ class IblockSchema extends AbstractSchema
      */
     protected function cleanIblocks($skip = [])
     {
-        $helper = $this->getHelperManager();
+        $iblockHelper = $this->getHelperManager()->Iblock()->setTestMode(
+            $this->isTestMode()
+        );
 
-        $olds = $helper->Iblock()->getIblocks();
+        $olds = $iblockHelper->getIblocks();
         foreach ($olds as $old) {
             if (!empty($old['CODE'])) {
                 $uniq = $this->getUniqIblock($old);
                 if (!in_array($uniq, $skip)) {
-                    $ok = ($this->testMode) ? true : $helper->Iblock()->deleteIblock($old['ID']);
                     $this->outWarningIf(
-                        $ok,
+                        $iblockHelper->deleteIblock($old['ID']),
                         Locale::getMessage(
                             'IB_DELETED',
                             [

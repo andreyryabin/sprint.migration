@@ -7,6 +7,7 @@ use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Traits\ExitMessageTrait;
 use Sprint\Migration\Traits\HelperManagerTrait;
+use Sprint\Migration\Traits\OutTrait;
 
 abstract class AbstractBuilder extends ExchangeEntity
 {

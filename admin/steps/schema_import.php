@@ -10,8 +10,8 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 }
 
 $hasSteps = (
-    ($_POST['step_code'] == 'schema_import') ||
-    ($_POST['step_code'] == 'schema_test')
+    ($_POST['step_code'] == 'schema_import')
+    || ($_POST['step_code'] == 'schema_diff')
 );
 
 if ($hasSteps && check_bitrix_sessid('send_sessid')) {
@@ -22,22 +22,16 @@ if ($hasSteps && check_bitrix_sessid('send_sessid')) {
     /** @var $versionConfig VersionConfig */
     $schemaManager = new SchemaManager($versionConfig, $params);
 
-    if ($stepCode == 'schema_test') {
-        $schemaManager->setTestMode(1);
-    } else {
-        $schemaManager->setTestMode(0);
-    }
-
     $ok = false;
     $error = false;
 
     try {
-        $schemaManager->import(['name' => $checked]);
+        $testMode = $stepCode == 'schema_diff' ? 1 : 0;
+        $schemaManager->import(['name' => $checked], $testMode);
 
         $ok = true;
 
     } catch (RestartException $e) {
-
         $json = json_encode([
             'params' => $schemaManager->getRestartParams(),
         ]);
