@@ -3,7 +3,6 @@
 namespace Sprint\Migration;
 
 use DirectoryIterator;
-use Exception;
 use Sprint\Migration\Builders\AgentBuilder;
 use Sprint\Migration\Builders\BlankBuilder;
 use Sprint\Migration\Builders\CacheCleanerBuilder;
@@ -301,12 +300,7 @@ class VersionConfig
         return $values;
     }
 
-    /**
-     * @param array $values
-     *
-     * @return array|mixed
-     */
-    public function humanValues($values = [])
+    public function humanValues(array $values = []): array
     {
         foreach ($values as $key => $val) {
             if ($val === true || $val === false) {
@@ -325,12 +319,12 @@ class VersionConfig
     }
 
     /**
-     * @param        $name
-     * @param string $default
+     * @param string      $name
+     * @param bool|string $default
      *
-     * @return bool|mixed|string
+     * @return bool|string
      */
-    public function getVal($name, $default = '')
+    public function getVal(string $name, $default = '')
     {
         $values = $this->configList[$this->configCurrent]['values'];
 
@@ -345,13 +339,7 @@ class VersionConfig
         return $default;
     }
 
-    /**
-     * @param string $configName
-     * @param array  $configValues
-     *
-     * @return bool
-     */
-    public function createConfig($configName, $configValues = []): bool
+    public function createConfig(string $configName, array $configValues = []): bool
     {
         $fileName = 'migrations.' . $configName . '.php';
         if (!$this->getConfigName($fileName)) {
@@ -395,12 +383,9 @@ class VersionConfig
     }
 
     /**
-     * @param $configName
-     *
-     * @throws Exception
-     * @return bool
+     * @throws MigrationException
      */
-    public function deleteConfig($configName)
+    public function deleteConfig(string $configName): bool
     {
         $fileName = 'migrations.' . $configName . '.php';
         if (!$this->getConfigName($fileName)) {
@@ -425,15 +410,11 @@ class VersionConfig
         return true;
     }
 
-    /**
-     * @param        $dirname
-     * @param false  $relative
-     * @param string $configName
-     *
-     * @return false|string|string[]
-     */
-    public function getSiblingDir($dirname, $relative = false, $configName = VersionEnum::CONFIG_DEFAULT)
-    {
+    public function getSiblingDir(
+        string $dirname,
+        bool $relative = false,
+        string $configName = VersionEnum::CONFIG_DEFAULT
+    ): string {
         $def = $this->configList[$configName];
         $dir = rtrim($def['values']['migration_dir'], '/');
         $dir = $dir . '.' . trim($dirname, '/') . '/';
@@ -441,12 +422,7 @@ class VersionConfig
         return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
 
-    /**
-     * @param $configName
-     *
-     * @return int
-     */
-    protected function getSort($configName)
+    protected function getSort(string $configName): int
     {
         if ($configName == VersionEnum::CONFIG_ARCHIVE) {
             return 110;
@@ -459,10 +435,8 @@ class VersionConfig
 
     /**
      * Метод должен быть публичным для работы со сторонним кодом
-     *
-     * @return string[]
      */
-    public static function getDefaultBuilders()
+    public static function getDefaultBuilders(): array
     {
         return [
             'UserGroupBuilder'        => UserGroupBuilder::class,
@@ -487,10 +461,8 @@ class VersionConfig
 
     /**
      * Метод должен быть публичным для работы со сторонним кодом
-     *
-     * @return string[]
      */
-    public static function getDefaultSchemas()
+    public static function getDefaultSchemas(): array
     {
         return [
             'IblockSchema'           => IblockSchema::class,

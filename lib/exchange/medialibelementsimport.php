@@ -3,7 +3,6 @@
 namespace Sprint\Migration\Exchange;
 
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -16,9 +15,8 @@ class MedialibElementsImport extends AbstractReader
     /**
      * @param callable $converter
      *
-     * @throws MigrationException
-     * @throws RestartException
      * @throws HelperException
+     * @throws RestartException
      */
     public function execute(callable $converter)
     {
