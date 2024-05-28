@@ -3,7 +3,6 @@
 namespace Sprint\Migration;
 
 use CAdminMessage;
-use Sprint\Migration\Exceptions\HelperException;
 use Throwable;
 
 class Out
@@ -427,56 +426,45 @@ class Out
 
     public static function outException(?Throwable $exception)
     {
-        if ($exception) {
-            if ($exception instanceof HelperException) {
-                self::outHelperException($exception);
-                return;
-            }
-            self::outWarning(self::getExceptionAsString($exception));
-            self::outExceptionTrace($exception->getTrace());
+        if (!$exception) {
+            return;
         }
-    }
 
-    protected static function getExceptionAsString(Throwable $exception): string
-    {
-        return sprintf(
+        $trace = $exception->getTrace();
+        $offset = self::startMigrationOffset($trace);
+
+        $file = $exception->getFile();
+        $line = $exception->getLine();
+
+        if ($offset >= 0) {
+            $trace = array_slice($trace, 0, $offset);
+            if (count($trace) > 1) {
+                $first = $trace[0];
+                $file = $first['file'];
+                $line = $first['line'];
+            }
+        }
+
+        self::outWarning(
             "[%s] %s (%s) in %s:%d",
             get_class($exception),
             $exception->getMessage(),
             $exception->getCode(),
-            $exception->getFile(),
-            $exception->getLine()
-        );
-    }
+            $file,
+            $line
 
-    protected static function outHelperException(Throwable $exception)
-    {
-        $trace = array_filter($exception->getTrace(), function ($item) {
-            $skipClass = in_array($item['class'], [
-                VersionManager::class,
-                Console::class,
-            ]);
-
-            $skipMethod = in_array($item['function'], [
-                'up',
-                'down',
-            ]);
-            return ($item['class'] && $item['function'] && !$skipClass && !$skipMethod);
-        });
-
-        $last = end($trace);
-
-        self::outWarning(
-            sprintf(
-                "[%s] %s (%s) in %s:%d",
-                get_class($exception),
-                $exception->getMessage(),
-                $exception->getCode(),
-                $last['file'],
-                $last['line']
-            )
         );
         self::outExceptionTrace($trace);
+    }
+
+    protected static function startMigrationOffset(array $trace)
+    {
+        foreach ($trace as $index => $item) {
+            if ($item['class'] == VersionManager::class && $item['function'] == 'startMigration') {
+                return $index;
+            }
+        }
+        return -1;
     }
 
     protected static function outExceptionTrace(array $trace)
@@ -491,18 +479,23 @@ class Out
                 $name = '[b]' . $err['function'] . '[/]';
             }
 
+            $err['args'] = (array)($err['args'] ?? []);
             $cntArgs = count($err['args']);
 
-            self::out('[b]#' . $index . '[/] ' . $name . '(');
-            foreach ($err['args'] as $argi => $argval) {
-                $del = $argi < $cntArgs - 1 ? ', ' : '';
-                $argval = var_export($argval, 1);
-                if ($isBrowser) {
-                    $argval = htmlspecialchars($argval);
+            if ($cntArgs > 0) {
+                self::out('[b]#' . $index . '[/] ' . $name . '(');
+                foreach ($err['args'] as $argi => $argval) {
+                    $del = $argi < $cntArgs - 1 ? ', ' : '';
+                    $argval = var_export($argval, 1);
+                    if ($isBrowser) {
+                        $argval = htmlspecialchars($argval);
+                    }
+                    self::out('[tab]' . $argval . $del . '[/]');
                 }
-                self::out('[tab]' . $argval . $del . '[/]');
+                self::out(');');
+            } else {
+                self::out('[b]#' . $index . '[/] ' . $name . '();');
             }
-            self::out(');');
         }
     }
 }
