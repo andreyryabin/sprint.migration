@@ -226,7 +226,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_Configurator_config_name" => "Название (лат буквы и цифры)",
         "BUILDER_Configurator_error"       => "Ошибка создания конфигурации",
         "BUILDER_Configurator_success"     => "Конфигурация создана",
-        "BUILDER_Archive"                  => "Создать архивную конфигурацию",
         "BUILDER_Cleaner"                  => "Удалить конфигурацию",
         "BUILDER_Cleaner_desc"             => "Удаление файла конфигурации, файлов миграций и записей в таблице миграций",
         "BUILDER_Cleaner_config_name"      => "Название (лат буквы и цифры)",

@@ -50,19 +50,6 @@ if ($request->isPost() && check_bitrix_sessid()) {
         }
     }
 
-    if ($request->getPost("archive_create")) {
-        $versionConfig = new VersionConfig();
-        if ($versionConfig->createConfigArchive()) {
-            Out::outSuccess(
-                Locale::getMessage('BUILDER_Configurator_success')
-            );
-        } else {
-            Out::outError(
-                Locale::getMessage('BUILDER_Configurator_error')
-            );
-        }
-    }
-
     if ($request->getPost("gadgets_install")) {
         /** @var $tmpmodule sprint_migration */
         $tmpmodule = CModule::CreateModuleObject(Module::ID);
@@ -129,19 +116,6 @@ if ($request->isPost() && check_bitrix_sessid()) {
                 <?= bitrix_sessid_post(); ?>
             </form>
         </div>
-        <div class="sp-col">
-            <form method="post" action="">
-                <p><?= Locale::getMessage('BUILDER_Archive') ?></p>
-                <p><input type="submit" name="archive_create"
-                          value="<?= Locale::getMessage('BUILDER_CREATE') ?>"></p>
-                <?= bitrix_sessid_post(); ?>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="sp-table">
-    <div class="sp-row">
         <div class="sp-col">
             <form method="post" action="">
                 <p><?= Locale::getMessage('BUILDER_Cleaner_desc') ?></p>

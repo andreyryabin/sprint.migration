@@ -133,7 +133,7 @@ class VersionManager
             $record = $this->getVersionTable()->getRecord($versionName);
             $record = !empty($record) ? $record : 0;
 
-            return $this->prepVersionMeta($versionName, $file, $record);
+            return $this->makeVersion($versionName, $file, $record);
         }
         return false;
     }
@@ -168,7 +168,7 @@ class VersionManager
             $record = $records[$version] ?? 0;
             $file = $files[$version] ?? 0;
 
-            $meta = $this->prepVersionMeta($version, $file, $record);
+            $meta = $this->makeVersion($version, $file, $record);
 
             if (
                 $this->containsFilterStatus($meta, $filter)
@@ -369,8 +369,7 @@ class VersionManager
             }
         }
 
-        $this->getVersionTable()
-             ->deleteTable();
+        $this->getVersionTable()->deleteTable();
     }
 
     /**
@@ -394,7 +393,7 @@ class VersionManager
 
         if (!empty($metas)) {
             foreach ($metas as $meta) {
-                $result[] = $this->deleteMigratioByMeta($meta);
+                $result[] = $this->deleteMigrationByMeta($meta);
             }
         } else {
             $result[] = [
@@ -584,7 +583,7 @@ class VersionManager
      * @throws MigrationException
      * @return array|bool
      */
-    protected function prepVersionMeta($versionName, $file, $record)
+    protected function makeVersion($versionName, $file, $record)
     {
         $isFile = ($file) ? 1 : 0;
         $isRecord = ($record) ? 1 : 0;
@@ -697,7 +696,7 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    protected function deleteMigratioByMeta($meta): array
+    protected function deleteMigrationByMeta($meta): array
     {
         $success = 0;
 

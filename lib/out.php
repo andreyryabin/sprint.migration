@@ -482,20 +482,21 @@ class Out
             $err['args'] = (array)($err['args'] ?? []);
             $cntArgs = count($err['args']);
 
-            if ($cntArgs > 0) {
-                self::out('[b]#' . $index . '[/] ' . $name . '(');
-                foreach ($err['args'] as $argi => $argval) {
-                    $del = $argi < $cntArgs - 1 ? ', ' : '';
-                    $argval = var_export($argval, 1);
-                    if ($isBrowser) {
-                        $argval = htmlspecialchars($argval);
-                    }
-                    self::out('[tab]' . $argval . $del . '[/]');
-                }
-                self::out(');');
-            } else {
+            if ($cntArgs == 0) {
                 self::out('[b]#' . $index . '[/] ' . $name . '();');
+                continue;
             }
+
+            self::out('[b]#' . $index . '[/] ' . $name . '(');
+            foreach ($err['args'] as $argi => $argval) {
+                $del = $argi < $cntArgs - 1 ? ', ' : '';
+
+                $argval = var_export($argval, 1);
+                $argval = $isBrowser ? htmlspecialchars($argval) : $argval;
+
+                self::out('[tab]' . $argval . $del . '[/]');
+            }
+            self::out(');');
         }
     }
 }

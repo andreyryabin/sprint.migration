@@ -52,15 +52,14 @@ abstract class VersionBuilder extends AbstractBuilder
 
     protected function getVersionFile($versionName)
     {
-        return $this->getVersionConfig()->getVal('migration_dir') . '/' .
-               $versionName . '.php';
+        $dir = $this->getVersionConfig()->getVal('migration_dir');
+        return $dir . '/' . $versionName . '.php';
     }
 
     protected function getVersionResourceFile($versionName, $name)
     {
-        return $this->getVersionConfig()->getVal('exchange_dir') . '/' .
-               $versionName . '_files/' .
-               $name;
+        $dir = $this->getVersionConfig()->getVal('exchange_dir');
+        return $dir . '/' . $versionName . '_files/' . $name;
     }
 
     protected function getVersionName()

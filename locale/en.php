@@ -224,7 +224,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_CacheCleaner1"            => "Cache clean",
         "BUILDER_CacheCleaner2"            => "Execute BXClearCache(true)",
         "BUILDER_Configurator"             => "Create configuration",
-        "BUILDER_Archive"                  => "Create archive configuration",
         "BUILDER_Configurator_config_name" => "Name",
         "BUILDER_Configurator_error"       => "Error creating configuration",
         "BUILDER_Configurator_success"     => "Configuration created",

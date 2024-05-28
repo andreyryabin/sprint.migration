@@ -370,18 +370,6 @@ class VersionConfig
         return is_file($configPath);
     }
 
-    public function createConfigArchive(): bool
-    {
-        return $this->createConfig(
-            VersionEnum::CONFIG_ARCHIVE,
-            [
-                'title'           => Locale::getMessage('CONFIG_archive'),
-                'migration_dir'   => Module::getPhpInterfaceDir(false) . '/migrations.archive',
-                'migration_table' => 'sprint_migration_archive',
-            ]
-        );
-    }
-
     /**
      * @param $configName
      *
