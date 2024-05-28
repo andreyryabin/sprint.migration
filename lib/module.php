@@ -63,33 +63,26 @@ class Module
         return rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
     }
 
-    public static function getPhpInterfaceDir(): string
+    public static function getPhpInterfaceDir($absolute = true): string
     {
+        $root = $absolute ? self::getDocRoot() : '';
+
         if (is_dir(self::getDocRoot() . '/local/php_interface')) {
-            return self::getDocRoot() . '/local/php_interface';
+            return $root . '/local/php_interface';
         } else {
-            return self::getDocRoot() . '/bitrix/php_interface';
+            return $root . '/bitrix/php_interface';
         }
     }
 
-    public static function getModuleDir(): string
+    public static function getModuleDir($absolute = true): string
     {
+        $root = $absolute ? self::getDocRoot() : '';
+
         if (is_file(self::getDocRoot() . '/local/modules/' . Module::ID . '/include.php')) {
-            return self::getDocRoot() . '/local/modules/' . Module::ID;
+            return $root . '/local/modules/' . Module::ID;
         } else {
-            return self::getDocRoot() . '/bitrix/modules/' . Module::ID;
+            return $root . '/bitrix/modules/' . Module::ID;
         }
-    }
-
-    public static function getRelativeDir($dir)
-    {
-        $docroot = Module::getDocRoot();
-        $docroot = str_replace('/', DIRECTORY_SEPARATOR, $docroot);
-        $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
-        if (strpos($dir, $docroot) === 0) {
-            $dir = substr($dir, strlen($docroot));
-        }
-        return $dir;
     }
 
     /**

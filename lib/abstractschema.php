@@ -114,21 +114,21 @@ abstract class AbstractSchema extends ExchangeEntity
 
     protected function getSchemaDir()
     {
-        return $this->getVersionConfig()->getSiblingDir(
-            'schema',
-            false,
-            $this->getVersionConfig()->getName()
-        );
+        $dir = $this->getVersionConfig()->getVal('migration_dir');
+
+        return $dir . '.schema';
     }
 
     protected function getSchemaSubDir($name)
     {
-        return $this->getSchemaDir() . $name;
+        return $this->getSchemaDir() . DIRECTORY_SEPARATOR . $name;
     }
 
-    protected function getSchemaFile($name)
+    protected function getSchemaFile($name, $absolute = true)
     {
-        return $this->getSchemaDir() . $name . '.json';
+        $root = $absolute ? $this->getSchemaDir() . DIRECTORY_SEPARATOR : '';
+
+        return $root . $name . '.json';
     }
 
     /**
@@ -162,7 +162,7 @@ abstract class AbstractSchema extends ExchangeEntity
         $files = [];
         $names = $this->getSchemas($this->getMap());
         foreach ($names as $name) {
-            $files[] = Module::getRelativeDir($this->getSchemaFile($name));
+            $files[] = $this->getSchemaFile($name, false);
         }
 
         if (!empty($files)) {
@@ -285,5 +285,4 @@ abstract class AbstractSchema extends ExchangeEntity
             );
         }
     }
-
 }

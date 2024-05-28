@@ -349,13 +349,7 @@ class VersionConfig
         return $default;
     }
 
-    /**
-     * @param string $configName
-     * @param array  $configValues
-     *
-     * @return bool
-     */
-    public function createConfig($configName, $configValues = []): bool
+    public function createConfig(string $configName): bool
     {
         $fileName = 'migrations.' . $configName . '.php';
         if (!$this->getConfigName($fileName)) {
@@ -367,20 +361,10 @@ class VersionConfig
             return false;
         }
 
-        if (isset($this->configList[$configName])) {
-            $curValues = $this->configList[$configName]['values'];
-            $configDefaults = [
-                'migration_dir'   => Module::getRelativeDir($curValues['migration_dir']),
-                'migration_table' => $curValues['migration_table'],
-            ];
-        } else {
-            $configDefaults = [
-                'migration_dir'   => $this->getSiblingDir($configName, true),
-                'migration_table' => 'sprint_migration_' . $configName,
-            ];
-        }
-
-        $configValues = array_merge($configDefaults, $configValues);
+        $configValues = [
+            'migration_dir'   => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
+            'migration_table' => 'sprint_migration_' . $configName,
+        ];
 
         file_put_contents($configPath, '<?php return ' . var_export($configValues, 1) . ';');
         return is_file($configPath);
@@ -392,7 +376,7 @@ class VersionConfig
             VersionEnum::CONFIG_ARCHIVE,
             [
                 'title'           => Locale::getMessage('CONFIG_archive'),
-                'migration_dir'   => $this->getSiblingDir('archive', true),
+                'migration_dir'   => Module::getPhpInterfaceDir(false) . '/migrations.archive',
                 'migration_table' => 'sprint_migration_archive',
             ]
         );
@@ -427,22 +411,6 @@ class VersionConfig
         }
 
         return true;
-    }
-
-    /**
-     * @param        $dirname
-     * @param false  $relative
-     * @param string $configName
-     *
-     * @return false|string|string[]
-     */
-    public function getSiblingDir($dirname, $relative = false, $configName = VersionEnum::CONFIG_DEFAULT)
-    {
-        $def = $this->configList[$configName];
-        $dir = rtrim($def['values']['migration_dir'], '/');
-        $dir = $dir . '.' . trim($dirname, '/') . '/';
-
-        return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
 
     /**
