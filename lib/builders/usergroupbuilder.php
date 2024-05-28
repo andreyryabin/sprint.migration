@@ -74,9 +74,9 @@ class UserGroupBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $items = $helper->UserGroup()->getGroups([
-            '!STRING_ID' => false,
-        ]);
+        $items = array_filter($helper->UserGroup()->getGroups(), function ($item) {
+            return !empty($item['STRING_ID']);
+        });
 
         $items = array_map(function ($item) {
             $item['NAME'] = '[' . $item['STRING_ID'] . '] ' . $item['NAME'];
