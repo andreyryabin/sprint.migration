@@ -15,12 +15,12 @@ use Throwable;
 
 class VersionManager
 {
-    private VersionConfig      $versionConfig;
-    private VersionTable       $versionTable;
-    private bool               $isRestart         = false;
-    private array              $lastRestartParams = [];
-    private MigrationException $lastException;
-    private string             $versionTimestampPattern;
+    private VersionConfig $versionConfig;
+    private VersionTable  $versionTable;
+    private bool          $isRestart         = false;
+    private array         $lastRestartParams = [];
+    private ?Throwable    $lastException;
+    private string        $versionTimestampPattern;
 
     /**
      * @throws MigrationException
@@ -41,8 +41,6 @@ class VersionManager
         $this->versionTable = new VersionTable(
             $this->versionConfig->getVal('migration_table')
         );
-
-        $this->lastException = new MigrationException();
     }
 
     public function getVersionConfig(): VersionConfig
@@ -63,7 +61,7 @@ class VersionManager
     ): bool {
         $this->isRestart = false;
         $this->lastRestartParams = [];
-        $this->lastException = new MigrationException();
+        $this->lastException = null;
 
         try {
             $meta = $this->getVersionByName($versionName);
@@ -110,7 +108,7 @@ class VersionManager
             $this->isRestart = true;
             $this->lastRestartParams = isset($versionInstance) ? $versionInstance->getRestartParams() : [];
         } catch (Throwable $e) {
-            $this->lastException = new MigrationException($e->getMessage(), $e->getCode(), $e);
+            $this->lastException = $e;
             return false;
         }
 
@@ -195,7 +193,7 @@ class VersionManager
         return $this->lastRestartParams;
     }
 
-    public function getLastException(): MigrationException
+    public function getLastException(): ?Throwable
     {
         return $this->lastException;
     }

@@ -425,15 +425,16 @@ class Out
         }
     }
 
-    public static function outException(Throwable $exception)
+    public static function outException(?Throwable $exception)
     {
-        if ($exception instanceof HelperException) {
-            self::outHelperException($exception);
-            return;
+        if ($exception) {
+            if ($exception instanceof HelperException) {
+                self::outHelperException($exception);
+                return;
+            }
+            self::outWarning(self::getExceptionAsString($exception));
+            self::outExceptionTrace($exception->getTrace());
         }
-
-        self::outWarning(self::getExceptionAsString($exception));
-        self::outExceptionTrace($exception->getTrace());
     }
 
     protected static function getExceptionAsString(Throwable $exception): string

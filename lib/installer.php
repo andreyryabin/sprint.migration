@@ -5,6 +5,7 @@ namespace Sprint\Migration;
 use Exception;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
+use Throwable;
 
 class Installer
 {
@@ -67,7 +68,7 @@ class Installer
      * @param string $version
      * @param string $action
      *
-     * @throws MigrationException
+     * @throws Throwable
      * @return bool
      */
     protected function executeVersion($version, $action = VersionEnum::ACTION_UP)
@@ -90,7 +91,9 @@ class Installer
             }
 
             if (!$success && !$restart) {
-                throw $this->versionManager->getLastException();
+                if ($this->versionManager->getLastException()) {
+                    throw $this->versionManager->getLastException();
+                }
             }
         } while ($exec == 1);
 

@@ -1,9 +1,10 @@
 <?php
 
 use Sprint\Migration\Enum\VersionEnum;
+use Sprint\Migration\Locale;
+use Sprint\Migration\Out;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
-use Sprint\Migration\Locale;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
@@ -61,7 +62,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
 
     if ($version && $action) {
         if (!$restart) {
-            Sprint\Migration\Out::out('[%s]%s (%s) start[/]', $action, $version, $action);
+            Out::out('[%s]%s (%s) start[/]', $action, $version, $action);
         }
 
         $success = $versionManager->startMigration(
@@ -74,7 +75,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
         $restart = ($success) ? $versionManager->needRestart() : $restart;
 
         if ($success && !$restart) {
-            Sprint\Migration\Out::out('%s (%s) success', $version, $action);
+            Out::out('%s (%s) success', $version, $action);
 
             if ($nextAction) {
                 $json = json_encode([
@@ -115,7 +116,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
         }
 
         if (!$success) {
-            Sprint\Migration\Out::outException($versionManager->getLastException());
+            Out::outException($versionManager->getLastException());
 
             $json = json_encode([
                 'params'      => $params,
@@ -131,7 +132,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
             <script>
                 (function () {
                     let $btn = $('<input type="button" value="<?= Locale::getMessage('RESTART_AGAIN') ?>">');
-                    $btn.bind('click', function(){
+                    $btn.bind('click', function () {
                         migrationExecuteStep('migration_execute', <?=$json?>);
                     })
                     $('#migration_actions').empty().append($btn);
