@@ -1,24 +1,25 @@
 function schemaScrollList() {
-    var $el = $('#schema_list');
+    var $el = jQuery('#schema_list');
     $el.scrollTop($el.prop("scrollHeight"));
 }
 
 function schemaOutLog(result) {
-    var $log = $('#schema_log');
+    var $log = jQuery('#schema_log');
     $log.append(result);
     $log.scrollTop($log.prop("scrollHeight"));
 }
 
 function schemaProgress(type, val) {
-    var $progress = $('#schema_progress_' + type);
-    var $bar = $progress.find('span');
-
-    val = parseInt(val, 10);
-    if (val) {
-        $bar.width(val + '%');
-        $progress.show();
-    } else {
-        $progress.hide();
+    var $progress = jQuery('#schema_progress_' + type);
+    if ($progress.length > 0) {
+        var $bar = $progress.find('span');
+        val = parseInt(val, 10);
+        if (val) {
+            $bar.width(val + '%');
+            $progress.show();
+        } else {
+            $progress.hide();
+        }
     }
 }
 
@@ -28,7 +29,7 @@ function schemaProgressReset() {
 }
 
 function schemaRefresh(callbackAfterRefresh) {
-    var $el = $('#schema_list');
+    var $el = jQuery('#schema_list');
 
     schemaExecuteStep('schema_list', {}, function (data) {
         $el.empty().html(data);
@@ -42,7 +43,7 @@ function schemaRefresh(callbackAfterRefresh) {
 }
 
 function schemaEnableButtons(enable) {
-    var $el = $('#schema-container');
+    var $el = jQuery('#schema-container');
     var buttons = $el.find('input,select');
     if (enable) {
         buttons.removeAttr('disabled');
@@ -52,13 +53,13 @@ function schemaEnableButtons(enable) {
 }
 
 function schemaExecuteStep(step_code, postData, succesCallback) {
-    var $el = $('#schema-container');
+    var $el = jQuery('#schema-container');
 
     postData = postData || {};
     postData['step_code'] = step_code;
     postData['send_sessid'] = $el.data('sessid');
     postData['schema_checked'] = $el.find(".sp-schema.adm-btn-active").map(function () {
-        return $(this).data('id');
+        return jQuery(this).data('id');
     }).get();
 
     schemaEnableButtons(0);

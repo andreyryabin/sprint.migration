@@ -175,7 +175,7 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
                             <?php Out::out(Locale::getMessage('VERSION_UNKNOWN')) ?>
                         <?php } ?>
                         <?php if (!empty($item['description'])): ?>
-                            <?= Out::prepareToHtml(
+                            <?php Out::outToHtml(
                                 $item['description'],
                                 [
                                     'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),

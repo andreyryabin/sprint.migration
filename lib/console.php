@@ -645,12 +645,6 @@ class Console
         do {
             $builder = $this->versionManager->createBuilder($from, $postvars);
 
-            if (!$builder) {
-                throw new ConsoleException(
-                    Locale::getMessage('ERR_BUILDER_NOT_FOUND')
-                );
-            }
-
             $builder->renderConsole();
 
             $builder->buildExecute();

@@ -90,9 +90,7 @@ class Installer
             }
 
             if (!$success && !$restart) {
-                throw new MigrationException(
-                    $this->versionManager->getLastException()->getMessage()
-                );
+                throw $this->versionManager->getLastException();
             }
         } while ($exec == 1);
 

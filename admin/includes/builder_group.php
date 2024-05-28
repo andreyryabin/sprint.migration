@@ -12,7 +12,7 @@ $builderList = $versionConfig->getVal('version_builders', []);
 $builderTree = [];
 foreach ($builderList as $builderName => $builderClass) {
     $builder = $versionManager->createBuilder($builderName);
-    if ($builder) {
+    if ($builder->isEnabled()) {
         $builderGroup = $builder->getGroup();
 
         if (!isset($builderTree[$builderGroup])) {

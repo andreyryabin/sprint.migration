@@ -6,9 +6,12 @@ use Sprint\Migration\Exceptions\MigrationException;
 
 class StorageTable extends AbstractTable
 {
-    protected $category;
+    protected string $category;
 
-    public function __construct($storageName, $category)
+    /**
+     * @throws MigrationException
+     */
+    public function __construct(string $storageName, string $category)
     {
         parent::__construct('sprint_storage_' . $storageName);
         $this->category = $category;
@@ -24,7 +27,7 @@ class StorageTable extends AbstractTable
      *
      * @throws MigrationException
      */
-    public function saveData($name, $value = '')
+    public function saveData(string $name, $value = '')
     {
         if (empty($name)) {
             throw new MigrationException('Need name kedy for saved data');
@@ -45,9 +48,10 @@ class StorageTable extends AbstractTable
      * @param string $name
      * @param mixed  $default
      *
+     * @throws MigrationException
      * @return mixed|string
      */
-    public function getSavedData($name, $default = '')
+    public function getSavedData(string $name, $default = '')
     {
         if (empty($name)) {
             throw new MigrationException('Need name kedy for saved data');
@@ -66,9 +70,9 @@ class StorageTable extends AbstractTable
     }
 
     /**
-     * @param string $name
+     * @throws MigrationException
      */
-    public function deleteSavedData($name = '')
+    public function deleteSavedData(string $name = '')
     {
         if ($name) {
             $this->query(
@@ -84,6 +88,9 @@ class StorageTable extends AbstractTable
         }
     }
 
+    /**
+     * @throws MigrationException
+     */
     protected function createTable()
     {
         $this->query(
@@ -97,6 +104,9 @@ class StorageTable extends AbstractTable
         );
     }
 
+    /**
+     * @throws MigrationException
+     */
     protected function dropTable()
     {
         $this->query('DROP TABLE IF EXISTS `#TABLE1#`;');

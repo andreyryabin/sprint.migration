@@ -5,15 +5,17 @@ namespace Sprint\Migration\Tables;
 use Bitrix\Main\Application;
 use Bitrix\Main\DB\Result;
 use Bitrix\Main\DB\SqlQueryException;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 
 abstract class AbstractTable
 {
-    private $tableName = '';
-    private $dbName = '';
-    protected $tableVersion = 1;
-    protected $connection;
+    private string $tableName;
+    private string $tableUid;
+    private string $dbName;
+    protected int  $tableVersion = 1;
+    protected      $connection;
 
     abstract protected function createTable();
 
@@ -26,10 +28,12 @@ abstract class AbstractTable
         $this->tableName = $tableName;
         $this->dbName = $this->connection->getDatabase();
 
-        $uid = $this->getUid();
-        if (!Module::getDbOption($uid)) {
+        $this->tableUid = strtolower('table_' . $this->tableName);
+
+        $version = Module::getDbOption($this->tableUid);
+        if ($version !== $this->tableVersion) {
             $this->createTable();
-            Module::setDbOption($uid, 1);
+            Module::setDbOption($this->tableUid, $this->tableVersion);
         }
     }
 
@@ -37,22 +41,17 @@ abstract class AbstractTable
     {
         $this->dropTable();
 
-        Module::removeDbOption($this->getUid());
-    }
-
-    private function getUid()
-    {
-        return 'upgrade' . $this->tableVersion . '_' . md5($this->tableName);
+        Module::removeDbOption($this->tableUid);
     }
 
     /**
-     * @param        $query
+     * @param string $query
      * @param string ...$vars
      *
-     * @throws SqlQueryException
+     * @throws MigrationException
      * @return Result
      */
-    protected function query($query, ...$vars)
+    protected function query(string $query, ...$vars): Result
     {
         if (func_num_args() > 1) {
             $params = func_get_args();
@@ -76,10 +75,14 @@ abstract class AbstractTable
         $queryReplace = array_values($search);
 
         $query = str_replace($querySearch, $queryReplace, $query);
-        return $this->connection->query($query);
+        try {
+            return $this->connection->query($query);
+        } catch (SqlQueryException $e) {
+            throw new MigrationException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
-    protected function forSql($query)
+    protected function forSql($query): string
     {
         return $this->connection->getSqlHelper()->forSql($query);
     }

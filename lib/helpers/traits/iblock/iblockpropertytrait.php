@@ -48,10 +48,12 @@ trait IblockPropertyTrait
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updatePropertyById(
-                $exists['ID'],
-                array_merge($fields, ['IBLOCK_ID' => $iblockId])
-            );
+            $ok = $this->getMode('test')
+                ? true
+                : $this->updatePropertyById(
+                    $exists['ID'],
+                    array_merge($fields, ['IBLOCK_ID' => $iblockId])
+                );
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -142,12 +144,13 @@ trait IblockPropertyTrait
         return $result;
     }
 
+    /**
+     * @throws HelperException
+     */
     public function getPropertyFeatures($propertyId)
     {
-        if (!class_exists('\Bitrix\Iblock\Model\PropertyFeature')) {
-            return [];
-        }
-        if (!class_exists('\Bitrix\Iblock\PropertyFeatureTable')) {
+        if (!class_exists('\Bitrix\Iblock\Model\PropertyFeature')
+            || !class_exists('\Bitrix\Iblock\PropertyFeatureTable')) {
             return [];
         }
 
@@ -160,6 +163,7 @@ trait IblockPropertyTrait
                 ])->fetchAll();
             }
         } catch (Exception $e) {
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
 
         return $features;

@@ -322,7 +322,7 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "ru",
     [
-        "ERR_BUILDER_NOT_FOUND"              => "Конструктор не найден",
+        "ERR_BUILDER_NOT_FOUND"              => "Конструктор \"#NAME#\" не найден",
         "ERR_CANT_CREATE_DIRECTORY"          => "Ошибка создания директории #NAME#",
         "ERR_MSSQL_NOT_SUPPORTED"            => "MSSQL не поддерживается",
         "ERR_JSON_NOT_SUPPORTED"             => "Установите php-расширение json",

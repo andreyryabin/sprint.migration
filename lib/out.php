@@ -64,7 +64,7 @@ class Out
         return (php_sapi_name() == 'cli') ? 0 : 1;
     }
 
-    public static function prepareToHtml($msg, $options = [])
+    protected static function prepareToHtml($msg, $options = [])
     {
         if ($options['br']) {
             $msg = nl2br($msg);
@@ -134,10 +134,9 @@ class Out
         }
     }
 
-    protected static function outToHtml($msg)
+    public static function outToHtml($msg, $options = ['br' => false])
     {
-        $msg = self::prepareToHtml($msg, ['br' => false]);
-        echo '<div class="sp-out">' . $msg . '</div>';
+        echo '<div class="sp-out">' . self::prepareToHtml($msg, $options) . '</div>';
     }
 
     protected static function outToConsole($msg, $rightEol = PHP_EOL)

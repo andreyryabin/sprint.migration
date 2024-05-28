@@ -70,18 +70,23 @@ abstract class AbstractSchema extends ExchangeEntity
 
     public function isModified()
     {
+        $algo = $this->getVersionConfig()->getVal('migration_hash_algo');
+
         $opt = strtolower('schema_' . $this->getName());
         $oldhash = Module::getDbOption($opt);
 
         $data = $this->loadSchemas($this->getMap());
-        $newhash = md5(serialize($data));
+        $newhash = hash($algo, serialize($data));
+
         return ($newhash != $oldhash);
     }
 
     public function setModified()
     {
+        $algo = $this->getVersionConfig()->getVal('migration_hash_algo');
+
         $data = $this->loadSchemas($this->getMap());
-        $newhash = md5(serialize($data));
+        $newhash = hash($algo, serialize($data));
 
         $opt = strtolower('schema_' . $this->getName());
         Module::setDbOption($opt, $newhash);

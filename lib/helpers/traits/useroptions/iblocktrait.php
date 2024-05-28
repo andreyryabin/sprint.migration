@@ -127,6 +127,7 @@ trait IblockTrait
             $prefix = defined('CATALOG_PRODUCT') ? 'tbl_product_list_' : 'tbl_iblock_list_';
         }
 
+        //md5 тут выбран сознательно, так сохраняется настройка в битриксе
         return $prefix . md5($this->iblock['IBLOCK_TYPE_ID'] . '.' . $iblockId);
     }
 
@@ -139,7 +140,9 @@ trait IblockTrait
     public function getSectionGridId($iblockId)
     {
         $this->initializeIblockVars($iblockId);
-        return 'tbl_iblock_section_' . md5($this->iblock['IBLOCK_TYPE_ID'] . "." . $iblockId);
+
+        //md5 тут выбран сознательно, так сохраняется настройка в битриксе
+        return 'tbl_iblock_section_' . md5($this->iblock['IBLOCK_TYPE_ID'] . '.' . $iblockId);
     }
 
     /**

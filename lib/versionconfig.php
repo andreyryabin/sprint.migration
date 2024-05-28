@@ -297,6 +297,10 @@ class VersionConfig
             $values['version_timestamp_format'] = 'YmdHis';
         }
 
+        if (empty($values['migration_hash_algo'])) {
+            $values['migration_hash_algo'] = 'md5';
+        }
+
         ksort($values);
         return $values;
     }
@@ -325,7 +329,7 @@ class VersionConfig
     }
 
     /**
-     * @param        $name
+     * @param string $name
      * @param string $default
      *
      * @return bool|mixed|string

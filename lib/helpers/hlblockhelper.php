@@ -511,7 +511,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -645,7 +645,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -670,7 +670,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -686,7 +686,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -771,9 +771,10 @@ class HlblockHelper extends Helper
      * предыдущие права сбрасываются
      * принимает массив вида [$groupId => $letter]
      *
-     * @param       $hlblockId
+     * @param int   $hlblockId
      * @param array $permissions
      *
+     * @throws HelperException
      * @return bool
      */
     public function setGroupPermissions($hlblockId, $permissions = [])
@@ -803,7 +804,7 @@ class HlblockHelper extends Helper
                 }
             }
         } catch (Exception $e) {
-            return false;
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
 
         return true;
@@ -964,6 +965,7 @@ class HlblockHelper extends Helper
     /**
      * @param int $hlblockId
      *
+     * @throws HelperException
      * @return array
      */
     protected function getGroupRights($hlblockId)
@@ -982,7 +984,7 @@ class HlblockHelper extends Helper
                 ]
             )->fetchAll();
         } catch (Exception $e) {
-            $items = [];
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
 
         foreach ($items as $item) {
@@ -1023,6 +1025,7 @@ class HlblockHelper extends Helper
     /**
      * @param int $hlblockId
      *
+     * @throws HelperException
      * @return array
      */
     protected function getHblockLangs($hlblockId)
@@ -1046,6 +1049,7 @@ class HlblockHelper extends Helper
                 ];
             }
         } catch (Exception $e) {
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
 
         return $result;

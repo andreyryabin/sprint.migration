@@ -51,7 +51,7 @@ if ($versionConfig->getVal('show_admin_interface')) {
 }
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
-CUtil::InitJSCore(["jquery"]);
+CJSCore::Init(["jquery3"]);
 
 if ($versionConfig->getVal('show_admin_interface')) {
     if (isset($_REQUEST['schema'])) {

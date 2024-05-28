@@ -18,7 +18,7 @@ if ($hasSteps && check_bitrix_sessid('send_sessid')) {
 
     $builder = $versionManager->createBuilder($builderName, $_POST);
 
-    if ($builder && $stepCode == 'migration_create') {
+    if ($stepCode == 'migration_create') {
         $builder->buildExecute();
         $builder->buildAfter();
 
@@ -40,7 +40,7 @@ if ($hasSteps && check_bitrix_sessid('send_sessid')) {
                 });
             </script><?php
         }
-    } elseif ($builder && $stepCode == 'migration_reset') {
+    } elseif ($stepCode == 'migration_reset') {
         $builder->renderHtml();
         ?>
         <script>

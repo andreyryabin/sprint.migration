@@ -2,41 +2,37 @@
 
 namespace Sprint\Migration\Tables;
 
-use Bitrix\Main\DB\SqlQueryException;
+use Sprint\Migration\Exceptions\MigrationException;
 
 class VersionTable extends AbstractTable
 {
-    protected $tableVersion = 3;
+    protected int $tableVersion = 3;
 
     /**
-     * @throws SqlQueryException
-     * @return array
+     * @throws MigrationException
      */
-    public function getRecords()
+    public function getRecords(): array
     {
         return $this->query('SELECT * FROM `#TABLE1#`')->fetchAll();
     }
 
     /**
-     * @param $versionName
-     *
-     * @throws SqlQueryException
-     * @return array|false
+     * @throws MigrationException
      */
-    public function getRecord($versionName)
+    public function getRecord(string $versionName): array
     {
-        return $this->query(
+        $record = $this->query(
             'SELECT * FROM `#TABLE1#` WHERE `version` = "%s" LIMIT 1',
             $this->forSql($versionName)
         )->fetch();
+
+        return !empty($record['version']) ? $record : [];
     }
 
     /**
-     * @param $meta
-     *
-     * @throws SqlQueryException
+     * @throws MigrationException
      */
-    public function addRecord($meta)
+    public function addRecord(array $meta)
     {
         $version = $this->forSql($meta['version']);
         $hash = $this->forSql($meta['hash']);
@@ -50,11 +46,9 @@ class VersionTable extends AbstractTable
     }
 
     /**
-     * @param $meta
-     *
-     * @throws SqlQueryException
+     * @throws MigrationException
      */
-    public function removeRecord($meta)
+    public function removeRecord(array $meta)
     {
         $version = $this->forSql($meta['version']);
 
@@ -62,21 +56,18 @@ class VersionTable extends AbstractTable
     }
 
     /**
-     * @param        $version
-     * @param string $tag
-     *
-     * @throws SqlQueryException
+     * @throws MigrationException
      */
-    public function updateTag($version, $tag = '')
+    public function updateTag(string $versionName, string $tag = '')
     {
-        $version = $this->forSql($version);
+        $versionName = $this->forSql($versionName);
         $tag = $this->forSql($tag);
 
-        $this->query('UPDATE `#TABLE1#` SET `tag` = "%s" WHERE `version` = "%s"', $tag, $version);
+        $this->query('UPDATE `#TABLE1#` SET `tag` = "%s" WHERE `version` = "%s"', $tag, $versionName);
     }
 
     /**
-     * @throws SqlQueryException
+     * @throws MigrationException
      */
     protected function createTable()
     {
@@ -101,7 +92,7 @@ class VersionTable extends AbstractTable
     }
 
     /**
-     * @throws SqlQueryException
+     * @throws MigrationException
      */
     protected function dropTable()
     {
