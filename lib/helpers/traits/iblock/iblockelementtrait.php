@@ -5,7 +5,6 @@ namespace Sprint\Migration\Helpers\Traits\Iblock;
 use CIBlockElement;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
-use Sprint\Migration\Out;
 
 trait IblockElementTrait
 {
