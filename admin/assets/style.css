@@ -3,6 +3,11 @@
     border: 1px solid;
     border-color: #c4ced2 #dce7ed #dce7ed;
     padding: 10px;
+    box-sizing: border-box;
+}
+
+.sp-col-scroll {
+    padding-right: 0;
 }
 
 .sp-col.sp-col_builders {
@@ -20,12 +25,8 @@
 }
 
 
-.sp-col-scroll {
-    padding-right: 0;
-}
-
 .sp-scroll {
-    overflow-y: auto;
+    overflow: auto;
     max-height: 425px;
 }
 
@@ -67,31 +68,33 @@
     display: block;
 }
 
-.sp-table {
-    display: table;
-    width: 100%;
-}
+
 
 .sp-separator {
     display: block;
     padding: 10px;
 }
 
+.sp-table {
+    /*display: table;*/
+    width: 100%;
+}
 .sp-table .sp-row1,
 .sp-table .sp-row2,
 .sp-table .sp-row3 {
-    display: table-row;
+    display: flex;
+    /*display: table-row;*/
 }
 
 .sp-table .sp-row1 .sp-col {
-    display: table-cell;
-    vertical-align: top;
+    /*display: table-cell;*/
+    /*vertical-align: top;*/
     width: 100%;
 }
 
 .sp-table .sp-row2 .sp-col {
-    display: table-cell;
-    vertical-align: top;
+    /*display: table-cell;*/
+    /*vertical-align: top;*/
     width: 50%;
     /*float: left;*/
     /*width: 350px;*/
@@ -106,8 +109,8 @@
 }
 
 .sp-table .sp-row3 .sp-col {
-    display: table-cell;
-    vertical-align: top;
+    /*display: table-cell;*/
+    /*vertical-align: top;*/
     /*float: left;*/
     width: 33%;
 }

@@ -6,10 +6,10 @@ use Sprint\Migration\Locale;
 <div id="schema-container" data-sessid="<?php echo bitrix_sessid() ?>">
     <div class="sp-table">
         <div class="sp-row2">
-            <div class="sp-col sp-col-scroll sp-white">
+            <div class="sp-col sp-white">
                 <div id="schema_list" class="sp-scroll"></div>
             </div>
-            <div class="sp-col sp-col-scroll">
+            <div class="sp-col">
                 <div id="schema_log" class="sp-scroll"></div>
             </div>
         </div>

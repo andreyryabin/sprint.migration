@@ -82,22 +82,27 @@ if ($request->isPost() && check_bitrix_sessid()) {
         <div class="sp-col">
             <form method="post" action="">
                 <p><?= Locale::getMessage('BUILDER_CommonSettings') ?></p>
-                <label>
-                    <input <?php if (Module::isDbOptionChecked('show_schemas')){ ?>checked="checked"<?php } ?>
-                           type="checkbox"
-                           name="show_schemas"
-                           value="1">
-                    <?=Locale::getMessage('SHOW_SCHEMAS')?>
-                </label>
-                <label>
-                    <input <?php if (Module::isDbOptionChecked('show_support')){ ?>checked="checked"<?php } ?>
-                           type="checkbox"
-                           name="show_support"
-                           value="1">
-                    <?=Locale::getMessage('SHOW_SUPPORT')?>
-                </label>
-                <p><input type="submit" name="options_save"
-                          value="<?= Locale::getMessage('BUILDER_SAVE') ?>"></p>
+                <p>
+                    <label>
+                        <input <?php if (Module::isDbOptionChecked('show_schemas')){ ?>checked="checked"<?php } ?>
+                               type="checkbox"
+                               name="show_schemas"
+                               value="1">
+                        <?= Locale::getMessage('SHOW_SCHEMAS') ?>
+                    </label>
+                </p>
+                <p>
+                    <label>
+                        <input <?php if (Module::isDbOptionChecked('show_support')){ ?>checked="checked"<?php } ?>
+                               type="checkbox"
+                               name="show_support"
+                               value="1">
+                        <?= Locale::getMessage('SHOW_SUPPORT') ?>
+                    </label>
+                </p>
+                <p>
+                    <input type="submit" name="options_save" value="<?= Locale::getMessage('BUILDER_SAVE') ?>">
+                </p>
                 <?= bitrix_sessid_post(); ?>
             </form>
         </div>
