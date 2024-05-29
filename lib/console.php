@@ -232,31 +232,24 @@ class Console
                 $item['version'] .= ' (' . $item['tag'] . ')';
             }
 
-            $status = Locale::getMessage('META_' . strtoupper($item['status']));
-
+            $status = Locale::getMessage('META_' . $item['status']);
             if (
                 $item['status'] == VersionEnum::STATUS_INSTALLED
                 || $item['status'] == VersionEnum::STATUS_UNKNOWN
             ) {
-                $status = sprintf(
-                    '%s (%s) %s',
-                    $status,
-                    $item['meta']['created_by'] ?? '',
-                    $item['meta']['created_at'] ?? ''
-                );
+                $status .= $item['meta']['created_by'] ? ' (' . $item['meta']['created_by'] . ')' : '';
+                $status .= $item['meta']['created_at'] ? ' ' . $item['meta']['created_at'] : '';
             }
 
-            $grid->addRow([
-                $item['version'],
-                $status,
-                Out::prepareToConsole(
-                    $item['description'],
-                    [
-                        'max_len'          => 50,
-                        'tracker_task_url' => $this->versionConfig->getVal('tracker_task_url'),
-                    ]
-                ),
-            ]);
+            $descr = Out::prepareToConsole(
+                $item['description'],
+                [
+                    'max_len'          => 50,
+                    'tracker_task_url' => $this->versionConfig->getVal('tracker_task_url'),
+                ]
+            );
+
+            $grid->addRow([$item['version'], $status, $descr]);
 
             $stval = $item['status'];
             $summary[$stval]++;

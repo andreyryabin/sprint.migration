@@ -147,53 +147,43 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
                     </td>
                     <td class="sp-list-td__content">
                         <span class="sp-item-<?= $item['status'] ?>"><?= $item['version'] ?></span>
-                        <?php if ($item['modified']): ?>
+                        <?php if ($item['modified']) { ?>
                             <span class="sp-modified" title="<?= Locale::getMessage('MODIFIED_VERSION') ?>">
                                 <?= Locale::getMessage('MODIFIED_LABEL') ?>
                             </span>
-                        <?php endif; ?>
-                        <?php if ($item['older']): ?>
+                        <?php } ?>
+                        <?php if ($item['older']) { ?>
                             <span class="sp-older" title="<?= Locale::getMessage('OLDER_VERSION', [
                                 '#V1#' => $item['older'],
                                 '#V2#' => Module::getVersion(),
                             ]) ?>">
                                 <?= Locale::getMessage('OLDER_LABEL') ?>
                             </span>
-                        <?php endif; ?>
-                        <?php if ($item['tag']): ?>
+                        <?php } ?>
+                        <?php if ($item['tag']) { ?>
                             <span class="sp-tag" title="<?= Locale::getMessage('TAG') ?>">
                                 <?= $item['tag'] ?>
                             </span>
-                        <?php endif; ?>
-                        <?php if ($item['status'] == VersionEnum::STATUS_NEW) { ?>
-                            <?php Out::out(Locale::getMessage('VERSION_NEW')) ?>
                         <?php } ?>
-                        <?php if ($item['status'] == VersionEnum::STATUS_INSTALLED) { ?>
-                            <?php Out::out(
-                                '%s (%s) %s',
-                                Locale::getMessage('VERSION_INSTALLED'),
-                                $item['meta']['created_by'] ?? '',
-                                $item['meta']['created_at'] ?? '',
-                            ) ?>
-                        <?php } ?>
-                        <?php if ($item['status'] == VersionEnum::STATUS_UNKNOWN) { ?>
-                            <?php Out::out(
-                                '%s (%s) %s',
-                                Locale::getMessage('VERSION_UNKNOWN'),
-                                $item['meta']['created_by'] ?? '',
-                                $item['meta']['created_at'] ?? '',
-                            ) ?>
-                        <?php } ?>
-                        <?php if (!empty($item['description'])): ?>
-                            <?php Out::outToHtml(
-                                $item['description'],
-                                [
-                                    'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),
-                                    'make_links'       => true,
-                                    'br'               => true,
-                                ]
-                            ) ?>
-                        <?php endif ?>
+                        <?php
+                        $status = Locale::getMessage('VERSION_' . $item['status']);
+                        if (
+                            $item['status'] == VersionEnum::STATUS_INSTALLED
+                            || $item['status'] == VersionEnum::STATUS_UNKNOWN
+                        ) {
+                            $status .= $item['meta']['created_by'] ? ' (' . $item['meta']['created_by'] . ')' : '';
+                            $status .= $item['meta']['created_at'] ? ' ' . $item['meta']['created_at'] : '';
+                        }
+                        Out::out($status);
+
+                        Out::outToHtml(
+                            $item['description'],
+                            [
+                                'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),
+                                'make_links'       => true,
+                                'br'               => true,
+                            ]
+                        ); ?>
                     </td>
                 </tr>
             <?php } ?>

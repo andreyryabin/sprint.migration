@@ -139,7 +139,7 @@ class Out
 
     public static function outToHtml($msg, $options = ['br' => false])
     {
-        echo '<div class="sp-out">' . self::prepareToHtml($msg, $options) . '</div>';
+        echo $msg ? '<div class="sp-out">' . self::prepareToHtml($msg, $options) . '</div>' : '';
     }
 
     public static function outToConsole($msg, $options = [], $rightEol = PHP_EOL)
