@@ -36,17 +36,10 @@ class FormBuilder extends VersionBuilder
         $formId = $this->addFieldAndReturn('form_id', [
             'title'  => Locale::getMessage('BUILDER_FormExport_FormId'),
             'width'  => 250,
-            'select' => $this->createSelect(
-                $helper->Form()->getList(),
-                'ID',
-                'NAME'
-            ),
+            'select' => $this->getFormsSelect(),
         ]);
 
         $form = $helper->Form()->getFormById($formId);
-        if (empty($form)) {
-            $this->rebuildField('form_id');
-        }
 
         unset($form['ID']);
         unset($form['TIMESTAMP_X']);
@@ -135,5 +128,18 @@ class FormBuilder extends VersionBuilder
                 'fields'     => $fields,
             ]
         );
+    }
+
+    private function getFormsSelect(): array
+    {
+        $helper = $this->getHelperManager();
+        $items = $helper->Form()->getList();
+
+        $items = array_map(function ($item) {
+            $item['NAME'] = '[' . $item['SID'] . '] ' . $item['NAME'];
+            return $item;
+        }, $items);
+
+        return $this->createSelect($items, 'ID', 'NAME');
     }
 }

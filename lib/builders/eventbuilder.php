@@ -68,10 +68,6 @@ class EventBuilder extends VersionBuilder
             return $item;
         }, $items);
 
-        return $this->createSelect(
-            $items,
-            'EVENT_NAME',
-            'NAME'
-        );
+        return $this->createSelect($items, 'EVENT_NAME', 'NAME');
     }
 }
