@@ -4,36 +4,30 @@ namespace Sprint\Migration\Tables;
 
 use Bitrix\Main\Entity\DataManager;
 
-class OptionTable extends DataManager
+class FormGroupTable extends DataManager
 {
     public static function getTableName()
     {
-        return 'b_option';
+        return 'b_form_2_group';
     }
 
     public static function getMap()
     {
         return [
-            'MODULE_ID'   => [
+            'ID'         => [
                 'data_type' => 'string',
                 'primary'   => true,
             ],
-            'NAME'        => [
+            'FORM_ID'    => [
                 'data_type' => 'string',
-                'primary'   => true,
             ],
-            'VALUE'       => [
+            'GROUP_ID'   => [
                 'data_type' => 'string',
-                'required'  => false,
             ],
-            'DESCRIPTION' => [
+            'PERMISSION' => [
                 'data_type' => 'string',
-                'required'  => false,
             ],
-            'SITE_ID'     => [
-                'data_type' => 'string',
-                'required'  => false,
-            ],
+
         ];
     }
 }
