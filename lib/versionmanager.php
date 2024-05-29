@@ -98,6 +98,11 @@ class VersionManager
 
                 $meta['tag'] = $tag;
 
+                $meta['meta'] = [
+                    'created_by' => $GLOBALS['USER']->GetLogin(),
+                    'created_at' => date('Y-m-d H:i:s'),
+                ];
+
                 $this->getVersionTable()->addRecord($meta);
             } else {
                 $this->checkResultAfterStart($versionInstance->down());
@@ -459,16 +464,16 @@ class VersionManager
                 VersionEnum::STATUS_UNKNOWN,
             ]
         )) {
-            $metas = $this->getVersions(['status' => $versionName]);
+            $items = $this->getVersions(['status' => $versionName]);
         } elseif ($versionName == 'all') {
-            $metas = $this->getVersions();
-        } elseif ($meta = $this->getVersionByName($versionName)) {
-            $metas = [$meta];
+            $items = $this->getVersions();
+        } elseif ($item = $this->getVersionByName($versionName)) {
+            $items = [$item];
         }
 
-        if (!empty($metas)) {
-            foreach ($metas as $meta) {
-                $result[] = $this->transferMigrationByMeta($meta, $vmTo);
+        if (!empty($items)) {
+            foreach ($items as $item) {
+                $result[] = $this->transferMigrationByItem($item, $vmTo);
             }
         } else {
             $result[] = [
@@ -610,6 +615,7 @@ class VersionManager
 
         if ($isRecord) {
             $meta['tag'] = $record['tag'];
+            $meta['meta'] = $record['meta'];
         }
 
         if (!$isFile) {
@@ -663,13 +669,13 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    protected function transferMigrationByMeta($meta, VersionManager $vmTo): array
+    protected function transferMigrationByItem($item, VersionManager $vmTo): array
     {
         $success = 0;
 
-        if ($meta['is_file']) {
-            $source = $meta['location'];
-            $dest = $vmTo->getVersionFile($meta['version']);
+        if ($item['is_file']) {
+            $source = $item['location'];
+            $dest = $vmTo->getVersionFile($item['version']);
 
             if (is_file($dest)) {
                 unlink($source);
@@ -680,15 +686,15 @@ class VersionManager
             $success = 1;
         }
 
-        if ($meta['is_record']) {
-            $this->getVersionTable()->removeRecord($meta);
-            $vmTo->getVersionTable()->addRecord($meta);
+        if ($item['is_record']) {
+            $this->getVersionTable()->removeRecord($item);
+            $vmTo->getVersionTable()->addRecord($item);
 
             $success = 1;
         }
 
         return [
-            'message' => Locale::getMessage('TRANSFER_OK', ['#VERSION#' => $meta['version']]),
+            'message' => Locale::getMessage('TRANSFER_OK', ['#VERSION#' => $item['version']]),
             'success' => $success,
         ];
     }

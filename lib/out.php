@@ -107,12 +107,16 @@ class Out
 
     public static function prepareToConsole($msg, $options = [])
     {
-        foreach (self::$colors as $key => $val) {
-            $msg = str_replace('[' . $key . ']', $val[0], $msg);
-        }
-
         if (!empty($options['tracker_task_url'])) {
             $msg = self::makeTaskUrl($msg, $options['tracker_task_url']);
+        }
+
+        if ($options['max_len']) {
+            $msg = self::truncateText($msg, $options['max_len']) . '[/]';
+        }
+
+        foreach (self::$colors as $key => $val) {
+            $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
 
         return Locale::convertToUtf8IfNeed($msg);
@@ -138,9 +142,9 @@ class Out
         echo '<div class="sp-out">' . self::prepareToHtml($msg, $options) . '</div>';
     }
 
-    protected static function outToConsole($msg, $rightEol = PHP_EOL)
+    public static function outToConsole($msg, $options = [], $rightEol = PHP_EOL)
     {
-        $msg = self::prepareToConsole($msg);
+        $msg = self::prepareToConsole($msg, $options);
         if (self::$needEol) {
             self::$needEol = false;
             fwrite(STDOUT, PHP_EOL . $msg . $rightEol);
@@ -236,7 +240,7 @@ class Out
                 self::outToConsole(' > ' . $item['value'] . ' (' . $item['title'] . ')');
             }
         }
-        self::outToConsole($field['title'] . ':', '');
+        self::outToConsole($field['title'] . ':', [], '');
     }
 
     protected static function inputSelect($field)
@@ -244,12 +248,12 @@ class Out
         foreach ($field['select'] as $item) {
             self::outToConsole(' > ' . $item['value'] . ' (' . $item['title'] . ')');
         }
-        self::outToConsole($field['title'] . ':', '');
+        self::outToConsole($field['title'] . ':', [], '');
     }
 
     protected static function inputText($field)
     {
-        self::outToConsole($field['title'] . ':', '');
+        self::outToConsole($field['title'] . ':', [], '');
     }
 
     public static function outDiffIf($cond, $arr1, $arr2)
@@ -279,6 +283,15 @@ class Out
             } else {
                 self::out($k . ': [red]' . htmlspecialchars($diff2[$k]) . '[/]');
             }
+        }
+    }
+
+    protected static function truncateText($strText, $intLen)
+    {
+        if (mb_strlen($strText) > $intLen) {
+            return rtrim(mb_substr($strText, 0, $intLen), ".") . "...";
+        } else {
+            return $strText;
         }
     }
 

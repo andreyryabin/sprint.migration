@@ -169,10 +169,20 @@ if ($listView && check_bitrix_sessid('send_sessid')) {
                             <?php Out::out(Locale::getMessage('VERSION_NEW')) ?>
                         <?php } ?>
                         <?php if ($item['status'] == VersionEnum::STATUS_INSTALLED) { ?>
-                            <?php Out::out(Locale::getMessage('VERSION_INSTALLED')) ?>
+                            <?php Out::out(
+                                '%s (%s) %s',
+                                Locale::getMessage('VERSION_INSTALLED'),
+                                $item['meta']['created_by'] ?? '',
+                                $item['meta']['created_at'] ?? '',
+                            ) ?>
                         <?php } ?>
                         <?php if ($item['status'] == VersionEnum::STATUS_UNKNOWN) { ?>
-                            <?php Out::out(Locale::getMessage('VERSION_UNKNOWN')) ?>
+                            <?php Out::out(
+                                '%s (%s) %s',
+                                Locale::getMessage('VERSION_UNKNOWN'),
+                                $item['meta']['created_by'] ?? '',
+                                $item['meta']['created_at'] ?? '',
+                            ) ?>
                         <?php } ?>
                         <?php if (!empty($item['description'])): ?>
                             <?php Out::outToHtml(

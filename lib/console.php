@@ -15,7 +15,7 @@ class Console
 {
     private $script;
     private $command;
-    private $arguments = [];
+    private $arguments  = [];
     private $versionConfig;
     private $versionManager;
     private $argoptions = [];
@@ -218,7 +218,6 @@ class Console
         $grid->setHeaders([
             'Version',
             'Status',
-            'Tag',
             'Description',
         ]);
 
@@ -229,13 +228,31 @@ class Console
             if ($item['older']) {
                 $item['version'] .= ' (' . Locale::getMessage('OLDER_LABEL') . ')';
             }
+            if ($item['tag']) {
+                $item['version'] .= ' (' . $item['tag'] . ')';
+            }
+
+            $status = Locale::getMessage('META_' . strtoupper($item['status']));
+
+            if (
+                $item['status'] == VersionEnum::STATUS_INSTALLED
+                || $item['status'] == VersionEnum::STATUS_UNKNOWN
+            ) {
+                $status = sprintf(
+                    '%s (%s) %s',
+                    $status,
+                    $item['meta']['created_by'] ?? '',
+                    $item['meta']['created_at'] ?? ''
+                );
+            }
+
             $grid->addRow([
                 $item['version'],
-                Locale::getMessage('META_' . strtoupper($item['status'])),
-                $item['tag'],
+                $status,
                 Out::prepareToConsole(
                     $item['description'],
                     [
+                        'max_len'          => 50,
                         'tracker_task_url' => $this->versionConfig->getVal('tracker_task_url'),
                     ]
                 ),

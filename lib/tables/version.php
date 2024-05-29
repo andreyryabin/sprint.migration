@@ -6,14 +6,18 @@ use Sprint\Migration\Exceptions\MigrationException;
 
 class VersionTable extends AbstractTable
 {
-    protected int $tableVersion = 3;
+    protected int $tableVersion = 4;
 
     /**
      * @throws MigrationException
      */
     public function getRecords(): array
     {
-        return $this->query('SELECT * FROM `#TABLE1#`')->fetchAll();
+        $records = $this->query('SELECT * FROM `#TABLE1#`')->fetchAll();
+
+        return array_map(function ($record) {
+            return $this->prepareFetch($record);
+        }, $records);
     }
 
     /**
@@ -26,22 +30,23 @@ class VersionTable extends AbstractTable
             $this->forSql($versionName)
         )->fetch();
 
-        return !empty($record['version']) ? $record : [];
+        return $record ? $this->prepareFetch($record) : [];
     }
 
     /**
      * @throws MigrationException
      */
-    public function addRecord(array $meta)
+    public function addRecord(array $record)
     {
-        $version = $this->forSql($meta['version']);
-        $hash = $this->forSql($meta['hash']);
-        $tag = $this->forSql($meta['tag']);
+        $version = $this->forSql($record['version']);
+        $hash = $this->forSql($record['hash']);
+        $tag = $this->forSql($record['tag']);
+        $meta = $this->forSql(serialize($record['meta']));
 
         $this->query(
-            'INSERT INTO `#TABLE1#` (`version`, `hash`, `tag`) VALUES ("%s", "%s", "%s") 
+            'INSERT INTO `#TABLE1#` (`version`, `hash`, `tag`, `meta`) VALUES ("%s", "%s", "%s", "%s") 
                     ON DUPLICATE KEY UPDATE `hash` = "%s", `tag` = "%s"',
-            $version, $hash, $tag, $hash, $tag
+            $version, $hash, $tag, $meta, $hash, $tag
         );
     }
 
@@ -89,6 +94,11 @@ class VersionTable extends AbstractTable
         if (empty($this->query('SHOW COLUMNS FROM `#TABLE1#` LIKE "tag"')->fetch())) {
             $this->query('ALTER TABLE `#TABLE1#` ADD COLUMN `tag` VARCHAR(50) NULL AFTER `hash`');
         }
+
+        //tableVersion 4
+        if (empty($this->query('SHOW COLUMNS FROM `#TABLE1#` LIKE "meta"')->fetch())) {
+            $this->query('ALTER TABLE `#TABLE1#` ADD COLUMN `meta` TEXT NULL AFTER `tag`');
+        }
     }
 
     /**
@@ -97,5 +107,12 @@ class VersionTable extends AbstractTable
     protected function dropTable()
     {
         $this->query('DROP TABLE IF EXISTS `#TABLE1#`;');
+    }
+
+    private function prepareFetch(array $record): array
+    {
+        $record['meta'] = unserialize($record['meta']);
+
+        return $record;
     }
 }
