@@ -29,7 +29,7 @@ class SchemaManager extends ExchangeEntity
     /**
      * @return AbstractSchema[]
      */
-    public function getEnabledSchemas()
+    public function getEnabledSchemas(): array
     {
         $result = [];
         $schemas = $this->getVersionSchemas();

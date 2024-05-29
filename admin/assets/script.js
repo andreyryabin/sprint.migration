@@ -199,8 +199,10 @@ jQuery(document).ready(function ($) {
         $('.sp-builder_title').removeClass('sp-active');
         if (localStorage) {
             let builderName = localStorage.getItem('migrations_open_builder');
-            $('[data-builder="' + builderName + '"]').addClass('sp-active');
-            migrationReset({builder_name: builderName});
+            if (builderName) {
+                $('[data-builder="' + builderName + '"]').addClass('sp-active');
+                migrationReset({builder_name: builderName});
+            }
         }
     })($);
 

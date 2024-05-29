@@ -21,7 +21,6 @@
   "require": {
     "php": ">=7.4",
     "composer/installers": "~1",
-    "ext-json": "*",
-    "ext-iconv": "*"
+    "ext-json": "*"
   }
 }

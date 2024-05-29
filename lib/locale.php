@@ -2,32 +2,29 @@
 
 namespace Sprint\Migration;
 
+use Bitrix\Main\Text\Encoding;
+
 class Locale
 {
-    public static function isWin1251()
+    public static function isWin1251(): bool
     {
-        return (defined('BX_UTF') && BX_UTF === true) ? 0 : 1;
+        return !(defined('BX_UTF') && BX_UTF === true);
     }
 
     public static function convertToWin1251IfNeed($msg)
     {
-        if (self::isWin1251() && self::detectUtf8($msg)) {
-            $msg = iconv('utf-8', 'windows-1251//IGNORE', $msg);
+        if (self::isWin1251() && Encoding::detectUtf8($msg)) {
+            $msg = Encoding::convertEncoding($msg, 'utf-8', 'windows-1251//IGNORE');
         }
         return $msg;
     }
 
     public static function convertToUtf8IfNeed($msg)
     {
-        if (self::isWin1251() && !self::detectUtf8($msg)) {
-            $msg = iconv('windows-1251', 'utf-8//IGNORE', $msg);
+        if (self::isWin1251() && !Encoding::detectUtf8($msg)) {
+            $msg = Encoding::convertEncoding($msg, 'windows-1251', 'utf-8//IGNORE');
         }
         return $msg;
-    }
-
-    protected static function detectUtf8($msg)
-    {
-        return (md5($msg) == md5(iconv('utf-8', 'utf-8', $msg))) ? 1 : 0;
     }
 
     public static function loadLocale($lang, $loc)
@@ -38,7 +35,7 @@ class Locale
         }
     }
 
-    public static function getMessageName($shortName, $lang = false)
+    public static function getMessageName($shortName, $lang = false): string
     {
         $lang = ($lang) ?: self::getLang();
 

@@ -1,1 +1,1 @@
-1) Поиск по выпадающим спискам (автор @SatanaKonst )<br>
+1) Параметр migration_hash_algo <br>

@@ -2,59 +2,63 @@
 
 namespace Sprint\Migration\Tables;
 
-use Bitrix\Main\DB\SqlQueryException;
+use Sprint\Migration\Exceptions\MigrationException;
 
 class VersionTable extends AbstractTable
 {
-    protected $tableVersion = 3;
+    protected int $tableVersion = 4;
 
     /**
-     * @throws SqlQueryException
-     * @return array
+     * @throws MigrationException
      */
-    public function getRecords()
+    public function getRecords(): array
     {
-        return $this->query('SELECT * FROM `#TABLE1#`')->fetchAll();
+        $records = $this->query('SELECT * FROM `#TABLE1#`')->fetchAll();
+
+        return array_map(function ($record) {
+            return $this->prepareFetch($record);
+        }, $records);
     }
 
     /**
-     * @param $versionName
-     *
-     * @throws SqlQueryException
-     * @return array|false
+     * @throws MigrationException
      */
-    public function getRecord($versionName)
+    public function getRecord(string $versionName): array
     {
-        return $this->query(
+        $record = $this->query(
             'SELECT * FROM `#TABLE1#` WHERE `version` = "%s" LIMIT 1',
             $this->forSql($versionName)
         )->fetch();
+
+        return $record ? $this->prepareFetch($record) : [];
     }
 
     /**
-     * @param $meta
-     *
-     * @throws SqlQueryException
+     * @throws MigrationException
      */
-    public function addRecord($meta)
+    public function addRecord(array $record)
     {
-        $version = $this->forSql($meta['version']);
-        $hash = $this->forSql($meta['hash']);
-        $tag = $this->forSql($meta['tag']);
+        $version = $this->forSql($record['version']);
+        $hash = $this->forSql($record['hash']);
+        $tag = $this->forSql($record['tag']);
+
+        $meta = $this->forSql(serialize([
+            'created_by' => $GLOBALS['USER']->GetLogin(),
+            'created_at' => date('Y-m-d H:i:s'),
+        ]));
 
         $this->query(
-            'INSERT INTO `#TABLE1#` (`version`, `hash`, `tag`) VALUES ("%s", "%s", "%s") 
-                    ON DUPLICATE KEY UPDATE `hash` = "%s", `tag` = "%s"',
-            $version, $hash, $tag, $hash, $tag
+            'INSERT INTO `#TABLE1#` (`version`, `hash`, `tag`, `meta`) ' .
+            'VALUES ("%s", "%s", "%s", "%s") ' .
+            'ON DUPLICATE KEY UPDATE `hash` = "%s", `tag` = "%s"',
+            $version, $hash, $tag, $meta, $hash, $tag
         );
     }
 
     /**
-     * @param $meta
-     *
-     * @throws SqlQueryException
+     * @throws MigrationException
      */
-    public function removeRecord($meta)
+    public function removeRecord(array $meta)
     {
         $version = $this->forSql($meta['version']);
 
@@ -62,21 +66,18 @@ class VersionTable extends AbstractTable
     }
 
     /**
-     * @param        $version
-     * @param string $tag
-     *
-     * @throws SqlQueryException
+     * @throws MigrationException
      */
-    public function updateTag($version, $tag = '')
+    public function updateTag(string $versionName, string $tag = '')
     {
-        $version = $this->forSql($version);
+        $versionName = $this->forSql($versionName);
         $tag = $this->forSql($tag);
 
-        $this->query('UPDATE `#TABLE1#` SET `tag` = "%s" WHERE `version` = "%s"', $tag, $version);
+        $this->query('UPDATE `#TABLE1#` SET `tag` = "%s" WHERE `version` = "%s"', $tag, $versionName);
     }
 
     /**
-     * @throws SqlQueryException
+     * @throws MigrationException
      */
     protected function createTable()
     {
@@ -98,13 +99,25 @@ class VersionTable extends AbstractTable
         if (empty($this->query('SHOW COLUMNS FROM `#TABLE1#` LIKE "tag"')->fetch())) {
             $this->query('ALTER TABLE `#TABLE1#` ADD COLUMN `tag` VARCHAR(50) NULL AFTER `hash`');
         }
+
+        //tableVersion 4
+        if (empty($this->query('SHOW COLUMNS FROM `#TABLE1#` LIKE "meta"')->fetch())) {
+            $this->query('ALTER TABLE `#TABLE1#` ADD COLUMN `meta` TEXT NULL AFTER `tag`');
+        }
     }
 
     /**
-     * @throws SqlQueryException
+     * @throws MigrationException
      */
     protected function dropTable()
     {
         $this->query('DROP TABLE IF EXISTS `#TABLE1#`;');
+    }
+
+    private function prepareFetch(array $record): array
+    {
+        $record['meta'] = unserialize($record['meta']);
+
+        return $record;
     }
 }

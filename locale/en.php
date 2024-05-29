@@ -224,7 +224,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_CacheCleaner1"            => "Cache clean",
         "BUILDER_CacheCleaner2"            => "Execute BXClearCache(true)",
         "BUILDER_Configurator"             => "Create configuration",
-        "BUILDER_Archive"                  => "Create archive configuration",
         "BUILDER_Configurator_config_name" => "Name",
         "BUILDER_Configurator_error"       => "Error creating configuration",
         "BUILDER_Configurator_success"     => "Configuration created",
@@ -321,7 +320,7 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "en",
     [
-        "ERR_BUILDER_NOT_FOUND"              => "Builder not found",
+        "ERR_BUILDER_NOT_FOUND"              => "Builder \"#NAME#\" not found",
         "ERR_CANT_CREATE_DIRECTORY"          => "Cant create directory #NAME#",
         "ERR_MSSQL_NOT_SUPPORTED"            => "MSSQL not supported",
         "ERR_JSON_NOT_SUPPORTED"             => "Install php-ext json",

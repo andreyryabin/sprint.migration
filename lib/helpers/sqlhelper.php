@@ -5,7 +5,6 @@ namespace Sprint\Migration\Helpers;
 use Bitrix\Main\Application;
 use Bitrix\Main\DB\Result;
 use Bitrix\Main\Db\SqlQueryException;
-use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Throwable;
@@ -49,56 +48,39 @@ class SqlHelper extends Helper
      * @throws SqlQueryException
      * @return Result
      */
-    public function query($query)
+    public function query($query): Result
     {
         return Application::getConnection()->query($query);
     }
 
-    /**
-     * @param     $value
-     * @param int $maxLength
-     *
-     * @return string
-     */
-    public function forSql($value, $maxLength = 0)
+    public function forSql($value, $maxLength = 0): string
     {
         return Application::getConnection()->getSqlHelper()->forSql($value, $maxLength);
     }
 
     /**
-     * @param $table
-     * @param $name
-     *
      * @throws SqlQueryException
      * @return array|false
      */
-    public function getColumn($table, $name)
+    public function getColumn(string $table, string $name)
     {
-        return $this->query(sprintf('SHOW COLUMNS FROM `%s` WHERE Field="%s"', $table, $name))->Fetch();
+        return $this->query("SHOW COLUMNS FROM `$table` WHERE Field=\"$name\"")->Fetch();
     }
 
     /**
-     * @param string $table
-     * @param string $name
-     * @param string $attributes
-     *
      * @throws SqlQueryException
      */
-    public function addColumn($table, $name, $attributes)
+    public function addColumn(string $table, string $name, string $attributes = '')
     {
         //$attributes = 'int(11) unsigned DEFAULT NULL AFTER `ID`';
 
-        $this->query(sprintf('ALTER TABLE `%s` ADD COLUMN %s %s', $table, $name, $attributes));
+        $this->query("ALTER TABLE `$table` ADD COLUMN $name $attributes");
     }
 
     /**
-     * @param string $table
-     * @param string $name
-     * @param        $attributes
-     *
      * @throws SqlQueryException
      */
-    public function addColumnIfNotExists($table, $name, $attributes)
+    public function addColumnIfNotExists(string $table, string $name, string $attributes = '')
     {
         $column = $this->getColumn($table, $name);
 
@@ -108,39 +90,32 @@ class SqlHelper extends Helper
     }
 
     /**
-     * @param string $table
-     * @param string $name
-     *
      * @throws SqlQueryException
      * @return array|false
      */
-    public function getIndex($table, $name)
+    public function getIndex(string $table, string $name)
     {
-        return $this->query(sprintf('SHOW INDEX FROM `%s` WHERE Key_name="%s"', $table, $name))->Fetch();
+        return $this->query("SHOW INDEX FROM `$table` WHERE Key_name=\"$name\"")->Fetch();
     }
 
     /**
-     * @param string       $table
-     * @param string       $name
      * @param string|array $columns
      *
      * @throws SqlQueryException
      */
-    public function addIndex($table, $name, $columns)
+    public function addIndex(string $table, string $name, $columns)
     {
         $columns = $this->prepareColumnsForIndex($columns);
 
-        $this->query(sprintf('ALTER TABLE `%s` ADD INDEX `%s` (%s)', $table, $name, $columns));
+        $this->query("ALTER TABLE `$table` ADD INDEX `$name` ($columns)");
     }
 
     /**
-     * @param string       $table
-     * @param string       $name
      * @param string|array $columns
      *
      * @throws SqlQueryException
      */
-    public function addIndexIfNotExists($table, $name, $columns)
+    public function addIndexIfNotExists(string $table, string $name, $columns)
     {
         $index = $this->getIndex($table, $name);
 
@@ -149,7 +124,10 @@ class SqlHelper extends Helper
         }
     }
 
-    private function prepareColumnsForIndex($columns)
+    /**
+     * @param string|array $columns
+     */
+    private function prepareColumnsForIndex($columns): string
     {
         $columns = is_array($columns) ? $columns : [$columns];
         $columns = array_map(

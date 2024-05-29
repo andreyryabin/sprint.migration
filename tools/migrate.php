@@ -8,7 +8,7 @@ if (php_sapi_name() != 'cli') {
 
 set_time_limit(0);
 error_reporting(E_ERROR);
-
+ini_set('zend.exception_ignore_args', 0);
 
 defined('NO_AGENT_CHECK') || define('NO_AGENT_CHECK', true);
 defined('NO_KEEP_STATISTIC') || define('NO_KEEP_STATISTIC', "Y");

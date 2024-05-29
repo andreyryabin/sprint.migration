@@ -148,6 +148,12 @@ class FormHelper extends Helper
      */
     public function saveFields($formId, $fields)
     {
+        [$currentFields, $updatedIds] = $this->updateFields($formId, $fields);
+        $this->deleteFieldsNotFound($currentFields, $updatedIds);
+    }
+
+    public function updateFields($formId, $fields): array
+    {
         $currentFields = $this->getFormFields($formId);
         $updatedIds = [];
 
@@ -190,7 +196,11 @@ class FormHelper extends Helper
             $this->saveFieldAnswers($fieldId, $answers);
             $this->saveFieldValidators($formId, $fieldId, $validators);
         }
+        return [$currentFields, $updatedIds];
+    }
 
+    private function deleteFieldsNotFound(array $currentFields, array $updatedIds): void
+    {
         foreach ($currentFields as $currentField) {
             if (!in_array($currentField['ID'], $updatedIds)) {
                 CFormField::Delete($currentField['ID'], 'N');

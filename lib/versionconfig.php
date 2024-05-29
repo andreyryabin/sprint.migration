@@ -296,6 +296,10 @@ class VersionConfig
             $values['version_timestamp_format'] = 'YmdHis';
         }
 
+        if (empty($values['migration_hash_algo'])) {
+            $values['migration_hash_algo'] = 'md5';
+        }
+
         ksort($values);
         return $values;
     }
@@ -319,8 +323,13 @@ class VersionConfig
     }
 
     /**
+<<<<<<< HEAD
      * @param string      $name
      * @param bool|string $default
+=======
+     * @param string $name
+     * @param string $default
+>>>>>>> master
      *
      * @return bool|string
      */
@@ -339,7 +348,7 @@ class VersionConfig
         return $default;
     }
 
-    public function createConfig(string $configName, array $configValues = []): bool
+    public function createConfig(string $configName): bool
     {
         $fileName = 'migrations.' . $configName . '.php';
         if (!$this->getConfigName($fileName)) {
@@ -351,35 +360,13 @@ class VersionConfig
             return false;
         }
 
-        if (isset($this->configList[$configName])) {
-            $curValues = $this->configList[$configName]['values'];
-            $configDefaults = [
-                'migration_dir'   => Module::getRelativeDir($curValues['migration_dir']),
-                'migration_table' => $curValues['migration_table'],
-            ];
-        } else {
-            $configDefaults = [
-                'migration_dir'   => $this->getSiblingDir($configName, true),
-                'migration_table' => 'sprint_migration_' . $configName,
-            ];
-        }
-
-        $configValues = array_merge($configDefaults, $configValues);
+        $configValues = [
+            'migration_dir'   => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
+            'migration_table' => 'sprint_migration_' . $configName,
+        ];
 
         file_put_contents($configPath, '<?php return ' . var_export($configValues, 1) . ';');
         return is_file($configPath);
-    }
-
-    public function createConfigArchive(): bool
-    {
-        return $this->createConfig(
-            VersionEnum::CONFIG_ARCHIVE,
-            [
-                'title'           => Locale::getMessage('CONFIG_archive'),
-                'migration_dir'   => $this->getSiblingDir('archive', true),
-                'migration_table' => 'sprint_migration_archive',
-            ]
-        );
     }
 
     /**
@@ -408,18 +395,6 @@ class VersionConfig
         }
 
         return true;
-    }
-
-    public function getSiblingDir(
-        string $dirname,
-        bool $relative = false,
-        string $configName = VersionEnum::CONFIG_DEFAULT
-    ): string {
-        $def = $this->configList[$configName];
-        $dir = rtrim($def['values']['migration_dir'], '/');
-        $dir = $dir . '.' . trim($dirname, '/') . '/';
-
-        return ($relative) ? Module::getRelativeDir($dir) : $dir;
     }
 
     protected function getSort(string $configName): int

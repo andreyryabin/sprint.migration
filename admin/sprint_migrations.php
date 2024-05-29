@@ -4,6 +4,8 @@ use Bitrix\Main\Loader;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 
+ini_set('zend.exception_ignore_args', 0);
+
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
 /** @global $APPLICATION CMain */

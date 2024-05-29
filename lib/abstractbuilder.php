@@ -182,7 +182,7 @@ abstract class AbstractBuilder extends ExchangeEntity
     {
         return ($this->execStatus == 'restart');
     }
-    public function buildInit()
+    public function buildInitialize()
     {
         $this->initialize();
     }

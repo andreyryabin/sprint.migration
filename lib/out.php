@@ -3,7 +3,6 @@
 namespace Sprint\Migration;
 
 use CAdminMessage;
-use Sprint\Migration\Exceptions\HelperException;
 use Throwable;
 
 class Out
@@ -64,7 +63,7 @@ class Out
         return (php_sapi_name() == 'cli') ? 0 : 1;
     }
 
-    public static function prepareToHtml($msg, $options = [])
+    protected static function prepareToHtml($msg, $options = [])
     {
         if ($options['br']) {
             $msg = nl2br($msg);
@@ -108,12 +107,16 @@ class Out
 
     public static function prepareToConsole($msg, $options = [])
     {
-        foreach (self::$colors as $key => $val) {
-            $msg = str_replace('[' . $key . ']', $val[0], $msg);
-        }
-
         if (!empty($options['tracker_task_url'])) {
             $msg = self::makeTaskUrl($msg, $options['tracker_task_url']);
+        }
+
+        if ($options['max_len']) {
+            $msg = self::truncateText($msg, $options['max_len']) . '[/]';
+        }
+
+        foreach (self::$colors as $key => $val) {
+            $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
 
         return Locale::convertToUtf8IfNeed($msg);
@@ -134,15 +137,14 @@ class Out
         }
     }
 
-    protected static function outToHtml($msg)
+    public static function outToHtml($msg, $options = ['br' => false])
     {
-        $msg = self::prepareToHtml($msg, ['br' => false]);
-        echo '<div class="sp-out">' . $msg . '</div>';
+        echo $msg ? '<div class="sp-out">' . self::prepareToHtml($msg, $options) . '</div>' : '';
     }
 
-    protected static function outToConsole($msg, $rightEol = PHP_EOL)
+    public static function outToConsole($msg, $options = [], $rightEol = PHP_EOL)
     {
-        $msg = self::prepareToConsole($msg);
+        $msg = self::prepareToConsole($msg, $options);
         if (self::$needEol) {
             self::$needEol = false;
             fwrite(STDOUT, PHP_EOL . $msg . $rightEol);
@@ -238,7 +240,7 @@ class Out
                 self::outToConsole(' > ' . $item['value'] . ' (' . $item['title'] . ')');
             }
         }
-        self::outToConsole($field['title'] . ':', '');
+        self::outToConsole($field['title'] . ':', [], '');
     }
 
     protected static function inputSelect($field)
@@ -246,12 +248,12 @@ class Out
         foreach ($field['select'] as $item) {
             self::outToConsole(' > ' . $item['value'] . ' (' . $item['title'] . ')');
         }
-        self::outToConsole($field['title'] . ':', '');
+        self::outToConsole($field['title'] . ':', [], '');
     }
 
     protected static function inputText($field)
     {
-        self::outToConsole($field['title'] . ':', '');
+        self::outToConsole($field['title'] . ':', [], '');
     }
 
     public static function outDiffIf($cond, $arr1, $arr2)
@@ -281,6 +283,15 @@ class Out
             } else {
                 self::out($k . ': [red]' . htmlspecialchars($diff2[$k]) . '[/]');
             }
+        }
+    }
+
+    protected static function truncateText($strText, $intLen)
+    {
+        if (mb_strlen($strText) > $intLen) {
+            return rtrim(mb_substr($strText, 0, $intLen), ".") . "...";
+        } else {
+            return $strText;
         }
     }
 
@@ -426,57 +437,47 @@ class Out
         }
     }
 
-    public static function outException(Throwable $exception)
+    public static function outException(?Throwable $exception)
     {
-        if ($exception instanceof HelperException) {
-            self::outHelperException($exception);
+        if (!$exception) {
             return;
         }
 
-        self::outWarning(self::getExceptionAsString($exception));
-        self::outExceptionTrace($exception->getTrace());
-    }
+        $trace = $exception->getTrace();
+        $offset = self::startMigrationOffset($trace);
 
-    protected static function getExceptionAsString(Throwable $exception): string
-    {
-        return sprintf(
+        $file = $exception->getFile();
+        $line = $exception->getLine();
+
+        if ($offset >= 0) {
+            $trace = array_slice($trace, 0, $offset);
+            if (count($trace) > 1) {
+                $first = $trace[0];
+                $file = $first['file'];
+                $line = $first['line'];
+            }
+        }
+
+        self::outWarning(
             "[%s] %s (%s) in %s:%d",
             get_class($exception),
             $exception->getMessage(),
             $exception->getCode(),
-            $exception->getFile(),
-            $exception->getLine()
-        );
-    }
+            $file,
+            $line
 
-    protected static function outHelperException(Throwable $exception)
-    {
-        $trace = array_filter($exception->getTrace(), function ($item) {
-            $skipClass = in_array($item['class'], [
-                VersionManager::class,
-                Console::class,
-            ]);
-
-            $skipMethod = in_array($item['function'], [
-                'up',
-                'down',
-            ]);
-            return ($item['class'] && $item['function'] && !$skipClass && !$skipMethod);
-        });
-
-        $last = end($trace);
-
-        self::outWarning(
-            sprintf(
-                "[%s] %s (%s) in %s:%d",
-                get_class($exception),
-                $exception->getMessage(),
-                $exception->getCode(),
-                $last['file'],
-                $last['line']
-            )
         );
         self::outExceptionTrace($trace);
+    }
+
+    protected static function startMigrationOffset(array $trace)
+    {
+        foreach ($trace as $index => $item) {
+            if ($item['class'] == VersionManager::class && $item['function'] == 'startMigration') {
+                return $index;
+            }
+        }
+        return -1;
     }
 
     protected static function outExceptionTrace(array $trace)
@@ -491,15 +492,21 @@ class Out
                 $name = '[b]' . $err['function'] . '[/]';
             }
 
+            $err['args'] = (array)($err['args'] ?? []);
             $cntArgs = count($err['args']);
+
+            if ($cntArgs == 0) {
+                self::out('[b]#' . $index . '[/] ' . $name . '();');
+                continue;
+            }
 
             self::out('[b]#' . $index . '[/] ' . $name . '(');
             foreach ($err['args'] as $argi => $argval) {
                 $del = $argi < $cntArgs - 1 ? ', ' : '';
+
                 $argval = var_export($argval, 1);
-                if ($isBrowser) {
-                    $argval = htmlspecialchars($argval);
-                }
+                $argval = $isBrowser ? htmlspecialchars($argval) : $argval;
+
                 self::out('[tab]' . $argval . $del . '[/]');
             }
             self::out(');');

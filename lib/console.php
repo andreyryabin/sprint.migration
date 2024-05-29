@@ -7,25 +7,22 @@ use CGroup;
 use CUser;
 use Exception;
 use Sprint\Migration\Enum\VersionEnum;
+use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\ConsoleException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Throwable;
 
 class Console
 {
-    private $script;
-    private $command;
-    private $arguments = [];
-    private $versionConfig;
-    private $versionManager;
-    private $argoptions = [];
+    private string         $script;
+    private string         $command;
+    private array          $arguments  = [];
+    private VersionConfig  $versionConfig;
+    private VersionManager $versionManager;
+    private array          $argoptions = [];
 
     /**
-     * Console constructor.
-     *
-     * @param $args
-     *
-     * @throws Exception
+     * @throws MigrationException
      */
     public function __construct($args)
     {
@@ -49,6 +46,7 @@ class Console
 
     /**
      * @throws MigrationException
+     * @throws ConsoleException
      */
     public function executeConsoleCommand()
     {
@@ -107,7 +105,7 @@ class Console
 
     /**
      * @noinspection PhpUnused
-     * @throws MigrationException
+     * @throws BuilderException
      */
     public function commandRun()
     {
@@ -115,7 +113,7 @@ class Console
     }
 
     /**
-     * @throws MigrationException
+     * @throws BuilderException
      */
     public function commandCreate()
     {
@@ -141,6 +139,7 @@ class Console
     /**
      * @noinspection PhpUnused
      * @throws MigrationException
+     * @throws ConsoleException
      */
     public function commandMark()
     {
@@ -218,7 +217,6 @@ class Console
         $grid->setHeaders([
             'Version',
             'Status',
-            'Tag',
             'Description',
         ]);
 
@@ -229,17 +227,28 @@ class Console
             if ($item['older']) {
                 $item['version'] .= ' (' . Locale::getMessage('OLDER_LABEL') . ')';
             }
-            $grid->addRow([
-                $item['version'],
-                Locale::getMessage('META_' . strtoupper($item['status'])),
-                $item['tag'],
-                Out::prepareToConsole(
-                    $item['description'],
-                    [
-                        'tracker_task_url' => $this->versionConfig->getVal('tracker_task_url'),
-                    ]
-                ),
-            ]);
+            if ($item['tag']) {
+                $item['version'] .= ' (' . $item['tag'] . ')';
+            }
+
+            $status = Locale::getMessage('META_' . $item['status']);
+            if (
+                $item['status'] == VersionEnum::STATUS_INSTALLED
+                || $item['status'] == VersionEnum::STATUS_UNKNOWN
+            ) {
+                $status .= $item['meta']['created_by'] ? ' (' . $item['meta']['created_by'] . ')' : '';
+                $status .= $item['meta']['created_at'] ? ' ' . $item['meta']['created_at'] : '';
+            }
+
+            $descr = Out::prepareToConsole(
+                $item['description'],
+                [
+                    'max_len'          => 50,
+                    'tracker_task_url' => $this->versionConfig->getVal('tracker_task_url'),
+                ]
+            );
+
+            $grid->addRow([$item['version'], $status, $descr]);
 
             $stval = $item['status'];
             $summary[$stval]++;
@@ -258,6 +267,7 @@ class Console
     /**
      * @noinspection PhpUnused
      * @throws MigrationException
+     * @throws ConsoleException
      */
     public function commandUp()
     {
@@ -285,6 +295,7 @@ class Console
     /**
      * @noinspection PhpUnused
      * @throws MigrationException
+     * @throws ConsoleException
      */
     public function commandDown()
     {
@@ -311,7 +322,7 @@ class Console
 
     /**
      * @noinspection PhpUnused
-     * @throws MigrationException
+     * @throws ConsoleException
      */
     public function commandRedo()
     {
@@ -326,9 +337,6 @@ class Console
         }
     }
 
-    /**
-     *
-     */
     public function commandInfo()
     {
         global $USER;
@@ -380,6 +388,9 @@ class Console
         }
     }
 
+    /**
+     * @noinspection PhpUnused
+     */
     public function commandConfig()
     {
         $configValues = $this->versionConfig->getCurrent('values');
@@ -419,7 +430,9 @@ class Console
 
     /**
      * @noinspection PhpUnused
-     * @throws MigrationException
+     */
+    /**
+     * @throws BuilderException
      */
     public function commandAdd()
     {
@@ -429,6 +442,7 @@ class Console
     /**
      * @noinspection PhpUnused
      * @throws MigrationException
+     * @throws ConsoleException
      */
     public function commandMigrate()
     {
@@ -445,6 +459,7 @@ class Console
 
     /**
      * @noinspection PhpUnused
+     * @throws ConsoleException
      * @throws MigrationException
      */
     public function commandMi()
@@ -454,7 +469,8 @@ class Console
     }
 
     /**
-     * @throws MigrationException
+     * @noinspection PhpUnused
+     * @throws ConsoleException
      */
     public function commandExecute()
     {
@@ -476,33 +492,23 @@ class Console
     /**
      * @noinspection PhpUnused
      * @throws Exception
-     * @return bool
      */
     public function commandSchema()
     {
         $action = $this->getArg(0);
+        $select = $this->getArg(1);
 
         $schemaManager = new SchemaManager($this->versionConfig);
         $enabledSchemas = $schemaManager->getEnabledSchemas();
 
-        $selectValues = [];
-        foreach ($enabledSchemas as $schema) {
-            $selectValues[] = [
-                'value' => $schema->getName(),
-                'title' => $schema->getTitle(),
-            ];
-        }
-
         if (empty($action)) {
             foreach ($enabledSchemas as $schema) {
-                $schema->outTitle(true);
+                $schema->outTitle();
                 $schema->outDescription();
             }
-
-            return true;
+            return;
         }
 
-        $select = $this->getArg(1);
         if (!empty($select)) {
             $select = explode(' ', $select);
             $select = array_filter($select, function ($a) {
@@ -511,8 +517,13 @@ class Console
         } else {
             $select = Out::input([
                 'title'    => 'select schemas',
-                'select'   => $selectValues,
                 'multiple' => 1,
+                'select'   => array_map(function (AbstractSchema $schema) {
+                    return [
+                        'value' => $schema->getName(),
+                        'title' => $schema->getTitle(),
+                    ];
+                }, $enabledSchemas),
             ]);
         }
 
@@ -524,10 +535,8 @@ class Console
 
             try {
                 if ($action == 'diff') {
-                    $schemaManager->setTestMode(1);
-                    $schemaManager->import(['name' => $select]);
+                    $schemaManager->import(['name' => $select], 1);
                 } elseif ($action == 'import') {
-                    $schemaManager->setTestMode(0);
                     $schemaManager->import(['name' => $select]);
                 } elseif ($action == 'export') {
                     $schemaManager->export(['name' => $select]);
@@ -539,16 +548,13 @@ class Console
                 Out::outException($e);
             }
         } while ($restart == 1);
-
-        return true;
     }
 
     /**
-     * @param $filter
-     *
      * @throws MigrationException
+     * @throws ConsoleException
      */
-    protected function executeAll($filter)
+    protected function executeAll(array $filter)
     {
         $success = 0;
         $fails = 0;
@@ -581,12 +587,9 @@ class Console
     }
 
     /**
-     * @param        $version
-     * @param string $action
-     *
-     * @throws MigrationException
+     * @throws ConsoleException
      */
-    protected function executeOnce($version, $action)
+    protected function executeOnce(string $version, string $action)
     {
         $ok = $this->executeVersion($version, $action);
 
@@ -597,9 +600,9 @@ class Console
         }
     }
 
-    protected function executeVersion($version, $action)
+    protected function executeVersion(string $version, string $action): bool
     {
-        $tag = $this->getArg('--add-tag=', '');
+        $tag = $this->getArg('--add-tag=');
 
         $params = [];
 
@@ -635,21 +638,13 @@ class Console
     }
 
     /**
-     * @param       $from
-     * @param array $postvars
-     *
-     * @throws MigrationException
+     * @throws BuilderException
      */
-    protected function executeBuilder($from, $postvars = [])
+    protected function executeBuilder(string $from, array $postvars = [])
     {
         do {
             $builder = $this->versionManager->createBuilder($from, $postvars);
 
-            if (!$builder) {
-                throw new ConsoleException(
-                    Locale::getMessage('ERR_BUILDER_NOT_FOUND')
-                );
-            }
             $builder->renderConsole();
 
             $builder->buildExecute();
@@ -661,7 +656,7 @@ class Console
         } while ($builder->isRestart() || $builder->isRebuild());
     }
 
-    protected function initializeArgs($args)
+    protected function initializeArgs(array $args): string
     {
         foreach ($args as $val) {
             $this->addArg($val);
@@ -703,9 +698,9 @@ class Console
     protected function getArg($name, $default = '')
     {
         if (is_numeric($name)) {
-            return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
+            return $this->arguments[$name] ?? $default;
         } else {
-            return isset($this->argoptions[$name]) ? $this->argoptions[$name] : $default;
+            return $this->argoptions[$name] ?? $default;
         }
     }
 
@@ -717,7 +712,7 @@ class Console
         }
     }
 
-    private function disableHandler($moduleId, $eventType)
+    private function disableHandler(string $moduleId, string $eventType)
     {
         $eventManager = EventManager::getInstance();
         $handlers = $eventManager->findEventHandlers($moduleId, $eventType);
