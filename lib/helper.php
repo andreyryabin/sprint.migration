@@ -170,7 +170,7 @@ class Helper
      */
     protected function checkRequiredKeys($fields, $reqKeys = [])
     {
-        if (is_string($fields)){
+        if (is_string($fields)) {
             throw new HelperException('Old format for checkRequiredKeys');
         }
 
@@ -188,14 +188,24 @@ class Helper
         }
     }
 
-    /**
-     * @param CDBResult $dbres
-     * @param bool      $indexKey
-     * @param bool      $valueKey
-     *
-     * @return array
-     */
-    protected function fetchAll(CDBResult $dbres, $indexKey = false, $valueKey = false)
+    protected function unsetKeys(array $keys, array $item): array
+    {
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $item)) {
+                unset($item[$key]);
+            }
+        }
+        return $item;
+    }
+
+    protected function unsetKeysFromCollection(array $keys, array $collection): array
+    {
+        return array_map(function ($item) use ($keys) {
+            return $this->unsetKeys($keys, $item);
+        }, $collection);
+    }
+
+    protected function fetchAll(CDBResult $dbres, string $indexKey = '', string $valueKey = ''): array
     {
         $res = [];
 

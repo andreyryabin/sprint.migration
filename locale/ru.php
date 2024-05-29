@@ -125,6 +125,9 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_UserGroupExport1"           => "Создать миграцию для групп пользователей",
         "BUILDER_UserGroupExport2"           => "Задайте символьный идентификатор группы (STRING_ID), чтобы увидеть её в списке",
         "BUILDER_UserGroupExport_user_group" => "Выберите группы",
+        "BUILDER_SelectAll"       => "Выбрать все",
+        "BUILDER_SelectNone"      => "Не выбирать ничего",
+        "BUILDER_SelectSome"      => "Выбрать несколько",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -158,9 +161,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_IblockElementsExport_SelectSomeXmlId" => "Указать XML_ID элементов",
         "BUILDER_IblockElementsExport_FilterListXmlId" => "Укажите XML_ID элементов через пробел",
         "BUILDER_IblockElementsExport_UpdateMode"      => "Настройка переноса",
-        "BUILDER_IblockElementsExport_SelectAll"       => "Выбрать все",
-        "BUILDER_IblockElementsExport_SelectNone"      => "Не выбирать ничего",
-        "BUILDER_IblockElementsExport_SelectSome"      => "Выбрать несколько",
         "BUILDER_IblockElementsExport_NotUpdate"       => "Простое добавление элементов",
         "BUILDER_IblockElementsExport_UpdateByCode"    => "Добавить или обновить элементы с такими же CODE",
         "BUILDER_IblockElementsExport_UpdateByXmlId"   => "Добавить или обновить элементы с такими же XML_ID",
@@ -218,6 +218,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_FormExport_Form"          => "Форму",
         "BUILDER_FormExport_Fields"        => "Поля формы",
         "BUILDER_FormExport_Statuses"      => "Статусы",
+        "BUILDER_FormExport_SelectFields"  => "Выберите поля формы",
         "BUILDER_OptionExport1"            => "Создать миграцию для настроек модулей",
         "BUILDER_OptionExport_module_id"   => "Выберите модули",
         "BUILDER_CacheCleaner1"            => "Очистка кеша",

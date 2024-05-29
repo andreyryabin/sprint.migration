@@ -440,13 +440,8 @@ trait IblockPropertyTrait
     /**
      * Получает свойства инфоблока
      * Данные подготовлены для экспорта в миграцию или схему
-     *
-     * @param       $iblockId
-     * @param array $filter
-     *
-     * @return array
      */
-    public function exportProperties($iblockId, $filter = [])
+    public function exportProperties(int $iblockId, array $filter = []): array
     {
         $exports = [];
         $items = $this->getProperties($iblockId, $filter);
@@ -465,15 +460,7 @@ trait IblockPropertyTrait
         return $exports;
     }
 
-    /**
-     * Получает свойства инфоблока
-     *
-     * @param       $iblockId
-     * @param array $filter
-     *
-     * @return array
-     */
-    public function getProperties($iblockId, $filter = [])
+    public function getProperties(int $iblockId, array $filter = []): array
     {
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';

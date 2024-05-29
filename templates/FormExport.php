@@ -9,7 +9,7 @@
  * @var $form
  * @var $statuses
  * @var $fields
- * @var $validators
+ * @var $fieldsMode
  * @formatter:off
  */
 
@@ -32,8 +32,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function up()
     {
-        $helper = $this->getHelperManager();
-        $formHelper = $helper->Form();
+        $formHelper = $this->getHelperManager()->Form();
 <?php if (!empty($formExport)): ?>
         $formId = $formHelper->saveForm(<?= var_export($form, 1)?>);
 <?php else:?>
@@ -42,8 +41,13 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 <?php if (!empty($statuses)): ?>
         $formHelper->saveStatuses($formId, <?= var_export($statuses, 1)?>);
 <?php endif;?>
-<?php if (!empty($fields)): ?>
+<?php if (!empty($fields) && $fieldsMode == 'all'): ?>
         $formHelper->saveFields($formId, <?= var_export($fields, 1)?>);
+<?php endif;?>
+<?php if (!empty($fields) && $fieldsMode == 'some'): ?>
+    <?php foreach ($fields as $field) { ?>
+        $formHelper->saveField($formId, <?= var_export($field, 1)?>);
+    <?php } ?>
 <?php endif;?>
     }
 
