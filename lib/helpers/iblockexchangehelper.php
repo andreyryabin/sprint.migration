@@ -52,7 +52,7 @@ class IblockExchangeHelper extends IblockHelper
      *
      * @return array
      */
-    public function getIblockPropertiesStructure($iblockId)
+    public function getIblockPropertiesStructure($iblockId): array
     {
         $props = $this->exportProperties($iblockId);
 

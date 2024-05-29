@@ -39,13 +39,9 @@ class FormBuilder extends VersionBuilder
             'select' => $this->getFormsSelect(),
         ]);
 
-        $form = $helper->Form()->getFormById($formId);
+        $form = $helper->Form()->exportFormById($formId);
 
-        unset($form['ID']);
-        unset($form['TIMESTAMP_X']);
-        unset($form['VARNAME']);
-
-        $what = $this->addFieldAndReturn('what_else', [
+        $what = $this->addFieldAndReturn('what', [
             'title'    => Locale::getMessage('BUILDER_FormExport_What'),
             'width'    => 250,
             'multiple' => 1,
@@ -56,15 +52,55 @@ class FormBuilder extends VersionBuilder
                     'value' => 'form',
                 ],
                 [
-                    'title' => Locale::getMessage('BUILDER_FormExport_Fields'),
-                    'value' => 'fields',
-                ],
-                [
                     'title' => Locale::getMessage('BUILDER_FormExport_Statuses'),
                     'value' => 'statuses',
                 ],
+                [
+                    'title' => Locale::getMessage('BUILDER_FormExport_Fields'),
+                    'value' => 'fields',
+                ],
             ],
         ]);
+
+        $fields = [];
+        $fieldsMode = '';
+
+        if (in_array('fields', $what)) {
+            $fieldsMode = $this->addFieldAndReturn(
+                'fields_mode',
+                [
+                    'title'  => Locale::getMessage('BUILDER_FormExport_Fields'),
+                    'width'  => 250,
+                    'select' => [
+                        [
+                            'title' => Locale::getMessage('BUILDER_SelectAll'),
+                            'value' => 'all',
+                        ],
+                        [
+                            'title' => Locale::getMessage('BUILDER_SelectSome'),
+                            'value' => 'some',
+                        ],
+                    ],
+                ]
+            );
+
+            if ($fieldsMode == 'some') {
+                $fieldsSomeSids = $this->addFieldAndReturn(
+                    'fields_some',
+                    [
+                        'title'    => Locale::getMessage('BUILDER_FormExport_Fields'),
+                        'width'    => 250,
+                        'multiple' => 1,
+                        'value'    => [],
+                        'select'   => $this->getFieldsSelect($formId),
+                    ]
+                );
+                $fields = $helper->Form()->exportFormFields($formId, $fieldsSomeSids);
+            }
+            if ($fieldsMode == 'all') {
+                $fields = $helper->Form()->exportFormFields($formId);
+            }
+        }
 
         $formExport = false;
         if (in_array('form', $what)) {
@@ -73,56 +109,14 @@ class FormBuilder extends VersionBuilder
 
         $statuses = [];
         if (in_array('statuses', $what)) {
-            $statuses = $helper->Form()->getFormStatuses($formId);
-            foreach ($statuses as $index => $status) {
-                unset($status['ID']);
-                unset($status['TIMESTAMP_X']);
-                unset($status['FORM_ID']);
-                unset($status['RESULTS']);
-                $statuses[$index] = $status;
-            }
-        }
-
-        $fields = [];
-        if (in_array('fields', $what)) {
-            $fields = $helper->Form()->getFormFields($formId);
-            foreach ($fields as $index => $field) {
-                unset($field['ID']);
-                unset($field['TIMESTAMP_X']);
-                unset($field['FORM_ID']);
-                unset($field['VARNAME']);
-
-                if (is_array($field['ANSWERS'])) {
-                    foreach ($field['ANSWERS'] as $answerIndex => $answer) {
-                        unset($answer['ID']);
-                        unset($answer['FIELD_ID']);
-                        unset($answer['QUESTION_ID']);
-                        unset($answer['TIMESTAMP_X']);
-
-                        $field['ANSWERS'][$answerIndex] = $answer;
-                    }
-                }
-
-                if (is_array($field['VALIDATORS'])) {
-                    foreach ($field['VALIDATORS'] as $validatorIndex => $validator) {
-                        unset($validator['ID']);
-                        unset($validator['FORM_ID']);
-                        unset($validator['FIELD_ID']);
-                        unset($validator['TIMESTAMP_X']);
-                        unset($validator['PARAMS_FULL']);
-
-                        $field['VALIDATORS'][$validatorIndex] = $validator;
-                    }
-                }
-
-                $fields[$index] = $field;
-            }
+            $statuses = $helper->Form()->exportFormStatuses($formId);
         }
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/FormExport.php',
             [
                 'formExport' => $formExport,
+                'fieldsMode' => $fieldsMode,
                 'form'       => $form,
                 'statuses'   => $statuses,
                 'fields'     => $fields,
@@ -141,5 +135,18 @@ class FormBuilder extends VersionBuilder
         }, $items);
 
         return $this->createSelect($items, 'ID', 'NAME');
+    }
+
+    private function getFieldsSelect(int $formId): array
+    {
+        $helper = $this->getHelperManager();
+        $items = $helper->Form()->getFormFields($formId);
+
+        $items = array_map(function ($item) {
+            $item['TITLE'] = '[' . $item['SID'] . '] ' . $item['TITLE'];
+            return $item;
+        }, $items);
+
+        return $this->createSelect($items, 'SID', 'TITLE');
     }
 }

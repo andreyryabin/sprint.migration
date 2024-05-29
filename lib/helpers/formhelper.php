@@ -38,6 +38,18 @@ class FormHelper extends Helper
     /**
      * @throws HelperException
      */
+    public function exportFormById(int $formId): array
+    {
+        return $this->unsetKeys([
+            'ID',
+            'TIMESTAMP_X',
+            'VARNAME',
+        ], $this->getFormById($formId));
+    }
+
+    /**
+     * @throws HelperException
+     */
     public function getFormById(int $formId): array
     {
         $form = CForm::GetByID($formId)->Fetch();
@@ -153,23 +165,25 @@ class FormHelper extends Helper
      */
     public function updateFields(int $formId, array $fields, bool $deleteOldFields = false): array
     {
-        $dbres = CFormField::GetList($formId, 'ALL');
-        $currentIds = $this->fetchAll($dbres, 'SID', 'ID');
+        $currentIdsBySid = [];
+        foreach ($this->getFormFields($formId) as $currentField) {
+            $currentIdsBySid[$currentField['SID']] = $currentField['ID'];
+        }
 
         $updatedIds = [];
 
         foreach ($fields as $field) {
             $this->checkRequiredKeys($field, ['SID']);
 
-            $fieldId = $currentIds[$field['SID']] ?? 0;
+            $fieldId = $currentIdsBySid[$field['SID']] ?? 0;
 
             $updatedIds[] = $this->replaceField($formId, $fieldId, $field);
         }
 
         if ($deleteOldFields) {
-            foreach ($currentIds as $oldId) {
-                if (!in_array($oldId, $updatedIds)) {
-                    $this->deleteFormField($oldId);
+            foreach ($currentIdsBySid as $currentId) {
+                if (!in_array($currentId, $updatedIds)) {
+                    $this->deleteFormField($currentId);
                 }
             }
         }
@@ -257,15 +271,62 @@ class FormHelper extends Helper
         return $this->fetchAll($dbres);
     }
 
-    public function getFormFields(int $formId): array
+    public function exportFormStatuses(int $formId): array
+    {
+        return $this->unsetKeysFromCollection([
+            'ID',
+            'TIMESTAMP_X',
+            'FORM_ID',
+            'RESULTS',
+        ], $this->getFormStatuses($formId));
+    }
+
+    public function getFormFields(int $formId, array $fieldSids = []): array
     {
         $dbres = CFormField::GetList($formId, 'ALL');
         $fields = $this->fetchAll($dbres);
 
-        foreach ($fields as $index => $field) {
-            $fields[$index]['ANSWERS'] = $this->getFieldAnswers($field['ID']);
-            $fields[$index]['VALIDATORS'] = $this->getFieldValidators($field['ID']);
+        if (!empty($fieldSids)) {
+            $fields = array_filter($fields, function ($item) use ($fieldSids) {
+                return in_array($item['SID'], $fieldSids);
+            });
+            return array_values($fields);
         }
+
+        return $fields;
+    }
+
+    public function exportFormFields(int $formId, array $fieldSids = []): array
+    {
+        $fields = $this->getFormFields($formId, $fieldSids);
+        foreach ($fields as $index => $field) {
+            $fieldId = $field['ID'];
+
+            $field = $this->unsetKeys([
+                'ID',
+                'TIMESTAMP_X',
+                'FORM_ID',
+                'VARNAME',
+            ], $field);
+
+            $field['ANSWERS'] = $this->unsetKeysFromCollection([
+                'ID',
+                'FIELD_ID',
+                'QUESTION_ID',
+                'TIMESTAMP_X',
+            ], $this->getFieldAnswers($fieldId));
+
+            $field['VALIDATORS'] = $this->unsetKeysFromCollection([
+                'ID',
+                'FORM_ID',
+                'FIELD_ID',
+                'TIMESTAMP_X',
+                'PARAMS_FULL',
+            ], $this->getFieldValidators($fieldId));
+
+            $fields[$index] = $field;
+        }
+
         return $fields;
     }
 

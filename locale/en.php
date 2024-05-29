@@ -126,6 +126,9 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_UserGroupExport2"           => "Set group code (STRING_ID), to see it in the list",
         "BUILDER_UserGroupExport_user_group" => "Select user groups",
         "BUILDER_CommonSettings"             => "Common settings",
+        "BUILDER_SelectAll"                  => "Select all",
+        "BUILDER_SelectNone"                 => "Select none",
+        "BUILDER_SelectSome"                 => "Select some",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -159,9 +162,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_IblockElementsExport_SelectSomeXmlId" => "Enter elements XML_ID",
         "BUILDER_IblockElementsExport_FilterListXmlId" => "Enter elements XML_ID by space",
         "BUILDER_IblockElementsExport_UpdateMode"      => "Export settings",
-        "BUILDER_IblockElementsExport_SelectAll"       => "Select all",
-        "BUILDER_IblockElementsExport_SelectNone"      => "Select none",
-        "BUILDER_IblockElementsExport_SelectSome"      => "Select some",
         "BUILDER_IblockElementsExport_NotUpdate"       => "Only add elements",
         "BUILDER_IblockElementsExport_UpdateByCode"    => "Update existing elements by CODE",
         "BUILDER_IblockElementsExport_UpdateByXmlId"   => "Update existing elements by XML_ID",
@@ -217,8 +217,9 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_FormExport_FormId"        => "Select web form",
         "BUILDER_FormExport_What"          => "Select export items",
         "BUILDER_FormExport_Form"          => "Form",
-        "BUILDER_FormExport_Fields"        => "Form questionsn",
+        "BUILDER_FormExport_Fields"        => "Form fields",
         "BUILDER_FormExport_Statuses"      => "Form statuses",
+        "BUILDER_FormExport_SelectFields"  => "Select form fields",
         "BUILDER_OptionExport1"            => "Create migration for module options",
         "BUILDER_OptionExport_module_id"   => "Select modules",
         "BUILDER_CacheCleaner1"            => "Cache clean",
