@@ -41,11 +41,16 @@ class VersionTable extends AbstractTable
         $version = $this->forSql($record['version']);
         $hash = $this->forSql($record['hash']);
         $tag = $this->forSql($record['tag']);
-        $meta = $this->forSql(serialize($record['meta']));
+
+        $meta = $this->forSql(serialize([
+            'created_by' => $GLOBALS['USER']->GetLogin(),
+            'created_at' => date('Y-m-d H:i:s'),
+        ]));
 
         $this->query(
-            'INSERT INTO `#TABLE1#` (`version`, `hash`, `tag`, `meta`) VALUES ("%s", "%s", "%s", "%s") 
-                    ON DUPLICATE KEY UPDATE `hash` = "%s", `tag` = "%s"',
+            'INSERT INTO `#TABLE1#` (`version`, `hash`, `tag`, `meta`) ' .
+            'VALUES ("%s", "%s", "%s", "%s") ' .
+            'ON DUPLICATE KEY UPDATE `hash` = "%s", `tag` = "%s"',
             $version, $hash, $tag, $meta, $hash, $tag
         );
     }

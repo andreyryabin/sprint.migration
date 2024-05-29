@@ -98,11 +98,6 @@ class VersionManager
 
                 $meta['tag'] = $tag;
 
-                $meta['meta'] = [
-                    'created_by' => $GLOBALS['USER']->GetLogin(),
-                    'created_at' => date('Y-m-d H:i:s'),
-                ];
-
                 $this->getVersionTable()->addRecord($meta);
             } else {
                 $this->checkResultAfterStart($versionInstance->down());
