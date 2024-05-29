@@ -8,6 +8,7 @@
 
 .sp-col-scroll {
     padding-right: 0;
+    padding-bottom: 0;
 }
 
 .sp-col.sp-col_builders {
@@ -28,6 +29,7 @@
 .sp-scroll {
     overflow: auto;
     max-height: 425px;
+    padding-bottom: 10px;
 }
 
 
