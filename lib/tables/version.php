@@ -101,6 +101,7 @@ class VersionTable extends AbstractTable
         }
 
         //tableVersion 4
+        $this->query('ALTER TABLE `#TABLE1#` MODIFY `hash` VARCHAR(255)');
         if (empty($this->query('SHOW COLUMNS FROM `#TABLE1#` LIKE "meta"')->fetch())) {
             $this->query('ALTER TABLE `#TABLE1#` ADD COLUMN `meta` TEXT NULL AFTER `tag`');
         }
