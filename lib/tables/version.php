@@ -3,9 +3,12 @@
 namespace Sprint\Migration\Tables;
 
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Traits\CurrentUserTrait;
 
 class VersionTable extends AbstractTable
 {
+    use CurrentUserTrait;
+
     protected int $tableVersion = 4;
 
     /**
@@ -43,7 +46,7 @@ class VersionTable extends AbstractTable
         $tag = $this->forSql($record['tag']);
 
         $meta = $this->forSql(serialize([
-            'created_by' => $GLOBALS['USER']->GetLogin(),
+            'created_by' => $this->getCurrentUserLogin(),
             'created_at' => date('Y-m-d H:i:s'),
         ]));
 

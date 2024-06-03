@@ -20,176 +20,186 @@ $listView = (
     || ($_POST["step_code"] == "migration_view_installed")
 );
 
-if ($listView && check_bitrix_sessid('send_sessid')) {
-    /** @var $versionConfig VersionConfig */
-    $versionManager = new VersionManager($versionConfig);
+if (!($listView && check_bitrix_sessid('send_sessid'))) {
+    return;
+}
 
-    $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
-    $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
+/** @var $versionConfig VersionConfig */
+$versionManager = new VersionManager($versionConfig);
 
-    if ($_POST["step_code"] == "migration_view_new") {
-        $versions = $versionManager->getVersions([
-            'status' => VersionEnum::STATUS_NEW,
-            'search' => $search,
-        ]);
-    } elseif ($_POST["step_code"] == "migration_view_installed") {
-        $versions = $versionManager->getVersions([
-            'status' => VersionEnum::STATUS_INSTALLED,
-            'search' => $search,
-        ]);
-    } elseif ($_POST["step_code"] == "migration_view_tag") {
-        $versions = $versionManager->getVersions([
-            'tag' => $search,
-        ]);
-    } elseif ($_POST["step_code"] == "migration_view_modified") {
-        $versions = $versionManager->getVersions([
-            'search'   => $search,
-            'modified' => 1,
-        ]);
-    } elseif ($_POST["step_code"] == "migration_view_older") {
-        $versions = $versionManager->getVersions([
-            'search' => $search,
-            'older'  => 1,
-        ]);
-    } else {
-        $versions = $versionManager->getVersions([
-            'search' => $search,
-        ]);
+$search = !empty($_POST['search']) ? trim($_POST['search']) : '';
+$search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
+
+if ($_POST["step_code"] == "migration_view_new") {
+    $versions = $versionManager->getVersions([
+        'status' => VersionEnum::STATUS_NEW,
+        'search' => $search,
+    ]);
+} elseif ($_POST["step_code"] == "migration_view_installed") {
+    $versions = $versionManager->getVersions([
+        'status' => VersionEnum::STATUS_INSTALLED,
+        'search' => $search,
+    ]);
+} elseif ($_POST["step_code"] == "migration_view_tag") {
+    $versions = $versionManager->getVersions([
+        'tag' => $search,
+    ]);
+} elseif ($_POST["step_code"] == "migration_view_modified") {
+    $versions = $versionManager->getVersions([
+        'search'   => $search,
+        'modified' => 1,
+    ]);
+} elseif ($_POST["step_code"] == "migration_view_older") {
+    $versions = $versionManager->getVersions([
+        'search' => $search,
+        'older'  => 1,
+    ]);
+} else {
+    $versions = $versionManager->getVersions([
+        'search' => $search,
+    ]);
+}
+
+$webdir = $versionManager->getWebDir();
+
+$getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
+    $menu = [];
+
+    if ($item['status'] == VersionEnum::STATUS_NEW) {
+        $menu[] = [
+            'TEXT'    => Locale::getMessage('UP'),
+            'ONCLICK' => 'migrationMigrationUp(\'' . $item['version'] . '\')',
+        ];
+        $menu[] = [
+            'TEXT'    => Locale::getMessage('MARK_NEW_AS_INSTALLED'),
+            'ONCLICK' => 'migrationMigrationMark(\'' . $item['version'] . '\',\'' . VersionEnum::STATUS_INSTALLED . '\')',
+        ];
+    }
+    if ($item['status'] == VersionEnum::STATUS_INSTALLED) {
+        $menu[] = [
+            'TEXT'    => Locale::getMessage('DOWN'),
+            'ONCLICK' => 'migrationMigrationDown(\'' . $item['version'] . '\')',
+        ];
+        $menu[] = [
+            'TEXT'    => Locale::getMessage('SETTAG'),
+            'ONCLICK' => 'migrationMigrationSetTag(\'' . $item['version'] . '\',\'' . $item['tag'] . '\')',
+        ];
+        $menu[] = [
+            'TEXT'    => Locale::getMessage('MARK_INSTALLED_AS_NEW'),
+            'ONCLICK' => 'migrationMigrationMark(\'' . $item['version'] . '\',\'' . VersionEnum::STATUS_NEW . '\')',
+        ];
     }
 
-    $webdir = $versionManager->getWebDir();
+    if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
+        $menu[] = [
+            'TEXT'    => Locale::getMessage('SETTAG'),
+            'ONCLICK' => 'migrationMigrationSetTag(\'' . $item['version'] . '\')',
+        ];
+    }
 
-    $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
-        $menu = [];
-
-        if ($item['status'] == VersionEnum::STATUS_NEW) {
-            $menu[] = [
-                'TEXT'    => Locale::getMessage('UP'),
-                'ONCLICK' => 'migrationMigrationUp(\'' . $item['version'] . '\')',
-            ];
-            $menu[] = [
-                'TEXT'    => Locale::getMessage('MARK_NEW_AS_INSTALLED'),
-                'ONCLICK' => 'migrationMigrationMark(\'' . $item['version'] . '\',\'' . VersionEnum::STATUS_INSTALLED . '\')',
-            ];
-        }
-        if ($item['status'] == VersionEnum::STATUS_INSTALLED) {
-            $menu[] = [
-                'TEXT'    => Locale::getMessage('DOWN'),
-                'ONCLICK' => 'migrationMigrationDown(\'' . $item['version'] . '\')',
-            ];
-            $menu[] = [
-                'TEXT'    => Locale::getMessage('SETTAG'),
-                'ONCLICK' => 'migrationMigrationSetTag(\'' . $item['version'] . '\',\'' . $item['tag'] . '\')',
-            ];
-            $menu[] = [
-                'TEXT'    => Locale::getMessage('MARK_INSTALLED_AS_NEW'),
-                'ONCLICK' => 'migrationMigrationMark(\'' . $item['version'] . '\',\'' . VersionEnum::STATUS_NEW . '\')',
-            ];
-        }
-
-        if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
-            $menu[] = [
-                'TEXT'    => Locale::getMessage('SETTAG'),
-                'ONCLICK' => 'migrationMigrationSetTag(\'' . $item['version'] . '\')',
-            ];
-        }
-
-        if ($item['status'] != VersionEnum::STATUS_UNKNOWN && $webdir) {
-            $viewUrl = '/bitrix/admin/fileman_file_view.php?' . http_build_query([
-                    'lang' => LANGUAGE_ID,
-                    'site' => SITE_ID,
-                    'path' => $webdir . '/' . $item['version'] . '.php',
-                ]);
-
-            $menu[] = [
-                'TEXT' => Locale::getMessage('VIEW_FILE'),
-                'LINK' => $viewUrl,
-            ];
-        }
-
-        $transferMenu = [];
-
-        $configList = $versionConfig->getList();
-        foreach ($configList as $configItem) {
-            if ($configItem['name'] != $versionConfig->getName()) {
-                $transferMenu[] = [
-                    'TEXT'    => $configItem['title'],
-                    'ONCLICK' => 'migrationMigrationTransfer(\'' . $item['version'] . '\',\'' . $configItem['name'] . '\')',
-                ];
-            }
-        }
-
-        if (!empty($transferMenu)) {
-            $menu[] = [
-                'TEXT' => Locale::getMessage('TRANSFER_TO'),
-                'MENU' => $transferMenu,
-            ];
-        }
+    if ($item['status'] != VersionEnum::STATUS_UNKNOWN && $webdir) {
+        $viewUrl = '/bitrix/admin/fileman_file_view.php?' . http_build_query([
+                'lang' => LANGUAGE_ID,
+                'site' => SITE_ID,
+                'path' => $webdir . '/' . $item['version'] . '.php',
+            ]);
 
         $menu[] = [
-            'TEXT'    => Locale::getMessage('DELETE'),
-            'ONCLICK' => 'migrationMigrationDelete(\'' . $item['version'] . '\')',
+            'TEXT' => Locale::getMessage('VIEW_FILE'),
+            'LINK' => $viewUrl,
         ];
-
-        return CUtil::PhpToJSObject($menu);
     }
 
-    ?>
-    <?php if (!empty($versions)): ?>
-        <table class="sp-list">
-            <?php foreach ($versions as $item) { ?>
-                <tr>
-                    <td class="sp-list-td__buttons">
-                        <a onclick="this.blur();BX.adminShowMenu(this, <?= $getOnclickMenu($item) ?>, {active_class: 'adm-btn-active',public_frame: '0'}); return false;"
-                           href="javascript:void(0)"
-                           class="adm-btn"
-                           hidefocus="true">&equiv;</a>
-                    </td>
-                    <td class="sp-list-td__content">
-                        <span class="sp-item-<?= $item['status'] ?>"><?= $item['version'] ?></span>
-                        <?php if ($item['modified']) { ?>
-                            <span class="sp-modified" title="<?= Locale::getMessage('MODIFIED_VERSION') ?>">
-                                <?= Locale::getMessage('MODIFIED_LABEL') ?>
-                            </span>
-                        <?php } ?>
-                        <?php if ($item['older']) { ?>
-                            <span class="sp-older" title="<?= Locale::getMessage('OLDER_VERSION', [
-                                '#V1#' => $item['older'],
-                                '#V2#' => Module::getVersion(),
-                            ]) ?>">
-                                <?= Locale::getMessage('OLDER_LABEL') ?>
-                            </span>
-                        <?php } ?>
-                        <?php if ($item['tag']) { ?>
-                            <span class="sp-tag" title="<?= Locale::getMessage('TAG') ?>">
-                                <?= $item['tag'] ?>
-                            </span>
-                        <?php } ?>
-                        <?php
-                        $status = Locale::getMessage('VERSION_' . $item['status']);
-                        if (
-                            $item['status'] == VersionEnum::STATUS_INSTALLED
-                            || $item['status'] == VersionEnum::STATUS_UNKNOWN
-                        ) {
-                            $status .= $item['meta']['created_by'] ? ' (' . $item['meta']['created_by'] . ')' : '';
-                            $status .= $item['meta']['created_at'] ? ' ' . $item['meta']['created_at'] : '';
-                        }
-                        Out::out($status);
+    $transferMenu = [];
 
-                        Out::outToHtml(
-                            $item['description'],
-                            [
-                                'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),
-                                'make_links'       => true,
-                                'br'               => true,
-                            ]
-                        ); ?>
-                    </td>
-                </tr>
-            <?php } ?>
-        </table>
-    <?php else: ?>
-        <?= Locale::getMessage('LIST_EMPTY') ?>
-    <?php endif ?>
-    <?php
+    $configList = $versionConfig->getList();
+    foreach ($configList as $configItem) {
+        if ($configItem['name'] != $versionConfig->getName()) {
+            $transferMenu[] = [
+                'TEXT'    => $configItem['title'],
+                'ONCLICK' => 'migrationMigrationTransfer(\'' . $item['version'] . '\',\'' . $configItem['name'] . '\')',
+            ];
+        }
+    }
+
+    if (!empty($transferMenu)) {
+        $menu[] = [
+            'TEXT' => Locale::getMessage('TRANSFER_TO'),
+            'MENU' => $transferMenu,
+        ];
+    }
+
+    $menu[] = [
+        'TEXT'    => Locale::getMessage('DELETE'),
+        'ONCLICK' => 'migrationMigrationDelete(\'' . $item['version'] . '\')',
+    ];
+
+    return CUtil::PhpToJSObject($menu);
+};
+
+if (empty($versions)) {
+    echo Locale::getMessage('LIST_EMPTY');
+    return;
 }
+
+?>
+<table class="sp-list">
+    <?php foreach ($versions as $item) {
+        $versionName = sprintf('[%s]%s[/]', $item['status'], $item['version']);
+
+        $versionStatus = Locale::getMessage('VERSION_' . $item['status']);
+        if (
+            $item['status'] == VersionEnum::STATUS_INSTALLED
+            || $item['status'] == VersionEnum::STATUS_UNKNOWN
+        ) {
+            $versionStatus .= $item['meta']['created_by'] ? ' (' . $item['meta']['created_by'] . ')' : '';
+            $versionStatus .= $item['meta']['created_at'] ? ' ' . $item['meta']['created_at'] : '';
+        }
+        $versionStatus = sprintf('<span class="sp-status">%s</span>', $versionStatus);
+
+        $versionLabels = '';
+        if ($item['older']) {
+            $versionLabels .= sprintf(
+                '<span title="%s" class="sp-older">%s</span>',
+                Locale::getMessage('OLDER_VERSION', [
+                    '#V1#' => $item['older'],
+                    '#V2#' => Module::getVersion(),
+                ]),
+                $item['older']
+            );
+        }
+        if ($item['modified']) {
+            $versionLabels .= sprintf(
+                '<span title="%s" class="sp-modified">%s</span>',
+                Locale::getMessage('MODIFIED_VERSION'),
+                Locale::getMessage('MODIFIED_LABEL')
+            );
+        }
+        if ($item['tag']) {
+            $versionLabels .= sprintf(
+                '<span title="%s" class="sp-tag">%s</span>',
+                Locale::getMessage('TAG'),
+                $item['tag']
+            );
+        }
+        $versionLabels .= $versionStatus;
+
+        ?>
+        <tr>
+            <td class="sp-list-td__buttons">
+                <a onclick="this.blur();BX.adminShowMenu(this, <?= $getOnclickMenu($item) ?>, {active_class: 'adm-btn-active',public_frame: '0'}); return false;"
+                   href="javascript:void(0)"
+                   class="adm-btn"
+                   hidefocus="true">&equiv;</a>
+            </td>
+            <td class="sp-list-td__content">
+                <?php Out::outToHtml($versionName); ?>
+                <?php Out::outToHtml($versionLabels); ?>
+                <?php Out::outToHtml($item['description'], [
+                    'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),
+                    'make_links'       => true,
+                ]); ?>
+            </td>
+        </tr>
+    <?php } ?>
+</table>

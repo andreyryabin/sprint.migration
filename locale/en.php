@@ -283,7 +283,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "MODIFIED_VERSION"       => "Migration file was modified after install",
         "MODIFIED_LABEL"         => "M",
         "OLDER_VERSION"          => "Migration file created in a later version of the module #V1#\nPerhaps it uses features that are not implemented in the current version #V2#",
-        "OLDER_LABEL"            => "!",
         "TAG"                    => "Migration tag",
         "SETTAG"                 => "Set tag",
         "SETTAG_OK"              => "Tag for migration #VERSION# setting",

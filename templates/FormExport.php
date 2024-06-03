@@ -32,21 +32,21 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function up()
     {
-        $formHelper = $this->getHelperManager()->Form();
+        $helper = $this->getHelperManager();
 <?php if (!empty($formExport)): ?>
-        $formId = $formHelper->saveForm(<?= var_export($form, 1)?>);
+        $formId = $helper->Form()->saveForm(<?= var_export($form, 1)?>);
 <?php else:?>
-        $formId = $formHelper->getFormIdIfExists('<?= $form['SID']?>');
+        $formId = $helper->Form()->getFormIdIfExists('<?= $form['SID']?>');
 <?php endif?>
 <?php if (!empty($statuses)): ?>
-        $formHelper->saveStatuses($formId, <?= var_export($statuses, 1)?>);
+        $helper->Form()->saveStatuses($formId, <?= var_export($statuses, 1)?>);
 <?php endif;?>
 <?php if (!empty($fields) && $fieldsMode == 'all'): ?>
-        $formHelper->saveFields($formId, <?= var_export($fields, 1)?>);
+        $helper->Form()->saveFields($formId, <?= var_export($fields, 1)?>);
 <?php endif;?>
 <?php if (!empty($fields) && $fieldsMode == 'some'): ?>
     <?php foreach ($fields as $field) { ?>
-        $formHelper->saveField($formId, <?= var_export($field, 1)?>);
+        $helper->Form()->saveField($formId, <?= var_export($field, 1)?>);
     <?php } ?>
 <?php endif;?>
     }

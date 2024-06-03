@@ -71,7 +71,6 @@
 }
 
 
-
 .sp-separator {
     display: block;
     padding: 10px;
@@ -81,6 +80,7 @@
     /*display: table;*/
     width: 100%;
 }
+
 .sp-table .sp-row1,
 .sp-table .sp-row2,
 .sp-table .sp-row3 {
@@ -159,17 +159,17 @@ table.sp-list td.sp-list-td__buttons {
 }
 
 
-table.sp-status {
+table.sp-summary {
     border-collapse: collapse;
 }
 
-table.sp-status td.sp-status-l {
+table.sp-summary td.sp-summary-l {
     vertical-align: middle;
     text-align: left;
     padding: 5px 5px 5px 0;
 }
 
-table.sp-status td.sp-status-r {
+table.sp-summary td.sp-summary-r {
     vertical-align: middle;
     text-align: left;
     padding: 5px 0 5px 5px;
@@ -218,9 +218,10 @@ a.sp-item-unknown:visited {
     padding: 0 10px;
     background: #ffcc00;
     color: #000;
-    border-radius: 10px;
+    border-radius: 4px;
     cursor: default;
-    font-weight: bold;
+    /*font-weight: bold;*/
+    margin: 0 2px 2px 0;
 }
 
 .sp-new,
@@ -228,16 +229,31 @@ a.sp-item-unknown:visited {
     padding: 0 10px;
     background: #b00;
     color: #fff;
-    border-radius: 10px;
+    border-radius: 4px;
     cursor: default;
-    font-weight: bold;
+    /*font-weight: bold;*/
+    margin: 0 2px 2px 0;
+}
+
+.sp-status {
+    padding: 0 10px;
+    background: #eee;
+    border-radius: 4px;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    cursor: default;
+    margin: 0 2px 2px 0;
 }
 
 .sp-tag {
     padding: 0 10px;
-    background: #ccc;
-    border-radius: 10px;
+    border-radius: 4px;
     cursor: default;
+    margin: 0 2px 2px 0;
+    background: #ffbbff;
+    /* color: #fff; */
+    border-bottom: 1px solid #ee33ff;
+    border-right: 1px solid #ee33ff;
 }
 
 .sp-optgroup-group {

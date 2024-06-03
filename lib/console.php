@@ -9,6 +9,7 @@ use Exception;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\ConsoleException;
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Traits\CurrentUserTrait;
 use Throwable;
 
 class Console
@@ -19,6 +20,7 @@ class Console
     private $versionConfig;
     private $versionManager;
     private $argoptions = [];
+    use CurrentUserTrait;
 
     /**
      * Console constructor.
@@ -226,7 +228,7 @@ class Console
                 $item['version'] .= ' (' . Locale::getMessage('MODIFIED_LABEL') . ')';
             }
             if ($item['older']) {
-                $item['version'] .= ' (' . Locale::getMessage('OLDER_LABEL') . ')';
+                $item['version'] .= ' (' . $item['older'] . ')';
             }
             if ($item['tag']) {
                 $item['version'] .= ' (' . $item['tag'] . ')';
@@ -341,15 +343,22 @@ class Console
      */
     public function commandInfo()
     {
-        global $USER;
-
-        Out::out(Locale::getMessage('MODULE_NAME'));
-        Out::out(Locale::getMessage('BITRIX_VERSION') . ': %s', defined('SM_VERSION') ? SM_VERSION : '');
-        Out::out(Locale::getMessage('MODULE_VERSION') . ': %s', Module::getVersion());
-
-        if ($USER && $USER->GetID()) {
-            Out::out(Locale::getMessage('CURRENT_USER') . ': [%d] %s', $USER->GetID(), $USER->GetLogin());
-        }
+        Out::out(
+            Locale::getMessage('MODULE_NAME')
+        );
+        Out::out(
+            Locale::getMessage('BITRIX_VERSION') . ': %s',
+            defined('SM_VERSION') ? SM_VERSION : ''
+        );
+        Out::out(
+            Locale::getMessage('MODULE_VERSION') . ': %s',
+            Module::getVersion()
+        );
+        Out::out(
+            Locale::getMessage('CURRENT_USER') . ': [%d] %s',
+            $this->getCurrentUserId(),
+            $this->getCurrentUserLogin()
+        );
 
         $configList = $this->versionConfig->getList();
         $configName = $this->versionConfig->getName();

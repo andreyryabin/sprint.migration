@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use Sprint\Migration\Enum\VersionEnum;
+use Sprint\Migration\Exceptions\MigrationException;
 
 abstract class VersionBuilder extends AbstractBuilder
 {
@@ -41,22 +42,18 @@ abstract class VersionBuilder extends AbstractBuilder
         return $prefix;
     }
 
-    protected function purifyDescription($descr = '')
+    protected function purifyDescription($descr = ''): string
     {
-        $descr = strval($descr);
-        $descr = str_replace(["\n\r", "\r\n", "\n", "\r"], ' ', $descr);
-        $descr = strip_tags($descr);
-        $descr = addslashes($descr);
-        return $descr;
+        return addslashes(strip_tags(trim($descr)));
     }
 
-    protected function getVersionFile($versionName)
+    protected function getVersionFile($versionName): string
     {
         $dir = $this->getVersionConfig()->getVal('migration_dir');
         return $dir . '/' . $versionName . '.php';
     }
 
-    protected function getVersionResourceFile($versionName, $name)
+    protected function getVersionResourceFile($versionName, $name): string
     {
         $dir = $this->getVersionConfig()->getVal('exchange_dir');
         return $dir . '/' . $versionName . '_files/' . $name;
@@ -70,7 +67,7 @@ abstract class VersionBuilder extends AbstractBuilder
         return $this->params['~version_name'];
     }
 
-    protected function createVersionName()
+    protected function createVersionName(): string
     {
         return strtr(
             $this->getVersionConfig()->getVal('version_name_template'),
@@ -84,15 +81,13 @@ abstract class VersionBuilder extends AbstractBuilder
     }
 
     /**
-     * @param string $templateFile
-     * @param array  $templateVars
-     * @param bool   $markAsInstalled
-     *
-     * @throws Exceptions\MigrationException
-     * @return bool|string
+     * @throws MigrationException
      */
-    protected function createVersionFile($templateFile = '', $templateVars = [], $markAsInstalled = true)
-    {
+    protected function createVersionFile(
+        string $templateFile = '',
+        array $templateVars = [],
+        bool $markAsInstalled = true
+    ): string {
         $templateVars['description'] = $this->purifyDescription(
             $this->getFieldValue('description')
         );
@@ -130,14 +125,13 @@ abstract class VersionBuilder extends AbstractBuilder
         file_put_contents($fileName, $fileContent);
 
         if (!is_file($fileName)) {
-            Out::outError(
+            throw new MigrationException(
                 Locale::getMessage(
                     'ERR_CANT_CREATE_FILE', [
                         '#NAME#' => $fileName,
                     ]
                 )
             );
-            return false;
         }
 
         Out::outSuccess(

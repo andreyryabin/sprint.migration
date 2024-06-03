@@ -656,9 +656,7 @@ class VersionManager
 
     protected function purifyDescriptionForMeta(string $descr = ''): string
     {
-        $descr = str_replace(["\n\r", "\r\n", "\n", "\r"], ' ', $descr);
-        $descr = strip_tags($descr);
-        return stripslashes($descr);
+        return stripslashes(strip_tags(trim($descr)));
     }
 
     /**
