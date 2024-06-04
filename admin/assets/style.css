@@ -29,7 +29,6 @@
 .sp-scroll {
     overflow: auto;
     max-height: 425px;
-    padding-bottom: 10px;
 }
 
 
@@ -144,32 +143,42 @@ table.sp-list {
     border-collapse: collapse;
 }
 
-table.sp-list td.sp-list-td__content {
-    vertical-align: top;
-    text-align: left;
-    padding: 5px 5px;
-    /*width: 50px;*/
-}
-
-table.sp-list td.sp-list-td__buttons {
-    white-space: nowrap;
-    text-align: right;
-    vertical-align: top;
-    padding: 5px 5px;
-}
-
-
 table.sp-summary {
     border-collapse: collapse;
 }
 
-table.sp-summary td.sp-summary-l {
+.sp-list-td__content {
+    vertical-align: top;
+    text-align: left;
+    padding: 0 10px 10px;
+    /*width: 50px;*/
+}
+
+.sp-list-td__content span {
+    margin: 0 5px 5px 0;
+}
+
+.sp-list-td__content .sp-out {
+    margin-bottom: 5px;
+}
+
+.sp-list-td__content .sp-out:last-child {
+    margin-bottom: 0;
+}
+
+.sp-list-td__buttons {
+    white-space: nowrap;
+    text-align: right;
+    vertical-align: top;
+}
+
+td.sp-summary-l {
     vertical-align: middle;
     text-align: left;
     padding: 5px 5px 5px 0;
 }
 
-table.sp-summary td.sp-summary-r {
+td.sp-summary-r {
     vertical-align: middle;
     text-align: left;
     padding: 5px 0 5px 5px;
@@ -221,7 +230,6 @@ a.sp-item-unknown:visited {
     border-radius: 4px;
     cursor: default;
     /*font-weight: bold;*/
-    margin: 0 2px 2px 0;
 }
 
 .sp-new,
@@ -232,7 +240,6 @@ a.sp-item-unknown:visited {
     border-radius: 4px;
     cursor: default;
     /*font-weight: bold;*/
-    margin: 0 2px 2px 0;
 }
 
 .sp-status {
@@ -242,14 +249,13 @@ a.sp-item-unknown:visited {
     border-bottom: 1px solid #ccc;
     border-right: 1px solid #ccc;
     cursor: default;
-    margin: 0 2px 2px 0;
+    margin-top: 5px
 }
 
 .sp-tag {
     padding: 0 10px;
     border-radius: 4px;
     cursor: default;
-    margin: 0 2px 2px 0;
     background: #ffbbff;
     /* color: #fff; */
     border-bottom: 1px solid #ee33ff;
