@@ -158,14 +158,6 @@ table.sp-summary {
     margin: 0 5px 5px 0;
 }
 
-.sp-list-td__content .sp-out {
-    margin-bottom: 5px;
-}
-
-.sp-list-td__content .sp-out:last-child {
-    margin-bottom: 0;
-}
-
 .sp-list-td__buttons {
     white-space: nowrap;
     text-align: right;
@@ -333,4 +325,8 @@ a.sp-item-unknown:visited {
 
 .sp-out {
     white-space: pre-wrap;
+    margin-bottom: 5px;
+}
+.sp-out:last-child {
+    margin-bottom: 0;
 }
