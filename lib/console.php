@@ -224,26 +224,20 @@ class Console
         ]);
 
         foreach ($versions as $item) {
-            if ($item['modified']) {
-                $item['version'] .= ' (' . Locale::getMessage('MODIFIED_LABEL') . ')';
+            $versionColumn = $item['version'];
+
+            $labelsColumn = '';
+            if ($item['tag']) {
+                $labelsColumn .= ' (' . $item['tag'] . ')';
             }
             if ($item['older']) {
-                $item['version'] .= ' (' . $item['older'] . ')';
+                $labelsColumn .= ' (' . $item['older'] . ' !!)';
             }
-            if ($item['tag']) {
-                $item['version'] .= ' (' . $item['tag'] . ')';
-            }
-
-            $status = Locale::getMessage('META_' . $item['status']);
-            if (
-                $item['status'] == VersionEnum::STATUS_INSTALLED
-                || $item['status'] == VersionEnum::STATUS_UNKNOWN
-            ) {
-                $status .= $item['meta']['created_by'] ? ' (' . $item['meta']['created_by'] . ')' : '';
-                $status .= $item['meta']['created_at'] ? ' ' . $item['meta']['created_at'] : '';
+            if ($item['modified']) {
+                $labelsColumn .= ' (' . Locale::getMessage('MODIFIED_LABEL') . ')';
             }
 
-            $descr = Out::prepareToConsole(
+            $descrColumn = Out::prepareToConsole(
                 $item['description'],
                 [
                     'max_len'          => 50,
@@ -251,7 +245,9 @@ class Console
                 ]
             );
 
-            $grid->addRow([$item['version'], $status, $descr]);
+            $statusColumn = Locale::getMessage('META_' . $item['status']);
+
+            $grid->addRow([$versionColumn, $statusColumn . $labelsColumn, $descrColumn]);
 
             $stval = $item['status'];
             $summary[$stval]++;
@@ -717,9 +713,9 @@ class Console
     protected function getArg($name, $default = '')
     {
         if (is_numeric($name)) {
-            return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
+            return $this->arguments[$name] ?? $default;
         } else {
-            return isset($this->argoptions[$name]) ? $this->argoptions[$name] : $default;
+            return $this->argoptions[$name] ?? $default;
         }
     }
 

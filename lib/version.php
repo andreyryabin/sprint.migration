@@ -19,6 +19,7 @@ class Version extends ExchangeEntity
     use ExitMessageTrait;
     use OutTrait;
 
+    protected $author        = "";
     protected $description   = "";
     protected $moduleVersion = "";
     /**
@@ -59,6 +60,11 @@ class Version extends ExchangeEntity
     public function getDescription()
     {
         return $this->description;
+    }
+
+    public function getAuthor(): string
+    {
+        return $this->author;
     }
 
     /**

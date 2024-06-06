@@ -21,6 +21,7 @@ class VersionManager
     private array         $lastRestartParams = [];
     private ?Throwable    $lastException;
     private string        $versionTimestampPattern;
+    private string        $versionTimestampFormat;
 
     /**
      * @throws MigrationException
@@ -30,13 +31,13 @@ class VersionManager
         if ($configName instanceof VersionConfig) {
             $this->versionConfig = $configName;
         } else {
-            $this->versionConfig = new VersionConfig(
-                $configName
-            );
+            $this->versionConfig = new VersionConfig($configName);
         }
 
         $this->versionTimestampPattern = $this
             ->versionConfig->getVal('version_timestamp_pattern');
+        $this->versionTimestampFormat = $this
+            ->versionConfig->getVal('version_timestamp_format');
 
         $this->versionTable = new VersionTable(
             $this->versionConfig->getVal('migration_table')
@@ -589,13 +590,15 @@ class VersionManager
         $isRecord = ($record) ? 1 : 0;
 
         $meta = [
-            'is_file'   => $isFile,
-            'is_record' => $isRecord,
-            'version'   => $versionName,
-            'modified'  => false,
-            'older'     => false,
-            'hash'      => '',
-            'tag'       => '',
+            'is_file'       => $isFile,
+            'is_record'     => $isRecord,
+            'version'       => $versionName,
+            'modified'      => false,
+            'older'         => false,
+            'hash'          => '',
+            'tag'           => '',
+            'file_status'   => '',
+            'record_status' => '',
         ];
 
         if ($isRecord && $isFile) {
@@ -610,7 +613,12 @@ class VersionManager
 
         if ($isRecord) {
             $meta['tag'] = $record['tag'];
-            $meta['meta'] = $record['meta'];
+
+            $meta['record_status'] = $this->humanStatus(
+                Locale::getMessage('META_INSTALLED'),
+                $record['meta']['created_at'] ?? '',
+                $record['meta']['created_by'] ?? ''
+            );
         }
 
         if (!$isFile) {
@@ -634,6 +642,15 @@ class VersionManager
             $meta['description'] = $this->purifyDescriptionForMeta(
                 $versionInstance->getDescription()
             );
+
+            $meta['file_status'] = $this->humanStatus(
+                Locale::getMessage('META_NEW'),
+                date(VersionTable::DATE_FORMAT, filemtime($file['location'])),
+                $this->purifyDescriptionForMeta(
+                    $versionInstance->getAuthor()
+                )
+            );
+
             $meta['required_versions'] = $versionInstance->getRequiredVersions();
 
             $v1 = $versionInstance->getModuleVersion();
@@ -652,6 +669,18 @@ class VersionManager
         }
 
         return $meta;
+    }
+
+    private function humanStatus($prefix, $at, $by)
+    {
+        $by = $by ? '(' . $by . ')' : '';
+
+        if ($at && $by) {
+            return $prefix . ': ' . $at . ' ' . $by;
+        } elseif ($at || $by) {
+            return $prefix . ': ' . $at . $by;
+        }
+        return $prefix;
     }
 
     protected function purifyDescriptionForMeta(string $descr = ''): string

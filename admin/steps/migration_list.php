@@ -145,22 +145,17 @@ if (empty($versions)) {
 ?>
 <table class="sp-list">
     <?php foreach ($versions as $item) {
-        $versionName = sprintf('[%s]%s[/]', $item['status'], $item['version']);
-
-        $versionStatus = Locale::getMessage('VERSION_' . $item['status']);
-        if (
-            $item['status'] == VersionEnum::STATUS_INSTALLED
-            || $item['status'] == VersionEnum::STATUS_UNKNOWN
-        ) {
-            $versionStatus .= $item['meta']['created_by'] ? ' (' . $item['meta']['created_by'] . ')' : '';
-            $versionStatus .= $item['meta']['created_at'] ? ' ' . $item['meta']['created_at'] : '';
-        }
-        $versionStatus = sprintf('<span class="sp-status">%s</span>', $versionStatus);
-
         $versionLabels = '';
+        if ($item['tag']) {
+            $versionLabels .= sprintf(
+                '<span title="%s" class="sp-label sp-label-tag">%s</span>',
+                Locale::getMessage('TAG'),
+                $item['tag']
+            );
+        }
         if ($item['older']) {
             $versionLabels .= sprintf(
-                '<span title="%s" class="sp-older">%s</span>',
+                '<span title="%s" class="sp-label sp-label-older">%s !!</span>',
                 Locale::getMessage('OLDER_VERSION', [
                     '#V1#' => $item['older'],
                     '#V2#' => Module::getVersion(),
@@ -170,20 +165,17 @@ if (empty($versions)) {
         }
         if ($item['modified']) {
             $versionLabels .= sprintf(
-                '<span title="%s" class="sp-modified">%s</span>',
+                '<span title="%s" class="sp-label sp-label-modified">%s</span>',
                 Locale::getMessage('MODIFIED_VERSION'),
                 Locale::getMessage('MODIFIED_LABEL')
             );
         }
-        if ($item['tag']) {
+        if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
             $versionLabels .= sprintf(
-                '<span title="%s" class="sp-tag">%s</span>',
-                Locale::getMessage('TAG'),
-                $item['tag']
+                '<span class="sp-label">%s</span>',
+                Locale::getMessage('VERSION_UNKNOWN')
             );
         }
-        $versionLabels .= $versionStatus;
-
         ?>
         <tr>
             <td class="sp-list-td__buttons">
@@ -193,7 +185,11 @@ if (empty($versions)) {
                    hidefocus="true">&equiv;</a>
             </td>
             <td class="sp-list-td__content">
-                <?php Out::outToHtml($versionName); ?>
+                <?php Out::outToHtml($item['version'], [
+                    'class' => 'sp-out sp-item-' . $item['status'],
+                ]); ?>
+                <?php Out::outToHtml($item['file_status']); ?>
+                <?php Out::outToHtml($item['record_status']); ?>
                 <?php Out::outToHtml($versionLabels); ?>
                 <?php Out::outToHtml($item['description'], [
                     'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),

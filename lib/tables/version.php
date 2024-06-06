@@ -9,6 +9,7 @@ class VersionTable extends AbstractTable
 {
     use CurrentUserTrait;
 
+    const DATE_FORMAT = 'Y-m-d H:i:s';
     protected int $tableVersion = 4;
 
     /**
@@ -47,7 +48,7 @@ class VersionTable extends AbstractTable
 
         $meta = $this->forSql(serialize([
             'created_by' => $this->getCurrentUserLogin(),
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date(VersionTable::DATE_FORMAT),
         ]));
 
         $this->query(
@@ -121,7 +122,6 @@ class VersionTable extends AbstractTable
     private function prepareFetch(array $record): array
     {
         $record['meta'] = unserialize($record['meta']);
-
         return $record;
     }
 }

@@ -4,9 +4,12 @@ namespace Sprint\Migration;
 
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Traits\CurrentUserTrait;
 
 abstract class VersionBuilder extends AbstractBuilder
 {
+    use CurrentUserTrait;
+
     protected function addVersionFields()
     {
         $this->addField(
@@ -91,7 +94,9 @@ abstract class VersionBuilder extends AbstractBuilder
         $templateVars['description'] = $this->purifyDescription(
             $this->getFieldValue('description')
         );
-
+        $templateVars['author'] = $this->purifyDescription(
+            $this->getCurrentUserLogin()
+        );
         if (empty($templateVars['version'])) {
             $templateVars['version'] = $this->getVersionName();
         }
@@ -107,20 +112,16 @@ abstract class VersionBuilder extends AbstractBuilder
             $extendUse = '';
         }
 
-        $tplVars = array_merge(
-            [
-                'extendUse'     => $extendUse,
-                'extendClass'   => $extendClass,
-                'moduleVersion' => Module::getVersion(),
-            ], $templateVars
-        );
+        $templateVars['extendUse'] = $extendUse;
+        $templateVars['extendClass'] = $extendClass;
+        $templateVars['moduleVersion'] = Module::getVersion();
 
         if (!is_file($templateFile)) {
             $templateFile = Module::getModuleDir() . '/templates/version.php';
         }
 
         $fileName = $this->getVersionFile($templateVars['version']);
-        $fileContent = $this->renderFile($templateFile, $tplVars);
+        $fileContent = $this->renderFile($templateFile, $templateVars);
 
         file_put_contents($fileName, $fileContent);
 
