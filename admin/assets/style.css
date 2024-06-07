@@ -245,12 +245,25 @@ a.sp-item-unknown:visited {
     margin-bottom: 10px;
 }
 
+.sp-optgroup-head {
+    margin-bottom: 10px;
+}
+
+.sp-optgroup-scroll {
+    max-height: 300px;
+    overflow: auto;
+}
+
 .sp-optgroup-title {
-    font-weight: bold;
+    /*font-weight: bold;*/
 }
 
 .sp-field {
     margin-bottom: 10px;
+}
+
+.sp-field-title {
+    font-weight: bold;
 }
 
 .sp-info-message {

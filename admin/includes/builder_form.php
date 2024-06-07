@@ -32,15 +32,16 @@ foreach ($builder->getFields() as $fieldCode => $fieldItem) {
     }
     echo '</div>';
 }
-if ($builder->hasDescription()) {
-    echo '<div class="sp-field sp-info-message">';
-    Out::out($builder->getDescription());
-    echo '</div>';
-}
 
 echo '<div class="sp-field">' .
      '<input type="submit" value="' . Locale::getMessage('BUILDER_NEXT') . '"/>' .
      '<input type="reset" value="' . Locale::getMessage('BUILDER_RESET') . '"/>' .
      '</div>';
+
+if ($builder->hasDescription()) {
+    echo '<div class="sp-field sp-info-message">';
+    Out::out($builder->getDescription());
+    echo '</div>';
+}
 
 echo '</form>';

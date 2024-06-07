@@ -8,15 +8,23 @@ use Sprint\Migration\AbstractBuilder;
  * @var $builder   AbstractBuilder
  */
 ?>
-<select name="<?= $fieldCode ?>"
-    <?php if (!empty($fieldItem['width'])) { ?>
-        style="width: <?= $fieldItem['width'] ?>px;"
+<div class="sp-optgroup">
+    <?php if (count($fieldItem['select']) > 8) { ?>
+        <div class="sp-optgroup-head">
+            <input class="sp-optgroup-search" data-attrs="<?= $fieldCode ?>" size="20" type="text" placeholder="Search"/>
+        </div>
     <?php } ?>
-><?php foreach ($fieldItem['select'] as $item) { ?>
-        <option value="<?= $item['value'] ?>"
-            <?php if ($fieldItem['value'] == $item['value']) { ?>
-                selected="selected"
-            <?php } ?>
-        ><?= $item['title'] ?></option>
-    <?php } ?>
-</select>
+    <div class="sp-optgroup-group">
+        <?php foreach ($fieldItem['select'] as $item) { ?>
+            <label class="sp-optgroup-item">
+                <input name="<?= $fieldCode ?>"
+                       value="<?= $item['value'] ?>"
+                    <?php if ($item['value'] == $fieldItem['value']) { ?>
+                        checked="checked"
+                    <?php } ?>
+                       type="radio"
+                ><?= $item['title'] ?>
+            </label>
+        <?php } ?>
+    </div>
+</div>

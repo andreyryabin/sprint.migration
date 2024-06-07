@@ -10,9 +10,8 @@ use Sprint\Migration\Locale;
  */
 ?>
 <div class="sp-optgroup">
-    <div style="padding: 5px 0;">
+    <div class="sp-optgroup-head">
         <input class="sp-optgroup-search" data-attrs="<?= $fieldCode ?>" size="20" type="text" placeholder="Search"/>
-        <button class="sp-optgroup-check adm-btn"><?= Locale::getMessage('SELECT_ALL') ?></button>
     </div>
     <?php foreach ($fieldItem['items'] as $group) { ?>
         <?php if (!empty($group['items'])) { ?>
@@ -34,4 +33,7 @@ use Sprint\Migration\Locale;
             </div>
         <?php } ?>
     <?php } ?>
+    <div class="sp-optgroup-head">
+        <button class="sp-optgroup-check adm-btn"><?= Locale::getMessage('SELECT_ALL') ?></button>
+    </div>
 </div>

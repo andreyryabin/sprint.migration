@@ -245,15 +245,17 @@ jQuery(document).ready(function ($) {
 
     $('#migration_builder').on('input', '.sp-optgroup-search', function (e) {
         e.preventDefault();
-        let text = $(this).val();
+        let searchText = $(this).val().toLowerCase();
 
         $(this).closest('.sp-optgroup').find('.sp-optgroup-group').each(function () {
             let all = 0;
             let hide = 0;
 
             $(this).find('label').each(function () {
+                let labelText = $(this).text().toLowerCase();
+
                 all++;
-                if ($(this).text().includes(text)) {
+                if (labelText.includes(searchText)) {
                     $(this).show()
                 } else {
                     hide++;
