@@ -11,6 +11,7 @@ use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
+use Sprint\Migration\Support\ExportRules;
 use Sprint\Migration\Tables\FormGroupTable;
 
 class FormHelper extends Helper
@@ -40,11 +41,19 @@ class FormHelper extends Helper
      */
     public function exportFormById(int $formId): array
     {
-        return $this->unsetKeys([
-            'ID',
-            'TIMESTAMP_X',
-            'VARNAME',
-        ], $this->getFormById($formId));
+        $form = $this->exportFormRules()->export(
+            $this->getFormById($formId)
+        );
+
+        $form['arSITE'] = $this->exportSites($formId);
+
+        $form["arMENU"] = $this->exportMenus($formId);
+
+        $form['arGROUP'] = $this->exportRights($formId);
+
+        $form['arMAIL_TEMPLATE'] = $this->exportMailTemplates($formId);
+
+        return $form;
     }
 
     /**
@@ -56,15 +65,6 @@ class FormHelper extends Helper
         if (empty($form)) {
             throw new HelperException('Form "%s" not found', $formId);
         }
-
-        $form['arSITE'] = $this->exportSites($formId);
-
-        $form["arMENU"] = $this->exportMenus($formId);
-
-        $form['arGROUP'] = $this->exportRights($formId);
-
-        $form['arMAIL_TEMPLATE'] = $this->exportMailTemplates($formId);
-
         return $form;
     }
 
@@ -96,6 +96,8 @@ class FormHelper extends Helper
     public function saveForm(array $form): int
     {
         $this->checkRequiredKeys($form, ['SID']);
+
+        $form = $this->exportFormRules()->merge($form);
 
         $form['VARNAME'] = $form['SID'];
 
@@ -196,7 +198,9 @@ class FormHelper extends Helper
      */
     public function saveStatuses(int $formId, array $statuses): array
     {
-        $currentStatuses = $this->getFormStatuses($formId);
+        $currentStatuses = $this->exportStatusRules()->mergeCollection(
+            $this->getFormStatuses($formId)
+        );
 
         $updatedIds = [];
 
@@ -273,12 +277,9 @@ class FormHelper extends Helper
 
     public function exportFormStatuses(int $formId): array
     {
-        return $this->unsetKeysFromCollection([
-            'ID',
-            'TIMESTAMP_X',
-            'FORM_ID',
-            'RESULTS',
-        ], $this->getFormStatuses($formId));
+        return $this->exportStatusRules()->exportCollection(
+            $this->getFormStatuses($formId)
+        );
     }
 
     public function getFormFields(int $formId, array $fieldSids = []): array
@@ -302,27 +303,15 @@ class FormHelper extends Helper
         foreach ($fields as $index => $field) {
             $fieldId = $field['ID'];
 
-            $field = $this->unsetKeys([
-                'ID',
-                'TIMESTAMP_X',
-                'FORM_ID',
-                'VARNAME',
-            ], $field);
+            $field = $this->exportFieldRules()->export($field);
 
-            $field['ANSWERS'] = $this->unsetKeysFromCollection([
-                'ID',
-                'FIELD_ID',
-                'QUESTION_ID',
-                'TIMESTAMP_X',
-            ], $this->getFieldAnswers($fieldId));
+            $field['ANSWERS'] = $this->exportAnswerRules()->exportCollection(
+                $this->getFieldAnswers($fieldId)
+            );
 
-            $field['VALIDATORS'] = $this->unsetKeysFromCollection([
-                'ID',
-                'FORM_ID',
-                'FIELD_ID',
-                'TIMESTAMP_X',
-                'PARAMS_FULL',
-            ], $this->getFieldValidators($fieldId));
+            $field['VALIDATORS'] = $this->exportValidatorRules()->exportCollection(
+                $this->getFieldValidators($fieldId)
+            );
 
             $fields[$index] = $field;
         }
@@ -488,13 +477,17 @@ class FormHelper extends Helper
      */
     private function replaceField(int $formId, int $fieldId, array $field): int
     {
+        $field = $this->exportFieldRules()->merge($field);
+
         $field['FORM_ID'] = $formId;
         $field['VARNAME'] = $field['SID'];
 
         $answers = [];
         if (isset($field['ANSWERS'])) {
             if (is_array($field['ANSWERS'])) {
-                $answers = $field['ANSWERS'];
+                $answers = $this->exportAnswerRules()->mergeCollection(
+                    $field['ANSWERS']
+                );
             }
             unset($field['ANSWERS']);
         }
@@ -502,7 +495,9 @@ class FormHelper extends Helper
         $validators = [];
         if (isset($field['VALIDATORS'])) {
             if (is_array($field['VALIDATORS'])) {
-                $validators = $field['VALIDATORS'];
+                $validators = $this->exportValidatorRules()->mergeCollection(
+                    $field['VALIDATORS']
+                );
             }
             unset($field['VALIDATORS']);
         }
@@ -514,8 +509,121 @@ class FormHelper extends Helper
         }
 
         $this->saveFieldAnswers($fieldId, $answers);
+
         $this->saveFieldValidators($formId, $fieldId, $validators);
 
         return $fieldId;
+    }
+
+    private function exportFormRules(): ExportRules
+    {
+        return (new ExportRules())
+            ->unsetKeys([
+                'ID',
+                'TIMESTAMP_X',
+                'VARNAME',
+                'C_FIELDS',
+                'QUESTIONS',
+                'STATUSES',
+            ])
+            ->setDefault([
+                'BUTTON'                 => 'Сохранить',
+                'C_SORT'                 => '100',
+                'FIRST_SITE_ID'          => null,
+                'IMAGE_ID'               => null,
+                'USE_CAPTCHA'            => 'N',
+                'DESCRIPTION'            => '',
+                'DESCRIPTION_TYPE'       => 'text',
+                'FORM_TEMPLATE'          => '',
+                'USE_DEFAULT_TEMPLATE'   => 'Y',
+                'SHOW_TEMPLATE'          => null,
+                'SHOW_RESULT_TEMPLATE'   => null,
+                'PRINT_RESULT_TEMPLATE'  => null,
+                'EDIT_RESULT_TEMPLATE'   => null,
+                'FILTER_RESULT_TEMPLATE' => null,
+                'TABLE_RESULT_TEMPLATE'  => null,
+                'USE_RESTRICTIONS'       => 'N',
+                'RESTRICT_USER'          => '0',
+                'RESTRICT_TIME'          => '0',
+                'RESTRICT_STATUS'        => '',
+                'STAT_EVENT1'            => 'form',
+                'STAT_EVENT2'            => '',
+                'STAT_EVENT3'            => '',
+                'LID'                    => null,
+            ]);
+    }
+
+    private function exportFieldRules(): ExportRules
+    {
+        return (new ExportRules())
+            ->unsetKeys([
+                'ID',
+                'TIMESTAMP_X',
+                'FORM_ID',
+                'VARNAME',
+            ])->setDefault([
+                'ACTIVE'           => 'Y',
+                'C_SORT'           => '100',
+                'ADDITIONAL'       => 'N',
+                'REQUIRED'         => 'N',
+                'IN_FILTER'        => 'Y',
+                'IN_RESULTS_TABLE' => 'Y',
+                'IN_EXCEL_TABLE'   => 'Y',
+                'FIELD_TYPE'       => 'text',
+                'IMAGE_ID'         => null,
+                'COMMENTS'         => '',
+            ]);
+    }
+
+    private function exportStatusRules(): ExportRules
+    {
+        return (new ExportRules())
+            ->unsetKeys([
+                'ID',
+                'TIMESTAMP_X',
+                'FORM_ID',
+                'RESULTS',
+            ])->setDefault([
+                'C_SORT'        => '100',
+                'ACTIVE'        => 'Y',
+                'DESCRIPTION'   => 'DEFAULT',
+                'DEFAULT_VALUE' => 'Y',
+                'HANDLER_OUT'   => null,
+                'HANDLER_IN'    => null,
+            ]);
+    }
+
+    private function exportAnswerRules(): ExportRules
+    {
+        return (new ExportRules())
+            ->unsetKeys([
+                'ID',
+                'FIELD_ID',
+                'QUESTION_ID',
+                'TIMESTAMP_X',
+            ])->setDefault([
+                'MESSAGE'      => ' ',
+                'VALUE'        => '',
+                'FIELD_WIDTH'  => '0',
+                'FIELD_HEIGHT' => '0',
+                'FIELD_PARAM'  => '',
+                'C_SORT'       => '0',
+                'ACTIVE'       => 'Y',
+            ]);
+    }
+
+    private function exportValidatorRules(): ExportRules
+    {
+        return (new ExportRules())
+            ->unsetKeys([
+                'ID',
+                'FORM_ID',
+                'FIELD_ID',
+                'TIMESTAMP_X',
+                'PARAMS_FULL',
+            ])->setDefault([
+                'ACTIVE' => 'Y',
+                'C_SORT' => '100',
+            ]);
     }
 }
