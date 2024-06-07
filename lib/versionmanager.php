@@ -21,7 +21,6 @@ class VersionManager
     private array         $lastRestartParams = [];
     private ?Throwable    $lastException;
     private string        $versionTimestampPattern;
-    private string        $versionTimestampFormat;
 
     /**
      * @throws MigrationException
@@ -36,8 +35,6 @@ class VersionManager
 
         $this->versionTimestampPattern = $this
             ->versionConfig->getVal('version_timestamp_pattern');
-        $this->versionTimestampFormat = $this
-            ->versionConfig->getVal('version_timestamp_format');
 
         $this->versionTable = new VersionTable(
             $this->versionConfig->getVal('migration_table')
@@ -463,13 +460,13 @@ class VersionManager
             $items = $this->getVersions(['status' => $versionName]);
         } elseif ($versionName == 'all') {
             $items = $this->getVersions();
-        } elseif ($item = $this->getVersionByName($versionName)) {
-            $items = [$item];
+        } elseif ($meta = $this->getVersionByName($versionName)) {
+            $items = [$meta];
         }
 
         if (!empty($items)) {
-            foreach ($items as $item) {
-                $result[] = $this->transferMigrationByItem($item, $vmTo);
+            foreach ($items as $meta) {
+                $result[] = $this->transferMigrationByMeta($meta, $vmTo);
             }
         } else {
             $result[] = [
@@ -691,32 +688,34 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    protected function transferMigrationByItem($item, VersionManager $vmTo): array
+    protected function transferMigrationByMeta(array $meta, VersionManager $vmTo): array
     {
         $success = 0;
 
-        if ($item['is_file']) {
-            $source = $item['location'];
-            $dest = $vmTo->getVersionFile($item['version']);
+        if ($meta['is_file']) {
 
-            if (is_file($dest)) {
-                unlink($source);
-            } else {
-                rename($source, $dest);
-            }
+            Module::movePath(
+                $meta['location'],
+                $vmTo->getVersionFile($meta['version'])
+            );
+
+            Module::movePath(
+                $this->getVersionExchangeDir($meta['version']),
+                $vmTo->getVersionExchangeDir($meta['version'])
+            );
 
             $success = 1;
         }
 
-        if ($item['is_record']) {
-            $this->getVersionTable()->removeRecord($item);
-            $vmTo->getVersionTable()->addRecord($item);
+        if ($meta['is_record']) {
+            $this->getVersionTable()->removeRecord($meta);
+            $vmTo->getVersionTable()->addRecord($meta);
 
             $success = 1;
         }
 
         return [
-            'message' => Locale::getMessage('TRANSFER_OK', ['#VERSION#' => $item['version']]),
+            'message' => Locale::getMessage('TRANSFER_OK', ['#VERSION#' => $meta['version']]),
             'success' => $success,
         ];
     }
@@ -734,7 +733,13 @@ class VersionManager
         }
 
         if ($meta && $meta['is_file']) {
-            unlink($meta['location']);
+            Module::deletePath(
+                $meta['location']
+            );
+            Module::deletePath(
+                $this->getVersionExchangeDir($meta['version'])
+            );
+
             $success = 1;
         }
 
@@ -744,6 +749,12 @@ class VersionManager
             'message' => Locale::getMessage($msg, ['#VERSION#' => $meta['version']]),
             'success' => $success,
         ];
+    }
+
+    public function getVersionExchangeDir($versionName): string
+    {
+        $dir = $this->getVersionConfig()->getVal('exchange_dir');
+        return $dir . '/' . $versionName . '_files/';
     }
 
     /**

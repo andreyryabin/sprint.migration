@@ -111,6 +111,26 @@ class Module
         return $dir;
     }
 
+    public static function deletePath($dir)
+    {
+        if (is_dir($dir)) {
+            $files = scandir($dir);
+            foreach ($files as $file) {
+                if ($file != "." && $file != "..") {
+                    self::deletePath("$dir/$file");
+                }
+            }
+            rmdir($dir);
+        } elseif (file_exists($dir)) {
+            unlink($dir);
+        }
+    }
+
+    public static function movePath(string $from, string $to)
+    {
+        rename($from, $to);
+    }
+
     public static function getVersion(): string
     {
         if (!self::$version) {

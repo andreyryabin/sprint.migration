@@ -138,7 +138,7 @@ $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
 };
 
 if (empty($versions)) {
-    echo Locale::getMessage('LIST_EMPTY');
+    Out::outToHtml(Locale::getMessage('LIST_EMPTY'), ['class' => 'sp-out-list-empty']);
     return;
 }
 
