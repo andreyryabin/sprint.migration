@@ -228,4 +228,41 @@ class Helper
         $short = array_pop($path);
         return $short;
     }
+
+    protected function merge(array $item, array $default): array
+    {
+        return array_merge($default, $item);
+    }
+
+    protected function mergeCollection(array $collection, array $default): array
+    {
+        return array_map(function ($item) use ($default) {
+            return $this->merge($item, $default);
+        }, $collection);
+    }
+
+    protected function export(array $item, array $unsetDefault, array $unsetKeys): array
+    {
+        foreach ($unsetKeys as $key) {
+            if (array_key_exists($key, $item)) {
+                unset($item[$key]);
+            }
+        }
+
+        //value может быть null
+        foreach ($item as $key => $value) {
+            if (array_key_exists($key, $unsetDefault) && $unsetDefault[$key] === $value) {
+                unset($item[$key]);
+            }
+        }
+
+        return $item;
+    }
+
+    protected function exportCollection(array $collection, array $unsetDefault, array $unsetKeys): array
+    {
+        return array_map(function ($item) use ($unsetDefault, $unsetKeys) {
+            return $this->export($item, $unsetDefault, $unsetKeys);
+        }, $collection);
+    }
 }

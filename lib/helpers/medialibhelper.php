@@ -157,7 +157,7 @@ TAG;
         try {
             return $sqlhelper->query($sqlQuery)->fetchAll();
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -187,7 +187,7 @@ TAG;
         try {
             $result = $sqlhelper->query($sqlQuery)->fetch();
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
         return (int)$result['CNT'];
     }

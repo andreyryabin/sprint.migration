@@ -562,7 +562,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -603,7 +603,7 @@ class HlblockHelper extends Helper
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -823,7 +823,7 @@ class HlblockHelper extends Helper
             $entity = HighloadBlockTable::compileEntity($hlblock);
             return $entity->getDataClass();
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -840,7 +840,7 @@ class HlblockHelper extends Helper
         try {
             return $dataManager::getList($params)->fetchAll();
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -861,7 +861,7 @@ class HlblockHelper extends Helper
                 'limit'  => 1,
             ])->fetch();
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -888,7 +888,7 @@ class HlblockHelper extends Helper
 
             return ($item) ? $item['CNT'] : 0;
         } catch (Exception $e) {
-            throw new HelperException($e->getMessage());
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
