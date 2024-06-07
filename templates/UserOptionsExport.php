@@ -46,8 +46,4 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     }
 
-    public function down()
-    {
-        //your code ...
-    }
 }

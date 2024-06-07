@@ -33,9 +33,4 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper->Option()->saveOption(<?php echo var_export($item, 1) ?>);
 <?php } ?>
     }
-
-    public function down()
-    {
-        //your code ...
-    }
 }

@@ -37,9 +37,4 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper->Agent()->saveAgent(<?php echo var_export($item, 1) ?>);
 <?php } ?>
     }
-
-    public function down()
-    {
-        //your code ...
-    }
 }

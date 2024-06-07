@@ -78,6 +78,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "PAGE_SUPPORT_DESC"        => "На этой странице можно поддержать улучшения, предложенные пользователями модуля, которые вы хотели бы видеть обновлениях.",
         "SUPPORT_DISABLE"          => "Отказаться от поддержки",
         "SUPPORT_CONFIRM"          => "Участвовать в поддержке",
+        "WRITE_UP_CODE"            => "Укажите код установки миграции в методе up()",
+        "WRITE_DOWN_CODE"          => "Укажите код отката миграции в методе down()",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -125,9 +127,9 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_UserGroupExport1"           => "Создать миграцию для групп пользователей",
         "BUILDER_UserGroupExport2"           => "Задайте символьный идентификатор группы (STRING_ID), чтобы увидеть её в списке",
         "BUILDER_UserGroupExport_user_group" => "Выберите группы",
-        "BUILDER_SelectAll"       => "Выбрать все",
-        "BUILDER_SelectNone"      => "Не выбирать ничего",
-        "BUILDER_SelectSome"      => "Выбрать несколько",
+        "BUILDER_SelectAll"                  => "Выбрать все",
+        "BUILDER_SelectNone"                 => "Не выбирать ничего",
+        "BUILDER_SelectSome"                 => "Выбрать несколько",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(

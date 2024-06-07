@@ -44,9 +44,4 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
             <?php echo var_export($sectionTree, 1) ?>
         );
     }
-
-    public function down()
-    {
-        //your code ...
-    }
 }

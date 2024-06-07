@@ -58,9 +58,4 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     $helper->UserOptions()->saveHlblockList($hlblockId, <?php echo var_export($exportElementList, 1) ?>);
 <?php endif?>
     }
-
-    public function down()
-    {
-        //your code ...
-    }
 }
