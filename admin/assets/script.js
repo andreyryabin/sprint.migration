@@ -138,9 +138,9 @@ function migrationListRefresh(callbackAfterRefresh) {
         });
 }
 
-function migrationBuilder(postData, formAttrs) {
+function migrationBuilder(postData) {
     migrationExecuteStep('migration_create', postData, function (result) {
-        migrationBuilderRender(result, formAttrs)
+        migrationBuilderRender(result)
     });
 }
 
@@ -155,11 +155,14 @@ function migrationListScroll() {
     $el.scrollTop($el.prop("scrollHeight"));
 }
 
-function migrationBuilderRender(html, formAttrs) {
-    jQuery('#migration_builder').html(html);
+function migrationBuilderRender(html) {
+    let $builder = jQuery('#migration_builder');
+    let formAttrs = $builder.serializeFormAttrs();
+
+    $builder.html(html);
 
     jQuery.each(formAttrs, function (name, value) {
-        let $el = jQuery('#migration_builder').find('[data-attrs=' + name + ']');
+        let $el = $builder.find('[data-attrs=' + name + ']');
         if ($el.length > 0) {
             $el.val(value).trigger('input');
         }
@@ -274,8 +277,7 @@ jQuery(document).ready(function ($) {
     $('#migration_builder').on('submit', 'form', function (e) {
         e.preventDefault();
         let postData = $(this).serializeFormJSON();
-        let formAttrs = $(this).serializeFormAttrs();
-        migrationBuilder(postData, formAttrs);
+        migrationBuilder(postData);
     });
 
     $('#migration_builder').on('reset', 'form', function (e) {
