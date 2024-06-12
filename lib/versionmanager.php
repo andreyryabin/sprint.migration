@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use CMain;
+use DateTime;
 use DirectoryIterator;
 use ReflectionClass;
 use SplFileInfo;
@@ -21,6 +22,7 @@ class VersionManager
     private array         $lastRestartParams = [];
     private ?Throwable    $lastException;
     private string        $versionTimestampPattern;
+    private string        $versionTimestampFormat;
 
     /**
      * @throws MigrationException
@@ -35,6 +37,9 @@ class VersionManager
 
         $this->versionTimestampPattern = $this
             ->versionConfig->getVal('version_timestamp_pattern');
+
+        $this->versionTimestampFormat = $this
+            ->versionConfig->getVal('version_timestamp_format');
 
         $this->versionTable = new VersionTable(
             $this->versionConfig->getVal('migration_table')
@@ -121,7 +126,9 @@ class VersionManager
      */
     public function getVersionByName($versionName)
     {
-        if ($this->checkVersionName($versionName)) {
+        $ts = $this->getVersionTimestamp($versionName);
+
+        if ($ts) {
             $fileName = $this->getVersionFile($versionName);
             $file = file_exists($fileName) ? [
                 'version'  => $versionName,
@@ -131,7 +138,7 @@ class VersionManager
             $record = $this->getVersionTable()->getRecord($versionName);
             $record = !empty($record) ? $record : 0;
 
-            return $this->makeVersion($versionName, $file, $record);
+            return $this->makeVersion($versionName, $file, $record, $ts);
         }
         return false;
     }
@@ -166,7 +173,7 @@ class VersionManager
             $record = $records[$version] ?? 0;
             $file = $files[$version] ?? 0;
 
-            $meta = $this->makeVersion($version, $file, $record);
+            $meta = $this->makeVersion($version, $file, $record, $ts);
 
             if (
                 $this->containsFilterStatus($meta, $filter)
@@ -581,7 +588,7 @@ class VersionManager
      * @throws MigrationException
      * @return array|bool
      */
-    protected function makeVersion($versionName, $file, $record)
+    protected function makeVersion($versionName, $file, $record, $ts)
     {
         $isFile = ($file) ? 1 : 0;
         $isRecord = ($record) ? 1 : 0;
@@ -640,9 +647,10 @@ class VersionManager
                 $versionInstance->getDescription()
             );
 
+            $humanTs = DateTime::createFromFormat($this->versionTimestampFormat, $ts);
             $meta['file_status'] = $this->humanStatus(
                 Locale::getMessage('META_NEW'),
-                date(VersionTable::DATE_FORMAT, filemtime($file['location'])),
+                $humanTs->format(VersionTable::DATE_FORMAT),
                 $this->purifyDescriptionForMeta(
                     $versionInstance->getAuthor()
                 )
@@ -693,7 +701,6 @@ class VersionManager
         $success = 0;
 
         if ($meta['is_file']) {
-
             Module::movePath(
                 $meta['location'],
                 $vmTo->getVersionFile($meta['version'])
