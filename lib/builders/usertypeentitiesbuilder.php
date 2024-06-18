@@ -33,20 +33,44 @@ class UserTypeEntitiesBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $typeCodes = $this->addFieldAndReturn(
-            'type_codes',
+        $allFields = $this->getHelperManager()->UserTypeEntity()->getList();
+
+        $selectEntities = [];
+        foreach ($allFields as $entityField) {
+            $selectEntities[$entityField['ENTITY_ID']] = [
+                'ID' => $entityField['ENTITY_ID'],
+            ];
+        }
+
+        $entityId = $this->addFieldAndReturn(
+            'entity_id',
             [
                 'title'       => Locale::getMessage('BUILDER_UserTypeEntities_EntityId'),
                 'placeholder' => '',
                 'width'       => 250,
+                'select'      => $this->createSelect($selectEntities, 'ID', 'ID'),
+                'value'       => '',
+            ]
+        );
+
+        $selectFields = array_filter($allFields, function ($entityField) use ($entityId) {
+            return $entityField['ENTITY_ID'] == $entityId;
+        });
+
+        $entityFields = $this->addFieldAndReturn(
+            'entity_fields',
+            [
+                'title'       => Locale::getMessage('BUILDER_UserTypeEntities_EntityFields'),
+                'placeholder' => '',
+                'width'       => 250,
                 'multiple'    => 1,
-                'items'       => $this->getEntitiesSelect(),
+                'select'      => $this->createSelect($selectFields, 'ID', 'FIELD_NAME'),
                 'value'       => [],
             ]
         );
 
         $entities = [];
-        foreach ($typeCodes as $fieldId) {
+        foreach ($entityFields as $fieldId) {
             $entity = $helper->UserTypeEntity()->exportUserTypeEntity($fieldId);
             if (!empty($entity)) {
                 $entities[] = $entity;
@@ -58,16 +82,6 @@ class UserTypeEntitiesBuilder extends VersionBuilder
             [
                 'entities' => $entities,
             ]
-        );
-    }
-
-    protected function getEntitiesSelect(): array
-    {
-        return $this->createSelectWithGroups(
-            $this->getHelperManager()->UserTypeEntity()->getList(),
-            'ENTITY_ID',
-            'ID',
-            'FIELD_NAME'
         );
     }
 }

@@ -3,7 +3,6 @@
 namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Helpers\AdminIblockHelper;
 use Sprint\Migration\Helpers\AgentHelper;
 use Sprint\Migration\helpers\DeliveryServiceHelper;
 use Sprint\Migration\Helpers\EventHelper;
@@ -40,18 +39,13 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  * @method MedialibExchangeHelper   MedialibExchange()
  * @method IblockExchangeHelper     IblockExchange()
  * @method HlblockExchangeHelper    HlblockExchange()
- * @method AdminIblockHelper        AdminIblock()
  */
 class HelperManager
 {
-    private        $cache      = [];
     private static $instance   = null;
-    private        $registered = [];
+    private array  $registered = [];
 
-    /**
-     * @return HelperManager
-     */
-    public static function getInstance()
+    public static function getInstance(): HelperManager
     {
         if (!isset(static::$instance)) {
             static::$instance = new static();
@@ -68,40 +62,38 @@ class HelperManager
      */
     public function __call($name, $arguments)
     {
-        return $this->callHelper($name);
-    }
+        $class = '\\Sprint\\Migration\\Helpers\\' . $name . 'Helper';
 
-    public function registerHelper($name, $class)
-    {
-        $this->registered[$name] = $class;
+        return $this->callHelper($class);
     }
 
     /**
-     * @param $name
-     *
      * @throws HelperException
-     * @return Helper
      */
-    protected function callHelper($name)
+    private function callHelper($class)
     {
-        if (isset($this->cache[$name])) {
-            return $this->cache[$name];
+        if (isset($this->registered[$class])) {
+            return $this->registered[$class];
         }
 
-        $helperClass = '\\Sprint\\Migration\\Helpers\\' . $name . 'Helper';
-        if (class_exists($helperClass)) {
-            $this->cache[$name] = new $helperClass;
-            return $this->cache[$name];
-        }
-
-        if (isset($this->registered[$name])) {
-            $helperClass = $this->registered[$name];
-            if (class_exists($helperClass)) {
-                $this->cache[$name] = new $helperClass;
-                return $this->cache[$name];
+        if (class_exists($class)) {
+            $ob = new $class;
+            if ($ob instanceof Helper) {
+                $this->registered[$class] = $ob;
+                return $ob;
             }
         }
 
-        throw new HelperException("Helper $name not found");
+        throw new HelperException("Helper \"$class\" not found");
+    }
+
+    /**
+     * @throws HelperException
+     * @deprecated
+     * @removed in 4.10
+     */
+    public function registerHelper(string $name, string $class)
+    {
+        $this->callHelper($class);
     }
 }

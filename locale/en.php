@@ -206,8 +206,9 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "en",
     [
-        "BUILDER_UserTypeEntities1"         => "Create migration for user type entities",
-        "BUILDER_UserTypeEntities_EntityId" => "Select entity id",
+        "BUILDER_UserTypeEntities1"             => "Create migration for user type entities",
+        "BUILDER_UserTypeEntities_EntityId"     => "Select entity",
+        "BUILDER_UserTypeEntities_EntityFields" => "Select fields",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(

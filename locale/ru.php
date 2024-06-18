@@ -207,8 +207,9 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "ru",
     [
-        "BUILDER_UserTypeEntities1"         => "Создать миграцию для пользовательских полей",
-        "BUILDER_UserTypeEntities_EntityId" => "Укажите поле для выгрузки",
+        "BUILDER_UserTypeEntities1"             => "Создать миграцию для пользовательских полей",
+        "BUILDER_UserTypeEntities_EntityId"     => "Выберите объект",
+        "BUILDER_UserTypeEntities_EntityFields" => "Укажите поля для выгрузки",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
