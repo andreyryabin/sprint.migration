@@ -26,26 +26,39 @@ class AgentBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
+        $allAgents = array_map(function ($item) {
+            $item['MODULE_ID'] = $item['MODULE_ID'] ?: Locale::getMessage('BUILDER_AgentExport_empty_module');
+            return $item;
+        }, $this->getHelperManager()->Agent()->getList());
+
+        $moduleIds = $this->addFieldAndReturn('module_id', [
+            'title'       => Locale::getMessage('BUILDER_AgentExport_module_id'),
+            'placeholder' => '',
+            'multiple'    => 1,
+            'value'       => [],
+            'width'       => 250,
+            'select'      => $this->createSelect($allAgents, 'MODULE_ID', 'MODULE_ID'),
+        ]);
+
+        $selectAgents = array_filter($allAgents, function ($item) use ($moduleIds) {
+            return in_array($item['MODULE_ID'], $moduleIds);
+        });
+
         $agentIds = $this->addFieldAndReturn('agent_id', [
             'title'       => Locale::getMessage('BUILDER_AgentExport_agent_id'),
             'placeholder' => '',
             'multiple'    => 1,
             'value'       => [],
             'width'       => 250,
-            'items'       => $this->getAgentsSelect(),
+            'items'       => $this->createSelectWithGroups($selectAgents, 'ID', 'NAME', 'MODULE_ID'),
         ]);
 
-        $agentIds = is_array($agentIds) ? $agentIds : [$agentIds];
-
         $items = [];
-
         foreach ($agentIds as $agentId) {
-            $agent = $helper->Agent()->exportAgent(['ID' => $agentId]);
-            if (empty($agent)) {
-                continue;
+            $agent = $helper->Agent()->exportAgentById($agentId);
+            if (!empty($agent)) {
+                $items[] = $agent;;
             }
-
-            $items[] = $agent;
         }
 
         if (empty($items)) {
@@ -57,16 +70,6 @@ class AgentBuilder extends VersionBuilder
             [
                 'items' => $items,
             ]
-        );
-    }
-
-    protected function getAgentsSelect(): array
-    {
-        return $this->createSelectWithGroups(
-            $this->getHelperManager()->Agent()->getList(),
-            'MODULE_ID',
-            'ID',
-            'NAME',
         );
     }
 }

@@ -35,42 +35,36 @@ class UserTypeEntitiesBuilder extends VersionBuilder
 
         $allFields = $this->getHelperManager()->UserTypeEntity()->getList();
 
-        $selectEntities = [];
-        foreach ($allFields as $entityField) {
-            $selectEntities[$entityField['ENTITY_ID']] = [
-                'ID' => $entityField['ENTITY_ID'],
-            ];
-        }
-
-        $entityId = $this->addFieldAndReturn(
+        $entityIds = $this->addFieldAndReturn(
             'entity_id',
             [
-                'title'       => Locale::getMessage('BUILDER_UserTypeEntities_EntityId'),
+                'title'       => Locale::getMessage('BUILDER_UserTypeEntities_EntityIds'),
                 'placeholder' => '',
                 'width'       => 250,
-                'select'      => $this->createSelect($selectEntities, 'ID', 'ID'),
-                'value'       => '',
+                'select'      => $this->createSelect($allFields, 'ENTITY_ID', 'ENTITY_ID'),
+                'multiple'    => 1,
+                'value'       => [],
             ]
         );
 
-        $selectFields = array_filter($allFields, function ($entityField) use ($entityId) {
-            return $entityField['ENTITY_ID'] == $entityId;
+        $selectFields = array_filter($allFields, function ($item) use ($entityIds) {
+            return in_array($item['ENTITY_ID'], $entityIds);
         });
 
-        $entityFields = $this->addFieldAndReturn(
+        $items = $this->addFieldAndReturn(
             'entity_fields',
             [
                 'title'       => Locale::getMessage('BUILDER_UserTypeEntities_EntityFields'),
                 'placeholder' => '',
                 'width'       => 250,
                 'multiple'    => 1,
-                'select'      => $this->createSelect($selectFields, 'ID', 'FIELD_NAME'),
+                'items'       => $this->createSelectWithGroups($selectFields, 'ID', 'FIELD_NAME', 'ENTITY_ID'),
                 'value'       => [],
             ]
         );
 
         $entities = [];
-        foreach ($entityFields as $fieldId) {
+        foreach ($items as $fieldId) {
             $entity = $helper->UserTypeEntity()->exportUserTypeEntity($fieldId);
             if (!empty($entity)) {
                 $entities[] = $entity;

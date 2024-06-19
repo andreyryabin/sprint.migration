@@ -329,8 +329,8 @@ abstract class AbstractBuilder extends ExchangeEntity
         foreach ($items as $item) {
             $itemId = $item[$idKey];
             $select[$itemId] = [
-                'value' => $itemId,
                 'title' => $item[$titleKey],
+                'value' => $itemId,
             ];
         }
         return $select;
@@ -338,13 +338,14 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     protected function createSelectWithGroups(
         array $items,
-        string $groupKey,
         string $idKey,
-        string $titleKey
+        string $titleKey,
+        string $groupKey = '-',
     ): array {
         $select = [];
         foreach ($items as $item) {
-            $groupId = $item[$groupKey];
+            $groupId = $item[$groupKey] ?? 'Group';
+            $itemId = $item[$idKey];
 
             if (!isset($select[$groupId])) {
                 $select[$groupId] = [
@@ -355,7 +356,7 @@ abstract class AbstractBuilder extends ExchangeEntity
 
             $select[$groupId]['items'][] = [
                 'title' => $item[$titleKey],
-                'value' => $item[$idKey],
+                'value' => $itemId,
             ];
         }
 

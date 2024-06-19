@@ -11,12 +11,8 @@ class AgentHelper extends Helper
 {
     /**
      * Получает список агентов по фильтру
-     *
-     * @param array $filter
-     *
-     * @return array
      */
-    public function getList(array $filter = [])
+    public function getList(array $filter = []): array
     {
         $dbres = CAgent::GetList(["MODULE_ID" => "ASC"], $filter);
         return $this->fetchAll($dbres);
@@ -25,65 +21,46 @@ class AgentHelper extends Helper
     /**
      * Получает список агентов по фильтру
      * Данные подготовлены для экспорта в миграцию или схему
-     *
-     * @param array $filter
-     *
-     * @return array
      */
-    public function exportAgents($filter = [])
+    public function exportAgents(array $filter = []): array
     {
-        $agents = $this->getList($filter);
-
-        $exportAgents = [];
-        foreach ($agents as $agent) {
-            $exportAgents[] = $this->prepareExportAgent($agent);
-        }
-
-        return $exportAgents;
+        return array_map(function ($agent) {
+            return $this->prepareExportAgent($agent);
+        }, $this->getList($filter));
     }
 
     /**
      * Получает агента
      * Данные подготовлены для экспорта в миграцию или схему
-     *
-     * @param        $moduleId
-     * @param string $name
-     *
-     * @return bool
      */
-    public function exportAgent($moduleId, $name = '')
+    public function exportAgent(string $moduleId, string $name)
     {
-        $agent = $this->getAgent($moduleId, $name);
-        if (empty($agent)) {
-            return false;
-        }
+        return $this->prepareExportAgent(
+            $this->getAgent($moduleId, $name)
+        );
+    }
 
-        return $this->prepareExportAgent($agent);
+    public function exportAgentById(int $agentId)
+    {
+        return $this->prepareExportAgent(
+            $this->getAgentById($agentId)
+        );
     }
 
     /**
      * Получает агента
-     *
-     * @param        $moduleId
-     * @param string $name
-     *
-     * @return array
      */
-    public function getAgent($moduleId, $name = '')
+    public function getAgent(string $moduleId, string $name)
     {
-        $filter = is_array($moduleId)
-            ? $moduleId
-            : [
-                'MODULE_ID' => $moduleId,
-            ];
+        return CAgent::GetList(
+            ['MODULE_ID' => 'ASC'],
+            ['MODULE_ID' => $moduleId, 'NAME' => $name],
+        )->Fetch();
+    }
 
-        if (!empty($name)) {
-            $filter['NAME'] = $name;
-        }
-
-        return CAgent::GetList([
-            "MODULE_ID" => "ASC",
-        ], $filter)->Fetch();
+    public function getAgentById(int $agentId)
+    {
+        return CAgent::GetById($agentId)->Fetch();
     }
 
     /**
@@ -127,14 +104,11 @@ class AgentHelper extends Helper
      * @throws HelperException
      * @return bool|mixed
      */
-    public function saveAgent($fields = [])
+    public function saveAgent(array $fields = [])
     {
-        $this->checkRequiredKeys($fields, ['MODULE_ID', 'NAME']);
+        $this->checkRequiredKeys($fields, ['NAME']);
 
-        $exists = $this->getAgent([
-            'MODULE_ID' => $fields['MODULE_ID'],
-            'NAME'      => $fields['NAME'],
-        ]);
+        $exists = $this->getAgent($fields['MODULE_ID'] ?? '', $fields['NAME']);
 
         $exportExists = $this->prepareExportAgent($exists);
         $fields = $this->prepareExportAgent($fields);
@@ -181,29 +155,26 @@ class AgentHelper extends Helper
     /**
      * Обновление агента, бросает исключение в случае неудачи
      *
-     * @param $fields
-     *
      * @throws HelperException
-     * @return bool
      */
-    public function updateAgent($fields)
+    public function updateAgent(array $fields)
     {
-        $this->checkRequiredKeys($fields, ['MODULE_ID', 'NAME']);
-        $this->deleteAgent($fields['MODULE_ID'], $fields['NAME']);
+        $this->checkRequiredKeys($fields, ['NAME']);
+
+        $this->deleteAgent($fields['MODULE_ID'] ?? '', $fields['NAME']);
+
         return $this->addAgent($fields);
     }
 
     /**
      * Создание агента, бросает исключение в случае неудачи
      *
-     * @param $fields
-     *
      * @throws HelperException
      * @return bool|int
      */
-    public function addAgent($fields)
+    public function addAgent(array $fields)
     {
-        $this->checkRequiredKeys($fields, ['MODULE_ID', 'NAME']);
+        $this->checkRequiredKeys($fields, ['NAME']);
 
         global $DB;
 
@@ -217,7 +188,7 @@ class AgentHelper extends Helper
 
         $agentId = CAgent::AddAgent(
             $fields['NAME'],
-            $fields['MODULE_ID'],
+            $fields['MODULE_ID'] ?? '',
             $fields['IS_PERIOD'],
             $fields['AGENT_INTERVAL'],
             '',

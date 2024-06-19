@@ -14,6 +14,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
 $listView = (
     ($_POST["step_code"] == "migration_view_all")
     || ($_POST["step_code"] == "migration_view_new")
+    || ($_POST["step_code"] == "migration_view_unknown")
     || ($_POST["step_code"] == "migration_view_tag")
     || ($_POST["step_code"] == "migration_view_modified")
     || ($_POST["step_code"] == "migration_view_older")
@@ -38,6 +39,11 @@ if ($_POST["step_code"] == "migration_view_new") {
 } elseif ($_POST["step_code"] == "migration_view_installed") {
     $versions = $versionManager->getVersions([
         'status' => VersionEnum::STATUS_INSTALLED,
+        'search' => $search,
+    ]);
+} elseif ($_POST["step_code"] == "migration_view_unknown") {
+    $versions = $versionManager->getVersions([
+        'status' => VersionEnum::STATUS_UNKNOWN,
         'search' => $search,
     ]);
 } elseif ($_POST["step_code"] == "migration_view_tag") {

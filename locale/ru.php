@@ -28,6 +28,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "TOGGLE_NEW"               => "Новые",
         "TOGGLE_STATUS"            => "Суммарно",
         "TOGGLE_INSTALLED"         => "Установленные",
+        "TOGGLE_UNKNOWN"           => "Неизвестные",
         "TOGGLE_MODIFIED"          => "Измененные",
         "TOGGLE_OLDER"             => "Не поддерживаемые",
         "TOGGLE_TAG"               => "Тег",
@@ -123,6 +124,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_AgentExport1"               => "Создать миграцию для агентов",
         "BUILDER_AgentExport2"               => "Задайте модуль и функцию агента (MODULE_ID, NAME), чтобы увидеть его в списке",
         "BUILDER_AgentExport_agent_id"       => "Выберите агенты",
+        "BUILDER_AgentExport_module_id"      => "Выберите модули",
+        "BUILDER_AgentExport_empty_module"   => "Без модуля",
         "BUILDER_Version1"                   => "Создать простую миграцию",
         "BUILDER_UserGroupExport1"           => "Создать миграцию для групп пользователей",
         "BUILDER_UserGroupExport2"           => "Задайте символьный идентификатор группы (STRING_ID), чтобы увидеть её в списке",
@@ -208,7 +211,7 @@ require_once __DIR__ . "/../lib/locale.php";
     "ru",
     [
         "BUILDER_UserTypeEntities1"             => "Создать миграцию для пользовательских полей",
-        "BUILDER_UserTypeEntities_EntityId"     => "Выберите объект",
+        "BUILDER_UserTypeEntities_EntityIds"    => "Выберите объекты",
         "BUILDER_UserTypeEntities_EntityFields" => "Укажите поля для выгрузки",
     ]
 );

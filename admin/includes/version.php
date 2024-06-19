@@ -60,6 +60,8 @@ $getOnclickMenu = function ()  {
                             value="migration_view_new"><?= Locale::getMessage('TOGGLE_NEW') ?></option>
                     <option <?php if ($listview == 'migration_view_installed'): ?>selected="selected"<?php endif ?>
                             value="migration_view_installed"><?= Locale::getMessage('TOGGLE_INSTALLED') ?></option>
+                    <option <?php if ($listview == 'migration_view_unknown'): ?>selected="selected"<?php endif ?>
+                            value="migration_view_unknown"><?= Locale::getMessage('TOGGLE_UNKNOWN') ?></option>
                     <option <?php if ($listview == 'migration_view_tag'): ?>selected="selected"<?php endif ?>
                             value="migration_view_tag"><?= Locale::getMessage('TOGGLE_TAG') ?></option>
                     <option <?php if ($listview == 'migration_view_modified'): ?>selected="selected"<?php endif ?>

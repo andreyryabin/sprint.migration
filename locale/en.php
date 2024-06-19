@@ -28,6 +28,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "TOGGLE_NEW"               => "New",
         "TOGGLE_STATUS"            => "Summary",
         "TOGGLE_INSTALLED"         => "Installed",
+        "TOGGLE_UNKNOWN"           => "Unknown",
         "TOGGLE_MODIFIED"          => "Modified",
         "TOGGLE_OLDER"             => "Not supported",
         "TOGGLE_TAG"               => "Tag",
@@ -121,6 +122,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_AgentExport1"               => "Create migration for agents",
         "BUILDER_AgentExport2"               => "Set agent module and name (MODULE_ID, NAME), to see it in the list",
         "BUILDER_AgentExport_agent_id"       => "Select agents",
+        "BUILDER_AgentExport_module_id"      => "Select modules",
+        "BUILDER_AgentExport_empty_module"   => "-Empty module-",
         "BUILDER_Version1"                   => "Create empty migration",
         "BUILDER_UserGroupExport1"           => "Create migration for user groups",
         "BUILDER_UserGroupExport2"           => "Set group code (STRING_ID), to see it in the list",
@@ -207,7 +210,7 @@ require_once __DIR__ . "/../lib/locale.php";
     "en",
     [
         "BUILDER_UserTypeEntities1"             => "Create migration for user type entities",
-        "BUILDER_UserTypeEntities_EntityId"     => "Select entity",
+        "BUILDER_UserTypeEntities_EntityIds"    => "Select entities",
         "BUILDER_UserTypeEntities_EntityFields" => "Select fields",
     ]
 );
