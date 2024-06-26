@@ -44,6 +44,7 @@ class HelperManager
 {
     private static $instance   = null;
     private array  $registered = [];
+    private array  $cache      = [];
 
     public static function getInstance(): HelperManager
     {
@@ -62,38 +63,35 @@ class HelperManager
      */
     public function __call($name, $arguments)
     {
-        $class = '\\Sprint\\Migration\\Helpers\\' . $name . 'Helper';
+        return $this->callHelper($name);
+    }
 
-        return $this->callHelper($class);
+    public function registerHelper($name, $class)
+    {
+        $this->registered[$name] = $class;
     }
 
     /**
      * @throws HelperException
      */
-    private function callHelper($class)
+    protected function callHelper(string $name): Helper
     {
-        if (isset($this->registered[$class])) {
-            return $this->registered[$class];
+        if (isset($this->cache[$name])) {
+            return $this->cache[$name];
         }
+
+        $default = '\\Sprint\\Migration\\Helpers\\' . $name . 'Helper';
+
+        $class = $this->registered[$name] ?? $default;
 
         if (class_exists($class)) {
             $ob = new $class;
             if ($ob instanceof Helper) {
-                $this->registered[$class] = $ob;
+                $this->cache[$class] = $ob;
                 return $ob;
             }
         }
 
-        throw new HelperException("Helper \"$class\" not found");
-    }
-
-    /**
-     * @throws HelperException
-     * @deprecated
-     * @removed in 4.10
-     */
-    public function registerHelper(string $name, string $class)
-    {
-        $this->callHelper($class);
+        throw new HelperException("Helper \"$name\" in \"$class\" not found");
     }
 }
