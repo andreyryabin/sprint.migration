@@ -139,4 +139,12 @@ class SqlHelper extends Helper
 
         return implode(',', $columns);
     }
+
+    /**
+     * @throws SqlQueryException
+     */
+    public function dropTable(string $table): Result
+    {
+        return $this->query("DROP TABLE `$table`");
+    }
 }
