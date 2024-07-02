@@ -340,7 +340,7 @@ abstract class AbstractBuilder extends ExchangeEntity
         array $items,
         string $idKey,
         string $titleKey,
-        string $groupKey = '-',
+        string $groupKey = '-'
     ): array {
         $select = [];
         foreach ($items as $item) {
