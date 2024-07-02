@@ -20,12 +20,19 @@ class OptionHelper extends Helper
         );
     }
 
-    /**
-     * @return array|mixed
-     */
-    public function getModules()
+    public function getModules(array $filter = []): array
     {
-        return ModuleManager::getInstalledModules();
+        $modules = ModuleManager::getInstalledModules();
+
+        if (isset($filter['!ID'])) {
+            $skipModules = is_array($filter['!ID']) ? $filter['!ID'] : [$filter['!ID']];
+
+            $modules = array_filter($modules, function ($module) use ($skipModules) {
+                return !in_array($module['ID'], $skipModules);
+            });
+        }
+
+        return $modules;
     }
 
     /**

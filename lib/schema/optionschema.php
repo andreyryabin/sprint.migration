@@ -10,6 +10,7 @@ use Exception;
 use Sprint\Migration\AbstractSchema;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
+use Sprint\Migration\Module;
 
 class OptionSchema extends AbstractSchema
 {
@@ -31,12 +32,21 @@ class OptionSchema extends AbstractSchema
         return $this->getHelperManager()->Option()->isEnabled();
     }
 
+    protected function getModules(): array
+    {
+        $helper = $this->getHelperManager();
+
+        return $helper->Option()->getModules([
+            '!ID' => [Module::ID],
+        ]);
+    }
+
     public function outDescription()
     {
         $schemas = $this->loadSchemas(
             'options/', [
-            'items' => [],
-        ]
+                'items' => [],
+            ]
         );
 
         $cnt = 0;
@@ -64,9 +74,7 @@ class OptionSchema extends AbstractSchema
     {
         $helper = $this->getHelperManager();
 
-        $modules = $helper->Option()->getModules();
-
-        foreach ($modules as $module) {
+        foreach ($this->getModules() as $module) {
             $exportItems = $helper->Option()->getOptions(
                 [
                     'MODULE_ID' => $module['ID'],
@@ -75,21 +83,21 @@ class OptionSchema extends AbstractSchema
 
             $this->saveSchema(
                 'options/' . $module['ID'], [
-                'items' => $exportItems,
-            ]
+                    'items' => $exportItems,
+                ]
             );
         }
     }
 
     public function import()
     {
-        $schemas = $this->loadSchemas(
-            'options/', [
-            'items' => [],
-        ]
-        );
+        foreach ($this->getModules() as $module) {
+            $schema = $this->loadSchema(
+                'options/' . $module['ID'], [
+                    'items' => [],
+                ]
+            );
 
-        foreach ($schemas as $schema) {
             $this->addToQueue('saveOptions', $schema['items']);
         }
     }
