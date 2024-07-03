@@ -196,10 +196,12 @@ class FormHelper extends Helper
      */
     public function saveStatuses(int $formId, array $statuses): array
     {
-        $currentStatuses = $this->mergeCollection(
-            $this->getFormStatuses($formId),
+        $statuses = $this->mergeCollection(
+            $statuses,
             $this->getDefaultStatus()
         );
+
+        $existsStatuses = $this->getFormStatuses($formId);
 
         $updatedIds = [];
 
@@ -207,13 +209,13 @@ class FormHelper extends Helper
             $status['FORM_ID'] = $formId;
 
             $statusId = false;
-            foreach ($currentStatuses as $currentStatus) {
+            foreach ($existsStatuses as $existsStatus) {
                 if (
-                    !in_array($currentStatus['ID'], $updatedIds)
-                    && $currentStatus['TITLE'] == $status['TITLE']
+                    !in_array($existsStatus['ID'], $updatedIds)
+                    && $existsStatus['TITLE'] == $status['TITLE']
                 ) {
-                    $statusId = $currentStatus['ID'];
-                    $updatedIds[] = $currentStatus['ID'];
+                    $statusId = $existsStatus['ID'];
+                    $updatedIds[] = $existsStatus['ID'];
                     break;
                 }
             }
@@ -232,7 +234,7 @@ class FormHelper extends Helper
             }
         }
 
-        foreach ($currentStatuses as $currentStatus) {
+        foreach ($existsStatuses as $currentStatus) {
             if (!in_array($currentStatus['ID'], $updatedIds)) {
                 $this->deleteFormStatus($currentStatus['ID']);
             }
