@@ -92,8 +92,8 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
     postData = postData || {};
     postData['step_code'] = step_code;
     postData['send_sessid'] = jQuery('#migration_container').data('sessid');
-    postData['search'] = jQuery('input[name=migration_search]').val();
-    postData['filter'] = jQuery('select[name=migration_filter]').val();
+    postData['search'] = jQuery('#migration_search').val();
+    postData['migration_view'] = jQuery('#migration_view').val();
 
     migrationEnableButtons(0);
 
@@ -126,7 +126,7 @@ function migrationEnableButtons(enable) {
 function migrationListRefresh(callbackAfterRefresh) {
     jQuery('#migration_actions').empty();
     migrationExecuteStep(
-        jQuery('select[name=migration_filter]').val(),
+        jQuery('#migration_view').val(),
         {},
         function (data) {
             jQuery('#migration_migrations').empty().html(data);
@@ -199,13 +199,20 @@ jQuery(document).ready(function ($) {
     };
 
     (function () {
-        $('.sp-builder_title').removeClass('sp-active');
-        if (localStorage) {
-            let builderName = localStorage.getItem('migrations_open_builder');
-            if (builderName) {
-                $('[data-builder="' + builderName + '"]').addClass('sp-active');
-                migrationReset({builder_name: builderName});
-            }
+        let viewName = localStorage.getItem('sprint_migrations_view');
+        if (viewName) {
+            $('#migration_view').val(viewName);
+        }
+
+        let searchName = localStorage.getItem('sprint_migrations_search');
+        if (searchName) {
+            $('#migration_search').val(searchName);
+        }
+
+        let builderName = localStorage.getItem('sprint_migrations_builder');
+        if (builderName) {
+            $('#migration_container [data-builder="' + builderName + '"]').addClass('sp-active');
+            migrationReset({builder_name: builderName});
         }
     })($);
 
@@ -214,29 +221,29 @@ jQuery(document).ready(function ($) {
         migrationListScroll();
     });
 
-    $('#migration_container').on('change', 'select[name=migration_filter]', function () {
+    $('#migration_view').on('change', function () {
+        localStorage.setItem('sprint_migrations_view', $(this).val())
         migrationListRefresh(function () {
             migrationEnableButtons(1);
             migrationListScroll();
-            $('#tab_cont_tab1').click();
         });
     });
 
-    $('#migration_container').on('keypress', 'input[name=migration_search]', function (e) {
+    $('#migration_search').on('keypress', function (e) {
         if (e.keyCode === 13) {
+            localStorage.setItem('sprint_migrations_search', $(this).val())
             migrationListRefresh(function () {
                 migrationEnableButtons(1);
                 migrationListScroll();
-                $('#tab_cont_tab1').click();
             });
         }
     });
 
-    $('#migration_container').on('click', '.sp-search', function () {
+    $('#migration_refresh').on('click', function () {
+        localStorage.setItem('sprint_migrations_search', $('#migration_search').val())
         migrationListRefresh(function () {
             migrationEnableButtons(1);
             migrationListScroll();
-            jQuery('#tab_cont_tab1').click();
         });
     });
 
@@ -294,9 +301,8 @@ jQuery(document).ready(function ($) {
 
         $(this).addClass('sp-active');
 
-        if (localStorage) {
-            localStorage.setItem('migrations_open_builder', builderName);
-        }
+        localStorage.setItem('sprint_migrations_builder', builderName);
+
         migrationReset({builder_name: builderName});
     });
 

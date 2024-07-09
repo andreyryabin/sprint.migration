@@ -123,14 +123,6 @@
     clear: both;
 }
 
-.sp-filter {
-    /*margin: 10px 0;*/
-    /*background: #ccc;*/
-    /*padding: 10px;*/
-
-    float: right;
-}
-
 table.sp-config {
     border-collapse: collapse;
 }

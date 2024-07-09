@@ -16,7 +16,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
 
     $params = !empty($_POST['params']) ? $_POST['params'] : [];
     $restart = !empty($_POST['restart']) ? 1 : 0;
-    $version = isset($_POST['version']) ? $_POST['version'] : 0;
+    $version = !empty($_POST['version']) ? $_POST['version'] : 0;
     $action = !empty($_POST['action']) ? $_POST['action'] : 0;
     $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
     $settag = !empty($_POST['settag']) ? trim($_POST['settag']) : '';
@@ -24,7 +24,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
-    $filter = !empty($_POST['filter']) ? trim($_POST['filter']) : '';
+    $migrationView = !empty($_POST['migration_view']) ? trim($_POST['migration_view']) : '';
 
     $filterVersion = [
         'search'   => $search,
@@ -33,12 +33,12 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
         'older'    => '',
     ];
 
-    if ($filter == 'migration_view_tag') {
+    if ($migrationView == 'migration_view_tag') {
         $filterVersion['tag'] = $search;
         $filterVersion['search'] = '';
-    } elseif ($filter == 'migration_view_modified') {
+    } elseif ($migrationView == 'migration_view_modified') {
         $filterVersion['modified'] = 1;
-    } elseif ($filter == 'migration_view_older') {
+    } elseif ($migrationView == 'migration_view_older') {
         $filterVersion['older'] = 1;
     }
 
@@ -79,10 +79,10 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
 
             if ($nextAction) {
                 $json = json_encode([
-                    'next_action' => $nextAction,
-                    'settag'      => $settag,
-                    'search'      => $search,
-                    'filter'      => $filter,
+                    'next_action'    => $nextAction,
+                    'settag'         => $settag,
+                    'search'         => $search,
+                    'migration_view' => $migrationView,
                 ]);
 
                 ?>
@@ -101,14 +101,14 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
 
         if ($success && $restart) {
             $json = json_encode([
-                'params'      => $versionManager->getRestartParams(),
-                'action'      => $action,
-                'version'     => $version,
-                'next_action' => $nextAction,
-                'restart'     => 1,
-                'search'      => $search,
-                'filter'      => $filter,
-                'settag'      => $settag,
+                'params'         => $versionManager->getRestartParams(),
+                'action'         => $action,
+                'version'        => $version,
+                'next_action'    => $nextAction,
+                'restart'        => 1,
+                'search'         => $search,
+                'migration_view' => $migrationView,
+                'settag'         => $settag,
             ]);
 
             ?>
@@ -119,14 +119,14 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
             Out::outException($versionManager->getLastException());
 
             $json = json_encode([
-                'params'      => $params,
-                'action'      => $action,
-                'version'     => $version,
-                'next_action' => $nextAction,
-                'restart'     => 1,
-                'search'      => $search,
-                'filter'      => $filter,
-                'settag'      => $settag,
+                'params'         => $params,
+                'action'         => $action,
+                'version'        => $version,
+                'next_action'    => $nextAction,
+                'restart'        => 1,
+                'search'         => $search,
+                'migration_view' => $migrationView,
+                'settag'         => $settag,
             ]);
             ?>
             <script>

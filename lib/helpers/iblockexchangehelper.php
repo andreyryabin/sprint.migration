@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Helpers;
 
+use _CIBElement;
 use Sprint\Migration\Exceptions\HelperException;
 
 class IblockExchangeHelper extends IblockHelper
@@ -95,7 +96,7 @@ class IblockExchangeHelper extends IblockHelper
         }
 
         if (is_string($uniqName)) {
-            list($sectionName, $depthLevel, $code) = explode('|', $uniqName);
+            [$sectionName, $depthLevel, $code] = explode('|', $uniqName);
             $uniqName = [];
             if ($sectionName) {
                 $uniqName['NAME'] = $sectionName;
@@ -121,7 +122,7 @@ class IblockExchangeHelper extends IblockHelper
         }
 
         if (is_string($uniqName)) {
-            list($elementName, $xmlId, $code) = explode('|', $uniqName);
+            [$elementName, $xmlId, $code] = explode('|', $uniqName);
             $uniqName = [];
             if ($elementName) {
                 $uniqName['NAME'] = $elementName;
@@ -153,5 +154,17 @@ class IblockExchangeHelper extends IblockHelper
     {
         $filter = $this->getElementUniqFilterById($iblockId, $elementId);
         return $filter['NAME'] . '|' . $filter['XML_ID'] . '|' . $filter['CODE'];
+    }
+
+    public function getElementFields(_CIBElement $element)
+    {
+        $fields = $element->GetFields();
+        $fields['IBLOCK_SECTION'] = $this->getElementSectionIds($fields['ID']);
+        return $fields;
+    }
+
+    public function getElementProps(_CIBElement $element)
+    {
+        return $element->GetProperties();
     }
 }

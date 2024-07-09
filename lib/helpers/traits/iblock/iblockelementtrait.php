@@ -3,54 +3,12 @@
 namespace Sprint\Migration\Helpers\Traits\Iblock;
 
 use CIBlockElement;
+use CIBlockResult;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
 
 trait IblockElementTrait
 {
-    /**
-     * Получает элемент инфоблока
-     *
-     * @param       $iblockId
-     * @param       $code
-     * @param array $select
-     *
-     * @return array
-     */
-    public function getElement($iblockId, $code, $select = [])
-    {
-        /** @compatibility filter or code */
-        $filter = is_array($code)
-            ? $code
-            : [
-                '=CODE' => $code,
-            ];
-
-        $filter['IBLOCK_ID'] = $iblockId;
-        $filter['CHECK_PERMISSIONS'] = 'N';
-
-        $select = array_merge(
-            [
-                'ID',
-                'XML_ID',
-                'IBLOCK_ID',
-                'NAME',
-                'CODE',
-                'ACTIVE',
-            ], $select
-        );
-
-        $item = CIBlockElement::GetList(
-            [
-                'SORT' => 'ASC',
-            ], $filter, false, [
-            'nTopCount' => 1,
-        ], $select
-        )->Fetch();
-
-        return $this->prepareElement($item);
-    }
-
     /**
      * Получает id элемента инфоблока
      *
@@ -66,18 +24,22 @@ trait IblockElementTrait
     }
 
     /**
-     * Получает элементы инфоблока
+     * Получает элемент инфоблока
      *
-     * @param       $iblockId
-     * @param array $filter
-     * @param array $select
+     * @param int          $iblockId
+     * @param array|string $code
+     * @param array        $select
      *
      * @return array
      */
-    public function getElements($iblockId, $filter = [], $select = [])
+    public function getElement($iblockId, $code, $select = [])
     {
-        $filter['IBLOCK_ID'] = $iblockId;
-        $filter['CHECK_PERMISSIONS'] = 'N';
+        /** @compatibility filter or code */
+        $filter = is_array($code)
+            ? $code
+            : [
+                '=CODE' => $code,
+            ];
 
         $select = array_merge(
             [
@@ -90,73 +52,138 @@ trait IblockElementTrait
             ], $select
         );
 
-        $dbres = CIBlockElement::GetList(
+        $item = $this->getElementsList($iblockId, [
+            'filter' => $filter,
+            'select' => $select,
+            'limit'  => 1,
+        ])->Fetch();
+
+        return $this->prepareElement($item);
+    }
+
+    /**
+     * @param $item
+     *
+     * @return mixed
+     */
+    protected function prepareElement($item)
+    {
+        if (empty($item['ID'])) {
+            return $item;
+        }
+
+        $item['IBLOCK_SECTION'] = $this->getElementSectionIds($item['ID']);
+
+        return $item;
+    }
+
+    /**
+     * @param $elementId
+     *
+     * @return array
+     */
+    public function getElementSectionIds($elementId)
+    {
+        $sections = $this->getElementSections($elementId);
+        return array_column($sections, 'ID');
+    }
+
+    /**
+     * @param       $elementId
+     * @param array $sectionSelect
+     *
+     * @return mixed
+     */
+    public function getElementSections($elementId, $sectionSelect = [])
+    {
+        $dbres = CIBlockElement::GetElementGroups($elementId, true, $sectionSelect);
+        return $this->fetchAll($dbres);
+    }
+
+    /**
+     * Получает элементы инфоблока
+     *
+     * @param int   $iblockId
+     * @param array $filter
+     * @param array $select
+     *
+     * @return array
+     */
+    public function getElements($iblockId, $filter = [], $select = []): array
+    {
+        $select = array_merge(
             [
-                'ID' => 'ASC',
-            ], $filter, false, false, $select
+                'ID',
+                'XML_ID',
+                'IBLOCK_ID',
+                'NAME',
+                'CODE',
+                'ACTIVE',
+            ], $select
+        );
+
+        $dbres = $this->getElementsList(
+            $iblockId,
+            [
+                'filter' => $filter,
+                'select' => $select,
+            ]
         );
 
         $list = [];
         while ($item = $dbres->Fetch()) {
-            $list[] = $this->prepareElement($item);;
+            $list[] = $this->prepareElement($item);
         }
         return $list;
     }
 
-    /**
-     * @param int   $iblockId
-     * @param array $params
-     *
-     * @return array
-     */
-    public function getElementsEx($iblockId, $params = [])
+    public function getElementsList($iblockId, $params = []): CIBlockResult
     {
         $params = array_merge(
             [
                 'offset' => 0,
                 'limit'  => 0,
                 'filter' => [],
+                'select' => [],
                 'order'  => ['ID' => 'ASC'],
             ], $params
         );
 
-        if ($params['limit'] > 0) {
-            $pageNum = (int)floor($params['offset'] / $params['limit']) + 1;
-        } else {
-            $pageNum = 1;
-        }
-
-        $params['filter']['IBLOCK_ID'] = $iblockId;
-        $params['filter']['CHECK_PERMISSIONS'] = 'N';
-
-        $dbres = CIBlockElement::GetList(
-            $params['order'],
+        $params['filter'] = array_merge(
             $params['filter'],
-            false,
             [
-                'nPageSize'       => $params['limit'],
-                'iNumPage'        => $pageNum,
-                'checkOutOfRange' => true,
+                'IBLOCK_ID'         => $iblockId,
+                'CHECK_PERMISSIONS' => 'N',
             ]
         );
 
-        $result = [];
-        while ($item = $dbres->GetNextElement(false, false)) {
-            $fields = $item->GetFields();
-            $props = $item->GetProperties();
-
-            $fields['IBLOCK_SECTION'] = $this->getElementSectionIds($fields['ID']);
-
-            $result[] = [
-                'FIELDS' => $fields,
-                'PROPS'  => $props,
-            ];
+        $navParams = false;
+        if ($params['limit'] > 0) {
+            if ($params['offset'] > 0) {
+                $pageNum = (int)floor($params['offset'] / $params['limit']) + 1;
+                $navParams = [
+                    'nPageSize'       => $params['limit'],
+                    'iNumPage'        => $pageNum,
+                    'checkOutOfRange' => true,
+                ];
+            } else {
+                $navParams = [
+                    'nTopCount' => $params['limit'],
+                ];
+            }
         }
-        return $result;
+
+        return CIBlockElement::GetList(
+            $params['order'],
+            $params['filter'],
+            false,
+            $navParams,
+            $params['select']
+        );
     }
 
     /**
-     * @param       $iblockId
+     * @param int   $iblockId
      * @param array $filter
      *
      * @return int
@@ -185,29 +212,6 @@ trait IblockElementTrait
     }
 
     /**
-     * @param       $elementId
-     * @param array $sectionSelect
-     *
-     * @return mixed
-     */
-    public function getElementSections($elementId, $sectionSelect = [])
-    {
-        $dbres = CIBlockElement::GetElementGroups($elementId, true, $sectionSelect);
-        return $this->fetchAll($dbres);
-    }
-
-    /**
-     * @param $elementId
-     *
-     * @return array
-     */
-    public function getElementSectionIds($elementId)
-    {
-        $sections = $this->getElementSections($elementId);
-        return array_column($sections, 'ID');
-    }
-
-    /**
      * Сохраняет элемент инфоблока
      * Создаст если не было, обновит если существует (поиск по коду)
      *
@@ -228,6 +232,72 @@ trait IblockElementTrait
         }
 
         return $this->addElement($iblockId, $fields, $props);
+    }
+
+    /**
+     * Обновляет элемент инфоблока
+     *
+     * @param       $elementId
+     * @param array $fields
+     * @param array $props
+     *
+     * @throws HelperException
+     * @return int
+     */
+    public function updateElement($elementId, $fields = [], $props = [])
+    {
+        $iblockId = !empty($fields['IBLOCK_ID']) ? $fields['IBLOCK_ID'] : false;
+        unset($fields['IBLOCK_ID']);
+
+        if (!empty($fields)) {
+            $ib = new CIBlockElement;
+            if (!$ib->Update($elementId, $fields)) {
+                throw new HelperException($ib->LAST_ERROR);
+            }
+        }
+
+        if (!empty($props)) {
+            CIBlockElement::SetPropertyValuesEx($elementId, $iblockId, $props);
+        }
+
+        return $elementId;
+    }
+
+    /**
+     * Добавляет элемент инфоблока
+     *
+     * @param       $iblockId
+     * @param array $fields - поля
+     * @param array $props  - свойства
+     *
+     * @throws HelperException
+     * @return int|void
+     */
+    public function addElement($iblockId, $fields = [], $props = [])
+    {
+        $default = [
+            'NAME'              => 'element',
+            'IBLOCK_SECTION_ID' => false,
+            'ACTIVE'            => 'Y',
+            'PREVIEW_TEXT'      => '',
+            'DETAIL_TEXT'       => '',
+        ];
+
+        $fields = array_replace_recursive($default, $fields);
+        $fields['IBLOCK_ID'] = $iblockId;
+
+        if (!empty($props)) {
+            $fields['PROPERTY_VALUES'] = $props;
+        }
+
+        $ib = new CIBlockElement;
+        $id = $ib->Add($fields);
+
+        if ($id) {
+            return $id;
+        }
+
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
@@ -273,43 +343,6 @@ trait IblockElementTrait
     }
 
     /**
-     * Добавляет элемент инфоблока
-     *
-     * @param       $iblockId
-     * @param array $fields - поля
-     * @param array $props  - свойства
-     *
-     * @throws HelperException
-     * @return int|void
-     */
-    public function addElement($iblockId, $fields = [], $props = [])
-    {
-        $default = [
-            'NAME'              => 'element',
-            'IBLOCK_SECTION_ID' => false,
-            'ACTIVE'            => 'Y',
-            'PREVIEW_TEXT'      => '',
-            'DETAIL_TEXT'       => '',
-        ];
-
-        $fields = array_replace_recursive($default, $fields);
-        $fields['IBLOCK_ID'] = $iblockId;
-
-        if (!empty($props)) {
-            $fields['PROPERTY_VALUES'] = $props;
-        }
-
-        $ib = new CIBlockElement;
-        $id = $ib->Add($fields);
-
-        if ($id) {
-            return $id;
-        }
-
-        throw new HelperException($ib->LAST_ERROR);
-    }
-
-    /**
      * Обновляет элемент инфоблока если он существует
      *
      * @param int   $iblockId
@@ -335,49 +368,6 @@ trait IblockElementTrait
     }
 
     /**
-     * Обновляет элемент инфоблока
-     *
-     * @param       $elementId
-     * @param array $fields
-     * @param array $props
-     *
-     * @throws HelperException
-     * @return int
-     */
-    public function updateElement($elementId, $fields = [], $props = [])
-    {
-        $iblockId = !empty($fields['IBLOCK_ID']) ? $fields['IBLOCK_ID'] : false;
-        unset($fields['IBLOCK_ID']);
-
-        if (!empty($fields)) {
-            $ib = new CIBlockElement;
-            if (!$ib->Update($elementId, $fields)) {
-                throw new HelperException($ib->LAST_ERROR);
-            }
-        }
-
-        if (!empty($props)) {
-            CIBlockElement::SetPropertyValuesEx($elementId, $iblockId, $props);
-        }
-
-        return $elementId;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function deleteElementByCode($iblockId, $code)
-    {
-        if (!empty($code)) {
-            $item = $this->getElement($iblockId, ['=CODE' => $code]);
-            if ($item) {
-                return $this->deleteElement($item['ID']);
-            }
-        }
-        return false;
-    }
-
-    /**
      * @throws HelperException
      */
     public function deleteElementByXmlId($iblockId, $xmlId)
@@ -389,20 +379,6 @@ trait IblockElementTrait
             }
         }
         return false;
-    }
-
-    /**
-     * Удаляет элемент инфоблока если он существует
-     *
-     * @param $iblockId
-     * @param $code
-     *
-     * @throws HelperException
-     * @return bool|void
-     */
-    public function deleteElementIfExists($iblockId, $code)
-    {
-        return $this->deleteElementByCode($iblockId, $code);
     }
 
     /**
@@ -421,6 +397,34 @@ trait IblockElementTrait
         }
 
         throw new HelperException($ib->LAST_ERROR);
+    }
+
+    /**
+     * Удаляет элемент инфоблока если он существует
+     *
+     * @param $iblockId
+     * @param $code
+     *
+     * @throws HelperException
+     * @return bool|void
+     */
+    public function deleteElementIfExists($iblockId, $code)
+    {
+        return $this->deleteElementByCode($iblockId, $code);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function deleteElementByCode($iblockId, $code)
+    {
+        if (!empty($code)) {
+            $item = $this->getElement($iblockId, ['=CODE' => $code]);
+            if ($item) {
+                return $this->deleteElement($item['ID']);
+            }
+        }
+        return false;
     }
 
     /**
@@ -497,21 +501,5 @@ trait IblockElementTrait
         }
 
         return $element['ID'];
-    }
-
-    /**
-     * @param $item
-     *
-     * @return mixed
-     */
-    protected function prepareElement($item)
-    {
-        if (empty($item['ID'])) {
-            return $item;
-        }
-
-        $item['IBLOCK_SECTION'] = $this->getElementSectionIds($item['ID']);
-
-        return $item;
     }
 }

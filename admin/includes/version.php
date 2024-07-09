@@ -1,28 +1,28 @@
 <?php
 
 use Sprint\Migration\Locale;
+use Sprint\Migration\VersionConfig;
 
-$search = '';
-$listview = '';
+/** @var $versionConfig VersionConfig */
 
-$getOnclickMenu = function ()  {
+$getOnclickMenu = function () {
     $menu = [];
     $menu[] = [
-        'TEXT' => Locale::getMessage('UP_START_WITH_TAG'),
+        'TEXT'    => Locale::getMessage('UP_START_WITH_TAG'),
         'ONCLICK' => 'migrationMigrationsUpWithTag()',
     ];
     $menu[] = [
-        'TEXT' => Locale::getMessage('DOWN_START'),
+        'TEXT'    => Locale::getMessage('DOWN_START'),
         'ONCLICK' => 'migrationMigrationsDownConfirm()',
     ];
     $menu[] = [
-        'TEXT' => Locale::getMessage('DELETE_UNKNOWN'),
+        'TEXT'    => Locale::getMessage('DELETE_UNKNOWN'),
         'ONCLICK' => 'migrationMigrationsDeleteUnknownConfirm()',
     ];
     return CUtil::PhpToJSObject($menu);
 }
 ?>
-<div id="migration_container" data-sessid="<?= bitrix_sessid() ?>">
+<div id="migration_container" data-sessid="<?= bitrix_sessid() ?>" data-config="<?= $versionConfig->getName() ?>">
     <div class="sp-table">
         <div class="sp-row2">
             <div class="sp-col sp-col-scroll sp-white">
@@ -30,7 +30,6 @@ $getOnclickMenu = function ()  {
             </div>
             <div class="sp-col sp-col-scroll">
                 <div id="migration_progress" class="sp-scroll"></div>
-                <div id="migration_actions"></div>
             </div>
         </div>
     </div>
@@ -45,33 +44,27 @@ $getOnclickMenu = function ()  {
                    href="javascript:void(0)"
                    class="adm-btn"
                    hidefocus="true">&equiv;</a>
+
+                <div id="migration_actions" style="float: right"></div>
             </div>
             <div class="sp-col">
                 <input placeholder="<?= Locale::getMessage('SEARCH') ?>"
                        style=""
                        type="text"
-                       value="<?= $search ?>"
+                       value=""
                        class="adm-input"
-                       name="migration_search"/>
-                <select name="migration_filter">
-                    <option <?php if ($listview == 'migration_view_all'): ?>selected="selected"<?php endif ?>
-                            value="migration_view_all"><?= Locale::getMessage('TOGGLE_LIST') ?></option>
-                    <option <?php if ($listview == 'migration_view_new'): ?>selected="selected"<?php endif ?>
-                            value="migration_view_new"><?= Locale::getMessage('TOGGLE_NEW') ?></option>
-                    <option <?php if ($listview == 'migration_view_installed'): ?>selected="selected"<?php endif ?>
-                            value="migration_view_installed"><?= Locale::getMessage('TOGGLE_INSTALLED') ?></option>
-                    <option <?php if ($listview == 'migration_view_unknown'): ?>selected="selected"<?php endif ?>
-                            value="migration_view_unknown"><?= Locale::getMessage('TOGGLE_UNKNOWN') ?></option>
-                    <option <?php if ($listview == 'migration_view_tag'): ?>selected="selected"<?php endif ?>
-                            value="migration_view_tag"><?= Locale::getMessage('TOGGLE_TAG') ?></option>
-                    <option <?php if ($listview == 'migration_view_modified'): ?>selected="selected"<?php endif ?>
-                            value="migration_view_modified"><?= Locale::getMessage('TOGGLE_MODIFIED') ?></option>
-                    <option <?php if ($listview == 'migration_view_older'): ?>selected="selected"<?php endif ?>
-                            value="migration_view_older"><?= Locale::getMessage('TOGGLE_OLDER') ?></option>
-                    <option <?php if ($listview == 'migration_view_status'): ?>selected="selected"<?php endif ?>
-                            value="migration_view_status"><?= Locale::getMessage('TOGGLE_STATUS') ?></option>
+                       id="migration_search"/>
+                <select id="migration_view">
+                    <option value="migration_view_all"><?= Locale::getMessage('TOGGLE_LIST') ?></option>
+                    <option value="migration_view_new"><?= Locale::getMessage('TOGGLE_NEW') ?></option>
+                    <option value="migration_view_installed"><?= Locale::getMessage('TOGGLE_INSTALLED') ?></option>
+                    <option value="migration_view_unknown"><?= Locale::getMessage('TOGGLE_UNKNOWN') ?></option>
+                    <option value="migration_view_tag"><?= Locale::getMessage('TOGGLE_TAG') ?></option>
+                    <option value="migration_view_modified"><?= Locale::getMessage('TOGGLE_MODIFIED') ?></option>
+                    <option value="migration_view_older"><?= Locale::getMessage('TOGGLE_OLDER') ?></option>
+                    <option value="migration_view_status"><?= Locale::getMessage('TOGGLE_STATUS') ?></option>
                 </select>
-                <input type="button" value="<?= Locale::getMessage('SEARCH') ?>" class="sp-search"/>
+                <input id="migration_refresh" type="button" value="<?= Locale::getMessage('SEARCH') ?>"/>
             </div>
         </div>
     </div>

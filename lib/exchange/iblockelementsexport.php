@@ -119,7 +119,7 @@ class IblockElementsExport extends AbstractExchange
         }
 
         if ($params['offset'] <= $params['total'] - 1) {
-            $items = $iblockExchange->getElementsEx(
+            $dbres = $iblockExchange->getElementsList(
                 $this->getIblockId(),
                 [
                     'order'  => ['ID' => 'ASC'],
@@ -129,12 +129,12 @@ class IblockElementsExport extends AbstractExchange
                 ]
             );
 
-            foreach ($items as $item) {
+            while ($element = $dbres->GetNextElement(false, false)) {
                 $writer = new XMLWriter();
                 $writer->openMemory();
                 $writer->startElement('item');
 
-                foreach ($item['FIELDS'] as $code => $val) {
+                foreach ($iblockExchange->getElementFields($element) as $code => $val) {
                     if (in_array($code, $this->getExportFields())) {
                         $method = $this->getWriteFieldMethod($code);
                         if (method_exists($this, $method)) {
@@ -146,7 +146,7 @@ class IblockElementsExport extends AbstractExchange
                     }
                 }
 
-                foreach ($item['PROPS'] as $prop) {
+                foreach ($iblockExchange->getElementProps($element)  as $prop) {
                     if (in_array($prop['CODE'], $this->getExportProperties())) {
                         $method = $this->getWritePropertyMethod($prop);
                         if (method_exists($this, $method)) {
