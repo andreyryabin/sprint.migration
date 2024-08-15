@@ -694,10 +694,10 @@ class HlblockHelper extends Helper
     {
         $this->checkRequiredKeys($fields, ['UF_XML_ID']);
 
-        $item = $this->getElementByXmlId($hlblockName, $fields['UF_XML_ID']);
+        $id = $this->getElementIdByXmlId($hlblockName, $fields['UF_XML_ID']);
 
-        if (!empty($item['ID'])) {
-            return $this->updateElement($hlblockName, $item['ID'], $fields);
+        if ($id) {
+            return $this->updateElement($hlblockName, $id, $fields);
         }
 
         return $this->addElement($hlblockName, $fields);
@@ -706,9 +706,9 @@ class HlblockHelper extends Helper
     public function deleteElementByXmlId($hlblockName, $xmlId)
     {
         if (!empty($xmlId)) {
-            $item = $this->getElementByXmlId($hlblockName, $xmlId);
-            if ($item) {
-                return $this->deleteElement($hlblockName, $item['ID']);
+            $id = $this->getElementIdByXmlId($hlblockName, $xmlId);
+            if ($id) {
+                return $this->deleteElement($hlblockName, $id);
             }
         }
         return false;
@@ -845,18 +845,14 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param string $hlblockName
-     * @param string $xmlId
-     *
      * @throws HelperException
-     * @return array|void
      */
-    public function getElementByXmlId($hlblockName, $xmlId)
+    public function getElement($hlblockName, array $filter)
     {
         $dataManager = $this->getDataManager($hlblockName);
         try {
             return $dataManager::getList([
-                'filter' => ['UF_XML_ID' => $xmlId],
+                'filter' => $filter,
                 'offset' => 0,
                 'limit'  => 1,
             ])->fetch();
@@ -866,13 +862,35 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param       $hlblockName
-     * @param array $filter
+     * @throws HelperException
+     */
+    public function getElementId($hlblockName, array $filter): int
+    {
+        $item = $this->getElement($hlblockName, $filter);
+        return (int)($item['ID'] ?? 0);
+    }
+
+    /**
+     * @param string $hlblockName
+     * @param string $xmlId
      *
      * @throws HelperException
-     * @return int|void
+     * @return array|void
      */
-    public function getElementsCount($hlblockName, $filter = [])
+    public function getElementByXmlId($hlblockName, $xmlId)
+    {
+        return $this->getElement($hlblockName, ['UF_XML_ID' => $xmlId]);
+    }
+
+    public function getElementIdByXmlId($hlblockName, $xmlId): int
+    {
+        return $this->getElementId($hlblockName, ['UF_XML_ID' => $xmlId]);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getElementsCount($hlblockName, array $filter = [])
     {
         $dataManager = $this->getDataManager($hlblockName);
         try {

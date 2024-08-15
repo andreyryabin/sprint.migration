@@ -196,50 +196,98 @@ class FormHelper extends Helper
      */
     public function saveStatuses(int $formId, array $statuses): array
     {
-        $statuses = $this->mergeCollection(
-            $statuses,
-            $this->getDefaultStatus()
-        );
-
-        $existsStatuses = $this->getFormStatuses($formId);
+        $oldStatuses = $this->getFormStatuses($formId);
 
         $updatedIds = [];
+        foreach ($statuses as $status) {
+            $updatedIds[] = $this->saveStatus($formId, $status);
+        }
+
+        foreach ($oldStatuses as $status) {
+            if (!in_array($status['ID'], $updatedIds)) {
+                $this->deleteFormStatus($status['ID']);
+            }
+        }
+
+        return $updatedIds;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function saveStatus(int $formId, array $fields): int
+    {
+        $this->checkRequiredKeys($fields, ['TITLE']);
+
+        $statusId = $this->getStatusId($formId, $fields['TITLE']);
+        if ($statusId) {
+            return $this->updateStatus($formId, $statusId, $fields);
+        }
+
+        return $this->addStatus($formId, $fields);
+    }
+
+    public function getStatusId(int $formId, string $title): int
+    {
+        $by = 's_sort';
+        $order = 'asc';
+
+        //жаль что фильтр TITLE_EXACT_MATCH не работает
+
+        $dbres = CFormStatus::GetList($formId, $by, $order);
+        $statuses = $this->fetchAll($dbres);
 
         foreach ($statuses as $status) {
-            $status['FORM_ID'] = $formId;
-
-            $statusId = false;
-            foreach ($existsStatuses as $existsStatus) {
-                if (
-                    !in_array($existsStatus['ID'], $updatedIds)
-                    && $existsStatus['TITLE'] == $status['TITLE']
-                ) {
-                    $statusId = $existsStatus['ID'];
-                    $updatedIds[] = $existsStatus['ID'];
-                    break;
-                }
-            }
-
-            //Зададим доступы к статусу для создателя результата
-            //Сделано по аналогии с тем, как  у самого Битрикс при создании новой веб-формы в упрощенном режиме
-            //см. \bitrix\modules\form\admin\form_edit.php#295
-            $status['arPERMISSION_VIEW'] = $status['arPERMISSION_VIEW'] ?: [0];
-            $status['arPERMISSION_MOVE'] = $status['arPERMISSION_MOVE'] ?: [0];
-            $status['arPERMISSION_EDIT'] = $status['arPERMISSION_EDIT'] ?: [0];
-            $status['arPERMISSION_DELETE'] = $status['arPERMISSION_DELETE'] ?: [0];
-
-            $statusId = CFormStatus::Set($status, $statusId, 'N');
-            if (empty($statusId)) {
-                throw new HelperException($GLOBALS['strError']);
+            if ($status['TITLE'] == $title) {
+                return $status['ID'];
             }
         }
+        return 0;
+    }
 
-        foreach ($existsStatuses as $currentStatus) {
-            if (!in_array($currentStatus['ID'], $updatedIds)) {
-                $this->deleteFormStatus($currentStatus['ID']);
-            }
+    /**
+     * @throws HelperException
+     */
+    public function updateStatus(int $formId, int $statusId, array $fields): int
+    {
+        $fields = $this->merge($fields, $this->getDefaultStatus());
+
+        $fields['FORM_ID'] = $formId;
+
+        $statusId = CFormStatus::Set($fields, $statusId, 'N');
+        if (empty($statusId)) {
+            throw new HelperException($GLOBALS['strError']);
         }
 
+        return $statusId;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function addStatus(int $formId, array $fields): int
+    {
+        $fields = $this->merge($fields, $this->getDefaultStatus());
+
+        $fields['FORM_ID'] = $formId;
+
+        $statusId = CFormStatus::Set($fields, false, 'N');
+        if (empty($statusId)) {
+            throw new HelperException($GLOBALS['strError']);
+        }
+
+        return $statusId;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function addNewStatuses(int $formId, array $statuses): array
+    {
+        $updatedIds = [];
+        foreach ($statuses as $status) {
+            $updatedIds[] = $this->addStatus($formId, $status);
+        }
         return $updatedIds;
     }
 
@@ -272,8 +320,31 @@ class FormHelper extends Helper
         $by = 's_sort';
         $order = 'asc';
 
+        $statuses = [];
         $dbres = CFormStatus::GetList($formId, $by, $order);
-        return $this->fetchAll($dbres);
+        while ($item = $dbres->Fetch()) {
+            $statuses[] = $this->prepareStatus($item);
+        }
+        return $statuses;
+    }
+
+    protected function prepareStatus(array $item): array
+    {
+        //см. \bitrix\modules\form\admin\form_edit.php#295
+
+        CFormStatus::GetPermissionList(
+            $item['ID'],
+            $arPERMISSION_VIEW,
+            $arPERMISSION_MOVE,
+            $arPERMISSION_EDIT,
+            $arPERMISSION_DELETE
+        );
+
+        $item['arPERMISSION_VIEW'] = $arPERMISSION_VIEW;
+        $item['arPERMISSION_MOVE'] = $arPERMISSION_MOVE;
+        $item['arPERMISSION_EDIT'] = $arPERMISSION_EDIT;
+        $item['arPERMISSION_DELETE'] = $arPERMISSION_DELETE;
+        return $item;
     }
 
     public function exportFormStatuses(int $formId): array
@@ -591,12 +662,16 @@ class FormHelper extends Helper
     private function getDefaultStatus(): array
     {
         return [
-            'C_SORT'        => '100',
-            'ACTIVE'        => 'Y',
-            'DESCRIPTION'   => 'DEFAULT',
-            'DEFAULT_VALUE' => 'Y',
-            'HANDLER_OUT'   => null,
-            'HANDLER_IN'    => null,
+            'C_SORT'              => '100',
+            'ACTIVE'              => 'Y',
+            'DESCRIPTION'         => 'DEFAULT',
+            'DEFAULT_VALUE'       => 'Y',
+            'HANDLER_OUT'         => null,
+            'HANDLER_IN'          => null,
+            'arPERMISSION_VIEW'   => [0],
+            'arPERMISSION_MOVE'   => [0],
+            'arPERMISSION_EDIT'   => [0],
+            'arPERMISSION_DELETE' => [0],
         ];
     }
 

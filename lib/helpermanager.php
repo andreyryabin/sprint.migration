@@ -87,7 +87,7 @@ class HelperManager
         if (class_exists($class)) {
             $ob = new $class;
             if ($ob instanceof Helper) {
-                $this->cache[$class] = $ob;
+                $this->cache[$name] = $ob;
                 return $ob;
             }
         }

@@ -141,13 +141,8 @@ class IblockBuilder extends VersionBuilder
             $exportSectionForm = $helper->UserOptions()->exportSectionForm($iblockId);
             $exportElementList = $helper->UserOptions()->exportElementList($iblockId);
             $exportSectionList = $helper->UserOptions()->exportSectionList($iblockId);
-
-            $exportElementGrid = $helper->UserOptions()->exportGrid(
-                $helper->UserOptions()->getElementGridId($iblockId)
-            );
-            $exportSectionGrid = $helper->UserOptions()->exportGrid(
-                $helper->UserOptions()->getSectionGridId($iblockId)
-            );
+            $exportElementGrid = $helper->UserOptions()->exportElementGrid($iblockId);
+            $exportSectionGrid = $helper->UserOptions()->exportSectionGrid($iblockId);
         }
 
         $this->createVersionFile(

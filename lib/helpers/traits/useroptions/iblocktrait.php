@@ -168,6 +168,16 @@ trait IblockTrait
     {
         return $this->exportGrid($this->getElementGridId($iblockId));
     }
+    /**
+     * @param $iblockId
+     *
+     * @throws HelperException
+     * @return mixed
+     */
+    public function exportSectionGrid($iblockId)
+    {
+        return $this->exportGrid($this->getSectionGridId($iblockId));
+    }
 
     /**
      * @param       $iblockId
