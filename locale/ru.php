@@ -23,6 +23,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "DOWN_START"               => "Откатить все",
         "VIEW_FILE"                => "Просмотреть",
         "TRANSFER_TO"              => "Перенести в",
+        "TOGGLE_ACTUAL"            => "Актуальные",
         "TOGGLE_LIST"              => "Все",
         "TOGGLE_NEW"               => "Новые",
         "TOGGLE_STATUS"            => "Суммарно",

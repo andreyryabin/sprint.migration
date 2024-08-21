@@ -198,6 +198,7 @@ class Console
             'tag'      => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
             'older'    => $this->getArg('--older'),
+            'actual'   => $this->getArg('--actual'),
         ]);
 
         if ($status) {

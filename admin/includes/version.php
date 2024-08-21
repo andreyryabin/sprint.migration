@@ -22,6 +22,9 @@ $getOnclickMenu = function () {
     <div class="sp-table">
         <div class="sp-row2">
             <div class="sp-col sp-col-scroll sp-white">
+                <div class="sp-search">
+                    <?php include __DIR__ . '/search.php' ?>
+                </div>
                 <div id="migration_migrations" class="sp-scroll"></div>
             </div>
             <div class="sp-col sp-col-scroll">
@@ -40,27 +43,9 @@ $getOnclickMenu = function () {
                    href="javascript:void(0)"
                    class="adm-btn"
                    hidefocus="true">&equiv;</a>
-
-                <div id="migration_actions" style="float: right"></div>
             </div>
             <div class="sp-col">
-                <input placeholder="<?= Locale::getMessage('SEARCH') ?>"
-                       style=""
-                       type="text"
-                       value=""
-                       class="adm-input"
-                       id="migration_search"/>
-                <select id="migration_view">
-                    <option value="migration_view_all"><?= Locale::getMessage('TOGGLE_LIST') ?></option>
-                    <option value="migration_view_new"><?= Locale::getMessage('TOGGLE_NEW') ?></option>
-                    <option value="migration_view_installed"><?= Locale::getMessage('TOGGLE_INSTALLED') ?></option>
-                    <option value="migration_view_unknown"><?= Locale::getMessage('TOGGLE_UNKNOWN') ?></option>
-                    <option value="migration_view_tag"><?= Locale::getMessage('TOGGLE_TAG') ?></option>
-                    <option value="migration_view_modified"><?= Locale::getMessage('TOGGLE_MODIFIED') ?></option>
-                    <option value="migration_view_older"><?= Locale::getMessage('TOGGLE_OLDER') ?></option>
-                    <option value="migration_view_status"><?= Locale::getMessage('TOGGLE_STATUS') ?></option>
-                </select>
-                <input id="migration_refresh" type="button" value="<?= Locale::getMessage('SEARCH') ?>"/>
+                <div id="migration_actions" style="float: right"></div>
             </div>
         </div>
     </div>

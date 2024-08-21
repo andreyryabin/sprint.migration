@@ -23,6 +23,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "DOWN_START"               => "Rollback all",
         "VIEW_FILE"                => "View file",
         "TRANSFER_TO"              => "Transfer to",
+        "TOGGLE_ACTUAL"            => "Actual",
         "TOGGLE_LIST"              => "All",
         "TOGGLE_NEW"               => "New",
         "TOGGLE_STATUS"            => "Summary",

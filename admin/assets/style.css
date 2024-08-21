@@ -25,7 +25,9 @@
     background: #fff;
 }
 
-
+.sp-search {
+    padding: 0 0 10px;
+}
 .sp-scroll {
     overflow: auto;
     max-height: 425px;

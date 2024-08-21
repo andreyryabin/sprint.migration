@@ -169,9 +169,20 @@ class VersionManager
         }
 
         $result = [];
+        $newFound = false;
+
         foreach ($merge as $version => $ts) {
             $record = $records[$version] ?? 0;
             $file = $files[$version] ?? 0;
+
+            if ($filter['actual'] == 1){
+                if (!$newFound && $file && !$record) {
+                    $newFound = true;
+                }
+                if (!$newFound) {
+                    continue;
+                }
+            }
 
             $meta = $this->makeVersion($version, $file, $record, $ts);
 
