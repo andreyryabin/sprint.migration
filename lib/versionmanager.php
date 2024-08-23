@@ -162,11 +162,12 @@ class VersionManager
             $merge[$item['version']] = $item['ts'];
         }
 
-        if ($filter['status'] == VersionEnum::STATUS_INSTALLED || $filter['status'] == VersionEnum::STATUS_UNKNOWN) {
+        if ($filter['sort'] == VersionEnum::SORT_DESC) {
             arsort($merge);
         } else {
             asort($merge);
         }
+
 
         $result = [];
         $newFound = false;

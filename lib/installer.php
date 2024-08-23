@@ -5,7 +5,6 @@ namespace Sprint\Migration;
 use Exception;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
-use Throwable;
 
 class Installer
 {
@@ -30,11 +29,7 @@ class Installer
      */
     public function up()
     {
-        $this->executeAll(
-            [
-                'status' => VersionEnum::STATUS_NEW,
-            ]
-        );
+        $this->executeAll([], VersionEnum::ACTION_UP);
     }
 
     /**
@@ -42,22 +37,25 @@ class Installer
      */
     public function down()
     {
-        $this->executeAll(
-            [
-                'status' => VersionEnum::STATUS_INSTALLED,
-            ]
-        );
+        $this->executeAll([], VersionEnum::ACTION_DOWN);
     }
 
     /**
-     * @param $filter
-     *
      * @throws MigrationException
      */
-    protected function executeAll($filter)
+    protected function executeAll($filter, $action)
     {
+        if ($action == VersionEnum::ACTION_UP) {
+            $filter['status'] = VersionEnum::STATUS_NEW;
+            $filter['sort'] = VersionEnum::SORT_ASC;
+        } elseif ($action == VersionEnum::ACTION_DOWN) {
+            $filter['status'] = VersionEnum::STATUS_INSTALLED;
+            $filter['sort'] = VersionEnum::SORT_DESC;
+        } else {
+            throw new MigrationException("Migrate action \"$action\" not implemented");
+        }
+
         $versions = $this->versionManager->getVersions($filter);
-        $action = ($filter['status'] == VersionEnum::STATUS_NEW) ? VersionEnum::ACTION_UP : VersionEnum::ACTION_DOWN;
 
         foreach ($versions as $item) {
             $this->executeVersion($item['version'], $action);
@@ -68,7 +66,7 @@ class Installer
      * @param string $version
      * @param string $action
      *
-     * @throws Throwable
+     * @throws MigrationException
      * @return bool
      */
     protected function executeVersion($version, $action = VersionEnum::ACTION_UP)

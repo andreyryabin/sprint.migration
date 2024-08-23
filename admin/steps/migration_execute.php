@@ -16,11 +16,10 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
 
     $params = !empty($_POST['params']) ? $_POST['params'] : [];
     $restart = !empty($_POST['restart']) ? 1 : 0;
-    $version = !empty($_POST['version']) ? $_POST['version'] : 0;
-    $action = !empty($_POST['action']) ? $_POST['action'] : 0;
-    $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : 0;
+    $versionName = !empty($_POST['version']) ? $_POST['version'] : '';
+    $action = !empty($_POST['action']) ? $_POST['action'] : '';
+    $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : '';
     $settag = !empty($_POST['settag']) ? trim($_POST['settag']) : '';
-
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
@@ -31,6 +30,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
         'tag'      => '',
         'modified' => '',
         'older'    => '',
+        'actual'   => '',
     ];
 
     if ($migrationView == 'migration_view_tag') {
@@ -42,31 +42,30 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
         $filterVersion['older'] = 1;
     }
 
-    if (!$version) {
+    if (!$versionName) {
         if ($nextAction == VersionEnum::ACTION_UP || $nextAction == VersionEnum::ACTION_DOWN) {
-            $version = 0;
             $action = $nextAction;
 
-            $filterVersion = array_merge([
-                'status' => ($action == VersionEnum::ACTION_UP) ? VersionEnum::STATUS_NEW : VersionEnum::STATUS_INSTALLED,
-            ], $filterVersion);
+            if ($action == VersionEnum::ACTION_UP) {
+                $filterVersion['status'] = VersionEnum::STATUS_NEW;
+                $filterVersion['sort'] = VersionEnum::SORT_ASC;
+            } else {
+                $filterVersion['status'] = VersionEnum::STATUS_INSTALLED;
+                $filterVersion['sort'] = VersionEnum::SORT_DESC;
+            }
 
             $items = $versionManager->getVersions($filterVersion);
-
-            foreach ($items as $item) {
-                $version = $item['version'];
-                break;
-            }
+            $versionName = isset($items[0]) ? $items[0]['version'] : '';
         }
     }
 
-    if ($version && $action) {
+    if ($versionName && $action) {
         if (!$restart) {
-            Out::out('[%s]%s (%s) start[/]', $action, $version, $action);
+            Out::out('[%s]%s (%s) start[/]', $action, $versionName, $action);
         }
 
         $success = $versionManager->startMigration(
-            $version,
+            $versionName,
             $action,
             $params,
             $settag
@@ -75,7 +74,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
         $restart = ($success) ? $versionManager->needRestart() : $restart;
 
         if ($success && !$restart) {
-            Out::out('%s (%s) success', $version, $action);
+            Out::out('%s (%s) success', $versionName, $action);
 
             if ($nextAction) {
                 $json = json_encode([
@@ -103,7 +102,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
             $json = json_encode([
                 'params'         => $versionManager->getRestartParams(),
                 'action'         => $action,
-                'version'        => $version,
+                'version'        => $versionName,
                 'next_action'    => $nextAction,
                 'restart'        => 1,
                 'search'         => $search,
@@ -121,7 +120,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
             $json = json_encode([
                 'params'         => $params,
                 'action'         => $action,
-                'version'        => $version,
+                'version'        => $versionName,
                 'next_action'    => $nextAction,
                 'restart'        => 1,
                 'search'         => $search,

@@ -7,7 +7,6 @@ use CGroup;
 use CUser;
 use Exception;
 use Sprint\Migration\Enum\VersionEnum;
-use Sprint\Migration\Exceptions\ConsoleException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Traits\CurrentUserTrait;
 use Throwable;
@@ -59,7 +58,7 @@ class Console
         } elseif (method_exists($this, $this->command)) {
             call_user_func([$this, $this->command]);
         } else {
-            throw new ConsoleException(
+            throw new MigrationException(
                 Locale::getMessage(
                     'ERR_COMMAND_NOT_FOUND', [
                         '#NAME#' => $this->command,
@@ -154,7 +153,7 @@ class Console
                 $this->versionManager->markMigration($search, $status)
             );
         } else {
-            throw new ConsoleException(
+            throw new MigrationException(
                 Locale::getMessage('ERR_INVALID_ARGUMENTS')
             );
         }
@@ -276,18 +275,18 @@ class Console
             if ($this->versionManager->checkVersionName($versionName)) {
                 $this->executeOnce($versionName, VersionEnum::ACTION_UP);
             } else {
-                throw new ConsoleException(
+                throw new MigrationException(
                     Locale::getMessage('ERR_VERSION_NOT_FOUND')
                 );
             }
         } else {
             $this->executeAll([
-                'status'   => VersionEnum::STATUS_NEW,
                 'search'   => $this->getArg('--search='),
                 'tag'      => $this->getArg('--tag='),
                 'modified' => $this->getArg('--modified'),
                 'older'    => $this->getArg('--older'),
-            ]);
+                'actual'   => $this->getArg('--actual'),
+            ], VersionEnum::ACTION_UP);
         }
     }
 
@@ -303,18 +302,18 @@ class Console
             if ($this->versionManager->checkVersionName($versionName)) {
                 $this->executeOnce($versionName, VersionEnum::ACTION_DOWN);
             } else {
-                throw new ConsoleException(
+                throw new MigrationException(
                     Locale::getMessage('ERR_VERSION_NOT_FOUND')
                 );
             }
         } else {
             $this->executeAll([
-                'status'   => VersionEnum::STATUS_INSTALLED,
                 'search'   => $this->getArg('--search='),
                 'tag'      => $this->getArg('--tag='),
                 'modified' => $this->getArg('--modified'),
                 'older'    => $this->getArg('--older'),
-            ]);
+                'actual'   => $this->getArg('--actual'),
+            ], VersionEnum::ACTION_DOWN);
         }
     }
 
@@ -329,7 +328,7 @@ class Console
             $this->executeVersion($versionName, VersionEnum::ACTION_DOWN);
             $this->executeVersion($versionName, VersionEnum::ACTION_UP);
         } else {
-            throw new ConsoleException(
+            throw new MigrationException(
                 Locale::getMessage('ERR_VERSION_NOT_FOUND')
             );
         }
@@ -448,15 +447,13 @@ class Console
      */
     public function commandMigrate()
     {
-        /** @compability */
-        $status = $this->getArg('--down') ? VersionEnum::STATUS_INSTALLED : VersionEnum::STATUS_NEW;
         $this->executeAll([
-            'status'   => $status,
             'search'   => $this->getArg('--search='),
             'tag'      => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
             'older'    => $this->getArg('--older'),
-        ]);
+            'actual'   => $this->getArg('--actual'),
+        ], $this->getArg('--down') ? VersionEnum::ACTION_DOWN : VersionEnum::ACTION_UP);
     }
 
     /**
@@ -483,7 +480,7 @@ class Console
                 $this->executeOnce($version, VersionEnum::ACTION_UP);
             }
         } else {
-            throw new ConsoleException(
+            throw new MigrationException(
                 Locale::getMessage('ERR_VERSION_NOT_FOUND')
             );
         }
@@ -560,18 +557,24 @@ class Console
     }
 
     /**
-     * @param $filter
-     *
      * @throws MigrationException
      */
-    protected function executeAll($filter)
+    protected function executeAll($filter, $action)
     {
         $success = 0;
         $fails = 0;
 
-        $versions = $this->versionManager->getVersions($filter);
+        if ($action == VersionEnum::ACTION_UP) {
+            $filter['status'] = VersionEnum::STATUS_NEW;
+            $filter['sort'] = VersionEnum::SORT_ASC;
+        } elseif ($action == VersionEnum::ACTION_DOWN) {
+            $filter['status'] = VersionEnum::STATUS_INSTALLED;
+            $filter['sort'] = VersionEnum::SORT_DESC;
+        } else {
+            throw new MigrationException("Migrate action \"$action\" not implemented");
+        }
 
-        $action = ($filter['status'] == VersionEnum::STATUS_NEW) ? VersionEnum::ACTION_UP : VersionEnum::ACTION_DOWN;
+        $versions = $this->versionManager->getVersions($filter);
 
         foreach ($versions as $item) {
             $ok = $this->executeVersion($item['version'], $action);
@@ -590,7 +593,7 @@ class Console
         Out::out('migrations (%s): %d', $action, $success);
 
         if ($fails) {
-            throw new ConsoleException(
+            throw new MigrationException(
                 Locale::getMessage('ERR_SOME_MIGRATIONS_FAILS')
             );
         }
@@ -607,7 +610,7 @@ class Console
         $ok = $this->executeVersion($version, $action);
 
         if (!$ok) {
-            throw new ConsoleException(
+            throw new MigrationException(
                 Locale::getMessage('ERR_MIGRATION_FAIL')
             );
         }

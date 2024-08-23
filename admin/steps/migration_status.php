@@ -18,7 +18,6 @@ if ($_POST["step_code"] == "migration_view_status" && check_bitrix_sessid('send_
 
     $versions = $versionManager->getVersions(
         [
-            'status' => '',
             'search' => $search,
         ]
     );

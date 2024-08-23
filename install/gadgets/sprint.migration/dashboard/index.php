@@ -9,6 +9,7 @@ use Sprint\Migration\Module;
 use Sprint\Migration\SchemaManager;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
+use Sprint\Migration\Enum\VersionEnum;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
@@ -44,7 +45,7 @@ try {
             new VersionConfig($config['name'])
         );
         $hasNewVersions = count($versionManager->getVersions([
-            'status' => 'new',
+            'status' => VersionEnum::STATUS_NEW,
         ]));
 
         $results[] = [
