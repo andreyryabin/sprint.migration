@@ -26,4 +26,6 @@ if ($updater && $updater instanceof CUpdater) {
     if (is_dir(__DIR__ . '/install/gadgets/')) {
         $updater->CopyFiles("install/gadgets/", "gadgets/");
     }
+
+    //v 4.12.4
 }

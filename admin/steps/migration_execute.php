@@ -25,7 +25,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
 
     $migrationView = !empty($_POST['migration_view']) ? trim($_POST['migration_view']) : '';
 
-    $filterVersion = [
+    $filter = [
         'search'   => $search,
         'tag'      => '',
         'modified' => '',
@@ -34,28 +34,18 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
     ];
 
     if ($migrationView == 'migration_view_tag') {
-        $filterVersion['tag'] = $search;
-        $filterVersion['search'] = '';
+        $filter['tag'] = $search;
+        $filter['search'] = '';
     } elseif ($migrationView == 'migration_view_modified') {
-        $filterVersion['modified'] = 1;
+        $filter['modified'] = 1;
     } elseif ($migrationView == 'migration_view_older') {
-        $filterVersion['older'] = 1;
+        $filter['older'] = 1;
     }
 
     if (!$versionName) {
         if ($nextAction == VersionEnum::ACTION_UP || $nextAction == VersionEnum::ACTION_DOWN) {
             $action = $nextAction;
-
-            if ($action == VersionEnum::ACTION_UP) {
-                $filterVersion['status'] = VersionEnum::STATUS_NEW;
-                $filterVersion['sort'] = VersionEnum::SORT_ASC;
-            } else {
-                $filterVersion['status'] = VersionEnum::STATUS_INSTALLED;
-                $filterVersion['sort'] = VersionEnum::SORT_DESC;
-            }
-
-            $items = $versionManager->getVersions($filterVersion);
-            $versionName = isset($items[0]) ? $items[0]['version'] : '';
+            $versionName = $versionManager->getOnceForExecute($filter, $action);
         }
     }
 

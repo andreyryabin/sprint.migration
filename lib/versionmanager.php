@@ -168,7 +168,6 @@ class VersionManager
             asort($merge);
         }
 
-
         $result = [];
         $newFound = false;
 
@@ -176,7 +175,7 @@ class VersionManager
             $record = $records[$version] ?? 0;
             $file = $files[$version] ?? 0;
 
-            if ($filter['actual'] == 1){
+            if ($filter['actual'] == 1) {
                 if (!$newFound && $file && !$record) {
                     $newFound = true;
                 }
@@ -187,17 +186,57 @@ class VersionManager
 
             $meta = $this->makeVersion($version, $file, $record, $ts);
 
-            if (
+            $check = (
                 $this->containsFilterStatus($meta, $filter)
                 && $this->containsFilterSearch($meta, $filter)
                 && $this->containsFilterTag($meta, $filter)
                 && $this->containsFilterModified($meta, $filter)
                 && $this->containsFilterOlder($meta, $filter)
-            ) {
-                $result[] = $meta;
+            );
+
+            if (!$check) {
+                continue;
             }
+
+            $result[] = $meta;
+
+            if ($filter['limit'] && count($result) == $filter['limit']) {
+                break;
+            }
+
         }
+
         return $result;
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function getListForExecute(array $filter, string $action): array
+    {
+        if ($action == VersionEnum::ACTION_UP) {
+            $filter['status'] = VersionEnum::STATUS_NEW;
+            $filter['sort'] = VersionEnum::SORT_ASC;
+        } elseif ($action == VersionEnum::ACTION_DOWN) {
+            $filter['status'] = VersionEnum::STATUS_INSTALLED;
+            $filter['sort'] = VersionEnum::SORT_DESC;
+        } else {
+            throw new MigrationException("Migrate action \"$action\" not implemented");
+        }
+
+        return array_column($this->getVersions($filter), 'version');
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function getOnceForExecute(array $filter , string $action)
+    {
+        $filter['limit'] = 1;
+
+        $names = $this->getListForExecute($filter,$action);
+
+        return $names[0] ?? '';
     }
 
     public function needRestart(): bool

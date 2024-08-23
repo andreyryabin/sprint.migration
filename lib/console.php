@@ -564,20 +564,10 @@ class Console
         $success = 0;
         $fails = 0;
 
-        if ($action == VersionEnum::ACTION_UP) {
-            $filter['status'] = VersionEnum::STATUS_NEW;
-            $filter['sort'] = VersionEnum::SORT_ASC;
-        } elseif ($action == VersionEnum::ACTION_DOWN) {
-            $filter['status'] = VersionEnum::STATUS_INSTALLED;
-            $filter['sort'] = VersionEnum::SORT_DESC;
-        } else {
-            throw new MigrationException("Migrate action \"$action\" not implemented");
-        }
+        $versionNames = $this->versionManager->getListForExecute($filter, $action);
 
-        $versions = $this->versionManager->getVersions($filter);
-
-        foreach ($versions as $item) {
-            $ok = $this->executeVersion($item['version'], $action);
+        foreach ($versionNames as $versionName) {
+            $ok = $this->executeVersion($versionName, $action);
 
             if ($ok) {
                 $success++;
@@ -600,9 +590,6 @@ class Console
     }
 
     /**
-     * @param        $version
-     * @param string $action
-     *
      * @throws MigrationException
      */
     protected function executeOnce($version, $action)
@@ -654,9 +641,6 @@ class Console
     }
 
     /**
-     * @param       $from
-     * @param array $postvars
-     *
      * @throws MigrationException
      */
     protected function executeBuilder($from, $postvars = [])

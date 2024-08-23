@@ -45,20 +45,10 @@ class Installer
      */
     protected function executeAll($filter, $action)
     {
-        if ($action == VersionEnum::ACTION_UP) {
-            $filter['status'] = VersionEnum::STATUS_NEW;
-            $filter['sort'] = VersionEnum::SORT_ASC;
-        } elseif ($action == VersionEnum::ACTION_DOWN) {
-            $filter['status'] = VersionEnum::STATUS_INSTALLED;
-            $filter['sort'] = VersionEnum::SORT_DESC;
-        } else {
-            throw new MigrationException("Migrate action \"$action\" not implemented");
-        }
+        $versionNames = $this->versionManager->getListForExecute($filter, $action);
 
-        $versions = $this->versionManager->getVersions($filter);
-
-        foreach ($versions as $item) {
-            $this->executeVersion($item['version'], $action);
+        foreach ($versionNames as $versionName) {
+            $this->executeVersion($versionName, $action);
         }
     }
 
