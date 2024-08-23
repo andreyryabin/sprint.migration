@@ -18,7 +18,7 @@ abstract class AbstractBuilder extends ExchangeEntity
     private $info       = [
         'title'       => '',
         'description' => '',
-        'group'       => 'Tools',
+        'group'       => '',
     ];
     private $fields     = [];
     private $execStatus = '';
@@ -297,7 +297,7 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     public function getGroup()
     {
-        return $this->info['group'];
+        return $this->info['group'] ?? Locale::getMessage('BUILDER_GROUP_Tools');
     }
 
     /** @param $code
