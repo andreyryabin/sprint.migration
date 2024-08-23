@@ -16,7 +16,7 @@ class BlankBuilder extends VersionBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_Version1'));
-        $this->setGroup('Tools');
+        $this->setGroup(Locale::getMessage('BUILDER_GROUP_Tools'));
 
         $this->addVersionFields();
     }

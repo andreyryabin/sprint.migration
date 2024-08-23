@@ -19,7 +19,7 @@ class UserOptionsBuilder extends VersionBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_UserOptionsExport_Title'));
-        $this->setGroup('Main');
+        $this->setGroup(Locale::getMessage('BUILDER_GROUP_Main'));
 
         $this->addVersionFields();
     }

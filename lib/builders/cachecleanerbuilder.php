@@ -17,7 +17,7 @@ class CacheCleanerBuilder extends AbstractBuilder
     {
         $this->setTitle(Locale::getMessage('BUILDER_CacheCleaner1'));
         $this->setDescription(Locale::getMessage('BUILDER_CacheCleaner2'));
-        $this->setGroup('Tools');
+        $this->setGroup(Locale::getMessage('BUILDER_GROUP_Tools'));
     }
 
     protected function execute()

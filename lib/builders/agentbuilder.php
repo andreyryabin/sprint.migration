@@ -17,7 +17,7 @@ class AgentBuilder extends VersionBuilder
     {
         $this->setTitle(Locale::getMessage('BUILDER_AgentExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_AgentExport2'));
-        $this->setGroup('Main');
+        $this->setGroup(Locale::getMessage('BUILDER_GROUP_Main'));
 
         $this->addVersionFields();
     }

@@ -21,7 +21,7 @@ class OptionBuilder extends VersionBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_OptionExport1'));
-        $this->setGroup('Main');
+        $this->setGroup(Locale::getMessage('BUILDER_GROUP_Main'));
 
         $this->addVersionFields();
     }

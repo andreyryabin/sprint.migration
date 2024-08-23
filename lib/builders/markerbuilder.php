@@ -17,7 +17,7 @@ class MarkerBuilder extends AbstractBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('MARK'));
-        $this->setGroup('Tools');
+        $this->setGroup(Locale::getMessage('BUILDER_GROUP_Tools'));
 
         $this->addField('mark_version', [
             'title'       => Locale::getMessage('MARK_FIELD1'),

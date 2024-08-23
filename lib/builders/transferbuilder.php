@@ -20,7 +20,7 @@ class TransferBuilder extends AbstractBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_Transfer1'));
-        $this->setGroup('Tools');
+        $this->setGroup(Locale::getMessage('BUILDER_GROUP_Tools'));
 
         $this->addField('transfer_filter', [
             'title'       => Locale::getMessage('BUILDER_TransferSelect'),

@@ -1,6 +1,5 @@
 <?php
 
-use Sprint\Migration\Locale;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 
@@ -31,7 +30,7 @@ foreach ($builderList as $builderName => $builderClass) {
         <div class="sp-col sp-col_builders">
             <?php foreach ($builderTree as $groupName => $groupItems) { ?>
                 <div class="sp-builder_group">
-                    <?= Locale::getMessage('BUILDER_GROUP_' . $groupName) ?>
+                    <?=$groupName?>
                 </div>
                 <?php foreach ($groupItems as $item) { ?>
                     <div class="sp-builder_title" data-builder="<?= $item['NAME'] ?>"><?= $item['TITLE'] ?></div>

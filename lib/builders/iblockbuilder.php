@@ -20,7 +20,7 @@ class IblockBuilder extends VersionBuilder
     {
         $this->setTitle(Locale::getMessage('BUILDER_IblockExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_IblockExport2'));
-        $this->setGroup('Iblock');
+        $this->setGroup(Locale::getMessage('BUILDER_GROUP_Iblock'));
 
         $this->addVersionFields();
     }

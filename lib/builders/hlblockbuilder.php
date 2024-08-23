@@ -19,7 +19,7 @@ class HlblockBuilder extends VersionBuilder
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_HlblockExport1'));
-        $this->setGroup('Hlblock');
+        $this->setGroup(Locale::getMessage('BUILDER_GROUP_Hlblock'));
 
         $this->addVersionFields();
     }
