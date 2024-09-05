@@ -1098,7 +1098,7 @@ class HlblockHelper extends Helper
         }
 
         foreach ($items as $item) {
-            HighloadBlockLangTable::delete($item['ID']);
+            HighloadBlockLangTable::delete(['ID' => $item['ID'], 'LID' => $item['LID']]);
             $del++;
         }
 
