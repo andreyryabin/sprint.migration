@@ -680,10 +680,10 @@ class VersionManager
             return $meta;
         }
 
-        $meta['location'] = $file['location'];
+        $meta['location'] = realpath($file['location']);
 
         try {
-            require_once($file['location']);
+            require_once($meta['location']);
 
             $class = __NAMESPACE__ . '\\' . $versionName;
             if (!class_exists($class)) {
