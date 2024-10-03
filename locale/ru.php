@@ -175,7 +175,7 @@ require_once __DIR__ . "/../lib/locale.php";
             "Задайте символьные коды у инфоблоков, чтобы увидеть их в списке",
         ]),
         "BUILDER_IblockCategoryExport_IblockId"        => "Выберите инфоблок",
-        "BUILDER_IblockDelete"                         => "Удалить инфоблок",
+        "BUILDER_IblockDelete"                         => "Удалить инфоблоки",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(

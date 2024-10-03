@@ -24,10 +24,17 @@ class IblockExchangeHelper extends IblockHelper
      *
      * @return array
      */
-    public function getIblocksStructure()
+    public function getIblocksStructure(): array
+    {
+        return $this->createIblocksStructure(
+            $this->getIblockTypes(),
+            $this->getIblocks()
+        );
+    }
+
+    public function createIblocksStructure(array $iblockTypes, array $iblocks): array
     {
         $res = [];
-        $iblockTypes = $this->getIblockTypes();
         foreach ($iblockTypes as $iblockType) {
             $res[$iblockType['ID']] = [
                 'title' => '[' . $iblockType['ID'] . '] ' . $iblockType['LANG'][LANGUAGE_ID]['NAME'],
@@ -35,7 +42,6 @@ class IblockExchangeHelper extends IblockHelper
             ];
         }
 
-        $iblocks = $this->getIblocks();
         foreach ($iblocks as $iblock) {
             if (!empty($iblock['CODE'])) {
                 $res[$iblock['IBLOCK_TYPE_ID']]['items'][] = [

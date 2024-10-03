@@ -1,14 +1,14 @@
 <?php
 
 /**
- * @var $version
- * @var $description
- * @var $items
- * @var $extendUse
- * @var $extendClass
- * @var $moduleVersion
- * @var $author
- * @var array $iblock
+ * @var       $version
+ * @var       $description
+ * @var       $items
+ * @var       $extendUse
+ * @var       $extendClass
+ * @var       $moduleVersion
+ * @var       $author
+ * @var array $iblocks
  * @formatter:off
  */
 
@@ -29,6 +29,10 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     public function up()
     {
-        $this->getHelperManager()->Iblock()->deleteIblockIfExists("<?php echo $iblock['CODE']?>");
+        $helper = $this->getHelperManager();
+
+<?php foreach ($iblocks as $iblock){?>
+        $helper->Iblock()->deleteIblockIfExists('<?php echo $iblock['CODE']?>', '<?php echo $iblock['IBLOCK_TYPE_ID']?>');
+<?php } ?>
     }
 }

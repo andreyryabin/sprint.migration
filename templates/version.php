@@ -27,6 +27,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     public function up()
     {
+        $helper = $this->getHelperManager();
         //your code ...
     }
 

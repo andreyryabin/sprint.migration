@@ -10,13 +10,13 @@ class IblockDeleteBuilder extends VersionBuilder
 {
     protected function isBuilderEnabled()
     {
-        return true;
+        return $this->getHelperManager()->Iblock()->isEnabled();
     }
 
     protected function initialize()
     {
         $this->setTitle(Locale::getMessage('BUILDER_IblockDelete'));
-        $this->setGroup('Iblock');
+        $this->setGroup(Locale::getMessage('BUILDER_GROUP_Iblock'));
 
         $this->addVersionFields();
     }
@@ -25,25 +25,43 @@ class IblockDeleteBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $iblockId = $this->addFieldAndReturn(
-            'iblock_id', [
+        $iblockTypes = $helper->IblockExchange()->getIblockTypes();
+
+        $iblocks = $helper->IblockExchange()->getIblocks();
+
+        $itemsForSelect = $helper->IblockExchange()->createIblocksStructure(
+            $iblockTypes,
+            $iblocks
+        );
+
+        $iblockIds = $this->addFieldAndReturn(
+            'iblock_ids', [
                 'title'       => Locale::getMessage('BUILDER_IblockExport_IblockId'),
                 'placeholder' => '',
                 'width'       => 250,
-                'items'       => $this->getHelperManager()->IblockExchange()->getIblocksStructure(),
+                'items'       => $itemsForSelect,
+                'multiple'    => 1,
+                'value'       => [],
             ]
         );
 
-        $iblock = $helper->Iblock()->exportIblock($iblockId);
-        if (empty($iblock)) {
-            $this->rebuildField('iblock_id');
+        if (empty($iblockIds)) {
+            $this->rebuildField('iblock_ids');
+        }
+
+        $selectedIblocks = [];
+        foreach ($iblocks as $iblock) {
+            if (in_array($iblock['ID'], $iblockIds)) {
+                $selectedIblocks[] = $iblock;
+            }
         }
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockDelete.php',
             [
-                'iblock'  => $iblock,
-            ]
+                'iblocks' => $selectedIblocks,
+            ],
+            false
         );
     }
 }
