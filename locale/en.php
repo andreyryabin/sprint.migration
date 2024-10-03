@@ -174,6 +174,7 @@ require_once __DIR__ . "/../lib/locale.php";
             "Set iblock codes to see them in the list",
         ]),
         "BUILDER_IblockCategoryExport_IblockId"        => "Select information block",
+        "BUILDER_IblockDelete"                         => "Delete information block",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(

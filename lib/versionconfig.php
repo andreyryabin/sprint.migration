@@ -13,6 +13,7 @@ use Sprint\Migration\Builders\HlblockBuilder;
 use Sprint\Migration\Builders\HlblockElementsBuilder;
 use Sprint\Migration\Builders\IblockBuilder;
 use Sprint\Migration\Builders\IblockCategoryBuilder;
+use Sprint\Migration\Builders\IblockDeleteBuilder;
 use Sprint\Migration\Builders\IblockElementsBuilder;
 use Sprint\Migration\Builders\MarkerBuilder;
 use Sprint\Migration\Builders\MedialibElementsBuilder;
@@ -429,6 +430,7 @@ class VersionConfig
             'IblockBuilder'           => IblockBuilder::class,
             'IblockCategoryBuilder'   => IblockCategoryBuilder::class,
             'IblockElementsBuilder'   => IblockElementsBuilder::class,
+            'IblockDeleteBuilder'     => IblockDeleteBuilder::class,
             'HlblockBuilder'          => HlblockBuilder::class,
             'HlblockElementsBuilder'  => HlblockElementsBuilder::class,
             'UserTypeEntitiesBuilder' => UserTypeEntitiesBuilder::class,
