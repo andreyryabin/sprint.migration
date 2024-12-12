@@ -282,7 +282,6 @@ class HlblockHelper extends Helper
         $this->checkRequiredKeys($fields, ['NAME']);
 
         $exists = $this->getHlblock($fields['NAME']);
-        $exportExists = $this->prepareExportHlblock($exists);
         $fields = $this->prepareExportHlblock($fields);
 
         if (empty($exists)) {
@@ -300,6 +299,8 @@ class HlblockHelper extends Helper
 
             return $ok;
         }
+
+        $exportExists = $this->prepareExportHlblock($exists);
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateHlblock($exists['ID'], $fields);

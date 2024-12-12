@@ -248,11 +248,10 @@ trait IblockTypeTrait
     {
         $this->checkRequiredKeys($fields, ['ID']);
 
-        $item = $this->getIblockType($fields['ID']);
-        $exists = $this->prepareExportIblockType($item);
+        $exists = $this->getIblockType($fields['ID']);
         $fields = $this->prepareExportIblockType($fields);
 
-        if (empty($item)) {
+        if (empty($exists)) {
             $ok = $this->getMode('test') ? true : $this->addIblockType($fields);
             $this->outNoticeIf(
                 $ok,
@@ -266,9 +265,9 @@ trait IblockTypeTrait
             return $ok;
         }
 
-
-        if ($this->hasDiff($exists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblockType($item['ID'], $fields);
+        $exportExists = $this->prepareExportIblockType($exists);
+        if ($this->hasDiff($exportExists, $fields)) {
+            $ok = $this->getMode('test') ? true : $this->updateIblockType($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -278,7 +277,7 @@ trait IblockTypeTrait
                     ]
                 )
             );
-            $this->outDiffIf($ok, $exists, $fields);
+            $this->outDiffIf($ok, $exportExists, $fields);
 
             return $ok;
         }

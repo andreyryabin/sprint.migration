@@ -467,7 +467,6 @@ class UserTypeEntityHelper extends Helper
             $fields['FIELD_NAME']
         );
 
-        $exportExists = $this->prepareExportUserTypeEntity($exists);
         $fields = $this->prepareExportUserTypeEntity($fields);
 
         if (empty($exists)) {
@@ -489,6 +488,12 @@ class UserTypeEntityHelper extends Helper
                 )
             );
             return $ok;
+        }
+
+        try {
+            $exportExists = $this->prepareExportUserTypeEntity($exists);
+        } catch (HelperException $e) {
+            $exportExists = [];
         }
 
         unset($exportExists['MULTIPLE']);

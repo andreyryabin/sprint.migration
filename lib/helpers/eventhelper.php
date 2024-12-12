@@ -347,7 +347,6 @@ class EventHelper extends Helper
             ]
         );
 
-        $exportExists = $this->prepareExportEventMessage($exists);
         $fields = $this->prepareExportEventMessage($fields);
 
         if (empty($exists)) {
@@ -363,6 +362,8 @@ class EventHelper extends Helper
             );
             return $ok;
         }
+
+        $exportExists = $this->prepareExportEventMessage($exists);
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateEventMessageById($exists['ID'], $fields);
@@ -403,7 +404,6 @@ class EventHelper extends Helper
             'LID'        => $fields['LID'],
         ]);
 
-        $exportExists = $this->prepareExportEventType($exists);
         $fields = $this->prepareExportEventType($fields);
 
         if (empty($exists)) {
@@ -421,6 +421,8 @@ class EventHelper extends Helper
 
             return $ok;
         }
+
+        $exportExists = $this->prepareExportEventType($exists);
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateEventTypeById($exists['ID'], $fields);

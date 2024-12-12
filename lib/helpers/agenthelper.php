@@ -110,7 +110,6 @@ class AgentHelper extends Helper
 
         $exists = $this->getAgent($fields['MODULE_ID'] ?? '', $fields['NAME']);
 
-        $exportExists = $this->prepareExportAgent($exists);
         $fields = $this->prepareExportAgent($fields);
 
         if (empty($exists)) {
@@ -126,6 +125,8 @@ class AgentHelper extends Helper
             );
             return $ok;
         }
+
+        $exportExists = $this->prepareExportAgent($exists);
 
         if (strtotime($fields['NEXT_EXEC']) <= strtotime($exportExists['NEXT_EXEC'])) {
             unset($fields['NEXT_EXEC']);

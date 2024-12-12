@@ -269,15 +269,9 @@ class Console
      */
     public function commandUp()
     {
-        $versionName = $this->getArg(0);
-
-        if ($versionName) {
-            if ($this->versionManager->checkVersionName($versionName)) {
+        if ($this->hasArguments()) {
+            foreach ($this->getArguments() as $versionName) {
                 $this->executeOnce($versionName, VersionEnum::ACTION_UP);
-            } else {
-                throw new MigrationException(
-                    Locale::getMessage('ERR_VERSION_NOT_FOUND')
-                );
             }
         } else {
             $this->executeAll([
@@ -296,15 +290,9 @@ class Console
      */
     public function commandDown()
     {
-        $versionName = $this->getArg(0);
-
-        if ($versionName) {
-            if ($this->versionManager->checkVersionName($versionName)) {
+        if ($this->hasArguments()) {
+            foreach ($this->getArguments() as $versionName) {
                 $this->executeOnce($versionName, VersionEnum::ACTION_DOWN);
-            } else {
-                throw new MigrationException(
-                    Locale::getMessage('ERR_VERSION_NOT_FOUND')
-                );
             }
         } else {
             $this->executeAll([
@@ -319,18 +307,12 @@ class Console
 
     /**
      * @noinspection PhpUnused
-     * @throws MigrationException
      */
     public function commandRedo()
     {
-        $versionName = $this->getArg(0);
-        if ($this->versionManager->checkVersionName($versionName)) {
+        foreach ($this->getArguments() as $versionName) {
             $this->executeVersion($versionName, VersionEnum::ACTION_DOWN);
             $this->executeVersion($versionName, VersionEnum::ACTION_UP);
-        } else {
-            throw new MigrationException(
-                Locale::getMessage('ERR_VERSION_NOT_FOUND')
-            );
         }
     }
 
@@ -471,18 +453,12 @@ class Console
      */
     public function commandExecute()
     {
-        /** @compability */
-        $version = $this->getArg(0);
-        if ($version) {
+        foreach ($this->getArguments() as $versionName) {
             if ($this->getArg('--down')) {
-                $this->executeOnce($version, VersionEnum::ACTION_DOWN);
+                $this->executeOnce($versionName, VersionEnum::ACTION_DOWN);
             } else {
-                $this->executeOnce($version, VersionEnum::ACTION_UP);
+                $this->executeOnce($versionName, VersionEnum::ACTION_UP);
             }
-        } else {
-            throw new MigrationException(
-                Locale::getMessage('ERR_VERSION_NOT_FOUND')
-            );
         }
     }
 
@@ -705,6 +681,16 @@ class Console
         } else {
             return $this->argoptions[$name] ?? $default;
         }
+    }
+
+    protected function getArguments()
+    {
+        return $this->arguments;
+    }
+
+    protected function hasArguments()
+    {
+        return !empty($this->arguments);
     }
 
     private function disableAuthHandlersIfNeed()

@@ -158,7 +158,6 @@ class UserGroupHelper extends Helper
         $this->checkRequiredKeys($fields, ['STRING_ID', 'NAME']);
 
         $exists = $this->getGroup($fields['STRING_ID']);
-        $exportExists = $this->prepareExportGroup($exists);
         $fields = $this->prepareExportGroup($fields);
 
         if (empty($exists)) {
@@ -174,6 +173,8 @@ class UserGroupHelper extends Helper
             );
             return $ok;
         }
+
+        $exportExists = $this->prepareExportGroup($exists);
 
         if ($this->hasDiff($exportExists, $fields)) {
             $ok = $this->getMode('test') ? true : $this->updateGroup($exists['ID'], $fields);

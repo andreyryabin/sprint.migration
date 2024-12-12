@@ -28,7 +28,6 @@ trait IblockPropertyTrait
         $this->checkRequiredKeys($fields, ['CODE']);
 
         $exists = $this->getProperty($iblockId, $fields['CODE']);
-        $exportExists = $this->prepareExportProperty($exists);
         $fields = $this->prepareExportProperty($fields);
 
         if (empty($exists)) {
@@ -45,6 +44,12 @@ trait IblockPropertyTrait
             );
 
             return $ok;
+        }
+
+        try {
+            $exportExists = $this->prepareExportProperty($exists);
+        } catch (HelperException $e) {
+            $exportExists = [];
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
@@ -189,6 +194,9 @@ trait IblockPropertyTrait
         return [];
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function prepareExportProperty($prop)
     {
         if (empty($prop)) {
