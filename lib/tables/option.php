@@ -6,12 +6,12 @@ use Bitrix\Main\Entity\DataManager;
 
 class OptionTable extends DataManager
 {
-    public static function getTableName()
+    public static function getTableName(): string
     {
         return 'b_option';
     }
 
-    public static function getMap()
+    public static function getMap(): array
     {
         return [
             'MODULE_ID'   => [

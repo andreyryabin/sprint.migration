@@ -14,7 +14,6 @@ if ($_POST["step_code"] == "migration_view_status" && check_bitrix_sessid('send_
     $versionManager = new VersionManager($versionConfig);
 
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
-    $search = Locale::convertToUtf8IfNeed($search);
 
     $versions = $versionManager->getVersions(
         [

@@ -17,7 +17,7 @@ class MedialibElementsBuilder extends VersionBuilder
      */
     protected function isBuilderEnabled()
     {
-        return (!Locale::isWin1251() && $this->getHelperManager()->MedialibExchange()->isEnabled());
+        return $this->getHelperManager()->MedialibExchange()->isEnabled();
     }
 
     protected function initialize()

@@ -76,7 +76,8 @@ function schemaExecuteStep(step_code, postData, succesCallback) {
             }
         },
         error: function (result) {
-
+            schemaOutLog(result.responseText);
+            schemaEnableButtons(1);
         }
     });
 }

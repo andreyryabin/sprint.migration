@@ -18,7 +18,7 @@ class HlblockElementsBuilder extends VersionBuilder
      */
     protected function isBuilderEnabled()
     {
-        return (!Locale::isWin1251() && $this->getHelperManager()->Hlblock()->isEnabled());
+        return $this->getHelperManager()->Hlblock()->isEnabled();
     }
 
     protected function initialize()

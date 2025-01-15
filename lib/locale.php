@@ -6,32 +6,11 @@ use Bitrix\Main\Text\Encoding;
 
 class Locale
 {
-    public static function isWin1251(): bool
-    {
-        return !(defined('BX_UTF') && BX_UTF === true);
-    }
-
-    public static function convertToWin1251IfNeed($msg)
-    {
-        if (self::isWin1251() && Encoding::detectUtf8($msg)) {
-            $msg = Encoding::convertEncoding($msg, 'utf-8', 'windows-1251//IGNORE');
-        }
-        return $msg;
-    }
-
-    public static function convertToUtf8IfNeed($msg)
-    {
-        if (self::isWin1251() && !Encoding::detectUtf8($msg)) {
-            $msg = Encoding::convertEncoding($msg, 'windows-1251', 'utf-8//IGNORE');
-        }
-        return $msg;
-    }
-
     public static function loadLocale($lang, $loc)
     {
         global $MESS;
         foreach ($loc as $shortName => $msg) {
-            $MESS[self::getMessageName($shortName, $lang)] = self::convertToWin1251IfNeed($msg);
+            $MESS[self::getMessageName($shortName, $lang)] = $msg;
         }
     }
 

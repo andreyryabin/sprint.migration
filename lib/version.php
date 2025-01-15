@@ -44,10 +44,7 @@ class Version extends ExchangeEntity
         throw new MigrationException(Locale::getMessage('WRITE_DOWN_CODE'));
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -57,18 +54,12 @@ class Version extends ExchangeEntity
         return $this->author;
     }
 
-    /**
-     * @return string
-     */
-    public function getModuleVersion()
+    public function getModuleVersion(): string
     {
         return $this->moduleVersion;
     }
 
-    /**
-     * @return array
-     */
-    public function getRequiredVersions()
+    public function getRequiredVersions(): array
     {
         return $this->requiredVersions;
     }
@@ -83,21 +74,17 @@ class Version extends ExchangeEntity
 
     /**
      * @throws MigrationException
-     * @return StorageManager
      */
-    protected function getStorageManager($versionName = '')
+    protected function getStorageManager($versionName = ''): StorageManager
     {
         if (empty($versionName)) {
             $versionName = $this->getClassName();
         }
 
-        return new StorageManager('default', $versionName);
+        return new StorageManager('sprint_storage_default', $versionName);
     }
 
-    /**
-     * @return ExchangeManager
-     */
-    protected function getExchangeManager()
+    protected function getExchangeManager(): ExchangeManager
     {
         return new ExchangeManager($this);
     }

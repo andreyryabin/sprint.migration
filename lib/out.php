@@ -83,7 +83,7 @@ class Out
             $msg = self::makeLinksHtml($msg);
         }
 
-        return Locale::convertToWin1251IfNeed($msg);
+        return $msg;
     }
 
     protected static function makeTaskUrl($msg, $taskUrl = '')
@@ -119,7 +119,7 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
 
-        return Locale::convertToUtf8IfNeed($msg);
+        return $msg;
     }
 
     public static function outInfo($msg, ...$vars)

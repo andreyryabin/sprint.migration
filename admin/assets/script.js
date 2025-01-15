@@ -100,7 +100,8 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
             }
         },
         error: function (result) {
-
+            migrationOutLog(result.responseText);
+            migrationEnableButtons(1);
         }
     });
 }

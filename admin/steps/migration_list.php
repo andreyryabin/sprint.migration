@@ -30,7 +30,6 @@ if (!($listView && check_bitrix_sessid('send_sessid'))) {
 $versionManager = new VersionManager($versionConfig);
 
 $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
-$search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
 
 if ($_POST["step_code"] == "migration_view_new") {
     $versions = $versionManager->getVersions([

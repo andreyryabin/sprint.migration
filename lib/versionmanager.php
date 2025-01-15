@@ -9,6 +9,7 @@ use ReflectionClass;
 use SplFileInfo;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\BuilderException;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Tables\VersionTable;
@@ -203,7 +204,6 @@ class VersionManager
             if ($filter['limit'] && count($result) == $filter['limit']) {
                 break;
             }
-
         }
 
         return $result;
@@ -230,11 +230,11 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function getOnceForExecute(array $filter , string $action)
+    public function getOnceForExecute(array $filter, string $action)
     {
         $filter['limit'] = 1;
 
-        $names = $this->getListForExecute($filter,$action);
+        $names = $this->getListForExecute($filter, $action);
 
         return $names[0] ?? '';
     }
@@ -425,7 +425,7 @@ class VersionManager
             }
         }
 
-        $this->getVersionTable()->deleteTable();
+        $this->getVersionTable()->dropTable();
     }
 
     /**
@@ -604,18 +604,9 @@ class VersionManager
         }
 
         $textindex = $meta['version'] . $meta['description'] . $meta['tag'];
-        $searchword = $filter['search'];
+        $searchword = trim($filter['search']);
 
-        $textindex = Locale::convertToUtf8IfNeed($textindex);
-        $searchword = Locale::convertToUtf8IfNeed($searchword);
-
-        $searchword = trim($searchword);
-
-        if (false !== mb_stripos($textindex, $searchword, null, 'utf-8')) {
-            return true;
-        }
-
-        return false;
+        return (false !== mb_stripos($textindex, $searchword, null, 'utf-8'));
     }
 
     protected function containsFilterStatus($meta, $filter): bool
