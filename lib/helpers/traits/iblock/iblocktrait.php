@@ -301,7 +301,7 @@ trait IblockTrait
         $fields = $this->prepareExportIblock($fields);
 
         if (empty($item)) {
-            $ok = $this->getMode('test') ? true : $this->addIblock($fields);
+            $ok = $this->addIblock($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -315,7 +315,7 @@ trait IblockTrait
         }
 
         if ($this->hasDiff($exists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblock($item['ID'], $fields);
+            $ok = $this->updateIblock($item['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -329,7 +329,7 @@ trait IblockTrait
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $item['ID'];
+        return $item['ID'];
     }
 
     /**

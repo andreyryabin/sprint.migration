@@ -21,10 +21,7 @@ class Module
     /**
      * @var array
      */
-    private static $defaultOptions = [
-        'show_schemas' => 'N',
-        'show_support' => 'N',
-    ];
+    private static $defaultOptions = [];
 
     public static function getDbOption($name, $default = '')
     {

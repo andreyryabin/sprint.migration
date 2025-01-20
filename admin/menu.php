@@ -29,35 +29,6 @@ try {
         ];
     }
 
-    if (Module::isDbOptionChecked('show_schemas')) {
-        $schemas = [];
-        foreach ($configList as $item) {
-            $schemas[] = [
-                'text' => $item['schema_title'],
-                'url'  => 'sprint_migrations.php?' . http_build_query([
-                        'schema' => $item['name'],
-                        'lang'   => LANGUAGE_ID,
-                    ]),
-            ];
-        }
-
-        $items[] = [
-            'items_id' => 'sp-menu-schema',
-            'text'     => Locale::getMessage('MENU_SCHEMAS'),
-            'items'    => $schemas,
-        ];
-    }
-
-    if (Module::isDbOptionChecked('show_support')) {
-        $items[] = [
-            'text' => Locale::getMessage('MENU_SUPPORT'),
-            'url'  => 'sprint_migrations.php?' . http_build_query([
-                    'showpage' => 'support',
-                    'lang'    => LANGUAGE_ID,
-                ]),
-        ];
-    }
-
     $aMenu = [
         'parent_menu' => 'global_menu_settings',
         'section'     => 'Sprint',

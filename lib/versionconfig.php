@@ -25,13 +25,6 @@ use Sprint\Migration\Builders\UserTypeEntitiesBuilder;
 use Sprint\Migration\Enum\EventsEnum;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\Schema\AgentSchema;
-use Sprint\Migration\Schema\EventSchema;
-use Sprint\Migration\Schema\GroupSchema;
-use Sprint\Migration\Schema\HlblockSchema;
-use Sprint\Migration\Schema\IblockSchema;
-use Sprint\Migration\Schema\OptionSchema;
-use Sprint\Migration\Schema\UserTypeEntitiesSchema;
 
 class VersionConfig
 {
@@ -184,24 +177,14 @@ class VersionConfig
             $title = sprintf('%s (%s)', Locale::getMessage('CFG_TITLE'), $configName);
         }
 
-        if (!empty($configValues['schema_title'])) {
-            $schemaTitle = sprintf('%s (%s)', $configValues['schema_title'], $configName);
-        } else {
-            $schemaTitle = sprintf('%s (%s)', Locale::getMessage('SCH_TITLE'), $configName);
-        }
-
         if (isset($configValues['title'])) {
             unset($configValues['title']);
-        }
-        if (isset($configValues['schema_title'])) {
-            unset($configValues['schema_title']);
         }
 
         return [
             'name'         => $configName,
             'sort'         => $this->getSort($configName),
             'title'        => $title,
-            'schema_title' => $schemaTitle,
             'file'         => $file,
             'values'       => $configValues,
         ];
@@ -269,10 +252,6 @@ class VersionConfig
 
         if (empty($values['version_builders']) || !is_array($values['version_builders'])) {
             $values['version_builders'] = VersionConfig::getDefaultBuilders();
-        }
-
-        if (empty($values['version_schemas']) || !is_array($values['version_schemas'])) {
-            $values['version_schemas'] = VersionConfig::getDefaultSchemas();
         }
 
         if (empty($values['tracker_task_url'])) {
@@ -445,24 +424,6 @@ class VersionConfig
             'CacheCleanerBuilder'     => CacheCleanerBuilder::class,
             'MarkerBuilder'           => MarkerBuilder::class,
             'TransferBuilder'         => TransferBuilder::class,
-        ];
-    }
-
-    /**
-     * Метод должен быть публичным для работы со сторонним кодом
-     *
-     * @return string[]
-     */
-    public static function getDefaultSchemas()
-    {
-        return [
-            'IblockSchema'           => IblockSchema::class,
-            'HlblockSchema'          => HlblockSchema::class,
-            'UserTypeEntitiesSchema' => UserTypeEntitiesSchema::class,
-            'AgentSchema'            => AgentSchema::class,
-            'GroupSchema'            => GroupSchema::class,
-            'OptionSchema'           => OptionSchema::class,
-            'EventSchema'            => EventSchema::class,
         ];
     }
 }

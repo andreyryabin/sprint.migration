@@ -31,7 +31,7 @@ trait IblockPropertyTrait
         $fields = $this->prepareExportProperty($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addProperty($iblockId, $fields);
+            $ok = $this->addProperty($iblockId, $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -53,9 +53,7 @@ trait IblockPropertyTrait
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test')
-                ? true
-                : $this->updatePropertyById(
+            $ok = $this->updatePropertyById(
                     $exists['ID'],
                     array_merge($fields, ['IBLOCK_ID' => $iblockId])
                 );
@@ -74,7 +72,7 @@ trait IblockPropertyTrait
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $exists['ID'];
+        return $exists['ID'];
     }
 
     /**

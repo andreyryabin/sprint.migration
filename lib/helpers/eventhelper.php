@@ -7,7 +7,6 @@ use CEventType;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
-use Sprint\Migration\Support\ExportRules;
 
 class EventHelper extends Helper
 {
@@ -350,7 +349,7 @@ class EventHelper extends Helper
         $fields = $this->prepareExportEventMessage($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addEventMessage($eventName, $fields);
+            $ok = $this->addEventMessage($eventName, $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -366,7 +365,7 @@ class EventHelper extends Helper
         $exportExists = $this->prepareExportEventMessage($exists);
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateEventMessageById($exists['ID'], $fields);
+            $ok = $this->updateEventMessageById($exists['ID'], $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -382,7 +381,7 @@ class EventHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $eventName;
+        return $eventName;
     }
 
     /**
@@ -407,7 +406,7 @@ class EventHelper extends Helper
         $fields = $this->prepareExportEventType($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addEventType($eventName, $fields);
+            $ok = $this->addEventType($eventName, $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -425,7 +424,7 @@ class EventHelper extends Helper
         $exportExists = $this->prepareExportEventType($exists);
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateEventTypeById($exists['ID'], $fields);
+            $ok = $this->updateEventTypeById($exists['ID'], $fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -441,7 +440,7 @@ class EventHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $eventName;
+        return $eventName;
     }
 
     /**

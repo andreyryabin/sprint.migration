@@ -84,7 +84,6 @@ class HlblockHelper extends Helper
     public function getFields($hlblockName)
     {
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
         return $entityHelper->getUserTypeEntities(
             $this->getEntityId($hlblockName)
         );
@@ -102,8 +101,6 @@ class HlblockHelper extends Helper
     public function getField($hlblockName, $fieldName)
     {
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
-
         return $entityHelper->getUserTypeEntity(
             $this->getEntityId($hlblockName),
             $fieldName
@@ -120,7 +117,6 @@ class HlblockHelper extends Helper
     public function getFieldUid($hlblockName, $field)
     {
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
 
         if (!is_array($field)) {
             //на вход пришел id или название поля
@@ -264,7 +260,6 @@ class HlblockHelper extends Helper
         $field['ENTITY_ID'] = $this->getEntityId($hlblockName);
 
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
         return $entityHelper->saveUserTypeEntity($field);
     }
 
@@ -285,7 +280,7 @@ class HlblockHelper extends Helper
         $fields = $this->prepareExportHlblock($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addHlblock($fields);
+            $ok = $this->addHlblock($fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -303,7 +298,7 @@ class HlblockHelper extends Helper
         $exportExists = $this->prepareExportHlblock($exists);
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateHlblock($exists['ID'], $fields);
+            $ok = $this->updateHlblock($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -318,7 +313,7 @@ class HlblockHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $exists['ID'];
+        return $exists['ID'];
     }
 
     /**
@@ -333,7 +328,6 @@ class HlblockHelper extends Helper
     public function deleteField($hlblockName, $fieldName)
     {
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
         return $entityHelper->deleteUserTypeEntity(
             $this->getEntityId($hlblockName),
             $fieldName
@@ -352,8 +346,6 @@ class HlblockHelper extends Helper
     public function exportFields($hlblockName)
     {
         $entityHelper = new UserTypeEntityHelper();
-        $entityHelper->setMode($this);
-
         $fields = $entityHelper->exportUserTypeEntities(
             $this->getEntityId($hlblockName)
         );

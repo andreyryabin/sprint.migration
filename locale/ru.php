@@ -11,7 +11,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "PARTNER_URI"              => "https://packagist.org/packages/andreyryabin/sprint.migration",
         "ACCESS_DENIED"            => "Доступ запрещен",
         "MENU_SPRINT"              => "Миграции для разработчиков",
-        "MENU_SCHEMAS"             => "Схемы данных",
         "TITLE"                    => "Миграции",
         "FORM_DESCR"               => "Описание",
         "FORM_PREFIX"              => "Заголовок",
@@ -62,7 +61,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "BITRIX_VERSION"           => "Версия bitrix",
         "MODULE_VERSION"           => "Версия модуля",
         "CFG_TITLE"                => "Миграции",
-        "SCH_TITLE"                => "Схемы данных",
         "CONFIG"                   => "Конфигурация",
         "BUILDER_ERROR"            => "Ошибка",
         "BUILDER_NEXT"             => "Далее",
@@ -73,12 +71,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "SELECT_ALL"               => "Выбрать все",
         "SELECT_ONE"               => "Выбрать",
         "RESTART_AGAIN"            => "Запустить снова",
-        "MENU_SUPPORT"             => "Поддержка проекта",
-        "SHOW_SUPPORT"             => "Показывать раздел \"Поддержка проекта\"",
-        "SHOW_SCHEMAS"             => "Показывать раздел \"Схемы данных\"",
-        "PAGE_SUPPORT_DESC"        => "На этой странице можно поддержать улучшения, предложенные пользователями модуля, которые вы хотели бы видеть обновлениях.",
-        "SUPPORT_DISABLE"          => "Отказаться от поддержки",
-        "SUPPORT_CONFIRM"          => "Участвовать в поддержке",
         "WRITE_UP_CODE"            => "Укажите код установки миграции в методе up()",
         "WRITE_DOWN_CODE"          => "Укажите код отката миграции в методе down()",
     ]
@@ -100,7 +92,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_console_auth_events_disable" => "Отключить обработчики авторизации в консоли",
         "CONFIG_config_file"                 => "Файл конфигурации",
         "CONFIG_title"                       => "Название конфигурации",
-        "CONFIG_version_schemas"             => "Схемы данных",
         "CONFIG_yes"                         => "да",
         "CONFIG_no"                          => "нет",
         "CONFIG_version_name_template"       => "Шаблон названия миграции",
@@ -240,8 +231,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_Cleaner_config_name"      => "Название (лат буквы и цифры)",
         "BUILDER_Cleaner_error"            => "Ошибка удаления конфигурации",
         "BUILDER_Cleaner_success"          => "Конфигурация удалена",
-        "BUILDER_SchemaImport"             => "Установка схемы",
-        "BUILDER_SchemaExport"             => "Создание схемы",
         "BUILDER_CommonSettings"           => "Общие настройки",
     ]
 );
@@ -288,7 +277,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "VERSION_NOT_FOUND"      => "Миграция не найдена",
         "RIGHT_D"                => "Доступ запрещен",
         "RIGHT_W"                => "Доступ разрешен",
-        "MODIFIED_SCHEMA"        => "Содержимое схемы было изменено после установки",
         "MODIFIED_VERSION"       => "Файл миграции был изменен после установки",
         "OLDER_VERSION"          => "Файл миграции создан в более поздней версии модуля #V1#",
         "RELEASE_TAG"            => "Тег релиза: #TAG#",
@@ -298,33 +286,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "SETTAG_ERROR2"          => "Миграция #VERSION# не найдена",
     ]
 );
-\Sprint\Migration\Locale::loadLocale(
-    "ru",
-    [
-        "SCHEMA_DIFF"                  => "Проверить изменения",
-        "SCHEMA_IMPORT"                => "Установить схему",
-        "SCHEMA_EXPORT"                => "Создать схему",
-        "SCHEMA_AGENT"                 => "Схема агентов",
-        "SCHEMA_AGENT_DESC"            => "Агенты: #COUNT#",
-        "SCHEMA_EVENT"                 => "Схема почтовых событий",
-        "SCHEMA_EVENT_DESC"            => "Типы почтовых событий: #COUNT#",
-        "SCHEMA_EVENT_MESSAGES_DESC"   => "Почтовые шаблоны: #COUNT#",
-        "SCHEMA_USER_GROUP"            => "Схема групп пользователей",
-        "SCHEMA_USER_GROUP_DESC"       => "Группы пользователей: #COUNT#",
-        "SCHEMA_HLBLOCK"               => "Схема highload-блоков",
-        "SCHEMA_HLBLOCK_DESC"          => "Highload-блоки: #COUNT#",
-        "SCHEMA_HLBLOCK_FIELDS_DESC"   => "Полей: #COUNT#",
-        "SCHEMA_IBLOCK"                => "Схема инфоблоков",
-        "SCHEMA_IBLOCK_TYPE_DESC"      => "Типы инфоблоков: #COUNT#",
-        "SCHEMA_IBLOCK_DESC"           => "Инфоблоков: #COUNT#",
-        "SCHEMA_IBLOCK_PROPS_DESC"     => "Свойств инфоблоков: #COUNT#",
-        "SCHEMA_IBLOCK_FORMS_DESC"     => "Форм редактирования: #COUNT#",
-        "SCHEMA_OPTION"                => "Схема настроек модулей",
-        "SCHEMA_OPTION_DESC"           => "Настроек: #COUNT#",
-        "SCHEMA_USER_TYPE_ENTITY"      => "Схема пользовательских полей",
-        "SCHEMA_USER_TYPE_ENTITY_DESC" => "Полей: #COUNT#",
-    ]
-);
+
 \Sprint\Migration\Locale::loadLocale(
     "ru",
     [
@@ -374,8 +336,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_CANT_DELETE_IBLOCK"             => "Ошибка удаления инфоблок \"#NAME#\"",
         "ERR_CANT_DELETE_IBLOCK_TYPE"        => "Ошибка удаления типа инфоблока \"#NAME#\"",
         "ERR_IB_FORM_OPTIONS_NOT_FOUND"      => "Не найдены настройки формы элемента инфоблока",
-        "ERR_SCHEMA_EMPTY"                   => "Схема \"#NAME#\" не содержит данных",
-        "ERR_SCHEMA_CREATED"                 => "Схема \"#NAME#\" сохранена",
         "ERR_EXCHANGE_FILE_NOT_FOUND"        => "Файл с данными не найден:  #FILE#",
         "ERR_EXCHANGE_VERSION"               => "Файл для переноса данных \"#NAME#\" не поддерживается текущей версией модуля.\nПожалуйста создайте его заново.",
         "ERR_IB_SECTION_ID_EMPTY"            => "Категория в инфоблоке \"#IBLOCK_ID#\" не указана",
@@ -447,20 +407,15 @@ require_once __DIR__ . "/../lib/locale.php";
         "GD_INSTALL"          => "Установить гаджеты: \"Сводка по миграциям\"",
         "GD_INSTALL_success"  => "Гаджеты установлены",
         "GD_SELECT_CONFIGS"   => "Конфигурации",
-        "GD_CHECK_SCHEMAS"    => "Показывать статус для схем",
         "GD_INFO_NAME"        => "Сводка по миграциям",
         "GD_INFO_DESC"        => "Сводка по миграциям",
         "GD_TYPE"             => "Тип",
         "GD_STATE"            => "Состояние",
         "GD_SHOW"             => "Перейти",
-        "GD_SHOW_SCHEMAS"     => "Перейти к схемам",
         "GD_SHOW_MIGRATIONS"  => "Перейти к миграциям",
         "GD_MIGRATIONS"       => "Миграции",
         "GD_MIGRATIONS_RED"   => "Есть неустановленные миграции",
         "GD_MIGRATIONS_GREEN" => "Все миграции установлены",
-        "GD_SCHEMAS"          => "Схемы данных",
-        "GD_SCHEMA_RED"       => "Не установлена",
-        "GD_SCHEMA_GREEN"     => "Установлена",
     ]
 );
 

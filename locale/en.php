@@ -11,7 +11,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "PARTNER_URI"              => "https://packagist.org/packages/andreyryabin/sprint.migration",
         "ACCESS_DENIED"            => "Access denied",
         "MENU_SPRINT"              => "Migrations for developers",
-        "MENU_SCHEMAS"             => "Data schemas",
         "TITLE"                    => "Migrations",
         "FORM_DESCR"               => "Description",
         "FORM_PREFIX"              => "Name prefix",
@@ -62,7 +61,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "BITRIX_VERSION"           => "Bitrix version",
         "MODULE_VERSION"           => "Module version",
         "CFG_TITLE"                => "Migrations",
-        "SCH_TITLE"                => "Data schemas",
         "CONFIG"                   => "Configuration",
         "BUILDER_ERROR"            => "Error",
         "BUILDER_NEXT"             => "Next",
@@ -73,12 +71,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "SELECT_ALL"               => "Select all",
         "SELECT_ONE"               => "Select one",
         "RESTART_AGAIN"            => "Restart again",
-        "MENU_SUPPORT"             => "Support",
-        "SHOW_SUPPORT"             => "Show support page",
-        "SHOW_SCHEMAS"             => "Show schemas page",
-        "PAGE_SUPPORT_DESC"        => "On this page you can support updates proposed by users",
-        "SUPPORT_DISABLE"          => "Disable support",
-        "SUPPORT_CONFIRM"          => "Confirm support",
+        "WRITE_UP_CODE"            => "Write migration code in method up()",
+        "WRITE_DOWN_CODE"          => "Write migration code in method down()",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -98,7 +92,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_console_auth_events_disable" => "Disable auth events in console",
         "CONFIG_config_file"                 => "Config file",
         "CONFIG_title"                       => "Config name",
-        "CONFIG_version_schemas"             => "Data schemas",
         "CONFIG_yes"                         => "yes",
         "CONFIG_no"                          => "no",
         "CONFIG_version_name_template"       => "Version name template",
@@ -239,8 +232,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_Cleaner_config_name"      => "Name",
         "BUILDER_Cleaner_error"            => "Error deleting configuration",
         "BUILDER_Cleaner_success"          => "Configuration deleted",
-        "BUILDER_SchemaImport"             => "Install data schema",
-        "BUILDER_SchemaExport"             => "Create data schema",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -285,7 +276,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "VERSION_NOT_FOUND"      => "Migration not found",
         "RIGHT_D"                => "Access deny",
         "RIGHT_W"                => "Full access",
-        "MODIFIED_SCHEMA"        => "Data schema was modified after install",
         "MODIFIED_VERSION"       => "Migration file was modified after install",
         "OLDER_VERSION"          => "Migration file created in a later version of the module #V1#",
         "RELEASE_TAG"            => "Release tag: #TAG#",
@@ -295,33 +285,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "SETTAG_ERROR2"          => "Migration #VERSION# not found",
     ]
 );
-\Sprint\Migration\Locale::loadLocale(
-    "en",
-    [
-        "SCHEMA_DIFF"                  => "Show difference",
-        "SCHEMA_IMPORT"                => "Install data schema",
-        "SCHEMA_EXPORT"                => "Create data schema",
-        "SCHEMA_AGENT"                 => "Data schema agents",
-        "SCHEMA_AGENT_DESC"            => "Agents: #COUNT#",
-        "SCHEMA_EVENT"                 => "Data schema event types",
-        "SCHEMA_EVENT_DESC"            => "Event types: #COUNT#",
-        "SCHEMA_EVENT_MESSAGES_DESC"   => "Event messages: #COUNT#",
-        "SCHEMA_USER_GROUP"            => "Data schema user groups",
-        "SCHEMA_USER_GROUP_DESC"       => "User groups: #COUNT#",
-        "SCHEMA_HLBLOCK"               => "Data schema highload blocks",
-        "SCHEMA_HLBLOCK_DESC"          => "Highload blocks: #COUNT#",
-        "SCHEMA_HLBLOCK_FIELDS_DESC"   => "Highload blocks fields: #COUNT#",
-        "SCHEMA_IBLOCK"                => "Data schema information blocks",
-        "SCHEMA_IBLOCK_TYPE_DESC"      => "Information blocks types: #COUNT#",
-        "SCHEMA_IBLOCK_DESC"           => "Information blocks: #COUNT#",
-        "SCHEMA_IBLOCK_PROPS_DESC"     => "Information blocks properties: #COUNT#",
-        "SCHEMA_IBLOCK_FORMS_DESC"     => "Information blocks user options: #COUNT#",
-        "SCHEMA_OPTION"                => "Data schema module options",
-        "SCHEMA_OPTION_DESC"           => "Module options: #COUNT#",
-        "SCHEMA_USER_TYPE_ENTITY"      => "Data schema user type entities",
-        "SCHEMA_USER_TYPE_ENTITY_DESC" => "User type entities: #COUNT#",
-    ]
-);
+
 \Sprint\Migration\Locale::loadLocale(
     "en",
     [
@@ -371,8 +335,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_CANT_DELETE_IBLOCK"             => "Error deleting information block \"#NAME#\"",
         "ERR_CANT_DELETE_IBLOCK_TYPE"        => "Error deleting information block type \"#NAME#\"",
         "ERR_IB_FORM_OPTIONS_NOT_FOUND"      => "Information block form options not found",
-        "ERR_SCHEMA_EMPTY"                   => "Data schema \"#NAME#\" empty",
-        "ERR_SCHEMA_CREATED"                 => "Data schema \"#NAME#\" saved",
         "ERR_EXCHANGE_FILE_NOT_FOUND"        => "Exchange file not found: #FILE#",
         "ERR_EXCHANGE_VERSION"               => "Exchange file \"#NAME#\" not supported in this version of module.\nPlease recreate it",
         "ERR_IB_SECTION_ID_EMPTY"            => "Section in iblock \"#IBLOCK_ID#\" empty",
@@ -445,20 +407,15 @@ require_once __DIR__ . "/../lib/locale.php";
         "GD_INSTALL"          => "Install gadgets: \"Migration summary\"",
         "GD_INSTALL_success"  => "Gadgets installed",
         "GD_SELECT_CONFIGS"   => "Configs",
-        "GD_CHECK_SCHEMAS"    => "Check data schemas",
         "GD_INFO_NAME"        => "Migration summary",
         "GD_INFO_DESC"        => "Migration summary",
         "GD_TYPE"             => "Type",
         "GD_STATE"            => "State",
         "GD_SHOW"             => "Show",
-        "GD_SHOW_SCHEMAS"     => "Show data schemas",
         "GD_SHOW_MIGRATIONS"  => "Show migrations",
         "GD_MIGRATIONS"       => "Migrations",
         "GD_MIGRATIONS_RED"   => "Some migrations not installed",
         "GD_MIGRATIONS_GREEN" => "All migrations installed",
-        "GD_SCHEMAS"          => "Data schemas",
-        "GD_SCHEMA_RED"       => "Not installed",
-        "GD_SCHEMA_GREEN"     => "Installed",
     ]
 );
 

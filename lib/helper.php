@@ -14,15 +14,6 @@ class Helper
     use OutTrait;
 
     /**
-     * @var string
-     * @deprecated
-     */
-    public  $lastError = '';
-    private $mode      = [
-        'test' => 0,
-    ];
-
-    /**
      * Helper constructor.
      *
      * @throws HelperException
@@ -39,39 +30,6 @@ class Helper
                 )
             );
         }
-    }
-
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function getLastError()
-    {
-        return $this->lastError;
-    }
-
-    public function getMode($key = false)
-    {
-        if ($key) {
-            return $this->mode[$key] ?? 0;
-        } else {
-            return $this->mode;
-        }
-    }
-
-    public function setMode($key, $val = 1)
-    {
-        if ($key instanceof Helper) {
-            $this->mode = $key->getMode();
-        } else {
-            $val = ($val) ? 1 : 0;
-            $this->mode[$key] = $val;
-        }
-    }
-
-    public function setTestMode($val = 1)
-    {
-        $this->setMode('test', $val);
     }
 
     public function isEnabled()
@@ -121,8 +79,6 @@ class Helper
         }
 
         $msg = $this->getMethod($method) . ': ' . $msg;
-
-        $this->lastError = $msg;
 
         throw new HelperException($msg);
     }

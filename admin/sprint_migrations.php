@@ -22,15 +22,7 @@ try {
 
     Module::checkHealth();
 
-    if (isset($_GET['showpage'])) {
-        require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
-        $showpage = preg_replace("/[^a-z0-9_]/", "", $_GET['showpage']);
-        if ($showpage && file_exists(__DIR__ . '/pages/' . $showpage . '.php')) {
-            include __DIR__ . '/pages/' . $showpage . '.php';
-        }
-    } else {
-        include __DIR__ . '/includes/interface.php';
-    }
+    include __DIR__ . '/includes/interface.php';
 
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");
 } catch (Throwable $exception) {

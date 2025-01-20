@@ -252,7 +252,7 @@ trait IblockTypeTrait
         $fields = $this->prepareExportIblockType($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addIblockType($fields);
+            $ok = $this->addIblockType($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -267,7 +267,7 @@ trait IblockTypeTrait
 
         $exportExists = $this->prepareExportIblockType($exists);
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblockType($exists['ID'], $fields);
+            $ok = $this->updateIblockType($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -282,7 +282,7 @@ trait IblockTypeTrait
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $fields['ID'];
+        return $fields['ID'];
     }
 
     /**
