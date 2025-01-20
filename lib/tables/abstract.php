@@ -30,7 +30,7 @@ abstract class AbstractTable
 
         $this->tableUid = strtolower('table_' . $this->tableName);
 
-        $version = Module::getDbOption($this->tableUid);
+        $version = (int)Module::getDbOption($this->tableUid);
         if ($version !== $this->tableVersion) {
             $this->createTable();
             Module::setDbOption($this->tableUid, $this->tableVersion);
