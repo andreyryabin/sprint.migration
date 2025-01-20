@@ -105,6 +105,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_tracker_task_url"            => "Task url template",
         "CONFIG_version_timestamp_format"    => "Timestamp format for creating migration file",
         "CONFIG_version_timestamp_pattern"   => "Timestamp pattern for search migration files by timestamp format",
+        "CONFIG_migration_hash_algo"         => "Hash algorithm for checking changes in the migration file",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -286,9 +287,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "RIGHT_W"                => "Full access",
         "MODIFIED_SCHEMA"        => "Data schema was modified after install",
         "MODIFIED_VERSION"       => "Migration file was modified after install",
-        "MODIFIED_LABEL"         => "Modified",
-        "OLDER_VERSION"          => "Migration file created in a later version of the module #V1#\nPerhaps it uses features that are not implemented in the current version #V2#",
-        "TAG"                    => "Migration tag",
+        "OLDER_VERSION"          => "Migration file created in a later version of the module #V1#",
+        "RELEASE_TAG"            => "Release tag: #TAG#",
         "SETTAG"                 => "Set tag",
         "SETTAG_OK"              => "Tag for migration #VERSION# setting",
         "SETTAG_ERROR1"          => "Migrations for setting tag not found",

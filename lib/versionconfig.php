@@ -318,6 +318,7 @@ class VersionConfig
                 $val = ($val) ? 'yes' : 'no';
                 $val = Locale::getMessage('CONFIG_' . $val);
             } elseif (is_array($val)) {
+                $val = Out::getArrayFlat($val);
                 $fres = [];
                 foreach ($val as $fkey => $fval) {
                     $fres[] = '[' . $fkey . '] => ' . $fval;

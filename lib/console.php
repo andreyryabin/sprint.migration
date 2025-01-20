@@ -200,67 +200,104 @@ class Console
             'actual'   => $this->getArg('--actual'),
         ]);
 
-        if ($status) {
-            $summary = [];
-            $summary[$status] = 0;
-        } else {
-            $summary = [
-                VersionEnum::STATUS_NEW       => 0,
-                VersionEnum::STATUS_INSTALLED => 0,
-                VersionEnum::STATUS_UNKNOWN   => 0,
-            ];
-        }
-
-        $grid = new ConsoleGrid(-1, [
-            'horizontal'   => '=',
-            'vertical'     => '',
-            'intersection' => '',
-        ], 1, 'UTF-8');
-
-        $grid->setHeaders([
-            'Version',
-            'Status',
-            'Description',
-        ]);
+        $summary = [
+            VersionEnum::STATUS_NEW       => 0,
+            VersionEnum::STATUS_INSTALLED => 0,
+            VersionEnum::STATUS_UNKNOWN   => 0,
+        ];
 
         foreach ($versions as $item) {
-            $versionColumn = $item['version'];
-
-            $labelsColumn = '';
-            if ($item['tag']) {
-                $labelsColumn .= ' (' . $item['tag'] . ')';
-            }
+            $versionLabels = [];
             if ($item['older']) {
-                $labelsColumn .= ' (' . $item['older'] . ' !!)';
+                $olderMsg = Locale::getMessage('OLDER_VERSION', [
+                    '#V1#' => $item['older'],
+                ]);
+                $versionLabels[] = '[label:red]' . $olderMsg . '[/]';
             }
             if ($item['modified']) {
-                $labelsColumn .= ' (' . Locale::getMessage('MODIFIED_LABEL') . ')';
+                $versionLabels[] = '[label:yellow]' . Locale::getMessage('MODIFIED_VERSION') . '[/]';
             }
-
+            if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
+                $versionLabels[] = '[label]' . Locale::getMessage('VERSION_UNKNOWN') . '[/]';
+            }
             $descrColumn = Out::prepareToConsole(
                 $item['description'],
                 [
-                    'max_len'          => 50,
                     'tracker_task_url' => $this->versionConfig->getVal('tracker_task_url'),
                 ]
             );
 
-            $statusColumn = Locale::getMessage('META_' . $item['status']);
+            Out::out('┌─');
+            Out::out('│ [%s]%s[/]', $item['status'], $item['version']);
 
-            $grid->addRow([$versionColumn, $statusColumn . $labelsColumn, $descrColumn]);
+            if ($item['file_status']) {
+                Out::out('│ ' . $item['file_status']);
+            }
+
+            if ($item['record_status']) {
+                Out::out('│ ' . $item['record_status']);
+            }
+
+            if ($item['tag']) {
+                $tagMsg = Locale::getMessage('RELEASE_TAG', [
+                    '#TAG#' => '[label:green]' . $item['tag'] . '[/]',
+                ]);
+                Out::out('│ ' . $tagMsg);
+            }
+
+            if (!empty($versionLabels)) {
+                Out::out('│ ' . implode(' ', $versionLabels));
+            }
+
+            if ($descrColumn) {
+                Out::out('├─');
+                $descrColumn = explode(PHP_EOL, $descrColumn);
+                foreach ($descrColumn as $descStr) {
+                    Out::out('│ ' . $descStr);
+                }
+            }
+
+            Out::out('└─');
 
             $stval = $item['status'];
             $summary[$stval]++;
         }
 
-        Out::out($grid->build());
-
-        $grid = new ConsoleGrid(-1, '', 1, 'UTF-8');
         foreach ($summary as $k => $v) {
-            $grid->addRow([Locale::getMessage('META_' . strtoupper($k)) . ':', $v,]);
+            if ($v > 0) {
+                Out::out(Locale::getMessage('META_' . $k) . ':' . $v);
+            }
         }
+    }
 
-        Out::out($grid->build());
+    public function commandConfig()
+    {
+        $configValues = $this->versionConfig->getCurrent('values');
+        $configTitle = $this->versionConfig->getCurrent('title');
+
+        $configValues = $this->versionConfig->humanValues($configValues);
+
+        Out::out(
+            '%s: %s',
+            Locale::getMessage('CONFIG'),
+            $configTitle
+        );
+
+        foreach ($configValues as $configKey => $configValue) {
+            Out::out('┌─');
+            Out::out('│ ' . Locale::getMessage('CONFIG_' . $configKey));
+            Out::out('│ ' . $configKey);
+
+            if ($configValue) {
+                Out::out('├─');
+                $configValue = explode(PHP_EOL, $configValue);
+                foreach ($configValue as $valueStr) {
+                    Out::out('│ ' . $valueStr);
+                }
+            }
+
+            Out::out('└─');
+        }
     }
 
     /**
@@ -375,34 +412,6 @@ class Console
         } else {
             Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
         }
-    }
-
-    public function commandConfig()
-    {
-        $configValues = $this->versionConfig->getCurrent('values');
-        $configTitle = $this->versionConfig->getCurrent('title');
-
-        $configValues = $this->versionConfig->humanValues($configValues);
-
-        Out::out(
-            '%s: %s',
-            Locale::getMessage('CONFIG'),
-            $configTitle
-        );
-
-        $grid = new ConsoleGrid(-1, [
-            'horizontal'   => '=',
-            'vertical'     => '',
-            'intersection' => '',
-        ], 1, 'UTF-8');
-
-        $grid->setBorderVisibility(['bottom' => false]);
-
-        foreach ($configValues as $key => $val) {
-            $grid->addRow([$key, $val]);
-        }
-
-        Out::out($grid->build());
     }
 
     /**

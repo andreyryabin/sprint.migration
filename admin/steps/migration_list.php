@@ -156,37 +156,27 @@ if (empty($versions)) {
 ?>
 <table class="sp-list">
     <?php foreach ($versions as $item) {
-        $versionLabels = '';
-        if ($item['tag']) {
-            $versionLabels .= sprintf(
-                '<span title="%s" class="sp-label sp-label-tag">%s</span>',
-                Locale::getMessage('TAG'),
-                $item['tag']
-            );
-        }
+        $versionLabels = [];
         if ($item['older']) {
-            $versionLabels .= sprintf(
-                '<span title="%s" class="sp-label sp-label-older">%s !!</span>',
-                Locale::getMessage('OLDER_VERSION', [
-                    '#V1#' => $item['older'],
-                    '#V2#' => Module::getVersion(),
-                ]),
-                $item['older']
-            );
+            $olderMsg = Locale::getMessage('OLDER_VERSION', [
+                '#V1#' => $item['older'],
+            ]);
+
+            $versionLabels[] = '[label:red]' . $olderMsg . '[/]';
         }
         if ($item['modified']) {
-            $versionLabels .= sprintf(
-                '<span title="%s" class="sp-label sp-label-modified">%s</span>',
-                Locale::getMessage('MODIFIED_VERSION'),
-                Locale::getMessage('MODIFIED_LABEL')
-            );
+            $versionLabels[] = '[label:yellow]' . Locale::getMessage('MODIFIED_VERSION') . '[/]';
         }
         if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
-            $versionLabels .= sprintf(
-                '<span class="sp-label">%s</span>',
-                Locale::getMessage('VERSION_UNKNOWN')
-            );
+            $versionLabels[] = '[label]' . Locale::getMessage('VERSION_UNKNOWN') . '[/]';
         }
+        $tagMsg = '';
+        if ($item['tag']) {
+            $tagMsg = Locale::getMessage('RELEASE_TAG', [
+                '#TAG#' => '[label:green]' . $item['tag'] . '[/]',
+            ]);
+        }
+
         ?>
         <tr>
             <td class="sp-list-td__buttons">
@@ -196,16 +186,21 @@ if (empty($versions)) {
                    hidefocus="true">&equiv;</a>
             </td>
             <td class="sp-list-td__content">
-                <?php Out::outToHtml($item['version'], [
+                <?php
+                Out::outToHtml($item['version'], [
                     'class' => 'sp-out sp-item-' . $item['status'],
-                ]); ?>
-                <?php Out::outToHtml($item['file_status']); ?>
-                <?php Out::outToHtml($item['record_status']); ?>
-                <?php Out::outToHtml($versionLabels); ?>
-                <?php Out::outToHtml($item['description'], [
+                ]);
+                Out::outToHtml($item['file_status']);
+                Out::outToHtml($item['record_status']);
+                Out::outToHtml($tagMsg);
+                if (!empty($versionLabels)) {
+                    Out::outToHtml(implode(' ', $versionLabels));
+                }
+                Out::outToHtml($item['description'], [
                     'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),
                     'make_links'       => true,
-                ]); ?>
+                ]);
+                ?>
             </td>
         </tr>
     <?php } ?>
