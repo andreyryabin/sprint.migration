@@ -15,7 +15,7 @@ use Sprint\Migration\Module;
 
 abstract class AbstractTable
 {
-    protected string $tableVersion = '1';
+    protected int $tableVersion = 1;
     private string   $tableName;
     private string   $entityName;
     private Entity   $entity;
@@ -57,8 +57,7 @@ abstract class AbstractTable
      */
     public function createTable()
     {
-        $version = Module::getDbOption($this->entityName);
-
+        $version = (int)Module::getDbOption($this->entityName);
         if ($version !== $this->tableVersion) {
             try {
                 $this->createDbTable();
