@@ -98,8 +98,10 @@ class Out
     protected static function makeLinksHtml($msg)
     {
         $reg_exUrl = "/(http|https)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
-        if (preg_match($reg_exUrl, $msg, $url)) {
-            $msg = preg_replace($reg_exUrl, '<a target="_blank" href="' . $url[0] . '">' . $url[0] . '</a>', $msg);
+        if (preg_match_all($reg_exUrl, $msg, $urls)) {
+            foreach ($urls[0] as $url) {
+                $msg = str_replace($url, '<a target="_blank" href="' . $url . '">' . $url . '</a>', $msg);
+            }
         }
 
         return $msg;
