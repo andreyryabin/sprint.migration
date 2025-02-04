@@ -6,16 +6,14 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
 use CDBResult;
 use CMain;
-use ReflectionClass;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Traits\OutTrait;
 
 class Helper
 {
     use OutTrait;
 
     /**
-     * Helper constructor.
-     *
      * @throws HelperException
      */
     public function __construct()
@@ -37,12 +35,7 @@ class Helper
         return true;
     }
 
-    /**
-     * @param array $names
-     *
-     * @return bool
-     */
-    protected function checkModules($names = [])
+    protected function checkModules(array $names = []): bool
     {
         $names = is_array($names) ? $names : [$names];
         foreach ($names as $name) {
@@ -58,11 +51,6 @@ class Helper
     }
 
     /**
-     *
-     * @param        $method
-     * @param        $msg
-     * @param string ...$vars
-     *
      * @throws HelperException
      * @deprecated
      */
@@ -113,13 +101,13 @@ class Helper
      *
      * @return bool
      */
-    protected function hasDiffStrict($exists, $fields)
+    protected function hasDiffStrict($exists, $fields): bool
     {
         return ($exists !== $fields);
     }
 
     /**
-     * @param       $fields
+     * @param array $fields
      * @param array $reqKeys
      *
      * @throws HelperException

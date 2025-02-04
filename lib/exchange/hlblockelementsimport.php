@@ -2,14 +2,14 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Sprint\Migration\AbstractExchange;
+use Sprint\Migration\AbstractReader;
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
+use Sprint\Migration\Module;
 use XMLReader;
 
-class HlblockElementsImport extends AbstractExchange
+class HlblockElementsImport extends AbstractReader
 {
     protected $converter;
 
@@ -27,7 +27,7 @@ class HlblockElementsImport extends AbstractExchange
         $params = $this->exchangeEntity->getRestartParams();
 
         if (!isset($params['total'])) {
-            if (!is_file($this->file)){
+            if (!is_file($this->file)) {
                 throw new HelperException(
                     Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->file])
                 );
@@ -50,14 +50,14 @@ class HlblockElementsImport extends AbstractExchange
             }
             $reader->close();
 
-            if (!$exchangeVersion || $exchangeVersion < self::EXCHANGE_VERSION) {
+            if (!$exchangeVersion || $exchangeVersion < Module::getExchangeVersion()) {
                 throw new HelperException(
                     Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->getExchangeFile()])
                 );
             }
 
             $params['hlblock_id'] = $hblockExchange->getHlblockIdByUid($hlblockUid);
-       }
+        }
 
         $reader = new XMLReader();
         $reader->open($this->getExchangeFile());
@@ -80,7 +80,7 @@ class HlblockElementsImport extends AbstractExchange
                 if ($restart) {
                     $params['offset'] = $index;
                     $this->exchangeEntity->setRestartParams($params);
-                    $this->restart();
+                    $this->exchangeEntity->restart();
                 }
                 $index++;
             }

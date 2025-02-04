@@ -138,6 +138,11 @@ class Module
         return self::$version;
     }
 
+    public static function getExchangeVersion()
+    {
+        return 2;
+    }
+
     /**
      * @throws Exception
      */

@@ -266,7 +266,7 @@ trait IblockTrait
      * @param $iblockId
      *
      * @throws HelperException
-     * @return bool|void
+     * @return bool
      */
     public function deleteIblock($iblockId)
     {

@@ -66,7 +66,7 @@ class UserOptionsHelper extends Helper
 
         $params = array_merge(
             [
-                'name' => '',
+                'name'     => '',
                 'category' => 'list',
             ],
             $params
@@ -86,8 +86,8 @@ class UserOptionsHelper extends Helper
         $option = array_merge(
             [
                 'page_size' => 20,
-                'order' => 'desc',
-                'by' => 'timestamp_x',
+                'order'     => 'desc',
+                'by'        => 'timestamp_x',
             ],
             $option
         );
@@ -110,16 +110,16 @@ class UserOptionsHelper extends Helper
         /** @compability with old format */
         if (!isset($data['columns'])) {
             $data = [
-                'columns' => is_array($data) ? $data : [],
+                'columns'   => is_array($data) ? $data : [],
                 'page_size' => isset($params['page_size']) ? $params['page_size'] : '',
-                'order' => isset($params['order']) ? $params['order'] : '',
-                'by' => isset($params['by']) ? $params['by'] : '',
+                'order'     => isset($params['order']) ? $params['order'] : '',
+                'by'        => isset($params['by']) ? $params['by'] : '',
             ];
         }
 
         $params = array_merge(
             [
-                'name' => '',
+                'name'     => '',
                 'category' => 'list',
             ],
             $params
@@ -127,10 +127,10 @@ class UserOptionsHelper extends Helper
 
         $data = array_merge(
             [
-                'columns' => [],
+                'columns'   => [],
                 'page_size' => 20,
-                'order' => 'desc',
-                'by' => 'timestamp_x',
+                'order'     => 'desc',
+                'by'        => 'timestamp_x',
             ],
             $data
         );
@@ -141,10 +141,10 @@ class UserOptionsHelper extends Helper
         }
 
         $value = [
-            'columns' => $this->transformCodesToColumns($data['columns']),
+            'columns'   => $this->transformCodesToColumns($data['columns']),
             'page_size' => $params['page_size'],
-            'order' => $params['order'],
-            'by' => $params['by'],
+            'order'     => $params['order'],
+            'by'        => $params['by'],
         ];
 
         CUserOptions::DeleteOptionsByName(
@@ -267,7 +267,7 @@ class UserOptionsHelper extends Helper
 
         $params = array_merge(
             [
-                'name' => '',
+                'name'     => '',
                 'category' => 'form',
             ],
             $params
@@ -340,7 +340,7 @@ class UserOptionsHelper extends Helper
 
         $params = array_merge(
             [
-                'name' => '',
+                'name'     => '',
                 'category' => 'form',
             ],
             $params

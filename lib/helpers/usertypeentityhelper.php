@@ -341,7 +341,7 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldName
      *
      * @throws HelperException
-     * @return bool|void
+     * @return bool
      */
     public function deleteUserTypeEntityIfExists($entityId, $fieldName)
     {

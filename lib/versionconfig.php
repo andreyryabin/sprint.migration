@@ -285,19 +285,13 @@ class VersionConfig
         return $values;
     }
 
-    /**
-     * @param array $values
-     *
-     * @return array|mixed
-     */
-    public function humanValues($values = [])
+    public function humanValues(array $values = []): array
     {
         foreach ($values as $key => $val) {
             if ($val === true || $val === false) {
                 $val = ($val) ? 'yes' : 'no';
                 $val = Locale::getMessage('CONFIG_' . $val);
             } elseif (is_array($val)) {
-                $val = Out::getArrayFlat($val);
                 $fres = [];
                 foreach ($val as $fkey => $fval) {
                     $fres[] = '[' . $fkey . '] => ' . $fval;
@@ -352,12 +346,9 @@ class VersionConfig
     }
 
     /**
-     * @param $configName
-     *
-     * @throws Exception
-     * @return bool
+     * @throws MigrationException
      */
-    public function deleteConfig($configName)
+    public function deleteConfig(string $configName): bool
     {
         $fileName = 'migrations.' . $configName . '.php';
         if (!$this->getConfigName($fileName)) {
@@ -382,12 +373,7 @@ class VersionConfig
         return true;
     }
 
-    /**
-     * @param $configName
-     *
-     * @return int
-     */
-    protected function getSort($configName)
+    protected function getSort(string $configName): int
     {
         if ($configName == VersionEnum::CONFIG_ARCHIVE) {
             return 110;
@@ -403,7 +389,7 @@ class VersionConfig
      *
      * @return string[]
      */
-    public static function getDefaultBuilders()
+    public static function getDefaultBuilders(): array
     {
         return [
             'UserGroupBuilder'        => UserGroupBuilder::class,

@@ -7,26 +7,24 @@ use CGroup;
 use CUser;
 use Exception;
 use Sprint\Migration\Enum\VersionEnum;
+use Sprint\Migration\Exceptions\BuilderException;
+use Sprint\Migration\Exceptions\ConsoleException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Traits\CurrentUserTrait;
 use Throwable;
 
 class Console
 {
-    private $script;
-    private $command;
-    private $arguments  = [];
-    private $versionConfig;
-    private $versionManager;
-    private $argoptions = [];
+    private string         $script;
+    private string         $command;
+    private array          $arguments  = [];
+    private VersionConfig  $versionConfig;
+    private VersionManager $versionManager;
+    private array          $argoptions = [];
     use CurrentUserTrait;
 
     /**
-     * Console constructor.
-     *
-     * @param $args
-     *
-     * @throws Exception
+     * @throws MigrationException
      */
     public function __construct($args)
     {
@@ -353,9 +351,6 @@ class Console
         }
     }
 
-    /**
-     *
-     */
     public function commandInfo()
     {
         Out::out(
@@ -507,7 +502,7 @@ class Console
     /**
      * @throws MigrationException
      */
-    protected function executeOnce($version, $action)
+    protected function executeOnce(string $version, string $action)
     {
         $ok = $this->executeVersion($version, $action);
 
@@ -518,9 +513,9 @@ class Console
         }
     }
 
-    protected function executeVersion($version, $action)
+    protected function executeVersion(string $version, string $action): bool
     {
-        $tag = $this->getArg('--add-tag=', '');
+        $tag = $this->getArg('--add-tag=');
 
         $params = [];
 
@@ -558,7 +553,7 @@ class Console
     /**
      * @throws MigrationException
      */
-    protected function executeBuilder($from, $postvars = [])
+    protected function executeBuilder(string $from, array $postvars = [])
     {
         do {
             $builder = $this->versionManager->createBuilder($from, $postvars);
@@ -574,7 +569,7 @@ class Console
         } while ($builder->isRestart() || $builder->isRebuild());
     }
 
-    protected function initializeArgs($args)
+    protected function initializeArgs(array $args): string
     {
         foreach ($args as $val) {
             $this->addArg($val);
@@ -640,7 +635,7 @@ class Console
         }
     }
 
-    private function disableHandler($moduleId, $eventType)
+    private function disableHandler(string $moduleId, string $eventType)
     {
         $eventManager = EventManager::getInstance();
         $handlers = $eventManager->findEventHandlers($moduleId, $eventType);

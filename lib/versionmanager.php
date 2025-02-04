@@ -266,7 +266,7 @@ class VersionManager
         if ($class && class_exists($class)) {
             $builder = new $class($this->getVersionConfig(), $name, $params);
             if ($builder instanceof AbstractBuilder) {
-                $builder->initializeBuilder();
+                $builder->buildInitialize();
                 return $builder;
             }
         }
@@ -518,13 +518,13 @@ class VersionManager
             $items = $this->getVersions(['status' => $versionName]);
         } elseif ($versionName == 'all') {
             $items = $this->getVersions();
-        } elseif ($meta = $this->getVersionByName($versionName)) {
-            $items = [$meta];
+        } elseif ($item = $this->getVersionByName($versionName)) {
+            $items = [$item];
         }
 
         if (!empty($items)) {
-            foreach ($items as $meta) {
-                $result[] = $this->transferMigrationByMeta($meta, $vmTo);
+            foreach ($items as $item) {
+                $result[] = $this->transferMigrationByItem($item, $vmTo);
             }
         } else {
             $result[] = [
@@ -685,7 +685,7 @@ class VersionManager
             $versionInstance = (new ReflectionClass($class))
                 ->newInstanceWithoutConstructor();
             $meta['class'] = $class;
-            $meta['description'] = $this->purifyDescriptionForMeta(
+            $meta['description'] = $this->stripslashes(
                 $versionInstance->getDescription()
             );
 
@@ -693,7 +693,7 @@ class VersionManager
             $meta['file_status'] = $this->humanStatus(
                 Locale::getMessage('META_NEW'),
                 $humanTs->format(VersionTable::DATE_FORMAT),
-                $this->purifyDescriptionForMeta(
+                $this->stripslashes(
                     $versionInstance->getAuthor()
                 )
             );
@@ -730,7 +730,7 @@ class VersionManager
         return $prefix;
     }
 
-    protected function purifyDescriptionForMeta(string $descr = ''): string
+    protected function stripslashes(string $descr = ''): string
     {
         return stripslashes(strip_tags(trim($descr)));
     }

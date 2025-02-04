@@ -531,7 +531,7 @@ trait IblockPropertyTrait
      * @param $propertyId
      *
      * @throws HelperException
-     * @return bool|void
+     * @return bool
      */
     public function deletePropertyById($propertyId)
     {

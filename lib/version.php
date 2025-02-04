@@ -5,7 +5,7 @@ namespace Sprint\Migration;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Traits\ExitMessageTrait;
 use Sprint\Migration\Traits\HelperManagerTrait;
-
+use Sprint\Migration\Traits\OutTrait;
 /**
  * Class Version
  *

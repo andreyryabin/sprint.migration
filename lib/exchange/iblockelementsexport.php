@@ -3,11 +3,12 @@
 namespace Sprint\Migration\Exchange;
 
 use Exception;
-use Sprint\Migration\AbstractExchange;
+use Sprint\Migration\AbstractWriter;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Module;
 use XMLWriter;
 
-class IblockElementsExport extends AbstractExchange
+class IblockElementsExport extends AbstractWriter
 {
     protected $iblockId;
     protected $updateMode;
@@ -115,7 +116,7 @@ class IblockElementsExport extends AbstractExchange
             $this->createExchangeDir();
 
             $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
-            $this->appendToExchangeFile('<items iblockUid="' . $iblockUid . '" exchangeVersion="' . self::EXCHANGE_VERSION . '">');
+            $this->appendToExchangeFile('<items iblockUid="' . $iblockUid . '" exchangeVersion="' . Module::getExchangeVersion() . '">');
         }
 
         if ($params['offset'] <= $params['total'] - 1) {
@@ -166,7 +167,7 @@ class IblockElementsExport extends AbstractExchange
             $this->outProgress('', $params['offset'], $params['total']);
 
             $this->exchangeEntity->setRestartParams($params);
-            $this->restart();
+            $this->exchangeEntity->restart();
         }
 
         $this->appendToExchangeFile('</items>');

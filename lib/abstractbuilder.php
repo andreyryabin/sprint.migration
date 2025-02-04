@@ -7,6 +7,7 @@ use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Traits\ExitMessageTrait;
 use Sprint\Migration\Traits\HelperManagerTrait;
+use Sprint\Migration\Traits\OutTrait;
 
 abstract class AbstractBuilder extends ExchangeEntity
 {
@@ -44,11 +45,6 @@ abstract class AbstractBuilder extends ExchangeEntity
     protected function isBuilderEnabled()
     {
         return false;
-    }
-
-    public function initializeBuilder()
-    {
-        $this->initialize();
     }
 
     public function isEnabled()
@@ -186,7 +182,10 @@ abstract class AbstractBuilder extends ExchangeEntity
     {
         return ($this->execStatus == 'restart');
     }
-
+    public function buildInitialize()
+    {
+        $this->initialize();
+    }
     public function buildExecute()
     {
         $this->execStatus = '';

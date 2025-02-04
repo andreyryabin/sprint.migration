@@ -4,17 +4,14 @@ namespace Sprint\Migration\Traits;
 
 use Sprint\Migration\Exceptions\MigrationException;
 
-/**
- * @deprecated
- */
 trait ExitMessageTrait
 {
     /**
-     * @deprecated
      * @param $cond
      * @param $msg
      *
      * @throws MigrationException
+     * @deprecated
      */
     public function exitIf($cond, $msg)
     {
@@ -24,10 +21,10 @@ trait ExitMessageTrait
     }
 
     /**
-     * @deprecated
      * @param $msg
      *
      * @throws MigrationException
+     * @deprecated
      */
     public function exitWithMessage($msg)
     {
@@ -35,11 +32,11 @@ trait ExitMessageTrait
     }
 
     /**
-     * @deprecated
      * @param $var
      * @param $msg
      *
      * @throws MigrationException
+     * @deprecated
      */
     public function exitIfEmpty($var, $msg)
     {

@@ -307,7 +307,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_CANT_CREATE_FILE"               => "Ошибка создания файла \"#NAME#\"",
         "ERR_FORM_NOT_FOUND"                 => "Форма \"#NAME#\" не найдена",
         "ERR_EMPTY_REQ_FIELD"                => "Обязательное поле \"#NAME#\" не заполнено",
-        "ERR_HELPER_DISABLED"                => "Помощник \"#NAME#\" отключен",
+        "ERR_HELPER_DISABLED"                => "Помощник отключен",
         "ERR_AGENT_NOT_ADDED"                => "Агент \"#NAME#\" не добавлен",
         "ERR_EVENT_TYPE_NOT_UPDATED"         => "Тип почтового события не обновлен",
         "ERR_CANT_DELETE_FORM"               => "Ошибка удаления формы \"#NAME#\"",

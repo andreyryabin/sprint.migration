@@ -45,7 +45,7 @@ abstract class VersionBuilder extends AbstractBuilder
         return $prefix;
     }
 
-    protected function purifyDescription($descr = ''): string
+    protected function addslashes($descr = ''): string
     {
         return addslashes(strip_tags(trim($descr)));
     }
@@ -91,10 +91,10 @@ abstract class VersionBuilder extends AbstractBuilder
         array $templateVars = [],
         bool $markAsInstalled = true
     ): string {
-        $templateVars['description'] = $this->purifyDescription(
+        $templateVars['description'] = $this->addslashes(
             $this->getFieldValue('description')
         );
-        $templateVars['author'] = $this->purifyDescription(
+        $templateVars['author'] = $this->addslashes(
             $this->getCurrentUserLogin()
         );
         if (empty($templateVars['version'])) {

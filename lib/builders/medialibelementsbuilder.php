@@ -6,6 +6,7 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Exchange\MedialibElementsExport;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -50,9 +51,9 @@ class MedialibElementsBuilder extends VersionBuilder
             ]
         );
 
-        $this->getExchangeManager()
-             ->MedialibElementsExport()
+        (new MedialibElementsExport($this))
              ->setLimit(20)
+             ->setCopyFiles(true)
              ->setCollectionIds($collectionIds)
              ->setExchangeFile(
                  $this->getVersionResourceFile(

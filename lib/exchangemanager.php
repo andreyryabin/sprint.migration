@@ -2,11 +2,9 @@
 
 namespace Sprint\Migration;
 
-use Sprint\Migration\Exchange\HlblockElementsExport;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exchange\HlblockElementsImport;
-use Sprint\Migration\Exchange\IblockElementsExport;
 use Sprint\Migration\Exchange\IblockElementsImport;
-use Sprint\Migration\Exchange\MedialibElementsExport;
 use Sprint\Migration\Exchange\MedialibElementsImport;
 
 class ExchangeManager
@@ -19,55 +17,25 @@ class ExchangeManager
     }
 
     /**
-     * @throws Exceptions\MigrationException
-     * @return IblockElementsExport
+     * @throws MigrationException
      */
-    public function IblockElementsExport()
-    {
-        return new IblockElementsExport($this->exchangeEntity);
-    }
-
-    /**
-     * @throws Exceptions\MigrationException
-     * @return IblockElementsImport
-     */
-    public function IblockElementsImport()
+    public function IblockElementsImport(): IblockElementsImport
     {
         return new IblockElementsImport($this->exchangeEntity);
     }
 
     /**
-     * @throws Exceptions\MigrationException
-     * @return HlblockElementsImport
+     * @throws MigrationException
      */
-    public function HlblockElementsImport()
+    public function HlblockElementsImport(): HlblockElementsImport
     {
         return new HlblockElementsImport($this->exchangeEntity);
     }
 
     /**
-     * @throws Exceptions\MigrationException
-     * @return HlblockElementsExport
+     * @throws MigrationException
      */
-    public function HlblockElementsExport()
-    {
-        return new HlblockElementsExport($this->exchangeEntity);
-    }
-
-    /**
-     * @throws Exceptions\MigrationException
-     * @return MedialibElementsExport
-     */
-    public function MedialibElementsExport()
-    {
-        return new MedialibElementsExport($this->exchangeEntity);
-    }
-
-    /**
-     * @throws Exceptions\MigrationException
-     * @return MedialibElementsImport
-     */
-    public function MedialibElementsImport()
+    public function MedialibElementsImport(): MedialibElementsImport
     {
         return new MedialibElementsImport($this->exchangeEntity);
     }

@@ -9,7 +9,6 @@ use Sprint\Migration\Locale;
 
 trait IblockTypeTrait
 {
-
     /**
      * Получает тип инфоблока, бросает исключение если его не существует
      * @param $typeId
@@ -49,7 +48,6 @@ trait IblockTypeTrait
             )
         );
     }
-
 
     /**
      * Получает тип инфоблока
@@ -129,18 +127,18 @@ trait IblockTypeTrait
     public function addIblockType($fields = [])
     {
         $default = [
-            'ID' => '',
+            'ID'       => '',
             'SECTIONS' => 'Y',
-            'IN_RSS' => 'N',
-            'SORT' => 100,
-            'LANG' => [
+            'IN_RSS'   => 'N',
+            'SORT'     => 100,
+            'LANG'     => [
                 'ru' => [
-                    'NAME' => 'Catalog',
+                    'NAME'         => 'Catalog',
                     'SECTION_NAME' => 'Sections',
                     'ELEMENT_NAME' => 'Elements',
                 ],
                 'en' => [
-                    'NAME' => 'Catalog',
+                    'NAME'         => 'Catalog',
                     'SECTION_NAME' => 'Sections',
                     'ELEMENT_NAME' => 'Elements',
                 ],
@@ -188,14 +186,13 @@ trait IblockTypeTrait
         }
 
         return $this->deleteIblockType($iblockType['ID']);
-
     }
 
     /**
      * Удаляет тип инфоблока
      * @param $typeId
      * @throws HelperException
-     * @return bool|void
+     * @return bool
      */
     public function deleteIblockType($typeId)
     {
@@ -228,7 +225,7 @@ trait IblockTypeTrait
             $values = CIBlockType::GetByIDLang($typeId, $item['LID'], false);
             if (!empty($values)) {
                 $result[$item['LID']] = [
-                    'NAME' => $values['NAME'],
+                    'NAME'         => $values['NAME'],
                     'SECTION_NAME' => $values['SECTION_NAME'],
                     'ELEMENT_NAME' => $values['ELEMENT_NAME'],
                 ];

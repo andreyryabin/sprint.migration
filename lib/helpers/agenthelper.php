@@ -177,13 +177,10 @@ class AgentHelper extends Helper
     {
         $this->checkRequiredKeys($fields, ['NAME']);
 
-        global $DB;
-
         $fields = array_merge([
             'AGENT_INTERVAL' => 86400,
             'ACTIVE'         => 'Y',
             'IS_PERIOD'      => 'N',
-            'NEXT_EXEC'      => $DB->GetNowDate(),
             'SORT'           => 100,
         ], $fields);
 

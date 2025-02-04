@@ -306,7 +306,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_CANT_CREATE_FILE"               => "Cant create file \"#NAME#\"",
         "ERR_FORM_NOT_FOUND"                 => "Form \"#NAME#\" not found",
         "ERR_EMPTY_REQ_FIELD"                => "Required field \"#NAME#\" is empty",
-        "ERR_HELPER_DISABLED"                => "Helper class \"#NAME#\" disabled",
+        "ERR_HELPER_DISABLED"                => "Helper disabled",
         "ERR_AGENT_NOT_ADDED"                => "Agent \"#NAME#\" not created",
         "ERR_EVENT_TYPE_NOT_UPDATED"         => "Event type not updated",
         "ERR_CANT_DELETE_FORM"               => "Error deleting form \"#NAME#\"",
