@@ -5,14 +5,11 @@ namespace Sprint\Migration;
 use CFile;
 use Exception;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\ExchangeEntity;
-use Sprint\Migration\Locale;
-use Sprint\Migration\Module;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
 use XMLWriter;
 
-abstract class AbstractWriter
+abstract class ExchangeWriter
 {
     use HelperManagerTrait;
     use OutTrait;
@@ -55,6 +52,29 @@ abstract class AbstractWriter
     protected function isEnabled()
     {
         return true;
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function createExchangeFile(array $attrs = []): void
+    {
+        $this->createExchangeDir();
+
+        $attrs['exchangeVersion'] = Module::getExchangeVersion();
+
+        $str = '';
+        foreach ($attrs as $attr => $value) {
+            $str .= $attr . '="' . $value . '" ';
+        }
+
+        $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
+        $this->appendToExchangeFile('<items ' . $str . '">');
+    }
+
+    protected function closeExchangeFile(): void
+    {
+        $this->appendToExchangeFile('</items>');
     }
 
     public function setExchangeFile($file)

@@ -2,37 +2,20 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Sprint\Migration\AbstractWriter;
+use Sprint\Migration\ExchangeWriter;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Module;
 use XMLWriter;
 
-class MedialibElementsExport extends AbstractWriter
+class MedialibElementsExport extends ExchangeWriter
 {
     protected $collectionIds = [];
-    protected $exportFields  = [
+    protected $exportFields = [
         'NAME',
         'DESCRIPTION',
         'KEYWORDS',
         'COLLECTION_ID',
         'SOURCE_ID',
     ];
-
-    public function setCollectionIds($collectionIds = [])
-    {
-        $this->collectionIds = $collectionIds;
-        return $this;
-    }
-
-    public function getCollectionIds()
-    {
-        return $this->collectionIds;
-    }
-
-    public function getExportFields()
-    {
-        return $this->exportFields;
-    }
 
     /**
      * @throws RestartException
@@ -48,10 +31,7 @@ class MedialibElementsExport extends AbstractWriter
             );
             $params['offset'] = 0;
 
-            $this->createExchangeDir();
-
-            $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
-            $this->appendToExchangeFile('<items exchangeVersion="' . Module::getExchangeVersion() . '">');
+            $this->createExchangeFile();
         }
 
         if ($params['offset'] <= $params['total'] - 1) {
@@ -59,7 +39,7 @@ class MedialibElementsExport extends AbstractWriter
                 $this->getCollectionIds(),
                 [
                     'offset' => $params['offset'],
-                    'limit'  => $this->getLimit(),
+                    'limit' => $this->getLimit(),
                 ]
             );
 
@@ -94,10 +74,27 @@ class MedialibElementsExport extends AbstractWriter
             $this->exchangeEntity->restart();
         }
 
-        $this->appendToExchangeFile('</items>');
+        $this->closeExchangeFile();
+
         unset($params['total']);
         unset($params['offset']);
         $this->exchangeEntity->setRestartParams($params);
+    }
+
+    public function getCollectionIds()
+    {
+        return $this->collectionIds;
+    }
+
+    public function setCollectionIds($collectionIds = [])
+    {
+        $this->collectionIds = $collectionIds;
+        return $this;
+    }
+
+    public function getExportFields()
+    {
+        return $this->exportFields;
     }
 
     private function writeFieldFile(XMLWriter $writer, $val)

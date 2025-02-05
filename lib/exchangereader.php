@@ -11,7 +11,7 @@ use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
 use XMLReader;
 
-abstract class AbstractReader
+abstract class ExchangeReader
 {
     use HelperManagerTrait;
     use OutTrait;

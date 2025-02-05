@@ -2,14 +2,14 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Sprint\Migration\AbstractReader;
+use Sprint\Migration\ExchangeReader;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use XMLReader;
 
-class IblockElementsImport extends AbstractReader
+class IblockElementsImport extends ExchangeReader
 {
     protected $converter;
 
@@ -122,8 +122,8 @@ class IblockElementsImport extends AbstractReader
 
             $convertedItem = $this->convertItem(
                 [
-                    'iblock_id'  => $iblockId,
-                    'fields'     => $fields,
+                    'iblock_id' => $iblockId,
+                    'fields' => $fields,
                     'properties' => $props,
                 ]
             );
@@ -162,8 +162,8 @@ class IblockElementsImport extends AbstractReader
         }
 
         return [
-            'iblock_id'  => $item['iblock_id'],
-            'fields'     => $convertedFields,
+            'iblock_id' => $item['iblock_id'],
+            'fields' => $convertedFields,
             'properties' => $convertedProperties,
         ];
     }
@@ -185,6 +185,18 @@ class IblockElementsImport extends AbstractReader
         }
     }
 
+    protected function getConvertPropertyMethod($iblockId, $code)
+    {
+        $iblockExchange = $this->getHelperManager()->IblockExchange();
+        $type = $iblockExchange->getPropertyType($iblockId, $code);
+
+        if (in_array($type, ['L', 'F', 'G', 'E'])) {
+            return 'convertProperty' . ucfirst($type);
+        } else {
+            return 'convertPropertyS';
+        }
+    }
+
     /**
      * @param $iblockId
      * @param $field
@@ -196,12 +208,17 @@ class IblockElementsImport extends AbstractReader
         return $this->makeFieldValue($field['value'][0]);
     }
 
+    protected function makeFieldValue($val)
+    {
+        return $val['value'];
+    }
+
     /**
      * @param $iblockId
      * @param $field
      *
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
     protected function convertFieldIblockSection($iblockId, $field)
     {
@@ -227,18 +244,6 @@ class IblockElementsImport extends AbstractReader
         return $this->makeFileValue($field['value'][0]);
     }
 
-    protected function getConvertPropertyMethod($iblockId, $code)
-    {
-        $iblockExchange = $this->getHelperManager()->IblockExchange();
-        $type = $iblockExchange->getPropertyType($iblockId, $code);
-
-        if (in_array($type, ['L', 'F', 'G', 'E'])) {
-            return 'convertProperty' . ucfirst($type);
-        } else {
-            return 'convertPropertyS';
-        }
-    }
-
     protected function convertPropertyS($iblockId, $prop)
     {
         $iblockExchange = $this->getHelperManager()->IblockExchange();
@@ -249,6 +254,19 @@ class IblockElementsImport extends AbstractReader
         }
 
         return ($isMultiple) ? $res : $res[0];
+    }
+
+    protected function makePropertyValue($val)
+    {
+        $result = [
+            'VALUE' => $val['value'],
+        ];
+
+        if (!empty($val['description'])) {
+            $result['DESCRIPTION'] = $val['description'];
+        }
+
+        return $result;
     }
 
     protected function convertPropertyG($iblockId, $prop)
@@ -311,23 +329,5 @@ class IblockElementsImport extends AbstractReader
             $res[] = $this->makePropertyValue($val);
         }
         return ($isMultiple) ? $res : $res[0];
-    }
-
-    protected function makeFieldValue($val)
-    {
-        return $val['value'];
-    }
-
-    protected function makePropertyValue($val)
-    {
-        $result = [
-            'VALUE' => $val['value'],
-        ];
-
-        if (!empty($val['description'])) {
-            $result['DESCRIPTION'] = $val['description'];
-        }
-
-        return $result;
     }
 }

@@ -3,25 +3,116 @@
 namespace Sprint\Migration\Exchange;
 
 use Exception;
-use Sprint\Migration\AbstractWriter;
+use Sprint\Migration\ExchangeWriter;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Module;
 use XMLWriter;
 
-class IblockElementsExport extends AbstractWriter
+class IblockElementsExport extends ExchangeWriter
 {
+    const UPDATE_MODE_NOT = 'not';
+    const UPDATE_MODE_CODE = 'code';
+    const UPDATE_MODE_XML_ID = 'xml_id';
     protected $iblockId;
     protected $updateMode;
-    protected $exportFilter     = [];
-    protected $exportFields     = [];
+    protected $exportFilter = [];
+    protected $exportFields = [];
     protected $exportProperties = [];
-    const UPDATE_MODE_NOT    = 'not';
-    const UPDATE_MODE_CODE   = 'code';
-    const UPDATE_MODE_XML_ID = 'xml_id';
 
     public function setUpdateMode(string $updateMode)
     {
         $this->updateMode = $updateMode;
+        return $this;
+    }
+
+    /**
+     * @throws RestartException
+     * @throws Exception
+     */
+    public function execute()
+    {
+        $iblockExchange = $this->getHelperManager()->IblockExchange();
+
+        $params = $this->exchangeEntity->getRestartParams();
+        if (!isset($params['total'])) {
+            $iblockUid = $iblockExchange->getIblockUid(
+                $this->getIblockId()
+            );
+
+            $params['total'] = $iblockExchange->getElementsCount(
+                $this->getIblockId(),
+                $this->getExportFilter()
+            );
+            $params['offset'] = 0;
+
+            $this->createExchangeFile(['iblockUid' => $iblockUid]);
+        }
+
+        if ($params['offset'] <= $params['total'] - 1) {
+            $dbres = $iblockExchange->getElementsList(
+                $this->getIblockId(),
+                [
+                    'order' => ['ID' => 'ASC'],
+                    'offset' => $params['offset'],
+                    'limit' => $this->getLimit(),
+                    'filter' => $this->getExportFilter(),
+                ]
+            );
+
+            while ($element = $dbres->GetNextElement(false, false)) {
+                $writer = new XMLWriter();
+                $writer->openMemory();
+                $writer->startElement('item');
+
+                foreach ($iblockExchange->getElementFields($element) as $code => $val) {
+                    if (in_array($code, $this->getExportFields())) {
+                        $method = $this->getWriteFieldMethod($code);
+                        if (method_exists($this, $method)) {
+                            $writer->startElement('field');
+                            $writer->writeAttribute('name', $code);
+                            $this->$method($writer, $val);
+                            $writer->endElement();
+                        }
+                    }
+                }
+
+                foreach ($iblockExchange->getElementProps($element) as $prop) {
+                    if (in_array($prop['CODE'], $this->getExportProperties())) {
+                        $method = $this->getWritePropertyMethod($prop);
+                        if (method_exists($this, $method)) {
+                            $writer->startElement('property');
+                            $writer->writeAttribute('name', $prop['CODE']);
+                            $this->$method($writer, $prop);
+                            $writer->endElement();
+                        }
+                    }
+                }
+
+                $writer->endElement();
+                $this->appendToExchangeFile($writer->flush());
+                $params['offset']++;
+            }
+
+            $this->outProgress('', $params['offset'], $params['total']);
+
+            $this->exchangeEntity->setRestartParams($params);
+            $this->exchangeEntity->restart();
+        }
+
+        $this->closeExchangeFile();
+
+        unset($params['total']);
+        unset($params['offset']);
+        $this->exchangeEntity->setRestartParams($params);
+    }
+
+    public function getIblockId()
+    {
+        return $this->iblockId;
+    }
+
+    public function setIblockId($iblockId)
+    {
+        $this->iblockId = $iblockId;
         return $this;
     }
 
@@ -63,6 +154,17 @@ class IblockElementsExport extends AbstractWriter
         return $this;
     }
 
+    protected function getWriteFieldMethod($code)
+    {
+        if (in_array($code, ['PREVIEW_PICTURE', 'DETAIL_PICTURE'])) {
+            return 'writeFieldF';
+        } elseif ($code == 'IBLOCK_SECTION') {
+            return 'writeFieldSection';
+        } else {
+            return 'writeFieldS';
+        }
+    }
+
     /**
      * @return array
      */
@@ -82,108 +184,14 @@ class IblockElementsExport extends AbstractWriter
         return $this;
     }
 
-    public function getIblockId()
+    protected function getWritePropertyMethod($prop)
     {
-        return $this->iblockId;
-    }
+        $type = $prop['PROPERTY_TYPE'];
 
-    public function setIblockId($iblockId)
-    {
-        $this->iblockId = $iblockId;
-        return $this;
-    }
-
-    /**
-     * @throws RestartException
-     * @throws Exception
-     */
-    public function execute()
-    {
-        $iblockExchange = $this->getHelperManager()->IblockExchange();
-
-        $params = $this->exchangeEntity->getRestartParams();
-        if (!isset($params['total'])) {
-            $iblockUid = $iblockExchange->getIblockUid(
-                $this->getIblockId()
-            );
-
-            $params['total'] = $iblockExchange->getElementsCount(
-                $this->getIblockId(),
-                $this->getExportFilter()
-            );
-            $params['offset'] = 0;
-
-            $this->createExchangeDir();
-
-            $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
-            $this->appendToExchangeFile('<items iblockUid="' . $iblockUid . '" exchangeVersion="' . Module::getExchangeVersion() . '">');
-        }
-
-        if ($params['offset'] <= $params['total'] - 1) {
-            $dbres = $iblockExchange->getElementsList(
-                $this->getIblockId(),
-                [
-                    'order'  => ['ID' => 'ASC'],
-                    'offset' => $params['offset'],
-                    'limit'  => $this->getLimit(),
-                    'filter' => $this->getExportFilter(),
-                ]
-            );
-
-            while ($element = $dbres->GetNextElement(false, false)) {
-                $writer = new XMLWriter();
-                $writer->openMemory();
-                $writer->startElement('item');
-
-                foreach ($iblockExchange->getElementFields($element) as $code => $val) {
-                    if (in_array($code, $this->getExportFields())) {
-                        $method = $this->getWriteFieldMethod($code);
-                        if (method_exists($this, $method)) {
-                            $writer->startElement('field');
-                            $writer->writeAttribute('name', $code);
-                            $this->$method($writer, $val);
-                            $writer->endElement();
-                        }
-                    }
-                }
-
-                foreach ($iblockExchange->getElementProps($element)  as $prop) {
-                    if (in_array($prop['CODE'], $this->getExportProperties())) {
-                        $method = $this->getWritePropertyMethod($prop);
-                        if (method_exists($this, $method)) {
-                            $writer->startElement('property');
-                            $writer->writeAttribute('name', $prop['CODE']);
-                            $this->$method($writer, $prop);
-                            $writer->endElement();
-                        }
-                    }
-                }
-
-                $writer->endElement();
-                $this->appendToExchangeFile($writer->flush());
-                $params['offset']++;
-            }
-
-            $this->outProgress('', $params['offset'], $params['total']);
-
-            $this->exchangeEntity->setRestartParams($params);
-            $this->exchangeEntity->restart();
-        }
-
-        $this->appendToExchangeFile('</items>');
-        unset($params['total']);
-        unset($params['offset']);
-        $this->exchangeEntity->setRestartParams($params);
-    }
-
-    protected function getWriteFieldMethod($code)
-    {
-        if (in_array($code, ['PREVIEW_PICTURE', 'DETAIL_PICTURE'])) {
-            return 'writeFieldF';
-        } elseif ($code == 'IBLOCK_SECTION') {
-            return 'writeFieldSection';
+        if (in_array($type, ['L', 'F', 'G', 'E'])) {
+            return 'writeProperty' . ucfirst($type);
         } else {
-            return 'writeFieldS';
+            return 'writePropertyS';
         }
     }
 
@@ -201,17 +209,6 @@ class IblockElementsExport extends AbstractWriter
     protected function writeFieldS(XMLWriter $writer, $val)
     {
         $this->writeValue($writer, $val);
-    }
-
-    protected function getWritePropertyMethod($prop)
-    {
-        $type = $prop['PROPERTY_TYPE'];
-
-        if (in_array($type, ['L', 'F', 'G', 'E'])) {
-            return 'writeProperty' . ucfirst($type);
-        } else {
-            return 'writePropertyS';
-        }
     }
 
     protected function writePropertyS(XMLWriter $writer, $prop)

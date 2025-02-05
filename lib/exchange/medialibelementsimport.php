@@ -2,14 +2,14 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Sprint\Migration\AbstractReader;
+use Sprint\Migration\ExchangeReader;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use XMLReader;
 
-class MedialibElementsImport extends AbstractReader
+class MedialibElementsImport extends ExchangeReader
 {
     protected $converter;
 
@@ -147,15 +147,15 @@ class MedialibElementsImport extends AbstractReader
         return $this->makeFileValue($field['value'][0]);
     }
 
-    protected function convertFieldString($field)
-    {
-        return $field['value'][0]['value'];
-    }
-
     protected function convertFieldCollectionPath($field)
     {
         $medialibExchange = $this->getHelperManager()->MedialibExchange();
         $paths = array_column($field['value'], 'value');
         return $medialibExchange->saveCollectionByPath($medialibExchange::TYPE_IMAGE, $paths);
+    }
+
+    protected function convertFieldString($field)
+    {
+        return $field['value'][0]['value'];
     }
 }

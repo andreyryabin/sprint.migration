@@ -2,14 +2,14 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Sprint\Migration\AbstractReader;
+use Sprint\Migration\ExchangeReader;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use XMLReader;
 
-class HlblockElementsImport extends AbstractReader
+class HlblockElementsImport extends ExchangeReader
 {
     protected $converter;
 
@@ -115,7 +115,7 @@ class HlblockElementsImport extends AbstractReader
             $convertedItem = $this->convertItem(
                 [
                     'hlblock_id' => $hlblockId,
-                    'fields'     => $fields,
+                    'fields' => $fields,
                 ]
             );
 
@@ -128,8 +128,8 @@ class HlblockElementsImport extends AbstractReader
     /**
      * @param $item
      *
-     * @throws HelperException
      * @return array|bool
+     * @throws HelperException
      */
     protected function convertItem($item)
     {
@@ -154,7 +154,7 @@ class HlblockElementsImport extends AbstractReader
 
         return [
             'hlblock_id' => $item['hlblock_id'],
-            'fields'     => $convertedFields,
+            'fields' => $convertedFields,
         ];
     }
 
@@ -162,8 +162,8 @@ class HlblockElementsImport extends AbstractReader
      * @param $hlblockId
      * @param $fieldName
      *
-     * @throws HelperException
      * @return string
+     * @throws HelperException
      */
     protected function getConvertFieldMethod($hlblockId, $fieldName)
     {
@@ -181,8 +181,8 @@ class HlblockElementsImport extends AbstractReader
      * @param $hlblockId
      * @param $field
      *
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
     protected function convertFieldString($hlblockId, $field)
     {
@@ -202,8 +202,8 @@ class HlblockElementsImport extends AbstractReader
      * @param $hlblockId
      * @param $field
      *
-     * @throws HelperException
      * @return array|bool|null
+     * @throws HelperException
      */
     protected function convertFieldFile($hlblockId, $field)
     {
@@ -223,8 +223,8 @@ class HlblockElementsImport extends AbstractReader
      * @param $hlblockId
      * @param $field
      *
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
     protected function convertFieldEnumeration($hlblockId, $field)
     {
