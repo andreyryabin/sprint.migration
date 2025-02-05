@@ -1,8 +1,11 @@
 <?php
 
-namespace Sprint\Migration;
+namespace Sprint\Migration\Exchange\Base;
 
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\ExchangeEntity;
+use Sprint\Migration\Locale;
+use Sprint\Migration\Module;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
 use XMLWriter;

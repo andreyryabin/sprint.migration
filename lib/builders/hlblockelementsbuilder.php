@@ -13,6 +13,8 @@ use Sprint\Migration\VersionBuilder;
 
 class HlblockElementsBuilder extends VersionBuilder
 {
+    const UPDATE_MODE_NOT = 'not';
+    const UPDATE_MODE_XML_ID = 'xml_id';
     /**
      * @return bool
      */
@@ -51,7 +53,7 @@ class HlblockElementsBuilder extends VersionBuilder
         $fields = $this->getHelperManager()->HlblockExchange()->getHlblockFieldsCodes($hlblockId);
         $updateMode = $this->getFieldValueUpdateMode();
 
-        if ($updateMode == HlblockElementsExport::UPDATE_MODE_XML_ID) {
+        if ($updateMode == self::UPDATE_MODE_XML_ID) {
             if (!in_array('UF_XML_ID', $fields)) {
                 throw new HelperException('Field UF_XML_ID not found');
             }
@@ -60,7 +62,6 @@ class HlblockElementsBuilder extends VersionBuilder
         (new HlblockElementsExport($this))
              ->setLimit(20)
              ->setCopyFiles(true)
-             ->setUpdateMode($updateMode)
              ->setExportFields($fields)
              ->setHlblockId($hlblockId)
              ->setExchangeFile(
@@ -92,11 +93,11 @@ class HlblockElementsBuilder extends VersionBuilder
                 'select'      => [
                     [
                         'title' => Locale::getMessage('BUILDER_IblockElementsExport_NotUpdate'),
-                        'value' => HlblockElementsExport::UPDATE_MODE_NOT,
+                        'value' => self::UPDATE_MODE_NOT,
                     ],
                     [
                         'title' => Locale::getMessage('BUILDER_IblockElementsExport_UpdateByXmlId'),
-                        'value' => HlblockElementsExport::UPDATE_MODE_XML_ID,
+                        'value' => self::UPDATE_MODE_XML_ID,
                     ],
                 ],
             ]

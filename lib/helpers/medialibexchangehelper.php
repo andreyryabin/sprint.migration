@@ -3,17 +3,12 @@
 namespace Sprint\Migration\Helpers;
 
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\ExchangeDto;
+use Sprint\Migration\Exchange\Base\ExchangeDto;
 
-/**
- * Class MedialibExchangeHelper
- *
- * @package Sprint\Migration\Helpers
- */
 class MedialibExchangeHelper extends MedialibHelper
 {
-    private $cachedFlatTree = [];
-    private $cachedPaths = [];
+    private array $cachedFlatTree = [];
+    private array $cachedPaths = [];
 
     public function getCollectionsFlatTree($typeId)
     {
@@ -39,7 +34,7 @@ class MedialibExchangeHelper extends MedialibHelper
         return $this->cachedPaths[$uid];
     }
 
-    public function getCollectionStructure($typeId)
+    public function getCollectionStructure($typeId): array
     {
         $items = $this->getCollectionsFlatTree($typeId);
 
@@ -71,31 +66,40 @@ class MedialibExchangeHelper extends MedialibHelper
         $elements = $this->getElements($collectionId, $params);
 
         $dto = new ExchangeDto('tmp');
-
         foreach ($elements as $element) {
 
             $item = new ExchangeDto('item');
-
             foreach ($element as $code => $val) {
-                if (in_array($code, $exportFields)) {
-
-                    $field = new ExchangeDto('field');
-                    if ($code == 'SOURCE_ID') {
-                        $field->setAttribute('name', 'FILE');
-                        $field->addFile($val);
-                    } elseif ($code == 'COLLECTION_ID') {
-                        $field->setAttribute('name', 'COLLECTION_PATH');
-                        $field->addValue($this->getCollectionPath(self::TYPE_IMAGE, $val));
-                    } else {
-                        $field->setAttribute('name', $code);
-                        $field->addValue($val);
-                    }
-
-                    $item->addChild($field);
+                if (!in_array($code, $exportFields)) {
+                    continue;
                 }
-            }
 
+                $field = $this->createFieldDto([
+                    'NAME' => $code,
+                    'VALUE' => $val,
+                ]);
+
+
+                $item->addChild($field);
+            }
             $dto->addChild($item);
+        }
+        return $dto;
+    }
+
+    private function createFieldDto(array $field): ExchangeDto
+    {
+        $dto = new ExchangeDto('field', ['name' => $field['NAME']]);
+
+        if ($field['NAME'] == 'SOURCE_ID') {
+            $dto->setAttribute('name', 'FILE');
+            $dto->addFile($field['VALUE']);
+        } elseif ($field['NAME'] == 'COLLECTION_ID') {
+            $path = $this->getCollectionPath(self::TYPE_IMAGE, $field['VALUE']);
+            $dto->setAttribute('name', 'COLLECTION_PATH');
+            $dto->addValue($path);
+        } else {
+            $dto->addValue($field['VALUE']);
         }
 
         return $dto;

@@ -4,6 +4,7 @@ namespace Sprint\Migration\Helpers;
 
 use _CIBElement;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exchange\Base\ExchangeDto;
 
 class IblockExchangeHelper extends IblockHelper
 {
@@ -147,7 +148,7 @@ class IblockExchangeHelper extends IblockHelper
     /**
      * @throws HelperException
      */
-    public function getSectionUniqNameById($iblockId, $sectionId)
+    public function getSectionUniqNameById($iblockId, $sectionId): string
     {
         $filter = $this->getSectionUniqFilterById($iblockId, $sectionId);
         return $filter['NAME'] . '|' . $filter['DEPTH_LEVEL'] . '|' . $filter['CODE'];
@@ -156,10 +157,38 @@ class IblockExchangeHelper extends IblockHelper
     /**
      * @throws HelperException
      */
-    public function getElementUniqNameById($iblockId, $elementId)
+    public function getSectionUniqNamesByIds($iblockId, $sectionIds): array
+    {
+        $sectionIds = array_filter(is_array($sectionIds) ? $sectionIds : [$sectionIds]);
+
+        $uniqNames = [];
+        foreach ($sectionIds as $sectionId) {
+            $uniqNames[] = $this->getSectionUniqNameById($iblockId, $sectionId);
+        }
+        return $uniqNames;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getElementUniqNameById($iblockId, $elementId): string
     {
         $filter = $this->getElementUniqFilterById($iblockId, $elementId);
         return $filter['NAME'] . '|' . $filter['XML_ID'] . '|' . $filter['CODE'];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getElementUniqNamesByIds($iblockId, $elementIds): array
+    {
+        $elementIds = array_filter(is_array($elementIds) ? $elementIds : [$elementIds]);
+
+        $uniqNames = [];
+        foreach ($elementIds as $elementId) {
+            $uniqNames[] = $this->getElementUniqNameById($iblockId, $elementId);
+        }
+        return $uniqNames;
     }
 
     public function getElementFields(_CIBElement $element)
@@ -169,8 +198,119 @@ class IblockExchangeHelper extends IblockHelper
         return $fields;
     }
 
-    public function getElementProps(_CIBElement $element)
+    public function getElementProps(_CIBElement $element): array
     {
         return $element->GetProperties();
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getElementsListExchangeDto($iblockId, $params = [], $exportFields = [], $exportProperties = []): ExchangeDto
+    {
+
+        $dbres = $this->getElementsList($iblockId, $params);
+
+        $dto = new ExchangeDto('tmp');
+
+        while ($element = $dbres->GetNextElement(false, false)) {
+            $item = new ExchangeDto('item');
+
+            foreach ($this->getElementFields($element) as $code => $val) {
+                if (in_array($code, $exportFields)) {
+                    $field = $this->createFieldDto([
+                        'NAME' => $code,
+                        'VALUE' => $val,
+                        'IBLOCK_ID' => $iblockId
+                    ]);
+                    $item->addChild($field);
+                }
+            }
+
+            foreach ($this->getElementProps($element) as $prop) {
+                if (in_array($prop['CODE'], $exportProperties)) {
+                    $field = $this->createPropertyDto($prop);
+                    $item->addChild($field);
+                }
+            }
+
+            $dto->addChild($item);
+        }
+
+        return $dto;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function createFieldDto(array $field): ExchangeDto
+    {
+        $dto = new ExchangeDto('field', ['name' => $field['NAME']]);
+        if ($field['NAME'] == 'PREVIEW_PICTURE') {
+            $dto->addFile($field['VALUE']);
+        } elseif ($field['NAME'] == 'DETAIL_PICTURE') {
+            $dto->addFile($field['VALUE']);
+        } elseif ($field['NAME'] == 'IBLOCK_SECTION') {
+            $uniqSections = $this->getSectionUniqNamesByIds($field['IBLOCK_ID'], $field['VALUE']);
+            $dto->addValue($uniqSections);
+        } else {
+            $dto->addValue($field['VALUE']);
+        }
+        return $dto;
+    }
+
+    protected function createPropertyDto(array $prop): ExchangeDto
+    {
+        $dto = new ExchangeDto('property', ['name' => $prop['CODE']]);
+
+        if ($prop['PROPERTY_TYPE'] == 'F') {
+            $this->addPropertyValueFile($dto, $prop);
+        } elseif ($prop['PROPERTY_TYPE'] == 'L') {
+            $this->addPropertyValueList($dto, $prop);
+        } elseif ($prop['PROPERTY_TYPE'] == 'G') {
+            $this->addPropertyValueSection($dto, $prop);
+        } elseif ($prop['PROPERTY_TYPE'] == 'E') {
+            $this->addPropertyValueElement($dto, $prop);
+        } else {
+            $this->addPropertyValueString($dto, $prop);
+        }
+        return $dto;
+    }
+
+    protected function addPropertyValueString(ExchangeDto $dto, $prop): void
+    {
+        if ($prop['MULTIPLE'] == 'Y') {
+            foreach ($prop['VALUE'] as $index => $val1) {
+                $dto->addValue($val1, ['description' => $prop['DESCRIPTION'][$index] ?? '']);
+            }
+        } else {
+            $dto->addValue($prop['VALUE'], ['description' => $prop['DESCRIPTION']]);
+        }
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function addPropertyValueSection(ExchangeDto $dto, $prop): void
+    {
+        $uniqNames = $this->getSectionUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']);
+        $dto->addValue($uniqNames);
+    }
+
+    protected function addPropertyValueElement(ExchangeDto $dto, $prop): void
+    {
+        $uniqNames = $this->getElementUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']);
+        $dto->addValue($uniqNames);
+    }
+
+    protected function addPropertyValueList(ExchangeDto $dto, $prop): void
+    {
+        $dto->addValue($prop['VALUE_XML_ID']);
+    }
+
+
+    protected function addPropertyValueFile(ExchangeDto $dto, $prop): void
+    {
+        $dto->addFile($prop['VALUE']);
     }
 }

@@ -3,9 +3,8 @@
 namespace Sprint\Migration\Exchange;
 
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\ExchangeWriter;
 use Sprint\Migration\Exceptions\RestartException;
-use XMLWriter;
+use Sprint\Migration\Exchange\Base\ExchangeWriter;
 
 class MedialibElementsExport extends ExchangeWriter
 {
@@ -39,6 +38,7 @@ class MedialibElementsExport extends ExchangeWriter
 
 
         if ($params['offset'] <= $params['total'] - 1) {
+
             $dto = $medialibExchange->getElementsExchangeDto(
                 $this->getCollectionIds(),
                 [

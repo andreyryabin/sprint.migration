@@ -30,8 +30,8 @@ class HlblockHelper extends Helper
      *
      * @param array $filter
      *
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
     public function getHlblocks($filter = [])
     {
@@ -58,8 +58,8 @@ class HlblockHelper extends Helper
      *
      * @param array $filter
      *
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
     public function exportHlblocks($filter = [])
     {
@@ -78,8 +78,8 @@ class HlblockHelper extends Helper
      *
      * @param $hlblockName int|string|array - id, имя или фильтр
      *
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
     public function getFields($hlblockName)
     {
@@ -95,8 +95,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      * @param $fieldName
      *
-     * @throws HelperException
      * @return array|bool
+     * @throws HelperException
      */
     public function getField($hlblockName, $fieldName)
     {
@@ -111,8 +111,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      * @param $field
      *
-     * @throws HelperException
      * @return string|void
+     * @throws HelperException
      */
     public function getFieldUid($hlblockName, $field)
     {
@@ -140,8 +140,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      * @param $fieldName
      *
-     * @throws HelperException
      * @return mixed
+     * @throws HelperException
      */
     public function getFieldType($hlblockName, $fieldName)
     {
@@ -153,8 +153,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      * @param $fieldName
      *
-     * @throws HelperException
      * @return bool
+     * @throws HelperException
      */
     public function isFieldMultiple($hlblockName, $fieldName)
     {
@@ -167,8 +167,8 @@ class HlblockHelper extends Helper
      * @param $fieldName
      * @param $xmlId
      *
-     * @throws HelperException
      * @return mixed|string
+     * @throws HelperException
      */
     public function getFieldEnumIdByXmlId($hlblockName, $fieldName, $xmlId)
     {
@@ -187,14 +187,9 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param $hlblockName
-     * @param $fieldName
-     * @param $id
-     *
      * @throws HelperException
-     * @return mixed|string
      */
-    public function getFieldEnumXmlIdById($hlblockName, $fieldName, $id)
+    public function getFieldEnumXmlIdById($hlblockName, $fieldName, $valueId)
     {
         $field = $this->getField($hlblockName, $fieldName);
         if (empty($field['ENUM_VALUES']) || !is_array($field['ENUM_VALUES'])) {
@@ -202,7 +197,7 @@ class HlblockHelper extends Helper
         }
 
         foreach ($field['ENUM_VALUES'] as $val) {
-            if ($val['ID'] == $id) {
+            if ($val['ID'] == $valueId) {
                 return $val['XML_ID'];
             }
         }
@@ -210,11 +205,32 @@ class HlblockHelper extends Helper
     }
 
     /**
+     * @throws HelperException
+     */
+    public function getFieldEnumXmlIdsByIds($hlblockName, $fieldName, $valueIds): array
+    {
+        $valueIds = is_array($valueIds) ? $valueIds : [$valueIds];
+
+        $field = $this->getField($hlblockName, $fieldName);
+        if (empty($field['ENUM_VALUES']) || !is_array($field['ENUM_VALUES'])) {
+            return [];
+        }
+
+        $xmlIds = [];
+        foreach ($field['ENUM_VALUES'] as $val) {
+            if (in_array($val['ID'], $valueIds)) {
+                $xmlIds[] = $val['XML_ID'];
+            }
+        }
+        return $xmlIds;
+    }
+
+    /**
      * @param $hlblockName
      * @param $fieldUid
      *
-     * @throws HelperException
      * @return int
+     * @throws HelperException
      */
     public function getFieldIdByUid($hlblockName, $fieldUid)
     {
@@ -236,8 +252,8 @@ class HlblockHelper extends Helper
     /**
      * @param $hlblockName
      *
-     * @throws HelperException
      * @return string
+     * @throws HelperException
      */
     public function getEntityId($hlblockName)
     {
@@ -252,8 +268,8 @@ class HlblockHelper extends Helper
      * @param       $hlblockName int|string|array - id, имя или фильтр
      * @param array $field
      *
-     * @throws HelperException
      * @return bool|int|mixed
+     * @throws HelperException
      */
     public function saveField($hlblockName, $field = [])
     {
@@ -269,8 +285,8 @@ class HlblockHelper extends Helper
      *
      * @param array $fields
      *
-     * @throws HelperException
      * @return bool|int|mixed
+     * @throws HelperException
      */
     public function saveHlblock($fields)
     {
@@ -322,8 +338,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      * @param $fieldName
      *
-     * @throws HelperException
      * @return bool
+     * @throws HelperException
      */
     public function deleteField($hlblockName, $fieldName)
     {
@@ -340,8 +356,8 @@ class HlblockHelper extends Helper
      *
      * @param $hlblockName
      *
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
     public function exportFields($hlblockName)
     {
@@ -364,8 +380,8 @@ class HlblockHelper extends Helper
      *
      * @param $hlblockName
      *
-     * @throws HelperException
      * @return mixed
+     * @throws HelperException
      */
     public function exportHlblock($hlblockName)
     {
@@ -379,8 +395,8 @@ class HlblockHelper extends Helper
      *
      * @param $hlblockName - id, имя или фильтр
      *
-     * @throws HelperException
      * @return array|false
+     * @throws HelperException
      */
     public function getHlblock($hlblockName)
     {
@@ -409,8 +425,8 @@ class HlblockHelper extends Helper
     /**
      * @param $hlblockName
      *
-     * @throws HelperException
      * @return array|void
+     * @throws HelperException
      */
     public function getHlblockIfExists($hlblockName)
     {
@@ -432,8 +448,8 @@ class HlblockHelper extends Helper
      *
      * @param $hlblockName - id, имя или фильтр
      *
-     * @throws HelperException
      * @return int|void
+     * @throws HelperException
      */
     public function getHlblockIdIfExists($hlblockName)
     {
@@ -461,8 +477,8 @@ class HlblockHelper extends Helper
      *
      * @param $hlblockName - id, имя или фильтр
      *
-     * @throws HelperException
      * @return int|mixed
+     * @throws HelperException
      */
     public function getHlblockId($hlblockName)
     {
@@ -481,8 +497,8 @@ class HlblockHelper extends Helper
      *
      * @param array $fields
      *
-     * @throws HelperException
      * @return int|void
+     * @throws HelperException
      */
     public function addHlblock($fields)
     {
@@ -513,8 +529,8 @@ class HlblockHelper extends Helper
      *
      * @param array $fields
      *
-     * @throws HelperException
      * @return int|mixed
+     * @throws HelperException
      */
     public function addHlblockIfNotExists($fields)
     {
@@ -534,8 +550,8 @@ class HlblockHelper extends Helper
      * @param $hlblockId
      * @param $fields
      *
-     * @throws HelperException
      * @return int|void
+     * @throws HelperException
      */
     public function updateHlblock($hlblockId, $fields)
     {
@@ -565,8 +581,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      * @param $fields
      *
-     * @throws HelperException
      * @return bool|int
+     * @throws HelperException
      */
     public function updateHlblockIfExists($hlblockName, $fields)
     {
@@ -583,8 +599,8 @@ class HlblockHelper extends Helper
      *
      * @param $hlblockId
      *
-     * @throws HelperException
      * @return bool|void
+     * @throws HelperException
      */
     public function deleteHlblock($hlblockId)
     {
@@ -605,8 +621,8 @@ class HlblockHelper extends Helper
      *
      * @param $hlblockName
      *
-     * @throws HelperException
      * @return bool
+     * @throws HelperException
      */
     public function deleteHlblockIfExists($hlblockName)
     {
@@ -622,8 +638,8 @@ class HlblockHelper extends Helper
      * @param $hlblockName
      * @param $fields
      *
-     * @throws HelperException
      * @return int|void
+     * @throws HelperException
      */
     public function addElement($hlblockName, $fields)
     {
@@ -647,8 +663,8 @@ class HlblockHelper extends Helper
      * @param $elementId
      * @param $fields
      *
-     * @throws HelperException
      * @return int|void
+     * @throws HelperException
      */
     public function updateElement($hlblockName, $elementId, $fields)
     {
@@ -728,8 +744,8 @@ class HlblockHelper extends Helper
     /**
      * @param $hlblockId
      *
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
     public function exportGroupPermissions($hlblockId)
     {
@@ -764,11 +780,11 @@ class HlblockHelper extends Helper
      * предыдущие права сбрасываются
      * принимает массив вида [$groupId => $letter]
      *
-     * @param int   $hlblockId
+     * @param int $hlblockId
      * @param array $permissions
      *
-     * @throws HelperException
      * @return bool
+     * @throws HelperException
      */
     public function setGroupPermissions($hlblockId, $permissions = [])
     {
@@ -789,8 +805,8 @@ class HlblockHelper extends Helper
                 if (!empty($taskId)) {
                     HighloadBlockRightsTable::add(
                         [
-                            'HL_ID'       => $hlblockId,
-                            'TASK_ID'     => $taskId,
+                            'HL_ID' => $hlblockId,
+                            'TASK_ID' => $taskId,
                             'ACCESS_CODE' => 'G' . $groupId,
                         ]
                     );
@@ -806,8 +822,8 @@ class HlblockHelper extends Helper
     /**
      * @param $hlblockName
      *
-     * @throws HelperException
      * @return DataManager|void
+     * @throws HelperException
      */
     public function getDataManager($hlblockName)
     {
@@ -824,8 +840,8 @@ class HlblockHelper extends Helper
      * @param       $hlblockName
      * @param array $params
      *
-     * @throws HelperException
      * @return array|void
+     * @throws HelperException
      */
     public function getElements($hlblockName, $params = [])
     {
@@ -847,7 +863,7 @@ class HlblockHelper extends Helper
             return $dataManager::getList([
                 'filter' => $filter,
                 'offset' => 0,
-                'limit'  => 1,
+                'limit' => 1,
             ])->fetch();
         } catch (Exception $e) {
             throw new HelperException($e->getMessage(), $e->getCode(), $e);
@@ -867,8 +883,8 @@ class HlblockHelper extends Helper
      * @param string $hlblockName
      * @param string $xmlId
      *
-     * @throws HelperException
      * @return array|void
+     * @throws HelperException
      */
     public function getElementByXmlId($hlblockName, $xmlId)
     {
@@ -889,8 +905,8 @@ class HlblockHelper extends Helper
         try {
             $item = $dataManager::getList(
                 [
-                    'select'  => ['CNT'],
-                    'filter'  => $filter,
+                    'select' => ['CNT'],
+                    'filter' => $filter,
                     'runtime' => [
                         new ExpressionField('CNT', 'COUNT(*)'),
                     ],
@@ -906,8 +922,8 @@ class HlblockHelper extends Helper
     /**
      * @param        $hlblock
      *
-     * @throws HelperException
      * @return string|void
+     * @throws HelperException
      */
     public function getHlblockUid($hlblock)
     {
@@ -942,8 +958,8 @@ class HlblockHelper extends Helper
     /**
      * @param $hlblockUid
      *
-     * @throws HelperException
      * @return int
+     * @throws HelperException
      */
     public function getHlblockIdByUid($hlblockUid)
     {
@@ -976,8 +992,8 @@ class HlblockHelper extends Helper
     /**
      * @param int $hlblockId
      *
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
     protected function getGroupRights($hlblockId)
     {
@@ -1036,8 +1052,8 @@ class HlblockHelper extends Helper
     /**
      * @param int $hlblockId
      *
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
     protected function getHblockLangs($hlblockId)
     {
@@ -1069,8 +1085,8 @@ class HlblockHelper extends Helper
     /**
      * @param int $hlblockId
      *
-     * @throws Exception
      * @return int
+     * @throws Exception
      */
     protected function deleteHblockLangs($hlblockId)
     {
@@ -1099,11 +1115,11 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param int   $hlblockId
+     * @param int $hlblockId
      * @param array $lang
      *
-     * @throws Exception
      * @return int
+     * @throws Exception
      */
     protected function addHblockLangs($hlblockId, $lang = [])
     {
@@ -1117,8 +1133,8 @@ class HlblockHelper extends Helper
             if (!empty($item['NAME'])) {
                 HighloadBlockLangTable::add(
                     [
-                        'ID'   => $hlblockId,
-                        'LID'  => $lid,
+                        'ID' => $hlblockId,
+                        'LID' => $lid,
                         'NAME' => $item['NAME'],
                     ]
                 );
@@ -1131,7 +1147,7 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * @param int   $hlblockId
+     * @param int $hlblockId
      * @param array $lang
      *
      * @throws Exception

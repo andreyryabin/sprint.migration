@@ -1,6 +1,6 @@
 <?php
 
-namespace Sprint\Migration;
+namespace Sprint\Migration\Exchange\Base;
 
 use CFile;
 use ReflectionClass;

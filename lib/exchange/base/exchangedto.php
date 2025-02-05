@@ -1,6 +1,6 @@
 <?php
 
-namespace Sprint\Migration;
+namespace Sprint\Migration\Exchange\Base;
 
 
 use CFile;
@@ -17,7 +17,10 @@ class ExchangeDto
     public function __construct(string $name, array $attributes = [])
     {
         $this->name = $name;
-        $this->attributes = $attributes;
+
+        foreach ($attributes as $key => $value) {
+            $this->setAttribute($key, $value);
+        }
     }
 
     public function getName(): string

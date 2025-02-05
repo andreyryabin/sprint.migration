@@ -13,6 +13,9 @@ use Sprint\Migration\VersionBuilder;
 
 class IblockElementsBuilder extends VersionBuilder
 {
+    const UPDATE_MODE_NOT = 'not';
+    const UPDATE_MODE_CODE = 'code';
+    const UPDATE_MODE_XML_ID = 'xml_id';
     /**
      * @return bool
      */
@@ -46,7 +49,6 @@ class IblockElementsBuilder extends VersionBuilder
         $exportProps = $this->getFieldValueExportProps($iblockId);
 
         (new IblockElementsExport($this))
-             ->setUpdateMode($updateMode)
              ->setCopyFiles(true)
              ->setExportFilter($exportFilter)
              ->setExportFields($exportFields)
@@ -228,11 +230,11 @@ class IblockElementsBuilder extends VersionBuilder
             $exportFields = [];
         }
 
-        if ($updateMode == IblockElementsExport::UPDATE_MODE_CODE) {
+        if ($updateMode == self::UPDATE_MODE_CODE) {
             if (!in_array('CODE', $exportFields)) {
                 $exportFields[] = 'CODE';
             }
-        } elseif ($updateMode == IblockElementsExport::UPDATE_MODE_XML_ID) {
+        } elseif ($updateMode == self::UPDATE_MODE_XML_ID) {
             if (!in_array('XML_ID', $exportFields)) {
                 $exportFields[] = 'XML_ID';
             }
@@ -281,15 +283,15 @@ class IblockElementsBuilder extends VersionBuilder
                 'select'      => [
                     [
                         'title' => Locale::getMessage('BUILDER_IblockElementsExport_NotUpdate'),
-                        'value' => IblockElementsExport::UPDATE_MODE_NOT,
+                        'value' => self::UPDATE_MODE_NOT,
                     ],
                     [
                         'title' => Locale::getMessage('BUILDER_IblockElementsExport_UpdateByCode'),
-                        'value' => IblockElementsExport::UPDATE_MODE_CODE,
+                        'value' => self::UPDATE_MODE_CODE,
                     ],
                     [
                         'title' => Locale::getMessage('BUILDER_IblockElementsExport_UpdateByXmlId'),
-                        'value' => IblockElementsExport::UPDATE_MODE_XML_ID,
+                        'value' => self::UPDATE_MODE_XML_ID,
                     ],
                 ],
             ]

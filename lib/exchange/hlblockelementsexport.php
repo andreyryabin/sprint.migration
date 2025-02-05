@@ -3,28 +3,19 @@
 namespace Sprint\Migration\Exchange;
 
 use Exception;
-use Sprint\Migration\ExchangeWriter;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
-use XMLWriter;
+use Sprint\Migration\Exchange\Base\ExchangeWriter;
+
 
 class HlblockElementsExport extends ExchangeWriter
 {
-    const UPDATE_MODE_NOT = 'not';
-    const UPDATE_MODE_XML_ID = 'xml_id';
     protected $hlblockId;
-    protected $updateMode;
     protected $exportFields = [];
 
     public function setHlblockId($hlblockId)
     {
         $this->hlblockId = $hlblockId;
-        return $this;
-    }
-
-    public function setUpdateMode(string $updateMode)
-    {
-        $this->updateMode = $updateMode;
         return $this;
     }
 
@@ -48,36 +39,19 @@ class HlblockElementsExport extends ExchangeWriter
         }
 
         if ($params['offset'] <= $params['total'] - 1) {
-            $items = $hblockExchange->getElements(
+
+            $dto = $hblockExchange->getElementsExchangeDto(
                 $this->hlblockId,
                 [
                     'order' => ['ID' => 'ASC'],
                     'offset' => $params['offset'],
                     'limit' => $this->getLimit(),
-                ]
+                ],
+                $this->getExportFields()
             );
+            $this->appendDtoToExchangeFile($dto);
 
-            foreach ($items as $item) {
-                $writer = new XMLWriter();
-                $writer->openMemory();
-                $writer->startElement('item');
-
-                foreach ($item as $code => $val) {
-                    if (in_array($code, $this->getExportFields())) {
-                        $method = $this->getWriteFieldMethod($code);
-                        if (method_exists($this, $method)) {
-                            $writer->startElement('field');
-                            $writer->writeAttribute('name', $code);
-                            $this->$method($writer, ['FIELD_NAME' => $code, 'VALUE' => $val]);
-                            $writer->endElement();
-                        }
-                    }
-                }
-
-                $writer->endElement();
-                $this->appendToExchangeFile($writer->flush());
-                $params['offset']++;
-            }
+            $params['offset'] += $dto->countChilds();
 
             $this->outProgress('Progress: ', $params['offset'], $params['total']);
 
@@ -97,74 +71,9 @@ class HlblockElementsExport extends ExchangeWriter
         return $this->exportFields;
     }
 
-    /**
-     * @param array $exportFields
-     *
-     * @return $this
-     */
-    public function setExportFields(array $exportFields)
+    public function setExportFields(array $exportFields): static
     {
         $this->exportFields = $exportFields;
         return $this;
-    }
-
-    /**
-     * @param $code
-     *
-     * @return string
-     * @throws HelperException
-     */
-    protected function getWriteFieldMethod($code)
-    {
-        $hblockExchange = $this->getHelperManager()->HlblockExchange();
-
-        $type = $hblockExchange->getFieldType($this->hlblockId, $code);
-
-        if (in_array($type, ['enumeration', 'file'])) {
-            return 'writeField' . ucfirst($type);
-        }
-        return 'writeFieldString';
-    }
-
-    protected function writeFieldString(XMLWriter $writer, $field)
-    {
-        $this->writeValue($writer, $field['VALUE']);
-    }
-
-    /**
-     * @param XMLWriter $writer
-     * @param array $field
-     *
-     * @throws Exception
-     */
-    protected function writeFieldFile(XMLWriter $writer, $field)
-    {
-        $this->writeFile($writer, $field['VALUE']);
-    }
-
-    /**
-     * @param XMLWriter $writer
-     * @param array $field
-     *
-     * @throws HelperException
-     */
-    protected function writeFieldEnumeration(XMLWriter $writer, $field)
-    {
-        $hblockExchange = $this->getHelperManager()->HlblockExchange();
-
-        $idValues = is_array($field['VALUE']) ? $field['VALUE'] : [$field['VALUE']];
-        $xmlValues = [];
-        foreach ($idValues as $id) {
-            $xmlId = $hblockExchange->getFieldEnumXmlIdById(
-                $this->hlblockId,
-                $field['FIELD_NAME'],
-                $id
-            );
-            if ($xmlId) {
-                $xmlValues[] = $xmlId;
-            }
-        }
-
-        $this->writeValue($writer, $xmlValues);
     }
 }

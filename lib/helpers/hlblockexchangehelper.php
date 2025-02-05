@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Helpers;
 
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exchange\Base\ExchangeDto;
 
 class HlblockExchangeHelper extends HlblockHelper
 {
@@ -12,8 +13,8 @@ class HlblockExchangeHelper extends HlblockHelper
      * @param $hlblockName
      * @param $fieldName
      *
-     * @throws HelperException
      * @return mixed
+     * @throws HelperException
      */
     public function getField($hlblockName, $fieldName)
     {
@@ -26,10 +27,10 @@ class HlblockExchangeHelper extends HlblockHelper
     }
 
     /**
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
-    public function getHlblocksStructure()
+    public function getHlblocksStructure(): array
     {
         $res = [];
         $hlblocks = $this->getHlblocks();
@@ -45,8 +46,8 @@ class HlblockExchangeHelper extends HlblockHelper
     /**
      * @param $hlblockName
      *
-     * @throws HelperException
      * @return array
+     * @throws HelperException
      */
     public function getHlblockFieldsCodes($hlblockName)
     {
@@ -59,4 +60,56 @@ class HlblockExchangeHelper extends HlblockHelper
         }
         return $res;
     }
+
+    /**
+     * @throws HelperException
+     */
+    public function getElementsExchangeDto($hlblockId, array $params, array $exportFields): ExchangeDto
+    {
+        $elements = $this->getElements($hlblockId, $params);
+
+        $dto = new ExchangeDto('tmp');
+
+        foreach ($elements as $element) {
+            $item = new ExchangeDto('item');
+
+            foreach ($element as $code => $val) {
+                if (!in_array($code, $exportFields)) {
+                    continue;
+                }
+
+                $field = $this->createFieldDto([
+                    'NAME' => $code,
+                    'VALUE' => $val['VALUE'],
+                    'HLBLOCK_ID' => $hlblockId,
+                    'USER_TYPE_ID' => $this->getFieldType($hlblockId, $code)
+                ]);
+                $item->addChild($field);
+            }
+
+            $dto->addChild($item);
+        }
+
+        return $dto;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    private function createFieldDto(array $field): ExchangeDto
+    {
+        $dto = new ExchangeDto('field', ['name' => $field['NAME']]);
+
+        if ($field['USER_TYPE_ID'] == 'enumeration') {
+            $xmlIds = $this->getFieldEnumXmlIdsByIds($field['HLBLOCK_ID'], $field['NAME'], $field['VALUE']);
+            $dto->addValue($xmlIds);
+        } elseif ($field['USER_TYPE_ID'] == 'file') {
+            $dto->addFile($field['VALUE']);
+        } else {
+            $dto->addValue($field['VALUE']);
+        }
+
+        return $dto;
+    }
+
 }

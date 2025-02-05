@@ -2,9 +2,9 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Sprint\Migration\ExchangeReader;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Exchange\Base\ExchangeReader;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use XMLReader;
