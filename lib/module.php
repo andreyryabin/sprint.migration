@@ -3,7 +3,7 @@
 namespace Sprint\Migration;
 
 use COption;
-use Exception;
+use Sprint\Migration\Exceptions\MigrationException;
 
 /**
  *
@@ -83,10 +83,7 @@ class Module
     }
 
     /**
-     * @param $dir
-     *
-     * @throws Exception
-     * @return mixed
+     * @throws MigrationException
      */
     public static function createDir($dir)
     {
@@ -95,7 +92,7 @@ class Module
         }
 
         if (!is_dir($dir)) {
-            throw new Exception(
+            throw new MigrationException(
                 Locale::getMessage(
                     'ERR_CANT_CREATE_DIRECTORY',
                     [
@@ -108,7 +105,7 @@ class Module
         return $dir;
     }
 
-    public static function deletePath($dir)
+    public static function deletePath($dir): void
     {
         if (is_dir($dir)) {
             $files = scandir($dir);
@@ -123,7 +120,7 @@ class Module
         }
     }
 
-    public static function movePath(string $from, string $to)
+    public static function movePath(string $from, string $to): void
     {
         rename($from, $to);
     }
@@ -138,18 +135,18 @@ class Module
         return self::$version;
     }
 
-    public static function getExchangeVersion()
+    public static function getExchangeVersion(): int
     {
         return 2;
     }
 
     /**
-     * @throws Exception
+     * @throws MigrationException
      */
     public static function checkHealth()
     {
         if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql') {
-            throw new Exception(
+            throw new MigrationException(
                 Locale::getMessage(
                     'ERR_MSSQL_NOT_SUPPORTED'
                 )
@@ -157,7 +154,7 @@ class Module
         }
 
         if (!function_exists('json_encode')) {
-            throw new Exception(
+            throw new MigrationException(
                 Locale::getMessage(
                     'ERR_JSON_NOT_SUPPORTED'
                 )
@@ -165,7 +162,7 @@ class Module
         }
 
         if (version_compare(PHP_VERSION, '7.4', '<')) {
-            throw new Exception(
+            throw new MigrationException(
                 Locale::getMessage(
                     'ERR_PHP_NOT_SUPPORTED',
                     [
@@ -179,7 +176,7 @@ class Module
             is_file($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . Module::ID . '/include.php')
             && is_file($_SERVER['DOCUMENT_ROOT'] . '/local/modules/' . Module::ID . '/include.php')
         ) {
-            throw new Exception('module installed to bitrix and local folder');
+            throw new MigrationException('module installed to bitrix and local folder');
         }
     }
 }

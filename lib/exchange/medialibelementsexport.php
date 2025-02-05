@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Exchange;
 
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\ExchangeWriter;
 use Sprint\Migration\Exceptions\RestartException;
 use XMLWriter;
@@ -19,6 +20,8 @@ class MedialibElementsExport extends ExchangeWriter
 
     /**
      * @throws RestartException
+     * @throws HelperException
+     * @throws \Exception
      */
     public function execute()
     {
@@ -34,39 +37,20 @@ class MedialibElementsExport extends ExchangeWriter
             $this->createExchangeFile();
         }
 
+
         if ($params['offset'] <= $params['total'] - 1) {
-            $items = $medialibExchange->getElements(
+            $dto = $medialibExchange->getElementsExchangeDto(
                 $this->getCollectionIds(),
                 [
                     'offset' => $params['offset'],
                     'limit' => $this->getLimit(),
-                ]
+                ],
+                $this->getExportFields()
             );
 
-            foreach ($items as $item) {
-                $writer = new XMLWriter();
-                $writer->openMemory();
-                $writer->startElement('item');
-                foreach ($item as $code => $val) {
-                    if (in_array($code, $this->getExportFields())) {
-                        $writer->startElement('field');
-                        if ($code == 'SOURCE_ID') {
-                            $writer->writeAttribute('name', 'FILE');
-                            $this->writeFile($writer, $val);
-                        } elseif ($code == 'COLLECTION_ID') {
-                            $writer->writeAttribute('name', 'COLLECTION_PATH');
-                            $this->writeFieldCollection($writer, $val);
-                        } else {
-                            $writer->writeAttribute('name', $code);
-                            $this->writeValue($writer, $val);
-                        }
-                        $writer->endElement();
-                    }
-                }
-                $writer->endElement();
-                $this->appendToExchangeFile($writer->flush());
-                $params['offset']++;
-            }
+            $this->appendDtoToExchangeFile($dto);
+
+            $params['offset'] += $dto->countChilds();
 
             $this->outProgress('Progress: ', $params['offset'], $params['total']);
 
@@ -95,15 +79,5 @@ class MedialibElementsExport extends ExchangeWriter
     public function getExportFields()
     {
         return $this->exportFields;
-    }
-
-
-    private function writeFieldCollection(XMLWriter $writer, $val)
-    {
-        $medialibExchange = $this->getHelperManager()->MedialibExchange();
-        $this->writeValue(
-            $writer,
-            $medialibExchange->getCollectionPath($medialibExchange::TYPE_IMAGE, $val)
-        );
     }
 }

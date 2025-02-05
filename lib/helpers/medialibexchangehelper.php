@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Helpers;
 
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\ExchangeDto;
 
 /**
  * Class MedialibExchangeHelper
@@ -12,7 +13,7 @@ use Sprint\Migration\Exceptions\HelperException;
 class MedialibExchangeHelper extends MedialibHelper
 {
     private $cachedFlatTree = [];
-    private $cachedPaths    = [];
+    private $cachedPaths = [];
 
     public function getCollectionsFlatTree($typeId)
     {
@@ -26,8 +27,8 @@ class MedialibExchangeHelper extends MedialibHelper
      * @param $typeId
      * @param $path
      *
-     * @throws HelperException
      * @return int|void
+     * @throws HelperException
      */
     public function saveCollectionByPath($typeId, $path)
     {
@@ -61,4 +62,44 @@ class MedialibExchangeHelper extends MedialibHelper
         }
         return [];
     }
+
+    /**
+     * @throws HelperException
+     */
+    public function getElementsExchangeDto($collectionId, $params = [], $exportFields = []): ExchangeDto
+    {
+        $elements = $this->getElements($collectionId, $params);
+
+        $dto = new ExchangeDto('tmp');
+
+        foreach ($elements as $element) {
+
+            $item = new ExchangeDto('item');
+
+            foreach ($element as $code => $val) {
+                if (in_array($code, $exportFields)) {
+
+                    $field = new ExchangeDto('field');
+                    if ($code == 'SOURCE_ID') {
+                        $field->setAttribute('name', 'FILE');
+                        $field->addFile($val);
+                    } elseif ($code == 'COLLECTION_ID') {
+                        $field->setAttribute('name', 'COLLECTION_PATH');
+                        $field->addValue($this->getCollectionPath(self::TYPE_IMAGE, $val));
+                    } else {
+                        $field->setAttribute('name', $code);
+                        $field->addValue($val);
+                    }
+
+                    $item->addChild($field);
+                }
+            }
+
+            $dto->addChild($item);
+        }
+
+        return $dto;
+    }
+
+
 }

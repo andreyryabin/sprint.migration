@@ -2,8 +2,6 @@
 
 namespace Sprint\Migration;
 
-use CFile;
-use Exception;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
@@ -14,12 +12,12 @@ abstract class ExchangeWriter
     use HelperManagerTrait;
     use OutTrait;
 
-    protected $exchangeEntity;
-    protected $file;
-    protected $limit     = 10;
-    protected $copyFiles = true;
+    protected ExchangeEntity $exchangeEntity;
+    protected string $file;
+    protected int $limit = 10;
+    protected bool $copyFiles = true;
 
-    public function setCopyFiles($copyFiles)
+    public function setCopyFiles($copyFiles): static
     {
         $this->copyFiles = (bool)$copyFiles;
         return $this;
@@ -49,24 +47,24 @@ abstract class ExchangeWriter
         }
     }
 
-    protected function isEnabled()
+    protected function isEnabled(): bool
     {
         return true;
     }
 
     /**
-     * @throws Exception
+     * @throws MigrationException
      */
     protected function createExchangeFile(array $attrs = []): void
     {
-        $this->createExchangeDir();
-
         $attrs['exchangeVersion'] = Module::getExchangeVersion();
 
         $str = '';
         foreach ($attrs as $attr => $value) {
             $str .= $attr . '="' . $value . '" ';
         }
+
+        Module::createDir($this->getExchangeDir());
 
         $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
         $this->appendToExchangeFile('<items ' . $str . '>');
@@ -77,99 +75,31 @@ abstract class ExchangeWriter
         $this->appendToExchangeFile('</items>');
     }
 
-    public function setExchangeFile($file)
+    /**
+     * @throws MigrationException
+     */
+    protected function appendDtoToExchangeFile(ExchangeDto $dto): void
     {
-        $this->file = $file;
-        return $this;
-    }
+        $writer = new XMLWriter();
+        $writer->openMemory();
 
-    public function getLimit()
-    {
-        return $this->limit;
-    }
-
-    public function setLimit($limit)
-    {
-        $this->limit = $limit;
-        return $this;
-    }
-
-    protected function getExchangeDir()
-    {
-        return dirname($this->file);
-    }
-
-    protected function getExchangeFile()
-    {
-        return $this->file;
-    }
-
-    protected function writeValue(XMLWriter $writer, $val, $attributes = [])
-    {
-        if (is_array($val)) {
-            foreach ($val as $val1) {
-                $this->writeSingleValue($writer, $val1, $attributes);
-            }
-        } else {
-            $this->writeSingleValue($writer, $val, $attributes);
+        /** @var ExchangeDto $child */
+        foreach ($dto->getChilds() as $child) {
+            $this->appendDtoToWriter($writer, $child);
         }
-    }
 
-    protected function writeSingleValue(XMLWriter $writer, $val, $attributes = [])
-    {
-        if (!empty($val)) {
-            if (is_array($val)) {
-                $val = json_encode($val, JSON_UNESCAPED_UNICODE);
-                $attributes['type'] = 'json';
-            }
-            $writer->startElement('value');
-            foreach ($attributes as $atcode => $atval) {
-                if (!empty($atval)) {
-                    $writer->writeAttribute($atcode, $atval);
-                }
-            }
-            $writer->text(htmlspecialchars_decode($val));
-            $writer->endElement();
-        }
+        $this->appendToExchangeFile($writer->flush());
+
+        $this->copyDtoFiles($dto);
     }
 
     /**
-     * @param XMLWriter $writer
-     * @param           $fileIds
-     *
-     * @throws Exception
+     * @throws MigrationException
      */
-    protected function writeFile(XMLWriter $writer, $fileIds)
+    protected function copyDtoFiles(ExchangeDto $dto): void
     {
-        if (is_array($fileIds)) {
-            foreach ($fileIds as $fileId) {
-                $this->writeSingleFile($writer, $fileId);
-            }
-        } else {
-            $this->writeSingleFile($writer, $fileIds);
-        }
-    }
-
-    /**
-     * @param XMLWriter $writer
-     * @param           $fileId
-     *
-     * @throws Exception
-     */
-    protected function writeSingleFile(XMLWriter $writer, $fileId)
-    {
-        $file = CFile::GetFileArray($fileId);
-        if (!empty($file)) {
-            $this->writeValue(
-                $writer,
-                $file['SUBDIR'] . '/' . $file['FILE_NAME'],
-                [
-                    'name'        => $file['ORIGINAL_NAME'],
-                    'description' => $file['DESCRIPTION'],
-                ]
-            );
-
-            if ($this->copyFiles) {
+        if ($this->copyFiles) {
+            foreach ($dto->getFiles() as $file) {
                 $filePath = Module::getDocRoot() . $file['SRC'];
                 if (file_exists($filePath)) {
                     $newPath = $this->getExchangeDir() . '/' . $file['SUBDIR'] . '/' . $file['FILE_NAME'];
@@ -180,15 +110,48 @@ abstract class ExchangeWriter
         }
     }
 
-    /**
-     * @throws Exception
-     */
-    protected function createExchangeDir()
+    private function appendDtoToWriter(XMLWriter $writer, ExchangeDto $dto): void
     {
-        Module::createDir($this->getExchangeDir());
+        $writer->startElement($dto->getName());
+
+        foreach ($dto->getAttributes() as $atname => $atval) {
+            $writer->writeAttribute($atname, $atval);
+        }
+        /** @var ExchangeDto $child */
+        foreach ($dto->getChilds() as $child) {
+            $this->appendDtoToWriter($writer, $child);
+        }
+
+        if ($dto->getText()) {
+            $writer->text($dto->getText());
+        }
+
+        $writer->endElement();
     }
 
-    protected function appendToExchangeFile($content)
+    public function setExchangeFile(string $file): static
+    {
+        $this->file = $file;
+        return $this;
+    }
+
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
+
+    public function setLimit($limit): static
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
+    protected function getExchangeDir(): string
+    {
+        return dirname($this->file);
+    }
+
+    protected function appendToExchangeFile($content): void
     {
         file_put_contents($this->file, $content, FILE_APPEND);
     }
