@@ -257,7 +257,7 @@ a.sp-item-unknown:visited {
 }
 
 .sp-label-green {
-    background: #9fff9f;
+    background: #b5e5a5;
     border-bottom: 1px solid #080;
     border-right: 1px solid #080;
 }
@@ -317,10 +317,6 @@ a.sp-item-unknown:visited {
 
 #bx-admin-prefix #migration_container .adm-info-message {
     margin: 5px 0 5px 0;
-}
-
-#bx-admin-prefix #migration_container .sp-progress .adm-info-message-buttons {
-    display: none;
 }
 
 .sp-disabled {

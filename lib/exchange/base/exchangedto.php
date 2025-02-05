@@ -8,10 +8,9 @@ use CFile;
 class ExchangeDto
 {
     private string $name;
-    private array $attributes;
+    private array $attributes = [];
     private string $text = '';
     private array $childs = [];
-
     private array $files = [];
 
     public function __construct(string $name, array $attributes = [])

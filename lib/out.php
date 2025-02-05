@@ -36,26 +36,23 @@ class Out
 
         self::$needEol = true;
 
+        $msg = '[label]' . $msg . ' ' . $val . ' / ' . $total . '[/]';
+
         if (self::canOutAsHtml()) {
-            $msg = self::prepareToHtml($msg, ['br' => true]);
-            echo '<div class="sp-progress">' . "$msg $val/$total" . '</div>';
+            self::outToHtml($msg, ['class' => 'sp-progress']);
         } else {
             $msg = self::prepareToConsole($msg);
-            fwrite(STDOUT, "\r$msg $val/$total");
+            fwrite(STDOUT, "\r$msg $val / $total");
         }
     }
 
-    protected static function canOutAsHtml()
+    protected static function canOutAsHtml(): bool
     {
-        return (php_sapi_name() == 'cli') ? 0 : 1;
+        return (php_sapi_name() != 'cli');
     }
 
     protected static function prepareToHtml($msg, $options = [])
     {
-        if ($options['br']) {
-            $msg = nl2br($msg);
-        }
-
         $msg = str_replace('[t]', '&rarr;', $msg);
 
         foreach (self::$colors as $key => $val) {
@@ -75,7 +72,7 @@ class Out
 
     protected static function makeTaskUrl($msg, $taskUrl = '')
     {
-        if (false !== strpos($taskUrl, '$1')) {
+        if (str_contains($taskUrl, '$1')) {
             $msg = preg_replace('/\#([a-z0-9_\-]*)/i', $taskUrl, $msg);
         }
 
@@ -118,15 +115,10 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $msg = '[blue]' . $msg . '[/]';
-        if (self::canOutAsHtml()) {
-            self::outToHtml($msg);
-        } else {
-            self::outToConsole($msg);
-        }
+        self::out('[blue]' . $msg . '[/]');
     }
 
-    public static function outToHtml($msg, $options = ['br' => false])
+    public static function outToHtml($msg, $options = [])
     {
         $class = $options['class'] ?? 'sp-out';
 
@@ -370,7 +362,7 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        self::outNotice($msg);
+        self::out('[label:green]' . $msg . '[/]');
     }
 
     public static function outNotice($msg, ...$vars)
@@ -380,12 +372,7 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $msg = '[green]' . $msg . '[/]';
-        if (self::canOutAsHtml()) {
-            self::outToHtml($msg);
-        } else {
-            self::outToConsole($msg);
-        }
+        self::out('[green]' . $msg . '[/]');
     }
 
     public static function outError($msg, ...$vars)
@@ -395,7 +382,7 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        self::outWarning($msg);
+        self::out('[label:red]' . $msg . '[/]');
     }
 
     public static function outWarning($msg, ...$vars)
@@ -405,12 +392,7 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $msg = '[red]' . $msg . '[/]';
-        if (self::canOutAsHtml()) {
-            self::outToHtml($msg);
-        } else {
-            self::outToConsole($msg);
-        }
+        self::out('[red]' . $msg . '[/]');
     }
 
     public static function outException(?Throwable $exception)
