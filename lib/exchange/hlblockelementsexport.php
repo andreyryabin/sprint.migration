@@ -79,7 +79,7 @@ class HlblockElementsExport extends ExchangeWriter
                 $params['offset']++;
             }
 
-            $this->outProgress('', $params['offset'], $params['total']);
+            $this->outProgress('Progress: ', $params['offset'], $params['total']);
 
             $this->exchangeEntity->setRestartParams($params);
             $this->exchangeEntity->restart();

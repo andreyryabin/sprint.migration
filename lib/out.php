@@ -2,31 +2,30 @@
 
 namespace Sprint\Migration;
 
-use CAdminMessage;
 use Throwable;
 
 class Out
 {
-    protected static $colors  = [
-        '/'            => ["\x1b[0m", '</span>'],
-        'tab'          => ["\x1b[0m", '<span class="sp-indent-20">'],
-        'unknown'      => ["\x1b[0;34m", '<span class="sp-blue"">'],
-        'installed'    => ["\x1b[0;32m", '<span class="sp-green">'],
-        'new'          => ["\x1b[0;31m", '<span class="sp-red">'],
-        'blue'         => ["\x1b[0;34m", '<span class="sp-blue">'],
-        'pink'         => ["\x1b[0;35m", '<span class="sp-pink">'],
-        'green'        => ["\x1b[0;32m", '<span class="sp-green">'],
-        'up'           => ["\x1b[0;32m", '<span class="sp-green">'],
-        'red'          => ["\x1b[0;31m", '<span class="sp-red">'],
-        'down'         => ["\x1b[0;31m", '<span class="sp-red">'],
-        'yellow'       => ["\x1b[0;93m", '<span class="sp-yellow">'],
-        'label'        => ["\x1b[47;30m", '<span class="sp-label">'],
-        'label:blue'   => ["\x1b[104;30m", '<span class="sp-label sp-label-blue">'],
-        'label:pink'   => ["\x1b[105;30m", '<span class="sp-label sp-label-pink">'],
-        'label:red'    => ["\x1b[41;37m", '<span class="sp-label sp-label-red">'],
-        'label:green'  => ["\x1b[102;30m", '<span class="sp-label sp-label-green">'],
+    protected static $colors = [
+        '/' => ["\x1b[0m", '</span>'],
+        'tab' => ["\x1b[0m", '<span class="sp-indent-20">'],
+        'unknown' => ["\x1b[0;34m", '<span class="sp-blue"">'],
+        'installed' => ["\x1b[0;32m", '<span class="sp-green">'],
+        'new' => ["\x1b[0;31m", '<span class="sp-red">'],
+        'blue' => ["\x1b[0;34m", '<span class="sp-blue">'],
+        'pink' => ["\x1b[0;35m", '<span class="sp-pink">'],
+        'green' => ["\x1b[0;32m", '<span class="sp-green">'],
+        'up' => ["\x1b[0;32m", '<span class="sp-green">'],
+        'red' => ["\x1b[0;31m", '<span class="sp-red">'],
+        'down' => ["\x1b[0;31m", '<span class="sp-red">'],
+        'yellow' => ["\x1b[0;93m", '<span class="sp-yellow">'],
+        'label' => ["\x1b[47;30m", '<span class="sp-label">'],
+        'label:blue' => ["\x1b[104;30m", '<span class="sp-label sp-label-blue">'],
+        'label:pink' => ["\x1b[105;30m", '<span class="sp-label sp-label-pink">'],
+        'label:red' => ["\x1b[41;37m", '<span class="sp-label sp-label-red">'],
+        'label:green' => ["\x1b[102;30m", '<span class="sp-label sp-label-green">'],
         'label:yellow' => ["\x1b[103;30m", '<span class="sp-label sp-label-yellow">'],
-        'b'            => ["\x1b[1m", '<span class="sp-bold">'],
+        'b' => ["\x1b[1m", '<span class="sp-bold">'],
     ];
     protected static $needEol = false;
 
@@ -37,29 +36,13 @@ class Out
 
         self::$needEol = true;
 
-        if (self::canOutProgressBar()) {
-            $mess = [
-                "MESSAGE"        => $msg,
-                "DETAILS"        => "#PROGRESS_BAR#",
-                "HTML"           => true,
-                "TYPE"           => "PROGRESS",
-                "PROGRESS_TOTAL" => $total,
-                "PROGRESS_VALUE" => $val,
-            ];
-
-            echo '<div class="sp-progress">' . (new CAdminMessage($mess))->Show() . '</div>';
-        } elseif (self::canOutAsHtml()) {
+        if (self::canOutAsHtml()) {
             $msg = self::prepareToHtml($msg, ['br' => true]);
             echo '<div class="sp-progress">' . "$msg $val/$total" . '</div>';
         } else {
             $msg = self::prepareToConsole($msg);
             fwrite(STDOUT, "\r$msg $val/$total");
         }
-    }
-
-    protected static function canOutProgressBar()
-    {
-        return method_exists('\CAdminMessage', '_getProgressHtml') ? 1 : 0;
     }
 
     protected static function canOutAsHtml()
@@ -101,9 +84,11 @@ class Out
 
     protected static function makeLinksHtml($msg)
     {
-        $reg_exUrl = "/(http|https)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
-        if (preg_match($reg_exUrl, $msg, $url)) {
-            $msg = preg_replace($reg_exUrl, '<a target="_blank" href="' . $url[0] . '">' . $url[0] . '</a>', $msg);
+        $regex = "/(http|https)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
+        if (preg_match_all($regex, $msg, $urls)) {
+            foreach (array_unique($urls[0]) as $url) {
+                $msg = str_replace($url, '<a target="_blank" href="' . $url . '">' . $url . '</a>', $msg);
+            }
         }
 
         return $msg;
@@ -301,6 +286,7 @@ class Out
             self::out($k . ':' . $v);
         }
     }
+
     protected static function truncateText($strText, $intLen)
     {
         if (mb_strlen($strText) > $intLen) {
@@ -384,22 +370,7 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        if (self::canOutAsAdminMessage()) {
-            echo (new CAdminMessage(
-                [
-                    "MESSAGE" => self::prepareToHtml($msg, ['br' => true]),
-                    'HTML'    => true,
-                    'TYPE'    => 'OK',
-                ]
-            ))->Show();
-        } else {
-            self::outNotice($msg);
-        }
-    }
-
-    protected static function canOutAsAdminMessage()
-    {
-        return (self::canOutAsHtml() && class_exists('\CAdminMessage')) ? 1 : 0;
+        self::outNotice($msg);
     }
 
     public static function outNotice($msg, ...$vars)
@@ -424,17 +395,7 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        if (self::canOutAsAdminMessage()) {
-            echo (new CAdminMessage(
-                [
-                    "MESSAGE" => self::prepareToHtml($msg, ['br' => true]),
-                    'HTML'    => true,
-                    'TYPE'    => 'ERROR',
-                ]
-            ))->Show();
-        } else {
-            self::outWarning($msg);
-        }
+        self::outWarning($msg);
     }
 
     public static function outWarning($msg, ...$vars)

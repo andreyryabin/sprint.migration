@@ -68,7 +68,7 @@ class MedialibElementsImport extends ExchangeReader
                 }
 
                 if ($finish || $restart) {
-                    $this->outProgress('', ($index + 1), $params['total']);
+                    $this->outProgress('Progress: ', ($index + 1), $params['total']);
                 }
 
                 if ($restart) {

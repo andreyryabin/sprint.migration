@@ -69,7 +69,7 @@ abstract class ExchangeWriter
         }
 
         $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
-        $this->appendToExchangeFile('<items ' . $str . '">');
+        $this->appendToExchangeFile('<items ' . $str . '>');
     }
 
     protected function closeExchangeFile(): void

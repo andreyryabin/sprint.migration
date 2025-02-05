@@ -52,7 +52,7 @@ class MedialibElementsExport extends ExchangeWriter
                         $writer->startElement('field');
                         if ($code == 'SOURCE_ID') {
                             $writer->writeAttribute('name', 'FILE');
-                            $this->writeFieldFile($writer, $val);
+                            $this->writeFile($writer, $val);
                         } elseif ($code == 'COLLECTION_ID') {
                             $writer->writeAttribute('name', 'COLLECTION_PATH');
                             $this->writeFieldCollection($writer, $val);
@@ -68,7 +68,7 @@ class MedialibElementsExport extends ExchangeWriter
                 $params['offset']++;
             }
 
-            $this->outProgress('', $params['offset'], $params['total']);
+            $this->outProgress('Progress: ', $params['offset'], $params['total']);
 
             $this->exchangeEntity->setRestartParams($params);
             $this->exchangeEntity->restart();
@@ -97,10 +97,6 @@ class MedialibElementsExport extends ExchangeWriter
         return $this->exportFields;
     }
 
-    private function writeFieldFile(XMLWriter $writer, $val)
-    {
-        $this->writeFile($writer, $val);
-    }
 
     private function writeFieldCollection(XMLWriter $writer, $val)
     {
