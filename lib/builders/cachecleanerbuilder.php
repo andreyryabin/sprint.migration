@@ -22,10 +22,7 @@ class CacheCleanerBuilder extends AbstractBuilder
 
     protected function execute()
     {
-        if (BXClearCache(true)) {
-            $this->outSuccess('Success');
-        } else {
-            $this->outError('Error');
-        }
+        BXClearCache(true);
+        $this->outSuccess('Success');
     }
 }

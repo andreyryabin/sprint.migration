@@ -590,19 +590,6 @@ class EventHelper extends Helper
         );
     }
 
-    /**
-     * @param $filter
-     * @param $fields
-     *
-     * @throws HelperException
-     * @return bool
-     * @deprecated use updateEventMessage
-     */
-    public function updateEventMessageByFilter($filter, $fields)
-    {
-        return $this->updateEventMessage($filter, $fields);
-    }
-
     protected function prepareEventMessage($item)
     {
         if (empty($item['ID'])) {

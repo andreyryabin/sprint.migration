@@ -2,7 +2,6 @@
 
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
-use Sprint\Migration\Module;
 use Sprint\Migration\Out;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
@@ -57,13 +56,13 @@ if ($_POST["step_code"] == "migration_view_new") {
     ]);
 } elseif ($_POST["step_code"] == "migration_view_modified") {
     $versions = $versionManager->getVersions([
-        'search'   => $search,
+        'search' => $search,
         'modified' => 1,
     ]);
 } elseif ($_POST["step_code"] == "migration_view_older") {
     $versions = $versionManager->getVersions([
         'search' => $search,
-        'older'  => 1,
+        'older' => 1,
     ]);
 } else {
     $versions = $versionManager->getVersions([
@@ -78,32 +77,32 @@ $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
 
     if ($item['status'] == VersionEnum::STATUS_NEW) {
         $menu[] = [
-            'TEXT'    => Locale::getMessage('UP'),
+            'TEXT' => Locale::getMessage('UP'),
             'ONCLICK' => 'migrationMigrationUp(\'' . $item['version'] . '\')',
         ];
         $menu[] = [
-            'TEXT'    => Locale::getMessage('MARK_NEW_AS_INSTALLED'),
+            'TEXT' => Locale::getMessage('MARK_NEW_AS_INSTALLED'),
             'ONCLICK' => 'migrationMigrationMark(\'' . $item['version'] . '\',\'' . VersionEnum::STATUS_INSTALLED . '\')',
         ];
     }
     if ($item['status'] == VersionEnum::STATUS_INSTALLED) {
         $menu[] = [
-            'TEXT'    => Locale::getMessage('DOWN'),
+            'TEXT' => Locale::getMessage('DOWN'),
             'ONCLICK' => 'migrationMigrationDown(\'' . $item['version'] . '\')',
         ];
         $menu[] = [
-            'TEXT'    => Locale::getMessage('SETTAG'),
+            'TEXT' => Locale::getMessage('SETTAG'),
             'ONCLICK' => 'migrationMigrationSetTag(\'' . $item['version'] . '\',\'' . $item['tag'] . '\')',
         ];
         $menu[] = [
-            'TEXT'    => Locale::getMessage('MARK_INSTALLED_AS_NEW'),
+            'TEXT' => Locale::getMessage('MARK_INSTALLED_AS_NEW'),
             'ONCLICK' => 'migrationMigrationMark(\'' . $item['version'] . '\',\'' . VersionEnum::STATUS_NEW . '\')',
         ];
     }
 
     if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
         $menu[] = [
-            'TEXT'    => Locale::getMessage('SETTAG'),
+            'TEXT' => Locale::getMessage('SETTAG'),
             'ONCLICK' => 'migrationMigrationSetTag(\'' . $item['version'] . '\')',
         ];
     }
@@ -127,7 +126,7 @@ $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
     foreach ($configList as $configItem) {
         if ($configItem['name'] != $versionConfig->getName()) {
             $transferMenu[] = [
-                'TEXT'    => $configItem['title'],
+                'TEXT' => $configItem['title'],
                 'ONCLICK' => 'migrationMigrationTransfer(\'' . $item['version'] . '\',\'' . $configItem['name'] . '\')',
             ];
         }
@@ -140,8 +139,10 @@ $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
         ];
     }
 
+    $menu[] = ['SEPARATOR' => 'Y'];
+
     $menu[] = [
-        'TEXT'    => Locale::getMessage('DELETE'),
+        'TEXT' => Locale::getMessage('DELETE'),
         'ONCLICK' => 'migrationMigrationDelete(\'' . $item['version'] . '\')',
     ];
 
@@ -198,7 +199,7 @@ if (empty($versions)) {
                 }
                 Out::outToHtml($item['description'], [
                     'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),
-                    'make_links'       => true,
+                    'make_links' => true,
                 ]);
                 ?>
             </td>

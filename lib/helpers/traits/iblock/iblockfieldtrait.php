@@ -100,17 +100,6 @@ trait IblockFieldTrait
         return false;
     }
 
-    /**
-     * @param $iblockId
-     * @param $fields
-     *
-     * @deprecated
-     */
-    public function mergeIblockFields($iblockId, $fields)
-    {
-        $this->saveIblockFields($iblockId, $fields);
-    }
-
     public function exportIblockElementFields($iblockId)
     {
         return $this->prepareExportIblockElementFields(

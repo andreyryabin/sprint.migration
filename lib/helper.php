@@ -52,27 +52,6 @@ class Helper
 
     /**
      * @throws HelperException
-     * @deprecated
-     */
-    protected function throwException($method, $msg, ...$vars)
-    {
-        $args = func_get_args();
-        $method = array_shift($args);
-
-        if ($msg instanceof \Throwable) {
-            $msg = $msg->getMessage();
-        } else {
-            $msg = call_user_func_array('sprintf', $args);
-            $msg = strip_tags($msg);
-        }
-
-        $msg = $this->getMethod($method) . ': ' . $msg;
-
-        throw new HelperException($msg);
-    }
-
-    /**
-     * @throws HelperException
      */
     protected function throwApplicationExceptionIfExists()
     {

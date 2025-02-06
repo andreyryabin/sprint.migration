@@ -3,7 +3,6 @@
 namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\Traits\ExitMessageTrait;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
 /**
@@ -14,7 +13,6 @@ use Sprint\Migration\Traits\OutTrait;
 class Version extends ExchangeEntity
 {
     use HelperManagerTrait;
-    use ExitMessageTrait;
     use OutTrait;
 
     protected $author        = "";

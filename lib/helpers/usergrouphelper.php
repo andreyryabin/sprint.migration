@@ -303,17 +303,6 @@ class UserGroupHelper extends Helper
     }
 
     /**
-     * @param array $filter
-     *
-     * @return array
-     * @deprecated
-     */
-    public function getGroupsByFilter($filter = [])
-    {
-        return $this->getGroups($filter);
-    }
-
-    /**
      * Cброс настроек доступа группы
      *
      * @param $groupId

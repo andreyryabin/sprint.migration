@@ -444,32 +444,6 @@ trait IblockTrait
     }
 
     /**
-     * @param        $code
-     * @param string $typeId
-     *
-     * @throws HelperException
-     * @return mixed
-     * @deprecated
-     */
-    public function findIblockId($code, $typeId = '')
-    {
-        return $this->getIblockIdIfExists($code, $typeId);
-    }
-
-    /**
-     * @param        $code
-     * @param string $typeId
-     *
-     * @throws HelperException
-     * @return mixed
-     * @deprecated
-     */
-    public function findIblock($code, $typeId = '')
-    {
-        return $this->getIblockIfExists($code, $typeId);
-    }
-
-    /**
      * @param $iblock int|array
      *
      * @throws HelperException

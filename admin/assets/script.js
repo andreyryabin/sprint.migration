@@ -63,9 +63,11 @@ function migrationMigrationTransfer(version, transferTo) {
 }
 
 function migrationMigrationDelete(version) {
-    migrationExecuteStep('migration_delete', {
-        'version': version,
-    });
+    if (confirm('Confirm delete migration file')) {
+        migrationExecuteStep('migration_delete', {
+            'version': version,
+        });
+    }
 }
 
 function migrationOutLog(result) {

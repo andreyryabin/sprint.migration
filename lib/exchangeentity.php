@@ -14,7 +14,10 @@ abstract class ExchangeEntity
     {
         return $this->versionConfig;
     }
-
+    public function getClassName(): string
+    {
+        return (new ReflectionClass($this))->getShortName();
+    }
     /**
      * Не использовать
      *

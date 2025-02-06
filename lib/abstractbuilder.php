@@ -5,14 +5,12 @@ namespace Sprint\Migration;
 use Exception;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Traits\ExitMessageTrait;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
 
 abstract class AbstractBuilder extends ExchangeEntity
 {
     use HelperManagerTrait;
-    use ExitMessageTrait;
     use OutTrait;
 
     private $name;
@@ -297,26 +295,6 @@ abstract class AbstractBuilder extends ExchangeEntity
     public function getGroup()
     {
         return $this->info['group'] ?? Locale::getMessage('BUILDER_GROUP_Tools');
-    }
-
-    /** @param $code
-     * @param array $param
-     *
-     * @deprecated
-     */
-    protected function requiredField($code, $param = [])
-    {
-        $this->addField($code, $param);
-    }
-
-    /** @param $code
-     * @param array $param
-     *
-     * @deprecated
-     */
-    protected function setField($code, $param = [])
-    {
-        $this->addField($code, $param);
     }
 
     protected function createSelect(

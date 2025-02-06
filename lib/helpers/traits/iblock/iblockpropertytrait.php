@@ -494,19 +494,6 @@ trait IblockPropertyTrait
     }
 
     /**
-     * @param $iblockId
-     * @param $code
-     *
-     * @throws HelperException
-     * @return bool
-     * @deprecated
-     */
-    public function deleteProperty($iblockId, $code)
-    {
-        return $this->deletePropertyIfExists($iblockId, $code);
-    }
-
-    /**
      * Удаляет свойство инфоблока если оно существует
      *
      * @param $iblockId
@@ -541,20 +528,6 @@ trait IblockPropertyTrait
         }
 
         throw new HelperException($ib->LAST_ERROR);
-    }
-
-    /**
-     * @param $iblockId
-     * @param $code
-     * @param $fields
-     *
-     * @throws HelperException
-     * @return bool|mixed
-     * @deprecated
-     */
-    public function updateProperty($iblockId, $code, $fields)
-    {
-        return $this->updatePropertyIfExists($iblockId, $code, $fields);
     }
 
     /**

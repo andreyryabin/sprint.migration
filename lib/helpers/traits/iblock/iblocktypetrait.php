@@ -295,28 +295,6 @@ trait IblockTypeTrait
         );
     }
 
-    /**
-     * @param $typeId
-     * @throws HelperException
-     * @return array
-     * @deprecated
-     */
-    public function findIblockType($typeId)
-    {
-        return $this->getIblockTypeIfExists($typeId);
-    }
-
-    /**
-     * @param $typeId
-     * @throws HelperException
-     * @return mixed
-     * @deprecated
-     */
-    public function findIblockTypeId($typeId)
-    {
-        return $this->getIblockTypeIdIfExists($typeId);
-    }
-
     protected function prepareExportIblockType($item)
     {
         if (empty($item)) {
