@@ -99,7 +99,7 @@ class Out
     {
         $reg_exUrl = "/(http|https)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
         if (preg_match_all($reg_exUrl, $msg, $urls)) {
-            foreach ($urls[0] as $url) {
+            foreach (array_unique($urls[0]) as $url) {
                 $msg = str_replace($url, '<a target="_blank" href="' . $url . '">' . $url . '</a>', $msg);
             }
         }
