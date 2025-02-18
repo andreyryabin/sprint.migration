@@ -11,7 +11,7 @@ class ExchangeManager
 {
     protected $exchangeEntity;
 
-    public function __construct(ExchangeEntity $exchangeEntity)
+    public function __construct(Version $exchangeEntity)
     {
         $this->exchangeEntity = $exchangeEntity;
     }

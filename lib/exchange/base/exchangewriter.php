@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Exchange\Base;
 
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\ExchangeEntity;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -20,11 +21,7 @@ abstract class ExchangeWriter
     protected int $limit = 10;
     protected bool $copyFiles = true;
 
-    public function setCopyFiles($copyFiles): static
-    {
-        $this->copyFiles = (bool)$copyFiles;
-        return $this;
-    }
+    abstract protected function getRecordsDto(int $offset, int $limit): ExchangeDto;
 
     /**
      * @throws MigrationException
@@ -40,19 +37,44 @@ abstract class ExchangeWriter
                 )
             );
         }
-
-        if (!$this->isEnabled()) {
-            throw new MigrationException(
-                Locale::getMessage(
-                    'ERR_EXCHANGE_DISABLED'
-                )
-            );
-        }
     }
 
-    protected function isEnabled(): bool
+    /**
+     * @throws RestartException
+     * @throws MigrationException
+     */
+    public function execute(): void
     {
-        return true;
+        $params = $this->exchangeEntity->getRestartParams();
+        if (!isset($params['offset'])) {
+            $params['offset'] = 0;
+
+            $this->createExchangeFile();
+        }
+
+        $dto = $this->getRecordsDto($params['offset'], $this->getLimit());
+
+        $this->appendDtoToExchangeFile($dto);
+
+        $params['offset'] += $dto->countChilds();
+
+        $this->out('Progress: ', $params['offset']);
+
+        if ($dto->countChilds() >= $this->getLimit()) {
+            $this->exchangeEntity->setRestartParams($params);
+            $this->exchangeEntity->restart();
+        }
+
+        $this->closeExchangeFile();
+
+        unset($params['offset']);
+        $this->exchangeEntity->setRestartParams($params);
+    }
+
+    public function setCopyFiles($copyFiles): static
+    {
+        $this->copyFiles = (bool)$copyFiles;
+        return $this;
     }
 
     /**
@@ -127,6 +149,7 @@ abstract class ExchangeWriter
 
         if ($dto->getText()) {
             $writer->text($dto->getText());
+            //$writer->writeCdata($dto->getText());
         }
 
         $writer->endElement();

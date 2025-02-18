@@ -8,7 +8,7 @@ use Sprint\Migration\Exchange\Base\ExchangeDto;
 
 class IblockExchangeHelper extends IblockHelper
 {
-    protected $cachedProps = [];
+    protected array $cachedProps = [];
 
     public function getProperty($iblockId, $code)
     {
@@ -79,7 +79,7 @@ class IblockExchangeHelper extends IblockHelper
      *
      * @return array
      */
-    public function getIblockElementFieldsStructure($iblockId)
+    public function getIblockElementFieldsStructure($iblockId): array
     {
         $fields = $this->exportIblockElementFields($iblockId);
 
@@ -208,36 +208,52 @@ class IblockExchangeHelper extends IblockHelper
      */
     public function getElementsListExchangeDto($iblockId, $params = [], $exportFields = [], $exportProperties = []): ExchangeDto
     {
-
         $dbres = $this->getElementsList($iblockId, $params);
 
         $dto = new ExchangeDto('tmp');
-
         while ($element = $dbres->GetNextElement(false, false)) {
-            $item = new ExchangeDto('item');
+            $dto->addChild(
+                $this->createRecordDto(
+                    $iblockId,
+                    [
+                        'FIELDS' => $this->getElementFields($element),
+                        'PROPS' => $this->getElementProps($element),
+                    ],
+                    $exportFields,
+                    $exportProperties
+                ));
+        }
+        return $dto;
+    }
 
-            foreach ($this->getElementFields($element) as $code => $val) {
-                if (in_array($code, $exportFields)) {
-                    $field = $this->createFieldDto([
+    /**
+     * @throws HelperException
+     */
+    protected function createRecordDto($iblockId, array $element, array $exportFields, array $exportProperties): ExchangeDto
+    {
+        $item = new ExchangeDto('item');
+
+        foreach ($element['FIELDS'] as $code => $val) {
+            if (in_array($code, $exportFields)) {
+                $item->addChild(
+                    $this->createFieldDto([
                         'NAME' => $code,
                         'VALUE' => $val,
                         'IBLOCK_ID' => $iblockId
-                    ]);
-                    $item->addChild($field);
-                }
+                    ])
+                );
             }
-
-            foreach ($this->getElementProps($element) as $prop) {
-                if (in_array($prop['CODE'], $exportProperties)) {
-                    $field = $this->createPropertyDto($prop);
-                    $item->addChild($field);
-                }
-            }
-
-            $dto->addChild($item);
         }
 
-        return $dto;
+        foreach ($element['PROPS'] as $prop) {
+            if (in_array($prop['CODE'], $exportProperties)) {
+                $item->addChild(
+                    $this->createPropertyDto($prop)
+                );
+            }
+        }
+
+        return $item;
     }
 
     /**
@@ -259,6 +275,9 @@ class IblockExchangeHelper extends IblockHelper
         return $dto;
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function createPropertyDto(array $prop): ExchangeDto
     {
         $dto = new ExchangeDto('property', ['name' => $prop['CODE']]);
@@ -297,6 +316,9 @@ class IblockExchangeHelper extends IblockHelper
         $dto->addValue($uniqNames);
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function addPropertyValueElement(ExchangeDto $dto, $prop): void
     {
         $uniqNames = $this->getElementUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']);

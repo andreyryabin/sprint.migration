@@ -7,6 +7,7 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\MedialibElementsExport;
+use Sprint\Migration\Helpers\MedialibExchangeHelper;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -18,7 +19,7 @@ class MedialibElementsBuilder extends VersionBuilder
      */
     protected function isBuilderEnabled()
     {
-        return $this->getHelperManager()->MedialibExchange()->isEnabled();
+        return $this->getHelperManager()->Medialib()->isEnabled();
     }
 
     protected function initialize()
@@ -31,21 +32,22 @@ class MedialibElementsBuilder extends VersionBuilder
     }
 
     /**
-     * @throws RebuildException
-     * @throws HelperException
      * @throws MigrationException
+     * @throws RebuildException
+     * @throws RestartException
      */
     protected function execute()
     {
-        $medialibExchange = $this->getHelperManager()->MedialibExchange();
+        $medialibExchangeHelper = new MedialibExchangeHelper();
+
         $collectionIds = $this->addFieldAndReturn(
             'collection_id',
             [
                 'title'       => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
                 'placeholder' => '',
                 'width'       => 250,
-                'select'      => $medialibExchange->getCollectionStructure(
-                    $medialibExchange::TYPE_IMAGE
+                'select'      => $medialibExchangeHelper->getCollectionStructure(
+                    $medialibExchangeHelper::TYPE_IMAGE
                 ),
                 'multiple'    => true,
             ]
@@ -57,7 +59,7 @@ class MedialibElementsBuilder extends VersionBuilder
              ->setCollectionIds($collectionIds)
              ->setExchangeFile(
                  $this->getVersionResourceFile(
-                     $this->getVersionName(),
+                     $this->getClassName(),
                      'medialib_elements.xml'
                  )
              )->execute();

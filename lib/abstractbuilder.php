@@ -14,12 +14,12 @@ abstract class AbstractBuilder extends ExchangeEntity
     use OutTrait;
 
     private $name;
-    private $info       = [
-        'title'       => '',
+    private $info = [
+        'title' => '',
         'description' => '',
-        'group'       => '',
+        'group' => '',
     ];
-    private $fields     = [];
+    private $fields = [];
     private $execStatus = '';
 
     public function __construct(VersionConfig $versionConfig, $name, $params = [])
@@ -35,8 +35,8 @@ abstract class AbstractBuilder extends ExchangeEntity
     abstract protected function initialize();
 
     /**
-     * @throws RestartException|RebuildException|Exception
      * @return mixed
+     * @throws RestartException|RebuildException|Exception
      */
     abstract protected function execute();
 
@@ -54,15 +54,7 @@ abstract class AbstractBuilder extends ExchangeEntity
         }
     }
 
-    /**
-     * @return ExchangeManager
-     */
-    protected function getExchangeManager()
-    {
-        return new ExchangeManager($this);
-    }
-
-    protected function addField($code, $param = [])
+     protected function addField($code, $param = [])
     {
         if (isset($param['multiple']) && $param['multiple']) {
             $value = [];
@@ -74,7 +66,7 @@ abstract class AbstractBuilder extends ExchangeEntity
             [
                 'title' => '',
                 'value' => $value,
-                'bind'  => 0,
+                'bind' => 0,
             ], $param
         );
 
@@ -92,10 +84,10 @@ abstract class AbstractBuilder extends ExchangeEntity
 
     /**
      * @param string $code
-     * @param array  $param
+     * @param array $param
      *
-     * @throws RebuildException
      * @return mixed
+     * @throws RebuildException
      */
     protected function addFieldAndReturn($code, $param = [])
     {
@@ -180,10 +172,12 @@ abstract class AbstractBuilder extends ExchangeEntity
     {
         return ($this->execStatus == 'restart');
     }
+
     public function buildInitialize()
     {
         $this->initialize();
     }
+
     public function buildExecute()
     {
         $this->execStatus = '';
@@ -219,7 +213,12 @@ abstract class AbstractBuilder extends ExchangeEntity
         }
     }
 
-    protected function unbindField($code)
+    /**
+     * @param $code
+     *
+     * @throws RebuildException
+     */
+    protected function rebuildField($code)
     {
         if (isset($this->fields[$code])) {
             $this->fields[$code]['bind'] = 0;
@@ -228,27 +227,7 @@ abstract class AbstractBuilder extends ExchangeEntity
         if (isset($this->params[$code])) {
             unset($this->params[$code]);
         }
-    }
 
-    protected function removeField($code)
-    {
-        if (isset($this->params[$code])) {
-            unset($this->params[$code]);
-        }
-
-        if (isset($this->fields[$code])) {
-            unset($this->fields[$code]);
-        }
-    }
-
-    /**
-     * @param $code
-     *
-     * @throws RebuildException
-     */
-    protected function rebuildField($code)
-    {
-        $this->unbindField($code);
         throw new RebuildException('rebuild form');
     }
 
@@ -298,10 +277,11 @@ abstract class AbstractBuilder extends ExchangeEntity
     }
 
     protected function createSelect(
-        array $items,
+        array  $items,
         string $idKey,
         string $titleKey
-    ): array {
+    ): array
+    {
         $select = [];
         foreach ($items as $item) {
             $itemId = $item[$idKey];
@@ -314,11 +294,12 @@ abstract class AbstractBuilder extends ExchangeEntity
     }
 
     protected function createSelectWithGroups(
-        array $items,
+        array  $items,
         string $idKey,
         string $titleKey,
         string $groupKey = '-'
-    ): array {
+    ): array
+    {
         $select = [];
         foreach ($items as $item) {
             $groupId = $item[$groupKey] ?? 'Group';

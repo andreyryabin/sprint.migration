@@ -67,24 +67,27 @@ class MedialibExchangeHelper extends MedialibHelper
 
         $dto = new ExchangeDto('tmp');
         foreach ($elements as $element) {
-
-            $item = new ExchangeDto('item');
-            foreach ($element as $code => $val) {
-                if (!in_array($code, $exportFields)) {
-                    continue;
-                }
-
-                $field = $this->createFieldDto([
-                    'NAME' => $code,
-                    'VALUE' => $val,
-                ]);
-
-
-                $item->addChild($field);
-            }
-            $dto->addChild($item);
+            $dto->addChild(
+                $this->createRecordDto($element, $exportFields)
+            );
         }
         return $dto;
+    }
+
+    private function createRecordDto(array $element, array $exportFields): ExchangeDto
+    {
+        $item = new ExchangeDto('item');
+        foreach ($element as $code => $val) {
+            if (in_array($code, $exportFields)) {
+                $item->addChild(
+                    $this->createFieldDto([
+                        'NAME' => $code,
+                        'VALUE' => $val,
+                    ])
+                );
+            }
+        }
+        return $item;
     }
 
     private function createFieldDto(array $field): ExchangeDto
@@ -106,4 +109,27 @@ class MedialibExchangeHelper extends MedialibHelper
     }
 
 
+    /////////////////
+    ///
+    ///
+    protected function convertRecord($record): array
+    {
+        $fields = [];
+        foreach ($record['fields'] as $field) {
+            if ($field['name'] == 'FILE') {
+                $fields['FILE'] = $this->convertFieldFile($field);
+            } elseif ($field['name'] == 'COLLECTION_PATH') {
+                $paths = array_column($field['value'], 'value');
+                $fields['COLLECTION_ID'] = $this->saveCollectionByPath(self::TYPE_IMAGE, $paths);
+            } else {
+                $fields[$field['name']] = $field['value'][0]['value'];
+            }
+        }
+        return $fields;
+    }
+
+    protected function convertFieldFile($field)
+    {
+        return $this->makeFileValue($field['value'][0]);
+    }
 }

@@ -7,6 +7,7 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\HlblockElementsExport;
+use Sprint\Migration\Helpers\HlblockExchangeHelper;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -40,17 +41,19 @@ class HlblockElementsBuilder extends VersionBuilder
      */
     protected function execute()
     {
+        $hlblockExchangeHelper = new HlblockExchangeHelper;
+
         $hlblockId = $this->addFieldAndReturn(
             'hlblock_id',
             [
                 'title'       => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
                 'placeholder' => '',
                 'width'       => 250,
-                'select'      => $this->getHelperManager()->HlblockExchange()->getHlblocksStructure(),
+                'select'      => $hlblockExchangeHelper->getHlblocksStructure(),
             ]
         );
 
-        $fields = $this->getHelperManager()->HlblockExchange()->getHlblockFieldsCodes($hlblockId);
+        $fields = $hlblockExchangeHelper->getHlblockFieldsCodes($hlblockId);
         $updateMode = $this->getFieldValueUpdateMode();
 
         if ($updateMode == self::UPDATE_MODE_XML_ID) {
@@ -81,7 +84,6 @@ class HlblockElementsBuilder extends VersionBuilder
 
     /**
      * @throws RebuildException
-     * @return string
      */
     protected function getFieldValueUpdateMode()
     {

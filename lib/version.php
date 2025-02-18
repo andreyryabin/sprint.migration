@@ -5,11 +5,7 @@ namespace Sprint\Migration;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
-/**
- * Class Version
- *
- * @package Sprint\Migration
- */
+
 class Version extends ExchangeEntity
 {
     use HelperManagerTrait;
@@ -67,7 +63,9 @@ class Version extends ExchangeEntity
      */
     public function checkRequiredVersions($versionNames)
     {
-        (new VersionManager($this->getVersionConfig()))->checkRequiredVersions($versionNames);
+        (new VersionManager(
+            $this->getVersionConfig()
+        ))->checkRequiredVersions($versionNames);
     }
 
     /**

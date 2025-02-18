@@ -12,11 +12,6 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
 
-/**
- * Class MedialibHelper
- *
- * @package Sprint\Migration\Helpers
- */
 class MedialibHelper extends Helper
 {
     const TYPE_IMAGE = 'image';

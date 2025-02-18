@@ -7,6 +7,7 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\IblockElementsExport;
+use Sprint\Migration\Helpers\IblockExchangeHelper;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -108,11 +109,11 @@ class IblockElementsBuilder extends VersionBuilder
                     'width'    => 250,
                     'multiple' => 1,
                     'value'    => [],
-                    'select'   => $this->getHelperManager()->IblockExchange()->getIblockPropertiesStructure($iblockId),
+                    'select'   => $iblockExchangeHelper->getIblockPropertiesStructure($iblockId),
                 ]
             );
         } elseif ($propsMode == 'all') {
-            $exportProps = $this->getHelperManager()->IblockExchange()->getIblockPropertiesStructure($iblockId);
+            $exportProps = $iblockExchangeHelper->getIblockPropertiesStructure($iblockId);
             $exportProps = array_column($exportProps, 'value');
         } else {
             $exportProps = [];
@@ -191,6 +192,8 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueExportFields($iblockId, $updateMode = false)
     {
+        $iblockExchangeHelper = new IblockExchangeHelper;
+
         $fieldsMode = $this->addFieldAndReturn(
             'fields_mode',
             [
@@ -220,11 +223,11 @@ class IblockElementsBuilder extends VersionBuilder
                     'width'    => 250,
                     'multiple' => 1,
                     'value'    => [],
-                    'select'   => $this->getHelperManager()->IblockExchange()->getIblockElementFieldsStructure($iblockId),
+                    'select'   => $iblockExchangeHelper->getIblockElementFieldsStructure($iblockId),
                 ]
             );
         } elseif ($fieldsMode == 'all') {
-            $exportFields = $this->getHelperManager()->IblockExchange()->getIblockElementFieldsStructure($iblockId);
+            $exportFields = $iblockExchangeHelper->getIblockElementFieldsStructure($iblockId);
             $exportFields = array_column($exportFields, 'value');
         } else {
             $exportFields = [];
@@ -250,18 +253,18 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueIblockId()
     {
-        $helper = $this->getHelperManager();
+        $iblockExchangeHelper = new IblockExchangeHelper;
 
         $iblockId = $this->addFieldAndReturn(
             'iblock_id', [
                 'title'       => Locale::getMessage('BUILDER_IblockElementsExport_IblockId'),
                 'placeholder' => '',
                 'width'       => 250,
-                'items'       => $this->getHelperManager()->IblockExchange()->getIblocksStructure(),
+                'items'       => $iblockExchangeHelper->getIblocksStructure(),
             ]
         );
 
-        $iblock = $helper->Iblock()->exportIblock($iblockId);
+        $iblock = $iblockExchangeHelper->exportIblock($iblockId);
         if (empty($iblock)) {
             $this->rebuildField('iblock_id');
         }

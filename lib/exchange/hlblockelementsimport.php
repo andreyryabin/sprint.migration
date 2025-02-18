@@ -3,190 +3,52 @@
 namespace Sprint\Migration\Exchange;
 
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\Base\ExchangeReader;
-use Sprint\Migration\Locale;
-use Sprint\Migration\Module;
-use XMLReader;
+use Sprint\Migration\Helpers\HlblockExchangeHelper;
 
 class HlblockElementsImport extends ExchangeReader
 {
-    protected $converter;
+    protected $hlblockId;
 
-    /**
-     * @param callable $converter
-     *
-     * @throws RestartException
-     * @throws HelperException
-     */
-    public function execute(callable $converter)
+    public function setHlblockId($hlblockId): static
     {
-        $hblockExchange = $this->getHelperManager()->HlblockExchange();
-
-        $this->converter = $converter;
-        $params = $this->exchangeEntity->getRestartParams();
-
-        if (!isset($params['total'])) {
-            if (!is_file($this->file)) {
-                throw new HelperException(
-                    Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->file])
-                );
-            }
-
-            $reader = new XMLReader();
-            $reader->open($this->getExchangeFile());
-            $params['total'] = 0;
-            $params['offset'] = 0;
-            $hlblockUid = '';
-            $exchangeVersion = 0;
-            while ($reader->read()) {
-                if ($this->isOpenTag($reader, 'items')) {
-                    $exchangeVersion = (int)$reader->getAttribute('exchangeVersion');
-                    $hlblockUid = $reader->getAttribute('hlblockUid');
-                }
-                if ($this->isOpenTag($reader, 'item')) {
-                    $params['total']++;
-                }
-            }
-            $reader->close();
-
-            if (!$exchangeVersion || $exchangeVersion < Module::getExchangeVersion()) {
-                throw new HelperException(
-                    Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->getExchangeFile()])
-                );
-            }
-
-            $params['hlblock_id'] = $hblockExchange->getHlblockIdByUid($hlblockUid);
-        }
-
-        $reader = new XMLReader();
-        $reader->open($this->getExchangeFile());
-        $index = 0;
-
-        while ($reader->read()) {
-            if ($this->isOpenTag($reader, 'item')) {
-                $collect = ($index >= $params['offset'] && $index < $params['offset'] + $this->getLimit());
-                $restart = ($index >= $params['offset'] + $this->getLimit());
-                $finish = ($index >= $params['total'] - 1);
-
-                if ($collect) {
-                    $this->collectItem($reader, $params['hlblock_id']);
-                }
-
-                if ($finish || $restart) {
-                    $this->outProgress('Progress: ', ($index + 1), $params['total']);
-                }
-
-                if ($restart) {
-                    $params['offset'] = $index;
-                    $this->exchangeEntity->setRestartParams($params);
-                    $this->exchangeEntity->restart();
-                }
-                $index++;
-            }
-        }
-
-        $reader->close();
-        unset($params['offset']);
-        unset($params['total']);
-        unset($params['hlblock_id']);
-        $this->exchangeEntity->setRestartParams($params);
+        $this->hlblockId = $hlblockId;
+        return $this;
     }
-
     /**
-     * @param XMLReader $reader
-     * @param           $hlblockId
-     *
      * @throws HelperException
      */
-    protected function collectItem(XMLReader $reader, $hlblockId)
+    protected function convertRecord(array $record): array
     {
-        $fields = [];
-        if ($this->isOpenTag($reader, 'item')) {
-            do {
-                $reader->read();
-
-                $field = $this->collectField($reader, 'field');
-                if ($field) {
-                    $fields[] = $field;
-                }
-            } while (!$this->isCloseTag($reader, 'item'));
-
-            $convertedItem = $this->convertItem(
-                [
-                    'hlblock_id' => $hlblockId,
-                    'fields' => $fields,
-                ]
-            );
-
-            if ($convertedItem) {
-                call_user_func($this->converter, $convertedItem);
-            }
-        }
-    }
-
-    /**
-     * @param $item
-     *
-     * @return array|bool
-     * @throws HelperException
-     */
-    protected function convertItem($item)
-    {
-        if (empty($item['hlblock_id'])) {
-            return false;
-        }
-        if (empty($item['fields'])) {
-            return false;
-        }
+        $hblockExchange = new HlblockExchangeHelper();
+        $hlblockId = $hblockExchange->getHlblockIdByUid($this->hlblockId);
 
         $convertedFields = [];
-        foreach ($item['fields'] as $field) {
-            $method = $this->getConvertFieldMethod($item['hlblock_id'], $field['name']);
-            if (method_exists($this, $method)) {
-                $convertedFields[$field['name']] = $this->$method($item['hlblock_id'], $field);
-            }
-        }
+        foreach ($record['fields'] as $field) {
+            $fieldType = $hblockExchange->getFieldType($hlblockId, $field['name']);
 
-        if (empty($convertedFields)) {
-            return false;
+            if ($fieldType == 'enumeration') {
+                $convertedFields[$field['name']] = $this->convertFieldEnumeration($hlblockId, $field);
+            } elseif ($fieldType == 'file') {
+                $convertedFields[$field['name']] = $this->convertFieldFile($hlblockId, $field);
+            } else {
+                $convertedFields[$field['name']] = $this->convertFieldString($hlblockId, $field);
+            }
+
         }
 
         return [
-            'hlblock_id' => $item['hlblock_id'],
+            'hlblock_id' => $hlblockId,
             'fields' => $convertedFields,
         ];
     }
 
     /**
-     * @param $hlblockId
-     * @param $fieldName
-     *
-     * @return string
      * @throws HelperException
      */
-    protected function getConvertFieldMethod($hlblockId, $fieldName)
+    protected function convertFieldString(int $hlblockId, array $field)
     {
-        $hblockExchange = $this->getHelperManager()->HlblockExchange();
-        $type = $hblockExchange->getFieldType($hlblockId, $fieldName);
-
-        if (in_array($type, ['enumeration', 'file'])) {
-            return 'convertField' . ucfirst($type);
-        } else {
-            return 'convertFieldString';
-        }
-    }
-
-    /**
-     * @param $hlblockId
-     * @param $field
-     *
-     * @return array
-     * @throws HelperException
-     */
-    protected function convertFieldString($hlblockId, $field)
-    {
-        $hblockExchange = $this->getHelperManager()->HlblockExchange();
+        $hblockExchange = new HlblockExchangeHelper();
         if ($hblockExchange->isFieldMultiple($hlblockId, $field['name'])) {
             $res = [];
             foreach ($field['value'] as $val) {
@@ -199,15 +61,11 @@ class HlblockElementsImport extends ExchangeReader
     }
 
     /**
-     * @param $hlblockId
-     * @param $field
-     *
-     * @return array|bool|null
      * @throws HelperException
      */
-    protected function convertFieldFile($hlblockId, $field)
+    protected function convertFieldFile(int $hlblockId, array $field): false|array
     {
-        $hblockExchange = $this->getHelperManager()->HlblockExchange();
+        $hblockExchange = new HlblockExchangeHelper();
         if ($hblockExchange->isFieldMultiple($hlblockId, $field['name'])) {
             $res = [];
             foreach ($field['value'] as $val) {
@@ -220,15 +78,11 @@ class HlblockElementsImport extends ExchangeReader
     }
 
     /**
-     * @param $hlblockId
-     * @param $field
-     *
-     * @return array
      * @throws HelperException
      */
-    protected function convertFieldEnumeration($hlblockId, $field)
+    protected function convertFieldEnumeration(int $hlblockId, array $field)
     {
-        $hblockExchange = $this->getHelperManager()->HlblockExchange();
+        $hblockExchange = new HlblockExchangeHelper();
         if ($hblockExchange->isFieldMultiple($hlblockId, $field['name'])) {
             $res = [];
             foreach ($field['value'] as $val) {

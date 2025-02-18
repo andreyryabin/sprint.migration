@@ -37,9 +37,6 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  * @method DeliveryServiceHelper    DeliveryService()
  * @method SqlHelper                Sql()
  * @method MedialibHelper           Medialib()
- * @method MedialibExchangeHelper   MedialibExchange()
- * @method IblockExchangeHelper     IblockExchange()
- * @method HlblockExchangeHelper    HlblockExchange()
  * @method TextHelper               Text()
  */
 class HelperManager

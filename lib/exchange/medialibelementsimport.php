@@ -3,159 +3,33 @@
 namespace Sprint\Migration\Exchange;
 
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\Base\ExchangeReader;
-use Sprint\Migration\Locale;
-use Sprint\Migration\Module;
-use XMLReader;
+use Sprint\Migration\Helpers\MedialibExchangeHelper;
 
 class MedialibElementsImport extends ExchangeReader
 {
-    protected $converter;
 
     /**
-     * @param callable $converter
-     *
      * @throws HelperException
-     * @throws RestartException
      */
-    public function execute(callable $converter)
+    protected function convertRecord(array $record): array
     {
-        $this->converter = $converter;
-        $params = $this->exchangeEntity->getRestartParams();
+        $medialibExchangeHelper = new MedialibExchangeHelper();
 
-        if (!isset($params['total'])) {
-            if (!is_file($this->file)) {
-                throw new HelperException(
-                    Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->file])
-                );
-            }
-
-            $reader = new XMLReader();
-            $reader->open($this->getExchangeFile());
-            $params['total'] = 0;
-            $params['offset'] = 0;
-            $exchangeVersion = 0;
-            while ($reader->read()) {
-                if ($this->isOpenTag($reader, 'items')) {
-                    $exchangeVersion = (int)$reader->getAttribute('exchangeVersion');
-                }
-                if ($this->isOpenTag($reader, 'item')) {
-                    $params['total']++;
-                }
-            }
-            $reader->close();
-
-            if (!$exchangeVersion || $exchangeVersion < Module::getExchangeVersion()) {
-                throw new HelperException(
-                    Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->getExchangeFile()])
-                );
-            }
-        }
-
-        $reader = new XMLReader();
-        $reader->open($this->getExchangeFile());
-        $index = 0;
-
-        while ($reader->read()) {
-            if ($this->isOpenTag($reader, 'item')) {
-                $collect = ($index >= $params['offset'] && $index < $params['offset'] + $this->getLimit());
-                $restart = ($index >= $params['offset'] + $this->getLimit());
-                $finish = ($index >= $params['total'] - 1);
-
-                if ($collect) {
-                    $this->collectItem($reader);
-                }
-
-                if ($finish || $restart) {
-                    $this->outProgress('Progress: ', ($index + 1), $params['total']);
-                }
-
-                if ($restart) {
-                    $params['offset'] = $index;
-                    $this->exchangeEntity->setRestartParams($params);
-                    $this->exchangeEntity->restart();
-                }
-                $index++;
-            }
-        }
-
-        $reader->close();
-        unset($params['offset']);
-        unset($params['total']);
-        $this->exchangeEntity->setRestartParams($params);
-    }
-
-    /**
-     * @param XMLReader $reader
-     *
-     */
-    protected function collectItem(XMLReader $reader)
-    {
         $fields = [];
-        if ($this->isOpenTag($reader, 'item')) {
-            do {
-                $reader->read();
-                $field = $this->collectField($reader, 'field');
-                if ($field) {
-                    $fields[] = $field;
-                }
-            } while (!$this->isCloseTag($reader, 'item'));
-
-            $convertedItem = $this->convertItem($fields);
-            if ($convertedItem) {
-                call_user_func($this->converter, $convertedItem);
-            }
-        }
-    }
-
-    /**
-     * @param $fields
-     *
-     * @return array|bool
-     */
-    protected function convertItem($fields)
-    {
-        if (empty($fields)) {
-            return false;
-        }
-
-        $convertedFields = [];
-        foreach ($fields as $field) {
+        foreach ($record['fields'] as $field) {
             if ($field['name'] == 'FILE') {
-                $convertedFields['FILE'] = $this->convertFieldFile($field);
+                $fields['FILE'] = $this->makeFileValue($field['value'][0]);
             } elseif ($field['name'] == 'COLLECTION_PATH') {
-                $convertedFields['COLLECTION_ID'] = $this->convertFieldCollectionPath($field);
+                $paths = array_column($field['value'], 'value');
+                $fields['COLLECTION_ID'] = $medialibExchangeHelper->saveCollectionByPath(
+                    $medialibExchangeHelper::TYPE_IMAGE,
+                    $paths
+                );
             } else {
-                $convertedFields[$field['name']] = $this->convertFieldString($field);
+                $fields[$field['name']] = $field['value'][0]['value'];
             }
         }
-
-        if (empty($convertedFields)) {
-            return false;
-        }
-
-        if (empty($convertedFields['FILE'])) {
-            return false;
-        }
-
-        return $convertedFields;
-    }
-
-    protected function convertFieldFile($field)
-    {
-        return $this->makeFileValue($field['value'][0]);
-    }
-
-    protected function convertFieldCollectionPath($field)
-    {
-        $medialibExchange = $this->getHelperManager()->MedialibExchange();
-        $paths = array_column($field['value'], 'value');
-        return $medialibExchange->saveCollectionByPath($medialibExchange::TYPE_IMAGE, $paths);
-    }
-
-    protected function convertFieldString($field)
-    {
-        return $field['value'][0]['value'];
+        return $fields;
     }
 }

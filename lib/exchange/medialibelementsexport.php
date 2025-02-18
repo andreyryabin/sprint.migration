@@ -3,13 +3,14 @@
 namespace Sprint\Migration\Exchange;
 
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Exchange\Base\ExchangeDto;
 use Sprint\Migration\Exchange\Base\ExchangeWriter;
+use Sprint\Migration\Helpers\MedialibExchangeHelper;
 
 class MedialibElementsExport extends ExchangeWriter
 {
-    protected $collectionIds = [];
-    protected $exportFields = [
+    protected array $collectionIds = [];
+    protected array $exportFields = [
         'NAME',
         'DESCRIPTION',
         'KEYWORDS',
@@ -17,67 +18,36 @@ class MedialibElementsExport extends ExchangeWriter
         'SOURCE_ID',
     ];
 
-    /**
-     * @throws RestartException
-     * @throws HelperException
-     * @throws \Exception
-     */
-    public function execute()
-    {
-        $medialibExchange = $this->getHelperManager()->MedialibExchange();
-
-        $params = $this->exchangeEntity->getRestartParams();
-        if (!isset($params['total'])) {
-            $params['total'] = $medialibExchange->getElementsCount(
-                $this->getCollectionIds()
-            );
-            $params['offset'] = 0;
-
-            $this->createExchangeFile();
-        }
-
-
-        if ($params['offset'] <= $params['total'] - 1) {
-
-            $dto = $medialibExchange->getElementsExchangeDto(
-                $this->getCollectionIds(),
-                [
-                    'offset' => $params['offset'],
-                    'limit' => $this->getLimit(),
-                ],
-                $this->getExportFields()
-            );
-
-            $this->appendDtoToExchangeFile($dto);
-
-            $params['offset'] += $dto->countChilds();
-
-            $this->outProgress('Progress: ', $params['offset'], $params['total']);
-
-            $this->exchangeEntity->setRestartParams($params);
-            $this->exchangeEntity->restart();
-        }
-
-        $this->closeExchangeFile();
-
-        unset($params['total']);
-        unset($params['offset']);
-        $this->exchangeEntity->setRestartParams($params);
-    }
-
-    public function getCollectionIds()
+    public function getCollectionIds(): array
     {
         return $this->collectionIds;
     }
 
-    public function setCollectionIds($collectionIds = [])
+    public function setCollectionIds($collectionIds = []): static
     {
         $this->collectionIds = $collectionIds;
         return $this;
     }
 
-    public function getExportFields()
+    public function getExportFields(): array
     {
         return $this->exportFields;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function getRecordsDto(int $offset, int $limit): ExchangeDto
+    {
+        $medialibExchangeHelper = new MedialibExchangeHelper();
+
+        return $medialibExchangeHelper->getElementsExchangeDto(
+            $this->getCollectionIds(),
+            [
+                'offset' => $offset,
+                'limit' => $limit,
+            ],
+            $this->getExportFields()
+        );
     }
 }

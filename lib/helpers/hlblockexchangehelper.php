@@ -69,28 +69,34 @@ class HlblockExchangeHelper extends HlblockHelper
         $elements = $this->getElements($hlblockId, $params);
 
         $dto = new ExchangeDto('tmp');
-
         foreach ($elements as $element) {
-            $item = new ExchangeDto('item');
-
-            foreach ($element as $code => $val) {
-                if (!in_array($code, $exportFields)) {
-                    continue;
-                }
-
-                $field = $this->createFieldDto([
-                    'NAME' => $code,
-                    'VALUE' => $val['VALUE'],
-                    'HLBLOCK_ID' => $hlblockId,
-                    'USER_TYPE_ID' => $this->getFieldType($hlblockId, $code)
-                ]);
-                $item->addChild($field);
-            }
-
-            $dto->addChild($item);
+            $dto->addChild(
+                $this->createRecordDto($hlblockId, $element, $exportFields)
+            );
         }
 
         return $dto;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    private function createRecordDto($hlblockId, array $element, array $exportFields): ExchangeDto
+    {
+        $item = new ExchangeDto('item');
+        foreach ($element as $code => $val) {
+            if (in_array($code, $exportFields)) {
+                $item->addChild(
+                    $this->createFieldDto([
+                        'NAME' => $code,
+                        'VALUE' => $val,
+                        'HLBLOCK_ID' => $hlblockId,
+                        'USER_TYPE_ID' => $this->getFieldType($hlblockId, $code)
+                    ])
+                );
+            }
+        }
+        return $item;
     }
 
     /**
@@ -111,5 +117,6 @@ class HlblockExchangeHelper extends HlblockHelper
 
         return $dto;
     }
+
 
 }

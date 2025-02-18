@@ -3,69 +3,19 @@
 namespace Sprint\Migration\Exchange;
 
 use Exception;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Exchange\Base\ExchangeDto;
 use Sprint\Migration\Exchange\Base\ExchangeWriter;
+use Sprint\Migration\Helpers\IblockExchangeHelper;
 use XMLWriter;
 
 class IblockElementsExport extends ExchangeWriter
 {
     protected $iblockId;
-    protected $exportFilter = [];
-    protected $exportFields = [];
-    protected $exportProperties = [];
-
-    /**
-     * @throws RestartException
-     * @throws Exception
-     */
-    public function execute()
-    {
-        $iblockExchange = $this->getHelperManager()->IblockExchange();
-
-        $params = $this->exchangeEntity->getRestartParams();
-        if (!isset($params['total'])) {
-            $iblockUid = $iblockExchange->getIblockUid(
-                $this->getIblockId()
-            );
-
-            $params['total'] = $iblockExchange->getElementsCount(
-                $this->getIblockId(),
-                $this->getExportFilter()
-            );
-            $params['offset'] = 0;
-
-            $this->createExchangeFile(['iblockUid' => $iblockUid]);
-        }
-
-        if ($params['offset'] <= $params['total'] - 1) {
-            $dto = $iblockExchange->getElementsListExchangeDto(
-                $this->getIblockId(),
-                [
-                    'order' => ['ID' => 'ASC'],
-                    'offset' => $params['offset'],
-                    'limit' => $this->getLimit(),
-                    'filter' => $this->getExportFilter(),
-                ],
-                $this->getExportFields(),
-                $this->getExportProperties()
-            );
-
-            $this->appendDtoToExchangeFile($dto);
-
-            $params['offset'] += $dto->countChilds();
-
-            $this->outProgress('Progress: ', $params['offset'], $params['total']);
-
-            $this->exchangeEntity->setRestartParams($params);
-            $this->exchangeEntity->restart();
-        }
-
-        $this->closeExchangeFile();
-
-        unset($params['total']);
-        unset($params['offset']);
-        $this->exchangeEntity->setRestartParams($params);
-    }
+    protected array $exportFilter = [];
+    protected array $exportFields = [];
+    protected array $exportProperties = [];
 
     public function getIblockId()
     {
@@ -134,4 +84,23 @@ class IblockElementsExport extends ExchangeWriter
         return $this;
     }
 
+    /**
+     * @throws HelperException
+     */
+    protected function getRecordsDto(int $offset, int $limit): ExchangeDto
+    {
+        $iblockExchangeHelper = new IblockExchangeHelper();
+
+        return $iblockExchangeHelper->getElementsListExchangeDto(
+            $this->getIblockId(),
+            [
+                'order' => ['ID' => 'ASC'],
+                'offset' => $offset,
+                'limit' => $limit,
+                'filter' => $this->getExportFilter(),
+            ],
+            $this->getExportFields(),
+            $this->getExportProperties()
+        );
+    }
 }
