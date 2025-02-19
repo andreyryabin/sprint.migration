@@ -21,7 +21,7 @@ abstract class ExchangeWriter
     protected int $limit = 10;
     protected bool $copyFiles = true;
 
-    abstract protected function getRecordsDto(int $offset, int $limit): ExchangeDto;
+    abstract protected function createRecords(int $offset, int $limit): ExchangeDto;
 
     /**
      * @throws MigrationException
@@ -52,7 +52,7 @@ abstract class ExchangeWriter
             $this->createExchangeFile();
         }
 
-        $dto = $this->getRecordsDto($params['offset'], $this->getLimit());
+        $dto = $this->createRecords($params['offset'], $this->getLimit());
 
         $this->appendDtoToExchangeFile($dto);
 

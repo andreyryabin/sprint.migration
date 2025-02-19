@@ -7,7 +7,7 @@ use Sprint\Migration\Exchange\Base\ExchangeDto;
 
 class HlblockExchangeHelper extends HlblockHelper
 {
-    protected $cachedFields = [];
+    protected array $cachedFields = [];
 
     /**
      * @param $hlblockName
@@ -16,7 +16,7 @@ class HlblockExchangeHelper extends HlblockHelper
      * @return mixed
      * @throws HelperException
      */
-    public function getField($hlblockName, $fieldName)
+    public function getField($hlblockName, $fieldName): array
     {
         $key = $hlblockName . $fieldName;
 
@@ -27,7 +27,6 @@ class HlblockExchangeHelper extends HlblockHelper
     }
 
     /**
-     * @return array
      * @throws HelperException
      */
     public function getHlblocksStructure(): array
@@ -44,12 +43,9 @@ class HlblockExchangeHelper extends HlblockHelper
     }
 
     /**
-     * @param $hlblockName
-     *
-     * @return array
      * @throws HelperException
      */
-    public function getHlblockFieldsCodes($hlblockName)
+    public function getHlblockFieldsCodes($hlblockName): array
     {
         $res = [];
         $items = $this->getFields($hlblockName);
@@ -61,17 +57,99 @@ class HlblockExchangeHelper extends HlblockHelper
         return $res;
     }
 
+
+    //reader
+
     /**
      * @throws HelperException
      */
-    public function getElementsExchangeDto($hlblockId, array $params, array $exportFields): ExchangeDto
+    public function convertRecord(int $hlblockId, array $record): array
     {
-        $elements = $this->getElements($hlblockId, $params);
+        $hlblockId = $this->getHlblockIdIfExists($hlblockId);
+
+        $convertedFields = [];
+        foreach ($record['fields'] as $field) {
+            $fieldType = $this->getFieldType($hlblockId, $field['name']);
+
+            if ($fieldType == 'enumeration') {
+                $convertedFields[$field['name']] = $this->convertFieldEnumeration($hlblockId, $field);
+            } else {
+                $convertedFields[$field['name']] = $this->convertFieldValue($hlblockId, $field);
+            }
+        }
+
+        return [
+            'hlblock_id' => $hlblockId,
+            'fields' => $convertedFields,
+        ];
+
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function convertFieldValue(int $hlblockId, array $field)
+    {
+        if ($this->isFieldMultiple($hlblockId, $field['name'])) {
+            $res = [];
+            foreach ($field['value'] as $val) {
+                $res[] = $val['value'];
+            }
+            return $res;
+        } else {
+            return $field['value'][0]['value'];
+        }
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function convertFieldEnumeration(int $hlblockId, array $field)
+    {
+        if ($this->isFieldMultiple($hlblockId, $field['name'])) {
+            $res = [];
+            foreach ($field['value'] as $val) {
+                $res[] = $this->getFieldEnumIdByXmlId(
+                    $hlblockId,
+                    $field['name'],
+                    $val['value']
+                );
+            }
+            return $res;
+        } else {
+            return $this->getFieldEnumIdByXmlId(
+                $hlblockId,
+                $field['name'],
+                $field['value'][0]['value']
+            );
+        }
+    }
+
+
+    //writer
+
+    /**
+     * @throws HelperException
+     */
+    public function createRecordsDto($hlblockId, int $offset, int $limit, array $exportFields): ExchangeDto
+    {
+        $elements = $this->getElements(
+            $hlblockId,
+            [
+                'order' => ['ID' => 'ASC'],
+                'offset' => $offset,
+                'limit' => $limit,
+            ]
+        );
 
         $dto = new ExchangeDto('tmp');
         foreach ($elements as $element) {
             $dto->addChild(
-                $this->createRecordDto($hlblockId, $element, $exportFields)
+                $this->createRecordDto(
+                    $hlblockId,
+                    $element,
+                    $exportFields
+                )
             );
         }
 
@@ -83,7 +161,9 @@ class HlblockExchangeHelper extends HlblockHelper
      */
     private function createRecordDto($hlblockId, array $element, array $exportFields): ExchangeDto
     {
+
         $item = new ExchangeDto('item');
+
         foreach ($element as $code => $val) {
             if (in_array($code, $exportFields)) {
                 $item->addChild(
@@ -107,7 +187,11 @@ class HlblockExchangeHelper extends HlblockHelper
         $dto = new ExchangeDto('field', ['name' => $field['NAME']]);
 
         if ($field['USER_TYPE_ID'] == 'enumeration') {
-            $xmlIds = $this->getFieldEnumXmlIdsByIds($field['HLBLOCK_ID'], $field['NAME'], $field['VALUE']);
+            $xmlIds = $this->getFieldEnumXmlIdsByIds(
+                $field['HLBLOCK_ID'],
+                $field['NAME'],
+                $field['VALUE']
+            );
             $dto->addValue($xmlIds);
         } elseif ($field['USER_TYPE_ID'] == 'file') {
             $dto->addFile($field['VALUE']);
@@ -117,6 +201,4 @@ class HlblockExchangeHelper extends HlblockHelper
 
         return $dto;
     }
-
-
 }

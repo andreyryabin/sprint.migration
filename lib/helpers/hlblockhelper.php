@@ -90,21 +90,20 @@ class HlblockHelper extends Helper
     }
 
     /**
-     * Получает поле highload-блока
-     *
-     * @param $hlblockName
-     * @param $fieldName
-     *
-     * @return array|bool
      * @throws HelperException
      */
-    public function getField($hlblockName, $fieldName)
+    public function getField($hlblockName, $fieldName): array
     {
         $entityHelper = new UserTypeEntityHelper();
-        return $entityHelper->getUserTypeEntity(
+        $field = $entityHelper->getUserTypeEntity(
             $this->getEntityId($hlblockName),
             $fieldName
         );
+
+        if (!empty($field)) {
+            return $field;
+        }
+        throw new HelperException(Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND'));
     }
 
     /**
@@ -409,12 +408,10 @@ class HlblockHelper extends Helper
         }
 
         try {
-            $hlblock = HighloadBlockTable::getList(
-                [
-                    'select' => ['*'],
-                    'filter' => $filter,
-                ]
-            )->fetch();
+            $hlblock = HighloadBlockTable::getRow([
+                'select' => ['*'],
+                'filter' => $filter,
+            ]);
 
             return $this->prepareHlblock($hlblock);
         } catch (Exception $e) {

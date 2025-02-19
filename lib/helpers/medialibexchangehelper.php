@@ -19,13 +19,9 @@ class MedialibExchangeHelper extends MedialibHelper
     }
 
     /**
-     * @param $typeId
-     * @param $path
-     *
-     * @return int|void
      * @throws HelperException
      */
-    public function saveCollectionByPath($typeId, $path)
+    public function saveCollectionByPath($typeId, $path): int
     {
         $uid = md5($typeId . implode('', $path));
         if (!isset($this->cachedPaths[$uid])) {
@@ -58,21 +54,34 @@ class MedialibExchangeHelper extends MedialibHelper
         return [];
     }
 
+
+    //writer
+
     /**
      * @throws HelperException
      */
-    public function getElementsExchangeDto($collectionId, $params = [], $exportFields = []): ExchangeDto
+    public function createRecordsDto($collectionId, int $offset, int $limit, array $exportFields): ExchangeDto
     {
-        $elements = $this->getElements($collectionId, $params);
+        $elements = $this->getElements(
+            $collectionId,
+            [
+                'offset' => $offset,
+                'limit' => $limit,
+            ],
+        );
 
         $dto = new ExchangeDto('tmp');
         foreach ($elements as $element) {
             $dto->addChild(
-                $this->createRecordDto($element, $exportFields)
+                $this->createRecordDto(
+                    $element,
+                    $exportFields,
+                )
             );
         }
         return $dto;
     }
+
 
     private function createRecordDto(array $element, array $exportFields): ExchangeDto
     {
@@ -98,7 +107,10 @@ class MedialibExchangeHelper extends MedialibHelper
             $dto->setAttribute('name', 'FILE');
             $dto->addFile($field['VALUE']);
         } elseif ($field['NAME'] == 'COLLECTION_ID') {
-            $path = $this->getCollectionPath(self::TYPE_IMAGE, $field['VALUE']);
+            $path = $this->getCollectionPath(
+                self::TYPE_IMAGE,
+                $field['VALUE']
+            );
             $dto->setAttribute('name', 'COLLECTION_PATH');
             $dto->addValue($path);
         } else {
@@ -108,28 +120,39 @@ class MedialibExchangeHelper extends MedialibHelper
         return $dto;
     }
 
+    //reader
 
-    /////////////////
-    ///
-    ///
-    protected function convertRecord($record): array
+    /**
+     * @throws HelperException
+     */
+    public function convertRecord(array $record): array
     {
         $fields = [];
         foreach ($record['fields'] as $field) {
-            if ($field['name'] == 'FILE') {
-                $fields['FILE'] = $this->convertFieldFile($field);
-            } elseif ($field['name'] == 'COLLECTION_PATH') {
-                $paths = array_column($field['value'], 'value');
-                $fields['COLLECTION_ID'] = $this->saveCollectionByPath(self::TYPE_IMAGE, $paths);
+            if ($field['name'] == 'COLLECTION_PATH') {
+                $fields['COLLECTION_ID'] = $this->convertFieldCollectionPath($field);
             } else {
-                $fields[$field['name']] = $field['value'][0]['value'];
+                $fields[$field['name']] = $this->convertFieldValue($field);
             }
         }
         return $fields;
+
     }
 
-    protected function convertFieldFile($field)
+    /**
+     * @throws HelperException
+     */
+    protected function convertFieldCollectionPath($field): int
     {
-        return $this->makeFileValue($field['value'][0]);
+        $paths = array_column($field['value'], 'value');
+        return $this->saveCollectionByPath(
+            self::TYPE_IMAGE,
+            $paths
+        );
+    }
+
+    protected function convertFieldValue(array $field): string
+    {
+        return $field['value'][0]['value'];
     }
 }

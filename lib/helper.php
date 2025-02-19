@@ -6,6 +6,7 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
 use CDBResult;
 use CMain;
+use ReflectionClass;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Traits\OutTrait;
 
@@ -53,7 +54,7 @@ class Helper
     /**
      * @throws HelperException
      */
-    protected function throwApplicationExceptionIfExists()
+    protected function throwApplicationExceptionIfExists(): void
     {
         /* @global $APPLICATION CMain */
         global $APPLICATION;
@@ -64,12 +65,12 @@ class Helper
         }
     }
 
-    protected function getHelperName()
+    protected function getHelperName(): string
     {
         return (new ReflectionClass($this))->getShortName();
     }
 
-    protected function hasDiff($exists, $fields)
+    protected function hasDiff($exists, $fields): bool
     {
         return ($exists != $fields);
     }
@@ -86,17 +87,10 @@ class Helper
     }
 
     /**
-     * @param array $fields
-     * @param array $reqKeys
-     *
      * @throws HelperException
      */
-    protected function checkRequiredKeys($fields, $reqKeys = [])
+    protected function checkRequiredKeys(array $fields, array $reqKeys = []): void
     {
-        if (is_string($fields)) {
-            throw new HelperException('Old format for checkRequiredKeys');
-        }
-
         foreach ($reqKeys as $name) {
             if (empty($fields[$name])) {
                 throw new HelperException(
@@ -133,7 +127,7 @@ class Helper
         return $res;
     }
 
-    protected function filterByKey($items, $key, $value)
+    protected function filterByKey(array $items, string $key, $value): array
     {
         return array_values(
             array_filter(
@@ -143,13 +137,6 @@ class Helper
                 }
             )
         );
-    }
-
-    private function getMethod($method)
-    {
-        $path = explode('\\', $method);
-        $short = array_pop($path);
-        return $short;
     }
 
     protected function merge(array $item, array $default): array

@@ -262,9 +262,9 @@ TAG;
      * @param $path
      *
      * @throws HelperException
-     * @return int|void
+     * @return int
      */
-    public function saveCollectionByPath($typeId, $path)
+    public function saveCollectionByPath($typeId, $path): int
     {
         $parentId = 0;
         foreach ($path as $name) {

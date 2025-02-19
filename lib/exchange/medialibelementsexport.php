@@ -18,36 +18,26 @@ class MedialibElementsExport extends ExchangeWriter
         'SOURCE_ID',
     ];
 
-    public function getCollectionIds(): array
-    {
-        return $this->collectionIds;
-    }
-
     public function setCollectionIds($collectionIds = []): static
     {
         $this->collectionIds = $collectionIds;
         return $this;
     }
 
-    public function getExportFields(): array
-    {
-        return $this->exportFields;
-    }
 
     /**
      * @throws HelperException
      */
-    protected function getRecordsDto(int $offset, int $limit): ExchangeDto
+    protected function createRecords(int $offset, int $limit): ExchangeDto
     {
         $medialibExchangeHelper = new MedialibExchangeHelper();
-
-        return $medialibExchangeHelper->getElementsExchangeDto(
-            $this->getCollectionIds(),
-            [
-                'offset' => $offset,
-                'limit' => $limit,
-            ],
-            $this->getExportFields()
+        return $medialibExchangeHelper->createRecordsDto(
+            $this->collectionIds,
+            $offset,
+            $limit,
+            $this->exportFields
         );
+
     }
+
 }

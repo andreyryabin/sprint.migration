@@ -203,22 +203,37 @@ class IblockExchangeHelper extends IblockHelper
         return $element->GetProperties();
     }
 
+    //writer
+
     /**
      * @throws HelperException
      */
-    public function getElementsListExchangeDto($iblockId, $params = [], $exportFields = [], $exportProperties = []): ExchangeDto
+    public function createRecordsDto(
+        $iblockId,
+        int $offset,
+        int $limit,
+        array $exportFilter,
+        array $exportFields,
+        array $exportProperties
+    ): ExchangeDto
     {
-        $dbres = $this->getElementsList($iblockId, $params);
+        $dbres = $this->getElementsList(
+            $iblockId,
+            [
+                'order' => ['ID' => 'ASC'],
+                'offset' => $offset,
+                'limit' => $limit,
+                'filter' => $exportFilter,
+            ]
+        );
 
         $dto = new ExchangeDto('tmp');
         while ($element = $dbres->GetNextElement(false, false)) {
             $dto->addChild(
                 $this->createRecordDto(
                     $iblockId,
-                    [
-                        'FIELDS' => $this->getElementFields($element),
-                        'PROPS' => $this->getElementProps($element),
-                    ],
+                    $this->getElementFields($element),
+                    $this->getElementProps($element),
                     $exportFields,
                     $exportProperties
                 ));
@@ -229,11 +244,17 @@ class IblockExchangeHelper extends IblockHelper
     /**
      * @throws HelperException
      */
-    protected function createRecordDto($iblockId, array $element, array $exportFields, array $exportProperties): ExchangeDto
+    protected function createRecordDto(
+        $iblockId,
+        array $fields,
+        array $props,
+        array $exportFields,
+        array $exportProperties
+    ): ExchangeDto
     {
         $item = new ExchangeDto('item');
 
-        foreach ($element['FIELDS'] as $code => $val) {
+        foreach ($fields as $code => $val) {
             if (in_array($code, $exportFields)) {
                 $item->addChild(
                     $this->createFieldDto([
@@ -245,7 +266,7 @@ class IblockExchangeHelper extends IblockHelper
             }
         }
 
-        foreach ($element['PROPS'] as $prop) {
+        foreach ($props as $prop) {
             if (in_array($prop['CODE'], $exportProperties)) {
                 $item->addChild(
                     $this->createPropertyDto($prop)
@@ -262,12 +283,16 @@ class IblockExchangeHelper extends IblockHelper
     protected function createFieldDto(array $field): ExchangeDto
     {
         $dto = new ExchangeDto('field', ['name' => $field['NAME']]);
+
         if ($field['NAME'] == 'PREVIEW_PICTURE') {
             $dto->addFile($field['VALUE']);
         } elseif ($field['NAME'] == 'DETAIL_PICTURE') {
             $dto->addFile($field['VALUE']);
         } elseif ($field['NAME'] == 'IBLOCK_SECTION') {
-            $uniqSections = $this->getSectionUniqNamesByIds($field['IBLOCK_ID'], $field['VALUE']);
+            $uniqSections = $this->getSectionUniqNamesByIds(
+                $field['IBLOCK_ID'],
+                $field['VALUE']
+            );
             $dto->addValue($uniqSections);
         } else {
             $dto->addValue($field['VALUE']);
@@ -312,7 +337,11 @@ class IblockExchangeHelper extends IblockHelper
      */
     protected function addPropertyValueSection(ExchangeDto $dto, $prop): void
     {
-        $uniqNames = $this->getSectionUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']);
+        $uniqNames = $this->getSectionUniqNamesByIds(
+            $prop['LINK_IBLOCK_ID'],
+            $prop['VALUE']
+        );
+
         $dto->addValue($uniqNames);
     }
 
@@ -321,7 +350,11 @@ class IblockExchangeHelper extends IblockHelper
      */
     protected function addPropertyValueElement(ExchangeDto $dto, $prop): void
     {
-        $uniqNames = $this->getElementUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']);
+        $uniqNames = $this->getElementUniqNamesByIds(
+            $prop['LINK_IBLOCK_ID'],
+            $prop['VALUE']
+        );
+
         $dto->addValue($uniqNames);
     }
 
@@ -334,5 +367,151 @@ class IblockExchangeHelper extends IblockHelper
     protected function addPropertyValueFile(ExchangeDto $dto, $prop): void
     {
         $dto->addFile($prop['VALUE']);
+    }
+
+
+    //reader
+
+    /**
+     * @throws HelperException
+     */
+    public function convertRecord(int $iblockId, array $record): array
+    {
+        $convertedFields = [];
+        foreach ($record['fields'] as $field) {
+            if ($field['name'] == 'IBLOCK_SECTION') {
+                $convertedFields[$field['name']] = $this->convertFieldIblockSection($iblockId, $field);
+            } else {
+                $convertedFields[$field['name']] = $this->convertFieldValue($iblockId, $field);
+            }
+        }
+
+        $convertedProperties = [];
+        foreach ($record['properties'] as $prop) {
+            $proprtyType = $this->getPropertyType($iblockId, $prop['name']);
+
+            if ($proprtyType == 'L') {
+                $convertedProperties[$prop['name']] = $this->convertPropertyL($iblockId, $prop);
+            } elseif ($proprtyType == 'F') {
+                $convertedProperties[$prop['name']] = $this->convertPropertyF($iblockId, $prop);
+            } elseif ($proprtyType == 'G') {
+                $convertedProperties[$prop['name']] = $this->convertPropertyG($iblockId, $prop);
+            } elseif ($proprtyType == 'E') {
+                $convertedProperties[$prop['name']] = $this->convertPropertyE($iblockId, $prop);
+            } else {
+                $convertedProperties[$prop['name']] = $this->convertPropertyS($iblockId, $prop);
+            }
+        }
+
+        return [
+            'iblock_id' => $iblockId,
+            'fields' => $convertedFields,
+            'properties' => $convertedProperties,
+        ];
+    }
+
+
+    protected function convertFieldValue(int $iblockId, array $field): string
+    {
+        return $field['value'][0]['value'];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function convertFieldIblockSection(int $iblockId, array $field): array
+    {
+        $value = [];
+        foreach ($field['value'] as $val) {
+            $value[] = $this->getSectionIdByUniqName($iblockId, $val['value']);
+        }
+
+        return $value;
+    }
+
+    protected function convertPropertyS(int $iblockId, array $prop)
+    {
+        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
+        $res = [];
+        foreach ($prop['value'] as $val) {
+            $res[] = $this->makePropertyValue($val);
+        }
+
+        return ($isMultiple) ? $res : $res[0];
+    }
+
+    protected function makePropertyValue(array $val): array
+    {
+        $result = ['VALUE' => $val['value']];
+
+        if (!empty($val['description'])) {
+            $result['DESCRIPTION'] = $val['description'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function convertPropertyG(int $iblockId, array $prop)
+    {
+        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
+        $linkIblockId = $this->getPropertyLinkIblockId($iblockId, $prop['name']);
+
+        $res = [];
+        if ($linkIblockId) {
+            foreach ($prop['value'] as $val) {
+                $val['value'] = $this->getSectionIdByUniqName($linkIblockId, $val['value']);
+                $res[] = $this->makePropertyValue($val);
+            }
+        }
+
+        return ($isMultiple) ? $res : $res[0];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function convertPropertyE(int $iblockId, array $prop)
+    {
+        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
+        $linkIblockId = $this->getPropertyLinkIblockId($iblockId, $prop['name']);
+
+        $res = [];
+        if ($linkIblockId) {
+            foreach ($prop['value'] as $val) {
+                $val['value'] = $this->getElementIdByUniqName($linkIblockId, $val['value']);
+                $res[] = $this->makePropertyValue($val);
+            }
+        }
+
+        return ($isMultiple) ? $res : $res[0];
+    }
+
+    protected function convertPropertyF(int $iblockId, array $prop)
+    {
+        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
+        $res = [];
+        foreach ($prop['value'] as $val) {
+            $res[] = $val['value'];
+        }
+        return ($isMultiple) ? $res : $res[0];
+    }
+
+    protected function convertPropertyL(int $iblockId, array $prop)
+    {
+        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
+        $res = [];
+        foreach ($prop['value'] as $val) {
+            $val['value'] = $this->getPropertyEnumIdByXmlId(
+                $iblockId,
+                $prop['name'],
+                $val['value']
+            );
+
+            $res[] = $this->makePropertyValue($val);
+        }
+        return ($isMultiple) ? $res : $res[0];
     }
 }

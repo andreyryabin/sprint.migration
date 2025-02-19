@@ -81,7 +81,7 @@ class ExchangeDto
             foreach ($val as $val1) {
                 $this->addFileTag($val1);
             }
-        } elseif($val) {
+        } elseif ($val) {
             $this->addFileTag($val);
         }
     }
@@ -126,6 +126,7 @@ class ExchangeDto
             [
                 'name' => $file['ORIGINAL_NAME'],
                 'description' => $file['DESCRIPTION'],
+                'type' => 'file',
             ]
         );
 

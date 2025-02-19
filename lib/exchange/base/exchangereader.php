@@ -18,9 +18,10 @@ abstract class ExchangeReader
     use HelperManagerTrait;
     use OutTrait;
 
-    protected $exchangeEntity;
-    private $file;
-    protected $limit = 10;
+    protected ExchangeEntity $exchangeEntity;
+    private string $file;
+    protected int $limit = 10;
+
 
     /**
      * @throws MigrationException
@@ -56,12 +57,10 @@ abstract class ExchangeReader
             $context['offset'] = 0;
         }
 
-        $records = $this->readExchangeFileRecords(
-            $context['offset'],
+        $records = $this->readRecords(
+            (int)$context['offset'],
             $this->getLimit()
         );
-
-        $records = array_map(fn($record) => $this->convertRecord($record), $records);
 
         array_map(fn($record) => $converter($record), $records);
 
@@ -79,34 +78,34 @@ abstract class ExchangeReader
         $this->exchangeEntity->setRestartParams($context);
     }
 
-    public function setExchangeFile($file)
+    public function setExchangeFile(string $file): static
     {
         $this->file = $file;
         return $this;
     }
 
-    public function getLimit()
+    public function getLimit(): int
     {
         return $this->limit;
     }
 
-    public function setLimit($limit)
+    public function setLimit(int $limit): static
     {
         $this->limit = $limit;
         return $this;
     }
 
-    protected function getExchangeDir()
+    protected function getExchangeDir(): string
     {
         return dirname($this->file);
     }
 
-    protected function getExchangeFile()
+    protected function getExchangeFile(): string
     {
         return $this->file;
     }
 
-    protected function readExchangeFileRecords($offset = 0, $limit = 10): array
+    protected function readRecords(int $offset, int $limit): array
     {
         $reader = new XMLReader();
         $reader->open($this->getExchangeFile());
@@ -146,7 +145,7 @@ abstract class ExchangeReader
             }
         } while (!$this->isCloseTag($reader, 'item'));
 
-        return $record;
+        return $this->convertRecord($record);
 
     }
 
@@ -163,6 +162,8 @@ abstract class ExchangeReader
                 $reader->read();
                 if (isset($val['type']) && $val['type'] == 'json') {
                     $val['value'] = json_decode($reader->value, true);
+                } elseif (isset($val['type']) && $val['type'] == 'file') {
+                    $val['value'] = $this->makeFileValue($reader->value, $val);
                 } else {
                     $val['value'] = $reader->value;
                 }
@@ -173,12 +174,7 @@ abstract class ExchangeReader
         return $field;
     }
 
-    /**
-     * @param $name
-     *
-     * @return $this
-     */
-    public function setExchangeResource($name)
+    public function setExchangeResource(string $name): static
     {
         $path = $this->exchangeEntity->getVersionConfig()->getVal('exchange_dir');
 
@@ -189,24 +185,8 @@ abstract class ExchangeReader
         return $this;
     }
 
-    protected function makeFileValue($value): false|array
-    {
-        if (!empty($value['value'])) {
-            $path = $this->getExchangeDir() . '/' . $value['value'];
-            $file = CFile::MakeFileArray($path);
-            if (!empty($value['name'])) {
-                $file['name'] = $value['name'];
-            }
-            if (!empty($value['description'])) {
-                $file['description'] = $value['description'];
-            }
-            return $file;
-        }
-        return false;
-    }
 
-
-    protected function isOpenTag(XMLReader $reader, $tag)
+    protected function isOpenTag(XMLReader $reader, $tag): bool
     {
         return (
             $reader->nodeType == XMLReader::ELEMENT
@@ -215,7 +195,7 @@ abstract class ExchangeReader
         );
     }
 
-    protected function isCloseTag(XMLReader $reader, $tag)
+    protected function isCloseTag(XMLReader $reader, $tag): bool
     {
         return (
             $reader->nodeType == XMLReader::END_ELEMENT
@@ -273,5 +253,22 @@ abstract class ExchangeReader
 
         $reader->close();
         return $attributes;
+    }
+
+
+    private function makeFileValue($value, $attrs): false|array
+    {
+        if (!empty($value)) {
+            $path = $this->getExchangeDir() . '/' . $value;
+            $file = CFile::MakeFileArray($path);
+            if (!empty($attrs['name'])) {
+                $file['name'] = $attrs['name'];
+            }
+            if (!empty($attrs['description'])) {
+                $file['description'] = $attrs['description'];
+            }
+            return $file;
+        }
+        return false;
     }
 }
