@@ -9,11 +9,18 @@ use Sprint\Migration\Exchange\MedialibElementsImport;
 
 class ExchangeManager
 {
-    protected $exchangeEntity;
+    protected Version $versionEntity;
 
-    public function __construct(Version $exchangeEntity)
+    public function __construct(Version $versionEntity)
     {
-        $this->exchangeEntity = $exchangeEntity;
+        $this->versionEntity = $versionEntity;
+
+    }
+
+    protected function getExchangeFile(string $name): string
+    {
+        $dir = $this->versionEntity->getVersionConfig()->getVal('exchange_dir');
+        return $dir . '/' . $this->versionEntity->getVersionName() . '_files/' . $name;
     }
 
     /**
@@ -21,7 +28,8 @@ class ExchangeManager
      */
     public function IblockElementsImport(): IblockElementsImport
     {
-        return new IblockElementsImport($this->exchangeEntity);
+        return (new IblockElementsImport($this->versionEntity))
+            ->setExchangeFile($this->getExchangeFile('iblock_elements.xml'));
     }
 
     /**
@@ -29,7 +37,8 @@ class ExchangeManager
      */
     public function HlblockElementsImport(): HlblockElementsImport
     {
-        return new HlblockElementsImport($this->exchangeEntity);
+        return (new HlblockElementsImport($this->versionEntity))
+            ->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'));
     }
 
     /**
@@ -37,6 +46,7 @@ class ExchangeManager
      */
     public function MedialibElementsImport(): MedialibElementsImport
     {
-        return new MedialibElementsImport($this->exchangeEntity);
+        return (new MedialibElementsImport($this->versionEntity))
+            ->setExchangeFile($this->getExchangeFile('medialib_elements.xml'));
     }
 }

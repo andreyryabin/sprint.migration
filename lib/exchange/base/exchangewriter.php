@@ -2,33 +2,29 @@
 
 namespace Sprint\Migration\Exchange\Base;
 
+use Sprint\Migration\AbstractBuilder;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\ExchangeEntity;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
-use Sprint\Migration\Traits\HelperManagerTrait;
-use Sprint\Migration\Traits\OutTrait;
+use Sprint\Migration\Out;
 use XMLWriter;
 
-abstract class ExchangeWriter
+class ExchangeWriter
 {
-    use HelperManagerTrait;
-    use OutTrait;
+    private AbstractBuilder $builderEntity;
 
-    protected ExchangeEntity $exchangeEntity;
-    protected string $file;
-    protected int $limit = 10;
-    protected bool $copyFiles = true;
+    private int $limit = 10;
+    private bool $copyFiles = true;
 
-    abstract protected function createRecords(int $offset, int $limit): ExchangeDto;
+    private string $exchangeFile = '';
 
     /**
      * @throws MigrationException
      */
-    public function __construct(ExchangeEntity $exchangeEntity)
+    public function __construct(AbstractBuilder $builderEntity)
     {
-        $this->exchangeEntity = $exchangeEntity;
+        $this->builderEntity = $builderEntity;
 
         if (!class_exists('XMLWriter')) {
             throw new MigrationException(
@@ -43,32 +39,36 @@ abstract class ExchangeWriter
      * @throws RestartException
      * @throws MigrationException
      */
-    public function execute(): void
+    public function execute(callable $converter): void
     {
-        $params = $this->exchangeEntity->getRestartParams();
+        $params = $this->builderEntity->getRestartParams();
         if (!isset($params['offset'])) {
             $params['offset'] = 0;
 
             $this->createExchangeFile();
         }
 
-        $dto = $this->createRecords($params['offset'], $this->getLimit());
+        $dto = $converter($params['offset'], $this->getLimit());
+
+        if (!$dto instanceof ExchangeDto) {
+            throw new MigrationException('converter must return an instance of ExchangeDto');
+        }
 
         $this->appendDtoToExchangeFile($dto);
 
         $params['offset'] += $dto->countChilds();
 
-        $this->out('Progress: ', $params['offset']);
+        Out::outProgress('', $params['offset'],1);
 
         if ($dto->countChilds() >= $this->getLimit()) {
-            $this->exchangeEntity->setRestartParams($params);
-            $this->exchangeEntity->restart();
+            $this->builderEntity->setRestartParams($params);
+            $this->builderEntity->restart();
         }
 
         $this->closeExchangeFile();
 
         unset($params['offset']);
-        $this->exchangeEntity->setRestartParams($params);
+        $this->builderEntity->setRestartParams($params);
     }
 
     public function setCopyFiles($copyFiles): static
@@ -155,9 +155,9 @@ abstract class ExchangeWriter
         $writer->endElement();
     }
 
-    public function setExchangeFile(string $file): static
+    public function setExchangeFile(string $exchangeFile): static
     {
-        $this->file = $file;
+        $this->exchangeFile = $exchangeFile;
         return $this;
     }
 
@@ -172,13 +172,13 @@ abstract class ExchangeWriter
         return $this;
     }
 
-    protected function getExchangeDir(): string
-    {
-        return dirname($this->file);
-    }
-
     protected function appendToExchangeFile($content): void
     {
-        file_put_contents($this->file, $content, FILE_APPEND);
+        file_put_contents($this->exchangeFile, $content, FILE_APPEND);
+    }
+
+    private function getExchangeDir(): string
+    {
+        return dirname($this->exchangeFile);
     }
 }

@@ -1,34 +1,12 @@
 <?php
 
-namespace Sprint\Migration;
+namespace Sprint\Migration\Traits;
 
-use ReflectionClass;
 use Sprint\Migration\Exceptions\RestartException;
 
-abstract class ExchangeEntity
+trait RestartableTrait
 {
-    protected $params = [];
-    private   $versionConfig;
-
-    public function getVersionConfig(): VersionConfig
-    {
-        return $this->versionConfig;
-    }
-    public function getClassName(): string
-    {
-        return (new ReflectionClass($this))->getShortName();
-    }
-    /**
-     * Не использовать
-     *
-     * @param VersionConfig $versionConfig
-     *
-     * @return void
-     */
-    public function setVersionConfig(VersionConfig $versionConfig)
-    {
-        $this->versionConfig = $versionConfig;
-    }
+    protected array $params = [];
 
     /**
      * @throws RestartException
@@ -43,7 +21,7 @@ abstract class ExchangeEntity
         return $this->params;
     }
 
-    public function setRestartParams(array $params = [])
+    public function setRestartParams(array $params = []): void
     {
         $this->params = $params;
     }

@@ -7,22 +7,26 @@ use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
+use Sprint\Migration\Traits\RestartableTrait;
+use Sprint\Migration\Traits\VersionConfigTrait;
 
-abstract class AbstractBuilder extends ExchangeEntity
+abstract class AbstractBuilder
 {
     use HelperManagerTrait;
     use OutTrait;
+    use RestartableTrait;
+    use VersionConfigTrait;
 
-    private $name;
-    private $info = [
+    private string $name;
+    private array $info = [
         'title' => '',
         'description' => '',
         'group' => '',
     ];
-    private $fields = [];
-    private $execStatus = '';
+    private array $fields = [];
+    private string $execStatus = '';
 
-    public function __construct(VersionConfig $versionConfig, $name, $params = [])
+    public function __construct(VersionConfig $versionConfig, string $name, array $params = [])
     {
         $this->name = $name;
 
@@ -35,7 +39,6 @@ abstract class AbstractBuilder extends ExchangeEntity
     abstract protected function initialize();
 
     /**
-     * @return mixed
      * @throws RestartException|RebuildException|Exception
      */
     abstract protected function execute();
@@ -54,7 +57,7 @@ abstract class AbstractBuilder extends ExchangeEntity
         }
     }
 
-     protected function addField($code, $param = [])
+    protected function addField($code, $param = []): void
     {
         if (isset($param['multiple']) && $param['multiple']) {
             $value = [];
@@ -83,13 +86,9 @@ abstract class AbstractBuilder extends ExchangeEntity
     }
 
     /**
-     * @param string $code
-     * @param array $param
-     *
-     * @return mixed
      * @throws RebuildException
      */
-    protected function addFieldAndReturn($code, $param = [])
+    protected function addFieldAndReturn(string $code, array $param = [])
     {
         $this->addField($code, $param);
 
@@ -105,13 +104,13 @@ abstract class AbstractBuilder extends ExchangeEntity
         return $value;
     }
 
-    protected function addFieldHidden($code, $val)
+    protected function addFieldHidden(string $code, $val): void
     {
         $this->params[$code] = $val;
         $this->addField($code, ['type' => 'hidden']);
     }
 
-    protected function getFieldValue($code, $default = '')
+    protected function getFieldValue(string $code, $default = '')
     {
         if (isset($this->fields[$code]) && $this->fields[$code]['bind'] == 1) {
             return $this->fields[$code]['value'];
@@ -120,16 +119,7 @@ abstract class AbstractBuilder extends ExchangeEntity
         }
     }
 
-    protected function bindField($code, $val)
-    {
-        if (isset($this->fields[$code])) {
-            $this->fields[$code]['bind'] = 1;
-            $this->fields[$code]['value'] = $val;
-            $this->params[$code] = $val;
-        }
-    }
-
-    protected function renderFile($file, $vars = [])
+    protected function renderFile($file, $vars = []): string
     {
         if (is_array($vars)) {
             extract($vars, EXTR_SKIP);
@@ -144,7 +134,7 @@ abstract class AbstractBuilder extends ExchangeEntity
         return ob_get_clean();
     }
 
-    public function renderHtml()
+    public function renderHtml(): void
     {
         echo $this->renderFile(
             Module::getModuleDir() . '/admin/includes/builder_form.php', [
@@ -153,32 +143,36 @@ abstract class AbstractBuilder extends ExchangeEntity
         );
     }
 
-    public function renderConsole()
+    public function renderConsole(): void
     {
-        foreach ($this->getFields() as $code => $field) {
+        foreach ($this->fields as $code => $field) {
             if (empty($field['bind'])) {
                 $val = Out::input($field);
-                $this->bindField($code, $val);
+
+                $this->fields[$code]['bind'] = 1;
+                $this->fields[$code]['value'] = $val;
+                $this->params[$code] = $val;
+
             }
         }
     }
 
-    public function isRebuild()
+    public function isRebuild(): bool
     {
         return ($this->execStatus == 'rebuild');
     }
 
-    public function isRestart()
+    public function isRestart(): bool
     {
         return ($this->execStatus == 'restart');
     }
 
-    public function buildInitialize()
+    public function buildInitialize(): void
     {
         $this->initialize();
     }
 
-    public function buildExecute()
+    public function buildExecute(): bool
     {
         $this->execStatus = '';
 
@@ -202,7 +196,7 @@ abstract class AbstractBuilder extends ExchangeEntity
         return true;
     }
 
-    public function buildAfter()
+    public function buildAfter(): void
     {
         foreach ($this->params as $code => $val) {
             if (!isset($this->fields[$code])) {
@@ -214,11 +208,9 @@ abstract class AbstractBuilder extends ExchangeEntity
     }
 
     /**
-     * @param $code
-     *
      * @throws RebuildException
      */
-    protected function rebuildField($code)
+    protected function rebuildField(string $code)
     {
         if (isset($this->fields[$code])) {
             $this->fields[$code]['bind'] = 0;
@@ -231,47 +223,47 @@ abstract class AbstractBuilder extends ExchangeEntity
         throw new RebuildException('rebuild form');
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getFields()
+    public function getFields(): array
     {
         return $this->fields;
     }
 
-    protected function setTitle($title = '')
+    protected function setTitle(string $title = ''): void
     {
         $this->info['title'] = $title;
     }
 
-    protected function setDescription($description = '')
+    protected function setDescription(string $description = ''): void
     {
         $this->info['description'] = $description;
     }
 
-    protected function setGroup($group = '')
+    protected function setGroup(string $group = ''): void
     {
         $this->info['group'] = $group;
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->info['title'];
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->info['description'];
     }
 
-    public function hasDescription()
+    public function hasDescription(): bool
     {
         return !empty($this->info['description']);
     }
 
-    public function getGroup()
+    public function getGroup(): string
     {
         return $this->info['group'] ?? Locale::getMessage('BUILDER_GROUP_Tools');
     }

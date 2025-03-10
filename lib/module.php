@@ -5,12 +5,6 @@ namespace Sprint\Migration;
 use COption;
 use Sprint\Migration\Exceptions\MigrationException;
 
-/**
- *
- * В этом классе у свойств не надо указывать тип
- *  ради совместимости с php < 7.4, чтобы админка
- *  могла корректно показать фразу PHP 7.3 не поддерживается
- */
 class Module
 {
     const ID = 'sprint.migration';
@@ -137,13 +131,13 @@ class Module
 
     public static function getExchangeVersion(): int
     {
-        return 2;
+        return 3;
     }
 
     /**
      * @throws MigrationException
      */
-    public static function checkHealth()
+    public static function checkHealth(): void
     {
         if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql') {
             throw new MigrationException(
@@ -161,7 +155,7 @@ class Module
             );
         }
 
-        if (version_compare(PHP_VERSION, '7.4', '<')) {
+        if (version_compare(PHP_VERSION, '8.0', '<')) {
             throw new MigrationException(
                 Locale::getMessage(
                     'ERR_PHP_NOT_SUPPORTED',

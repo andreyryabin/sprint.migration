@@ -36,7 +36,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     {
         $this->getExchangeManager()
              ->IblockElementsImport()
-             ->setExchangeResource('iblock_elements.xml')
              ->setLimit(20)
              ->execute(function ($item) {
 <?php if ($updateMode == IblockElementsBuilder::UPDATE_MODE_CODE) { ?>
@@ -77,7 +76,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 <?php if ($updateMode == IblockElementsBuilder::UPDATE_MODE_CODE) { ?>
         $this->getExchangeManager()
              ->IblockElementsImport()
-             ->setExchangeResource('iblock_elements.xml')
              ->setLimit(10)
              ->execute(function ($item) {
                  $this->getHelperManager()
@@ -90,7 +88,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 <?php } elseif($updateMode == IblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
         $this->getExchangeManager()
              ->IblockElementsImport()
-             ->setExchangeResource('iblock_elements.xml')
              ->setLimit(10)
              ->execute(function ($item) {
                  $this->getHelperManager()

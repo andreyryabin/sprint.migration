@@ -2,17 +2,22 @@
 
 namespace Sprint\Migration;
 
+use ReflectionClass;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
+use Sprint\Migration\Traits\RestartableTrait;
+use Sprint\Migration\Traits\VersionConfigTrait;
 
-class Version extends ExchangeEntity
+class Version
 {
     use HelperManagerTrait;
     use OutTrait;
+    use RestartableTrait;
+    use VersionConfigTrait;
 
-    protected $author        = "";
-    protected $description   = "";
+    protected $author = "";
+    protected $description = "";
     protected $moduleVersion = "";
     /**
      * Миграции, которые должны быть установлены перед установкой текущей
@@ -58,10 +63,15 @@ class Version extends ExchangeEntity
         return $this->requiredVersions;
     }
 
+    public function getVersionName(): string
+    {
+        return (new ReflectionClass($this))->getShortName();
+    }
+
     /**
      * @throws MigrationException
      */
-    public function checkRequiredVersions($versionNames)
+    public function checkRequiredVersions($versionNames): void
     {
         (new VersionManager(
             $this->getVersionConfig()
@@ -74,7 +84,7 @@ class Version extends ExchangeEntity
     protected function getStorageManager($versionName = ''): StorageManager
     {
         if (empty($versionName)) {
-            $versionName = $this->getClassName();
+            $versionName = $this->getVersionName();
         }
 
         return new StorageManager('sprint_storage_default', $versionName);

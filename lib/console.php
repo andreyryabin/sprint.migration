@@ -40,7 +40,7 @@ class Console
         $userlogin = $this->versionConfig->getVal('console_user');
         if ($userlogin == 'admin') {
             $this->authorizeAsAdmin();
-        } elseif (strpos($userlogin, 'login:') === 0) {
+        } elseif (str_starts_with($userlogin, 'login:')) {
             $userlogin = substr($userlogin, 6);
             $this->authorizeAsLogin($userlogin);
         }

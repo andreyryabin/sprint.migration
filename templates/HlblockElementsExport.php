@@ -38,7 +38,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     {
         $this->getExchangeManager()
              ->HlblockElementsImport()
-             ->setExchangeResource('hlblock_elements.xml')
              ->setLimit(20)
              ->execute(function ($item) {
 <?php if ($updateMode == HlblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
@@ -70,7 +69,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 <?php if ($updateMode == HlblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
         $this->getExchangeManager()
              ->HlblockElementsImport()
-             ->setExchangeResource('hlblock_elements.xml')
              ->setLimit(20)
              ->execute(function ($item) {
                  $this->getHelperManager()

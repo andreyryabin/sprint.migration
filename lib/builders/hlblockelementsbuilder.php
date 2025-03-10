@@ -6,7 +6,7 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\HlblockElementsExport;
+use Sprint\Migration\Exchange\Base\ExchangeWriter;
 use Sprint\Migration\Helpers\HlblockExchangeHelper;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -16,10 +16,11 @@ class HlblockElementsBuilder extends VersionBuilder
 {
     const UPDATE_MODE_NOT = 'not';
     const UPDATE_MODE_XML_ID = 'xml_id';
+
     /**
      * @return bool
      */
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Hlblock()->isEnabled();
     }
@@ -39,17 +40,17 @@ class HlblockElementsBuilder extends VersionBuilder
      * @throws RebuildException
      * @throws RestartException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $hlblockExchangeHelper = new HlblockExchangeHelper;
 
         $hlblockId = $this->addFieldAndReturn(
             'hlblock_id',
             [
-                'title'       => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
+                'title' => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
                 'placeholder' => '',
-                'width'       => 250,
-                'select'      => $hlblockExchangeHelper->getHlblocksStructure(),
+                'width' => 250,
+                'select' => $hlblockExchangeHelper->getHlblocksStructure(),
             ]
         );
 
@@ -62,17 +63,16 @@ class HlblockElementsBuilder extends VersionBuilder
             }
         }
 
-        (new HlblockElementsExport($this))
-             ->setLimit(20)
-             ->setCopyFiles(true)
-             ->setExportFields($fields)
-             ->setHlblockId($hlblockId)
-             ->setExchangeFile(
-                 $this->getVersionResourceFile(
-                     $this->getVersionName(),
-                     'hlblock_elements.xml'
-                 )
-             )->execute();
+        (new ExchangeWriter($this))
+            ->setLimit(20)
+            ->setCopyFiles(true)
+            ->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'))
+            ->execute(fn($offset, $limit) => $hlblockExchangeHelper->createRecordsDto(
+                $hlblockId,
+                $offset,
+                $limit,
+                $fields
+            ));
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/HlblockElementsExport.php',
@@ -88,11 +88,12 @@ class HlblockElementsBuilder extends VersionBuilder
     protected function getFieldValueUpdateMode()
     {
         return $this->addFieldAndReturn(
-            'update_mode', [
-                'title'       => Locale::getMessage('BUILDER_IblockElementsExport_UpdateMode'),
+            'update_mode',
+            [
+                'title' => Locale::getMessage('BUILDER_IblockElementsExport_UpdateMode'),
                 'placeholder' => '',
-                'width'       => 250,
-                'select'      => [
+                'width' => 250,
+                'select' => [
                     [
                         'title' => Locale::getMessage('BUILDER_IblockElementsExport_NotUpdate'),
                         'value' => self::UPDATE_MODE_NOT,

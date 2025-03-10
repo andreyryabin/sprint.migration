@@ -6,29 +6,25 @@ use CFile;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\ExchangeEntity;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
-use Sprint\Migration\Traits\HelperManagerTrait;
-use Sprint\Migration\Traits\OutTrait;
+use Sprint\Migration\Out;
+use Sprint\Migration\Version;
 use XMLReader;
 
 abstract class ExchangeReader
 {
-    use HelperManagerTrait;
-    use OutTrait;
-
-    protected ExchangeEntity $exchangeEntity;
-    private string $file;
-    protected int $limit = 10;
+    private Version $versionEntity;
+    private int $limit = 10;
+    private string $exchangeFile = '';
 
 
     /**
      * @throws MigrationException
      */
-    public function __construct(ExchangeEntity $exchangeEntity)
+    public function __construct(Version $versionEntity)
     {
-        $this->exchangeEntity = $exchangeEntity;
+        $this->versionEntity = $versionEntity;
 
         if (!class_exists('XMLReader')) {
             throw new MigrationException(
@@ -49,39 +45,33 @@ abstract class ExchangeReader
      */
     public function execute(callable $converter): void
     {
-        $context = $this->exchangeEntity->getRestartParams();
+        $params = $this->versionEntity->getRestartParams();
 
-        if (!isset($context['offset'])) {
+        if (!isset($params['offset'])) {
             $this->checkExchangeFile();
 
-            $context['offset'] = 0;
+            $params['offset'] = 0;
         }
 
         $records = $this->readRecords(
-            (int)$context['offset'],
+            (int)$params['offset'],
             $this->getLimit()
         );
 
         array_map(fn($record) => $converter($record), $records);
 
         $countRecords = count($records);
-        $context['offset'] += $countRecords;
+        $params['offset'] += $countRecords;
 
-        $this->out('Progress: ', $context['offset']);
+        Out::outProgress('',$params['offset'],1);
 
         if ($countRecords >= $this->getLimit()) {
-            $this->exchangeEntity->setRestartParams($context);
-            $this->exchangeEntity->restart();
+            $this->versionEntity->setRestartParams($params);
+            $this->versionEntity->restart();
         }
 
-        unset($context['offset']);
-        $this->exchangeEntity->setRestartParams($context);
-    }
-
-    public function setExchangeFile(string $file): static
-    {
-        $this->file = $file;
-        return $this;
+        unset($params['offset']);
+        $this->versionEntity->setRestartParams($params);
     }
 
     public function getLimit(): int
@@ -95,20 +85,10 @@ abstract class ExchangeReader
         return $this;
     }
 
-    protected function getExchangeDir(): string
-    {
-        return dirname($this->file);
-    }
-
-    protected function getExchangeFile(): string
-    {
-        return $this->file;
-    }
-
     protected function readRecords(int $offset, int $limit): array
     {
         $reader = new XMLReader();
-        $reader->open($this->getExchangeFile());
+        $reader->open($this->exchangeFile);
         $index = 0;
 
         $records = [];
@@ -174,17 +154,24 @@ abstract class ExchangeReader
         return $field;
     }
 
-    public function setExchangeResource(string $name): static
+    public function setExchangeFile(string $exchangeFile): static
     {
-        $path = $this->exchangeEntity->getVersionConfig()->getVal('exchange_dir');
-
-        $shortName = $this->exchangeEntity->getClassName();
-
-        $this->setExchangeFile($path . '/' . $shortName . '_files/' . $name);
-
+        $this->exchangeFile = $exchangeFile;
         return $this;
     }
 
+    private function getExchangeDir(): string
+    {
+        return dirname($this->exchangeFile);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function setExchangeResource(): static
+    {
+        return $this;
+    }
 
     protected function isOpenTag(XMLReader $reader, $tag): bool
     {
@@ -219,9 +206,9 @@ abstract class ExchangeReader
      */
     private function checkExchangeFile(): void
     {
-        if (!is_file($this->getExchangeFile())) {
+        if (!is_file($this->exchangeFile)) {
             throw new HelperException(
-                Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->getExchangeFile()])
+                Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->exchangeFile])
             );
         }
 
@@ -229,7 +216,7 @@ abstract class ExchangeReader
 
         if (!$attributes['exchangeVersion'] || $attributes['exchangeVersion'] < Module::getExchangeVersion()) {
             throw new HelperException(
-                Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->getExchangeFile()])
+                Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->exchangeFile])
             );
         }
 
@@ -240,7 +227,7 @@ abstract class ExchangeReader
     {
 
         $reader = new XMLReader();
-        $reader->open($this->getExchangeFile());
+        $reader->open($this->exchangeFile);
 
         $attributes = [];
 

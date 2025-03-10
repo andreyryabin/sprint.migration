@@ -6,7 +6,7 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\IblockElementsExport;
+use Sprint\Migration\Exchange\Base\ExchangeWriter;
 use Sprint\Migration\Helpers\IblockExchangeHelper;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -17,6 +17,7 @@ class IblockElementsBuilder extends VersionBuilder
     const UPDATE_MODE_NOT = 'not';
     const UPDATE_MODE_CODE = 'code';
     const UPDATE_MODE_XML_ID = 'xml_id';
+
     /**
      * @return bool
      */
@@ -42,6 +43,8 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function execute()
     {
+        $iblockExchangeHelper = new IblockExchangeHelper;
+
         $iblockId = $this->getFieldValueIblockId();
         $exportFilter = $this->getFieldValueExportFilter();
 
@@ -49,19 +52,18 @@ class IblockElementsBuilder extends VersionBuilder
         $exportFields = $this->getFieldValueExportFields($iblockId, $updateMode);
         $exportProps = $this->getFieldValueExportProps($iblockId);
 
-        (new IblockElementsExport($this))
-             ->setCopyFiles(true)
-             ->setExportFilter($exportFilter)
-             ->setExportFields($exportFields)
-             ->setExportProperties($exportProps)
-             ->setIblockId($iblockId)
-             ->setLimit(20)
-             ->setExchangeFile(
-                 $this->getVersionResourceFile(
-                     $this->getVersionName(),
-                     'iblock_elements.xml'
-                 )
-             )->execute();
+        (new ExchangeWriter($this))
+            ->setLimit(20)
+            ->setCopyFiles(true)
+            ->setExchangeFile($this->getExchangeFile('iblock_elements.xml'))
+            ->execute(fn($offset, $limit) => $iblockExchangeHelper->createRecordsDto(
+                $iblockId,
+                $offset,
+                $limit,
+                $exportFilter,
+                $exportFields,
+                $exportProps
+            ));
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockElementsExport.php',
@@ -72,18 +74,17 @@ class IblockElementsBuilder extends VersionBuilder
     }
 
     /**
-     * @param $iblockId
-     *
      * @throws RebuildException
-     * @return array
      */
     protected function getFieldValueExportProps($iblockId)
     {
+        $iblockExchangeHelper = new IblockExchangeHelper;
+
         $propsMode = $this->addFieldAndReturn(
             'props_mode',
             [
-                'title'  => Locale::getMessage('BUILDER_IblockElementsExport_Properties'),
-                'width'  => 250,
+                'title' => Locale::getMessage('BUILDER_IblockElementsExport_Properties'),
+                'width' => 250,
                 'select' => [
                     [
                         'title' => Locale::getMessage('BUILDER_SelectAll'),
@@ -105,11 +106,11 @@ class IblockElementsBuilder extends VersionBuilder
             $exportProps = $this->addFieldAndReturn(
                 'export_props',
                 [
-                    'title'    => Locale::getMessage('BUILDER_IblockElementsExport_Properties'),
-                    'width'    => 250,
+                    'title' => Locale::getMessage('BUILDER_IblockElementsExport_Properties'),
+                    'width' => 250,
                     'multiple' => 1,
-                    'value'    => [],
-                    'select'   => $iblockExchangeHelper->getIblockPropertiesStructure($iblockId),
+                    'value' => [],
+                    'select' => $iblockExchangeHelper->getIblockPropertiesStructure($iblockId),
                 ]
             );
         } elseif ($propsMode == 'all') {
@@ -124,15 +125,14 @@ class IblockElementsBuilder extends VersionBuilder
 
     /**
      * @throws RebuildException
-     * @return array
      */
-    protected function getFieldValueExportFilter()
+    protected function getFieldValueExportFilter(): array
     {
         $elementsMode = $this->addFieldAndReturn(
             'filter_mode',
             [
-                'title'  => Locale::getMessage('BUILDER_IblockElementsExport_Filter'),
-                'width'  => 250,
+                'title' => Locale::getMessage('BUILDER_IblockElementsExport_Filter'),
+                'width' => 250,
                 'select' => [
                     [
                         'title' => Locale::getMessage('BUILDER_SelectAll'),
@@ -153,8 +153,8 @@ class IblockElementsBuilder extends VersionBuilder
         if ($elementsMode == 'list_id') {
             $filterIds = $this->addFieldAndReturn(
                 'export_filter_list_id', [
-                    'title'  => Locale::getMessage('BUILDER_IblockElementsExport_FilterListId'),
-                    'width'  => 350,
+                    'title' => Locale::getMessage('BUILDER_IblockElementsExport_FilterListId'),
+                    'width' => 350,
                     'height' => 40,
                 ]
             );
@@ -166,8 +166,8 @@ class IblockElementsBuilder extends VersionBuilder
             $filterXmlIds = $this->addFieldAndReturn(
                 'export_filter_list_xml_id',
                 [
-                    'title'  => Locale::getMessage('BUILDER_IblockElementsExport_FilterListXmlId'),
-                    'width'  => 350,
+                    'title' => Locale::getMessage('BUILDER_IblockElementsExport_FilterListXmlId'),
+                    'width' => 350,
                     'height' => 40,
                 ]
             );
@@ -183,12 +183,7 @@ class IblockElementsBuilder extends VersionBuilder
     }
 
     /**
-     * @param      $iblockId
-     *
-     * @param bool $updateMode
-     *
      * @throws RebuildException
-     * @return array
      */
     protected function getFieldValueExportFields($iblockId, $updateMode = false)
     {
@@ -197,8 +192,8 @@ class IblockElementsBuilder extends VersionBuilder
         $fieldsMode = $this->addFieldAndReturn(
             'fields_mode',
             [
-                'title'  => Locale::getMessage('BUILDER_IblockElementsExport_Fields'),
-                'width'  => 250,
+                'title' => Locale::getMessage('BUILDER_IblockElementsExport_Fields'),
+                'width' => 250,
                 'select' => [
                     [
                         'title' => Locale::getMessage('BUILDER_SelectAll'),
@@ -219,11 +214,11 @@ class IblockElementsBuilder extends VersionBuilder
         if ($fieldsMode == 'some') {
             $exportFields = $this->addFieldAndReturn(
                 'export_filter', [
-                    'title'    => Locale::getMessage('BUILDER_IblockElementsExport_Fields'),
-                    'width'    => 250,
+                    'title' => Locale::getMessage('BUILDER_IblockElementsExport_Fields'),
+                    'width' => 250,
                     'multiple' => 1,
-                    'value'    => [],
-                    'select'   => $iblockExchangeHelper->getIblockElementFieldsStructure($iblockId),
+                    'value' => [],
+                    'select' => $iblockExchangeHelper->getIblockElementFieldsStructure($iblockId),
                 ]
             );
         } elseif ($fieldsMode == 'all') {
@@ -249,18 +244,17 @@ class IblockElementsBuilder extends VersionBuilder
     /**
      * @throws HelperException
      * @throws RebuildException
-     * @return integer
      */
-    protected function getFieldValueIblockId()
+    protected function getFieldValueIblockId(): int
     {
         $iblockExchangeHelper = new IblockExchangeHelper;
 
         $iblockId = $this->addFieldAndReturn(
             'iblock_id', [
-                'title'       => Locale::getMessage('BUILDER_IblockElementsExport_IblockId'),
+                'title' => Locale::getMessage('BUILDER_IblockElementsExport_IblockId'),
                 'placeholder' => '',
-                'width'       => 250,
-                'items'       => $iblockExchangeHelper->getIblocksStructure(),
+                'width' => 250,
+                'items' => $iblockExchangeHelper->getIblocksStructure(),
             ]
         );
 
@@ -274,16 +268,15 @@ class IblockElementsBuilder extends VersionBuilder
 
     /**
      * @throws RebuildException
-     * @return string
      */
     protected function getFieldValueUpdateMode()
     {
         return $this->addFieldAndReturn(
             'update_mode', [
-                'title'       => Locale::getMessage('BUILDER_IblockElementsExport_UpdateMode'),
+                'title' => Locale::getMessage('BUILDER_IblockElementsExport_UpdateMode'),
                 'placeholder' => '',
-                'width'       => 250,
-                'select'      => [
+                'width' => 250,
+                'select' => [
                     [
                         'title' => Locale::getMessage('BUILDER_IblockElementsExport_NotUpdate'),
                         'value' => self::UPDATE_MODE_NOT,
@@ -301,7 +294,7 @@ class IblockElementsBuilder extends VersionBuilder
         );
     }
 
-    protected function explodeString($string, $delimiter = ' ')
+    protected function explodeString(string $string, string $delimiter = ' '): array
     {
         $values = explode($delimiter, trim($string));
         return array_filter($values);

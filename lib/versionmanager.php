@@ -120,12 +120,9 @@ class VersionManager
     }
 
     /**
-     * @param $versionName
-     *
      * @throws MigrationException
-     * @return array|bool
      */
-    public function getVersionByName($versionName)
+    public function getVersionByName(string $versionName): bool|array
     {
         $ts = $this->getVersionTimestamp($versionName);
 
@@ -321,18 +318,18 @@ class VersionManager
         return $result;
     }
 
-    public function getVersionFile($versionName): string
+    public function getVersionFile(string $versionName): string
     {
         $dir = $this->getVersionConfig()->getVal('migration_dir');
         return $dir . '/' . $versionName . '.php';
     }
 
-    public function checkVersionName($versionName): bool
+    public function checkVersionName(string $versionName): bool
     {
         return (bool)$this->getVersionTimestamp($versionName);
     }
 
-    public function getVersionTimestamp($versionName)
+    public function getVersionTimestamp(string $versionName)
     {
         $matches = [];
         if (preg_match($this->versionTimestampPattern, $versionName, $matches)) {
@@ -342,10 +339,10 @@ class VersionManager
         return false;
     }
 
-    public function getWebDir()
+    public function getWebDir(): string
     {
         $dir = $this->getVersionConfig()->getVal('migration_dir');
-        if (strpos($dir, Module::getDocRoot()) === 0) {
+        if (str_starts_with($dir, Module::getDocRoot())) {
             return substr($dir, strlen(Module::getDocRoot()));
         }
         return '';
@@ -410,7 +407,10 @@ class VersionManager
         return $files;
     }
 
-    public function clean()
+    /**
+     * @throws MigrationException
+     */
+    public function clean(): void
     {
         $dir = $this->getVersionConfig()->getVal('migration_dir');
 
@@ -524,7 +524,7 @@ class VersionManager
 
         if (!empty($items)) {
             foreach ($items as $item) {
-                $result[] = $this->transferMigrationByItem($item, $vmTo);
+                $result[] = $this->transferMigrationByMeta($item, $vmTo);
             }
         } else {
             $result[] = [
@@ -623,14 +623,9 @@ class VersionManager
     }
 
     /**
-     * @param $versionName
-     * @param $file
-     * @param $record
-     *
      * @throws MigrationException
-     * @return array|bool
      */
-    protected function makeVersion($versionName, $file, $record, $ts)
+    protected function makeVersion(string $versionName, $file, $record, $ts)
     {
         $isFile = ($file) ? 1 : 0;
         $isRecord = ($record) ? 1 : 0;
@@ -718,7 +713,7 @@ class VersionManager
         return $meta;
     }
 
-    private function humanStatus($prefix, $at, $by)
+    private function humanStatus(string $prefix, string $at, string $by): string
     {
         $by = $by ? '(' . $by . ')' : '';
 
@@ -772,7 +767,7 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    protected function deleteMigrationByMeta($meta): array
+    protected function deleteMigrationByMeta(array $meta): array
     {
         $success = 0;
 
@@ -781,7 +776,7 @@ class VersionManager
             $success = 1;
         }
 
-        if ($meta && $meta['is_file']) {
+        if ($meta['is_file']) {
             Module::deletePath(
                 $meta['location']
             );
@@ -800,7 +795,7 @@ class VersionManager
         ];
     }
 
-    public function getVersionExchangeDir($versionName): string
+    public function getVersionExchangeDir(string $versionName): string
     {
         $dir = $this->getVersionConfig()->getVal('exchange_dir');
         return $dir . '/' . $versionName . '_files/';
@@ -809,7 +804,7 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    protected function setMigrationTagByMeta($meta, $tag = ''): array
+    protected function setMigrationTagByMeta(array $meta, $tag = ''): array
     {
         $success = 0;
 
@@ -827,11 +822,9 @@ class VersionManager
     }
 
     /**
-     * @param $ok
-     *
      * @throws MigrationException
      */
-    protected function checkResultAfterStart($ok)
+    protected function checkResultAfterStart($ok): void
     {
         /* @global $APPLICATION CMain */
         global $APPLICATION;
@@ -848,10 +841,10 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function checkRequiredVersions(array $versionNames)
+    public function checkRequiredVersions(array $versionNames): void
     {
         foreach ($versionNames as $versionName) {
-            if (strpos($versionName, '\\') !== false) {
+            if (str_contains($versionName, '\\')) {
                 $versionName = substr(strrchr($versionName, '\\'), 1);
             }
             if (!$this->checkVersionName($versionName)) {

@@ -10,11 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     CUtil::JSPostUnescape();
 }
 
-if (isset($_REQUEST['config'])) {
-    $versionConfig = new Sprint\Migration\VersionConfig($_REQUEST['config']);
-} else {
-    $versionConfig = new Sprint\Migration\VersionConfig();
-}
+$versionConfig = new Sprint\Migration\VersionConfig($_REQUEST['config']??'');
 
 if ($versionConfig->getVal('show_admin_interface')) {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {

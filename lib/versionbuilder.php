@@ -10,7 +10,7 @@ abstract class VersionBuilder extends AbstractBuilder
 {
     use CurrentUserTrait;
 
-    protected function addVersionFields()
+    protected function addVersionFields(): void
     {
         $this->addField(
             'prefix', [
@@ -29,7 +29,7 @@ abstract class VersionBuilder extends AbstractBuilder
         );
     }
 
-    protected function purifyPrefix($prefix = '')
+    protected function purifyPrefix(string $prefix = ''): string
     {
         $prefix = trim($prefix);
         if (empty($prefix)) {
@@ -45,24 +45,24 @@ abstract class VersionBuilder extends AbstractBuilder
         return $prefix;
     }
 
-    protected function addslashes($descr = ''): string
+    protected function addslashes(string $descr = ''): string
     {
         return addslashes(strip_tags(trim($descr)));
     }
 
-    protected function getVersionFile($versionName): string
+    protected function getVersionFile(string $versionName): string
     {
         $dir = $this->getVersionConfig()->getVal('migration_dir');
         return $dir . '/' . $versionName . '.php';
     }
 
-    protected function getVersionResourceFile($versionName, $name): string
+    protected function getExchangeFile(string $name): string
     {
         $dir = $this->getVersionConfig()->getVal('exchange_dir');
-        return $dir . '/' . $versionName . '_files/' . $name;
+        return $dir . '/' . $this->getVersionName() . '_files/' . $name;
     }
 
-    protected function getVersionName()
+    protected function getVersionName():string
     {
         if (!isset($this->params['~version_name'])) {
             $this->params['~version_name'] = $this->createVersionName();
@@ -152,7 +152,7 @@ abstract class VersionBuilder extends AbstractBuilder
         return $templateVars['version'];
     }
 
-    protected function getTimestamp($versionTimestampFormat)
+    protected function getTimestamp($versionTimestampFormat): string
     {
         $originTz = date_default_timezone_get();
         date_default_timezone_set('Europe/Moscow');
