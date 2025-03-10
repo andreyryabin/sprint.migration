@@ -473,3 +473,12 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_GROUP_Tools"    => "Tools",
     ]
 );
+
+\Sprint\Migration\Locale::loadLocale(
+    "en",
+    [
+        "ENTITY_TITLE_HLBLOCK" => "Highload block / NAME",
+        "ENTITY_TITLE_IBLOCK_SECTION" => "Information block / IBLOCK_TYPE_ID / NAME",
+        "ENTITY_TITLE_USER" => "User entity",
+    ]
+);

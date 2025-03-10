@@ -475,3 +475,12 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_GROUP_Tools"    => "Инструменты",
     ]
 );
+
+\Sprint\Migration\Locale::loadLocale(
+    "ru",
+    [
+        "ENTITY_TITLE_HLBLOCK" => "Highload-блок / NAME",
+        "ENTITY_TITLE_IBLOCK_SECTION" => "Инфоблок / IBLOCK_TYPE_ID / NAME",
+        "ENTITY_TITLE_USER" => "Пользователь",
+    ]
+);

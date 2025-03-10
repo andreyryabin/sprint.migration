@@ -47,9 +47,9 @@ class Locale
         return defined('LANGUAGE_ID') ? LANGUAGE_ID : 'ru';
     }
 
-    public static function getMessage($shortName, $replaces = [])
+    public static function getMessage($shortName, $replaces = [], $default = '')
     {
         $msg = GetMessage(self::getMessageName($shortName), $replaces);
-        return ($msg) ?: $shortName;
+        return ($msg) ?: ($default ?: $shortName);
     }
 }
