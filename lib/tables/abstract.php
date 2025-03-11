@@ -86,6 +86,14 @@ abstract class AbstractTable
     {
         return $this->connection->getSqlHelper()->forSql($query);
     }
+
+    /**
+     * @return string
+     */
+    protected function getDataBaseType() : string
+    {
+        return $this->connection->getType();
+    }
 }
 
 
