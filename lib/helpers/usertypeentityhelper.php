@@ -443,6 +443,39 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
+     * @throws HelperException
+     */
+    public function getEntityTitle($entityId)
+    {
+        $title = Locale::getMessage('ENTITY_TITLE_' . $entityId, [], $entityId);
+
+        if (0 === strpos($entityId, 'HLBLOCK_')) {
+            $hlblockId = substr($entityId, 8);
+            if (is_numeric($hlblockId)) {
+                $hlblock = (new HlblockHelper())->getHlblock($hlblockId);
+                if ($hlblock['NAME']) {
+                    $title = Locale::getMessage('ENTITY_TITLE_HLBLOCK', $hlblock);
+                }
+            }
+        }
+
+        $matches = [];
+        if (preg_match('/^IBLOCK_(.+)_SECTION$/', $entityId, $matches)) {
+            $iblockId = $matches[1];
+            if (is_numeric($iblockId)) {
+                $iblock = (new IblockHelper())->getIblock($iblockId);
+                if ($iblock['NAME']) {
+                    $title = Locale::getMessage('ENTITY_TITLE_IBLOCK_SECTION', $iblock);
+                }
+
+            }
+        }
+
+        return ($title == $entityId) ? $entityId : '[' . $entityId . '] ' . $title;
+    }
+
+
+    /**
      * Сохраняет пользовательское поле
      * Создаст если не было, обновит если существует и отличается
      *

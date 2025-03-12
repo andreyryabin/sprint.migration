@@ -33,7 +33,11 @@ class UserTypeEntitiesBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $allFields = $this->getHelperManager()->UserTypeEntity()->getList();
+        $allFields = $helper->UserTypeEntity()->getList();
+        foreach ($allFields as $index => $field) {
+            $allFields[$index]['TITLE'] = $helper->UserTypeEntity()->getEntityTitle($field['ENTITY_ID']);
+        }
+
 
         $entityIds = $this->addFieldAndReturn(
             'entity_id',
@@ -41,7 +45,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
                 'title'       => Locale::getMessage('BUILDER_UserTypeEntities_EntityIds'),
                 'placeholder' => '',
                 'width'       => 250,
-                'select'      => $this->createSelect($allFields, 'ENTITY_ID', 'ENTITY_ID'),
+                'select'      => $this->createSelect($allFields, 'ENTITY_ID', 'TITLE'),
                 'multiple'    => 1,
                 'value'       => [],
             ]
@@ -58,7 +62,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
                 'placeholder' => '',
                 'width'       => 250,
                 'multiple'    => 1,
-                'items'       => $this->createSelectWithGroups($selectFields, 'ID', 'FIELD_NAME', 'ENTITY_ID'),
+                'items'       => $this->createSelectWithGroups($selectFields, 'ID', 'FIELD_NAME', 'TITLE'),
                 'value'       => [],
             ]
         );
