@@ -40,7 +40,7 @@ echo '<div class="sp-field">' .
 
 if ($builder->hasDescription()) {
     echo '<div class="sp-field sp-info-message">';
-    Out::out($builder->getDescription());
+    Out::outToHtml($builder->getDescription(), ['make_links' => true]);
     echo '</div>';
 }
 
