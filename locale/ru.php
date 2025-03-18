@@ -292,7 +292,6 @@ require_once __DIR__ . "/../lib/locale.php";
     [
         "ERR_BUILDER_NOT_FOUND"              => "Конструктор \"#NAME#\" не найден",
         "ERR_CANT_CREATE_DIRECTORY"          => "Ошибка создания директории #NAME#",
-        "ERR_MSSQL_NOT_SUPPORTED"            => "MSSQL не поддерживается",
         "ERR_JSON_NOT_SUPPORTED"             => "Установите php-расширение json",
         "ERR_PHP_NOT_SUPPORTED"              => "PHP #NAME# не поддерживается",
         "ERR_EXCHANGE_DISABLED"              => "Обмен отключен, подключите недостающие модули",

@@ -291,7 +291,6 @@ require_once __DIR__ . "/../lib/locale.php";
     [
         "ERR_BUILDER_NOT_FOUND"              => "Builder \"#NAME#\" not found",
         "ERR_CANT_CREATE_DIRECTORY"          => "Cant create directory #NAME#",
-        "ERR_MSSQL_NOT_SUPPORTED"            => "MSSQL not supported",
         "ERR_JSON_NOT_SUPPORTED"             => "Install php-ext json",
         "ERR_PHP_NOT_SUPPORTED"              => "PHP #NAME# not supported",
         "ERR_EXCHANGE_DISABLED"              => "Exchange disabled, install required bitrix modules",

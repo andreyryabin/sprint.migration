@@ -58,7 +58,7 @@ class ExchangeWriter
 
         $params['offset'] += $dto->countChilds();
 
-        Out::outProgress('', $params['offset'],1);
+        Out::outProgress('', $params['offset'], 1);
 
         if ($dto->countChilds() >= $this->getLimit()) {
             $this->builderEntity->setRestartParams($params);
@@ -80,19 +80,12 @@ class ExchangeWriter
     /**
      * @throws MigrationException
      */
-    protected function createExchangeFile(array $attrs = []): void
+    protected function createExchangeFile(): void
     {
-        $attrs['exchangeVersion'] = Module::getExchangeVersion();
-
-        $str = '';
-        foreach ($attrs as $attr => $value) {
-            $str .= $attr . '="' . $value . '" ';
-        }
-
         Module::createDir($this->getExchangeDir());
 
         $this->appendToExchangeFile('<?xml version="1.0" encoding="UTF-8"?>');
-        $this->appendToExchangeFile('<items ' . $str . '>');
+        $this->appendToExchangeFile('<items exchangeVersion="' . Module::getExchangeVersion() . '">');
     }
 
     protected function closeExchangeFile(): void

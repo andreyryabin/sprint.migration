@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Exchange\Base\ExchangeReader;
 use Sprint\Migration\Exchange\HlblockElementsImport;
 use Sprint\Migration\Exchange\IblockElementsImport;
 use Sprint\Migration\Exchange\MedialibElementsImport;
@@ -26,27 +27,27 @@ class ExchangeManager
     /**
      * @throws MigrationException
      */
-    public function IblockElementsImport(): IblockElementsImport
+    public function IblockElementsImport(): ExchangeReader
     {
-        return (new IblockElementsImport($this->versionEntity))
+        return (new ExchangeReader($this->versionEntity))
             ->setExchangeFile($this->getExchangeFile('iblock_elements.xml'));
     }
 
     /**
      * @throws MigrationException
      */
-    public function HlblockElementsImport(): HlblockElementsImport
+    public function HlblockElementsImport(): ExchangeReader
     {
-        return (new HlblockElementsImport($this->versionEntity))
+        return (new ExchangeReader($this->versionEntity))
             ->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'));
     }
 
     /**
      * @throws MigrationException
      */
-    public function MedialibElementsImport(): MedialibElementsImport
+    public function MedialibElementsImport(): ExchangeReader
     {
-        return (new MedialibElementsImport($this->versionEntity))
+        return (new ExchangeReader($this->versionEntity))
             ->setExchangeFile($this->getExchangeFile('medialib_elements.xml'));
     }
 }

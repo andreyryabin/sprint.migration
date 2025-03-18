@@ -8,6 +8,7 @@
  * @var $extendClass
  * @var $moduleVersion
  * @var $author
+ * @var $iblock
  * @formatter:off
  */
 
@@ -34,6 +35,12 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function up()
     {
+        $helper = $this->getHelperManager();
+        $iblockId = $helper->Iblock()->getIblockIdIfExists(
+            '<?php echo $iblock['CODE'] ?>',
+            '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>'
+        );
+
         $this->getExchangeManager()
              ->IblockElementsImport()
              ->setLimit(20)
@@ -42,7 +49,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                  $this->getHelperManager()
                       ->Iblock()
                       ->saveElement(
-                          $item['iblock_id'],
+                          $iblockId,
                           $item['fields'],
                           $item['properties']
                       );
@@ -50,7 +57,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                  $this->getHelperManager()
                       ->Iblock()
                       ->saveElementByXmlId(
-                          $item['iblock_id'],
+                          $iblockId,
                           $item['fields'],
                           $item['properties']
                       );
@@ -58,7 +65,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                  $this->getHelperManager()
                       ->Iblock()
                       ->addElement(
-                          $item['iblock_id'],
+                          $iblockId,
                           $item['fields'],
                           $item['properties']
                       );
@@ -73,6 +80,12 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function down()
     {
+        $helper = $this->getHelperManager();
+        $iblockId = $helper->Iblock()->getIblockIdIfExists(
+            '<?php echo $iblock['CODE'] ?>',
+            '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>'
+        );
+
 <?php if ($updateMode == IblockElementsBuilder::UPDATE_MODE_CODE) { ?>
         $this->getExchangeManager()
              ->IblockElementsImport()
@@ -81,7 +94,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                  $this->getHelperManager()
                       ->Iblock()
                       ->deleteElementByCode(
-                          $item['iblock_id'],
+                          $iblockId,
                           $item['fields']['CODE']
                  );
              });
@@ -93,7 +106,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                  $this->getHelperManager()
                      ->Iblock()
                      ->deleteElementByXmlId(
-                         $item['iblock_id'],
+                         $iblockId,
                          $item['fields']['XML_ID']
                      );
              });

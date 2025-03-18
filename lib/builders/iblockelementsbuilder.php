@@ -55,7 +55,9 @@ class IblockElementsBuilder extends VersionBuilder
         (new ExchangeWriter($this))
             ->setLimit(20)
             ->setCopyFiles(true)
-            ->setExchangeFile($this->getExchangeFile('iblock_elements.xml'))
+            ->setExchangeFile(
+                $this->getExchangeFile('iblock_elements.xml')
+            )
             ->execute(fn($offset, $limit) => $iblockExchangeHelper->createRecordsDto(
                 $iblockId,
                 $offset,
@@ -69,6 +71,7 @@ class IblockElementsBuilder extends VersionBuilder
             Module::getModuleDir() . '/templates/IblockElementsExport.php',
             [
                 'updateMode' => $updateMode,
+                'iblock' => $iblockExchangeHelper->exportIblock($iblockId),
             ]
         );
     }

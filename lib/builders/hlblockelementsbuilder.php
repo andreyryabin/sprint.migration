@@ -66,7 +66,9 @@ class HlblockElementsBuilder extends VersionBuilder
         (new ExchangeWriter($this))
             ->setLimit(20)
             ->setCopyFiles(true)
-            ->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'))
+            ->setExchangeFile(
+                $this->getExchangeFile('hlblock_elements.xml')
+            )
             ->execute(fn($offset, $limit) => $hlblockExchangeHelper->createRecordsDto(
                 $hlblockId,
                 $offset,
@@ -78,6 +80,7 @@ class HlblockElementsBuilder extends VersionBuilder
             Module::getModuleDir() . '/templates/HlblockElementsExport.php',
             [
                 'updateMode' => $updateMode,
+                'hlblock' => $hlblockExchangeHelper->exportHlblock($hlblockId)
             ]
         );
     }

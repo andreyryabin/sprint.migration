@@ -139,14 +139,6 @@ class Module
      */
     public static function checkHealth(): void
     {
-        if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql') {
-            throw new MigrationException(
-                Locale::getMessage(
-                    'ERR_MSSQL_NOT_SUPPORTED'
-                )
-            );
-        }
-
         if (!function_exists('json_encode')) {
             throw new MigrationException(
                 Locale::getMessage(

@@ -12,13 +12,11 @@ use Sprint\Migration\Out;
 use Sprint\Migration\Version;
 use XMLReader;
 
-abstract class ExchangeReader
+class ExchangeReader
 {
     private Version $versionEntity;
     private int $limit = 10;
     private string $exchangeFile = '';
-
-
     /**
      * @throws MigrationException
      */
@@ -35,8 +33,6 @@ abstract class ExchangeReader
         }
     }
 
-    abstract protected function convertRecord(array $record): array;
-
     /**
      * @param callable $converter
      *
@@ -48,7 +44,7 @@ abstract class ExchangeReader
         $params = $this->versionEntity->getRestartParams();
 
         if (!isset($params['offset'])) {
-            $this->checkExchangeFile();
+            $this->checkExchangeFileAndVersion();
 
             $params['offset'] = 0;
         }
@@ -58,12 +54,15 @@ abstract class ExchangeReader
             $this->getLimit()
         );
 
-        array_map(fn($record) => $converter($record), $records);
+        array_map(
+            fn($record) => $converter($record),
+            $records
+        );
 
         $countRecords = count($records);
         $params['offset'] += $countRecords;
 
-        Out::outProgress('',$params['offset'],1);
+        Out::outProgress('', $params['offset'], 1);
 
         if ($countRecords >= $this->getLimit()) {
             $this->versionEntity->setRestartParams($params);
@@ -125,8 +124,7 @@ abstract class ExchangeReader
             }
         } while (!$this->isCloseTag($reader, 'item'));
 
-        return $this->convertRecord($record);
-
+        return $record;
     }
 
 
@@ -204,7 +202,7 @@ abstract class ExchangeReader
     /**
      * @throws HelperException
      */
-    private function checkExchangeFile(): void
+    private function checkExchangeFileAndVersion(): void
     {
         if (!is_file($this->exchangeFile)) {
             throw new HelperException(
@@ -212,18 +210,16 @@ abstract class ExchangeReader
             );
         }
 
-        $attributes = $this->getExchangeFileAttributes();
+        $attributes = $this->getExchangeAttributes();
 
         if (!$attributes['exchangeVersion'] || $attributes['exchangeVersion'] < Module::getExchangeVersion()) {
             throw new HelperException(
                 Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->exchangeFile])
             );
         }
-
     }
 
-
-    private function getExchangeFileAttributes(): array
+    private function getExchangeAttributes(): array
     {
 
         $reader = new XMLReader();

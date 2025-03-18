@@ -135,7 +135,7 @@ abstract class VersionBuilder extends AbstractBuilder
             );
         }
 
-        $this->outNotice(
+        $this->outSuccess(
             Locale::getMessage(
                 'CREATED_SUCCESS',
                 [
