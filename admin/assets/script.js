@@ -109,11 +109,15 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
 }
 
 function migrationEnableButtons(enable) {
-    var buttons = jQuery('#migration_container').find('input,select,.adm-btn');
+    let $container = jQuery('#migration_container');
+    let $loader = jQuery('#migration_loader');
+    let $buttons = $container.find('input,select,.adm-btn');
     if (enable) {
-        buttons.removeAttr('disabled').removeClass('sp-disabled');
+        $buttons.removeAttr('disabled').removeClass('sp-disabled');
+        $loader.hide();
     } else {
-        buttons.attr('disabled', 'disabled').addClass('sp-disabled');
+        $buttons.attr('disabled', 'disabled').addClass('sp-disabled');
+        $loader.show();
     }
 }
 
