@@ -1,15 +1,15 @@
 <?php
 
-namespace Sprint\Migration;
+namespace Sprint\Migration\Exchange;
 
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\Exchange\Base\ExchangeReader;
-use Sprint\Migration\Exchange\HlblockElementsImport;
-use Sprint\Migration\Exchange\IblockElementsImport;
-use Sprint\Migration\Exchange\MedialibElementsImport;
+use Sprint\Migration\Traits\HelperManagerTrait;
+use Sprint\Migration\Version;
 
 class ExchangeManager
 {
+    use HelperManagerTrait;
+
     protected Version $versionEntity;
 
     public function __construct(Version $versionEntity)
@@ -29,7 +29,12 @@ class ExchangeManager
      */
     public function IblockElementsImport(): ExchangeReader
     {
+        $exhelper = $this->getHelperManager()->IblockExchange();
+
         return (new ExchangeReader($this->versionEntity))
+            ->setHelperConverter(
+                fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
+            )
             ->setExchangeFile($this->getExchangeFile('iblock_elements.xml'));
     }
 
@@ -38,8 +43,12 @@ class ExchangeManager
      */
     public function HlblockElementsImport(): ExchangeReader
     {
+        $exhelper = $this->getHelperManager()->HlblockExchange();
+
         return (new ExchangeReader($this->versionEntity))
-            ->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'));
+            ->setHelperConverter(
+                fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
+            )->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'));
     }
 
     /**
@@ -47,7 +56,11 @@ class ExchangeManager
      */
     public function MedialibElementsImport(): ExchangeReader
     {
+        $exhelper = $this->getHelperManager()->MedialibExchange();
+
         return (new ExchangeReader($this->versionEntity))
-            ->setExchangeFile($this->getExchangeFile('medialib_elements.xml'));
+            ->setHelperConverter(
+                fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
+            )->setExchangeFile($this->getExchangeFile('medialib_elements.xml'));
     }
 }

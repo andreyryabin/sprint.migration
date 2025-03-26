@@ -3,7 +3,7 @@
 namespace Sprint\Migration\Helpers;
 
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exchange\Base\ExchangeDto;
+use Sprint\Migration\Exchange\ExchangeTag;
 
 class HlblockExchangeHelper extends HlblockHelper
 {
@@ -63,9 +63,9 @@ class HlblockExchangeHelper extends HlblockHelper
     /**
      * @throws HelperException
      */
-    public function convertRecord(int $hlblockId, array $record): array
+    public function convertRecord(array $attrs, array $record): array
     {
-        $hlblockId = $this->getHlblockIdIfExists($hlblockId);
+        $hlblockId = $this->getHlblockIdIfExists($attrs['hlblockUid']);
 
         $convertedFields = [];
         foreach ($record['fields'] as $field) {
@@ -131,7 +131,7 @@ class HlblockExchangeHelper extends HlblockHelper
     /**
      * @throws HelperException
      */
-    public function createRecordsDto($hlblockId, int $offset, int $limit, array $exportFields): ExchangeDto
+    public function createRecordsTags($hlblockId, int $offset, int $limit, array $exportFields): ExchangeTag
     {
         $elements = $this->getElements(
             $hlblockId,
@@ -142,10 +142,10 @@ class HlblockExchangeHelper extends HlblockHelper
             ]
         );
 
-        $dto = new ExchangeDto('tmp');
+        $tag = new ExchangeTag('tmp');
         foreach ($elements as $element) {
-            $dto->addChild(
-                $this->createRecordDto(
+            $tag->addChild(
+                $this->createRecordTag(
                     $hlblockId,
                     $element,
                     $exportFields
@@ -153,21 +153,21 @@ class HlblockExchangeHelper extends HlblockHelper
             );
         }
 
-        return $dto;
+        return $tag;
     }
 
     /**
      * @throws HelperException
      */
-    private function createRecordDto($hlblockId, array $element, array $exportFields): ExchangeDto
+    private function createRecordTag($hlblockId, array $element, array $exportFields): ExchangeTag
     {
 
-        $item = new ExchangeDto('item');
+        $item = new ExchangeTag('item');
 
         foreach ($element as $code => $val) {
             if (in_array($code, $exportFields)) {
                 $item->addChild(
-                    $this->createFieldDto([
+                    $this->createFieldTag([
                         'NAME' => $code,
                         'VALUE' => $val,
                         'HLBLOCK_ID' => $hlblockId,
@@ -182,9 +182,9 @@ class HlblockExchangeHelper extends HlblockHelper
     /**
      * @throws HelperException
      */
-    private function createFieldDto(array $field): ExchangeDto
+    private function createFieldTag(array $field): ExchangeTag
     {
-        $dto = new ExchangeDto('field', ['name' => $field['NAME']]);
+        $tag = new ExchangeTag('field', ['name' => $field['NAME']]);
 
         if ($field['USER_TYPE_ID'] == 'enumeration') {
             $xmlIds = $this->getFieldEnumXmlIdsByIds(
@@ -192,13 +192,13 @@ class HlblockExchangeHelper extends HlblockHelper
                 $field['NAME'],
                 $field['VALUE']
             );
-            $dto->addValue($xmlIds);
+            $tag->addValue($xmlIds);
         } elseif ($field['USER_TYPE_ID'] == 'file') {
-            $dto->addFile($field['VALUE']);
+            $tag->addFile($field['VALUE']);
         } else {
-            $dto->addValue($field['VALUE']);
+            $tag->addValue($field['VALUE']);
         }
 
-        return $dto;
+        return $tag;
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace Sprint\Migration\Exchange\Base;
+namespace Sprint\Migration\Exchange;
 
 
 use CFile;
 
-class ExchangeDto
+class ExchangeTag
 {
     private string $name;
     private array $attributes = [];
@@ -37,7 +37,7 @@ class ExchangeDto
         return $this->text;
     }
 
-    public function addChild(ExchangeDto $child): void
+    public function addChild(ExchangeTag $child): void
     {
         $this->childs[] = $child;
 
@@ -104,14 +104,14 @@ class ExchangeDto
             return;
         }
 
-        $dto = new ExchangeDto('value', $attributes);
+        $tag = new ExchangeTag('value', $attributes);
         if (is_array($val)) {
-            $dto->setTextJson($val);
+            $tag->setTextJson($val);
         } else {
-            $dto->setText($val);
+            $tag->setText($val);
         }
 
-        $this->addChild($dto);
+        $this->addChild($tag);
     }
 
     private function addFileTag(int $fileId): void

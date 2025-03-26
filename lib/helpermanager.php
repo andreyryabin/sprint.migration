@@ -38,12 +38,15 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  * @method SqlHelper                Sql()
  * @method MedialibHelper           Medialib()
  * @method TextHelper               Text()
+ * @method IblockExchangeHelper     IblockExchange()
+ * @method HlblockExchangeHelper    HlblockExchange()
+ * @method MedialibExchangeHelper   MedialibExchange()
  */
 class HelperManager
 {
-    private static $instance   = null;
-    private array  $registered = [];
-    private array  $cache      = [];
+    private static $instance = null;
+    private array $registered = [];
+    private array $cache = [];
 
     public static function getInstance(): HelperManager
     {
@@ -57,8 +60,8 @@ class HelperManager
      * @param $name
      * @param $arguments
      *
-     * @throws HelperException
      * @return Helper
+     * @throws HelperException
      */
     public function __call($name, $arguments)
     {

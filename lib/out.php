@@ -39,7 +39,7 @@ class Out
         $msg = '[label]' . $msg . ' ' . $val . ' / ' . $total . '[/]';
 
         if (self::canOutAsHtml()) {
-            self::outToHtml($msg, ['class' => 'sp-progress']);
+            self::outToHtml($msg, ['class' => 'sp-out sp-progress']);
         } else {
             $msg = self::prepareToConsole($msg);
             fwrite(STDOUT, "\r$msg $val / $total");

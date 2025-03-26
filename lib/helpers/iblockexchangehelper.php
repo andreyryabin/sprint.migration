@@ -4,7 +4,7 @@ namespace Sprint\Migration\Helpers;
 
 use _CIBElement;
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exchange\Base\ExchangeDto;
+use Sprint\Migration\Exchange\ExchangeTag;
 
 class IblockExchangeHelper extends IblockHelper
 {
@@ -208,14 +208,14 @@ class IblockExchangeHelper extends IblockHelper
     /**
      * @throws HelperException
      */
-    public function createRecordsDto(
+    public function createRecordsTags(
         $iblockId,
         int $offset,
         int $limit,
         array $exportFilter,
         array $exportFields,
         array $exportProperties
-    ): ExchangeDto
+    ): ExchangeTag
     {
         $dbres = $this->getElementsList(
             $iblockId,
@@ -227,10 +227,10 @@ class IblockExchangeHelper extends IblockHelper
             ]
         );
 
-        $dto = new ExchangeDto('tmp');
+        $tag = new ExchangeTag('tmp');
         while ($element = $dbres->GetNextElement(false, false)) {
-            $dto->addChild(
-                $this->createRecordDto(
+            $tag->addChild(
+                $this->createRecordTag(
                     $iblockId,
                     $this->getElementFields($element),
                     $this->getElementProps($element),
@@ -238,26 +238,26 @@ class IblockExchangeHelper extends IblockHelper
                     $exportProperties
                 ));
         }
-        return $dto;
+        return $tag;
     }
 
     /**
      * @throws HelperException
      */
-    protected function createRecordDto(
+    protected function createRecordTag(
         $iblockId,
         array $fields,
         array $props,
         array $exportFields,
         array $exportProperties
-    ): ExchangeDto
+    ): ExchangeTag
     {
-        $item = new ExchangeDto('item');
+        $item = new ExchangeTag('item');
 
         foreach ($fields as $code => $val) {
             if (in_array($code, $exportFields)) {
                 $item->addChild(
-                    $this->createFieldDto([
+                    $this->createFieldTag([
                         'NAME' => $code,
                         'VALUE' => $val,
                         'IBLOCK_ID' => $iblockId
@@ -269,7 +269,7 @@ class IblockExchangeHelper extends IblockHelper
         foreach ($props as $prop) {
             if (in_array($prop['CODE'], $exportProperties)) {
                 $item->addChild(
-                    $this->createPropertyDto($prop)
+                    $this->createPropertyTag($prop)
                 );
             }
         }
@@ -280,93 +280,93 @@ class IblockExchangeHelper extends IblockHelper
     /**
      * @throws HelperException
      */
-    protected function createFieldDto(array $field): ExchangeDto
+    protected function createFieldTag(array $field): ExchangeTag
     {
-        $dto = new ExchangeDto('field', ['name' => $field['NAME']]);
+        $tag = new ExchangeTag('field', ['name' => $field['NAME']]);
 
         if ($field['NAME'] == 'PREVIEW_PICTURE') {
-            $dto->addFile($field['VALUE']);
+            $tag->addFile($field['VALUE']);
         } elseif ($field['NAME'] == 'DETAIL_PICTURE') {
-            $dto->addFile($field['VALUE']);
+            $tag->addFile($field['VALUE']);
         } elseif ($field['NAME'] == 'IBLOCK_SECTION') {
             $uniqSections = $this->getSectionUniqNamesByIds(
                 $field['IBLOCK_ID'],
                 $field['VALUE']
             );
-            $dto->addValue($uniqSections);
+            $tag->addValue($uniqSections);
         } else {
-            $dto->addValue($field['VALUE']);
+            $tag->addValue($field['VALUE']);
         }
-        return $dto;
+        return $tag;
     }
 
     /**
      * @throws HelperException
      */
-    protected function createPropertyDto(array $prop): ExchangeDto
+    protected function createPropertyTag(array $prop): ExchangeTag
     {
-        $dto = new ExchangeDto('property', ['name' => $prop['CODE']]);
+        $tag = new ExchangeTag('property', ['name' => $prop['CODE']]);
 
         if ($prop['PROPERTY_TYPE'] == 'F') {
-            $this->addPropertyValueFile($dto, $prop);
+            $this->addPropertyValueFile($tag, $prop);
         } elseif ($prop['PROPERTY_TYPE'] == 'L') {
-            $this->addPropertyValueList($dto, $prop);
+            $this->addPropertyValueList($tag, $prop);
         } elseif ($prop['PROPERTY_TYPE'] == 'G') {
-            $this->addPropertyValueSection($dto, $prop);
+            $this->addPropertyValueSection($tag, $prop);
         } elseif ($prop['PROPERTY_TYPE'] == 'E') {
-            $this->addPropertyValueElement($dto, $prop);
+            $this->addPropertyValueElement($tag, $prop);
         } else {
-            $this->addPropertyValueString($dto, $prop);
+            $this->addPropertyValueString($tag, $prop);
         }
-        return $dto;
+        return $tag;
     }
 
-    protected function addPropertyValueString(ExchangeDto $dto, $prop): void
+    protected function addPropertyValueString(ExchangeTag $tag, $prop): void
     {
         if ($prop['MULTIPLE'] == 'Y') {
             foreach ($prop['VALUE'] as $index => $val1) {
-                $dto->addValue($val1, ['description' => $prop['DESCRIPTION'][$index] ?? '']);
+                $tag->addValue($val1, ['description' => $prop['DESCRIPTION'][$index] ?? '']);
             }
         } else {
-            $dto->addValue($prop['VALUE'], ['description' => $prop['DESCRIPTION']]);
+            $tag->addValue($prop['VALUE'], ['description' => $prop['DESCRIPTION']]);
         }
     }
 
     /**
      * @throws HelperException
      */
-    protected function addPropertyValueSection(ExchangeDto $dto, $prop): void
+    protected function addPropertyValueSection(ExchangeTag $tag, $prop): void
     {
         $uniqNames = $this->getSectionUniqNamesByIds(
             $prop['LINK_IBLOCK_ID'],
             $prop['VALUE']
         );
 
-        $dto->addValue($uniqNames);
+        $tag->addValue($uniqNames);
     }
 
     /**
      * @throws HelperException
      */
-    protected function addPropertyValueElement(ExchangeDto $dto, $prop): void
+    protected function addPropertyValueElement(ExchangeTag $tag, $prop): void
     {
         $uniqNames = $this->getElementUniqNamesByIds(
             $prop['LINK_IBLOCK_ID'],
             $prop['VALUE']
         );
 
-        $dto->addValue($uniqNames);
+        $tag->addValue($uniqNames);
     }
 
-    protected function addPropertyValueList(ExchangeDto $dto, $prop): void
+    protected function addPropertyValueList(ExchangeTag $tag, $prop): void
     {
-        $dto->addValue($prop['VALUE_XML_ID']);
+        $tag->addValue($prop['VALUE_XML_ID']);
     }
 
 
-    protected function addPropertyValueFile(ExchangeDto $dto, $prop): void
+    protected function addPropertyValueFile(ExchangeTag $tag, $prop): void
     {
-        $dto->addFile($prop['VALUE']);
+        $tag->addFile($prop['VALUE']);
     }
 
 
@@ -375,8 +375,10 @@ class IblockExchangeHelper extends IblockHelper
     /**
      * @throws HelperException
      */
-    public function convertRecord(int $iblockId, array $record): array
+    public function convertRecord(array $attrs, array $record): array
     {
+        $iblockId = $this->getIblockIdByUid($attrs['iblockUid']);
+
         $convertedFields = [];
         foreach ($record['fields'] as $field) {
             if ($field['name'] == 'IBLOCK_SECTION') {

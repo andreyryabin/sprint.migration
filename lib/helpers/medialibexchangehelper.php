@@ -3,7 +3,7 @@
 namespace Sprint\Migration\Helpers;
 
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exchange\Base\ExchangeDto;
+use Sprint\Migration\Exchange\ExchangeTag;
 
 class MedialibExchangeHelper extends MedialibHelper
 {
@@ -60,7 +60,7 @@ class MedialibExchangeHelper extends MedialibHelper
     /**
      * @throws HelperException
      */
-    public function createRecordsDto($collectionId, int $offset, int $limit, array $exportFields): ExchangeDto
+    public function createRecordsTags($collectionId, int $offset, int $limit, array $exportFields): ExchangeTag
     {
         $elements = $this->getElements(
             $collectionId,
@@ -70,26 +70,26 @@ class MedialibExchangeHelper extends MedialibHelper
             ],
         );
 
-        $dto = new ExchangeDto('tmp');
+        $tag = new ExchangeTag('tmp');
         foreach ($elements as $element) {
-            $dto->addChild(
-                $this->createRecordDto(
+            $tag->addChild(
+                $this->createRecordTag(
                     $element,
                     $exportFields,
                 )
             );
         }
-        return $dto;
+        return $tag;
     }
 
 
-    private function createRecordDto(array $element, array $exportFields): ExchangeDto
+    private function createRecordTag(array $element, array $exportFields): ExchangeTag
     {
-        $item = new ExchangeDto('item');
+        $item = new ExchangeTag('item');
         foreach ($element as $code => $val) {
             if (in_array($code, $exportFields)) {
                 $item->addChild(
-                    $this->createFieldDto([
+                    $this->createFieldTag([
                         'NAME' => $code,
                         'VALUE' => $val,
                     ])
@@ -99,25 +99,25 @@ class MedialibExchangeHelper extends MedialibHelper
         return $item;
     }
 
-    private function createFieldDto(array $field): ExchangeDto
+    private function createFieldTag(array $field): ExchangeTag
     {
-        $dto = new ExchangeDto('field', ['name' => $field['NAME']]);
+        $tag = new ExchangeTag('field', ['name' => $field['NAME']]);
 
         if ($field['NAME'] == 'SOURCE_ID') {
-            $dto->setAttribute('name', 'FILE');
-            $dto->addFile($field['VALUE']);
+            $tag->setAttribute('name', 'FILE');
+            $tag->addFile($field['VALUE']);
         } elseif ($field['NAME'] == 'COLLECTION_ID') {
             $path = $this->getCollectionPath(
                 self::TYPE_IMAGE,
                 $field['VALUE']
             );
-            $dto->setAttribute('name', 'COLLECTION_PATH');
-            $dto->addValue($path);
+            $tag->setAttribute('name', 'COLLECTION_PATH');
+            $tag->addValue($path);
         } else {
-            $dto->addValue($field['VALUE']);
+            $tag->addValue($field['VALUE']);
         }
 
-        return $dto;
+        return $tag;
     }
 
     //reader
@@ -125,7 +125,7 @@ class MedialibExchangeHelper extends MedialibHelper
     /**
      * @throws HelperException
      */
-    public function convertRecord(array $record): array
+    public function convertRecord(array $attrs, array $record): array
     {
         $fields = [];
         foreach ($record['fields'] as $field) {

@@ -6,7 +6,7 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\Base\ExchangeWriter;
+use Sprint\Migration\Exchange\ExchangeWriter;
 use Sprint\Migration\Helpers\IblockExchangeHelper;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -43,7 +43,7 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function execute()
     {
-        $iblockExchangeHelper = new IblockExchangeHelper;
+        $exhelper = $this->getHelperManager()->IblockExchange();
 
         $iblockId = $this->getFieldValueIblockId();
         $exportFilter = $this->getFieldValueExportFilter();
@@ -58,7 +58,10 @@ class IblockElementsBuilder extends VersionBuilder
             ->setExchangeFile(
                 $this->getExchangeFile('iblock_elements.xml')
             )
-            ->execute(fn($offset, $limit) => $iblockExchangeHelper->createRecordsDto(
+            ->setAttributes([
+                'iblockUid' => $exhelper->getIblockUid($iblockId)
+            ])
+            ->execute(fn($offset, $limit) => $exhelper->createRecordsTags(
                 $iblockId,
                 $offset,
                 $limit,
@@ -71,7 +74,7 @@ class IblockElementsBuilder extends VersionBuilder
             Module::getModuleDir() . '/templates/IblockElementsExport.php',
             [
                 'updateMode' => $updateMode,
-                'iblock' => $iblockExchangeHelper->exportIblock($iblockId),
+                'iblock' => $exhelper->exportIblock($iblockId),
             ]
         );
     }

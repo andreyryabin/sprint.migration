@@ -8,14 +8,8 @@ use Sprint\Migration\Exceptions\MigrationException;
 class Module
 {
     const ID = 'sprint.migration';
-    /**
-     * @var string
-     */
-    private static $version = '';
-    /**
-     * @var array
-     */
-    private static $defaultOptions = [];
+    const EXCHANGE_VERSION = 2;
+    private static string $version = '';
 
     public static function getDbOption($name, $default = '')
     {
@@ -37,16 +31,6 @@ class Module
     public static function removeDbOptions()
     {
         COption::RemoveOption(Module::ID);
-    }
-
-    public static function checkDbOption(string $name, bool $checked)
-    {
-        self::setDbOption($name, $checked ? 'Y' : 'N');
-    }
-
-    public static function isDbOptionChecked(string $name)
-    {
-        return self::getDbOption($name, self::$defaultOptions[$name]) == 'Y';
     }
 
     public static function getDocRoot(): string
@@ -129,11 +113,6 @@ class Module
         return self::$version;
     }
 
-    public static function getExchangeVersion(): int
-    {
-        return 3;
-    }
-
     /**
      * @throws MigrationException
      */
@@ -147,7 +126,7 @@ class Module
             );
         }
 
-        if (version_compare(PHP_VERSION, '8.0', '<')) {
+        if (version_compare(PHP_VERSION, '8.1', '<')) {
             throw new MigrationException(
                 Locale::getMessage(
                     'ERR_PHP_NOT_SUPPORTED',

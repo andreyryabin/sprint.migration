@@ -43,6 +43,7 @@ $getOnclickMenu = function () {
                    href="javascript:void(0)"
                    class="adm-btn"
                    hidefocus="true">&equiv;</a>
+                <div id="migration_loader">Загрузка...</div>
             </div>
             <div class="sp-col">
                 <div id="migration_actions" style="float: right"></div>

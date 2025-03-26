@@ -4,6 +4,7 @@ namespace Sprint\Migration;
 
 use ReflectionClass;
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Exchange\ExchangeManager;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
 use Sprint\Migration\Traits\RestartableTrait;

@@ -6,8 +6,7 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\Base\ExchangeWriter;
-use Sprint\Migration\Helpers\HlblockExchangeHelper;
+use Sprint\Migration\Exchange\ExchangeWriter;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -42,7 +41,7 @@ class HlblockElementsBuilder extends VersionBuilder
      */
     protected function execute(): void
     {
-        $hlblockExchangeHelper = new HlblockExchangeHelper;
+        $exhelper = $this->getHelperManager()->HlblockExchange();
 
         $hlblockId = $this->addFieldAndReturn(
             'hlblock_id',
@@ -50,11 +49,12 @@ class HlblockElementsBuilder extends VersionBuilder
                 'title' => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
                 'placeholder' => '',
                 'width' => 250,
-                'select' => $hlblockExchangeHelper->getHlblocksStructure(),
+                'select' => $exhelper->getHlblocksStructure(),
             ]
         );
 
-        $fields = $hlblockExchangeHelper->getHlblockFieldsCodes($hlblockId);
+        $fields = $exhelper->getHlblockFieldsCodes($hlblockId);
+
         $updateMode = $this->getFieldValueUpdateMode();
 
         if ($updateMode == self::UPDATE_MODE_XML_ID) {
@@ -63,24 +63,22 @@ class HlblockElementsBuilder extends VersionBuilder
             }
         }
 
-        (new ExchangeWriter($this))
-            ->setLimit(20)
+        (new ExchangeWriter)
             ->setCopyFiles(true)
-            ->setExchangeFile(
-                $this->getExchangeFile('hlblock_elements.xml')
-            )
-            ->execute(fn($offset, $limit) => $hlblockExchangeHelper->createRecordsDto(
-                $hlblockId,
-                $offset,
-                $limit,
-                $fields
-            ));
+            ->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'))
+            ->execute(
+                restartable: $this,
+                recordsCntFn: fn() => $exhelper->getElementsCount($hlblockId),
+                recordsFn: fn($offset, $limit) => $exhelper->createRecordsTags($hlblockId, $offset, $limit, $fields),
+                fileAttrsFn: fn() => ['hlblockUid' => $exhelper->getHlblockUid($hlblockId)],
+                progressFn: fn($msg, $offset, $total) => $this->outProgress($msg, $offset, $total)
+            );;
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/HlblockElementsExport.php',
             [
                 'updateMode' => $updateMode,
-                'hlblock' => $hlblockExchangeHelper->exportHlblock($hlblockId)
+                'hlblock' => $exhelper->exportHlblock($hlblockId)
             ]
         );
     }

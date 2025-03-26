@@ -1,6 +1,6 @@
 <?php
 
-namespace Sprint\Migration\Exchange\Base;
+namespace Sprint\Migration\Exchange;
 
 use CFile;
 use Sprint\Migration\Exceptions\HelperException;
@@ -18,12 +18,16 @@ class ExchangeReader
     private int $limit = 10;
     private string $exchangeFile = '';
     /**
+     * @var callable
+     */
+    private $helperConverter;
+
+    /**
      * @throws MigrationException
      */
     public function __construct(Version $versionEntity)
     {
         $this->versionEntity = $versionEntity;
-
         if (!class_exists('XMLReader')) {
             throw new MigrationException(
                 Locale::getMessage(
@@ -43,15 +47,26 @@ class ExchangeReader
     {
         $params = $this->versionEntity->getRestartParams();
 
+        $this->checkExchangeFile();
+
         if (!isset($params['offset'])) {
-            $this->checkExchangeFileAndVersion();
+            $params = array_merge($params, $this->getExchangeAttributes());
+
+            $this->checkExchangeAttributes($params);
 
             $params['offset'] = 0;
         }
 
         $records = $this->readRecords(
             (int)$params['offset'],
-            $this->getLimit()
+            $this->getLimit(),
+        );
+
+        $helperConverter = $this->helperConverter;
+
+        $records = array_map(
+            fn($record) => $helperConverter($params, $record),
+            $records
         );
 
         array_map(
@@ -78,7 +93,7 @@ class ExchangeReader
         return $this->limit;
     }
 
-    public function setLimit(int $limit): static
+    public function setLimit(int $limit): ExchangeReader
     {
         $this->limit = $limit;
         return $this;
@@ -152,7 +167,7 @@ class ExchangeReader
         return $field;
     }
 
-    public function setExchangeFile(string $exchangeFile): static
+    public function setExchangeFile(string $exchangeFile): ExchangeReader
     {
         $this->exchangeFile = $exchangeFile;
         return $this;
@@ -166,7 +181,7 @@ class ExchangeReader
     /**
      * @deprecated
      */
-    public function setExchangeResource(): static
+    public function setExchangeResource(): ExchangeReader
     {
         return $this;
     }
@@ -202,17 +217,21 @@ class ExchangeReader
     /**
      * @throws HelperException
      */
-    private function checkExchangeFileAndVersion(): void
+    private function checkExchangeFile(): void
     {
         if (!is_file($this->exchangeFile)) {
             throw new HelperException(
                 Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->exchangeFile])
             );
         }
+    }
 
-        $attributes = $this->getExchangeAttributes();
-
-        if (!$attributes['exchangeVersion'] || $attributes['exchangeVersion'] < Module::getExchangeVersion()) {
+    /**
+     * @throws HelperException
+     */
+    private function checkExchangeAttributes(array $attributes): void
+    {
+        if (!$attributes['exchangeVersion'] || $attributes['exchangeVersion'] < Module::EXCHANGE_VERSION) {
             throw new HelperException(
                 Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->exchangeFile])
             );
@@ -221,21 +240,23 @@ class ExchangeReader
 
     private function getExchangeAttributes(): array
     {
-
         $reader = new XMLReader();
         $reader->open($this->exchangeFile);
 
         $attributes = [];
-
+        $total = 0;
         while ($reader->read()) {
             if ($this->isOpenTag($reader, 'items')) {
                 $attributes = $this->getTagAttributes($reader);
-                break;
+            }
+            if ($this->isOpenTag($reader, 'item')) {
+                $total++;
             }
         }
 
         $reader->close();
-        return $attributes;
+
+        return array_merge($attributes, ['total' => $total]);
     }
 
 
@@ -253,5 +274,11 @@ class ExchangeReader
             return $file;
         }
         return false;
+    }
+
+    public function setHelperConverter(callable $helperConverter): ExchangeReader
+    {
+        $this->helperConverter = $helperConverter;
+        return $this;
     }
 }

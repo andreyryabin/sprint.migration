@@ -6,7 +6,7 @@ use Sprint\Migration\HelperManager;
 
 trait HelperManagerTrait
 {
-    public function getHelperManager()
+    public function getHelperManager(): HelperManager
     {
         return HelperManager::getInstance();
     }

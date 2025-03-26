@@ -6,7 +6,7 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\Base\ExchangeWriter;
+use Sprint\Migration\Exchange\ExchangeWriter;
 use Sprint\Migration\Helpers\MedialibExchangeHelper;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
@@ -39,7 +39,7 @@ class MedialibElementsBuilder extends VersionBuilder
      */
     protected function execute()
     {
-        $medialibExchangeHelper = new MedialibExchangeHelper();
+        $exhelper = $this->getHelperManager()->MedialibExchange();
 
         $collectionIds = $this->addFieldAndReturn(
             'collection_id',
@@ -47,8 +47,8 @@ class MedialibElementsBuilder extends VersionBuilder
                 'title' => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
                 'placeholder' => '',
                 'width' => 250,
-                'select' => $medialibExchangeHelper->getCollectionStructure(
-                    $medialibExchangeHelper::TYPE_IMAGE
+                'select' => $exhelper->getCollectionStructure(
+                    $exhelper::TYPE_IMAGE
                 ),
                 'multiple' => true,
             ]
@@ -66,7 +66,7 @@ class MedialibElementsBuilder extends VersionBuilder
             ->setLimit(20)
             ->setCopyFiles(true)
             ->setExchangeFile($this->getExchangeFile('medialib_elements.xml'))
-            ->execute(fn($offset, $limit) => $medialibExchangeHelper->createRecordsDto(
+            ->execute(fn($offset, $limit) => $exhelper->createRecordsTags(
                 $collectionIds,
                 $offset,
                 $limit,
