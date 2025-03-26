@@ -10,18 +10,20 @@ class ExchangeManager
 {
     use HelperManagerTrait;
 
-    protected Version $versionEntity;
+    protected Version $restartable;
 
-    public function __construct(Version $versionEntity)
+    public function __construct(Version $restartable)
     {
-        $this->versionEntity = $versionEntity;
+        $this->restartable = $restartable;
 
     }
 
-    protected function getExchangeFile(string $name): string
+    protected function getExchangeFile(string $fileName): string
     {
-        $dir = $this->versionEntity->getVersionConfig()->getVal('exchange_dir');
-        return $dir . '/' . $this->versionEntity->getVersionName() . '_files/' . $name;
+        return $this->restartable->getVersionConfig()->getVersionExchangeFile(
+            $this->restartable->getVersionName(),
+            $fileName
+        );
     }
 
     /**
@@ -31,11 +33,10 @@ class ExchangeManager
     {
         $exhelper = $this->getHelperManager()->IblockExchange();
 
-        return (new ExchangeReader($this->versionEntity))
-            ->setHelperConverter(
-                fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
-            )
-            ->setExchangeFile($this->getExchangeFile('iblock_elements.xml'));
+        return (new ExchangeReader(
+            $this->restartable,
+            fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
+        ))->setExchangeFile($this->getExchangeFile('iblock_elements.xml'));
     }
 
     /**
@@ -45,10 +46,10 @@ class ExchangeManager
     {
         $exhelper = $this->getHelperManager()->HlblockExchange();
 
-        return (new ExchangeReader($this->versionEntity))
-            ->setHelperConverter(
-                fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
-            )->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'));
+        return (new ExchangeReader(
+            $this->restartable,
+            fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
+        ))->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'));
     }
 
     /**
@@ -58,9 +59,9 @@ class ExchangeManager
     {
         $exhelper = $this->getHelperManager()->MedialibExchange();
 
-        return (new ExchangeReader($this->versionEntity))
-            ->setHelperConverter(
-                fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
-            )->setExchangeFile($this->getExchangeFile('medialib_elements.xml'));
+        return (new ExchangeReader(
+            $this->restartable,
+            fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
+        ))->setExchangeFile($this->getExchangeFile('medialib_elements.xml'));
     }
 }

@@ -110,7 +110,7 @@ function migrationExecuteStep(step_code, postData, succesCallback) {
 
 function migrationEnableButtons(enable) {
     let $container = jQuery('#migration_container');
-    let $loader = jQuery('#migration_loader');
+    let $loader = jQuery('#migration_loading');
     let $buttons = $container.find('input,select,.adm-btn');
     if (enable) {
         $buttons.removeAttr('disabled').removeClass('sp-disabled');

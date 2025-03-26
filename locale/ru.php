@@ -73,6 +73,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "RESTART_AGAIN"            => "Запустить снова",
         "WRITE_UP_CODE"            => "Укажите код установки миграции в методе up()",
         "WRITE_DOWN_CODE"          => "Укажите код отката миграции в методе down()",
+        "LOADING_TEXT"             => "Загрузка...",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(

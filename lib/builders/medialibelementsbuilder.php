@@ -59,7 +59,11 @@ class MedialibElementsBuilder extends VersionBuilder
 
         $this->restartOnce('step1', fn() => $writer->createExchangeFile([]));
 
-        $this->restartWithOffset('step2', function (int $offset) use ($exhelper, $writer, $collectionIds) {
+        $this->restartWhile('step2', function (int $offset) use (
+            $exhelper,
+            $writer,
+            $collectionIds
+        ) {
             $totalCount = $this->restartOnce('step2_1', fn() => $exhelper->getElementsCount($collectionIds));
 
             $limit = 20;
@@ -81,9 +85,11 @@ class MedialibElementsBuilder extends VersionBuilder
 
             $writer->appendTagsToExchangeFile($tags);
 
+            $offset += $tags->countChilds();
+
             $this->outProgress('Progress: ', $offset, $totalCount);
 
-            return ($tags->countChilds() >= $limit) ? $offset + $tags->countChilds() : false;
+            return ($tags->countChilds() >= $limit) ? $offset : false;
         });
 
 

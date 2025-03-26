@@ -71,7 +71,7 @@ class HlblockElementsBuilder extends VersionBuilder
             ['hlblockUid' => $exhelper->getHlblockUid($hlblockId)]
         ));
 
-        $this->restartWithOffset('step2', function (int $offset) use (
+        $this->restartWhile('step2', function (int $offset) use (
             $exhelper,
             $writer,
             $hlblockId,
@@ -85,9 +85,11 @@ class HlblockElementsBuilder extends VersionBuilder
 
             $writer->appendTagsToExchangeFile($tags);
 
+            $offset += $tags->countChilds();
+
             $this->outProgress('Progress: ', $offset, $totalCount);
 
-            return ($tags->countChilds() >= $limit) ? $offset + $tags->countChilds() : false;
+            return ($tags->countChilds() >= $limit) ? $offset : false;
         });
 
         $this->restartOnce('step3', fn() => $writer->closeExchangeFile());

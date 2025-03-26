@@ -7,6 +7,7 @@ use Bitrix\Main\DB\Result;
 use Bitrix\Main\Db\SqlQueryException;
 use Bitrix\Main\ORM\Entity;
 use Bitrix\Main\ORM\Fields\ScalarField;
+use Closure;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
@@ -18,12 +19,12 @@ class SqlHelper extends Helper
      * @throws HelperException
      * @throws SqlQueryException
      */
-    public function transaction(callable $func)
+    public function transaction(Closure $func): void
     {
         $connection = Application::getConnection();
         $connection->startTransaction();
         try {
-            $ok = call_user_func($func);
+            $ok = $func();
 
             $this->throwApplicationExceptionIfExists();
 

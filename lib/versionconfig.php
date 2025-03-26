@@ -3,7 +3,6 @@
 namespace Sprint\Migration;
 
 use DirectoryIterator;
-use Exception;
 use Sprint\Migration\Builders\AgentBuilder;
 use Sprint\Migration\Builders\BlankBuilder;
 use Sprint\Migration\Builders\CacheCleanerBuilder;
@@ -29,13 +28,13 @@ use Sprint\Migration\Exceptions\MigrationException;
 class VersionConfig
 {
     private $configCurrent = '';
-    private $configList    = [];
+    private $configList = [];
 
     /**
      * VersionConfig constructor.
      *
      * @param string $configName
-     * @param array  $configValues
+     * @param array $configValues
      *
      * @throws MigrationException
      */
@@ -121,6 +120,17 @@ class VersionConfig
         return $this->configList[$this->configCurrent]['name'];
     }
 
+    public function getVersionExchangeFile(string $versionName, string $fileName): string
+    {
+        return $this->getVersionExchangeDir($versionName) . $fileName;
+    }
+
+    public function getVersionExchangeDir(string $versionName): string
+    {
+        $dir = $this->getVal('exchange_dir');
+        return $dir . '/' . $versionName . '_files/';
+    }
+
     protected function searchConfigs($directory)
     {
         $result = [];
@@ -164,8 +174,8 @@ class VersionConfig
      * @param array $configValues
      * @param false $file
      *
-     * @throws MigrationException
      * @return array
+     * @throws MigrationException
      */
     protected function prepare($configName, $configValues = [], $file = false): array
     {
@@ -182,19 +192,19 @@ class VersionConfig
         }
 
         return [
-            'name'         => $configName,
-            'sort'         => $this->getSort($configName),
-            'title'        => $title,
-            'file'         => $file,
-            'values'       => $configValues,
+            'name' => $configName,
+            'sort' => $this->getSort($configName),
+            'title' => $title,
+            'file' => $file,
+            'values' => $configValues,
         ];
     }
 
     /**
      * @param array $values
      *
-     * @throws MigrationException
      * @return array
+     * @throws MigrationException
      */
     protected function prepareValues(array $values = []): array
     {
@@ -337,7 +347,7 @@ class VersionConfig
         }
 
         $configValues = [
-            'migration_dir'   => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
+            'migration_dir' => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
             'migration_table' => 'sprint_migration_' . $configName,
         ];
 
@@ -392,24 +402,24 @@ class VersionConfig
     public static function getDefaultBuilders(): array
     {
         return [
-            'UserGroupBuilder'        => UserGroupBuilder::class,
-            'IblockBuilder'           => IblockBuilder::class,
-            'IblockCategoryBuilder'   => IblockCategoryBuilder::class,
-            'IblockElementsBuilder'   => IblockElementsBuilder::class,
-            'IblockDeleteBuilder'     => IblockDeleteBuilder::class,
-            'HlblockBuilder'          => HlblockBuilder::class,
-            'HlblockElementsBuilder'  => HlblockElementsBuilder::class,
+            'UserGroupBuilder' => UserGroupBuilder::class,
+            'IblockBuilder' => IblockBuilder::class,
+            'IblockCategoryBuilder' => IblockCategoryBuilder::class,
+            'IblockElementsBuilder' => IblockElementsBuilder::class,
+            'IblockDeleteBuilder' => IblockDeleteBuilder::class,
+            'HlblockBuilder' => HlblockBuilder::class,
+            'HlblockElementsBuilder' => HlblockElementsBuilder::class,
             'UserTypeEntitiesBuilder' => UserTypeEntitiesBuilder::class,
-            'AgentBuilder'            => AgentBuilder::class,
-            'OptionBuilder'           => OptionBuilder::class,
-            'FormBuilder'             => FormBuilder::class,
-            'EventBuilder'            => EventBuilder::class,
-            'UserOptionsBuilder'      => UserOptionsBuilder::class,
+            'AgentBuilder' => AgentBuilder::class,
+            'OptionBuilder' => OptionBuilder::class,
+            'FormBuilder' => FormBuilder::class,
+            'EventBuilder' => EventBuilder::class,
+            'UserOptionsBuilder' => UserOptionsBuilder::class,
             'MedialibElementsBuilder' => MedialibElementsBuilder::class,
-            'BlankBuilder'            => BlankBuilder::class,
-            'CacheCleanerBuilder'     => CacheCleanerBuilder::class,
-            'MarkerBuilder'           => MarkerBuilder::class,
-            'TransferBuilder'         => TransferBuilder::class,
+            'BlankBuilder' => BlankBuilder::class,
+            'CacheCleanerBuilder' => CacheCleanerBuilder::class,
+            'MarkerBuilder' => MarkerBuilder::class,
+            'TransferBuilder' => TransferBuilder::class,
         ];
     }
 }

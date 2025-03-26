@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Traits;
 
+use Closure;
 use Sprint\Migration\Exceptions\RestartException;
 
 trait RestartableTrait
@@ -30,12 +31,12 @@ trait RestartableTrait
     /**
      * @throws RestartException
      */
-    public function restartIterator(string $name, array $array, callable $callback): void
+    public function restartIterator(string $name, array $array, Closure $callback): void
     {
         $index = (int)($this->params[$name] ?? 0);
 
         if (isset($array[$index])) {
-            call_user_func($callback, $array[$index], $index);
+            $callback($array[$index], $index);
             $this->params[$name] = $index + 1;
             $this->restart();
         }
@@ -44,10 +45,10 @@ trait RestartableTrait
     /**
      * @throws RestartException
      */
-    public function restartOnce(string $name, callable $callback): mixed
+    public function restartOnce(string $name, Closure $callback): mixed
     {
         if (!array_key_exists($name, $this->params)) {
-            $res = call_user_func($callback);
+            $res = $callback();
             $this->params[$name] = serialize($res);
             $this->restart();
         }
@@ -57,29 +58,14 @@ trait RestartableTrait
     /**
      * @throws RestartException
      */
-    public function restartWithOffset(string $name, callable $callback): void
+    public function restartWhile(string $name, Closure $callback): void
     {
-        $offset = $this->params[$name] ?? '';
-        if ($offset !== 'finish') {
-            $res = (int)call_user_func($callback, (int)$offset);
-            if ($res > $offset) {
-                $this->params[$name] = $res;
-                $this->restart();
-            } else {
-                $this->params[$name] = 'finish';
-            }
-        }
-    }
+        $payload = $this->params[$name] ?? serialize(0);
 
-
-    /**
-     * @throws RestartException
-     */
-    public function restartWhile(string $name, callable $callback): void
-    {
-        if (!array_key_exists($name, $this->params)) {
-            $res = call_user_func($callback);
+        if ($payload !== 'finish') {
+            $res = $callback(unserialize($payload));
             if ($res) {
+                $this->params[$name] = serialize($res);
                 $this->restart();
             } else {
                 $this->params[$name] = 'finish';

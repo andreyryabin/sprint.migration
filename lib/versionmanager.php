@@ -744,8 +744,8 @@ class VersionManager
             );
 
             Module::movePath(
-                $this->getVersionExchangeDir($meta['version']),
-                $vmTo->getVersionExchangeDir($meta['version'])
+                $this->getVersionConfig()->getVersionExchangeDir($meta['version']),
+                $this->getVersionConfig()->getVersionExchangeDir($meta['version'])
             );
 
             $success = 1;
@@ -781,7 +781,7 @@ class VersionManager
                 $meta['location']
             );
             Module::deletePath(
-                $this->getVersionExchangeDir($meta['version'])
+                $this->getVersionConfig()->getVersionExchangeDir($meta['version'])
             );
 
             $success = 1;
@@ -793,12 +793,6 @@ class VersionManager
             'message' => Locale::getMessage($msg, ['#VERSION#' => $meta['version']]),
             'success' => $success,
         ];
-    }
-
-    public function getVersionExchangeDir(string $versionName): string
-    {
-        $dir = $this->getVersionConfig()->getVal('exchange_dir');
-        return $dir . '/' . $versionName . '_files/';
     }
 
     /**

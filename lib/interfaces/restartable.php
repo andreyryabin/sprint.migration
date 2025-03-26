@@ -2,18 +2,32 @@
 
 namespace Sprint\Migration\Interfaces;
 
+use Closure;
+use Sprint\Migration\Exceptions\RestartException;
+
 interface Restartable
 {
+    /**
+     * @throws RestartException
+     */
     public function restart();
 
     public function getRestartParams(): array;
 
     public function setRestartParams(array $params = []): void;
 
-    public function restartIterator(string $name, array $array, callable $callback): void;
+    /**
+     * @throws RestartException
+     */
+    public function restartIterator(string $name, array $array, Closure $callback): void;
 
-    public function restartOnce(string $name, callable $callback): mixed;
+    /**
+     * @throws RestartException
+     */
+    public function restartOnce(string $name, Closure $callback): mixed;
 
-    public function restartWithOffset(string $name, callable $callback): void;
-    public function restartWhile(string $name, callable $callback): void;
+    /**
+     * @throws RestartException
+     */
+    public function restartWhile(string $name, Closure $callback): void;
 }

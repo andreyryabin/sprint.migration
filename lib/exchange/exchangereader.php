@@ -3,31 +3,32 @@
 namespace Sprint\Migration\Exchange;
 
 use CFile;
+use Closure;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Interfaces\Restartable;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\Out;
-use Sprint\Migration\Version;
 use XMLReader;
 
 class ExchangeReader
 {
-    private Version $versionEntity;
+    private Restartable $restartable;
     private int $limit = 10;
     private string $exchangeFile = '';
-    /**
-     * @var callable
-     */
-    private $helperConverter;
+    private Closure $recordConverter;
 
     /**
      * @throws MigrationException
      */
-    public function __construct(Version $versionEntity)
+    public function __construct(Restartable $restartable, Closure $recordConverter)
     {
-        $this->versionEntity = $versionEntity;
+        $this->restartable = $restartable;
+
+        $this->recordConverter = $recordConverter;
+
         if (!class_exists('XMLReader')) {
             throw new MigrationException(
                 Locale::getMessage(
@@ -38,54 +39,36 @@ class ExchangeReader
     }
 
     /**
-     * @param callable $converter
-     *
      * @throws HelperException
      * @throws RestartException
      */
-    public function execute(callable $converter): void
+    public function execute(Closure $converter): void
     {
-        $params = $this->versionEntity->getRestartParams();
-
         $this->checkExchangeFile();
 
-        if (!isset($params['offset'])) {
-            $params = array_merge($params, $this->getExchangeAttributes());
+        $attrs = $this->restartable->restartOnce('step1', fn() => $this->getExchangeAttributes());
 
-            $this->checkExchangeAttributes($params);
+        $this->checkExchangeAttributes($attrs);
 
-            $params['offset'] = 0;
-        }
+        $this->restartable->restartWhile('step2', function ($offset) use (
+            $converter,
+            $attrs
+        ) {
 
-        $records = $this->readRecords(
-            (int)$params['offset'],
-            $this->getLimit(),
-        );
+            $totalCount = $this->restartable->restartOnce('step2_1', fn() => $this->getExchangeRecordsCount());
 
-        $helperConverter = $this->helperConverter;
+            $records = $this->readRecords($offset, $this->getLimit());
 
-        $records = array_map(
-            fn($record) => $helperConverter($params, $record),
-            $records
-        );
+            array_map(fn($record) => $converter(($this->recordConverter)($attrs, $record)), $records);
 
-        array_map(
-            fn($record) => $converter($record),
-            $records
-        );
+            $countRecords = count($records);
 
-        $countRecords = count($records);
-        $params['offset'] += $countRecords;
+            $offset += $countRecords;
 
-        Out::outProgress('', $params['offset'], 1);
+            Out::outProgress('Progress: ', $offset, $totalCount);
 
-        if ($countRecords >= $this->getLimit()) {
-            $this->versionEntity->setRestartParams($params);
-            $this->versionEntity->restart();
-        }
-
-        unset($params['offset']);
-        $this->versionEntity->setRestartParams($params);
+            return ($countRecords >= $this->getLimit()) ? $offset : false;
+        });
     }
 
     public function getLimit(): int
@@ -244,19 +227,31 @@ class ExchangeReader
         $reader->open($this->exchangeFile);
 
         $attributes = [];
-        $total = 0;
         while ($reader->read()) {
             if ($this->isOpenTag($reader, 'items')) {
                 $attributes = $this->getTagAttributes($reader);
+                break;
             }
+        }
+
+        $reader->close();
+        return $attributes;
+    }
+
+    private function getExchangeRecordsCount(): int
+    {
+        $reader = new XMLReader();
+        $reader->open($this->exchangeFile);
+
+        $total = 0;
+        while ($reader->read()) {
             if ($this->isOpenTag($reader, 'item')) {
                 $total++;
             }
         }
 
         $reader->close();
-
-        return array_merge($attributes, ['total' => $total]);
+        return $total;
     }
 
 
@@ -274,11 +269,5 @@ class ExchangeReader
             return $file;
         }
         return false;
-    }
-
-    public function setHelperConverter(callable $helperConverter): ExchangeReader
-    {
-        $this->helperConverter = $helperConverter;
-        return $this;
     }
 }

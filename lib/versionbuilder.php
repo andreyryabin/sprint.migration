@@ -22,8 +22,8 @@ abstract class VersionBuilder extends AbstractBuilder
 
         $this->addField(
             'description', [
-                'title'  => Locale::getMessage('FORM_DESCR'),
-                'width'  => 350,
+                'title' => Locale::getMessage('FORM_DESCR'),
+                'width' => 350,
                 'height' => 40,
             ]
         );
@@ -58,11 +58,13 @@ abstract class VersionBuilder extends AbstractBuilder
 
     protected function getExchangeFile(string $name): string
     {
-        $dir = $this->getVersionConfig()->getVal('exchange_dir');
-        return $dir . '/' . $this->getVersionName() . '_files/' . $name;
+        return $this->getVersionConfig()->getVersionExchangeFile(
+            $this->getVersionName(),
+            $name
+        );
     }
 
-    protected function getVersionName():string
+    protected function getVersionName(): string
     {
         if (!isset($this->params['~version_name'])) {
             $this->params['~version_name'] = $this->createVersionName();
@@ -75,7 +77,7 @@ abstract class VersionBuilder extends AbstractBuilder
         return strtr(
             $this->getVersionConfig()->getVal('version_name_template'),
             [
-                '#NAME#'      => $this->purifyPrefix($this->getFieldValue('prefix')),
+                '#NAME#' => $this->purifyPrefix($this->getFieldValue('prefix')),
                 '#TIMESTAMP#' => $this->getTimestamp(
                     $this->getVersionConfig()->getVal('version_timestamp_format')
                 ),
@@ -88,9 +90,10 @@ abstract class VersionBuilder extends AbstractBuilder
      */
     protected function createVersionFile(
         string $templateFile = '',
-        array $templateVars = [],
-        bool $markAsInstalled = true
-    ): string {
+        array  $templateVars = [],
+        bool   $markAsInstalled = true
+    ): string
+    {
         $templateVars['description'] = $this->addslashes(
             $this->getFieldValue('description')
         );
