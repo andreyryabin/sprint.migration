@@ -11,7 +11,7 @@ $existsEvents = (
 ($_POST["step_code"] == "migration_delete")
 );
 
-if ($existsEvents && check_bitrix_sessid('send_sessid')) {
+if ($existsEvents && check_bitrix_sessid()) {
 
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);

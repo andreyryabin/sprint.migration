@@ -52,29 +52,51 @@ class IblockElementsBuilder extends VersionBuilder
         $exportFields = $this->getFieldValueExportFields($iblockId, $updateMode);
         $exportProps = $this->getFieldValueExportProps($iblockId);
 
-        (new ExchangeWriter($this))
-            ->setLimit(20)
+        $writer = (new ExchangeWriter)
             ->setCopyFiles(true)
-            ->setExchangeFile(
-                $this->getExchangeFile('iblock_elements.xml')
-            )
-            ->setAttributes([
-                'iblockUid' => $exhelper->getIblockUid($iblockId)
-            ])
-            ->execute(fn($offset, $limit) => $exhelper->createRecordsTags(
+            ->setExchangeFile($this->getExchangeFile('iblock_elements.xml'));
+
+        $this->restartOnce('step1', fn() => $writer->createExchangeFile(
+            ['iblockUid' => $exhelper->getIblockUid($iblockId)]
+        ));
+
+        $this->restartWithOffset('step2', function (int $offset) use (
+            $exhelper,
+            $writer,
+            $iblockId,
+            $exportFilter,
+            $exportFields,
+            $exportProps
+        ) {
+            $totalCount = $this->restartOnce('step2_1', fn() => $exhelper->getElementsCount(
+                $iblockId,
+                $exportFilter
+            ));
+
+            $limit = 20;
+
+            $tags = $exhelper->createRecordsTags(
                 $iblockId,
                 $offset,
                 $limit,
                 $exportFilter,
                 $exportFields,
                 $exportProps
-            ));
+            );
+
+            $writer->appendTagsToExchangeFile($tags);
+
+            $this->outProgress('Progress: ', $offset, $totalCount);
+
+            return ($tags->countChilds() >= $limit) ? $offset + $tags->countChilds() : false;
+        });
+
+        $this->restartOnce('step3', fn() => $writer->closeExchangeFile());
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockElementsExport.php',
             [
                 'updateMode' => $updateMode,
-                'iblock' => $exhelper->exportIblock($iblockId),
             ]
         );
     }

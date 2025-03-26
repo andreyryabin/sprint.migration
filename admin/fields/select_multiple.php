@@ -19,7 +19,7 @@ use Sprint\Migration\Locale;
         <?php foreach ($fieldItem['select'] as $item) { ?>
             <label class="sp-optgroup-item">
                 <input name="<?= $fieldCode ?>[]"
-                       value="<?= $item['value'] ?>"
+                       value="<?= htmlspecialchars($item['value']) ?>"
                     <?php if (in_array($item['value'], $fieldItem['value'])) { ?>
                         checked="checked"
                     <?php } ?>

@@ -32,7 +32,7 @@ trait RestartableTrait
      */
     public function restartIterator(string $name, array $array, callable $callback): void
     {
-        $index = $this->params[$name] ?? 0;
+        $index = (int)($this->params[$name] ?? 0);
 
         if (isset($array[$index])) {
             call_user_func($callback, $array[$index], $index);
@@ -59,8 +59,8 @@ trait RestartableTrait
      */
     public function restartWithOffset(string $name, callable $callback): void
     {
-        $offset = $this->params[$name] ?? 0;
-        if (is_numeric($offset)) {
+        $offset = $this->params[$name] ?? '';
+        if ($offset !== 'finish') {
             $res = (int)call_user_func($callback, (int)$offset);
             if ($res > $offset) {
                 $this->params[$name] = $res;

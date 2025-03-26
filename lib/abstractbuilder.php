@@ -34,7 +34,10 @@ abstract class AbstractBuilder implements Restartable
         $this->setVersionConfig($versionConfig);
         $this->setRestartParams($params);
 
-        $this->addFieldHidden('builder_name', $this->getName());
+        $this->addField('builder_name', [
+            'type' => 'hidden',
+            'value' => $name
+        ]);
     }
 
     abstract protected function initialize();
@@ -103,12 +106,6 @@ abstract class AbstractBuilder implements Restartable
         }
 
         return $value;
-    }
-
-    protected function addFieldHidden(string $code, $val): void
-    {
-        $this->params[$code] = $val;
-        $this->addField($code, ['type' => 'hidden']);
     }
 
     protected function getFieldValue(string $code, $default = '')
@@ -202,7 +199,7 @@ abstract class AbstractBuilder implements Restartable
         foreach ($this->params as $code => $val) {
             if (!isset($this->fields[$code])) {
                 if (is_numeric($val) || is_string($val)) {
-                    $this->addFieldHidden($code, $val);
+                    $this->addField($code, ['type' => 'hidden']);
                 }
             }
         }

@@ -10,7 +10,7 @@ use Sprint\Migration\AbstractBuilder;
 ?>
 <input name="<?= $fieldCode ?>"
        type="text"
-       value="<?= $fieldItem['value'] ?>"
+       value="<?= htmlspecialchars($fieldItem['value']) ?>"
     <?php if (!empty($fieldItem['placeholder'])) { ?>
         placeholder="<?= $fieldItem['placeholder'] ?>"
     <?php } ?>

@@ -21,7 +21,7 @@ $listView = (
     || ($_POST["step_code"] == "migration_view_installed")
 );
 
-if (!($listView && check_bitrix_sessid('send_sessid'))) {
+if (!($listView && check_bitrix_sessid())) {
     return;
 }
 

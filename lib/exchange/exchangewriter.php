@@ -2,9 +2,7 @@
 
 namespace Sprint\Migration\Exchange;
 
-use Closure;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\Interfaces\Restartable;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use XMLWriter;
@@ -131,32 +129,5 @@ class ExchangeWriter
             $str .= $k . '="' . $v . '" ';
         }
         return $str;
-    }
-
-    public function execute(
-        Restartable $restartable,
-        Closure     $recordsCntFn,
-        Closure     $recordsFn,
-        Closure     $fileAttrsFn,
-        Closure     $progressFn,
-        int         $limit = 20
-    ): void
-    {
-        $totalCount = $restartable->restartOnce('init1', $recordsCntFn);
-
-        $restartable->restartOnce('init2', fn() => $this->createExchangeFile($fileAttrsFn()));
-
-        $restartable->restartWithOffset('init3', function (int $offset) use ($recordsFn, $progressFn, $limit, $totalCount) {
-
-            $tags = $recordsFn($offset, $limit);
-
-            $this->appendTagsToExchangeFile($tags);
-
-            $progressFn('Progress: ', $offset, $totalCount);
-
-            return ($tags->countChilds() >= $limit) ? $offset + $tags->countChilds() : false;
-        });
-
-        $restartable->restartOnce('init4', fn() => $this->closeExchangeFile());
     }
 }

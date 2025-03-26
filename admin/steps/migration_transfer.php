@@ -11,7 +11,7 @@ $existsEvents = (
 ($_POST["step_code"] == "migration_transfer")
 );
 
-if ($existsEvents && check_bitrix_sessid('send_sessid')) {
+if ($existsEvents && check_bitrix_sessid()) {
 
     $version = !empty($_POST['version']) ? $_POST['version'] : '';
     $transferTo = !empty($_POST['transfer_to']) ? $_POST['transfer_to'] : '';

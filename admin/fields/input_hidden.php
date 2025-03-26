@@ -9,4 +9,4 @@ use Sprint\Migration\AbstractBuilder;
  */
 
 ?>
-<input type="hidden" name="<?= $fieldCode ?>" value="<?= $fieldItem['value'] ?>"/>
+<input type="hidden" name="<?= $fieldCode ?>" value="<?= htmlspecialchars($fieldItem['value']) ?>"/>

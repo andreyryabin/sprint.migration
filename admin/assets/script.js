@@ -84,7 +84,7 @@ function migrationOutLog(result) {
 function migrationExecuteStep(step_code, postData, succesCallback) {
     postData = postData || {};
     postData['step_code'] = step_code;
-    postData['send_sessid'] = jQuery('#migration_container').data('sessid');
+    postData['sessid'] = jQuery('#migration_container').data('sessid');
     postData['search'] = jQuery('#migration_search').val();
     postData['migration_view'] = jQuery('#migration_view').val();
 
@@ -141,7 +141,10 @@ function migrationBuilder(postData) {
         migrationBuilderRender(result)
     });
 }
-
+function migrationBuilderRestart(){
+    let postData = jQuery('#migration_builder form').serializeFormJSON();
+    migrationBuilder(postData);
+}
 function migrationReset(postData) {
     migrationExecuteStep('migration_reset', postData, function (result) {
         migrationBuilderRender(result, {})

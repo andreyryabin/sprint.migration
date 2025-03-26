@@ -63,22 +63,39 @@ class HlblockElementsBuilder extends VersionBuilder
             }
         }
 
-        (new ExchangeWriter)
+        $writer = (new ExchangeWriter)
             ->setCopyFiles(true)
-            ->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'))
-            ->execute(
-                restartable: $this,
-                recordsCntFn: fn() => $exhelper->getElementsCount($hlblockId),
-                recordsFn: fn($offset, $limit) => $exhelper->createRecordsTags($hlblockId, $offset, $limit, $fields),
-                fileAttrsFn: fn() => ['hlblockUid' => $exhelper->getHlblockUid($hlblockId)],
-                progressFn: fn($msg, $offset, $total) => $this->outProgress($msg, $offset, $total)
-            );;
+            ->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'));
+
+        $this->restartOnce('step1', fn() => $writer->createExchangeFile(
+            ['hlblockUid' => $exhelper->getHlblockUid($hlblockId)]
+        ));
+
+        $this->restartWithOffset('step2', function (int $offset) use (
+            $exhelper,
+            $writer,
+            $hlblockId,
+            $fields
+        ) {
+            $totalCount = $this->restartOnce('step2_1', fn() => $exhelper->getElementsCount($hlblockId));
+
+            $limit = 20;
+
+            $tags = $exhelper->createRecordsTags($hlblockId, $offset, $limit, $fields);
+
+            $writer->appendTagsToExchangeFile($tags);
+
+            $this->outProgress('Progress: ', $offset, $totalCount);
+
+            return ($tags->countChilds() >= $limit) ? $offset + $tags->countChilds() : false;
+        });
+
+        $this->restartOnce('step3', fn() => $writer->closeExchangeFile());
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/HlblockElementsExport.php',
             [
                 'updateMode' => $updateMode,
-                'hlblock' => $exhelper->exportHlblock($hlblockId)
             ]
         );
     }

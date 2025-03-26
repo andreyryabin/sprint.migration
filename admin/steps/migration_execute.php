@@ -10,7 +10,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
-if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sessid')) {
+if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid()) {
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
 

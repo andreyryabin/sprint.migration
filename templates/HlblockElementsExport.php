@@ -7,8 +7,7 @@
  * @var $extendClass
  * @var $moduleVersion
  * @var $updateMode
- * @var $hlblock
- * @var $author
+  * @var $author
  * @formatter:off
  */
 
@@ -37,9 +36,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function up()
     {
-        $helper = $this->getHelperManager();
-        $hlblockId = $helper->Hlblock()->getHlblockIdIfExists('<?php echo $hlblock['NAME'] ?>');
-
         $this->getExchangeManager()
              ->HlblockElementsImport()
              ->setLimit(20)
@@ -48,14 +44,14 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                  $this->getHelperManager()
                       ->Hlblock()
                       ->saveElementByXmlId(
-                          $hlblockId,
+                          $item['hlblock_id'],
                           $item['fields']
                       );
 <?php } else { ?>
                  $this->getHelperManager()
                       ->Hlblock()
                       ->addElement(
-                          $hlblockId,
+                          $item['hlblock_id'],
                           $item['fields']
                       );
 <?php } ?>
@@ -70,9 +66,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function down()
     {
-        $helper = $this->getHelperManager();
-        $hlblockId = $helper->Hlblock()->getHlblockIdIfExists('<?php echo $hlblock['NAME'] ?>');
-
 <?php if ($updateMode == HlblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
         $this->getExchangeManager()
              ->HlblockElementsImport()
@@ -81,7 +74,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                  $this->getHelperManager()
                       ->Hlblock()
                       ->deleteElementByXmlId(
-                          $hlblockId,
+                          $item['hlblock_id'],
                           $item['fields']['UF_XML_ID']
                       );
              });
