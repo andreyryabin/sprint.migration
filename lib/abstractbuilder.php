@@ -5,13 +5,13 @@ namespace Sprint\Migration;
 use Exception;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Interfaces\Restartable;
+use Sprint\Migration\Interfaces\RestartableInterface;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
 use Sprint\Migration\Traits\RestartableTrait;
 use Sprint\Migration\Traits\VersionConfigTrait;
 
-abstract class AbstractBuilder implements Restartable
+abstract class AbstractBuilder implements RestartableInterface
 {
     use HelperManagerTrait;
     use OutTrait;

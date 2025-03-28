@@ -5,7 +5,7 @@ namespace Sprint\Migration\Exchange;
 
 use CFile;
 
-class ExchangeTag
+class WriterTag
 {
     private string $name;
     private array $attributes = [];
@@ -37,7 +37,7 @@ class ExchangeTag
         return $this->text;
     }
 
-    public function addChild(ExchangeTag $child): void
+    public function addChild(WriterTag $child): void
     {
         $this->childs[] = $child;
 
@@ -104,7 +104,7 @@ class ExchangeTag
             return;
         }
 
-        $tag = new ExchangeTag('value', $attributes);
+        $tag = new WriterTag('value', $attributes);
         if (is_array($val)) {
             $tag->setTextJson($val);
         } else {

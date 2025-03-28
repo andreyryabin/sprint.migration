@@ -7,12 +7,12 @@ use Sprint\Migration\Helpers\AgentHelper;
 use Sprint\Migration\helpers\DeliveryServiceHelper;
 use Sprint\Migration\Helpers\EventHelper;
 use Sprint\Migration\Helpers\FormHelper;
-use Sprint\Migration\Helpers\HlblockExchangeHelper;
+use Sprint\Migration\Helpers\HlblockReaderHelper;
 use Sprint\Migration\Helpers\HlblockHelper;
-use Sprint\Migration\Helpers\IblockExchangeHelper;
+use Sprint\Migration\Helpers\IblockReaderHelper;
 use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Helpers\LangHelper;
-use Sprint\Migration\Helpers\MedialibExchangeHelper;
+use Sprint\Migration\Helpers\MedialibReaderHelper;
 use Sprint\Migration\Helpers\MedialibHelper;
 use Sprint\Migration\Helpers\OptionHelper;
 use Sprint\Migration\Helpers\SiteHelper;
@@ -38,9 +38,9 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  * @method SqlHelper                Sql()
  * @method MedialibHelper           Medialib()
  * @method TextHelper               Text()
- * @method IblockExchangeHelper     IblockExchange()
- * @method HlblockExchangeHelper    HlblockExchange()
- * @method MedialibExchangeHelper   MedialibExchange()
+ * @method IblockReaderHelper     IblockExchange()
+ * @method HlblockReaderHelper    HlblockExchange()
+ * @method MedialibReaderHelper   MedialibExchange()
  */
 class HelperManager
 {

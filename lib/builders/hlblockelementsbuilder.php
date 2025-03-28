@@ -6,7 +6,7 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\ExchangeWriter;
+use Sprint\Migration\Exchange\RestartableWriter;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -63,36 +63,25 @@ class HlblockElementsBuilder extends VersionBuilder
             }
         }
 
-        $writer = (new ExchangeWriter)
-            ->setCopyFiles(true)
-            ->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'));
+        (new RestartableWriter($this))
+            ->execute(
+                file: $this->getExchangeFile('hlblock_elements.xml'),
+                limit: 20,
+                copyFiles: true,
+                attributesFn: fn() => $exhelper->createAttributes(
+                    $hlblockId
+                ),
+                totalCountFn: fn() => $exhelper->getElementsCount(
+                    $hlblockId
+                ),
+                recordsFn: fn($offset, $limit) => $exhelper->createRecordsTags(
+                    $hlblockId,
+                    $offset,
+                    $limit,
+                    $fields
+                )
+            );
 
-        $this->restartOnce('step1', fn() => $writer->createExchangeFile(
-            ['hlblockUid' => $exhelper->getHlblockUid($hlblockId)]
-        ));
-
-        $this->restartWhile('step2', function (int $offset) use (
-            $exhelper,
-            $writer,
-            $hlblockId,
-            $fields
-        ) {
-            $totalCount = $this->restartOnce('step2_1', fn() => $exhelper->getElementsCount($hlblockId));
-
-            $limit = 20;
-
-            $tags = $exhelper->createRecordsTags($hlblockId, $offset, $limit, $fields);
-
-            $writer->appendTagsToExchangeFile($tags);
-
-            $offset += $tags->countChilds();
-
-            $this->outProgress('Progress: ', $offset, $totalCount);
-
-            return ($tags->countChilds() >= $limit) ? $offset : false;
-        });
-
-        $this->restartOnce('step3', fn() => $writer->closeExchangeFile());
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/HlblockElementsExport.php',

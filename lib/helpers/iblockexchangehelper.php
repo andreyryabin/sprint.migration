@@ -4,9 +4,10 @@ namespace Sprint\Migration\Helpers;
 
 use _CIBElement;
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exchange\ExchangeTag;
+use Sprint\Migration\Exchange\WriterTag;
+use Sprint\Migration\Interfaces\ReaderHelperInterface;
 
-class IblockExchangeHelper extends IblockHelper
+class IblockReaderHelper extends IblockHelper implements ReaderHelperInterface
 {
     protected array $cachedProps = [];
 
@@ -204,6 +205,12 @@ class IblockExchangeHelper extends IblockHelper
     }
 
     //writer
+    public function createAttributes(int $iblockId): array
+    {
+        return [
+            'iblockUid' => $this->getIblockUid($iblockId)
+        ];
+    }
 
     /**
      * @throws HelperException
@@ -215,7 +222,7 @@ class IblockExchangeHelper extends IblockHelper
         array $exportFilter,
         array $exportFields,
         array $exportProperties
-    ): ExchangeTag
+    ): WriterTag
     {
         $dbres = $this->getElementsList(
             $iblockId,
@@ -227,7 +234,7 @@ class IblockExchangeHelper extends IblockHelper
             ]
         );
 
-        $tag = new ExchangeTag('tmp');
+        $tag = new WriterTag('tmp');
         while ($element = $dbres->GetNextElement(false, false)) {
             $tag->addChild(
                 $this->createRecordTag(
@@ -250,9 +257,9 @@ class IblockExchangeHelper extends IblockHelper
         array $props,
         array $exportFields,
         array $exportProperties
-    ): ExchangeTag
+    ): WriterTag
     {
-        $item = new ExchangeTag('item');
+        $item = new WriterTag('item');
 
         foreach ($fields as $code => $val) {
             if (in_array($code, $exportFields)) {
@@ -280,9 +287,9 @@ class IblockExchangeHelper extends IblockHelper
     /**
      * @throws HelperException
      */
-    protected function createFieldTag(array $field): ExchangeTag
+    protected function createFieldTag(array $field): WriterTag
     {
-        $tag = new ExchangeTag('field', ['name' => $field['NAME']]);
+        $tag = new WriterTag('field', ['name' => $field['NAME']]);
 
         if ($field['NAME'] == 'PREVIEW_PICTURE') {
             $tag->addFile($field['VALUE']);
@@ -303,9 +310,9 @@ class IblockExchangeHelper extends IblockHelper
     /**
      * @throws HelperException
      */
-    protected function createPropertyTag(array $prop): ExchangeTag
+    protected function createPropertyTag(array $prop): WriterTag
     {
-        $tag = new ExchangeTag('property', ['name' => $prop['CODE']]);
+        $tag = new WriterTag('property', ['name' => $prop['CODE']]);
 
         if ($prop['PROPERTY_TYPE'] == 'F') {
             $this->addPropertyValueFile($tag, $prop);
@@ -321,7 +328,7 @@ class IblockExchangeHelper extends IblockHelper
         return $tag;
     }
 
-    protected function addPropertyValueString(ExchangeTag $tag, $prop): void
+    protected function addPropertyValueString(WriterTag $tag, $prop): void
     {
         if ($prop['MULTIPLE'] == 'Y') {
             foreach ($prop['VALUE'] as $index => $val1) {
@@ -335,7 +342,7 @@ class IblockExchangeHelper extends IblockHelper
     /**
      * @throws HelperException
      */
-    protected function addPropertyValueSection(ExchangeTag $tag, $prop): void
+    protected function addPropertyValueSection(WriterTag $tag, $prop): void
     {
         $uniqNames = $this->getSectionUniqNamesByIds(
             $prop['LINK_IBLOCK_ID'],
@@ -348,7 +355,7 @@ class IblockExchangeHelper extends IblockHelper
     /**
      * @throws HelperException
      */
-    protected function addPropertyValueElement(ExchangeTag $tag, $prop): void
+    protected function addPropertyValueElement(WriterTag $tag, $prop): void
     {
         $uniqNames = $this->getElementUniqNamesByIds(
             $prop['LINK_IBLOCK_ID'],
@@ -358,13 +365,13 @@ class IblockExchangeHelper extends IblockHelper
         $tag->addValue($uniqNames);
     }
 
-    protected function addPropertyValueList(ExchangeTag $tag, $prop): void
+    protected function addPropertyValueList(WriterTag $tag, $prop): void
     {
         $tag->addValue($prop['VALUE_XML_ID']);
     }
 
 
-    protected function addPropertyValueFile(ExchangeTag $tag, $prop): void
+    protected function addPropertyValueFile(WriterTag $tag, $prop): void
     {
         $tag->addFile($prop['VALUE']);
     }
@@ -516,4 +523,6 @@ class IblockExchangeHelper extends IblockHelper
         }
         return ($isMultiple) ? $res : $res[0];
     }
+
+
 }

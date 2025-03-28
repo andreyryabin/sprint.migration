@@ -5,7 +5,7 @@ namespace Sprint\Migration\Interfaces;
 use Closure;
 use Sprint\Migration\Exceptions\RestartException;
 
-interface Restartable
+interface RestartableInterface
 {
     /**
      * @throws RestartException

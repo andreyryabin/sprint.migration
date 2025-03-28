@@ -3,9 +3,10 @@
 namespace Sprint\Migration\Helpers;
 
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Exchange\ExchangeTag;
+use Sprint\Migration\Exchange\WriterTag;
+use Sprint\Migration\Interfaces\ReaderHelperInterface;
 
-class MedialibExchangeHelper extends MedialibHelper
+class MedialibReaderHelper extends MedialibHelper implements ReaderHelperInterface
 {
     private array $cachedFlatTree = [];
     private array $cachedPaths = [];
@@ -60,7 +61,7 @@ class MedialibExchangeHelper extends MedialibHelper
     /**
      * @throws HelperException
      */
-    public function createRecordsTags($collectionId, int $offset, int $limit, array $exportFields): ExchangeTag
+    public function createRecordsTags($collectionId, int $offset, int $limit, array $exportFields): WriterTag
     {
         $elements = $this->getElements(
             $collectionId,
@@ -70,7 +71,7 @@ class MedialibExchangeHelper extends MedialibHelper
             ],
         );
 
-        $tag = new ExchangeTag('tmp');
+        $tag = new WriterTag('tmp');
         foreach ($elements as $element) {
             $tag->addChild(
                 $this->createRecordTag(
@@ -83,9 +84,9 @@ class MedialibExchangeHelper extends MedialibHelper
     }
 
 
-    private function createRecordTag(array $element, array $exportFields): ExchangeTag
+    private function createRecordTag(array $element, array $exportFields): WriterTag
     {
-        $item = new ExchangeTag('item');
+        $item = new WriterTag('item');
         foreach ($element as $code => $val) {
             if (in_array($code, $exportFields)) {
                 $item->addChild(
@@ -99,9 +100,9 @@ class MedialibExchangeHelper extends MedialibHelper
         return $item;
     }
 
-    private function createFieldTag(array $field): ExchangeTag
+    private function createFieldTag(array $field): WriterTag
     {
-        $tag = new ExchangeTag('field', ['name' => $field['NAME']]);
+        $tag = new WriterTag('field', ['name' => $field['NAME']]);
 
         if ($field['NAME'] == 'SOURCE_ID') {
             $tag->setAttribute('name', 'FILE');

@@ -6,8 +6,8 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Exchange\ExchangeWriter;
-use Sprint\Migration\Helpers\IblockExchangeHelper;
+use Sprint\Migration\Exchange\RestartableWriter;
+use Sprint\Migration\Helpers\IblockReaderHelper;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -52,48 +52,28 @@ class IblockElementsBuilder extends VersionBuilder
         $exportFields = $this->getFieldValueExportFields($iblockId, $updateMode);
         $exportProps = $this->getFieldValueExportProps($iblockId);
 
-        $writer = (new ExchangeWriter)
-            ->setCopyFiles(true)
-            ->setExchangeFile($this->getExchangeFile('iblock_elements.xml'));
 
-        $this->restartOnce('step1', fn() => $writer->createExchangeFile(
-            ['iblockUid' => $exhelper->getIblockUid($iblockId)]
-        ));
-
-        $this->restartWhile('step2', function (int $offset) use (
-            $exhelper,
-            $writer,
-            $iblockId,
-            $exportFilter,
-            $exportFields,
-            $exportProps
-        ) {
-            $totalCount = $this->restartOnce('step2_1', fn() => $exhelper->getElementsCount(
-                $iblockId,
-                $exportFilter
-            ));
-
-            $limit = 20;
-
-            $tags = $exhelper->createRecordsTags(
-                $iblockId,
-                $offset,
-                $limit,
-                $exportFilter,
-                $exportFields,
-                $exportProps
+        (new RestartableWriter($this))
+            ->execute(
+                file: $this->getExchangeFile('iblock_elements.xml'),
+                limit: 20,
+                copyFiles: true,
+                attributesFn: fn() => $exhelper->createAttributes(
+                    $iblockId
+                ),
+                totalCountFn: fn() => $exhelper->getElementsCount(
+                    $iblockId,
+                    $exportFilter
+                ),
+                recordsFn: fn($offset, $limit) => $exhelper->createRecordsTags(
+                    $iblockId,
+                    $offset,
+                    $limit,
+                    $exportFilter,
+                    $exportFields,
+                    $exportProps
+                ),
             );
-
-            $writer->appendTagsToExchangeFile($tags);
-
-            $offset += $tags->countChilds();
-
-            $this->outProgress('Progress: ', $offset, $totalCount);
-
-            return ($tags->countChilds() >= $limit) ? $offset : false;
-        });
-
-        $this->restartOnce('step3', fn() => $writer->closeExchangeFile());
 
         $this->createVersionFile(
             Module::getModuleDir() . '/templates/IblockElementsExport.php',
@@ -108,7 +88,7 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueExportProps($iblockId)
     {
-        $iblockExchangeHelper = new IblockExchangeHelper;
+        $iblockExchangeHelper = new IblockReaderHelper;
 
         $propsMode = $this->addFieldAndReturn(
             'props_mode',
@@ -217,7 +197,7 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueExportFields($iblockId, $updateMode = false)
     {
-        $iblockExchangeHelper = new IblockExchangeHelper;
+        $iblockExchangeHelper = new IblockReaderHelper;
 
         $fieldsMode = $this->addFieldAndReturn(
             'fields_mode',
@@ -277,7 +257,7 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueIblockId(): int
     {
-        $iblockExchangeHelper = new IblockExchangeHelper;
+        $iblockExchangeHelper = new IblockReaderHelper;
 
         $iblockId = $this->addFieldAndReturn(
             'iblock_id', [

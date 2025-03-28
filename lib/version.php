@@ -5,13 +5,13 @@ namespace Sprint\Migration;
 use ReflectionClass;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exchange\ExchangeManager;
-use Sprint\Migration\Interfaces\Restartable;
+use Sprint\Migration\Interfaces\RestartableInterface;
 use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\OutTrait;
 use Sprint\Migration\Traits\RestartableTrait;
 use Sprint\Migration\Traits\VersionConfigTrait;
 
-class Version implements Restartable
+class Version implements RestartableInterface
 {
     use HelperManagerTrait;
     use OutTrait;
@@ -94,7 +94,11 @@ class Version implements Restartable
 
     protected function getExchangeManager(): ExchangeManager
     {
-        return new ExchangeManager($this);
+        $dir = $this->getVersionConfig()->getVersionExchangeDir(
+            $this->getVersionName()
+        );
+
+        return new ExchangeManager($this, $dir);
     }
 }
 

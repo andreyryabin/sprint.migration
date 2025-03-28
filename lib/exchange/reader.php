@@ -3,31 +3,22 @@
 namespace Sprint\Migration\Exchange;
 
 use CFile;
-use Closure;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\Exceptions\RestartException;
-use Sprint\Migration\Interfaces\Restartable;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
-use Sprint\Migration\Out;
 use XMLReader;
 
-class ExchangeReader
+class Reader
 {
-    private Restartable $restartable;
-    private int $limit = 10;
-    private string $exchangeFile = '';
-    private Closure $recordConverter;
+    private string $file;
 
     /**
      * @throws MigrationException
      */
-    public function __construct(Restartable $restartable, Closure $recordConverter)
+    public function __construct(string $file)
     {
-        $this->restartable = $restartable;
-
-        $this->recordConverter = $recordConverter;
+        $this->file = $file;
 
         if (!class_exists('XMLReader')) {
             throw new MigrationException(
@@ -36,58 +27,34 @@ class ExchangeReader
                 )
             );
         }
+        if (!is_file($this->file)) {
+            throw new MigrationException(
+                Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->file])
+            );
+        }
     }
 
-    /**
-     * @throws HelperException
-     * @throws RestartException
-     */
-    public function execute(Closure $converter): void
-    {
-        $this->checkExchangeFile();
-
-        $attrs = $this->restartable->restartOnce('step1', fn() => $this->getExchangeAttributes());
-
-        $this->checkExchangeAttributes($attrs);
-
-        $this->restartable->restartWhile('step2', function ($offset) use (
-            $converter,
-            $attrs
-        ) {
-
-            $totalCount = $this->restartable->restartOnce('step2_1', fn() => $this->getExchangeRecordsCount());
-
-            $records = $this->readRecords($offset, $this->getLimit());
-
-            array_map(fn($record) => $converter(($this->recordConverter)($attrs, $record)), $records);
-
-            $countRecords = count($records);
-
-            $offset += $countRecords;
-
-            Out::outProgress('Progress: ', $offset, $totalCount);
-
-            return ($countRecords >= $this->getLimit()) ? $offset : false;
-        });
-    }
-
-    public function getLimit(): int
-    {
-        return $this->limit;
-    }
-
-    public function setLimit(int $limit): ExchangeReader
-    {
-        $this->limit = $limit;
-        return $this;
-    }
-
-    protected function readRecords(int $offset, int $limit): array
+    public function getRecordsCount(): int
     {
         $reader = new XMLReader();
-        $reader->open($this->exchangeFile);
-        $index = 0;
+        $reader->open($this->file);
 
+        $total = 0;
+        while ($reader->read()) {
+            if ($this->isOpenTag($reader, 'item')) {
+                $total++;
+            }
+        }
+
+        $reader->close();
+        return $total;
+    }
+
+    public function readRecords(int $offset, int $limit): array
+    {
+        $reader = new XMLReader();
+        $reader->open($this->file);
+        $index = 0;
         $records = [];
 
         while ($reader->read()) {
@@ -102,8 +69,23 @@ class ExchangeReader
         }
 
         $reader->close();
-
         return $records;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getAttributes(): array
+    {
+        $attrs = $this->readAttributes();
+
+        if (!$attrs['exchangeVersion'] || $attrs['exchangeVersion'] < Module::EXCHANGE_VERSION) {
+            throw new HelperException(
+                Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->file])
+            );
+        }
+
+        return $attrs;
     }
 
     private function readRecord(XMLReader $reader): array
@@ -125,8 +107,7 @@ class ExchangeReader
         return $record;
     }
 
-
-    protected function readRecordField(XMLReader $reader, string $tagName): array
+    private function readRecordField(XMLReader $reader, string $tagName): array
     {
         $field = $this->getTagAttributes($reader);
         $field['value'] = [];
@@ -150,26 +131,12 @@ class ExchangeReader
         return $field;
     }
 
-    public function setExchangeFile(string $exchangeFile): ExchangeReader
-    {
-        $this->exchangeFile = $exchangeFile;
-        return $this;
-    }
-
     private function getExchangeDir(): string
     {
-        return dirname($this->exchangeFile);
+        return dirname($this->file);
     }
 
-    /**
-     * @deprecated
-     */
-    public function setExchangeResource(): ExchangeReader
-    {
-        return $this;
-    }
-
-    protected function isOpenTag(XMLReader $reader, $tag): bool
+    private function isOpenTag(XMLReader $reader, $tag): bool
     {
         return (
             $reader->nodeType == XMLReader::ELEMENT
@@ -178,7 +145,7 @@ class ExchangeReader
         );
     }
 
-    protected function isCloseTag(XMLReader $reader, $tag): bool
+    private function isCloseTag(XMLReader $reader, $tag): bool
     {
         return (
             $reader->nodeType == XMLReader::END_ELEMENT
@@ -186,7 +153,7 @@ class ExchangeReader
         );
     }
 
-    protected function getTagAttributes(XMLReader $reader): array
+    private function getTagAttributes(XMLReader $reader): array
     {
         $attrs = [];
         if ($reader->hasAttributes) {
@@ -197,34 +164,10 @@ class ExchangeReader
         return $attrs;
     }
 
-    /**
-     * @throws HelperException
-     */
-    private function checkExchangeFile(): void
-    {
-        if (!is_file($this->exchangeFile)) {
-            throw new HelperException(
-                Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->exchangeFile])
-            );
-        }
-    }
-
-    /**
-     * @throws HelperException
-     */
-    private function checkExchangeAttributes(array $attributes): void
-    {
-        if (!$attributes['exchangeVersion'] || $attributes['exchangeVersion'] < Module::EXCHANGE_VERSION) {
-            throw new HelperException(
-                Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->exchangeFile])
-            );
-        }
-    }
-
-    private function getExchangeAttributes(): array
+    private function readAttributes(): array
     {
         $reader = new XMLReader();
-        $reader->open($this->exchangeFile);
+        $reader->open($this->file);
 
         $attributes = [];
         while ($reader->read()) {
@@ -237,23 +180,6 @@ class ExchangeReader
         $reader->close();
         return $attributes;
     }
-
-    private function getExchangeRecordsCount(): int
-    {
-        $reader = new XMLReader();
-        $reader->open($this->exchangeFile);
-
-        $total = 0;
-        while ($reader->read()) {
-            if ($this->isOpenTag($reader, 'item')) {
-                $total++;
-            }
-        }
-
-        $reader->close();
-        return $total;
-    }
-
 
     private function makeFileValue($value, $attrs): false|array
     {

@@ -2,66 +2,90 @@
 
 namespace Sprint\Migration\Exchange;
 
+use Closure;
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Interfaces\ReaderHelperInterface;
+use Sprint\Migration\Interfaces\RestartableInterface;
 use Sprint\Migration\Traits\HelperManagerTrait;
-use Sprint\Migration\Version;
 
 class ExchangeManager
 {
     use HelperManagerTrait;
 
-    protected Version $restartable;
+    private int $limit = 10;
+    private string $file = '';
+    private ?ReaderHelperInterface $exchangeHelper;
 
-    public function __construct(Version $restartable)
+
+    public function __construct(
+        private readonly RestartableInterface $restartable,
+        private readonly string               $directory,
+    )
     {
-        $this->restartable = $restartable;
-
     }
 
-    protected function getExchangeFile(string $fileName): string
+
+    /**
+     * @throws MigrationException
+     * @throws RestartException
+     */
+    public function execute(Closure $userFn): void
     {
-        return $this->restartable->getVersionConfig()->getVersionExchangeFile(
-            $this->restartable->getVersionName(),
-            $fileName
+        $reader = (new RestartableReader($this->restartable));
+
+        $recordFn = fn($attrs, $record) => $this->exchangeHelper->convertRecord($attrs, $record);
+
+        $reader->execute(
+            file: $this->file,
+            limit: $this->limit,
+            recordFn: $recordFn,
+            userFn: $userFn
         );
     }
 
-    /**
-     * @throws MigrationException
-     */
-    public function IblockElementsImport(): ExchangeReader
-    {
-        $exhelper = $this->getHelperManager()->IblockExchange();
 
-        return (new ExchangeReader(
-            $this->restartable,
-            fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
-        ))->setExchangeFile($this->getExchangeFile('iblock_elements.xml'));
+    public function IblockElementsImport(): ExchangeManager
+    {
+        return $this
+            ->setExchangeResource('iblock_elements.xml')
+            ->setExchangeHelper($this->getHelperManager()->IblockExchange());
     }
 
-    /**
-     * @throws MigrationException
-     */
-    public function HlblockElementsImport(): ExchangeReader
+    public function HlblockElementsImport(): ExchangeManager
     {
-        $exhelper = $this->getHelperManager()->HlblockExchange();
-
-        return (new ExchangeReader(
-            $this->restartable,
-            fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
-        ))->setExchangeFile($this->getExchangeFile('hlblock_elements.xml'));
+        return $this
+            ->setExchangeResource('hlblock_elements.xml')
+            ->setExchangeHelper($this->getHelperManager()->HlblockExchange());
     }
 
-    /**
-     * @throws MigrationException
-     */
-    public function MedialibElementsImport(): ExchangeReader
+    public function MedialibElementsImport(): ExchangeManager
     {
-        $exhelper = $this->getHelperManager()->MedialibExchange();
+        return $this
+            ->setExchangeResource('medialib_elements.xml')
+            ->setExchangeHelper($this->getHelperManager()->MedialibExchange());
+    }
 
-        return (new ExchangeReader(
-            $this->restartable,
-            fn($attrs, $record) => $exhelper->convertRecord($attrs, $record)
-        ))->setExchangeFile($this->getExchangeFile('medialib_elements.xml'));
+    public function setExchangeResource(string $exchangeResource): ExchangeManager
+    {
+        return $this->setExchangeFile($this->directory . $exchangeResource);
+    }
+
+    public function setExchangeFile(string $filePath): ExchangeManager
+    {
+        $this->file = $filePath;
+        return $this;
+    }
+
+    public function setLimit(int $limit): ExchangeManager
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
+    public function setExchangeHelper(ReaderHelperInterface $exchangeHelper): ExchangeManager
+    {
+        $this->exchangeHelper = $exchangeHelper;
+        return $this;
     }
 }
