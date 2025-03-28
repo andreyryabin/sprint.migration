@@ -63,21 +63,15 @@ class HlblockElementsBuilder extends VersionBuilder
             }
         }
 
-        (new RestartableWriter($this))
+        (new RestartableWriter($this, $this->getVersionExchangeDir()))
+            ->setExchangeResource('hlblock_elements.xml')
             ->execute(
-                file: $this->getExchangeFile('hlblock_elements.xml'),
-                limit: 20,
-                copyFiles: true,
-                attributesFn: fn() => $exhelper->createAttributes(
-                    $hlblockId
-                ),
-                totalCountFn: fn() => $exhelper->getElementsCount(
-                    $hlblockId
-                ),
-                recordsFn: fn($offset, $limit) => $exhelper->createRecordsTags(
-                    $hlblockId,
+                attributesFn: fn() => $exhelper->getWriterAttributes($hlblockId),
+                totalCountFn: fn() => $exhelper->getWriterRecordsCount($hlblockId),
+                recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
                     $offset,
                     $limit,
+                    $hlblockId,
                     $fields
                 )
             );

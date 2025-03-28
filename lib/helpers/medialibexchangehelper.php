@@ -5,8 +5,9 @@ namespace Sprint\Migration\Helpers;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exchange\WriterTag;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
+use Sprint\Migration\Interfaces\WriterHelperInterface;
 
-class MedialibReaderHelper extends MedialibHelper implements ReaderHelperInterface
+class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInterface, WriterHelperInterface
 {
     private array $cachedFlatTree = [];
     private array $cachedPaths = [];
@@ -57,12 +58,28 @@ class MedialibReaderHelper extends MedialibHelper implements ReaderHelperInterfa
 
 
     //writer
+    public function getWriterAttributes(...$vars): array
+    {
+        return [];
+    }
 
     /**
      * @throws HelperException
      */
-    public function createRecordsTags($collectionId, int $offset, int $limit, array $exportFields): WriterTag
+    public function getWriterRecordsCount(...$vars): int
     {
+        [$collectionIds] = $vars;
+
+        return $this->getElementsCount($collectionIds);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getWriterRecordsTag(int $offset, int $limit, ...$vars): WriterTag
+    {
+        [$collectionId, $exportFields] = $vars;;
+
         $elements = $this->getElements(
             $collectionId,
             [
@@ -126,7 +143,15 @@ class MedialibReaderHelper extends MedialibHelper implements ReaderHelperInterfa
     /**
      * @throws HelperException
      */
-    public function convertRecord(array $attrs, array $record): array
+    public function convertReaderRecords(array $attributes, array $records): array
+    {
+        return array_map(fn($record) => $this->convertReaderRecord($record), $records);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function convertReaderRecord(array $record): array
     {
         $fields = [];
         foreach ($record['fields'] as $field) {
@@ -137,7 +162,6 @@ class MedialibReaderHelper extends MedialibHelper implements ReaderHelperInterfa
             }
         }
         return $fields;
-
     }
 
     /**

@@ -61,20 +61,15 @@ class MedialibElementsBuilder extends VersionBuilder
             'SOURCE_ID',
         ];
 
-
-        (new RestartableWriter($this))
+        (new RestartableWriter($this, $this->getVersionExchangeDir()))
+            ->setExchangeResource('medialib_elements.xml')
             ->execute(
-                file: $this->getExchangeFile('medialib_elements.xml'),
-                limit: 20,
-                copyFiles: true,
-                attributesFn: fn() => [],
-                totalCountFn: fn() => $exhelper->getElementsCount(
-                    $collectionIds
-                ),
-                recordsFn: fn($offset, $limit) => $exhelper->createRecordsTags(
-                    $collectionIds,
+                attributesFn: fn() => $exhelper->getWriterAttributes(),
+                totalCountFn: fn() => $exhelper->getWriterRecordsCount($collectionIds),
+                recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
                     $offset,
                     $limit,
+                    $collectionIds,
                     $exportFields
                 ),
             );

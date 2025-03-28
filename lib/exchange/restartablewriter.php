@@ -10,8 +10,41 @@ use Sprint\Migration\Out;
 
 class RestartableWriter
 {
-    public function __construct(private readonly RestartableInterface $restartable)
+    private int $limit = 20;
+    private string $file = '';
+    private bool $copyFiles = true;
+    private int $totalCount = 0;
+    private ?Writer $writer;
+
+
+    public function __construct(
+        private readonly RestartableInterface $restartable,
+        private readonly string               $directory,
+    )
     {
+    }
+
+    public function setExchangeResource(string $exchangeResource): RestartableWriter
+    {
+        return $this->setExchangeFile($this->directory . $exchangeResource);
+    }
+
+    public function setExchangeFile(string $filePath): RestartableWriter
+    {
+        $this->file = $filePath;
+        return $this;
+    }
+
+    public function setLimit(int $limit): RestartableWriter
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
+    public function setCopyFiles(bool $copyFiles): RestartableWriter
+    {
+        $this->copyFiles = $copyFiles;
+        return $this;
     }
 
     /**
@@ -19,52 +52,41 @@ class RestartableWriter
      * @throws RestartException
      */
     public function execute(
-        string  $file,
-        int     $limit,
-        bool    $copyFiles,
         Closure $attributesFn,
         Closure $totalCountFn,
         Closure $recordsFn,
     ): void
     {
-        $writer = new Writer($file);
+        $this->writer = new Writer($this->file);
 
-        $writer->setCopyFiles($copyFiles);
+        $this->writer->setCopyFiles($this->copyFiles);
 
-        $this->restartable->restartOnce('step1', fn() => $writer->createFile($attributesFn()));
+        $this->restartable->restartOnce('step1', fn() => $this->writer->createFile($attributesFn()));
 
-        $totalCount = $this->restartable->restartOnce('step2', fn() => $totalCountFn());
+        $this->totalCount = $this->restartable->restartOnce('step2', fn() => $totalCountFn());
 
-        $this->restartable->restartWhile('step3', fn(int $offset) => $this->write(
-            $writer,
-            $offset,
-            $limit,
-            $totalCount,
-            $recordsFn
-        ));
+        $this->restartable->restartWhile('step3', fn(int $offset) => $this->write($offset, $recordsFn));
 
-        $this->restartable->restartOnce('step4', fn() => $writer->closeFile());
+        $this->restartable->restartOnce('step4', fn() => $this->writer->closeFile());
 
     }
 
     /**
      * @throws MigrationException
      */
-    private function write(
-        Writer  $writer,
-        int     $offset,
-        int     $limit,
-        int     $totalCount,
-        Closure $recordsFn,
-    ): int
+    private function write(int $offset, Closure $recordsFn): int
     {
-        $fetchedCount = $writer->appendTagsToFile($recordsFn($offset, $limit));
+        /** @var WriterTag $tags */
+        $tags = $recordsFn($offset, $this->limit);
+
+        $fetchedCount = $this->writer->appendTagsToFile($tags);
 
         $offset += $fetchedCount;
 
-        Out::outProgress('Progress: ', $offset, $totalCount);
+        Out::outProgress('Progress: ', $offset, $this->totalCount);
 
-        return ($fetchedCount >= $limit) ? $offset : 0;
+        return ($fetchedCount >= $this->limit) ? $offset : 0;
     }
+
 
 }

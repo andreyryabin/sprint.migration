@@ -56,14 +56,6 @@ abstract class VersionBuilder extends AbstractBuilder
         return $dir . '/' . $versionName . '.php';
     }
 
-    protected function getExchangeFile(string $name): string
-    {
-        return $this->getVersionConfig()->getVersionExchangeFile(
-            $this->getVersionName(),
-            $name
-        );
-    }
-
     protected function getVersionName(): string
     {
         if (!isset($this->params['~version_name'])) {
@@ -162,5 +154,12 @@ abstract class VersionBuilder extends AbstractBuilder
         $ts = date($versionTimestampFormat);
         date_default_timezone_set($originTz);
         return $ts;
+    }
+
+    protected function getVersionExchangeDir(): string
+    {
+        return $this->getVersionConfig()->getVersionExchangeDir(
+            $this->getVersionName()
+        );
     }
 }

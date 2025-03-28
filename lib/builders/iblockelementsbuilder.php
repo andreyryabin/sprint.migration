@@ -7,7 +7,7 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\RestartableWriter;
-use Sprint\Migration\Helpers\IblockReaderHelper;
+use Sprint\Migration\Helpers\IblockExchangeHelper;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -53,22 +53,20 @@ class IblockElementsBuilder extends VersionBuilder
         $exportProps = $this->getFieldValueExportProps($iblockId);
 
 
-        (new RestartableWriter($this))
+        (new RestartableWriter($this, $this->getVersionExchangeDir()))
+            ->setExchangeResource('iblock_elements.xml')
             ->execute(
-                file: $this->getExchangeFile('iblock_elements.xml'),
-                limit: 20,
-                copyFiles: true,
-                attributesFn: fn() => $exhelper->createAttributes(
+                attributesFn: fn() => $exhelper->getWriterAttributes(
                     $iblockId
                 ),
-                totalCountFn: fn() => $exhelper->getElementsCount(
+                totalCountFn: fn() => $exhelper->getWriterRecordsCount(
                     $iblockId,
                     $exportFilter
                 ),
-                recordsFn: fn($offset, $limit) => $exhelper->createRecordsTags(
-                    $iblockId,
+                recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
                     $offset,
                     $limit,
+                    $iblockId,
                     $exportFilter,
                     $exportFields,
                     $exportProps
@@ -88,7 +86,7 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueExportProps($iblockId)
     {
-        $iblockExchangeHelper = new IblockReaderHelper;
+        $iblockExchangeHelper = new IblockExchangeHelper;
 
         $propsMode = $this->addFieldAndReturn(
             'props_mode',
@@ -197,7 +195,7 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueExportFields($iblockId, $updateMode = false)
     {
-        $iblockExchangeHelper = new IblockReaderHelper;
+        $iblockExchangeHelper = new IblockExchangeHelper;
 
         $fieldsMode = $this->addFieldAndReturn(
             'fields_mode',
@@ -257,7 +255,7 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueIblockId(): int
     {
-        $iblockExchangeHelper = new IblockReaderHelper;
+        $iblockExchangeHelper = new IblockExchangeHelper;
 
         $iblockId = $this->addFieldAndReturn(
             'iblock_id', [

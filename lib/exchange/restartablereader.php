@@ -3,60 +3,66 @@
 namespace Sprint\Migration\Exchange;
 
 use Closure;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\RestartableInterface;
 use Sprint\Migration\Out;
 
 class RestartableReader
 {
+    private int $limit = 10;
+    private string $file = '';
+    private array $attributes = [];
+    private int $totalCount = 0;
+    private ?Reader $reader;
 
-    public function __construct(private readonly RestartableInterface $restartable)
+    public function __construct(
+        private readonly RestartableInterface  $restartable,
+        private readonly ReaderHelperInterface $helper,
+        private readonly string                $directory,
+    )
     {
+    }
 
+    public function setExchangeResource(string $exchangeResource): RestartableReader
+    {
+        return $this->setExchangeFile($this->directory . $exchangeResource);
+    }
+
+    public function setExchangeFile(string $filePath): RestartableReader
+    {
+        $this->file = $filePath;
+        return $this;
+    }
+
+    public function setLimit(int $limit): RestartableReader
+    {
+        $this->limit = $limit;
+        return $this;
     }
 
     /**
-     * @throws RestartException
      * @throws MigrationException
+     * @throws RestartException
      */
-    public function execute(
-        string  $file,
-        int     $limit,
-        Closure $recordFn,
-        Closure $userFn
-    ): void
+    public function execute(Closure $userFn): void
     {
-        $reader = new Reader($file);
+        $this->reader = new Reader($this->file);
 
-        $attrs = $this->restartable->restartOnce('step1', fn() => $reader->getAttributes());
+        $this->attributes = $this->restartable->restartOnce('step1', fn() => $this->reader->getAttributes());
 
-        $totalCount = $this->restartable->restartOnce('step2', fn() => $reader->getRecordsCount());
+        $this->totalCount = $this->restartable->restartOnce('step2', fn() => $this->reader->getRecordsCount());
 
-        $this->restartable->restartWhile('step3', fn(int $offset) => $this->read(
-            $reader,
-            $attrs,
-            $offset,
-            $limit,
-            $totalCount,
-            $recordFn,
-            $userFn,
-        ));
+        $this->restartable->restartWhile('step3', fn(int $offset) => $this->read($offset, $userFn));
     }
 
-    private function read(
-        Reader  $reader,
-        array   $attrs,
-        int     $offset,
-        int     $limit,
-        int     $totalCount,
-        Closure $recordsFn,
-        Closure $userfunc
-    ): int
+    private function read(int $offset, Closure $userfunc): int
     {
-        $records = array_map(
-            fn($record) => $recordsFn($attrs, $record),
-            $reader->readRecords($offset, $limit)
+        $records = $this->helper->convertReaderRecords(
+            $this->attributes,
+            $this->reader->readRecords($offset, $this->limit)
         );
 
         array_map($userfunc, $records);
@@ -65,8 +71,10 @@ class RestartableReader
 
         $offset += $readCount;
 
-        Out::outProgress('Progress: ', $offset, $totalCount);
+        Out::outProgress('Progress: ', $offset, $this->totalCount);
 
-        return ($readCount >= $limit) ? $offset : 0;
+        return ($readCount >= $this->limit) ? $offset : 0;
     }
+
+
 }

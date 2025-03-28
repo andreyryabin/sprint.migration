@@ -120,11 +120,6 @@ class VersionConfig
         return $this->configList[$this->configCurrent]['name'];
     }
 
-    public function getVersionExchangeFile(string $versionName, string $fileName): string
-    {
-        return $this->getVersionExchangeDir($versionName) . $fileName;
-    }
-
     public function getVersionExchangeDir(string $versionName): string
     {
         $dir = $this->getVal('exchange_dir');

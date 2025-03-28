@@ -6,8 +6,9 @@ use _CIBElement;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exchange\WriterTag;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
+use Sprint\Migration\Interfaces\WriterHelperInterface;
 
-class IblockReaderHelper extends IblockHelper implements ReaderHelperInterface
+class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface, WriterHelperInterface
 {
     protected array $cachedProps = [];
 
@@ -205,32 +206,41 @@ class IblockReaderHelper extends IblockHelper implements ReaderHelperInterface
     }
 
     //writer
-    public function createAttributes(int $iblockId): array
+
+    /**
+     * @throws HelperException
+     */
+    public function getWriterAttributes(...$vars): array
     {
+        [$iblockId] = $vars;
+
         return [
             'iblockUid' => $this->getIblockUid($iblockId)
         ];
     }
 
+    public function getWriterRecordsCount(...$vars): int
+    {
+        [$iblockId, $filter] = $vars;
+
+        return $this->getElementsCount($iblockId, $filter);
+    }
+
     /**
      * @throws HelperException
      */
-    public function createRecordsTags(
-        $iblockId,
-        int $offset,
-        int $limit,
-        array $exportFilter,
-        array $exportFields,
-        array $exportProperties
-    ): WriterTag
+    public function getWriterRecordsTag(int $offset, int $limit, ...$vars): WriterTag
     {
+
+        [$iblockId, $filter, $exportFields, $exportProps] = $vars;
+
         $dbres = $this->getElementsList(
             $iblockId,
             [
                 'order' => ['ID' => 'ASC'],
                 'offset' => $offset,
                 'limit' => $limit,
-                'filter' => $exportFilter,
+                'filter' => $filter,
             ]
         );
 
@@ -242,7 +252,7 @@ class IblockReaderHelper extends IblockHelper implements ReaderHelperInterface
                     $this->getElementFields($element),
                     $this->getElementProps($element),
                     $exportFields,
-                    $exportProperties
+                    $exportProps
                 ));
         }
         return $tag;
@@ -382,10 +392,18 @@ class IblockReaderHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function convertRecord(array $attrs, array $record): array
+    public function convertReaderRecords(array $attributes, array $records): array
     {
-        $iblockId = $this->getIblockIdByUid($attrs['iblockUid']);
+        $iblockId = $this->getIblockIdByUid($attributes['iblockUid']);
 
+        return array_map(fn($record) => $this->convertReaderRecord($iblockId, $record), $records);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function convertReaderRecord(int $iblockId, array $record): array
+    {
         $convertedFields = [];
         foreach ($record['fields'] as $field) {
             if ($field['name'] == 'IBLOCK_SECTION') {

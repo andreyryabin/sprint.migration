@@ -5,8 +5,9 @@ namespace Sprint\Migration\Helpers;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exchange\WriterTag;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
+use Sprint\Migration\Interfaces\WriterHelperInterface;
 
-class HlblockReaderHelper extends HlblockHelper implements ReaderHelperInterface
+class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterface, WriterHelperInterface
 {
     protected array $cachedFields = [];
 
@@ -64,10 +65,18 @@ class HlblockReaderHelper extends HlblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function convertRecord(array $attrs, array $record): array
+    public function convertReaderRecords(array $attributes, array $records): array
     {
-        $hlblockId = $this->getHlblockIdIfExists($attrs['hlblockUid']);
+        $hlblockId = $this->getHlblockIdIfExists($attributes['hlblockUid']);
 
+        return array_map(fn($record) => $this->convertReaderRecord($hlblockId, $record), $records);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function convertReaderRecord(int $hlblockId, array $record): array
+    {
         $convertedFields = [];
         foreach ($record['fields'] as $field) {
             $fieldType = $this->getFieldType($hlblockId, $field['name']);
@@ -132,8 +141,10 @@ class HlblockReaderHelper extends HlblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function createAttributes(int $hlblockId): array
+    public function getWriterAttributes(...$vars): array
     {
+        [$hlblockId] = $vars;
+
         return [
             'hlblockUid' => $this->getHlblockUid($hlblockId)
         ];
@@ -142,8 +153,20 @@ class HlblockReaderHelper extends HlblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function createRecordsTags($hlblockId, int $offset, int $limit, array $exportFields): WriterTag
+    public function getWriterRecordsCount(...$vars): int
     {
+        [$hlblockId] = $vars;
+
+        return $this->getElementsCount($hlblockId);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getWriterRecordsTag(int $offset, int $limit, ...$vars): WriterTag
+    {
+        [$hlblockId, $exportFields] = $vars;
+
         $elements = $this->getElements(
             $hlblockId,
             [
