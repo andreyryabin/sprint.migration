@@ -3,7 +3,6 @@
 namespace Sprint\Migration\Exchange;
 
 use Closure;
-use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
