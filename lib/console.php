@@ -596,8 +596,8 @@ class Console
     protected function addArg($arg)
     {
         [$name, $val] = explode('=', $arg);
-        $isoption = (0 === strpos($name, '--')) ? 1 : 0;
-        if ($isoption) {
+
+        if (str_starts_with($name, '--')) {
             if (!is_null($val)) {
                 $this->argoptions[$name . '='] = $val;
             } else {

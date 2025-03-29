@@ -368,13 +368,10 @@ class UserOptionsHelper extends Helper
 
             $tabVals[$tabIndex][] = $tabId . '--#--' . $tabTitle . '--';
 
-            foreach ($fields as $fieldKey => $fieldValue) {
-                if (is_numeric($fieldKey)) {
+            foreach ($fields as $fcode => $ftitle) {
+                if (is_numeric($fcode)) {
                     /** @compability */
-                    [$fcode, $ftitle] = explode('|', $fieldValue);
-                } else {
-                    $fcode = $fieldKey;
-                    $ftitle = $fieldValue;
+                    [$fcode, $ftitle] = explode('|', $ftitle);
                 }
 
                 $fcode = $this->transformCode($fcode);

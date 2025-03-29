@@ -339,7 +339,7 @@ trait IblockTrait
 
     protected function transformCode($fieldCode)
     {
-        if (0 === strpos($fieldCode, 'PROPERTY_')) {
+        if (str_starts_with($fieldCode, 'PROPERTY_')) {
             $fieldCode = substr($fieldCode, 9);
             foreach ($this->props as $prop) {
                 if ($prop['CODE'] == $fieldCode) {
@@ -354,7 +354,7 @@ trait IblockTrait
 
     protected function revertCode($fieldCode)
     {
-        if (0 === strpos($fieldCode, 'PROPERTY_')) {
+        if (str_starts_with($fieldCode, 'PROPERTY_')) {
             $fieldCode = substr($fieldCode, 9);
             foreach ($this->props as $prop) {
                 if ($prop['ID'] == $fieldCode) {

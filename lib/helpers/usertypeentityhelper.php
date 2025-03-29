@@ -392,7 +392,7 @@ class UserTypeEntityHelper extends Helper
      */
     public function revertEntityId($entityId)
     {
-        if (0 === strpos($entityId, 'HLBLOCK_')) {
+        if (str_starts_with($entityId, 'HLBLOCK_')) {
             $hlblockId = substr($entityId, 8);
             if (!is_numeric($hlblockId)) {
                 $hlblockId = (new HlblockHelper())->getHlblockIdByUid($hlblockId);
@@ -422,7 +422,7 @@ class UserTypeEntityHelper extends Helper
      */
     public function transformEntityId($entityId)
     {
-        if (0 === strpos($entityId, 'HLBLOCK_')) {
+        if (str_starts_with($entityId, 'HLBLOCK_')) {
             $hlblockId = substr($entityId, 8);
             if (is_numeric($hlblockId)) {
                 $hlblockId = (new HlblockHelper())->getHlblockUid($hlblockId);
@@ -449,7 +449,7 @@ class UserTypeEntityHelper extends Helper
     {
         $title = Locale::getMessage('ENTITY_TITLE_' . $entityId, [], $entityId);
 
-        if (0 === strpos($entityId, 'HLBLOCK_')) {
+        if (str_starts_with($entityId, 'HLBLOCK_')) {
             $hlblockId = substr($entityId, 8);
             if (is_numeric($hlblockId)) {
                 $hlblock = (new HlblockHelper())->getHlblock($hlblockId);
