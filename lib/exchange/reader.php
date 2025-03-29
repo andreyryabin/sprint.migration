@@ -12,14 +12,13 @@ use XMLReader;
 class Reader
 {
     private string $file;
+    private string $path;
 
     /**
      * @throws MigrationException
      */
     public function __construct(string $file)
     {
-        $this->file = $file;
-
         if (!class_exists('XMLReader')) {
             throw new MigrationException(
                 Locale::getMessage(
@@ -27,11 +26,14 @@ class Reader
                 )
             );
         }
-        if (!is_file($this->file)) {
+        if (!is_file($file)) {
             throw new MigrationException(
-                Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $this->file])
+                Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $file])
             );
         }
+
+        $this->file = $file;
+        $this->path = dirname($this->file);
     }
 
     public function getRecordsCount(): int
@@ -115,25 +117,33 @@ class Reader
         do {
             $reader->read();
             if ($this->isOpenTag($reader, 'value')) {
-                $val = $this->getTagAttributes($reader);
-                $reader->read();
-                if (isset($val['type']) && $val['type'] == 'json') {
-                    $val['value'] = json_decode($reader->value, true);
-                } elseif (isset($val['type']) && $val['type'] == 'file') {
-                    $val['value'] = $this->makeFileValue($reader->value, $val);
-                } else {
-                    $val['value'] = $reader->value;
-                }
-                $field['value'][] = $val;
+                $field['value'][] = $this->readRecordValue($reader);
             }
         } while (!$this->isCloseTag($reader, $tagName));
 
         return $field;
     }
 
-    private function getExchangeDir(): string
+    private function readRecordValue(XMLReader $reader): array
     {
-        return dirname($this->file);
+        $val = $this->getTagAttributes($reader);
+        $reader->read();
+
+        if (isset($val['type']) && $val['type'] == 'json') {
+            $val['value'] = json_decode($reader->value, true);
+        } elseif (isset($val['type']) && $val['type'] == 'file') {
+            $val['value'] = $this->makeFileValue($reader->value, $val);
+        } elseif (isset($val['name']) && $this->isFilePath($reader->value)) {
+            $val['value'] = $this->makeFileValue($reader->value, $val);
+        } else {
+            $val['value'] = $reader->value;
+        }
+        return $val;
+    }
+
+    private function isFilePath(string $value): bool
+    {
+        return $value && is_file($this->path . '/' . $value);
     }
 
     private function isOpenTag(XMLReader $reader, $tag): bool
@@ -184,7 +194,7 @@ class Reader
     private function makeFileValue($value, $attrs): false|array
     {
         if (!empty($value)) {
-            $path = $this->getExchangeDir() . '/' . $value;
+            $path = $this->path . '/' . $value;
             $file = CFile::MakeFileArray($path);
             if (!empty($attrs['name'])) {
                 $file['name'] = $attrs['name'];
