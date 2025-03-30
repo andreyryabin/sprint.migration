@@ -438,7 +438,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     }
 
 
-    protected function convertFieldValue(int $iblockId, array $field): string
+    protected function convertFieldValue(int $iblockId, array $field)
     {
         return $field['value'][0]['value'];
     }

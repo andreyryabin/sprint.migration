@@ -176,7 +176,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
         );
     }
 
-    protected function convertFieldValue(array $field): string
+    protected function convertFieldValue(array $field)
     {
         return $field['value'][0]['value'];
     }
