@@ -60,6 +60,11 @@ class Module
         }
     }
 
+    public static function getModuleTemplateFile(string $name): string
+    {
+        return Module::getModuleDir() . '/templates/' . $name . '.php';
+    }
+
     /**
      * @throws MigrationException
      */

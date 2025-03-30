@@ -2,9 +2,9 @@
 
 namespace Sprint\Migration\Tables;
 
-use Bitrix\Main\Entity\DataManager;
+use Bitrix\Main\ORM\Data;
 
-class OptionTable extends DataManager
+class OptionTable extends Data\DataManager
 {
     public static function getTableName(): string
     {

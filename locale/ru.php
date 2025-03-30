@@ -358,6 +358,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "EVENT_MESSAGE_UPDATED"    => "Почтовый шаблон \"#NAME#\" обновлен",
         "EVENT_MESSAGE_EQUAL"      => "Почтовый шаблон \"#NAME#\" совпадает",
         "EVENT_MESSAGE_DELETED"    => "Почтовый шаблон \"#NAME#\" удален",
+        "EVENT_SMS_TEMPLATE_CREATED"    => "Шаблон смс \"#NAME#\" добавлен",
+        "EVENT_SMS_TEMPLATE_UPDATED"    => "Шаблон смс \"#NAME#\" обновлен",
         "EVENT_TYPE_CREATED"       => "Тип почтового события \"#NAME#\" добавлен",
         "EVENT_TYPE_UPDATED"       => "Тип почтового события \"#NAME#\" обновлен",
         "EVENT_TYPE_EQUAL"         => "Тип почтового события \"#NAME#\" совпадает",

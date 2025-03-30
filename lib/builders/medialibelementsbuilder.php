@@ -75,7 +75,7 @@ class MedialibElementsBuilder extends VersionBuilder
             );
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/MedialibElementsExport.php'
+            Module::getModuleTemplateFile('MedialibElementsExport')
         );
     }
 }

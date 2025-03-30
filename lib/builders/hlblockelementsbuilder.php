@@ -78,7 +78,7 @@ class HlblockElementsBuilder extends VersionBuilder
 
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/HlblockElementsExport.php',
+            Module::getModuleTemplateFile('HlblockElementsExport'),
             [
                 'updateMode' => $updateMode,
             ]

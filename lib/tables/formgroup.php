@@ -2,9 +2,9 @@
 
 namespace Sprint\Migration\Tables;
 
-use Bitrix\Main\Entity\DataManager;
+use Bitrix\Main\ORM\Data;
 
-class FormGroupTable extends DataManager
+class FormGroupTable extends Data\DataManager
 {
     public static function getTableName(): string
     {

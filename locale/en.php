@@ -358,6 +358,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "EVENT_MESSAGE_UPDATED"    => "Event message \"#NAME#\" updated",
         "EVENT_MESSAGE_EQUAL"      => "Event message \"#NAME#\" equivalent",
         "EVENT_MESSAGE_DELETED"    => "Event message \"#NAME#\" deleted",
+        "EVENT_SMS_TEMPLATE_CREATED"    => "Event sms template \"#NAME#\" created",
+        "EVENT_SMS_TEMPLATE_UPDATED"    => "Event sms template \"#NAME#\" updated",
         "EVENT_TYPE_CREATED"       => "Event type \"#NAME#\" created",
         "EVENT_TYPE_UPDATED"       => "Event type \"#NAME#\" updated",
         "EVENT_TYPE_EQUAL"         => "Event type \"#NAME#\" equivalent",

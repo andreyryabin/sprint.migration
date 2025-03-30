@@ -113,7 +113,7 @@ class FormBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/FormExport.php',
+            Module::getModuleTemplateFile('FormExport'),
             [
                 'formExport' => $formExport,
                 'fieldsMode' => $fieldsMode,

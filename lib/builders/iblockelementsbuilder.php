@@ -74,7 +74,7 @@ class IblockElementsBuilder extends VersionBuilder
             );
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/IblockElementsExport.php',
+            Module::getModuleTemplateFile('IblockElementsExport'),
             [
                 'updateMode' => $updateMode,
             ]

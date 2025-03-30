@@ -57,7 +57,7 @@ class IblockDeleteBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/IblockDelete.php',
+            Module::getModuleTemplateFile('IblockDelete'),
             [
                 'iblocks' => $selectedIblocks,
             ],

@@ -63,7 +63,7 @@ class UserGroupBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/UserGroupExport.php',
+            Module::getModuleTemplateFile('UserGroupExport'),
             [
                 'items' => $items,
             ]

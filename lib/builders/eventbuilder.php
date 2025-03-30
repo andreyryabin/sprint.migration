@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Builders;
 
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Locale;
@@ -26,31 +27,35 @@ class EventBuilder extends VersionBuilder
     /**
      * @throws RebuildException
      * @throws MigrationException
+     * @throws HelperException
      */
     protected function execute()
     {
         $helper = $this->getHelperManager();
 
         $eventTypes = $this->addFieldAndReturn('event_types', [
-            'title'    => Locale::getMessage('BUILDER_EventExport_event_types'),
-            'width'    => 350,
-            'select'   => $this->getEventTypesSelect(),
+            'title' => Locale::getMessage('BUILDER_EventExport_event_types'),
+            'width' => 350,
+            'select' => $this->getEventTypesSelect(),
             'multiple' => 1,
         ]);
 
         $result = [];
         foreach ($eventTypes as $eventName) {
             $types = $helper->Event()->exportEventTypes($eventName);
+
             $messages = $helper->Event()->exportEventMessages($eventName);
+            $smstemplates = $helper->Event()->exportEventSmsTemplates($eventName);
 
             $result[$eventName] = [
-                'types'    => $types,
-                'messages' => $messages,
+                'types' => $types,
+                'email' => $messages,
+                'sms' => $smstemplates,
             ];
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/EventExport.php',
+            Module::getModuleTemplateFile('EventExport'),
             [
                 'result' => $result,
             ]

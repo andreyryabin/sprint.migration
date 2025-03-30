@@ -146,7 +146,7 @@ class IblockBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/IblockExport.php',
+            Module::getModuleTemplateFile('IblockExport'),
             [
                 'iblockExport'      => $iblockExport,
                 'iblock'            => $iblock,

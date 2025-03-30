@@ -112,7 +112,7 @@ abstract class VersionBuilder extends AbstractBuilder
         $templateVars['moduleVersion'] = Module::getVersion();
 
         if (!is_file($templateFile)) {
-            $templateFile = Module::getModuleDir() . '/templates/version.php';
+            $templateFile = Module::getModuleTemplateFile('version');
         }
 
         $fileName = $this->getVersionFile($templateVars['version']);
