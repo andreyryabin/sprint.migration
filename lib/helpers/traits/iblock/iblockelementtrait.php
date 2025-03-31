@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration\Helpers\Traits\Iblock;
 
-use Bitrix\Iblock\InheritedProperty\ElementValues as IpropertyElementValues;
+use Bitrix\Iblock\InheritedProperty\ElementTemplates as IpropertyTemplates;
 use CIBlockElement;
 use CIBlockResult;
 use Sprint\Migration\Exceptions\HelperException;
@@ -57,7 +57,7 @@ trait IblockElementTrait
     {
         $item['IBLOCK_SECTION'] = $this->getElementSectionIds($item['ID']);
 
-        $item['IPROPERTY_TEMPLATES'] = $this->getElementIpropertyValues($item['IBLOCK_ID'], $item['ID']);
+        $item['IPROPERTY_TEMPLATES'] = $this->getElementIpropertyTemplates($item['IBLOCK_ID'], $item['ID']);
 
         return $item;
     }
@@ -68,9 +68,10 @@ trait IblockElementTrait
         return array_column($sections, 'ID');
     }
 
-    public function getElementIpropertyValues(int $iblockId, int $elementId): array
+    public function getElementIpropertyTemplates(int $iblockId, int $elementId): array
     {
-        return (new IpropertyElementValues($iblockId, $elementId))->getValues();
+        $templates = (new IpropertyTemplates($iblockId, $elementId))->findTemplates();
+        return array_column($templates, 'TEMPLATE', 'CODE');
     }
 
     public function getElementSections(int $elementId, array $sectionSelect = []): array
