@@ -12,6 +12,7 @@ class WriterTag
     private string $text = '';
     private array $childs = [];
     private array $files = [];
+    private bool $cdata = false;
 
     public function __construct(string $name, array $attributes = [])
     {
@@ -67,17 +68,19 @@ class WriterTag
     public function setText(string $text): void
     {
         $this->text = htmlspecialchars_decode($text);
+        $this->cdata = $this->text != $text;
     }
 
-    public function setTextJson(array $text): void
+    public function setJson(array $text): void
     {
-        $this->setText(json_encode($text, JSON_UNESCAPED_UNICODE));
+        $this->text = json_encode($text, JSON_UNESCAPED_UNICODE);
+        $this->cdata = true;
         $this->setAttribute('type', 'json');
     }
 
     public function isCdata(): bool
     {
-        return str_starts_with($this->text, '{');
+        return $this->cdata;
     }
 
 
@@ -112,7 +115,7 @@ class WriterTag
 
         $tag = new WriterTag('value', $attributes);
         if (is_array($val)) {
-            $tag->setTextJson($val);
+            $tag->setJson($val);
         } else {
             $tag->setText($val);
         }
