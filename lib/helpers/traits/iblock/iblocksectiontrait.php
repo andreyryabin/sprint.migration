@@ -338,13 +338,9 @@ trait IblockSectionTrait
     }
 
     /**
-     * @param $iblockId
-     * @param $sectionId
-     *
      * @throws HelperException
-     * @return array
      */
-    public function getSectionUniqFilterById($iblockId, $sectionId)
+    public function getSectionUniqFilterById(int $iblockId, int $sectionId): array
     {
         if (empty($sectionId)) {
             throw new HelperException(
@@ -387,7 +383,7 @@ trait IblockSectionTrait
     /**
      * @throws HelperException
      */
-    public function getSectionIdByUniqFilter($iblockId, $uniqFilter)
+    public function getSectionIdByUniqFilter(int $iblockId, array $uniqFilter): int
     {
         if (empty($uniqFilter)) {
             throw new HelperException(
@@ -417,7 +413,7 @@ trait IblockSectionTrait
             );
         }
 
-        return $section['ID'];
+        return (int)$section['ID'];
     }
 
     /**

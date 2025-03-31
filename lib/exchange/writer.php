@@ -51,7 +51,7 @@ class Writer
     {
         $writer = new XMLWriter();
         $writer->openMemory();
-
+        $writer->setIndent(true);
         /** @var WriterTag $child */
         foreach ($tag->getChilds() as $child) {
             $this->appendTagsToXml($writer, $child);
@@ -95,8 +95,11 @@ class Writer
         }
 
         if ($tag->getText()) {
-            $writer->text($tag->getText());
-            //$writer->writeCdata($tag->getText());
+            if ($tag->isCdata()) {
+                $writer->writeCdata($tag->getText());
+            } else {
+                $writer->text($tag->getText());
+            }
         }
 
         $writer->endElement();
@@ -104,7 +107,7 @@ class Writer
 
     private function appendToFile($content): void
     {
-        file_put_contents($this->file, $content, FILE_APPEND);
+        file_put_contents($this->file, $content . PHP_EOL, FILE_APPEND);
     }
 
     private function getFileDir(): string

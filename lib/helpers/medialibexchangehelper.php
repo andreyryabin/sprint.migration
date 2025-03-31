@@ -78,7 +78,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
      */
     public function getWriterRecordsTag(int $offset, int $limit, ...$vars): WriterTag
     {
-        [$collectionId, $exportFields] = $vars;;
+        [$collectionId, $exportFields] = $vars;
 
         $elements = $this->getElements(
             $collectionId,
@@ -123,16 +123,16 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
 
         if ($field['NAME'] == 'SOURCE_ID') {
             $tag->setAttribute('name', 'FILE');
-            $tag->addFile($field['VALUE']);
+            $tag->addFile($field['VALUE'], false);
         } elseif ($field['NAME'] == 'COLLECTION_ID') {
             $path = $this->getCollectionPath(
                 self::TYPE_IMAGE,
                 $field['VALUE']
             );
             $tag->setAttribute('name', 'COLLECTION_PATH');
-            $tag->addValue($path);
+            $tag->addValue($path, false);
         } else {
-            $tag->addValue($field['VALUE']);
+            $tag->addValue($field['VALUE'],false);
         }
 
         return $tag;

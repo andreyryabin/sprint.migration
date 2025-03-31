@@ -12,7 +12,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 {
     protected array $cachedProps = [];
 
-    public function getProperty($iblockId, $code)
+    public function getProperty(int $iblockId, string|array $code): array|bool
     {
         $key = $iblockId . $code;
 
@@ -24,8 +24,6 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
     /**
      * Структура инфоблоков для построения выпадающего списка
-     *
-     * @return array
      */
     public function getIblocksStructure(): array
     {
@@ -57,12 +55,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $res;
     }
 
-    /**
-     * @param $iblockId
-     *
-     * @return array
-     */
-    public function getIblockPropertiesStructure($iblockId): array
+    public function getIblockPropertiesStructure(int $iblockId): array
     {
         $props = $this->exportProperties($iblockId);
 
@@ -76,14 +69,11 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $res;
     }
 
-    /**
-     * @param $iblockId
-     *
-     * @return array
-     */
-    public function getIblockElementFieldsStructure($iblockId): array
+    public function getIblockElementFieldsStructure(int $iblockId): array
     {
         $fields = $this->exportIblockElementFields($iblockId);
+
+        $fields['IPROPERTY_TEMPLATES'] = ['NAME' => 'SEO'];
 
         $res = [];
         foreach ($fields as $fieldName => $field) {
@@ -98,24 +88,23 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function getSectionIdByUniqName($iblockId, $uniqName)
+    public function getSectionIdByUniqName(int $iblockId, string $uniqName): int
     {
-        if (is_numeric($uniqName)) {
-            return $uniqName;
+        if (!str_contains($uniqName, '|')) {
+            throw new HelperException('Invalid section unique name: ' . $uniqName);
         }
 
-        if (is_string($uniqName)) {
-            [$sectionName, $depthLevel, $code] = explode('|', $uniqName);
-            $uniqName = [];
-            if ($sectionName) {
-                $uniqName['NAME'] = $sectionName;
-            }
-            if ($depthLevel) {
-                $uniqName['DEPTH_LEVEL'] = $depthLevel;
-            }
-            if ($code) {
-                $uniqName['CODE'] = $code;
-            }
+
+        [$sectionName, $depthLevel, $code] = explode('|', $uniqName);
+        $uniqName = [];
+        if ($sectionName) {
+            $uniqName['NAME'] = $sectionName;
+        }
+        if ($depthLevel) {
+            $uniqName['DEPTH_LEVEL'] = $depthLevel;
+        }
+        if ($code) {
+            $uniqName['CODE'] = $code;
         }
 
         return $this->getSectionIdByUniqFilter($iblockId, $uniqName);
@@ -124,24 +113,32 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function getElementIdByUniqName($iblockId, $uniqName)
+    public function getElementUniqNameById(int $iblockId, int $elementId): string
     {
-        if (is_numeric($uniqName)) {
-            return $uniqName;
+        $filter = $this->getElementUniqFilterById($iblockId, $elementId);
+        return $filter['NAME'] . '|' . $filter['XML_ID'] . '|' . $filter['CODE'];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getElementIdByUniqName(int $iblockId, string $uniqName): int
+    {
+        if (!str_contains($uniqName, '|')) {
+            throw new HelperException('Invalid element unique name: ' . $uniqName);
         }
 
-        if (is_string($uniqName)) {
-            [$elementName, $xmlId, $code] = explode('|', $uniqName);
-            $uniqName = [];
-            if ($elementName) {
-                $uniqName['NAME'] = $elementName;
-            }
-            if ($xmlId) {
-                $uniqName['XML_ID'] = $xmlId;
-            }
-            if ($code) {
-                $uniqName['CODE'] = $code;
-            }
+        [$elementName, $xmlId, $code] = explode('|', $uniqName);
+
+        $uniqName = [];
+        if ($elementName) {
+            $uniqName['NAME'] = $elementName;
+        }
+        if ($xmlId) {
+            $uniqName['XML_ID'] = $xmlId;
+        }
+        if ($code) {
+            $uniqName['CODE'] = $code;
         }
 
         return $this->getElementIdByUniqFilter($iblockId, $uniqName);
@@ -150,7 +147,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function getSectionUniqNameById($iblockId, $sectionId): string
+    public function getSectionUniqNameById(int $iblockId, int $sectionId): string
     {
         $filter = $this->getSectionUniqFilterById($iblockId, $sectionId);
         return $filter['NAME'] . '|' . $filter['DEPTH_LEVEL'] . '|' . $filter['CODE'];
@@ -159,7 +156,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function getSectionUniqNamesByIds($iblockId, $sectionIds): array
+    public function getSectionUniqNamesByIds(int $iblockId, int|array $sectionIds): array
     {
         $sectionIds = array_filter(is_array($sectionIds) ? $sectionIds : [$sectionIds]);
 
@@ -170,19 +167,11 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $uniqNames;
     }
 
-    /**
-     * @throws HelperException
-     */
-    public function getElementUniqNameById($iblockId, $elementId): string
-    {
-        $filter = $this->getElementUniqFilterById($iblockId, $elementId);
-        return $filter['NAME'] . '|' . $filter['XML_ID'] . '|' . $filter['CODE'];
-    }
 
     /**
      * @throws HelperException
      */
-    public function getElementUniqNamesByIds($iblockId, $elementIds): array
+    public function getElementUniqNamesByIds(int $iblockId, int|array $elementIds): array
     {
         $elementIds = array_filter(is_array($elementIds) ? $elementIds : [$elementIds]);
 
@@ -193,11 +182,23 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $uniqNames;
     }
 
-    public function getElementFields(_CIBElement $element)
+    /**
+     * @throws HelperException
+     */
+    public function getElementIdsByUniqNames(int $iblockId, array|string $uniqNames): array
     {
-        $fields = $element->GetFields();
-        $fields['IBLOCK_SECTION'] = $this->getElementSectionIds($fields['ID']);
-        return $fields;
+        $uniqNames = array_filter(is_array($uniqNames) ? $uniqNames : [$uniqNames]);
+
+        $elementIds = [];
+        foreach ($uniqNames as $uniqName) {
+            $elementIds[] = $this->getElementIdByUniqName($iblockId, $uniqName);
+        }
+        return $elementIds;
+    }
+
+    public function getElementFields(_CIBElement $element): array
+    {
+        return $this->prepareElement($element->GetFields());
     }
 
     public function getElementProps(_CIBElement $element): array
@@ -302,17 +303,20 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         $tag = new WriterTag('field', ['name' => $field['NAME']]);
 
         if ($field['NAME'] == 'PREVIEW_PICTURE') {
-            $tag->addFile($field['VALUE']);
+            $tag->addFile($field['VALUE'], false);
         } elseif ($field['NAME'] == 'DETAIL_PICTURE') {
-            $tag->addFile($field['VALUE']);
+            $tag->addFile($field['VALUE'], false);
         } elseif ($field['NAME'] == 'IBLOCK_SECTION') {
-            $uniqSections = $this->getSectionUniqNamesByIds(
-                $field['IBLOCK_ID'],
-                $field['VALUE']
+            $tag->addValue(
+                $this->getSectionUniqNamesByIds($field['IBLOCK_ID'], $field['VALUE']),
+                true
             );
-            $tag->addValue($uniqSections);
+        } elseif ($field['NAME'] == 'IPROPERTY_TEMPLATES') {
+            foreach ($field['VALUE'] as $ikey => $ivalue) {
+                $tag->addValueTag($ivalue, ['name' => $ikey]);
+            }
         } else {
-            $tag->addValue($field['VALUE']);
+            $tag->addValue($field['VALUE'], false);
         }
         return $tag;
     }
@@ -342,10 +346,10 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     {
         if ($prop['MULTIPLE'] == 'Y') {
             foreach ($prop['VALUE'] as $index => $val1) {
-                $tag->addValue($val1, ['description' => $prop['DESCRIPTION'][$index] ?? '']);
+                $tag->addValueTag($val1, ['description' => $prop['DESCRIPTION'][$index] ?? '']);
             }
         } else {
-            $tag->addValue($prop['VALUE'], ['description' => $prop['DESCRIPTION']]);
+            $tag->addValueTag($prop['VALUE'], ['description' => $prop['DESCRIPTION']]);
         }
     }
 
@@ -354,12 +358,10 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     protected function addPropertyValueSection(WriterTag $tag, $prop): void
     {
-        $uniqNames = $this->getSectionUniqNamesByIds(
-            $prop['LINK_IBLOCK_ID'],
-            $prop['VALUE']
+        $tag->addValue(
+            $this->getSectionUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']),
+            true
         );
-
-        $tag->addValue($uniqNames);
     }
 
     /**
@@ -367,23 +369,21 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     protected function addPropertyValueElement(WriterTag $tag, $prop): void
     {
-        $uniqNames = $this->getElementUniqNamesByIds(
-            $prop['LINK_IBLOCK_ID'],
-            $prop['VALUE']
+        $tag->addValue(
+            $this->getElementUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']),
+            true
         );
-
-        $tag->addValue($uniqNames);
     }
 
     protected function addPropertyValueList(WriterTag $tag, $prop): void
     {
-        $tag->addValue($prop['VALUE_XML_ID']);
+        $tag->addValue($prop['VALUE_XML_ID'], $prop['MULTIPLE'] == 'Y');
     }
 
 
     protected function addPropertyValueFile(WriterTag $tag, $prop): void
     {
-        $tag->addFile($prop['VALUE']);
+        $tag->addFile($prop['VALUE'], $prop['MULTIPLE'] == 'Y');
     }
 
 
@@ -408,8 +408,10 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         foreach ($record['fields'] as $field) {
             if ($field['name'] == 'IBLOCK_SECTION') {
                 $convertedFields[$field['name']] = $this->convertFieldIblockSection($iblockId, $field);
+            } elseif ($field['name'] == 'IPROPERTY_TEMPLATES') {
+                $convertedFields[$field['name']] = $this->convertFieldIpropertyTemplates($field);
             } else {
-                $convertedFields[$field['name']] = $this->convertFieldValue($iblockId, $field);
+                $convertedFields[$field['name']] = $this->convertFieldValue($field);
             }
         }
 
@@ -438,7 +440,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     }
 
 
-    protected function convertFieldValue(int $iblockId, array $field)
+    protected function convertFieldValue(array $field)
     {
         return $field['value'][0]['value'];
     }
@@ -454,6 +456,15 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         }
 
         return $value;
+    }
+
+    protected function convertFieldIpropertyTemplates(array $field): array
+    {
+        $iproperty = [];
+        foreach ($field['value'] as $val) {
+            $iproperty[$val['name']] = $val['value'];
+        }
+        return $iproperty;
     }
 
     protected function convertPropertyS(int $iblockId, array $prop)

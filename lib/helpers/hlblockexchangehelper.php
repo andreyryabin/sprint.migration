@@ -205,7 +205,8 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                         'NAME' => $code,
                         'VALUE' => $val,
                         'HLBLOCK_ID' => $hlblockId,
-                        'USER_TYPE_ID' => $this->getFieldType($hlblockId, $code)
+                        'USER_TYPE_ID' => $this->getFieldType($hlblockId, $code),
+                        'MULTIPLE' => $this->isFieldMultiple($hlblockId, $code),
                     ])
                 );
             }
@@ -226,11 +227,11 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                 $field['NAME'],
                 $field['VALUE']
             );
-            $tag->addValue($xmlIds);
+            $tag->addValue($xmlIds, $field['MULTIPLE']);
         } elseif ($field['USER_TYPE_ID'] == 'file') {
-            $tag->addFile($field['VALUE']);
+            $tag->addFile($field['VALUE'], $field['MULTIPLE']);
         } else {
-            $tag->addValue($field['VALUE']);
+            $tag->addValue($field['VALUE'], $field['MULTIPLE']);
         }
 
         return $tag;

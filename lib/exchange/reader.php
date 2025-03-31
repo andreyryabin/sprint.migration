@@ -33,7 +33,7 @@ class Reader
         }
 
         $this->file = $file;
-        $this->path = dirname($this->file);
+        $this->path = dirname($file);
     }
 
     public function getRecordsCount(): int
@@ -128,38 +128,46 @@ class Reader
     {
         $val = $this->getTagAttributes($reader);
         $reader->read();
+        $text = htmlspecialchars_decode($reader->value);
 
         if (isset($val['type']) && $val['type'] == 'json') {
-            $val['value'] = json_decode($reader->value, true);
+            $val['value'] = $this->decodeJson($text);
         } elseif (isset($val['type']) && $val['type'] == 'file') {
-            $val['value'] = $this->makeFileValue($reader->value, $val);
-        } elseif (isset($val['name']) && $this->isFilePath($reader->value)) {
-            $val['value'] = $this->makeFileValue($reader->value, $val);
+            $val['value'] = $this->makeFileValue($text, $val);
+        } elseif (isset($val['name']) && $this->isFile($text)) {
+            $val['value'] = $this->makeFileValue($text, $val);
         } else {
-            $val['value'] = $reader->value;
+            $val['value'] = $text;
         }
+
         return $val;
     }
 
-    private function isFilePath(string $value): bool
+    private function decodeJson(string $json): array
     {
+        return json_decode(trim($json), true);
+    }
+
+    private function isFile(string $value): bool
+    {
+        $value = trim($value);
         return $value && is_file($this->path . '/' . $value);
     }
 
-    private function isOpenTag(XMLReader $reader, $tag): bool
+    private function isOpenTag(XMLReader $reader, string $tagName): bool
     {
         return (
             $reader->nodeType == XMLReader::ELEMENT
-            && $reader->name == $tag
+            && $reader->name == $tagName
             && !$reader->isEmptyElement
         );
     }
 
-    private function isCloseTag(XMLReader $reader, $tag): bool
+    private function isCloseTag(XMLReader $reader, string $tagName): bool
     {
         return (
             $reader->nodeType == XMLReader::END_ELEMENT
-            && $reader->name == $tag
+            && $reader->name == $tagName
         );
     }
 
@@ -191,19 +199,24 @@ class Reader
         return $attributes;
     }
 
-    private function makeFileValue($value, $attrs): false|array
+    private function makeFileValue(string $value, array $attrs): false|array
     {
-        if (!empty($value)) {
-            $path = $this->path . '/' . $value;
-            $file = CFile::MakeFileArray($path);
-            if (!empty($attrs['name'])) {
-                $file['name'] = $attrs['name'];
-            }
-            if (!empty($attrs['description'])) {
-                $file['description'] = $attrs['description'];
-            }
-            return $file;
+        $value = trim($value);
+        if (empty($value)) {
+            return false;
         }
-        return false;
+
+        $file = CFile::MakeFileArray($this->path . '/' . $value);
+        if (empty($file)) {
+            return false;
+        }
+
+        if (!empty($attrs['name'])) {
+            $file['name'] = $attrs['name'];
+        }
+        if (!empty($attrs['description'])) {
+            $file['description'] = $attrs['description'];
+        }
+        return $file;
     }
 }

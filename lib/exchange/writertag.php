@@ -75,9 +75,15 @@ class WriterTag
         $this->setAttribute('type', 'json');
     }
 
-    public function addFile(mixed $val): void
+    public function isCdata(): bool
     {
-        if (is_array($val)) {
+        return str_starts_with($this->text, '{');
+    }
+
+
+    public function addFile(mixed $val, bool $multiple): void
+    {
+        if ($multiple) {
             foreach ($val as $val1) {
                 $this->addFileTag($val1);
             }
@@ -86,19 +92,19 @@ class WriterTag
         }
     }
 
-    public function addValue(mixed $val, $attributes = []): void
+    public function addValue(mixed $val, bool $multiple): void
     {
-        if (is_array($val)) {
+        if ($multiple) {
             foreach ($val as $val1) {
-                $this->addValueTag($val1, $attributes);
+                $this->addValueTag($val1);
             }
         } else {
-            $this->addValueTag($val, $attributes);
+            $this->addValueTag($val);
         }
     }
 
 
-    private function addValueTag($val, $attributes = []): void
+    public function addValueTag($val, $attributes = []): void
     {
         if (empty($val)) {
             return;
@@ -114,7 +120,7 @@ class WriterTag
         $this->addChild($tag);
     }
 
-    private function addFileTag(int $fileId): void
+    public function addFileTag(int $fileId): void
     {
         $file = CFile::GetFileArray($fileId);
         if (empty($file)) {
