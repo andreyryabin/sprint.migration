@@ -5,22 +5,18 @@ namespace Sprint\Migration;
 use Bitrix\Main\EventManager;
 use CGroup;
 use CUser;
-use Exception;
 use Sprint\Migration\Enum\VersionEnum;
-use Sprint\Migration\Exceptions\BuilderException;
-use Sprint\Migration\Exceptions\ConsoleException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Traits\CurrentUserTrait;
-use Throwable;
 
 class Console
 {
-    private string         $script;
-    private string         $command;
-    private array          $arguments  = [];
-    private VersionConfig  $versionConfig;
+    private string $script;
+    private string $command;
+    private array $arguments = [];
+    private VersionConfig $versionConfig;
     private VersionManager $versionManager;
-    private array          $argoptions = [];
+    private array $argoptions = [];
     use CurrentUserTrait;
 
     /**
@@ -84,7 +80,7 @@ class Console
         $order = 'asc';
 
         $groupitem = CGroup::GetList($by, $order, [
-            'ADMIN'  => 'Y',
+            'ADMIN' => 'Y',
             'ACTIVE' => 'Y',
         ])->Fetch();
 
@@ -93,7 +89,7 @@ class Console
 
             $useritem = CUser::GetList($by, $order, [
                 'GROUPS_ID' => [$groupitem['ID']],
-                'ACTIVE'    => 'Y',
+                'ACTIVE' => 'Y',
             ], [
                 'NAV_PARAMS' => ['nTopCount' => 1],
             ])->Fetch();
@@ -133,7 +129,7 @@ class Console
 
         $this->executeBuilder($from, [
             'description' => $descr,
-            'prefix'      => $prefix,
+            'prefix' => $prefix,
         ]);
     }
 
@@ -190,18 +186,18 @@ class Console
         }
 
         $versions = $this->versionManager->getVersions([
-            'status'   => $status,
-            'search'   => $this->getArg('--search='),
-            'tag'      => $this->getArg('--tag='),
+            'status' => $status,
+            'search' => $this->getArg('--search='),
+            'tag' => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
-            'older'    => $this->getArg('--older'),
-            'actual'   => $this->getArg('--actual'),
+            'older' => $this->getArg('--older'),
+            'actual' => $this->getArg('--actual'),
         ]);
 
         $summary = [
-            VersionEnum::STATUS_NEW       => 0,
+            VersionEnum::STATUS_NEW => 0,
             VersionEnum::STATUS_INSTALLED => 0,
-            VersionEnum::STATUS_UNKNOWN   => 0,
+            VersionEnum::STATUS_UNKNOWN => 0,
         ];
 
         foreach ($versions as $item) {
@@ -310,11 +306,11 @@ class Console
             }
         } else {
             $this->executeAll([
-                'search'   => $this->getArg('--search='),
-                'tag'      => $this->getArg('--tag='),
+                'search' => $this->getArg('--search='),
+                'tag' => $this->getArg('--tag='),
                 'modified' => $this->getArg('--modified'),
-                'older'    => $this->getArg('--older'),
-                'actual'   => $this->getArg('--actual'),
+                'older' => $this->getArg('--older'),
+                'actual' => $this->getArg('--actual'),
             ], VersionEnum::ACTION_UP);
         }
     }
@@ -331,11 +327,11 @@ class Console
             }
         } else {
             $this->executeAll([
-                'search'   => $this->getArg('--search='),
-                'tag'      => $this->getArg('--tag='),
+                'search' => $this->getArg('--search='),
+                'tag' => $this->getArg('--tag='),
                 'modified' => $this->getArg('--modified'),
-                'older'    => $this->getArg('--older'),
-                'actual'   => $this->getArg('--actual'),
+                'older' => $this->getArg('--older'),
+                'actual' => $this->getArg('--actual'),
             ], VersionEnum::ACTION_DOWN);
         }
     }
@@ -434,11 +430,11 @@ class Console
     public function commandMigrate()
     {
         $this->executeAll([
-            'search'   => $this->getArg('--search='),
-            'tag'      => $this->getArg('--tag='),
+            'search' => $this->getArg('--search='),
+            'tag' => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
-            'older'    => $this->getArg('--older'),
-            'actual'   => $this->getArg('--actual'),
+            'older' => $this->getArg('--older'),
+            'actual' => $this->getArg('--actual'),
         ], $this->getArg('--down') ? VersionEnum::ACTION_DOWN : VersionEnum::ACTION_UP);
     }
 

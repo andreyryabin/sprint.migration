@@ -1,12 +1,12 @@
 <?php
 
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Builder;
 use Sprint\Migration\Locale;
 
 /**
  * @var $fieldCode string
  * @var $fieldItem array
- * @var $builder   AbstractBuilder
+ * @var $builder   Builder
  */
 ?>
 <div class="sp-optgroup">

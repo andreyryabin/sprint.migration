@@ -11,7 +11,7 @@ use Sprint\Migration\Traits\OutTrait;
 use Sprint\Migration\Traits\RestartableTrait;
 use Sprint\Migration\Traits\VersionConfigTrait;
 
-abstract class AbstractBuilder implements RestartableInterface
+class Builder implements RestartableInterface
 {
     use HelperManagerTrait;
     use OutTrait;
@@ -40,12 +40,16 @@ abstract class AbstractBuilder implements RestartableInterface
         ]);
     }
 
-    abstract protected function initialize();
+    protected function initialize(){
+        //your code
+    }
 
     /**
      * @throws RestartException|RebuildException|Exception
      */
-    abstract protected function execute();
+    protected function execute(){
+        //your code
+    }
 
     protected function isBuilderEnabled()
     {
@@ -56,7 +60,7 @@ abstract class AbstractBuilder implements RestartableInterface
     {
         try {
             return $this->isBuilderEnabled();
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
     }

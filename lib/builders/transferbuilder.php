@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Builder;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
@@ -10,7 +10,7 @@ use Sprint\Migration\Locale;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 
-class TransferBuilder extends AbstractBuilder
+class TransferBuilder extends Builder
 {
     protected function isBuilderEnabled()
     {

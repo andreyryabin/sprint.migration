@@ -6,7 +6,7 @@ use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Traits\CurrentUserTrait;
 
-abstract class VersionBuilder extends AbstractBuilder
+abstract class VersionBuilder extends Builder
 {
     use CurrentUserTrait;
 

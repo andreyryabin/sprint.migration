@@ -9,7 +9,6 @@ use ReflectionClass;
 use SplFileInfo;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\BuilderException;
-use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Tables\VersionTable;
@@ -18,12 +17,12 @@ use Throwable;
 class VersionManager
 {
     private VersionConfig $versionConfig;
-    private VersionTable  $versionTable;
-    private bool          $isRestart         = false;
-    private array         $lastRestartParams = [];
-    private ?Throwable    $lastException;
-    private string        $versionTimestampPattern;
-    private string        $versionTimestampFormat;
+    private VersionTable $versionTable;
+    private bool $isRestart = false;
+    private array $lastRestartParams = [];
+    private ?Throwable $lastException;
+    private string $versionTimestampPattern;
+    private string $versionTimestampFormat;
 
     /**
      * @throws MigrationException
@@ -60,9 +59,10 @@ class VersionManager
     public function startMigration(
         string $versionName,
         string $action = VersionEnum::ACTION_UP,
-        array $params = [],
+        array  $params = [],
         string $tag = ''
-    ): bool {
+    ): bool
+    {
         $this->isRestart = false;
         $this->lastRestartParams = [];
         $this->lastException = null;
@@ -129,7 +129,7 @@ class VersionManager
         if ($ts) {
             $fileName = $this->getVersionFile($versionName);
             $file = file_exists($fileName) ? [
-                'version'  => $versionName,
+                'version' => $versionName,
                 'location' => $fileName,
             ] : 0;
 
@@ -254,7 +254,7 @@ class VersionManager
     /**
      * @throws BuilderException
      */
-    public function createBuilder(string $name, array $params = []): AbstractBuilder
+    public function createBuilder(string $name, array $params = []): Builder
     {
         $builders = $this->getVersionConfig()->getVal('version_builders', []);
 
@@ -262,7 +262,7 @@ class VersionManager
 
         if ($class && class_exists($class)) {
             $builder = new $class($this->getVersionConfig(), $name, $params);
-            if ($builder instanceof AbstractBuilder) {
+            if ($builder instanceof Builder) {
                 $builder->buildInitialize();
                 return $builder;
             }
@@ -398,9 +398,9 @@ class VersionManager
             }
 
             $files[$filename] = [
-                'version'  => $filename,
+                'version' => $filename,
                 'location' => $item->getPathname(),
-                'ts'       => $timestamp,
+                'ts' => $timestamp,
             ];
         }
 
@@ -631,14 +631,14 @@ class VersionManager
         $isRecord = ($record) ? 1 : 0;
 
         $meta = [
-            'is_file'       => $isFile,
-            'is_record'     => $isRecord,
-            'version'       => $versionName,
-            'modified'      => false,
-            'older'         => false,
-            'hash'          => '',
-            'tag'           => '',
-            'file_status'   => '',
+            'is_file' => $isFile,
+            'is_record' => $isRecord,
+            'version' => $versionName,
+            'modified' => false,
+            'older' => false,
+            'hash' => '',
+            'tag' => '',
+            'file_status' => '',
             'record_status' => '',
         ];
 

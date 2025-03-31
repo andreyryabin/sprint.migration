@@ -2,12 +2,12 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Builder;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
 use Sprint\Migration\VersionManager;
 
-class MarkerBuilder extends AbstractBuilder
+class MarkerBuilder extends Builder
 {
     protected function isBuilderEnabled()
     {

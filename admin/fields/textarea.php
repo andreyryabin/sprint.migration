@@ -1,11 +1,11 @@
 <?php
 
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Builder;
 
 /**
  * @var $fieldCode string
  * @var $fieldItem array
- * @var $builder   AbstractBuilder
+ * @var $builder   Builder
  */
 
 $style = 'style="height: ' . $fieldItem['height'] . 'px;"';
