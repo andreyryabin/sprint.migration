@@ -60,14 +60,19 @@
 }
 
 .sp-search {
-    padding: 0 0 10px;
+    height: 45px;
 }
 
-.sp-scroll {
+#migration_migrations {
     overflow: auto;
-    max-height: 425px;
+    max-height: 440px;
 }
 
+/* sp-search + migration_migrations + 12 */
+#migration_progress{
+    overflow: auto;
+    max-height: 497px;
+}
 
 .sp-noblock_body {
     display: block;
