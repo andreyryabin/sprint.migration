@@ -306,7 +306,7 @@ a.sp-item-unknown:visited {
 }
 
 .sp-info-message {
-    border-radius: 5px;
+    border-radius: 4px;
     border: 1px solid;
     border-color: #d3c6a3 #cabc90 #c1b37f #c9bc8f;
     box-shadow: inset 0 1px 0 #fff;
@@ -357,6 +357,9 @@ a.sp-item-unknown:visited {
     color: black;
     font-family: Verdana, Arial, sans-serif;
     font-size: 11px;
-    padding: 10px 30px 10px 37px;
+    /*padding: 8px 30px 8px 38px;*/
+    padding: 7px 18px 9px 38px;
     text-align: center;
+    border-radius: 4px;
+    margin-left: 2px;
 }
