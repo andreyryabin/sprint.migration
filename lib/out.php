@@ -29,11 +29,8 @@ class Out
     ];
     protected static $needEol = false;
 
-    public static function outProgress($msg, $val, $total)
+    public static function outProgress(string $msg, int $val, int $total): void
     {
-        $val = (int)$val;
-        $total = (int)$total;
-
         self::$needEol = true;
 
         $msg = '[label]' . $msg . ' ' . $val . ' / ' . $total . '[/]';
@@ -42,7 +39,7 @@ class Out
             self::outToHtml($msg, ['class' => 'sp-out sp-progress']);
         } else {
             $msg = self::prepareToConsole($msg);
-            fwrite(STDOUT, "\r$msg $val / $total");
+            fwrite(STDOUT, "\r$msg");
         }
     }
 
