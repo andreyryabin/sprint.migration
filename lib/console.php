@@ -5,28 +5,22 @@ namespace Sprint\Migration;
 use Bitrix\Main\EventManager;
 use CGroup;
 use CUser;
-use Exception;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Traits\CurrentUserTrait;
-use Throwable;
 
 class Console
 {
-    private $script;
-    private $command;
-    private $arguments  = [];
-    private $versionConfig;
-    private $versionManager;
-    private $argoptions = [];
+    private string $script;
+    private string $command;
+    private array $arguments = [];
+    private VersionConfig $versionConfig;
+    private VersionManager $versionManager;
+    private array $argoptions = [];
     use CurrentUserTrait;
 
     /**
-     * Console constructor.
-     *
-     * @param $args
-     *
-     * @throws Exception
+     * @throws MigrationException
      */
     public function __construct($args)
     {
@@ -42,7 +36,7 @@ class Console
         $userlogin = $this->versionConfig->getVal('console_user');
         if ($userlogin == 'admin') {
             $this->authorizeAsAdmin();
-        } elseif (strpos($userlogin, 'login:') === 0) {
+        } elseif (str_starts_with($userlogin, 'login:')) {
             $userlogin = substr($userlogin, 6);
             $this->authorizeAsLogin($userlogin);
         }
@@ -86,7 +80,7 @@ class Console
         $order = 'asc';
 
         $groupitem = CGroup::GetList($by, $order, [
-            'ADMIN'  => 'Y',
+            'ADMIN' => 'Y',
             'ACTIVE' => 'Y',
         ])->Fetch();
 
@@ -95,7 +89,7 @@ class Console
 
             $useritem = CUser::GetList($by, $order, [
                 'GROUPS_ID' => [$groupitem['ID']],
-                'ACTIVE'    => 'Y',
+                'ACTIVE' => 'Y',
             ], [
                 'NAV_PARAMS' => ['nTopCount' => 1],
             ])->Fetch();
@@ -135,7 +129,7 @@ class Console
 
         $this->executeBuilder($from, [
             'description' => $descr,
-            'prefix'      => $prefix,
+            'prefix' => $prefix,
         ]);
     }
 
@@ -192,75 +186,112 @@ class Console
         }
 
         $versions = $this->versionManager->getVersions([
-            'status'   => $status,
-            'search'   => $this->getArg('--search='),
-            'tag'      => $this->getArg('--tag='),
+            'status' => $status,
+            'search' => $this->getArg('--search='),
+            'tag' => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
-            'older'    => $this->getArg('--older'),
-            'actual'   => $this->getArg('--actual'),
+            'older' => $this->getArg('--older'),
+            'actual' => $this->getArg('--actual'),
         ]);
 
-        if ($status) {
-            $summary = [];
-            $summary[$status] = 0;
-        } else {
-            $summary = [
-                VersionEnum::STATUS_NEW       => 0,
-                VersionEnum::STATUS_INSTALLED => 0,
-                VersionEnum::STATUS_UNKNOWN   => 0,
-            ];
-        }
-
-        $grid = new ConsoleGrid(-1, [
-            'horizontal'   => '=',
-            'vertical'     => '',
-            'intersection' => '',
-        ], 1, 'UTF-8');
-
-        $grid->setHeaders([
-            'Version',
-            'Status',
-            'Description',
-        ]);
+        $summary = [
+            VersionEnum::STATUS_NEW => 0,
+            VersionEnum::STATUS_INSTALLED => 0,
+            VersionEnum::STATUS_UNKNOWN => 0,
+        ];
 
         foreach ($versions as $item) {
-            $versionColumn = $item['version'];
-
-            $labelsColumn = '';
-            if ($item['tag']) {
-                $labelsColumn .= ' (' . $item['tag'] . ')';
-            }
+            $versionLabels = [];
             if ($item['older']) {
-                $labelsColumn .= ' (' . $item['older'] . ' !!)';
+                $olderMsg = Locale::getMessage('OLDER_VERSION', [
+                    '#V1#' => $item['older'],
+                ]);
+                $versionLabels[] = '[label:red]' . $olderMsg . '[/]';
             }
             if ($item['modified']) {
-                $labelsColumn .= ' (' . Locale::getMessage('MODIFIED_LABEL') . ')';
+                $versionLabels[] = '[label:yellow]' . Locale::getMessage('MODIFIED_VERSION') . '[/]';
             }
-
+            if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
+                $versionLabels[] = '[label]' . Locale::getMessage('VERSION_UNKNOWN') . '[/]';
+            }
             $descrColumn = Out::prepareToConsole(
                 $item['description'],
                 [
-                    'max_len'          => 50,
                     'tracker_task_url' => $this->versionConfig->getVal('tracker_task_url'),
                 ]
             );
 
-            $statusColumn = Locale::getMessage('META_' . $item['status']);
+            Out::out('┌─');
+            Out::out('│ [%s]%s[/]', $item['status'], $item['version']);
 
-            $grid->addRow([$versionColumn, $statusColumn . $labelsColumn, $descrColumn]);
+            if ($item['file_status']) {
+                Out::out('│ ' . $item['file_status']);
+            }
+
+            if ($item['record_status']) {
+                Out::out('│ ' . $item['record_status']);
+            }
+
+            if ($item['tag']) {
+                $tagMsg = Locale::getMessage('RELEASE_TAG', [
+                    '#TAG#' => '[label:green]' . $item['tag'] . '[/]',
+                ]);
+                Out::out('│ ' . $tagMsg);
+            }
+
+            if (!empty($versionLabels)) {
+                Out::out('│ ' . implode(' ', $versionLabels));
+            }
+
+            if ($descrColumn) {
+                Out::out('├─');
+                $descrColumn = explode(PHP_EOL, $descrColumn);
+                foreach ($descrColumn as $descStr) {
+                    Out::out('│ ' . $descStr);
+                }
+            }
+
+            Out::out('└─');
 
             $stval = $item['status'];
             $summary[$stval]++;
         }
 
-        Out::out($grid->build());
-
-        $grid = new ConsoleGrid(-1, '', 1, 'UTF-8');
         foreach ($summary as $k => $v) {
-            $grid->addRow([Locale::getMessage('META_' . strtoupper($k)) . ':', $v,]);
+            if ($v > 0) {
+                Out::out(Locale::getMessage('META_' . $k) . ':' . $v);
+            }
         }
+    }
 
-        Out::out($grid->build());
+    public function commandConfig()
+    {
+        $configValues = $this->versionConfig->getCurrent('values');
+        $configTitle = $this->versionConfig->getCurrent('title');
+
+        $configValues = $this->versionConfig->humanValues($configValues);
+
+        Out::out(
+            '%s: %s',
+            Locale::getMessage('CONFIG'),
+            $configTitle
+        );
+
+        foreach ($configValues as $configKey => $configValue) {
+            Out::out('┌─');
+            Out::out('│ ' . Locale::getMessage('CONFIG_' . $configKey));
+            Out::out('│ ' . $configKey);
+
+            if ($configValue) {
+                Out::out('├─');
+                $configValue = explode(PHP_EOL, $configValue);
+                foreach ($configValue as $valueStr) {
+                    Out::out('│ ' . $valueStr);
+                }
+            }
+
+            Out::out('└─');
+        }
     }
 
     /**
@@ -275,11 +306,11 @@ class Console
             }
         } else {
             $this->executeAll([
-                'search'   => $this->getArg('--search='),
-                'tag'      => $this->getArg('--tag='),
+                'search' => $this->getArg('--search='),
+                'tag' => $this->getArg('--tag='),
                 'modified' => $this->getArg('--modified'),
-                'older'    => $this->getArg('--older'),
-                'actual'   => $this->getArg('--actual'),
+                'older' => $this->getArg('--older'),
+                'actual' => $this->getArg('--actual'),
             ], VersionEnum::ACTION_UP);
         }
     }
@@ -296,11 +327,11 @@ class Console
             }
         } else {
             $this->executeAll([
-                'search'   => $this->getArg('--search='),
-                'tag'      => $this->getArg('--tag='),
+                'search' => $this->getArg('--search='),
+                'tag' => $this->getArg('--tag='),
                 'modified' => $this->getArg('--modified'),
-                'older'    => $this->getArg('--older'),
-                'actual'   => $this->getArg('--actual'),
+                'older' => $this->getArg('--older'),
+                'actual' => $this->getArg('--actual'),
             ], VersionEnum::ACTION_DOWN);
         }
     }
@@ -316,9 +347,6 @@ class Console
         }
     }
 
-    /**
-     *
-     */
     public function commandInfo()
     {
         Out::out(
@@ -377,34 +405,6 @@ class Console
         }
     }
 
-    public function commandConfig()
-    {
-        $configValues = $this->versionConfig->getCurrent('values');
-        $configTitle = $this->versionConfig->getCurrent('title');
-
-        $configValues = $this->versionConfig->humanValues($configValues);
-
-        Out::out(
-            '%s: %s',
-            Locale::getMessage('CONFIG'),
-            $configTitle
-        );
-
-        $grid = new ConsoleGrid(-1, [
-            'horizontal'   => '=',
-            'vertical'     => '',
-            'intersection' => '',
-        ], 1, 'UTF-8');
-
-        $grid->setBorderVisibility(['bottom' => false]);
-
-        foreach ($configValues as $key => $val) {
-            $grid->addRow([$key, $val]);
-        }
-
-        Out::out($grid->build());
-    }
-
     /**
      * @noinspection PhpUnused
      * @throws MigrationException
@@ -430,11 +430,11 @@ class Console
     public function commandMigrate()
     {
         $this->executeAll([
-            'search'   => $this->getArg('--search='),
-            'tag'      => $this->getArg('--tag='),
+            'search' => $this->getArg('--search='),
+            'tag' => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
-            'older'    => $this->getArg('--older'),
-            'actual'   => $this->getArg('--actual'),
+            'older' => $this->getArg('--older'),
+            'actual' => $this->getArg('--actual'),
         ], $this->getArg('--down') ? VersionEnum::ACTION_DOWN : VersionEnum::ACTION_UP);
     }
 
@@ -460,76 +460,6 @@ class Console
                 $this->executeOnce($versionName, VersionEnum::ACTION_UP);
             }
         }
-    }
-
-    /**
-     * @noinspection PhpUnused
-     * @throws Exception
-     * @return bool
-     */
-    public function commandSchema()
-    {
-        $action = $this->getArg(0);
-
-        $schemaManager = new SchemaManager($this->versionConfig);
-        $enabledSchemas = $schemaManager->getEnabledSchemas();
-
-        $selectValues = [];
-        foreach ($enabledSchemas as $schema) {
-            $selectValues[] = [
-                'value' => $schema->getName(),
-                'title' => $schema->getTitle(),
-            ];
-        }
-
-        if (empty($action)) {
-            foreach ($enabledSchemas as $schema) {
-                $schema->outTitle(true);
-                $schema->outDescription();
-            }
-
-            return true;
-        }
-
-        $select = $this->getArg(1);
-        if (!empty($select)) {
-            $select = explode(' ', $select);
-            $select = array_filter($select, function ($a) {
-                return !empty($a);
-            });
-        } else {
-            $select = Out::input([
-                'title'    => 'select schemas',
-                'select'   => $selectValues,
-                'multiple' => 1,
-            ]);
-        }
-
-        $params = [];
-
-        do {
-            $schemaManager = new SchemaManager($this->versionConfig, $params);
-            $restart = 0;
-
-            try {
-                if ($action == 'diff') {
-                    $schemaManager->setTestMode(1);
-                    $schemaManager->import(['name' => $select]);
-                } elseif ($action == 'import') {
-                    $schemaManager->setTestMode(0);
-                    $schemaManager->import(['name' => $select]);
-                } elseif ($action == 'export') {
-                    $schemaManager->export(['name' => $select]);
-                }
-            } catch (Exceptions\RestartException $e) {
-                $params = $schemaManager->getRestartParams();
-                $restart = 1;
-            } catch (Throwable $e) {
-                Out::outException($e);
-            }
-        } while ($restart == 1);
-
-        return true;
     }
 
     /**
@@ -568,7 +498,7 @@ class Console
     /**
      * @throws MigrationException
      */
-    protected function executeOnce($version, $action)
+    protected function executeOnce(string $version, string $action)
     {
         $ok = $this->executeVersion($version, $action);
 
@@ -579,9 +509,9 @@ class Console
         }
     }
 
-    protected function executeVersion($version, $action)
+    protected function executeVersion(string $version, string $action): bool
     {
-        $tag = $this->getArg('--add-tag=', '');
+        $tag = $this->getArg('--add-tag=');
 
         $params = [];
 
@@ -619,7 +549,7 @@ class Console
     /**
      * @throws MigrationException
      */
-    protected function executeBuilder($from, $postvars = [])
+    protected function executeBuilder(string $from, array $postvars = [])
     {
         do {
             $builder = $this->versionManager->createBuilder($from, $postvars);
@@ -635,7 +565,7 @@ class Console
         } while ($builder->isRestart() || $builder->isRebuild());
     }
 
-    protected function initializeArgs($args)
+    protected function initializeArgs(array $args): string
     {
         foreach ($args as $val) {
             $this->addArg($val);
@@ -662,8 +592,8 @@ class Console
     protected function addArg($arg)
     {
         [$name, $val] = explode('=', $arg);
-        $isoption = (0 === strpos($name, '--')) ? 1 : 0;
-        if ($isoption) {
+
+        if (str_starts_with($name, '--')) {
             if (!is_null($val)) {
                 $this->argoptions[$name . '='] = $val;
             } else {
@@ -701,7 +631,7 @@ class Console
         }
     }
 
-    private function disableHandler($moduleId, $eventType)
+    private function disableHandler(string $moduleId, string $eventType)
     {
         $eventManager = EventManager::getInstance();
         $handlers = $eventManager->findEventHandlers($moduleId, $eventType);

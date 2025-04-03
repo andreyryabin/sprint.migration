@@ -1,3 +1,37 @@
+/* colors */
+.sp-blue {
+    color: #00a
+}
+
+.sp-green {
+    color: #080;
+}
+
+.sp-red {
+    color: #a00;
+}
+
+.sp-yellow {
+    color: #aa0;
+}
+
+.sp-pink {
+    color: #ea00ff;
+}
+
+.sp-bold {
+    font-weight: bold;
+    color: #000
+}
+
+.sp-indent-10 {
+    padding-left: 10px
+}
+
+.sp-indent-20 {
+    padding-left: 20px
+}
+
 .sp-col {
     background-color: #f5f9f9;
     border: 1px solid;
@@ -26,13 +60,19 @@
 }
 
 .sp-search {
-    padding: 0 0 10px;
-}
-.sp-scroll {
-    overflow: auto;
-    max-height: 425px;
+    height: 45px;
 }
 
+#migration_migrations {
+    overflow: auto;
+    max-height: 440px;
+}
+
+/* sp-search + migration_migrations + 12 */
+#migration_progress{
+    overflow: auto;
+    max-height: 497px;
+}
 
 .sp-noblock_body {
     display: block;
@@ -103,14 +143,6 @@
     /*width: 350px;*/
 }
 
-.sp-table-support .sp-row2 .sp-col:first-child {
-    width: 40%;
-}
-
-.sp-table-support .sp-row2 .sp-col:last-child {
-    width: 60%;
-}
-
 .sp-table .sp-row3 .sp-col {
     /*display: table-cell;*/
     /*vertical-align: top;*/
@@ -146,10 +178,6 @@ table.sp-summary {
     text-align: left;
     padding: 0 10px 10px;
     /*width: 50px;*/
-}
-
-.sp-list-td__content span {
-    margin: 0 5px 5px 0;
 }
 
 .sp-list-td__buttons {
@@ -215,24 +243,41 @@ a.sp-item-unknown:visited {
     background: #eee;
     color: #000;
     border-radius: 4px;
-    border-bottom: 1px solid #ccc;
-    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #555;
+    border-right: 1px solid #555;
     cursor: default;
+    display: inline-block;
 }
 
-.sp-label-tag {
+.sp-label-blue {
+    background: #d1d1ff;
+    border-bottom: 1px solid #00a;
+    border-right: 1px solid #00a;
+}
+
+.sp-label-pink {
     background: #ffbbff;
-    border-bottom: 1px solid #ee33ff;
-    border-right: 1px solid #ee33ff;
+    border-bottom: 1px solid #ea00ff;
+    border-right: 1px solid #ea00ff;
 }
 
-.sp-label-modified {
+.sp-label-green {
+    background: #a7e7a7;
+    border-bottom: 1px solid #080;
+    border-right: 1px solid #080;
+}
+
+.sp-label-yellow {
     background: #ffcc00;
+    border-bottom: 1px solid #999;
+    border-right: 1px solid #999;
 }
 
-.sp-label-older {
-    background: #b00;
-    color: #fff;
+.sp-label-red {
+    background: #fdbaba;
+    color: #000;
+    border-bottom: 1px solid #b00;
+    border-right: 1px solid #b00;
 }
 
 .sp-optgroup-group {
@@ -261,7 +306,7 @@ a.sp-item-unknown:visited {
 }
 
 .sp-info-message {
-    border-radius: 5px;
+    border-radius: 4px;
     border: 1px solid;
     border-color: #d3c6a3 #cabc90 #c1b37f #c9bc8f;
     box-shadow: inset 0 1px 0 #fff;
@@ -275,41 +320,8 @@ a.sp-item-unknown:visited {
     position: relative;
 }
 
-#schema_progress_current {
-    margin-top: 10px;
-}
-
-#schema_progress_current {
-    margin-top: 10px;
-}
-
-#schema_progress_current,
-#schema_progress_full {
-    display: none;
-    height: 10px;
-    background: #eee
-}
-
-#schema_progress_current .bar {
-    display: block;
-    height: 10px;
-    background: #99d;
-    width: 0;
-}
-
-#schema_progress_full .bar {
-    display: block;
-    height: 10px;
-    background: #9d9;
-    width: 0;
-}
-
 #bx-admin-prefix #migration_container .adm-info-message {
     margin: 5px 0 5px 0;
-}
-
-#bx-admin-prefix #migration_container .sp-progress .adm-info-message-buttons {
-    display: none;
 }
 
 .sp-disabled {
@@ -334,7 +346,7 @@ a.sp-item-unknown:visited {
     position: relative;
 }
 
-#migration_loader {
+#migration_loading {
     /*position: fixed;*/
     /*top: 20px;*/
     /*right: 40px;*/
@@ -345,6 +357,9 @@ a.sp-item-unknown:visited {
     color: black;
     font-family: Verdana, Arial, sans-serif;
     font-size: 11px;
-    padding: 10px 30px 10px 37px;
+    /*padding: 8px 30px 8px 38px;*/
+    padding: 7px 18px 9px 38px;
     text-align: center;
+    border-radius: 4px;
+    margin-left: 2px;
 }

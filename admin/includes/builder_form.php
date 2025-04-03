@@ -1,7 +1,7 @@
 <?php
-/** @var $builder AbstractBuilder */
+/** @var $builder Builder */
 
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Builder;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Out;
 

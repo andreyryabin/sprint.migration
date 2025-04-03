@@ -341,7 +341,7 @@ class UserTypeEntityHelper extends Helper
      * @param $fieldName
      *
      * @throws HelperException
-     * @return bool|void
+     * @return bool
      */
     public function deleteUserTypeEntityIfExists($entityId, $fieldName)
     {
@@ -392,7 +392,7 @@ class UserTypeEntityHelper extends Helper
      */
     public function revertEntityId($entityId)
     {
-        if (0 === strpos($entityId, 'HLBLOCK_')) {
+        if (str_starts_with($entityId, 'HLBLOCK_')) {
             $hlblockId = substr($entityId, 8);
             if (!is_numeric($hlblockId)) {
                 $hlblockId = (new HlblockHelper())->getHlblockIdByUid($hlblockId);
@@ -422,7 +422,7 @@ class UserTypeEntityHelper extends Helper
      */
     public function transformEntityId($entityId)
     {
-        if (0 === strpos($entityId, 'HLBLOCK_')) {
+        if (str_starts_with($entityId, 'HLBLOCK_')) {
             $hlblockId = substr($entityId, 8);
             if (is_numeric($hlblockId)) {
                 $hlblockId = (new HlblockHelper())->getHlblockUid($hlblockId);
@@ -449,7 +449,7 @@ class UserTypeEntityHelper extends Helper
     {
         $title = Locale::getMessage('ENTITY_TITLE_' . $entityId, [], $entityId);
 
-        if (0 === strpos($entityId, 'HLBLOCK_')) {
+        if (str_starts_with($entityId, 'HLBLOCK_')) {
             $hlblockId = substr($entityId, 8);
             if (is_numeric($hlblockId)) {
                 $hlblock = (new HlblockHelper())->getHlblock($hlblockId);
@@ -503,9 +503,7 @@ class UserTypeEntityHelper extends Helper
         $fields = $this->prepareExportUserTypeEntity($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test')
-                ? true
-                : $this->addUserTypeEntity(
+            $ok = $this->addUserTypeEntity(
                     $fields['ENTITY_ID'],
                     $fields['FIELD_NAME'],
                     $fields
@@ -533,7 +531,7 @@ class UserTypeEntityHelper extends Helper
         unset($fields['MULTIPLE']);
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateUserTypeEntity($exists['ID'], $fields);
+            $ok = $this->updateUserTypeEntity($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -547,7 +545,7 @@ class UserTypeEntityHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $exists['ID'];
+        return $exists['ID'];
     }
 
     /**

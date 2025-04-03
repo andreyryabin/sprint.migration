@@ -1,16 +1,16 @@
 <?php
 
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Builder;
 
 /**
  * @var $fieldCode string
  * @var $fieldItem array
- * @var $builder   AbstractBuilder
+ * @var $builder   Builder
  */
 ?>
 <input name="<?= $fieldCode ?>"
        type="text"
-       value="<?= $fieldItem['value'] ?>"
+       value="<?= htmlspecialchars($fieldItem['value']) ?>"
     <?php if (!empty($fieldItem['placeholder'])) { ?>
         placeholder="<?= $fieldItem['placeholder'] ?>"
     <?php } ?>

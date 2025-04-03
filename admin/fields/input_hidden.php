@@ -1,12 +1,12 @@
 <?php
 
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Builder;
 
 /**
  * @var $fieldCode string
  * @var $fieldItem array
- * @var $builder   AbstractBuilder
+ * @var $builder   Builder
  */
 
 ?>
-<input type="hidden" name="<?= $fieldCode ?>" value="<?= $fieldItem['value'] ?>"/>
+<input type="hidden" name="<?= $fieldCode ?>" value="<?= htmlspecialchars($fieldItem['value']) ?>"/>

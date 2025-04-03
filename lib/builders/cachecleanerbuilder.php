@@ -2,11 +2,11 @@
 
 namespace Sprint\Migration\Builders;
 
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Builder;
 use Sprint\Migration\Locale;
 use function BXClearCache;
 
-class CacheCleanerBuilder extends AbstractBuilder
+class CacheCleanerBuilder extends Builder
 {
     protected function isBuilderEnabled()
     {
@@ -22,10 +22,7 @@ class CacheCleanerBuilder extends AbstractBuilder
 
     protected function execute()
     {
-        if (BXClearCache(true)) {
-            $this->outSuccess('Success');
-        } else {
-            $this->outError('Error');
-        }
+        BXClearCache(true);
+        $this->outSuccess('Success');
     }
 }

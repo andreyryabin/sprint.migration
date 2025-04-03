@@ -2,27 +2,30 @@
 
 namespace Sprint\Migration;
 
-use CAdminMessage;
 use Throwable;
 
 class Out
 {
-    protected static $colors  = [
-        '/'            => ["\x1b[0m", '</span>'],
-        'is_unknown'   => ["\x1b[0;34m", '<span style="color:#00a">'],
-        'is_installed' => ["\x1b[0;32m", '<span style="color:#080">'],
-        'is_new'       => ["\x1b[0;31m", '<span style="color:#a00">'],
-        'unknown'      => ["\x1b[0;34m", '<span style="color:#00a">'],
-        'installed'    => ["\x1b[0;32m", '<span style="color:#080">'],
-        'new'          => ["\x1b[0;31m", '<span style="color:#a00">'],
-        'blue'         => ["\x1b[0;34m", '<span style="color:#00a">'],
-        'green'        => ["\x1b[0;32m", '<span style="color:#080">'],
-        'up'           => ["\x1b[0;32m", '<span style="color:#080">'],
-        'red'          => ["\x1b[0;31m", '<span style="color:#a00">'],
-        'down'         => ["\x1b[0;31m", '<span style="color:#a00">'],
-        'yellow'       => ["\x1b[1;33m", '<span style="color:#aa0">'],
-        'tab'          => ["", '<span style="display: inline-block; margin-left: 10px">'],
-        'b'            => ["\x1b[1m", '<span style="font-weight:bold;color:#000">'],
+    protected static $colors = [
+        '/' => ["\x1b[0m", '</span>'],
+        'tab' => ["\x1b[0m", '<span class="sp-indent-20">'],
+        'unknown' => ["\x1b[0;34m", '<span class="sp-blue"">'],
+        'installed' => ["\x1b[0;32m", '<span class="sp-green">'],
+        'new' => ["\x1b[0;31m", '<span class="sp-red">'],
+        'blue' => ["\x1b[0;34m", '<span class="sp-blue">'],
+        'pink' => ["\x1b[0;35m", '<span class="sp-pink">'],
+        'green' => ["\x1b[0;32m", '<span class="sp-green">'],
+        'up' => ["\x1b[0;32m", '<span class="sp-green">'],
+        'red' => ["\x1b[0;31m", '<span class="sp-red">'],
+        'down' => ["\x1b[0;31m", '<span class="sp-red">'],
+        'yellow' => ["\x1b[0;93m", '<span class="sp-yellow">'],
+        'label' => ["\x1b[47;30m", '<span class="sp-label">'],
+        'label:blue' => ["\x1b[104;30m", '<span class="sp-label sp-label-blue">'],
+        'label:pink' => ["\x1b[105;30m", '<span class="sp-label sp-label-pink">'],
+        'label:red' => ["\x1b[41;37m", '<span class="sp-label sp-label-red">'],
+        'label:green' => ["\x1b[102;30m", '<span class="sp-label sp-label-green">'],
+        'label:yellow' => ["\x1b[103;30m", '<span class="sp-label sp-label-yellow">'],
+        'b' => ["\x1b[1m", '<span class="sp-bold">'],
     ];
     protected static $needEol = false;
 
@@ -33,42 +36,23 @@ class Out
 
         self::$needEol = true;
 
-        if (self::canOutProgressBar()) {
-            $mess = [
-                "MESSAGE"        => $msg,
-                "DETAILS"        => "#PROGRESS_BAR#",
-                "HTML"           => true,
-                "TYPE"           => "PROGRESS",
-                "PROGRESS_TOTAL" => $total,
-                "PROGRESS_VALUE" => $val,
-            ];
+        $msg = '[label]' . $msg . ' ' . $val . ' / ' . $total . '[/]';
 
-            echo '<div class="sp-progress">' . (new CAdminMessage($mess))->Show() . '</div>';
-        } elseif (self::canOutAsHtml()) {
-            $msg = self::prepareToHtml($msg, ['br' => true]);
-            echo '<div class="sp-progress">' . "$msg $val/$total" . '</div>';
+        if (self::canOutAsHtml()) {
+            self::outToHtml($msg, ['class' => 'sp-out sp-progress']);
         } else {
             $msg = self::prepareToConsole($msg);
-            fwrite(STDOUT, "\r$msg $val/$total");
+            fwrite(STDOUT, "\r$msg $val / $total");
         }
     }
 
-    protected static function canOutProgressBar()
+    protected static function canOutAsHtml(): bool
     {
-        return method_exists('\CAdminMessage', '_getProgressHtml') ? 1 : 0;
-    }
-
-    protected static function canOutAsHtml()
-    {
-        return (php_sapi_name() == 'cli') ? 0 : 1;
+        return (php_sapi_name() != 'cli');
     }
 
     protected static function prepareToHtml($msg, $options = [])
     {
-        if ($options['br']) {
-            $msg = nl2br($msg);
-        }
-
         $msg = str_replace('[t]', '&rarr;', $msg);
 
         foreach (self::$colors as $key => $val) {
@@ -83,12 +67,12 @@ class Out
             $msg = self::makeLinksHtml($msg);
         }
 
-        return Locale::convertToWin1251IfNeed($msg);
+        return $msg;
     }
 
     protected static function makeTaskUrl($msg, $taskUrl = '')
     {
-        if (false !== strpos($taskUrl, '$1')) {
+        if (str_contains($taskUrl, '$1')) {
             $msg = preg_replace('/\#([a-z0-9_\-]*)/i', $taskUrl, $msg);
         }
 
@@ -121,7 +105,7 @@ class Out
             $msg = str_replace('[' . $key . ']', $val[0], $msg);
         }
 
-        return Locale::convertToUtf8IfNeed($msg);
+        return $msg;
     }
 
     public static function outInfo($msg, ...$vars)
@@ -131,15 +115,10 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $msg = '[blue]' . $msg . '[/]';
-        if (self::canOutAsHtml()) {
-            self::outToHtml($msg);
-        } else {
-            self::outToConsole($msg);
-        }
+        self::out('[blue]' . $msg . '[/]');
     }
 
-    public static function outToHtml($msg, $options = ['br' => false])
+    public static function outToHtml($msg, $options = [])
     {
         $class = $options['class'] ?? 'sp-out';
 
@@ -154,7 +133,7 @@ class Out
         if (self::$needEol) {
             self::$needEol = false;
             fwrite(STDOUT, PHP_EOL . $msg . $rightEol);
-        } else {
+        } elseif ($msg) {
             fwrite(STDOUT, $msg . $rightEol);
         }
     }
@@ -292,6 +271,14 @@ class Out
         }
     }
 
+    public static function outArray($arr)
+    {
+        $arr = self::getArrayFlat($arr);
+        foreach ($arr as $k => $v) {
+            self::out($k . ':' . $v);
+        }
+    }
+
     protected static function truncateText($strText, $intLen)
     {
         if (mb_strlen($strText) > $intLen) {
@@ -301,7 +288,7 @@ class Out
         }
     }
 
-    protected static function getArrayFlat($arr)
+    public static function getArrayFlat($arr)
     {
         $out = [];
         self::makeArrayFlatRecursive($out, '', $arr);
@@ -375,22 +362,7 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        if (self::canOutAsAdminMessage()) {
-            echo (new CAdminMessage(
-                [
-                    "MESSAGE" => self::prepareToHtml($msg, ['br' => true]),
-                    'HTML'    => true,
-                    'TYPE'    => 'OK',
-                ]
-            ))->Show();
-        } else {
-            self::outNotice($msg);
-        }
-    }
-
-    protected static function canOutAsAdminMessage()
-    {
-        return (self::canOutAsHtml() && class_exists('\CAdminMessage')) ? 1 : 0;
+        self::out('[label:green]' . $msg . '[/]');
     }
 
     public static function outNotice($msg, ...$vars)
@@ -400,12 +372,7 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $msg = '[green]' . $msg . '[/]';
-        if (self::canOutAsHtml()) {
-            self::outToHtml($msg);
-        } else {
-            self::outToConsole($msg);
-        }
+        self::out('[green]' . $msg . '[/]');
     }
 
     public static function outError($msg, ...$vars)
@@ -415,17 +382,7 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        if (self::canOutAsAdminMessage()) {
-            echo (new CAdminMessage(
-                [
-                    "MESSAGE" => self::prepareToHtml($msg, ['br' => true]),
-                    'HTML'    => true,
-                    'TYPE'    => 'ERROR',
-                ]
-            ))->Show();
-        } else {
-            self::outWarning($msg);
-        }
+        self::out('[label:red]' . $msg . '[/]');
     }
 
     public static function outWarning($msg, ...$vars)
@@ -435,12 +392,7 @@ class Out
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $msg = '[red]' . $msg . '[/]';
-        if (self::canOutAsHtml()) {
-            self::outToHtml($msg);
-        } else {
-            self::outToConsole($msg);
-        }
+        self::out('[red]' . $msg . '[/]');
     }
 
     public static function outException(?Throwable $exception)

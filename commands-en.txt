@@ -28,11 +28,6 @@ All console commands:
 
   run [builder]                 Run builder
 
-  schema                        Show schemes
-    export [name]               Create selected schemes
-    import [name]               Install selected schemes
-    diff [name]                 Check differrences between scheme and database
-
   mark [version]                Mark migration by name
   mark new                      Mark all new migrations
   mark installed                Mark all installed migrations

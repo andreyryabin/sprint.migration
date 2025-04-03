@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Helpers\Traits\Iblock;
 
+use Bitrix\Iblock\InheritedProperty\ElementTemplates as IpropertyTemplates;
 use CIBlockElement;
 use CIBlockResult;
 use Sprint\Migration\Exceptions\HelperException;
@@ -11,28 +12,17 @@ trait IblockElementTrait
 {
     /**
      * Получает id элемента инфоблока
-     *
-     * @param $iblockId
-     * @param $code
-     *
-     * @return int|mixed
      */
-    public function getElementId($iblockId, $code)
+    public function getElementId(int $iblockId, array|string $code): int
     {
         $item = $this->getElement($iblockId, $code);
-        return ($item && isset($item['ID'])) ? $item['ID'] : 0;
+        return (int)($item['ID'] ?? 0);
     }
 
     /**
      * Получает элемент инфоблока
-     *
-     * @param int          $iblockId
-     * @param array|string $code
-     * @param array        $select
-     *
-     * @return array
      */
-    public function getElement($iblockId, $code, $select = [])
+    public function getElement(int $iblockId, array|string $code, array $select = []): bool|array
     {
         /** @compatibility filter or code */
         $filter = is_array($code)
@@ -55,46 +45,36 @@ trait IblockElementTrait
         $item = $this->getElementsList($iblockId, [
             'filter' => $filter,
             'select' => $select,
-            'limit'  => 1,
+            'limit' => 1,
         ])->Fetch();
 
-        return $this->prepareElement($item);
+        return $item ? $this->prepareElement($item) : false;
     }
 
     /**
-     * @param $item
-     *
-     * @return mixed
      */
-    protected function prepareElement($item)
+    protected function prepareElement(array $item): array
     {
-        if (empty($item['ID'])) {
-            return $item;
-        }
-
         $item['IBLOCK_SECTION'] = $this->getElementSectionIds($item['ID']);
+
+        $item['IPROPERTY_TEMPLATES'] = $this->getElementIpropertyTemplates($item['IBLOCK_ID'], $item['ID']);
 
         return $item;
     }
 
-    /**
-     * @param $elementId
-     *
-     * @return array
-     */
-    public function getElementSectionIds($elementId)
+    public function getElementSectionIds(int $elementId): array
     {
         $sections = $this->getElementSections($elementId);
         return array_column($sections, 'ID');
     }
 
-    /**
-     * @param       $elementId
-     * @param array $sectionSelect
-     *
-     * @return mixed
-     */
-    public function getElementSections($elementId, $sectionSelect = [])
+    public function getElementIpropertyTemplates(int $iblockId, int $elementId): array
+    {
+        $templates = (new IpropertyTemplates($iblockId, $elementId))->findTemplates();
+        return array_column($templates, 'TEMPLATE', 'CODE');
+    }
+
+    public function getElementSections(int $elementId, array $sectionSelect = []): array
     {
         $dbres = CIBlockElement::GetElementGroups($elementId, true, $sectionSelect);
         return $this->fetchAll($dbres);
@@ -102,14 +82,8 @@ trait IblockElementTrait
 
     /**
      * Получает элементы инфоблока
-     *
-     * @param int   $iblockId
-     * @param array $filter
-     * @param array $select
-     *
-     * @return array
      */
-    public function getElements($iblockId, $filter = [], $select = []): array
+    public function getElements(int $iblockId, array $filter = [], array $select = []): array
     {
         $select = array_merge(
             [
@@ -137,22 +111,22 @@ trait IblockElementTrait
         return $list;
     }
 
-    public function getElementsList($iblockId, $params = []): CIBlockResult
+    public function getElementsList(int $iblockId, array $params = []): CIBlockResult
     {
         $params = array_merge(
             [
                 'offset' => 0,
-                'limit'  => 0,
+                'limit' => 0,
                 'filter' => [],
                 'select' => [],
-                'order'  => ['ID' => 'ASC'],
+                'order' => ['ID' => 'ASC'],
             ], $params
         );
 
         $params['filter'] = array_merge(
             $params['filter'],
             [
-                'IBLOCK_ID'         => $iblockId,
+                'IBLOCK_ID' => $iblockId,
                 'CHECK_PERMISSIONS' => 'N',
             ]
         );
@@ -162,8 +136,8 @@ trait IblockElementTrait
             if ($params['offset'] > 0) {
                 $pageNum = (int)floor($params['offset'] / $params['limit']) + 1;
                 $navParams = [
-                    'nPageSize'       => $params['limit'],
-                    'iNumPage'        => $pageNum,
+                    'nPageSize' => $params['limit'],
+                    'iNumPage' => $pageNum,
                     'checkOutOfRange' => true,
                 ];
             } else {
@@ -182,13 +156,7 @@ trait IblockElementTrait
         );
     }
 
-    /**
-     * @param int   $iblockId
-     * @param array $filter
-     *
-     * @return int
-     */
-    public function getElementsCount($iblockId, $filter = [])
+    public function getElementsCount(int $iblockId, array $filter = []): int
     {
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
@@ -212,17 +180,11 @@ trait IblockElementTrait
     }
 
     /**
-     * Сохраняет элемент инфоблока
-     * Создаст если не было, обновит если существует (поиск по коду)
-     *
-     * @param       $iblockId
-     * @param array $fields
-     * @param array $props
-     *
+     * Сохраняет элемент инфоблока.
+     * Создаст элемент если не было, обновит если существует (поиск по коду)
      * @throws HelperException
-     * @return int|void
      */
-    public function saveElement($iblockId, $fields = [], $props = [])
+    public function saveElement(int $iblockId, array $fields = [], array $props = []): int
     {
         $this->checkRequiredKeys($fields, ['CODE']);
 
@@ -236,15 +198,9 @@ trait IblockElementTrait
 
     /**
      * Обновляет элемент инфоблока
-     *
-     * @param       $elementId
-     * @param array $fields
-     * @param array $props
-     *
      * @throws HelperException
-     * @return int
      */
-    public function updateElement($elementId, $fields = [], $props = [])
+    public function updateElement(int $elementId, array $fields = [], array $props = []): int
     {
         $iblockId = !empty($fields['IBLOCK_ID']) ? $fields['IBLOCK_ID'] : false;
         unset($fields['IBLOCK_ID']);
@@ -265,22 +221,16 @@ trait IblockElementTrait
 
     /**
      * Добавляет элемент инфоблока
-     *
-     * @param       $iblockId
-     * @param array $fields - поля
-     * @param array $props  - свойства
-     *
      * @throws HelperException
-     * @return int|void
      */
-    public function addElement($iblockId, $fields = [], $props = [])
+    public function addElement(int $iblockId, array $fields = [], array $props = []): int
     {
         $default = [
-            'NAME'              => 'element',
+            'NAME' => 'element',
             'IBLOCK_SECTION_ID' => false,
-            'ACTIVE'            => 'Y',
-            'PREVIEW_TEXT'      => '',
-            'DETAIL_TEXT'       => '',
+            'ACTIVE' => 'Y',
+            'PREVIEW_TEXT' => '',
+            'DETAIL_TEXT' => '',
         ];
 
         $fields = array_replace_recursive($default, $fields);
@@ -291,30 +241,25 @@ trait IblockElementTrait
         }
 
         $ib = new CIBlockElement;
-        $id = $ib->Add($fields);
+        $elementId = $ib->Add($fields);
 
-        if ($id) {
-            return $id;
+        if ($elementId) {
+            return (int)$elementId;
         }
 
         throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
-     * @param       $iblockId
-     * @param array $fields
-     * @param array $props
-     *
      * @throws HelperException
-     * @return int|void
      */
-    public function saveElementByXmlId($iblockId, $fields = [], $props = [])
+    public function saveElementByXmlId(int $iblockId, array $fields = [], array $props = []): int
     {
         $this->checkRequiredKeys($fields, ['XML_ID']);
 
-        $item = $this->getElement($iblockId, ['=XML_ID' => $fields['XML_ID']]);
-        if (!empty($item['ID'])) {
-            return $this->updateElement($item['ID'], $fields, $props);
+        $elementId = $this->getElementId($iblockId, ['=XML_ID' => $fields['XML_ID']]);
+        if ($elementId) {
+            return $this->updateElement($elementId, $fields, $props);
         }
 
         return $this->addElement($iblockId, $fields, $props);
@@ -322,55 +267,41 @@ trait IblockElementTrait
 
     /**
      * Добавляет элемент инфоблока если он не существует
-     *
-     * @param int   $iblockId
-     * @param array $fields
-     * @param array $props
-     *
      * @throws HelperException
-     * @return bool|mixed
      */
-    public function addElementIfNotExists($iblockId, $fields, $props = [])
+    public function addElementIfNotExists(int $iblockId, array $fields, array $props = []): int
     {
         $this->checkRequiredKeys($fields, ['CODE']);
 
-        $item = $this->getElement($iblockId, $fields['CODE']);
-        if ($item) {
-            return $item['ID'];
-        }
+        $elementId = $this->getElementId($iblockId, $fields['CODE']);
 
-        return $this->addElement($iblockId, $fields, $props);
+        return $elementId ?: $this->addElement($iblockId, $fields, $props);
     }
 
     /**
      * Обновляет элемент инфоблока если он существует
      *
-     * @param int   $iblockId
-     * @param array $fields
-     * @param array $props
-     *
      * @throws HelperException
-     * @return bool|int|void
      */
-    public function updateElementIfExists($iblockId, $fields = [], $props = [])
+    public function updateElementIfExists(int $iblockId, array $fields = [], array $props = []): int
     {
         $this->checkRequiredKeys($fields, ['CODE']);
 
-        $item = $this->getElement($iblockId, $fields['CODE']);
-        if (!$item) {
-            return false;
+        $elementId = $this->getElementId($iblockId, $fields['CODE']);
+
+        if ($elementId) {
+            $fields['IBLOCK_ID'] = $iblockId;
+            unset($fields['CODE']);
+            return $this->updateElement($elementId, $fields, $props);
         }
 
-        $fields['IBLOCK_ID'] = $iblockId;
-        unset($fields['CODE']);
-
-        return $this->updateElement($item['ID'], $fields, $props);
+        return 0;
     }
 
     /**
      * @throws HelperException
      */
-    public function deleteElementByXmlId($iblockId, $xmlId)
+    public function deleteElementByXmlId(int $iblockId, int|string $xmlId): bool
     {
         if (!empty($xmlId)) {
             $item = $this->getElement($iblockId, ['=XML_ID' => $xmlId]);
@@ -383,13 +314,9 @@ trait IblockElementTrait
 
     /**
      * Удаляет элемент инфоблока
-     *
-     * @param $elementId
-     *
      * @throws HelperException
-     * @return bool|void
      */
-    public function deleteElement($elementId)
+    public function deleteElement(int $elementId): bool
     {
         $ib = new CIBlockElement;
         if ($ib->Delete($elementId)) {
@@ -401,14 +328,9 @@ trait IblockElementTrait
 
     /**
      * Удаляет элемент инфоблока если он существует
-     *
-     * @param $iblockId
-     * @param $code
-     *
      * @throws HelperException
-     * @return bool|void
      */
-    public function deleteElementIfExists($iblockId, $code)
+    public function deleteElementIfExists(int $iblockId, string $code): bool
     {
         return $this->deleteElementByCode($iblockId, $code);
     }
@@ -416,25 +338,21 @@ trait IblockElementTrait
     /**
      * @throws HelperException
      */
-    public function deleteElementByCode($iblockId, $code)
+    public function deleteElementByCode(int $iblockId, string $code): bool
     {
         if (!empty($code)) {
-            $item = $this->getElement($iblockId, ['=CODE' => $code]);
-            if ($item) {
-                return $this->deleteElement($item['ID']);
+            $elementId = $this->getElementId($iblockId, ['=CODE' => $code]);
+            if ($elementId) {
+                return $this->deleteElement($elementId);
             }
         }
         return false;
     }
 
     /**
-     * @param $iblockId
-     * @param $elementId
-     *
      * @throws HelperException
-     * @return array
      */
-    public function getElementUniqFilterById($iblockId, $elementId)
+    public function getElementUniqFilterById(int $iblockId, int $elementId): array
     {
         if (empty($elementId)) {
             throw new HelperException(
@@ -454,7 +372,7 @@ trait IblockElementTrait
                 Locale::getMessage(
                     'ERR_IB_ELEMENT_ID_NOT_FOUND',
                     [
-                        '#IBLOCK_ID#'  => $iblockId,
+                        '#IBLOCK_ID#' => $iblockId,
                         '#ELEMENT_ID#' => $elementId,
                     ]
                 )
@@ -462,16 +380,16 @@ trait IblockElementTrait
         }
 
         return [
-            'NAME'   => $element['NAME'],
+            'NAME' => $element['NAME'],
             'XML_ID' => $element['XML_ID'],
-            'CODE'   => $element['CODE'],
+            'CODE' => $element['CODE'],
         ];
     }
 
     /**
      * @throws HelperException
      */
-    public function getElementIdByUniqFilter($iblockId, $uniqFilter)
+    public function getElementIdByUniqFilter(int $iblockId, array $uniqFilter): int
     {
         if (empty($uniqFilter)) {
             throw new HelperException(
@@ -486,20 +404,20 @@ trait IblockElementTrait
 
         $uniqFilter['IBLOCK_ID'] = $iblockId;
 
-        $element = $this->getElement($iblockId, $uniqFilter);
+        $elementId = $this->getElementId($iblockId, $uniqFilter);
 
-        if (empty($element['ID'])) {
+        if (empty($elementId)) {
             throw new HelperException(
                 Locale::getMessage(
                     'ERR_IB_ELEMENT_BY_FILTER_NOT_FOUND',
                     [
                         '#IBLOCK_ID#' => $iblockId,
-                        '#NAME#'      => $uniqFilter['NAME'],
+                        '#NAME#' => $uniqFilter['NAME'],
                     ]
                 )
             );
         }
 
-        return $element['ID'];
+        return $elementId;
     }
 }

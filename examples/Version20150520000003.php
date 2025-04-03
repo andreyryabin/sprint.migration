@@ -5,8 +5,19 @@ namespace Sprint\Migration;
 class Version20150520000003 extends Version
 {
 
-    protected $description = "Примеры вывода сообщений";
+    protected $description = <<<TEXT
+Пример описания миграции с [red]красным текстом[/], [green]зелёным[/], [blue]синим[/], 
+[yellow]желтым[/] и [pink]розовым[/] конечно.
 
+Также задавать информационные метки 
+[label]Простая[/]  [label:red]Красная[/] [label:green]Зеленая[/]
+
+[label:blue]Синяя[/] [label:yellow]Желтая[/] [label:pink]Розовая[/] 
+
+Выделять [b]важную часть[/] в описании и ставить ссылки 
+https://marketplace.1c-bitrix.ru/solutions/sprint.migration/
+ 
+TEXT;
     /**
      * @return bool|void
      */

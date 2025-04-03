@@ -98,7 +98,7 @@ class HlblockBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/HlblockExport.php',
+            Module::getModuleTemplateFile('HlblockExport'),
             [
                 'hlblockExport'      => $hlblockExport,
                 'hlblock'            => $hlblock,

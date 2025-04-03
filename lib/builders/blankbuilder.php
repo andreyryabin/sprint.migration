@@ -27,7 +27,7 @@ class BlankBuilder extends VersionBuilder
         if ($template && is_file(Module::getDocRoot() . $template)) {
             $template = Module::getDocRoot() . $template;
         } else {
-            $template = Module::getModuleDir() . '/templates/version.php';
+            $template = Module::getModuleTemplateFile('version');
         }
 
         $this->createVersionFile($template, [], false);

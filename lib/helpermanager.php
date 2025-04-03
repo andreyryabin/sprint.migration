@@ -17,6 +17,7 @@ use Sprint\Migration\Helpers\MedialibHelper;
 use Sprint\Migration\Helpers\OptionHelper;
 use Sprint\Migration\Helpers\SiteHelper;
 use Sprint\Migration\Helpers\SqlHelper;
+use Sprint\Migration\Helpers\TextHelper;
 use Sprint\Migration\Helpers\UserGroupHelper;
 use Sprint\Migration\Helpers\UserOptionsHelper;
 use Sprint\Migration\Helpers\UserTypeEntityHelper;
@@ -36,15 +37,16 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  * @method DeliveryServiceHelper    DeliveryService()
  * @method SqlHelper                Sql()
  * @method MedialibHelper           Medialib()
- * @method MedialibExchangeHelper   MedialibExchange()
+ * @method TextHelper               Text()
  * @method IblockExchangeHelper     IblockExchange()
  * @method HlblockExchangeHelper    HlblockExchange()
+ * @method MedialibExchangeHelper   MedialibExchange()
  */
 class HelperManager
 {
-    private static $instance   = null;
-    private array  $registered = [];
-    private array  $cache      = [];
+    private static $instance = null;
+    private array $registered = [];
+    private array $cache = [];
 
     public static function getInstance(): HelperManager
     {
@@ -58,8 +60,8 @@ class HelperManager
      * @param $name
      * @param $arguments
      *
-     * @throws HelperException
      * @return Helper
+     * @throws HelperException
      */
     public function __call($name, $arguments)
     {

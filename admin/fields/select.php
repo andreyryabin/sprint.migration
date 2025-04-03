@@ -1,11 +1,11 @@
 <?php
 
-use Sprint\Migration\AbstractBuilder;
+use Sprint\Migration\Builder;
 
 /**
  * @var $fieldCode string
  * @var $fieldItem array
- * @var $builder   AbstractBuilder
+ * @var $builder   Builder
  */
 ?>
 <div class="sp-optgroup">
@@ -18,7 +18,7 @@ use Sprint\Migration\AbstractBuilder;
         <?php foreach ($fieldItem['select'] as $item) { ?>
             <label class="sp-optgroup-item">
                 <input name="<?= $fieldCode ?>"
-                       value="<?= $item['value'] ?>"
+                       value="<?= htmlspecialchars($item['value']) ?>"
                     <?php if ($item['value'] == $fieldItem['value']) { ?>
                         checked="checked"
                     <?php } ?>

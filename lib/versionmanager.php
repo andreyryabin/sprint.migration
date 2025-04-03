@@ -17,12 +17,12 @@ use Throwable;
 class VersionManager
 {
     private VersionConfig $versionConfig;
-    private VersionTable  $versionTable;
-    private bool          $isRestart         = false;
-    private array         $lastRestartParams = [];
-    private ?Throwable    $lastException;
-    private string        $versionTimestampPattern;
-    private string        $versionTimestampFormat;
+    private VersionTable $versionTable;
+    private bool $isRestart = false;
+    private array $lastRestartParams = [];
+    private ?Throwable $lastException;
+    private string $versionTimestampPattern;
+    private string $versionTimestampFormat;
 
     /**
      * @throws MigrationException
@@ -59,9 +59,10 @@ class VersionManager
     public function startMigration(
         string $versionName,
         string $action = VersionEnum::ACTION_UP,
-        array $params = [],
+        array  $params = [],
         string $tag = ''
-    ): bool {
+    ): bool
+    {
         $this->isRestart = false;
         $this->lastRestartParams = [];
         $this->lastException = null;
@@ -119,19 +120,16 @@ class VersionManager
     }
 
     /**
-     * @param $versionName
-     *
      * @throws MigrationException
-     * @return array|bool
      */
-    public function getVersionByName($versionName)
+    public function getVersionByName(string $versionName): bool|array
     {
         $ts = $this->getVersionTimestamp($versionName);
 
         if ($ts) {
             $fileName = $this->getVersionFile($versionName);
             $file = file_exists($fileName) ? [
-                'version'  => $versionName,
+                'version' => $versionName,
                 'location' => $fileName,
             ] : 0;
 
@@ -203,7 +201,6 @@ class VersionManager
             if ($filter['limit'] && count($result) == $filter['limit']) {
                 break;
             }
-
         }
 
         return $result;
@@ -230,11 +227,11 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function getOnceForExecute(array $filter , string $action)
+    public function getOnceForExecute(array $filter, string $action)
     {
         $filter['limit'] = 1;
 
-        $names = $this->getListForExecute($filter,$action);
+        $names = $this->getListForExecute($filter, $action);
 
         return $names[0] ?? '';
     }
@@ -257,7 +254,7 @@ class VersionManager
     /**
      * @throws BuilderException
      */
-    public function createBuilder(string $name, array $params = []): AbstractBuilder
+    public function createBuilder(string $name, array $params = []): Builder
     {
         $builders = $this->getVersionConfig()->getVal('version_builders', []);
 
@@ -265,8 +262,8 @@ class VersionManager
 
         if ($class && class_exists($class)) {
             $builder = new $class($this->getVersionConfig(), $name, $params);
-            if ($builder instanceof AbstractBuilder) {
-                $builder->initializeBuilder();
+            if ($builder instanceof Builder) {
+                $builder->buildInitialize();
                 return $builder;
             }
         }
@@ -321,18 +318,18 @@ class VersionManager
         return $result;
     }
 
-    public function getVersionFile($versionName): string
+    public function getVersionFile(string $versionName): string
     {
         $dir = $this->getVersionConfig()->getVal('migration_dir');
         return $dir . '/' . $versionName . '.php';
     }
 
-    public function checkVersionName($versionName): bool
+    public function checkVersionName(string $versionName): bool
     {
         return (bool)$this->getVersionTimestamp($versionName);
     }
 
-    public function getVersionTimestamp($versionName)
+    public function getVersionTimestamp(string $versionName)
     {
         $matches = [];
         if (preg_match($this->versionTimestampPattern, $versionName, $matches)) {
@@ -342,10 +339,10 @@ class VersionManager
         return false;
     }
 
-    public function getWebDir()
+    public function getWebDir(): string
     {
         $dir = $this->getVersionConfig()->getVal('migration_dir');
-        if (strpos($dir, Module::getDocRoot()) === 0) {
+        if (str_starts_with($dir, Module::getDocRoot())) {
             return substr($dir, strlen(Module::getDocRoot()));
         }
         return '';
@@ -401,16 +398,19 @@ class VersionManager
             }
 
             $files[$filename] = [
-                'version'  => $filename,
+                'version' => $filename,
                 'location' => $item->getPathname(),
-                'ts'       => $timestamp,
+                'ts' => $timestamp,
             ];
         }
 
         return $files;
     }
 
-    public function clean()
+    /**
+     * @throws MigrationException
+     */
+    public function clean(): void
     {
         $dir = $this->getVersionConfig()->getVal('migration_dir');
 
@@ -425,7 +425,7 @@ class VersionManager
             }
         }
 
-        $this->getVersionTable()->deleteTable();
+        $this->getVersionTable()->dropTable();
     }
 
     /**
@@ -518,13 +518,13 @@ class VersionManager
             $items = $this->getVersions(['status' => $versionName]);
         } elseif ($versionName == 'all') {
             $items = $this->getVersions();
-        } elseif ($meta = $this->getVersionByName($versionName)) {
-            $items = [$meta];
+        } elseif ($item = $this->getVersionByName($versionName)) {
+            $items = [$item];
         }
 
         if (!empty($items)) {
-            foreach ($items as $meta) {
-                $result[] = $this->transferMigrationByMeta($meta, $vmTo);
+            foreach ($items as $item) {
+                $result[] = $this->transferMigrationByMeta($item, $vmTo);
             }
         } else {
             $result[] = [
@@ -604,18 +604,9 @@ class VersionManager
         }
 
         $textindex = $meta['version'] . $meta['description'] . $meta['tag'];
-        $searchword = $filter['search'];
+        $searchword = trim($filter['search']);
 
-        $textindex = Locale::convertToUtf8IfNeed($textindex);
-        $searchword = Locale::convertToUtf8IfNeed($searchword);
-
-        $searchword = trim($searchword);
-
-        if (false !== mb_stripos($textindex, $searchword, null, 'utf-8')) {
-            return true;
-        }
-
-        return false;
+        return (false !== mb_stripos($textindex, $searchword, null, 'utf-8'));
     }
 
     protected function containsFilterStatus($meta, $filter): bool
@@ -632,27 +623,22 @@ class VersionManager
     }
 
     /**
-     * @param $versionName
-     * @param $file
-     * @param $record
-     *
      * @throws MigrationException
-     * @return array|bool
      */
-    protected function makeVersion($versionName, $file, $record, $ts)
+    protected function makeVersion(string $versionName, $file, $record, $ts)
     {
         $isFile = ($file) ? 1 : 0;
         $isRecord = ($record) ? 1 : 0;
 
         $meta = [
-            'is_file'       => $isFile,
-            'is_record'     => $isRecord,
-            'version'       => $versionName,
-            'modified'      => false,
-            'older'         => false,
-            'hash'          => '',
-            'tag'           => '',
-            'file_status'   => '',
+            'is_file' => $isFile,
+            'is_record' => $isRecord,
+            'version' => $versionName,
+            'modified' => false,
+            'older' => false,
+            'hash' => '',
+            'tag' => '',
+            'file_status' => '',
             'record_status' => '',
         ];
 
@@ -694,7 +680,7 @@ class VersionManager
             $versionInstance = (new ReflectionClass($class))
                 ->newInstanceWithoutConstructor();
             $meta['class'] = $class;
-            $meta['description'] = $this->purifyDescriptionForMeta(
+            $meta['description'] = $this->stripslashes(
                 $versionInstance->getDescription()
             );
 
@@ -702,7 +688,7 @@ class VersionManager
             $meta['file_status'] = $this->humanStatus(
                 Locale::getMessage('META_NEW'),
                 $humanTs->format(VersionTable::DATE_FORMAT),
-                $this->purifyDescriptionForMeta(
+                $this->stripslashes(
                     $versionInstance->getAuthor()
                 )
             );
@@ -727,7 +713,7 @@ class VersionManager
         return $meta;
     }
 
-    private function humanStatus($prefix, $at, $by)
+    private function humanStatus(string $prefix, string $at, string $by): string
     {
         $by = $by ? '(' . $by . ')' : '';
 
@@ -739,7 +725,7 @@ class VersionManager
         return $prefix;
     }
 
-    protected function purifyDescriptionForMeta(string $descr = ''): string
+    protected function stripslashes(string $descr = ''): string
     {
         return stripslashes(strip_tags(trim($descr)));
     }
@@ -758,8 +744,8 @@ class VersionManager
             );
 
             Module::movePath(
-                $this->getVersionExchangeDir($meta['version']),
-                $vmTo->getVersionExchangeDir($meta['version'])
+                $this->getVersionConfig()->getVersionExchangeDir($meta['version']),
+                $this->getVersionConfig()->getVersionExchangeDir($meta['version'])
             );
 
             $success = 1;
@@ -781,7 +767,7 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    protected function deleteMigrationByMeta($meta): array
+    protected function deleteMigrationByMeta(array $meta): array
     {
         $success = 0;
 
@@ -790,12 +776,12 @@ class VersionManager
             $success = 1;
         }
 
-        if ($meta && $meta['is_file']) {
+        if ($meta['is_file']) {
             Module::deletePath(
                 $meta['location']
             );
             Module::deletePath(
-                $this->getVersionExchangeDir($meta['version'])
+                $this->getVersionConfig()->getVersionExchangeDir($meta['version'])
             );
 
             $success = 1;
@@ -809,16 +795,10 @@ class VersionManager
         ];
     }
 
-    public function getVersionExchangeDir($versionName): string
-    {
-        $dir = $this->getVersionConfig()->getVal('exchange_dir');
-        return $dir . '/' . $versionName . '_files/';
-    }
-
     /**
      * @throws MigrationException
      */
-    protected function setMigrationTagByMeta($meta, $tag = ''): array
+    protected function setMigrationTagByMeta(array $meta, $tag = ''): array
     {
         $success = 0;
 
@@ -836,11 +816,9 @@ class VersionManager
     }
 
     /**
-     * @param $ok
-     *
      * @throws MigrationException
      */
-    protected function checkResultAfterStart($ok)
+    protected function checkResultAfterStart($ok): void
     {
         /* @global $APPLICATION CMain */
         global $APPLICATION;
@@ -857,10 +835,10 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function checkRequiredVersions(array $versionNames)
+    public function checkRequiredVersions(array $versionNames): void
     {
         foreach ($versionNames as $versionName) {
-            if (strpos($versionName, '\\') !== false) {
+            if (str_contains($versionName, '\\')) {
                 $versionName = substr(strrchr($versionName, '\\'), 1);
             }
             if (!$this->checkVersionName($versionName)) {

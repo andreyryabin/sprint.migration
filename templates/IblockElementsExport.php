@@ -11,7 +11,7 @@
  * @formatter:off
  */
 
-use Sprint\Migration\Exchange\IblockElementsExport;
+use Sprint\Migration\Builders\IblockElementsBuilder;
 
 ?><?php echo "<?php\n" ?>
 
@@ -36,10 +36,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     {
         $this->getExchangeManager()
              ->IblockElementsImport()
-             ->setExchangeResource('iblock_elements.xml')
              ->setLimit(20)
              ->execute(function ($item) {
-<?php if ($updateMode == IblockElementsExport::UPDATE_MODE_CODE) { ?>
+<?php if ($updateMode == IblockElementsBuilder::UPDATE_MODE_CODE) { ?>
                  $this->getHelperManager()
                       ->Iblock()
                       ->saveElement(
@@ -47,7 +46,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                           $item['fields'],
                           $item['properties']
                       );
-<?php } elseif($updateMode == IblockElementsExport::UPDATE_MODE_XML_ID) { ?>
+<?php } elseif($updateMode == IblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
                  $this->getHelperManager()
                       ->Iblock()
                       ->saveElementByXmlId(
@@ -74,10 +73,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function down()
     {
-<?php if ($updateMode == IblockElementsExport::UPDATE_MODE_CODE) { ?>
+<?php if ($updateMode == IblockElementsBuilder::UPDATE_MODE_CODE) { ?>
         $this->getExchangeManager()
              ->IblockElementsImport()
-             ->setExchangeResource('iblock_elements.xml')
              ->setLimit(10)
              ->execute(function ($item) {
                  $this->getHelperManager()
@@ -87,10 +85,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                           $item['fields']['CODE']
                  );
              });
-<?php } elseif($updateMode == IblockElementsExport::UPDATE_MODE_XML_ID) { ?>
+<?php } elseif($updateMode == IblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
         $this->getExchangeManager()
              ->IblockElementsImport()
-             ->setExchangeResource('iblock_elements.xml')
              ->setLimit(10)
              ->execute(function ($item) {
                  $this->getHelperManager()

@@ -10,7 +10,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
-if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sessid')) {
+if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid()) {
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
 
@@ -21,8 +21,6 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid('send_sess
     $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : '';
     $settag = !empty($_POST['settag']) ? trim($_POST['settag']) : '';
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
-    $search = Sprint\Migration\Locale::convertToUtf8IfNeed($search);
-
     $migrationView = !empty($_POST['migration_view']) ? trim($_POST['migration_view']) : '';
 
     $filter = [

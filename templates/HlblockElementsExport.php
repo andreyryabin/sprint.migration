@@ -7,11 +7,11 @@
  * @var $extendClass
  * @var $moduleVersion
  * @var $updateMode
- * @var $author
+  * @var $author
  * @formatter:off
  */
 
-use Sprint\Migration\Exchange\HlblockElementsExport;
+use Sprint\Migration\Builders\HlblockElementsBuilder;
 
 ?><?php echo "<?php\n" ?>
 
@@ -38,10 +38,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     {
         $this->getExchangeManager()
              ->HlblockElementsImport()
-             ->setExchangeResource('hlblock_elements.xml')
              ->setLimit(20)
              ->execute(function ($item) {
-<?php if ($updateMode == HlblockElementsExport::UPDATE_MODE_XML_ID) { ?>
+<?php if ($updateMode == HlblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
                  $this->getHelperManager()
                       ->Hlblock()
                       ->saveElementByXmlId(
@@ -67,10 +66,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function down()
     {
-<?php if ($updateMode == HlblockElementsExport::UPDATE_MODE_XML_ID) { ?>
+<?php if ($updateMode == HlblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
         $this->getExchangeManager()
              ->HlblockElementsImport()
-             ->setExchangeResource('hlblock_elements.xml')
              ->setLimit(20)
              ->execute(function ($item) {
                  $this->getHelperManager()

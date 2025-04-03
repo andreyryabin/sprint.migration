@@ -2,23 +2,24 @@
 
 namespace Sprint\Migration;
 
+use ReflectionClass;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\Traits\ExitMessageTrait;
+use Sprint\Migration\Exchange\ExchangeManager;
+use Sprint\Migration\Interfaces\RestartableInterface;
 use Sprint\Migration\Traits\HelperManagerTrait;
+use Sprint\Migration\Traits\OutTrait;
+use Sprint\Migration\Traits\RestartableTrait;
+use Sprint\Migration\Traits\VersionConfigTrait;
 
-/**
- * Class Version
- *
- * @package Sprint\Migration
- */
-class Version extends ExchangeEntity
+class Version implements RestartableInterface
 {
     use HelperManagerTrait;
-    use ExitMessageTrait;
     use OutTrait;
+    use RestartableTrait;
+    use VersionConfigTrait;
 
-    protected $author        = "";
-    protected $description   = "";
+    protected $author = "";
+    protected $description = "";
     protected $moduleVersion = "";
     /**
      * Миграции, которые должны быть установлены перед установкой текущей
@@ -44,10 +45,7 @@ class Version extends ExchangeEntity
         throw new MigrationException(Locale::getMessage('WRITE_DOWN_CODE'));
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -57,49 +55,50 @@ class Version extends ExchangeEntity
         return $this->author;
     }
 
-    /**
-     * @return string
-     */
-    public function getModuleVersion()
+    public function getModuleVersion(): string
     {
         return $this->moduleVersion;
     }
 
-    /**
-     * @return array
-     */
-    public function getRequiredVersions()
+    public function getRequiredVersions(): array
     {
         return $this->requiredVersions;
     }
 
-    /**
-     * @throws MigrationException
-     */
-    public function checkRequiredVersions($versionNames)
+    public function getVersionName(): string
     {
-        (new VersionManager($this->getVersionConfig()))->checkRequiredVersions($versionNames);
+        return (new ReflectionClass($this))->getShortName();
     }
 
     /**
      * @throws MigrationException
-     * @return StorageManager
      */
-    protected function getStorageManager($versionName = '')
+    public function checkRequiredVersions($versionNames): void
+    {
+        (new VersionManager(
+            $this->getVersionConfig()
+        ))->checkRequiredVersions($versionNames);
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    protected function getStorageManager($versionName = ''): StorageManager
     {
         if (empty($versionName)) {
-            $versionName = $this->getClassName();
+            $versionName = $this->getVersionName();
         }
 
-        return new StorageManager('default', $versionName);
+        return new StorageManager('sprint_storage_default', $versionName);
     }
 
-    /**
-     * @return ExchangeManager
-     */
-    protected function getExchangeManager()
+    protected function getExchangeManager(): ExchangeManager
     {
-        return new ExchangeManager($this);
+        $dir = $this->getVersionConfig()->getVersionExchangeDir(
+            $this->getVersionName()
+        );
+
+        return new ExchangeManager($this, $dir);
     }
 }
 

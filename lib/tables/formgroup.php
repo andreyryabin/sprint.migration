@@ -2,16 +2,16 @@
 
 namespace Sprint\Migration\Tables;
 
-use Bitrix\Main\Entity\DataManager;
+use Bitrix\Main\ORM\Data;
 
-class FormGroupTable extends DataManager
+class FormGroupTable extends Data\DataManager
 {
-    public static function getTableName()
+    public static function getTableName(): string
     {
         return 'b_form_2_group';
     }
 
-    public static function getMap()
+    public static function getMap(): array
     {
         return [
             'ID'         => [

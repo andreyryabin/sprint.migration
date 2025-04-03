@@ -9,7 +9,6 @@ use Sprint\Migration\Locale;
 
 trait IblockTypeTrait
 {
-
     /**
      * Получает тип инфоблока, бросает исключение если его не существует
      * @param $typeId
@@ -49,7 +48,6 @@ trait IblockTypeTrait
             )
         );
     }
-
 
     /**
      * Получает тип инфоблока
@@ -129,18 +127,18 @@ trait IblockTypeTrait
     public function addIblockType($fields = [])
     {
         $default = [
-            'ID' => '',
+            'ID'       => '',
             'SECTIONS' => 'Y',
-            'IN_RSS' => 'N',
-            'SORT' => 100,
-            'LANG' => [
+            'IN_RSS'   => 'N',
+            'SORT'     => 100,
+            'LANG'     => [
                 'ru' => [
-                    'NAME' => 'Catalog',
+                    'NAME'         => 'Catalog',
                     'SECTION_NAME' => 'Sections',
                     'ELEMENT_NAME' => 'Elements',
                 ],
                 'en' => [
-                    'NAME' => 'Catalog',
+                    'NAME'         => 'Catalog',
                     'SECTION_NAME' => 'Sections',
                     'ELEMENT_NAME' => 'Elements',
                 ],
@@ -188,14 +186,13 @@ trait IblockTypeTrait
         }
 
         return $this->deleteIblockType($iblockType['ID']);
-
     }
 
     /**
      * Удаляет тип инфоблока
      * @param $typeId
      * @throws HelperException
-     * @return bool|void
+     * @return bool
      */
     public function deleteIblockType($typeId)
     {
@@ -228,7 +225,7 @@ trait IblockTypeTrait
             $values = CIBlockType::GetByIDLang($typeId, $item['LID'], false);
             if (!empty($values)) {
                 $result[$item['LID']] = [
-                    'NAME' => $values['NAME'],
+                    'NAME'         => $values['NAME'],
                     'SECTION_NAME' => $values['SECTION_NAME'],
                     'ELEMENT_NAME' => $values['ELEMENT_NAME'],
                 ];
@@ -252,7 +249,7 @@ trait IblockTypeTrait
         $fields = $this->prepareExportIblockType($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addIblockType($fields);
+            $ok = $this->addIblockType($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -267,7 +264,7 @@ trait IblockTypeTrait
 
         $exportExists = $this->prepareExportIblockType($exists);
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblockType($exists['ID'], $fields);
+            $ok = $this->updateIblockType($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -282,7 +279,7 @@ trait IblockTypeTrait
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $fields['ID'];
+        return $fields['ID'];
     }
 
     /**
@@ -296,28 +293,6 @@ trait IblockTypeTrait
         return $this->prepareExportIblockType(
             $this->getIblockType($typeId)
         );
-    }
-
-    /**
-     * @param $typeId
-     * @throws HelperException
-     * @return array
-     * @deprecated
-     */
-    public function findIblockType($typeId)
-    {
-        return $this->getIblockTypeIfExists($typeId);
-    }
-
-    /**
-     * @param $typeId
-     * @throws HelperException
-     * @return mixed
-     * @deprecated
-     */
-    public function findIblockTypeId($typeId)
-    {
-        return $this->getIblockTypeIdIfExists($typeId);
     }
 
     protected function prepareExportIblockType($item)

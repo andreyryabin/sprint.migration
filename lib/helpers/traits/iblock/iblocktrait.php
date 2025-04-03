@@ -266,7 +266,7 @@ trait IblockTrait
      * @param $iblockId
      *
      * @throws HelperException
-     * @return bool|void
+     * @return bool
      */
     public function deleteIblock($iblockId)
     {
@@ -301,7 +301,7 @@ trait IblockTrait
         $fields = $this->prepareExportIblock($fields);
 
         if (empty($item)) {
-            $ok = $this->getMode('test') ? true : $this->addIblock($fields);
+            $ok = $this->addIblock($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -315,7 +315,7 @@ trait IblockTrait
         }
 
         if ($this->hasDiff($exists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateIblock($item['ID'], $fields);
+            $ok = $this->updateIblock($item['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -329,7 +329,7 @@ trait IblockTrait
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $item['ID'];
+        return $item['ID'];
     }
 
     /**
@@ -441,32 +441,6 @@ trait IblockTrait
     public function setGroupPermissions($iblockId, $permissions = [])
     {
         CIBlock::SetPermission($iblockId, $permissions);
-    }
-
-    /**
-     * @param        $code
-     * @param string $typeId
-     *
-     * @throws HelperException
-     * @return mixed
-     * @deprecated
-     */
-    public function findIblockId($code, $typeId = '')
-    {
-        return $this->getIblockIdIfExists($code, $typeId);
-    }
-
-    /**
-     * @param        $code
-     * @param string $typeId
-     *
-     * @throws HelperException
-     * @return mixed
-     * @deprecated
-     */
-    public function findIblock($code, $typeId = '')
-    {
-        return $this->getIblockIfExists($code, $typeId);
     }
 
     /**

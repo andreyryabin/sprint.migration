@@ -24,14 +24,6 @@ trait IblockTrait
      */
     public function exportElementForm($iblockId)
     {
-        /**
-         * @compability
-         * @deprecated
-         */
-        if (func_num_args() > 1) {
-            throw new HelperException('$params is no longer supported, see examples');
-        }
-
         $this->initializeIblockVars($iblockId);
 
         return $this->exportForm([
@@ -48,14 +40,6 @@ trait IblockTrait
      */
     public function buildElementForm($iblockId, $formData = [])
     {
-        /**
-         * @compability
-         * @deprecated
-         */
-        if (func_num_args() > 2) {
-            throw new HelperException('$params is no longer supported, see examples');
-        }
-
         $this->initializeIblockVars($iblockId);
 
         return $this->buildForm($formData, [
@@ -72,14 +56,6 @@ trait IblockTrait
      */
     public function saveElementForm($iblockId, $formData = [])
     {
-        /**
-         * @compability
-         * @deprecated
-         */
-        if (func_num_args() > 2) {
-            throw new HelperException('$params is no longer supported, see examples');
-        }
-
         $this->initializeIblockVars($iblockId);
 
         return $this->saveForm($formData, [
@@ -303,28 +279,6 @@ trait IblockTrait
      * @param $iblockId
      *
      * @throws HelperException
-     * @return array|void
-     * @deprecated
-     */
-    public function extractElementForm($iblockId)
-    {
-        $result = $this->exportElementForm($iblockId);
-
-        if (!empty($result)) {
-            return $result;
-        }
-
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_IB_FORM_OPTIONS_NOT_FOUND'
-            )
-        );
-    }
-
-    /**
-     * @param $iblockId
-     *
-     * @throws HelperException
      * @return bool
      */
     protected function initializeIblockVars($iblockId)
@@ -361,7 +315,7 @@ trait IblockTrait
         $this->titles['ACTIVE_TO'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_TO'];
 
         foreach ($iblockMess as $code => $value) {
-            if (false !== strpos($code, 'IBLOCK_FIELD_')) {
+            if (str_contains($code, 'IBLOCK_FIELD_')) {
                 $fcode = str_replace('IBLOCK_FIELD_', '', $code);
                 $this->titles[$fcode] = $value;
             }
@@ -385,7 +339,7 @@ trait IblockTrait
 
     protected function transformCode($fieldCode)
     {
-        if (0 === strpos($fieldCode, 'PROPERTY_')) {
+        if (str_starts_with($fieldCode, 'PROPERTY_')) {
             $fieldCode = substr($fieldCode, 9);
             foreach ($this->props as $prop) {
                 if ($prop['CODE'] == $fieldCode) {
@@ -400,7 +354,7 @@ trait IblockTrait
 
     protected function revertCode($fieldCode)
     {
-        if (0 === strpos($fieldCode, 'PROPERTY_')) {
+        if (str_starts_with($fieldCode, 'PROPERTY_')) {
             $fieldCode = substr($fieldCode, 9);
             foreach ($this->props as $prop) {
                 if ($prop['ID'] == $fieldCode) {

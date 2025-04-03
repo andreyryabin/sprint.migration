@@ -3,28 +3,13 @@
 namespace Sprint\Migration;
 
 use COption;
-use Exception;
+use Sprint\Migration\Exceptions\MigrationException;
 
-/**
- *
- * В этом классе у свойств не надо указывать тип
- *  ради совместимости с php < 7.4, чтобы админка
- *  могла корректно показать фразу PHP 7.3 не поддерживается
- */
 class Module
 {
     const ID = 'sprint.migration';
-    /**
-     * @var string
-     */
-    private static $version = '';
-    /**
-     * @var array
-     */
-    private static $defaultOptions = [
-        'show_schemas' => 'N',
-        'show_support' => 'N',
-    ];
+    const EXCHANGE_VERSION = 2;
+    private static string $version = '';
 
     public static function getDbOption($name, $default = '')
     {
@@ -46,16 +31,6 @@ class Module
     public static function removeDbOptions()
     {
         COption::RemoveOption(Module::ID);
-    }
-
-    public static function checkDbOption(string $name, bool $checked)
-    {
-        self::setDbOption($name, $checked ? 'Y' : 'N');
-    }
-
-    public static function isDbOptionChecked(string $name)
-    {
-        return self::getDbOption($name, self::$defaultOptions[$name]) == 'Y';
     }
 
     public static function getDocRoot(): string
@@ -85,11 +60,13 @@ class Module
         }
     }
 
+    public static function getModuleTemplateFile(string $name): string
+    {
+        return Module::getModuleDir() . '/templates/' . $name . '.php';
+    }
+
     /**
-     * @param $dir
-     *
-     * @throws Exception
-     * @return mixed
+     * @throws MigrationException
      */
     public static function createDir($dir)
     {
@@ -98,7 +75,7 @@ class Module
         }
 
         if (!is_dir($dir)) {
-            throw new Exception(
+            throw new MigrationException(
                 Locale::getMessage(
                     'ERR_CANT_CREATE_DIRECTORY',
                     [
@@ -111,7 +88,7 @@ class Module
         return $dir;
     }
 
-    public static function deletePath($dir)
+    public static function deletePath($dir): void
     {
         if (is_dir($dir)) {
             $files = scandir($dir);
@@ -126,7 +103,7 @@ class Module
         }
     }
 
-    public static function movePath(string $from, string $to)
+    public static function movePath(string $from, string $to): void
     {
         rename($from, $to);
     }
@@ -142,28 +119,20 @@ class Module
     }
 
     /**
-     * @throws Exception
+     * @throws MigrationException
      */
-    public static function checkHealth()
+    public static function checkHealth(): void
     {
-        if (isset($GLOBALS['DBType']) && strtolower($GLOBALS['DBType']) == 'mssql') {
-            throw new Exception(
-                Locale::getMessage(
-                    'ERR_MSSQL_NOT_SUPPORTED'
-                )
-            );
-        }
-
         if (!function_exists('json_encode')) {
-            throw new Exception(
+            throw new MigrationException(
                 Locale::getMessage(
                     'ERR_JSON_NOT_SUPPORTED'
                 )
             );
         }
 
-        if (version_compare(PHP_VERSION, '7.4', '<')) {
-            throw new Exception(
+        if (version_compare(PHP_VERSION, '8.1', '<')) {
+            throw new MigrationException(
                 Locale::getMessage(
                     'ERR_PHP_NOT_SUPPORTED',
                     [
@@ -177,7 +146,7 @@ class Module
             is_file($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . Module::ID . '/include.php')
             && is_file($_SERVER['DOCUMENT_ROOT'] . '/local/modules/' . Module::ID . '/include.php')
         ) {
-            throw new Exception('module installed to bitrix and local folder');
+            throw new MigrationException('module installed to bitrix and local folder');
         }
     }
 }

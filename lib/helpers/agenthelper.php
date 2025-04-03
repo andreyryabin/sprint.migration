@@ -113,7 +113,7 @@ class AgentHelper extends Helper
         $fields = $this->prepareExportAgent($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addAgent($fields);
+            $ok = $this->addAgent($fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -134,7 +134,7 @@ class AgentHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateAgent($fields);
+            $ok = $this->updateAgent($fields);
 
             $this->outNoticeIf(
                 $ok,
@@ -150,7 +150,7 @@ class AgentHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $exists['ID'];
+        return $exists['ID'];
     }
 
     /**
@@ -177,13 +177,10 @@ class AgentHelper extends Helper
     {
         $this->checkRequiredKeys($fields, ['NAME']);
 
-        global $DB;
-
         $fields = array_merge([
             'AGENT_INTERVAL' => 86400,
             'ACTIVE'         => 'Y',
             'IS_PERIOD'      => 'N',
-            'NEXT_EXEC'      => $DB->GetNowDate(),
             'SORT'           => 100,
         ], $fields);
 
@@ -211,46 +208,6 @@ class AgentHelper extends Helper
                 ]
             )
         );
-    }
-
-    /**
-     * @param $moduleId
-     * @param $name
-     * @param $interval
-     * @param $nextExec
-     *
-     * @throws HelperException
-     * @return bool|mixed
-     * @deprecated
-     */
-    public function replaceAgent($moduleId, $name, $interval, $nextExec)
-    {
-        return $this->saveAgent([
-            'MODULE_ID'      => $moduleId,
-            'NAME'           => $name,
-            'AGENT_INTERVAL' => $interval,
-            'NEXT_EXEC'      => $nextExec,
-        ]);
-    }
-
-    /**
-     * @param $moduleId
-     * @param $name
-     * @param $interval
-     * @param $nextExec
-     *
-     * @throws HelperException
-     * @return bool|mixed
-     * @deprecated
-     */
-    public function addAgentIfNotExists($moduleId, $name, $interval, $nextExec)
-    {
-        return $this->saveAgent([
-            'MODULE_ID'      => $moduleId,
-            'NAME'           => $name,
-            'AGENT_INTERVAL' => $interval,
-            'NEXT_EXEC'      => $nextExec,
-        ]);
     }
 
     protected function prepareExportAgent($item)

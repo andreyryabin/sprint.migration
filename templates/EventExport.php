@@ -40,6 +40,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 <?php foreach ($item['messages'] as $fields) { ?>
         $helper->Event()->saveEventMessage('<?php echo $eventName ?>', <?php echo var_export($fields, 1) ?>);
     <?php } ?>
+<?php foreach ($item['sms'] as $fields) { ?>
+    $helper->Event()->saveEventSmsTemplate('<?php echo $eventName ?>', <?php echo var_export($fields, 1) ?>);
+<?php } ?>
 <?php } ?>
     }
 }

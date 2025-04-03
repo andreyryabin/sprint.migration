@@ -80,7 +80,7 @@ class UserOptionsBuilder extends VersionBuilder
         }
 
         $this->createVersionFile(
-            Module::getModuleDir() . '/templates/UserOptionsExport.php',
+            Module::getModuleTemplateFile('UserOptionsExport'),
             [
                 'exportUserForm'      => $exportUserForm,
                 'exportUserList'      => $exportUserList,

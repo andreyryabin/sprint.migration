@@ -37,7 +37,6 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     {
         $this->getExchangeManager()
              ->MedialibElementsImport()
-             ->setExchangeResource('medialib_elements.xml')
              ->setLimit(20)
              ->execute(
                  function ($item) {

@@ -12,11 +12,6 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
 
-/**
- * Class MedialibHelper
- *
- * @package Sprint\Migration\Helpers
- */
 class MedialibHelper extends Helper
 {
     const TYPE_IMAGE = 'image';
@@ -267,9 +262,9 @@ TAG;
      * @param $path
      *
      * @throws HelperException
-     * @return int|void
+     * @return int
      */
-    public function saveCollectionByPath($typeId, $path)
+    public function saveCollectionByPath($typeId, $path): int
     {
         $parentId = 0;
         foreach ($path as $name) {
@@ -296,37 +291,27 @@ TAG;
     }
 
     /**
-     * @param array $fields
-     *
      * @throws HelperException
-     * @return int|mixed
      */
-    public function addElement($fields = [])
+    public function addElement(array $fields = []): int
     {
         $fields['ID'] = 0;
         return $this->editElement($fields);
     }
 
     /**
-     * @param $id
-     * @param $fields
-     *
      * @throws HelperException
-     * @return int|mixed
      */
-    public function updateElement($id, $fields)
+    public function updateElement($id, $fields): int
     {
         $fields['ID'] = $id;
         return $this->editElement($fields);
     }
 
     /**
-     * @param array $fields
-     *
      * @throws HelperException
-     * @return int|mixed
      */
-    public function saveElement($fields = [])
+    public function saveElement(array $fields = []): int
     {
         $this->checkRequiredKeys($fields, ['NAME', 'FILE', 'COLLECTION_ID']);
 
@@ -346,12 +331,12 @@ TAG;
         }
     }
 
-    public function deleteElement($id)
+    public function deleteElement($id): void
     {
         CMedialibItem::Delete($id, false, false);
     }
 
-    public function deleteCollection($id)
+    public function deleteCollection($id): void
     {
         CMedialibCollection::Delete($id, true);
     }
@@ -422,12 +407,9 @@ TAG;
     }
 
     /**
-     * @param array $fields
-     *
      * @throws HelperException
-     * @return int|mixed
      */
-    private function editElement($fields = [])
+    private function editElement(array $fields = []): int
     {
         $this->checkRequiredKeys($fields, ['NAME', 'FILE', 'COLLECTION_ID']);
 

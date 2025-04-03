@@ -4,15 +4,11 @@ use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 
-/**
- * @var string $showpage
- */
-
 global $APPLICATION;
 $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
 
 ?>
-<div class="sp-table <?= $showpage ? 'sp-table-' . $showpage : '' ?>">
+<div class="sp-table">
     <div class="sp-row2">
         <div class="sp-col">
             <div style="margin-bottom: 10px;">

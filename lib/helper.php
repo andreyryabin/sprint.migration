@@ -8,23 +8,13 @@ use CDBResult;
 use CMain;
 use ReflectionClass;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Traits\OutTrait;
 
 class Helper
 {
     use OutTrait;
 
     /**
-     * @var string
-     * @deprecated
-     */
-    public  $lastError = '';
-    private $mode      = [
-        'test' => 0,
-    ];
-
-    /**
-     * Helper constructor.
-     *
      * @throws HelperException
      */
     public function __construct()
@@ -41,50 +31,12 @@ class Helper
         }
     }
 
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function getLastError()
-    {
-        return $this->lastError;
-    }
-
-    public function getMode($key = false)
-    {
-        if ($key) {
-            return $this->mode[$key] ?? 0;
-        } else {
-            return $this->mode;
-        }
-    }
-
-    public function setMode($key, $val = 1)
-    {
-        if ($key instanceof Helper) {
-            $this->mode = $key->getMode();
-        } else {
-            $val = ($val) ? 1 : 0;
-            $this->mode[$key] = $val;
-        }
-    }
-
-    public function setTestMode($val = 1)
-    {
-        $this->setMode('test', $val);
-    }
-
     public function isEnabled()
     {
         return true;
     }
 
-    /**
-     * @param array $names
-     *
-     * @return bool
-     */
-    protected function checkModules($names = [])
+    protected function checkModules(array $names = []): bool
     {
         $names = is_array($names) ? $names : [$names];
         foreach ($names as $name) {
@@ -100,37 +52,9 @@ class Helper
     }
 
     /**
-     *
-     * @param        $method
-     * @param        $msg
-     * @param string ...$vars
-     *
-     * @throws HelperException
-     * @deprecated
-     */
-    protected function throwException($method, $msg, ...$vars)
-    {
-        $args = func_get_args();
-        $method = array_shift($args);
-
-        if ($msg instanceof \Throwable) {
-            $msg = $msg->getMessage();
-        } else {
-            $msg = call_user_func_array('sprintf', $args);
-            $msg = strip_tags($msg);
-        }
-
-        $msg = $this->getMethod($method) . ': ' . $msg;
-
-        $this->lastError = $msg;
-
-        throw new HelperException($msg);
-    }
-
-    /**
      * @throws HelperException
      */
-    protected function throwApplicationExceptionIfExists()
+    protected function throwApplicationExceptionIfExists(): void
     {
         /* @global $APPLICATION CMain */
         global $APPLICATION;
@@ -141,12 +65,12 @@ class Helper
         }
     }
 
-    protected function getHelperName()
+    protected function getHelperName(): string
     {
         return (new ReflectionClass($this))->getShortName();
     }
 
-    protected function hasDiff($exists, $fields)
+    protected function hasDiff($exists, $fields): bool
     {
         return ($exists != $fields);
     }
@@ -157,23 +81,16 @@ class Helper
      *
      * @return bool
      */
-    protected function hasDiffStrict($exists, $fields)
+    protected function hasDiffStrict($exists, $fields): bool
     {
         return ($exists !== $fields);
     }
 
     /**
-     * @param       $fields
-     * @param array $reqKeys
-     *
      * @throws HelperException
      */
-    protected function checkRequiredKeys($fields, $reqKeys = [])
+    protected function checkRequiredKeys(array $fields, array $reqKeys = []): void
     {
-        if (is_string($fields)) {
-            throw new HelperException('Old format for checkRequiredKeys');
-        }
-
         foreach ($reqKeys as $name) {
             if (empty($fields[$name])) {
                 throw new HelperException(
@@ -210,7 +127,7 @@ class Helper
         return $res;
     }
 
-    protected function filterByKey($items, $key, $value)
+    protected function filterByKey(array $items, string $key, $value): array
     {
         return array_values(
             array_filter(
@@ -220,13 +137,6 @@ class Helper
                 }
             )
         );
-    }
-
-    private function getMethod($method)
-    {
-        $path = explode('\\', $method);
-        $short = array_pop($path);
-        return $short;
     }
 
     protected function merge(array $item, array $default): array

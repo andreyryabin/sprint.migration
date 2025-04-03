@@ -9,25 +9,18 @@ trait IblockFieldTrait
 {
     /**
      * Получает список полей инфоблока
-     *
-     * @param $iblockId
-     *
-     * @return array|bool
      */
-    public function getIblockFields($iblockId)
+    public function getIblockFields(int $iblockId): array
     {
-        return CIBlock::GetFields($iblockId);
+        $fields = CIBlock::GetFields($iblockId);
+
+        return is_array($fields) ? $fields : [];
     }
 
     /**
      * Сохраняет поля инфоблока
-     *
-     * @param       $iblockId
-     * @param array $fields
-     *
-     * @return bool
      */
-    public function saveIblockFields($iblockId, $fields = [])
+    public function saveIblockFields(int $iblockId, array $fields = []): bool
     {
         $exists = CIBlock::GetFields($iblockId);
 
@@ -37,7 +30,7 @@ trait IblockFieldTrait
         $fields = array_replace_recursive($exportExists, $fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') || $this->updateIblockFields($iblockId, $fields);
+            $ok = $this->updateIblockFields($iblockId, $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -51,7 +44,7 @@ trait IblockFieldTrait
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') || $this->updateIblockFields($iblockId, $fields);
+            $ok = $this->updateIblockFields($iblockId, $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -71,12 +64,8 @@ trait IblockFieldTrait
     /**
      * Получает список полей инфоблока
      * Данные подготовлены для экспорта в миграцию или схему
-     *
-     * @param $iblockId
-     *
-     * @return array
      */
-    public function exportIblockFields($iblockId)
+    public function exportIblockFields(int $iblockId): array
     {
         return $this->prepareExportIblockFields(
             $this->getIblockFields($iblockId)
@@ -85,13 +74,8 @@ trait IblockFieldTrait
 
     /**
      * Обновляет поля инфоблока
-     *
-     * @param $iblockId
-     * @param $fields
-     *
-     * @return bool
      */
-    public function updateIblockFields($iblockId, $fields)
+    public function updateIblockFields(int $iblockId, array $fields): bool
     {
         if ($iblockId && !empty($fields)) {
             CIBlock::SetFields($iblockId, $fields);
@@ -100,35 +84,24 @@ trait IblockFieldTrait
         return false;
     }
 
-    /**
-     * @param $iblockId
-     * @param $fields
-     *
-     * @deprecated
-     */
-    public function mergeIblockFields($iblockId, $fields)
-    {
-        $this->saveIblockFields($iblockId, $fields);
-    }
-
-    public function exportIblockElementFields($iblockId)
+    public function exportIblockElementFields(int $iblockId): array
     {
         return $this->prepareExportIblockElementFields(
             $this->getIblockFields($iblockId)
         );
     }
 
-    protected function prepareExportIblockFields($fields)
+    protected function prepareExportIblockFields(array $fields): array
     {
-        return array_filter($fields, function ($field, $code) {
+        return array_filter($fields, function ($field) {
             return ($field['VISIBLE'] != 'N');
-        }, ARRAY_FILTER_USE_BOTH);
+        });
     }
 
-    protected function prepareExportIblockElementFields($fields)
+    protected function prepareExportIblockElementFields(array $fields): array
     {
         return array_filter($fields, function ($field, $code) {
             return !($field['VISIBLE'] == 'N' || preg_match('/^(SECTION_|LOG_)/', $code));
-        },ARRAY_FILTER_USE_BOTH);
+        }, ARRAY_FILTER_USE_BOTH);
     }
 }

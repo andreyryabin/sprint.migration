@@ -161,7 +161,7 @@ class UserGroupHelper extends Helper
         $fields = $this->prepareExportGroup($fields);
 
         if (empty($exists)) {
-            $ok = $this->getMode('test') ? true : $this->addGroup($fields['STRING_ID'], $fields);
+            $ok = $this->addGroup($fields['STRING_ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -177,7 +177,7 @@ class UserGroupHelper extends Helper
         $exportExists = $this->prepareExportGroup($exists);
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->getMode('test') ? true : $this->updateGroup($exists['ID'], $fields);
+            $ok = $this->updateGroup($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
                 Locale::getMessage(
@@ -191,7 +191,7 @@ class UserGroupHelper extends Helper
             return $ok;
         }
 
-        return $this->getMode('test') ? true : $exists['ID'];
+        return $exists['ID'];
     }
 
     /**
@@ -300,17 +300,6 @@ class UserGroupHelper extends Helper
         $group = new CGroup;
         $group->Delete($groupId);
         return true;
-    }
-
-    /**
-     * @param array $filter
-     *
-     * @return array
-     * @deprecated
-     */
-    public function getGroupsByFilter($filter = [])
-    {
-        return $this->getGroups($filter);
     }
 
     /**

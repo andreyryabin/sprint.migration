@@ -6,7 +6,6 @@
 use Bitrix\Main\Loader;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
-use Sprint\Migration\SchemaManager;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 use Sprint\Migration\Enum\VersionEnum;
@@ -28,7 +27,6 @@ try {
     Module::checkHealth();
 
     $arGadgetParams['SELECT_CONFIGS'] = is_array($arGadgetParams['SELECT_CONFIGS']) ? $arGadgetParams['SELECT_CONFIGS'] : [];
-    $arGadgetParams['CHECK_SCHEMAS'] = is_array($arGadgetParams['CHECK_SCHEMAS']) ? $arGadgetParams['CHECK_SCHEMAS'] : [];
 
     $results = [];
 
@@ -63,41 +61,6 @@ try {
                 ],
             ],
         ];
-
-        if (!empty($arGadgetParams['CHECK_SCHEMAS'])) {
-
-            $schemaManager = new SchemaManager(
-                new VersionConfig($config['name'])
-            );
-
-            $modifiedCnt = 0;
-            $enabledSchemas = $schemaManager->getEnabledSchemas();
-            foreach ($enabledSchemas as $schema) {
-                if (!in_array($schema->getName(), $arGadgetParams['CHECK_SCHEMAS'])) {
-                    continue;
-                }
-
-                if ($schema->isModified()) {
-                    $modifiedCnt++;
-                }
-            }
-
-            $results[] = [
-                'title' => $config['schema_title'],
-                'text' => ($modifiedCnt) ? Locale::getMessage('GD_SCHEMA_RED') : Locale::getMessage('GD_SCHEMA_GREEN'),
-                'state' => ($modifiedCnt) ? 'red' : 'green',
-                'buttons' => [
-                    [
-                        'text' => Locale::getMessage('GD_SHOW'),
-                        'title' => Locale::getMessage('GD_SHOW_SCHEMAS'),
-                        'url' => '/bitrix/admin/sprint_migrations.php?' . http_build_query([
-                                'schema' => $config['name'],
-                                'lang' => LANGUAGE_ID,
-                            ]),
-                    ],
-                ],
-            ];
-        }
     }
 
     include __DIR__ . '/includes/style.php';
