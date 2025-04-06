@@ -38,6 +38,7 @@
     border-color: #c4ced2 #dce7ed #dce7ed;
     padding: 10px;
     box-sizing: border-box;
+    min-height: 55px;
 }
 
 .sp-col-scroll {

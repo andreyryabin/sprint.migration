@@ -53,7 +53,6 @@ if ($request->isPost() && check_bitrix_sessid()) {
 ?>
 
 <?php include __DIR__ . '/help.php' ?>
-<div class="sp-separator"></div>
 
 <div class="sp-table">
     <div class="sp-row2">

@@ -27,18 +27,13 @@ use Sprint\Migration\Exceptions\MigrationException;
 
 class VersionConfig
 {
-    private $configCurrent = '';
-    private $configList = [];
+    private string $configCurrent = '';
+    private array $configList = [];
 
     /**
-     * VersionConfig constructor.
-     *
-     * @param string $configName
-     * @param array $configValues
-     *
      * @throws MigrationException
      */
-    public function __construct($configName = '', $configValues = [])
+    public function __construct(string $configName = '', array $configValues = [])
     {
         if (!is_string($configName) || !is_array($configValues)) {
             throw new MigrationException("Config params error");
@@ -52,12 +47,9 @@ class VersionConfig
     }
 
     /**
-     * @param $configName
-     * @param $configValues
-     *
      * @throws MigrationException
      */
-    protected function initializeByValues($configName, $configValues)
+    protected function initializeByValues(string $configName, array $configValues): void
     {
         $this->configList = [
             $configName => $this->prepare($configName, $configValues),
@@ -67,11 +59,9 @@ class VersionConfig
     }
 
     /**
-     * @param $configName
-     *
      * @throws MigrationException
      */
-    protected function initializeByName($configName)
+    protected function initializeByName(string $configName): void
     {
         $this->configList = $this->searchConfigs(Module::getPhpInterfaceDir());
 
@@ -100,12 +90,7 @@ class VersionConfig
         }
     }
 
-    /**
-     * @param string $key
-     *
-     * @return mixed
-     */
-    public function getCurrent($key = '')
+    public function getCurrent(string $key = '')
     {
         return ($key) ? $this->configList[$this->configCurrent][$key] : $this->configList[$this->configCurrent];
     }
@@ -126,7 +111,10 @@ class VersionConfig
         return $dir . '/' . $versionName . '_files/';
     }
 
-    protected function searchConfigs($directory)
+    /**
+     * @throws MigrationException
+     */
+    protected function searchConfigs(string $directory): array
     {
         $result = [];
         $directory = new DirectoryIterator($directory);
@@ -151,12 +139,7 @@ class VersionConfig
         return $result;
     }
 
-    /**
-     * @param $fileName
-     *
-     * @return string
-     */
-    protected function getConfigName($fileName): string
+    protected function getConfigName(string $fileName): string
     {
         if (preg_match('/^migrations\.([a-z0-9_-]*)\.php$/i', $fileName, $matches)) {
             return $matches[1];
@@ -165,14 +148,9 @@ class VersionConfig
     }
 
     /**
-     * @param       $configName
-     * @param array $configValues
-     * @param false $file
-     *
-     * @return array
      * @throws MigrationException
      */
-    protected function prepare($configName, $configValues = [], $file = false): array
+    protected function prepare(string $configName, array $configValues = [], bool $file = false): array
     {
         $configValues = $this->prepareValues($configValues);
 
@@ -196,9 +174,6 @@ class VersionConfig
     }
 
     /**
-     * @param array $values
-     *
-     * @return array
      * @throws MigrationException
      */
     protected function prepareValues(array $values = []): array
@@ -243,6 +218,12 @@ class VersionConfig
             $values['show_admin_interface'] = true;
         }
 
+        if (isset($values['show_admin_updown'])) {
+            $values['show_admin_updown'] = (bool)$values['show_admin_updown'];
+        } else {
+            $values['show_admin_updown'] = true;
+        }
+
         if (isset($values['console_auth_events_disable'])) {
             $values['console_auth_events_disable'] = (bool)$values['console_auth_events_disable'];
         } else {
@@ -251,11 +232,11 @@ class VersionConfig
 
         $cond1 = isset($values['console_user']);
         $cond2 = ($cond1 && $values['console_user'] === false);
-        $cond3 = ($cond1 && strpos($values['console_user'], 'login:') === 0);
+        $cond3 = ($cond1 && str_starts_with($values['console_user'], 'login:'));
 
         $values['console_user'] = ($cond2 || $cond3) ? $values['console_user'] : 'admin';
 
-        if (empty($values['version_builders']) || !is_array($values['version_builders'])) {
+        if (!isset($values['version_builders']) || !is_array($values['version_builders'])) {
             $values['version_builders'] = VersionConfig::getDefaultBuilders();
         }
 
@@ -268,8 +249,8 @@ class VersionConfig
         }
 
         if (
-            (strpos($values['version_name_template'], '#TIMESTAMP#') === false)
-            || (strpos($values['version_name_template'], '#NAME#') === false)
+            (!str_contains($values['version_name_template'], '#TIMESTAMP#'))
+            || (!str_contains($values['version_name_template'], '#NAME#'))
         ) {
             throw new MigrationException("Config version_name_template format error");
         }
@@ -308,13 +289,7 @@ class VersionConfig
         return $values;
     }
 
-    /**
-     * @param string $name
-     * @param string $default
-     *
-     * @return bool|mixed|string
-     */
-    public function getVal($name, $default = '')
+    public function getVal(string $name, mixed $default = ''): mixed
     {
         $values = $this->configList[$this->configCurrent]['values'];
 
@@ -380,12 +355,10 @@ class VersionConfig
 
     protected function getSort(string $configName): int
     {
-        if ($configName == VersionEnum::CONFIG_ARCHIVE) {
-            return 110;
-        } elseif ($configName == VersionEnum::CONFIG_DEFAULT) {
+        if ($configName == VersionEnum::CONFIG_DEFAULT) {
             return 100;
         } else {
-            return 500;
+            return 200;
         }
     }
 

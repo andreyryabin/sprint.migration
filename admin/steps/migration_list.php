@@ -76,20 +76,24 @@ $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
     $menu = [];
 
     if ($item['status'] == VersionEnum::STATUS_NEW) {
-        $menu[] = [
-            'TEXT' => Locale::getMessage('UP'),
-            'ONCLICK' => 'migrationMigrationUp(\'' . $item['version'] . '\')',
-        ];
+        if ($versionConfig->getVal('show_admin_updown')) {
+            $menu[] = [
+                'TEXT' => Locale::getMessage('UP'),
+                'ONCLICK' => 'migrationMigrationUp(\'' . $item['version'] . '\')',
+            ];
+        }
         $menu[] = [
             'TEXT' => Locale::getMessage('MARK_NEW_AS_INSTALLED'),
             'ONCLICK' => 'migrationMigrationMark(\'' . $item['version'] . '\',\'' . VersionEnum::STATUS_INSTALLED . '\')',
         ];
     }
     if ($item['status'] == VersionEnum::STATUS_INSTALLED) {
-        $menu[] = [
-            'TEXT' => Locale::getMessage('DOWN'),
-            'ONCLICK' => 'migrationMigrationDown(\'' . $item['version'] . '\')',
-        ];
+        if ($versionConfig->getVal('show_admin_updown')) {
+            $menu[] = [
+                'TEXT' => Locale::getMessage('DOWN'),
+                'ONCLICK' => 'migrationMigrationDown(\'' . $item['version'] . '\')',
+            ];
+        }
         $menu[] = [
             'TEXT' => Locale::getMessage('SETTAG'),
             'ONCLICK' => 'migrationMigrationSetTag(\'' . $item['version'] . '\',\'' . $item['tag'] . '\')',

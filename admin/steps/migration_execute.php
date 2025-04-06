@@ -9,9 +9,10 @@ use Sprint\Migration\VersionManager;
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
+/** @var $versionConfig VersionConfig */
 
-if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid()) {
-    /** @var $versionConfig VersionConfig */
+if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid() && $versionConfig->getVal('show_admin_updown')) {
+
     $versionManager = new VersionManager($versionConfig);
 
     $params = !empty($_POST['params']) ? $_POST['params'] : [];

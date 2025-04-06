@@ -50,3 +50,4 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
         </div>
     </div>
 </div>
+<div class="sp-separator"></div>
