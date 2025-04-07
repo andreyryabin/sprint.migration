@@ -16,14 +16,13 @@ if (!Loader::includeModule('sprint.migration')) {
 
 try {
     $versionConfig = new Sprint\Migration\VersionConfig();
-    $configList = $versionConfig->getList();
 
-    $items = [];
-    foreach ($configList as $item) {
-        $items[] = [
-            'text' => $item['title'],
+    $menuItems = [];
+    foreach ($versionConfig->getConfigList() as $configItem) {
+        $menuItems[] = [
+            'text' => $configItem->getTitle(),
             'url'  => 'sprint_migrations.php?' . http_build_query([
-                    'config' => $item['name'],
+                    'config' => $configItem->getName(),
                     'lang'   => LANGUAGE_ID,
                 ]),
         ];
@@ -37,7 +36,7 @@ try {
         'icon'        => 'sys_menu_icon',
         'page_icon'   => 'sys_page_icon',
         'items_id'    => 'sprint_migrations',
-        'items'       => $items,
+        'items'       => $menuItems,
     ];
 
     return $aMenu;

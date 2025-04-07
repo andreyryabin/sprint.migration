@@ -5,21 +5,14 @@ use Sprint\Migration\Locale;
 use Sprint\Migration\VersionConfig;
 
 $versionConfig = new VersionConfig();
-$configList = $versionConfig->getList();
 
-?>
-
-<?php foreach ($configList as $configItem) { ?><?php
-
-    $configValues = $versionConfig->humanValues($configItem['values']);
-
-    ?>
+?><?php foreach ($versionConfig->getConfigList() as $configItem) { ?>
     <div class="sp-table">
         <div class="sp-row">
             <div class="sp-col sp-white">
-                <h3><?= Locale::getMessage('CONFIG') ?>: <?= $configItem['title'] ?></h3>
+                <h3><?= Locale::getMessage('CONFIG') ?>: <?= $configItem->getTitle() ?></h3>
                 <table class="sp-config">
-                    <?php foreach ($configValues as $key => $val) { ?>
+                    <?php foreach ($configItem->humanValues() as $key => $val) { ?>
                         <tr>
                             <td><?= Locale::getMessage('CONFIG_' . $key) ?></td>
                             <td><?= $key ?></td>

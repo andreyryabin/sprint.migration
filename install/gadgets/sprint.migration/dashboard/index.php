@@ -30,24 +30,21 @@ try {
 
     $results = [];
 
-    $configs = (new VersionConfig())->getList();
-    foreach ($configs as $config) {
-
+    $versionConfig = new VersionConfig();
+    foreach ($versionConfig->getConfigList() as $configItem) {
         if (!empty($arGadgetParams['SELECT_CONFIGS'])) {
-            if (!in_array($config['name'], $arGadgetParams['SELECT_CONFIGS'])) {
+            if (!in_array($configItem->getName(), $arGadgetParams['SELECT_CONFIGS'])) {
                 continue;
             }
         }
 
-        $versionManager = new VersionManager(
-            new VersionConfig($config['name'])
-        );
+        $versionManager = new VersionManager($configItem);
         $hasNewVersions = count($versionManager->getVersions([
             'status' => VersionEnum::STATUS_NEW,
         ]));
 
         $results[] = [
-            'title' => $config['title'],
+            'title' => $configItem->getTitle(),
             'text' => ($hasNewVersions) ? Locale::getMessage('GD_MIGRATIONS_RED') : Locale::getMessage('GD_MIGRATIONS_GREEN'),
             'state' => ($hasNewVersions) ? 'red' : 'green',
             'buttons' => [
@@ -55,7 +52,7 @@ try {
                     'text' => Locale::getMessage('GD_SHOW'),
                     'title' => Locale::getMessage('GD_SHOW_MIGRATIONS'),
                     'url' => '/bitrix/admin/sprint_migrations.php?' . http_build_query([
-                            'config' => $config['name'],
+                            'config' => $configItem->getName(),
                             'lang' => LANGUAGE_ID,
                         ]),
                 ],

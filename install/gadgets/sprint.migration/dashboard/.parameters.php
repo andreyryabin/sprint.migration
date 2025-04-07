@@ -12,12 +12,11 @@ if (!Loader::includeModule('sprint.migration')) {
     return false;
 }
 
-$configs = (new VersionConfig())->getList();
+$versionConfig = new VersionConfig();
 
 $configValues = [];
-
-foreach ($configs as $config) {
-    $configValues[$config['name']] = $config['title'];
+foreach ($versionConfig->getConfigList() as $configItem) {
+    $configValues[$configItem->getName()] = $configItem->getTitle();
 }
 
 $arParameters = [

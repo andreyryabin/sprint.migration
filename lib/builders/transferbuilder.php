@@ -84,12 +84,12 @@ class TransferBuilder extends Builder
     protected function getConfigs(): array
     {
         $structure = [];
-        $configFrom = $this->getVersionConfig()->getName();
-        foreach ($this->getVersionConfig()->getList() as $item) {
-            if ($item['name'] != $configFrom) {
+        $configFrom = $this->getVersionConfig()->getCurrent()->getName();
+        foreach ($this->getVersionConfig()->getConfigList() as $configItem) {
+            if ($configItem->getName() != $configFrom) {
                 $structure[] = [
-                    'title' => $item['title'],
-                    'value' => $item['name'],
+                    'title' => $configItem->getTitle(),
+                    'value' => $configItem->getName(),
                 ];
             }
         }

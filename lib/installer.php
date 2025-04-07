@@ -8,19 +8,15 @@ use Sprint\Migration\Exceptions\MigrationException;
 
 class Installer
 {
-    private $versionManager;
+    private VersionManager $versionManager;
 
     /**
-     * Installer constructor.
-     *
-     * @param array $configValues
-     *
      * @throws Exception
      */
-    public function __construct($configValues = [])
+    public function __construct(array $configValues = [])
     {
         $this->versionManager = new VersionManager(
-            new VersionConfig('installer', $configValues)
+            new VersionConfig(VersionEnum::CONFIG_INSTALLER, $configValues)
         );
     }
 
@@ -43,7 +39,7 @@ class Installer
     /**
      * @throws MigrationException
      */
-    protected function executeAll($filter, $action)
+    protected function executeAll(array $filter, string $action)
     {
         $versionNames = $this->versionManager->getListForExecute($filter, $action);
 
@@ -53,13 +49,9 @@ class Installer
     }
 
     /**
-     * @param string $version
-     * @param string $action
-     *
      * @throws MigrationException
-     * @return bool
      */
-    protected function executeVersion($version, $action = VersionEnum::ACTION_UP)
+    protected function executeVersion(string $version, string $action = VersionEnum::ACTION_UP): bool
     {
         $params = [];
         do {

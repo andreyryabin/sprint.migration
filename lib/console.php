@@ -11,12 +11,12 @@ use Sprint\Migration\Traits\CurrentUserTrait;
 
 class Console
 {
-    private string $script;
-    private string $command;
-    private array $arguments = [];
-    private VersionConfig $versionConfig;
+    private string         $script;
+    private string         $command;
+    private array          $arguments  = [];
+    private VersionConfig  $versionConfig;
     private VersionManager $versionManager;
-    private array $argoptions = [];
+    private array          $argoptions = [];
     use CurrentUserTrait;
 
     /**
@@ -33,7 +33,7 @@ class Console
 
         $this->disableAuthHandlersIfNeed();
 
-        $userlogin = $this->versionConfig->getVal('console_user');
+        $userlogin = $this->versionConfig->getCurrent()->getVal('console_user');
         if ($userlogin == 'admin') {
             $this->authorizeAsAdmin();
         } elseif (str_starts_with($userlogin, 'login:')) {
@@ -80,7 +80,7 @@ class Console
         $order = 'asc';
 
         $groupitem = CGroup::GetList($by, $order, [
-            'ADMIN' => 'Y',
+            'ADMIN'  => 'Y',
             'ACTIVE' => 'Y',
         ])->Fetch();
 
@@ -89,7 +89,7 @@ class Console
 
             $useritem = CUser::GetList($by, $order, [
                 'GROUPS_ID' => [$groupitem['ID']],
-                'ACTIVE' => 'Y',
+                'ACTIVE'    => 'Y',
             ], [
                 'NAV_PARAMS' => ['nTopCount' => 1],
             ])->Fetch();
@@ -129,7 +129,7 @@ class Console
 
         $this->executeBuilder($from, [
             'description' => $descr,
-            'prefix' => $prefix,
+            'prefix'      => $prefix,
         ]);
     }
 
@@ -186,18 +186,18 @@ class Console
         }
 
         $versions = $this->versionManager->getVersions([
-            'status' => $status,
-            'search' => $this->getArg('--search='),
-            'tag' => $this->getArg('--tag='),
+            'status'   => $status,
+            'search'   => $this->getArg('--search='),
+            'tag'      => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
-            'older' => $this->getArg('--older'),
-            'actual' => $this->getArg('--actual'),
+            'older'    => $this->getArg('--older'),
+            'actual'   => $this->getArg('--actual'),
         ]);
 
         $summary = [
-            VersionEnum::STATUS_NEW => 0,
+            VersionEnum::STATUS_NEW       => 0,
             VersionEnum::STATUS_INSTALLED => 0,
-            VersionEnum::STATUS_UNKNOWN => 0,
+            VersionEnum::STATUS_UNKNOWN   => 0,
         ];
 
         foreach ($versions as $item) {
@@ -217,7 +217,7 @@ class Console
             $descrColumn = Out::prepareToConsole(
                 $item['description'],
                 [
-                    'tracker_task_url' => $this->versionConfig->getVal('tracker_task_url'),
+                    'tracker_task_url' => $this->versionConfig->getCurrent()->getVal('tracker_task_url'),
                 ]
             );
 
@@ -264,20 +264,16 @@ class Console
         }
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function commandConfig()
     {
-        $configValues = $this->versionConfig->getCurrent('values');
-        $configTitle = $this->versionConfig->getCurrent('title');
+        $currentConfig = $this->versionConfig->getCurrent();
 
-        $configValues = $this->versionConfig->humanValues($configValues);
+        Out::out('%s: %s', Locale::getMessage('CONFIG'), $currentConfig->getTitle());
 
-        Out::out(
-            '%s: %s',
-            Locale::getMessage('CONFIG'),
-            $configTitle
-        );
-
-        foreach ($configValues as $configKey => $configValue) {
+        foreach ($currentConfig->humanValues() as $configKey => $configValue) {
             Out::out('┌─');
             Out::out('│ ' . Locale::getMessage('CONFIG_' . $configKey));
             Out::out('│ ' . $configKey);
@@ -306,11 +302,11 @@ class Console
             }
         } else {
             $this->executeAll([
-                'search' => $this->getArg('--search='),
-                'tag' => $this->getArg('--tag='),
+                'search'   => $this->getArg('--search='),
+                'tag'      => $this->getArg('--tag='),
                 'modified' => $this->getArg('--modified'),
-                'older' => $this->getArg('--older'),
-                'actual' => $this->getArg('--actual'),
+                'older'    => $this->getArg('--older'),
+                'actual'   => $this->getArg('--actual'),
             ], VersionEnum::ACTION_UP);
         }
     }
@@ -327,11 +323,11 @@ class Console
             }
         } else {
             $this->executeAll([
-                'search' => $this->getArg('--search='),
-                'tag' => $this->getArg('--tag='),
+                'search'   => $this->getArg('--search='),
+                'tag'      => $this->getArg('--tag='),
                 'modified' => $this->getArg('--modified'),
-                'older' => $this->getArg('--older'),
-                'actual' => $this->getArg('--actual'),
+                'older'    => $this->getArg('--older'),
+                'actual'   => $this->getArg('--actual'),
             ], VersionEnum::ACTION_DOWN);
         }
     }
@@ -366,13 +362,10 @@ class Console
             $this->getCurrentUserLogin()
         );
 
-        $configList = $this->versionConfig->getList();
-        $configName = $this->versionConfig->getName();
-
         Out::out('');
         Out::out(Locale::getMessage('CONFIG_LIST') . ':');
-        foreach ($configList as $configItem) {
-            if ($configItem['name'] == $configName) {
+        foreach ($this->versionConfig->getConfigList() as $configItem) {
+            if ($configItem['name'] == $this->versionConfig->getCurrent()->getName()) {
                 Out::out('  ' . $configItem['title'] . ' *');
             } else {
                 Out::out('  ' . $configItem['title']);
@@ -430,11 +423,11 @@ class Console
     public function commandMigrate()
     {
         $this->executeAll([
-            'search' => $this->getArg('--search='),
-            'tag' => $this->getArg('--tag='),
+            'search'   => $this->getArg('--search='),
+            'tag'      => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
-            'older' => $this->getArg('--older'),
-            'actual' => $this->getArg('--actual'),
+            'older'    => $this->getArg('--older'),
+            'actual'   => $this->getArg('--actual'),
         ], $this->getArg('--down') ? VersionEnum::ACTION_DOWN : VersionEnum::ACTION_UP);
     }
 
@@ -625,7 +618,7 @@ class Console
 
     private function disableAuthHandlersIfNeed()
     {
-        if ($this->versionConfig->getVal('console_auth_events_disable')) {
+        if ($this->versionConfig->getCurrent()->getVal('console_auth_events_disable')) {
             $this->disableHandler('main', 'OnAfterUserAuthorize');
             $this->disableHandler('main', 'OnUserLogin');
         }

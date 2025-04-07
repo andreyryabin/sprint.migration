@@ -36,13 +36,13 @@ class VersionManager
         }
 
         $this->versionTimestampPattern = $this
-            ->versionConfig->getVal('version_timestamp_pattern');
+            ->versionConfig->getCurrent()->getVal('version_timestamp_pattern');
 
         $this->versionTimestampFormat = $this
-            ->versionConfig->getVal('version_timestamp_format');
+            ->versionConfig->getCurrent()->getVal('version_timestamp_format');
 
         $this->versionTable = new VersionTable(
-            $this->versionConfig->getVal('migration_table')
+            $this->versionConfig->getCurrent()->getVal('migration_table')
         );
     }
 
@@ -256,7 +256,7 @@ class VersionManager
      */
     public function createBuilder(string $name, array $params = []): Builder
     {
-        $builders = $this->getVersionConfig()->getVal('version_builders', []);
+        $builders = $this->getVersionConfig()->getCurrent()->getVal('version_builders', []);
 
         $class = $builders[$name] ?? '';
 
@@ -320,7 +320,7 @@ class VersionManager
 
     public function getVersionFile(string $versionName): string
     {
-        $dir = $this->getVersionConfig()->getVal('migration_dir');
+        $dir = $this->getVersionConfig()->getCurrent()->getVal('migration_dir');
         return $dir . '/' . $versionName . '.php';
     }
 
@@ -341,7 +341,7 @@ class VersionManager
 
     public function getWebDir(): string
     {
-        $dir = $this->getVersionConfig()->getVal('migration_dir');
+        $dir = $this->getVersionConfig()->getCurrent()->getVal('migration_dir');
         if (str_starts_with($dir, Module::getDocRoot())) {
             return substr($dir, strlen(Module::getDocRoot()));
         }
@@ -376,7 +376,7 @@ class VersionManager
 
     public function getFiles(): array
     {
-        $dir = $this->getVersionConfig()->getVal('migration_dir');
+        $dir = $this->getVersionConfig()->getCurrent()->getVal('migration_dir');
         $files = [];
 
         /* @var $item SplFileInfo */
@@ -412,7 +412,7 @@ class VersionManager
      */
     public function clean(): void
     {
-        $dir = $this->getVersionConfig()->getVal('migration_dir');
+        $dir = $this->getVersionConfig()->getCurrent()->getVal('migration_dir');
 
         $files = $this->getFiles();
         foreach ($files as $meta) {
@@ -500,7 +500,7 @@ class VersionManager
     {
         $result = [];
 
-        if ($this->getVersionConfig()->getName() == $vmTo->getVersionConfig()->getName()) {
+        if ($this->getVersionConfig()->getCurrent()->getName() == $vmTo->getVersionConfig()->getCurrent()->getName()) {
             $result[] = [
                 'message' => Locale::getMessage('TRANSFER_ERROR2'),
                 'success' => 0,
@@ -702,7 +702,7 @@ class VersionManager
                 $meta['older'] = $v1;
             }
 
-            $algo = $this->getVersionConfig()->getVal('migration_hash_algo');
+            $algo = $this->getVersionConfig()->getCurrent()->getVal('migration_hash_algo');
 
             $meta['hash'] = hash($algo, file_get_contents($meta['location']));
             $meta['modified'] = $record['hash'] && ($meta['hash'] != $record['hash']);

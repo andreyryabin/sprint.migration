@@ -76,7 +76,7 @@ $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
     $menu = [];
 
     if ($item['status'] == VersionEnum::STATUS_NEW) {
-        if ($versionConfig->getVal('show_admin_updown')) {
+        if ($versionConfig->getCurrent()->getVal('show_admin_updown')) {
             $menu[] = [
                 'TEXT' => Locale::getMessage('UP'),
                 'ONCLICK' => 'migrationMigrationUp(\'' . $item['version'] . '\')',
@@ -88,7 +88,7 @@ $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
         ];
     }
     if ($item['status'] == VersionEnum::STATUS_INSTALLED) {
-        if ($versionConfig->getVal('show_admin_updown')) {
+        if ($versionConfig->getCurrent()->getVal('show_admin_updown')) {
             $menu[] = [
                 'TEXT' => Locale::getMessage('DOWN'),
                 'ONCLICK' => 'migrationMigrationDown(\'' . $item['version'] . '\')',
@@ -126,12 +126,11 @@ $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
 
     $transferMenu = [];
 
-    $configList = $versionConfig->getList();
-    foreach ($configList as $configItem) {
-        if ($configItem['name'] != $versionConfig->getName()) {
+    foreach ($versionConfig->getConfigList() as $configItem) {
+        if ($configItem->getName() != $versionConfig->getCurrent()->getName()) {
             $transferMenu[] = [
-                'TEXT' => $configItem['title'],
-                'ONCLICK' => 'migrationMigrationTransfer(\'' . $item['version'] . '\',\'' . $configItem['name'] . '\')',
+                'TEXT' => $configItem->getTitle(),
+                'ONCLICK' => 'migrationMigrationTransfer(\'' . $item['version'] . '\',\'' . $configItem->getName() . '\')',
             ];
         }
     }
@@ -202,7 +201,7 @@ if (empty($versions)) {
                     Out::outToHtml(implode(' ', $versionLabels));
                 }
                 Out::outToHtml($item['description'], [
-                    'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),
+                    'tracker_task_url' => $versionConfig->getCurrent()->getVal('tracker_task_url'),
                     'make_links' => true,
                 ]);
                 ?>
