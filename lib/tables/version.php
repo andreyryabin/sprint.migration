@@ -5,6 +5,7 @@ namespace Sprint\Migration\Tables;
 use Bitrix\Main\ORM\Fields\IntegerField;
 use Bitrix\Main\ORM\Fields\StringField;
 use Bitrix\Main\ORM\Fields\TextField;
+use Bitrix\Main\SystemException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Traits\CurrentUserTrait;
 
@@ -33,7 +34,7 @@ class VersionTable extends AbstractTable
     /**
      * @throws MigrationException
      */
-    public function addRecord(array $record)
+    public function addRecord(array $record): void
     {
         $record['meta'] = [
             'created_by' => $this->getCurrentUserLogin(),
@@ -46,7 +47,7 @@ class VersionTable extends AbstractTable
     /**
      * @throws MigrationException
      */
-    public function removeRecord(array $record)
+    public function removeRecord(array $record): void
     {
         $row = $this->getOnce(['version' => $record['version']]);
         if ($row) {
@@ -57,7 +58,7 @@ class VersionTable extends AbstractTable
     /**
      * @throws MigrationException
      */
-    public function updateTag(string $versionName, string $tag = '')
+    public function updateTag(string $versionName, string $tag = ''): void
     {
         $row = $this->getOnce(['version' => $versionName]);
         if ($row) {
@@ -65,6 +66,9 @@ class VersionTable extends AbstractTable
         }
     }
 
+    /**
+     * @throws SystemException
+     */
     public function getMap(): array
     {
         return [

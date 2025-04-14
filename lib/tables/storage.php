@@ -5,6 +5,7 @@ namespace Sprint\Migration\Tables;
 use Bitrix\Main\ORM\Fields\IntegerField;
 use Bitrix\Main\ORM\Fields\StringField;
 use Bitrix\Main\ORM\Fields\TextField;
+use Bitrix\Main\SystemException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\HelperManager;
 
@@ -76,7 +77,7 @@ class StorageTable extends AbstractTable
     /**
      * @throws MigrationException
      */
-    public function deleteSavedData(string $name = '')
+    public function deleteSavedData(string $name = ''): void
     {
         if ($name) {
             $rows = $this->getAll([
@@ -94,6 +95,9 @@ class StorageTable extends AbstractTable
         }
     }
 
+    /**
+     * @throws SystemException
+     */
     public function getMap(): array
     {
         return [
@@ -115,7 +119,7 @@ class StorageTable extends AbstractTable
     }
 
 
-    protected function createDbTable()
+    protected function createDbTable(): void
     {
         parent::createDbTable();
 
