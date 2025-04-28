@@ -100,6 +100,10 @@ class VersionManager
             if ($action == VersionEnum::ACTION_UP) {
                 $this->checkResultAfterStart($versionInstance->up());
 
+                if (empty($tag)) {
+                    $tag = $versionInstance->getTag();
+                }
+
                 $meta['tag'] = $tag;
 
                 $this->getVersionTable()->addRecord($meta);
@@ -706,6 +710,11 @@ class VersionManager
 
             $meta['hash'] = hash($algo, file_get_contents($meta['location']));
             $meta['modified'] = $record['hash'] && ($meta['hash'] != $record['hash']);
+            if (empty($meta['tag'])) {
+                $meta['tag'] = $this->stripslashes(
+                    $versionInstance->getTag()
+                );
+            }
         } catch (Throwable $e) {
             throw new MigrationException($e->getMessage(), $e->getCode(), $e);
         }
