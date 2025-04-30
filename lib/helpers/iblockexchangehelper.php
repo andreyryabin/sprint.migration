@@ -156,7 +156,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function getSectionUniqNamesByIds(int $iblockId, int|array $sectionIds): array
+    public function getSectionUniqNamesByIds(int $iblockId, $sectionIds): array
     {
         $sectionIds = array_filter(is_array($sectionIds) ? $sectionIds : [$sectionIds]);
 
@@ -171,7 +171,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function getElementUniqNamesByIds(int $iblockId, int|array $elementIds): array
+    public function getElementUniqNamesByIds(int $iblockId, $elementIds): array
     {
         $elementIds = array_filter(is_array($elementIds) ? $elementIds : [$elementIds]);
 
