@@ -8,6 +8,7 @@
  * @var $moduleVersion
  * @var $iblockElementsFile
  * @var $author
+ * @var $tag
  * @formatter:off
  */
 
@@ -26,6 +27,8 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     protected $description = "<?php echo $description ?>";
 
     protected $moduleVersion = "<?php echo $moduleVersion ?>";
+
+    protected $tag = "<?php echo $tag ?>";
 
     /**
      * @throws Exceptions\MigrationException
