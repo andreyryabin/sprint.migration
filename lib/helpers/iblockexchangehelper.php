@@ -307,10 +307,12 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         } elseif ($field['NAME'] == 'DETAIL_PICTURE') {
             $tag->addFile($field['VALUE'], false);
         } elseif ($field['NAME'] == 'IBLOCK_SECTION') {
-            $tag->addValue(
-                $this->getSectionUniqNamesByIds($field['IBLOCK_ID'], $field['VALUE']),
-                true
-            );
+            if (!empty($field['VALUE'])) {
+                $tag->addValue(
+                    $this->getSectionUniqNamesByIds($field['IBLOCK_ID'], $field['VALUE']),
+                    true
+                );
+            }
         } elseif ($field['NAME'] == 'IPROPERTY_TEMPLATES') {
             foreach ($field['VALUE'] as $ikey => $ivalue) {
                 $tag->addValueTag($ivalue, ['name' => $ikey]);
@@ -386,10 +388,12 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     protected function addPropertyValueSection(WriterTag $tag, $prop): void
     {
-        $tag->addValue(
-            $this->getSectionUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']),
-            true
-        );
+        if (!empty($prop['VALUE'])) {
+            $tag->addValue(
+                $this->getSectionUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']),
+                true
+            );
+        }
     }
 
     /**
@@ -397,10 +401,12 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     protected function addPropertyValueElement(WriterTag $tag, $prop): void
     {
-        $tag->addValue(
-            $this->getElementUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']),
-            true
-        );
+        if (!empty($prop['VALUE'])) {
+            $tag->addValue(
+                $this->getElementUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']),
+                true
+            );
+        }
     }
 
     protected function addPropertyValueList(WriterTag $tag, $prop): void
