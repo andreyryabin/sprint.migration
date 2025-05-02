@@ -37,7 +37,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 <?php foreach ($item['types'] as $fields) { ?>
         $helper->Event()->saveEventType('<?php echo $eventName ?>', <?php echo var_export($fields, 1) ?>);
     <?php } ?>
-<?php foreach ($item['messages'] as $fields) { ?>
+<?php foreach ($item['email'] as $fields) { ?>
         $helper->Event()->saveEventMessage('<?php echo $eventName ?>', <?php echo var_export($fields, 1) ?>);
     <?php } ?>
 <?php foreach ($item['sms'] as $fields) { ?>
