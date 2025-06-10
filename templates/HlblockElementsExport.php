@@ -29,7 +29,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
     protected $moduleVersion = "<?php echo $moduleVersion ?>";
 
-    protected $tag = "<?php echo $tag ?>";
+    protected string $tag = "<?php echo $tag ?>";
 
     /**
      * @throws Exceptions\MigrationException
