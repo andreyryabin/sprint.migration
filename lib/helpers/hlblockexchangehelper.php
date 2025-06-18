@@ -155,9 +155,9 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
      */
     public function getWriterRecordsCount(...$vars): int
     {
-        [$hlblockId] = $vars;
+        [$hlblockId, $filter] = $vars;
 
-        return $this->getElementsCount($hlblockId);
+        return $this->getElementsCount($hlblockId, $filter);
     }
 
     /**
@@ -165,7 +165,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
      */
     public function getWriterRecordsTag(int $offset, int $limit, ...$vars): WriterTag
     {
-        [$hlblockId, $exportFields] = $vars;
+        [$hlblockId, $filter, $exportFields] = $vars;
 
         $elements = $this->getElements(
             $hlblockId,
@@ -173,6 +173,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                 'order' => ['ID' => 'ASC'],
                 'offset' => $offset,
                 'limit' => $limit,
+                'filter' => $filter,
             ]
         );
 

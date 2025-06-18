@@ -81,8 +81,6 @@ class ConsoleCommand extends Command
             'older',
             'down',
             'force',
-            'skip-errors',
-            'stop-on-errors',
         ];
     }
 

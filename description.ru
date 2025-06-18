@@ -1,3 +1,5 @@
-1) Исправление выгрузки почтовых и смс шаблонов (предложил @eirubtsov) <br/>
-2) Исправление ошибок экранирования кавычек, при формировании XML (предложил @fortune1dev, @teleak,  @AlexeyGfiProgrammer, @AndreyChursin) <br/>
-3) Фикс типов в iblockexchangehelper.php (предложил @AndreyChursin) <br/>
+1) Исправление выгрузки свойств html\text (предложил @SergeyGarnov) <br/>
+2) Исправление выгрузки свойств с привязкой к категориям (предложил @SergeyGarnov)<br/>
+3) Настройка заголовка страницы в админке через конфиг<br/>
+4) Больше опций для формы переноса эелементов highload-блоков<br/>
+5) Поддержка Bitrix CLI (автор Alexey Shirchkov @ashirchkov)<br/>

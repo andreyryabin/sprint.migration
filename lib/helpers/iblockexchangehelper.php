@@ -94,7 +94,6 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
             throw new HelperException('Invalid section unique name: ' . $uniqName);
         }
 
-
         [$sectionName, $depthLevel, $code] = explode('|', $uniqName);
         $uniqName = [];
         if ($sectionName) {
@@ -167,7 +166,6 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $uniqNames;
     }
 
-
     /**
      * @throws HelperException
      */
@@ -216,7 +214,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         [$iblockId] = $vars;
 
         return [
-            'iblockUid' => $this->getIblockUid($iblockId)
+            'iblockUid' => $this->getIblockUid($iblockId),
         ];
     }
 
@@ -232,7 +230,6 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     public function getWriterRecordsTag(int $offset, int $limit, ...$vars): WriterTag
     {
-
         [$iblockId, $filter, $exportFields, $exportProps] = $vars;
 
         $dbres = $this->getElementsList(
@@ -254,7 +251,8 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                     $this->getElementProps($element),
                     $exportFields,
                     $exportProps
-                ));
+                )
+            );
         }
         return $tag;
     }
@@ -268,8 +266,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         array $props,
         array $exportFields,
         array $exportProperties
-    ): WriterTag
-    {
+    ): WriterTag {
         $item = new WriterTag('item');
 
         foreach ($fields as $code => $val) {
@@ -278,7 +275,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                     $this->createFieldTag([
                         'NAME'      => $code,
                         'VALUE'     => $val,
-                        'IBLOCK_ID' => $iblockId
+                        'IBLOCK_ID' => $iblockId,
                     ])
                 );
             }
@@ -306,13 +303,11 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
             $tag->addFile($field['VALUE'], false);
         } elseif ($field['NAME'] == 'DETAIL_PICTURE') {
             $tag->addFile($field['VALUE'], false);
-        } elseif ($field['NAME'] == 'IBLOCK_SECTION') {
-            if (!empty($field['VALUE'])) {
-                $tag->addValue(
-                    $this->getSectionUniqNamesByIds($field['IBLOCK_ID'], $field['VALUE']),
-                    true
-                );
-            }
+        } elseif ($field['NAME'] == 'IBLOCK_SECTION' && $field['VALUE']) {
+            $tag->addValue(
+                $this->getSectionUniqNamesByIds($field['IBLOCK_ID'], $field['VALUE']),
+                true
+            );
         } elseif ($field['NAME'] == 'IPROPERTY_TEMPLATES') {
             foreach ($field['VALUE'] as $ikey => $ivalue) {
                 $tag->addValueTag($ivalue, ['name' => $ikey]);
@@ -368,16 +363,16 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                     $val1['TEXT'],
                     [
                         'text-type'   => $val1['TYPE'],
-                        'description' => $prop['DESCRIPTION'][$index] ?? ''
+                        'description' => $prop['DESCRIPTION'][$index] ?? '',
                     ]
                 );
             }
         } else {
             $tag->addValueTag(
-                $prop['VALUE']['TEXT'],
+                $prop['VALUE']['TEXT'] ?? '',
                 [
-                    'text-type'   => $prop['VALUE']['TYPE'],
-                    'description' => $prop['DESCRIPTION']
+                    'text-type'   => $prop['VALUE']['TYPE'] ?? '',
+                    'description' => $prop['DESCRIPTION'],
                 ]
             );
         }
@@ -413,7 +408,6 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     {
         $tag->addValue($prop['VALUE_XML_ID'], $prop['MULTIPLE'] == 'Y');
     }
-
 
     protected function addPropertyValueFile(WriterTag $tag, $prop): void
     {
@@ -476,7 +470,6 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         ];
     }
 
-
     protected function convertFieldValue(array $field)
     {
         return $field['value'][0]['value'];
@@ -514,7 +507,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                     'TEXT' => $val['value'],
                     'TYPE' => $val['text-type'] ?? 'html',
                 ],
-                'DESCRIPTION' => $val['description'] ?? ''
+                'DESCRIPTION' => $val['description'] ?? '',
             ];
         }
 
@@ -606,6 +599,4 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         }
         return ($isMultiple) ? $res : $res[0];
     }
-
-
 }

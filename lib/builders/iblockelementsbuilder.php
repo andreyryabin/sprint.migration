@@ -46,12 +46,12 @@ class IblockElementsBuilder extends VersionBuilder
         $exhelper = $this->getHelperManager()->IblockExchange();
 
         $iblockId = $this->getFieldValueIblockId();
-        $exportFilter = $this->getFieldValueExportFilter();
 
+        $exportFilter = $this->getFieldValueExportFilter();
         $updateMode = $this->getFieldValueUpdateMode();
+
         $exportFields = $this->getFieldValueExportFields($iblockId, $updateMode);
         $exportProps = $this->getFieldValueExportProps($iblockId);
-
 
         (new RestartableWriter($this, $this->getVersionExchangeDir()))
             ->setExchangeResource('iblock_elements.xml')
@@ -300,11 +300,5 @@ class IblockElementsBuilder extends VersionBuilder
                 ],
             ]
         );
-    }
-
-    protected function explodeString(string $string, string $delimiter = ' '): array
-    {
-        $values = explode($delimiter, trim($string));
-        return array_filter($values);
     }
 }

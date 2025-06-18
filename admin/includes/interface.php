@@ -3,14 +3,10 @@
 use Sprint\Migration\Locale;
 use Sprint\Migration\Out;
 
+$versionConfig = new Sprint\Migration\VersionConfig($_REQUEST['config'] ?? '');
+
 global $APPLICATION;
-$APPLICATION->SetTitle(Locale::getMessage('TITLE'));
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    CUtil::JSPostUnescape();
-}
-
-$versionConfig = new Sprint\Migration\VersionConfig($_REQUEST['config']??'');
+$APPLICATION->SetTitle($versionConfig->getCurrent('title'));
 
 if ($versionConfig->getVal('show_admin_interface')) {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
