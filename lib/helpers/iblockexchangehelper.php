@@ -464,17 +464,15 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    protected function makePropertyValueElement(int $iblockId, array $val): array
+    protected function convertValueIblockElement(int $iblockId, array $val): int
     {
         $this->checkRequiredKeys($val, ['element_xml_id', 'element_code', 'value']);
 
-        $elementId = $this->getElementIdIfExists($iblockId, [
+        return $this->getElementIdIfExists($iblockId, array_filter([
             'NAME'   => $val['value'],
-            'CODE'   => $val['element_code'],
+            'CODE'   => $val['element_code'] ?? '',
             'XML_ID' => $val['element_xml_id'],
-        ]);
-
-        return ['VALUE' => $elementId];
+        ]));
     }
 
     /**
@@ -482,13 +480,13 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     protected function convertValueIblockSection(int $iblockId, array $val): int
     {
-        $this->checkRequiredKeys($val, ['section_depth_level', 'section_code', 'value']);
+        $this->checkRequiredKeys($val, ['section_depth_level', 'value']);
 
-        return $this->getSectionIdIfExists($iblockId, [
+        return $this->getSectionIdIfExists($iblockId, array_filter([
             'NAME'        => $val['value'],
-            'CODE'        => $val['section_code'],
+            'CODE'        => $val['section_code'] ?? '',
             'DEPTH_LEVEL' => $val['section_depth_level'],
-        ]);
+        ]));
     }
 
     /**
@@ -501,7 +499,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
         if ($linkIblockId) {
             $res = array_map(
-                fn($val) => ['VALUE' => $this->convertValueIblockSection($iblockId, $val)],
+                fn($val) => ['VALUE' => $this->convertValueIblockSection($linkIblockId, $val)],
                 $prop['value']
             );
             return ($isMultiple) ? $res : ($res[0] ?? false);
@@ -518,12 +516,14 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
         $linkIblockId = $this->getPropertyLinkIblockId($iblockId, $prop['name']);
 
-        $res = $linkIblockId ? array_map(
-            fn($val) => $this->makePropertyValueElement($linkIblockId, $val),
-            $prop['value']
-        ) : [];
-
-        return ($isMultiple) ? $res : ($res[0] ?? false);
+        if ($linkIblockId) {
+            $res = array_map(
+                fn($val) => ['VALUE' => $this->convertValueIblockElement($linkIblockId, $val)],
+                $prop['value']
+            );
+            return ($isMultiple) ? $res : ($res[0] ?? false);
+        }
+        return ($isMultiple) ? [] : false;
     }
 
     protected function convertPropertyFile(int $iblockId, array $prop)
