@@ -6,7 +6,8 @@
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion
- * @var $updateMode
+ * @var $updateMethod
+ * @var $equalKeys
   * @var $author
  * @formatter:off
  */
@@ -40,12 +41,20 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
              ->HlblockElementsImport()
              ->setLimit(20)
              ->execute(function ($item) {
-<?php if ($updateMode == HlblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
+<?php if ($updateMethod == HlblockElementsBuilder::UPDATE_METHOD_XML_ID) { ?>
                  $this->getHelperManager()
                       ->Hlblock()
                       ->saveElementByXmlId(
                           $item['hlblock_id'],
                           $item['fields']
+                      );
+<?php } elseif($updateMethod == HlblockElementsBuilder::UPDATE_METHOD_EQUAL_KEYS) { ?>
+                 $this->getHelperManager()
+                      ->Hlblock()
+                      ->saveElementWithEqualKeys(
+                          $item['hlblock_id'],
+                          $item['fields'],
+                          [<?php echo implode(', ', array_map(fn($v) => "'$v'",$equalKeys))?>]
                       );
 <?php } else { ?>
                  $this->getHelperManager()
@@ -66,7 +75,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function down()
     {
-<?php if ($updateMode == HlblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
+<?php if ($updateMethod == HlblockElementsBuilder::UPDATE_METHOD_XML_ID) { ?>
         $this->getExchangeManager()
              ->HlblockElementsImport()
              ->setLimit(20)

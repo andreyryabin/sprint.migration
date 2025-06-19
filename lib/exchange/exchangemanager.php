@@ -13,9 +13,8 @@ class ExchangeManager
 
     public function __construct(
         private readonly RestartableInterface $restartable,
-        private readonly string               $directory,
-    )
-    {
+        private readonly string $directory,
+    ) {
     }
 
     public function IblockElementsImport(): RestartableReader
@@ -24,7 +23,6 @@ class ExchangeManager
             $this->restartable,
             $this->getHelperManager()->IblockExchange(),
             $this->directory
-
         ))->setExchangeResource('iblock_elements.xml');
     }
 
@@ -34,7 +32,6 @@ class ExchangeManager
             $this->restartable,
             $this->getHelperManager()->HlblockExchange(),
             $this->directory
-
         ))->setExchangeResource('hlblock_elements.xml');
     }
 
@@ -44,7 +41,6 @@ class ExchangeManager
             $this->restartable,
             $this->getHelperManager()->MedialibExchange(),
             $this->directory
-
         ))->setExchangeResource('medialib_elements.xml');
     }
 }

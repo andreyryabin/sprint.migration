@@ -2,17 +2,16 @@
 
 namespace Sprint\Migration\Exchange;
 
-
 use CFile;
 
 class WriterTag
 {
     private string $name;
-    private array $attributes = [];
-    private string $text = '';
-    private array $childs = [];
-    private array $files = [];
-    private bool $cdata = false;
+    private array  $attributes = [];
+    private string $text       = '';
+    private array  $childs     = [];
+    private array  $files      = [];
+    private bool   $cdata      = false;
 
     public function __construct(string $name, array $attributes = [])
     {
@@ -57,7 +56,6 @@ class WriterTag
         if ($name && $value) {
             $this->attributes[$name] = $value;
         }
-
     }
 
     public function countChilds(): int
@@ -69,6 +67,12 @@ class WriterTag
     {
         $this->text = htmlspecialchars_decode($text);
         $this->cdata = $this->text != $text;
+
+        if (!$this->cdata) {
+            if (preg_match('/[\[\]{}\"\'<>]/', $this->text)) {
+                $this->cdata = true;
+            }
+        }
     }
 
     public function setJson(array $text): void
@@ -82,7 +86,6 @@ class WriterTag
     {
         return $this->cdata;
     }
-
 
     public function addFile(mixed $val, bool $multiple): void
     {
@@ -105,7 +108,6 @@ class WriterTag
             $this->addValueTag($val);
         }
     }
-
 
     public function addValueTag($val, $attributes = []): void
     {
@@ -133,9 +135,9 @@ class WriterTag
         $this->addValueTag(
             $file['SUBDIR'] . '/' . $file['FILE_NAME'],
             [
-                'name' => $file['ORIGINAL_NAME'],
+                'name'        => $file['ORIGINAL_NAME'],
                 'description' => $file['DESCRIPTION'],
-                'type' => 'file',
+                'type'        => 'file',
             ]
         );
 

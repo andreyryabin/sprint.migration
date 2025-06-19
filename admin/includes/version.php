@@ -39,7 +39,7 @@ $getOnclickMenu = function () {
                 </div>
                 <div id="migration_migrations"></div>
             </div>
-            <div class="sp-col sp-col-scroll" id="migration_progress"></div>
+            <div class="sp-col sp-col-scroll" id="migration_log"></div>
         </div>
     </div>
     <div class="sp-table">
@@ -53,9 +53,12 @@ $getOnclickMenu = function () {
                    href="javascript:void(0)"
                    class="adm-btn"
                    hidefocus="true">&equiv;</a>
-                <div id="migration_loading"><?= Locale::getMessage('LOADING_TEXT')?></div>
+                <div id="migration_loading"><?= Locale::getMessage('LOADING_TEXT') ?></div>
             </div>
-            <div class="sp-col" id="migration_actions"></div>
+            <div class="sp-col">
+                <div id="migration_actions"></div>
+                <div id="migration_progress"></div>
+            </div>
         </div>
     </div>
     <div class="sp-separator"></div>

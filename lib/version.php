@@ -18,14 +18,11 @@ class Version implements RestartableInterface
     use RestartableTrait;
     use VersionConfigTrait;
 
-    protected $author = "";
-    protected $description = "";
+    protected $author        = "";
+    protected $description   = "";
     protected $moduleVersion = "";
     /**
-     * Миграции, которые должны быть установлены перед установкой текущей
-     * $this->requiredVersions = ['Version1','Version1']
-     * или
-     * $this->requiredVersions = [Version1::class,Version2::class]
+     * @deprecated Используете $this->checkRequiredVersions(['Version1','Version1'])
      */
     protected $requiredVersions = [];
 
@@ -60,6 +57,9 @@ class Version implements RestartableInterface
         return $this->moduleVersion;
     }
 
+    /**
+     * @deprecated
+     */
     public function getRequiredVersions(): array
     {
         return $this->requiredVersions;
@@ -71,6 +71,9 @@ class Version implements RestartableInterface
     }
 
     /**
+     * Метод проверяет установлены ли обязательные миграции и бросает исключение если нет
+     * $versionNames = ['Version1','Version1'] или [Version1::class,Version2::class]
+     *
      * @throws MigrationException
      */
     public function checkRequiredVersions($versionNames): void

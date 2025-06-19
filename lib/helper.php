@@ -91,18 +91,39 @@ class Helper
      */
     protected function checkRequiredKeys(array $fields, array $reqKeys = []): void
     {
+        if (empty($reqKeys)) {
+            throw new HelperException(
+                Locale::getMessage(
+                    'ERR_EMPTY_REQ_FIELDS'
+                )
+            );
+        }
+
         foreach ($reqKeys as $name) {
             if (empty($fields[$name])) {
                 throw new HelperException(
                     Locale::getMessage(
                         'ERR_EMPTY_REQ_FIELD',
-                        [
-                            '#NAME#' => $name,
-                        ]
+                        ['#NAME#' => $name]
                     )
                 );
             }
         }
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function getEqualFilter(array $fields, array $equalKeys = []): array
+    {
+        $this->checkRequiredKeys($fields, $equalKeys);
+
+        $filter = [];
+        foreach ($equalKeys as $key) {
+            $filter['=' . $key] = $fields[$key];
+        }
+
+        return $filter;
     }
 
     protected function fetchAll(CDBResult $dbres, string $indexKey = '', string $valueKey = ''): array

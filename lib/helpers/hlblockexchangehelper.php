@@ -6,6 +6,7 @@ use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exchange\WriterTag;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\WriterHelperInterface;
+use Sprint\Migration\Locale;
 
 class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterface, WriterHelperInterface
 {
@@ -15,8 +16,8 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
      * @param $hlblockName
      * @param $fieldName
      *
-     * @return mixed
      * @throws HelperException
+     * @return mixed
      */
     public function getField($hlblockName, $fieldName): array
     {
@@ -33,30 +34,27 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
      */
     public function getHlblocksStructure(): array
     {
-        $res = [];
-        $hlblocks = $this->getHlblocks();
-        foreach ($hlblocks as $hlblock) {
-            $res[] = [
-                'title' => $hlblock['NAME'],
+        return array_map(
+            fn($hlblock) => [
+                'title' => Locale::getMessage('HLBLOCK_TITLE', $hlblock),
                 'value' => $hlblock['ID'],
-            ];
-        }
-        return $res;
+            ],
+            $this->getHlblocks()
+        );
     }
 
     /**
      * @throws HelperException
      */
-    public function getHlblockFieldsCodes($hlblockName): array
+    public function getHlblockFieldsStructure($hlblockName): array
     {
-        $res = [];
-        $items = $this->getFields($hlblockName);
-        foreach ($items as $item) {
-            if (!empty($item['FIELD_NAME'])) {
-                $res[] = $item['FIELD_NAME'];
-            }
-        }
-        return $res;
+        return array_map(
+            fn($field) => [
+                'title' => Locale::getMessage('HLBLOCK_FIELD', $field),
+                'value' => $field['FIELD_NAME'],
+            ],
+            $this->getFields($hlblockName)
+        );
     }
 
 
@@ -90,9 +88,8 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
 
         return [
             'hlblock_id' => $hlblockId,
-            'fields' => $convertedFields,
+            'fields'     => $convertedFields,
         ];
-
     }
 
     /**
@@ -146,7 +143,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         [$hlblockId] = $vars;
 
         return [
-            'hlblockUid' => $this->getHlblockUid($hlblockId)
+            'hlblockUid' => $this->getHlblockUid($hlblockId),
         ];
     }
 
@@ -170,9 +167,9 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         $elements = $this->getElements(
             $hlblockId,
             [
-                'order' => ['ID' => 'ASC'],
+                'order'  => ['ID' => 'ASC'],
                 'offset' => $offset,
-                'limit' => $limit,
+                'limit'  => $limit,
                 'filter' => $filter,
             ]
         );
@@ -196,18 +193,17 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
      */
     private function createRecordTag($hlblockId, array $element, array $exportFields): WriterTag
     {
-
         $item = new WriterTag('item');
 
         foreach ($element as $code => $val) {
             if (in_array($code, $exportFields)) {
                 $item->addChild(
                     $this->createFieldTag([
-                        'NAME' => $code,
-                        'VALUE' => $val,
-                        'HLBLOCK_ID' => $hlblockId,
+                        'NAME'         => $code,
+                        'VALUE'        => $val,
+                        'HLBLOCK_ID'   => $hlblockId,
                         'USER_TYPE_ID' => $this->getFieldType($hlblockId, $code),
-                        'MULTIPLE' => $this->isFieldMultiple($hlblockId, $code),
+                        'MULTIPLE'     => $this->isFieldMultiple($hlblockId, $code),
                     ])
                 );
             }
@@ -237,6 +233,4 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
 
         return $tag;
     }
-
-
 }

@@ -71,14 +71,17 @@ function migrationMigrationDelete(version) {
 }
 
 function migrationOutLog(result) {
-    var $el = jQuery('#migration_progress');
-    var lastOutElem = $el.children('div').last();
-    if (lastOutElem.hasClass('sp-progress') && jQuery(result).first().hasClass('sp-progress')) {
-        lastOutElem.replaceWith(result);
-    } else {
-        $el.append(result);
-        $el.scrollTop($el.prop("scrollHeight"));
-    }
+    var $el = jQuery('#migration_log');
+    var $pg = jQuery('#migration_progress');
+    var $res = jQuery('<div>'+result+'</div>');
+
+    $res.children('.sp-progress').each(function(){
+        $pg.html(jQuery(this));
+    });
+
+    $el.append($res.children());
+
+    $el.scrollTop($el.prop("scrollHeight"));
 }
 
 function migrationExecuteStep(step_code, postData, succesCallback) {
@@ -123,6 +126,7 @@ function migrationEnableButtons(enable) {
 
 function migrationListRefresh(callbackAfterRefresh) {
     jQuery('#migration_actions').empty();
+    jQuery('#migration_progress').empty();
     migrationExecuteStep(
         jQuery('#migration_view').val(),
         {},
@@ -141,10 +145,12 @@ function migrationBuilder(postData) {
         migrationBuilderRender(result)
     });
 }
-function migrationBuilderRestart(){
+
+function migrationBuilderRestart() {
     let postData = jQuery('#migration_builder form').serializeFormJSON();
     migrationBuilder(postData);
 }
+
 function migrationReset(postData) {
     migrationExecuteStep('migration_reset', postData, function (result) {
         migrationBuilderRender(result, {})

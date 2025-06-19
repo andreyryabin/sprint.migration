@@ -69,7 +69,7 @@
 }
 
 /* sp-search + migration_migrations + 12 */
-#migration_progress{
+#migration_log{
     overflow: auto;
     max-height: 497px;
 }

@@ -43,13 +43,13 @@ class MedialibElementsBuilder extends VersionBuilder
         $collectionIds = $this->addFieldAndReturn(
             'collection_id',
             [
-                'title' => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
+                'title'       => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
                 'placeholder' => '',
-                'width' => 250,
-                'select' => $exhelper->getCollectionStructure(
+                'width'       => 250,
+                'select'      => $exhelper->getCollectionStructure(
                     $exhelper::TYPE_IMAGE
                 ),
-                'multiple' => true,
+                'multiple'    => true,
             ]
         );
 
@@ -72,6 +72,11 @@ class MedialibElementsBuilder extends VersionBuilder
                     $collectionIds,
                     $exportFields
                 ),
+                progressFn: fn($value, $totalCount) => $this->outProgress(
+                    'Progress: ',
+                    $value,
+                    $totalCount
+                )
             );
 
         $this->createVersionFile(

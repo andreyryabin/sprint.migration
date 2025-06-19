@@ -45,7 +45,7 @@ trait IblockElementTrait
         $item = $this->getElementsList($iblockId, [
             'filter' => $filter,
             'select' => $select,
-            'limit' => 1,
+            'limit'  => 1,
         ])->Fetch();
 
         return $item ? $this->prepareElement($item) : false;
@@ -116,17 +116,17 @@ trait IblockElementTrait
         $params = array_merge(
             [
                 'offset' => 0,
-                'limit' => 0,
+                'limit'  => 0,
                 'filter' => [],
                 'select' => [],
-                'order' => ['ID' => 'ASC'],
+                'order'  => ['ID' => 'ASC'],
             ], $params
         );
 
         $params['filter'] = array_merge(
             $params['filter'],
             [
-                'IBLOCK_ID' => $iblockId,
+                'IBLOCK_ID'         => $iblockId,
                 'CHECK_PERMISSIONS' => 'N',
             ]
         );
@@ -136,8 +136,8 @@ trait IblockElementTrait
             if ($params['offset'] > 0) {
                 $pageNum = (int)floor($params['offset'] / $params['limit']) + 1;
                 $navParams = [
-                    'nPageSize' => $params['limit'],
-                    'iNumPage' => $pageNum,
+                    'nPageSize'       => $params['limit'],
+                    'iNumPage'        => $pageNum,
                     'checkOutOfRange' => true,
                 ];
             } else {
@@ -180,17 +180,41 @@ trait IblockElementTrait
     }
 
     /**
-     * Сохраняет элемент инфоблока.
-     * Создаст элемент если не было, обновит если существует (поиск по коду)
      * @throws HelperException
      */
     public function saveElement(int $iblockId, array $fields = [], array $props = []): int
     {
+        return $this->saveElementByCode($iblockId, $fields, $props);
+    }
+
+    /**
+     * Сохраняет элемент инфоблока.
+     * Создаст элемент если не было, обновит если существует (поиск по коду)
+     *
+     * @throws HelperException
+     */
+    public function saveElementByCode(int $iblockId, array $fields = [], array $props = []): int
+    {
         $this->checkRequiredKeys($fields, ['CODE']);
 
-        $item = $this->getElement($iblockId, $fields['CODE']);
-        if (!empty($item['ID'])) {
-            return $this->updateElement($item['ID'], $fields, $props);
+        $elementId = $this->getElementId($iblockId, $fields['CODE']);
+        if ($elementId) {
+            return $this->updateElement($elementId, $fields, $props);
+        }
+
+        return $this->addElement($iblockId, $fields, $props);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function saveElementByXmlId(int $iblockId, array $fields = [], array $props = []): int
+    {
+        $this->checkRequiredKeys($fields, ['XML_ID']);
+
+        $elementId = $this->getElementId($iblockId, ['=XML_ID' => $fields['XML_ID']]);
+        if ($elementId) {
+            return $this->updateElement($elementId, $fields, $props);
         }
 
         return $this->addElement($iblockId, $fields, $props);
@@ -198,6 +222,7 @@ trait IblockElementTrait
 
     /**
      * Обновляет элемент инфоблока
+     *
      * @throws HelperException
      */
     public function updateElement(int $elementId, array $fields = [], array $props = []): int
@@ -221,16 +246,17 @@ trait IblockElementTrait
 
     /**
      * Добавляет элемент инфоблока
+     *
      * @throws HelperException
      */
     public function addElement(int $iblockId, array $fields = [], array $props = []): int
     {
         $default = [
-            'NAME' => 'element',
+            'NAME'              => 'element',
             'IBLOCK_SECTION_ID' => false,
-            'ACTIVE' => 'Y',
-            'PREVIEW_TEXT' => '',
-            'DETAIL_TEXT' => '',
+            'ACTIVE'            => 'Y',
+            'PREVIEW_TEXT'      => '',
+            'DETAIL_TEXT'       => '',
         ];
 
         $fields = array_replace_recursive($default, $fields);
@@ -250,23 +276,10 @@ trait IblockElementTrait
         throw new HelperException($ib->LAST_ERROR);
     }
 
-    /**
-     * @throws HelperException
-     */
-    public function saveElementByXmlId(int $iblockId, array $fields = [], array $props = []): int
-    {
-        $this->checkRequiredKeys($fields, ['XML_ID']);
-
-        $elementId = $this->getElementId($iblockId, ['=XML_ID' => $fields['XML_ID']]);
-        if ($elementId) {
-            return $this->updateElement($elementId, $fields, $props);
-        }
-
-        return $this->addElement($iblockId, $fields, $props);
-    }
 
     /**
      * Добавляет элемент инфоблока если он не существует
+     *
      * @throws HelperException
      */
     public function addElementIfNotExists(int $iblockId, array $fields, array $props = []): int
@@ -314,6 +327,7 @@ trait IblockElementTrait
 
     /**
      * Удаляет элемент инфоблока
+     *
      * @throws HelperException
      */
     public function deleteElement(int $elementId): bool
@@ -328,6 +342,7 @@ trait IblockElementTrait
 
     /**
      * Удаляет элемент инфоблока если он существует
+     *
      * @throws HelperException
      */
     public function deleteElementIfExists(int $iblockId, string $code): bool
@@ -372,7 +387,7 @@ trait IblockElementTrait
                 Locale::getMessage(
                     'ERR_IB_ELEMENT_ID_NOT_FOUND',
                     [
-                        '#IBLOCK_ID#' => $iblockId,
+                        '#IBLOCK_ID#'  => $iblockId,
                         '#ELEMENT_ID#' => $elementId,
                     ]
                 )
@@ -380,9 +395,9 @@ trait IblockElementTrait
         }
 
         return [
-            'NAME' => $element['NAME'],
+            'NAME'   => $element['NAME'],
             'XML_ID' => $element['XML_ID'],
-            'CODE' => $element['CODE'],
+            'CODE'   => $element['CODE'],
         ];
     }
 
@@ -412,7 +427,7 @@ trait IblockElementTrait
                     'ERR_IB_ELEMENT_BY_FILTER_NOT_FOUND',
                     [
                         '#IBLOCK_ID#' => $iblockId,
-                        '#NAME#' => $uniqFilter['NAME'],
+                        '#NAME#'      => $uniqFilter['NAME'],
                     ]
                 )
             );
