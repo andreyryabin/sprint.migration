@@ -71,7 +71,7 @@ class IblockElementsBuilder extends VersionBuilder
                     $exportFields,
                     $exportProps
                 ),
-                progressFn: fn($offset, $totalCount) => $this->outProgress(
+                progressFn: fn($value, $totalCount) => $this->outProgress(
                     'Progress: ',
                     $value,
                     $totalCount
