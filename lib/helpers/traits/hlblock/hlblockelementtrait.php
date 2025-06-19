@@ -109,7 +109,7 @@ trait HlblockElementTrait
      */
     public function saveElementWithEqualKeys(string|int $hlblockName, array $fields, array $equalKeys): int
     {
-        $filter = $this->getEqualFilter($fields, $equalKeys);
+        $filter = $this->makeEqualFilter($fields, $equalKeys);
 
         $elementId = $this->getElementId($hlblockName, $filter);
 

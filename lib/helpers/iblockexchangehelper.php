@@ -112,40 +112,6 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function getElementUniqNameById(int $iblockId, int $elementId): string
-    {
-        $filter = $this->getElementUniqFilterById($iblockId, $elementId);
-        return $filter['NAME'] . '|' . $filter['XML_ID'] . '|' . $filter['CODE'];
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getElementIdByUniqName(int $iblockId, string $uniqName): int
-    {
-        if (!str_contains($uniqName, '|')) {
-            throw new HelperException('Invalid element unique name: ' . $uniqName);
-        }
-
-        [$elementName, $xmlId, $code] = explode('|', $uniqName);
-
-        $uniqName = [];
-        if ($elementName) {
-            $uniqName['NAME'] = $elementName;
-        }
-        if ($xmlId) {
-            $uniqName['XML_ID'] = $xmlId;
-        }
-        if ($code) {
-            $uniqName['CODE'] = $code;
-        }
-
-        return $this->getElementIdByUniqFilter($iblockId, $uniqName);
-    }
-
-    /**
-     * @throws HelperException
-     */
     public function getSectionUniqNameById(int $iblockId, int $sectionId): string
     {
         $filter = $this->getSectionUniqFilterById($iblockId, $sectionId);
@@ -157,41 +123,11 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     public function getSectionUniqNamesByIds(int $iblockId, int|array $sectionIds): array
     {
-        $sectionIds = array_filter(is_array($sectionIds) ? $sectionIds : [$sectionIds]);
-
         $uniqNames = [];
-        foreach ($sectionIds as $sectionId) {
+        foreach ($this->makeNonEmptyArray($sectionIds) as $sectionId) {
             $uniqNames[] = $this->getSectionUniqNameById($iblockId, $sectionId);
         }
         return $uniqNames;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getElementUniqNamesByIds(int $iblockId, int|array $elementIds): array
-    {
-        $elementIds = array_filter(is_array($elementIds) ? $elementIds : [$elementIds]);
-
-        $uniqNames = [];
-        foreach ($elementIds as $elementId) {
-            $uniqNames[] = $this->getElementUniqNameById($iblockId, $elementId);
-        }
-        return $uniqNames;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getElementIdsByUniqNames(int $iblockId, array|string $uniqNames): array
-    {
-        $uniqNames = array_filter(is_array($uniqNames) ? $uniqNames : [$uniqNames]);
-
-        $elementIds = [];
-        foreach ($uniqNames as $uniqName) {
-            $elementIds[] = $this->getElementIdByUniqName($iblockId, $uniqName);
-        }
-        return $elementIds;
     }
 
     public function getElementFields(_CIBElement $element): array
@@ -397,10 +333,20 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     protected function addPropertyValueElement(WriterTag $tag, $prop): void
     {
         if (!empty($prop['VALUE'])) {
-            $tag->addValue(
-                $this->getElementUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']),
-                true
-            );
+            foreach ($this->makeNonEmptyArray($prop['VALUE']) as $elementId) {
+                $element = $this->getElementIfExists(
+                    $prop['LINK_IBLOCK_ID'],
+                    ['ID' => $elementId]
+                );
+
+                $tag->addValueTag(
+                    $element['NAME'],
+                    [
+                        'element_xml_id' => $element['XML_ID'],
+                        'element_code'   => $element['CODE'],
+                    ]
+                );
+            }
         }
     }
 
@@ -449,17 +395,17 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
             $userType = $this->getPropertyUserType($iblockId, $prop['name']);
 
             if ($propType == 'L') {
-                $convertedProperties[$prop['name']] = $this->convertPropertyL($iblockId, $prop);
+                $convertedProperties[$prop['name']] = $this->convertPropertyList($iblockId, $prop);
             } elseif ($propType == 'F') {
-                $convertedProperties[$prop['name']] = $this->convertPropertyF($iblockId, $prop);
+                $convertedProperties[$prop['name']] = $this->convertPropertyFile($iblockId, $prop);
             } elseif ($propType == 'G') {
-                $convertedProperties[$prop['name']] = $this->convertPropertyG($iblockId, $prop);
+                $convertedProperties[$prop['name']] = $this->convertPropertySection($iblockId, $prop);
             } elseif ($propType == 'E') {
-                $convertedProperties[$prop['name']] = $this->convertPropertyE($iblockId, $prop);
+                $convertedProperties[$prop['name']] = $this->convertPropertyElement($iblockId, $prop);
             } elseif ($propType == 'S' && $userType == 'HTML') {
                 $convertedProperties[$prop['name']] = $this->convertPropertyHtml($iblockId, $prop);
             } else {
-                $convertedProperties[$prop['name']] = $this->convertPropertyS($iblockId, $prop);
+                $convertedProperties[$prop['name']] = $this->convertPropertyString($iblockId, $prop);
             }
         }
 
@@ -514,7 +460,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return ($isMultiple) ? $res : $res[0];
     }
 
-    protected function convertPropertyS(int $iblockId, array $prop)
+    protected function convertPropertyString(int $iblockId, array $prop)
     {
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
         $res = [];
@@ -539,7 +485,23 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    protected function convertPropertyG(int $iblockId, array $prop)
+    protected function makePropertyValueElement(int $iblockId, array $val): array
+    {
+        $this->checkRequiredKeys($val, ['element_xml_id', 'element_code', 'value']);
+
+        $elementId = $this->getElementIdIfExists($iblockId, [
+            'NAME'   => $val['value'],
+            'XML_ID' => $val['element_xml_id'],
+            'CODE'   => $val['element_code'],
+        ]);
+
+        return ['VALUE' => $elementId];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function convertPropertySection(int $iblockId, array $prop)
     {
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
         $linkIblockId = $this->getPropertyLinkIblockId($iblockId, $prop['name']);
@@ -558,33 +520,29 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    protected function convertPropertyE(int $iblockId, array $prop)
+    protected function convertPropertyElement(int $iblockId, array $prop)
     {
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
         $linkIblockId = $this->getPropertyLinkIblockId($iblockId, $prop['name']);
 
-        $res = [];
-        if ($linkIblockId) {
-            foreach ($prop['value'] as $val) {
-                $val['value'] = $this->getElementIdByUniqName($linkIblockId, $val['value']);
-                $res[] = $this->makePropertyValue($val);
-            }
-        }
+        $res = $linkIblockId ? array_map(
+            fn($val) => $this->makePropertyValueElement($linkIblockId, $val),
+            $prop['value']
+        ) : [];
 
-        return ($isMultiple) ? $res : $res[0];
+        return ($isMultiple) ? $res : ($res[0] ?? false);
     }
 
-    protected function convertPropertyF(int $iblockId, array $prop)
+    protected function convertPropertyFile(int $iblockId, array $prop)
     {
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
-        $res = [];
-        foreach ($prop['value'] as $val) {
-            $res[] = $val['value'];
-        }
+
+        $res = array_map(fn($val) => $val['value'], $prop['value']);
+
         return ($isMultiple) ? $res : $res[0];
     }
 
-    protected function convertPropertyL(int $iblockId, array $prop)
+    protected function convertPropertyList(int $iblockId, array $prop)
     {
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
         $res = [];

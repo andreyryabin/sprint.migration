@@ -20,6 +20,15 @@ trait IblockElementTrait
     }
 
     /**
+     * @throws HelperException
+     */
+    public function getElementIdIfExists(int $iblockId, array|string $code): int
+    {
+        $item = $this->getElementIfExists($iblockId, $code);
+        return (int)($item['ID'] ?? 0);
+    }
+
+    /**
      * Получает элемент инфоблока
      */
     public function getElement(int $iblockId, array|string $code, array $select = []): bool|array
@@ -52,14 +61,25 @@ trait IblockElementTrait
     }
 
     /**
+     * @throws HelperException
      */
-    protected function prepareElement(array $item): array
+    public function getElementIfExists(int $iblockId, array|string $code, array $select = []): bool|array
     {
-        $item['IBLOCK_SECTION'] = $this->getElementSectionIds($item['ID']);
+        $element = $this->getElement($iblockId, $code, $select);
 
-        $item['IPROPERTY_TEMPLATES'] = $this->getElementIpropertyTemplates($item['IBLOCK_ID'], $item['ID']);
+        if ($element && $element['ID']) {
+            return $element;
+        }
 
-        return $item;
+        throw new HelperException(
+            Locale::getMessage(
+                'ERR_IB_ELEMENT_ID_NOT_FOUND',
+                [
+                    '#IBLOCK_ID#'  => $iblockId,
+                    '#ELEMENT_ID#' => print_r($code, true),
+                ]
+            )
+        );
     }
 
     public function getElementSectionIds(int $elementId): array
@@ -104,11 +124,10 @@ trait IblockElementTrait
             ]
         );
 
-        $list = [];
-        while ($item = $dbres->Fetch()) {
-            $list[] = $this->prepareElement($item);
-        }
-        return $list;
+        return array_map(
+            fn($item) => $this->prepareElement($item),
+            $this->fetchAll($dbres)
+        );
     }
 
     public function getElementsList(int $iblockId, array $params = []): CIBlockResult
@@ -276,7 +295,6 @@ trait IblockElementTrait
         throw new HelperException($ib->LAST_ERROR);
     }
 
-
     /**
      * Добавляет элемент инфоблока если он не существует
      *
@@ -364,75 +382,12 @@ trait IblockElementTrait
         return false;
     }
 
-    /**
-     * @throws HelperException
-     */
-    public function getElementUniqFilterById(int $iblockId, int $elementId): array
+    protected function prepareElement(array $item): array
     {
-        if (empty($elementId)) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_IB_ELEMENT_ID_EMPTY',
-                    [
-                        '#IBLOCK_ID#' => $iblockId,
-                    ]
-                )
-            );
-        }
+        $item['IBLOCK_SECTION'] = $this->getElementSectionIds($item['ID']);
 
-        $element = $this->getElement($iblockId, ['ID' => $elementId]);
+        $item['IPROPERTY_TEMPLATES'] = $this->getElementIpropertyTemplates($item['IBLOCK_ID'], $item['ID']);
 
-        if (empty($element['ID'])) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_IB_ELEMENT_ID_NOT_FOUND',
-                    [
-                        '#IBLOCK_ID#'  => $iblockId,
-                        '#ELEMENT_ID#' => $elementId,
-                    ]
-                )
-            );
-        }
-
-        return [
-            'NAME'   => $element['NAME'],
-            'XML_ID' => $element['XML_ID'],
-            'CODE'   => $element['CODE'],
-        ];
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getElementIdByUniqFilter(int $iblockId, array $uniqFilter): int
-    {
-        if (empty($uniqFilter)) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_IB_ELEMENT_ID_EMPTY',
-                    [
-                        '#IBLOCK_ID#' => $iblockId,
-                    ]
-                )
-            );
-        }
-
-        $uniqFilter['IBLOCK_ID'] = $iblockId;
-
-        $elementId = $this->getElementId($iblockId, $uniqFilter);
-
-        if (empty($elementId)) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_IB_ELEMENT_BY_FILTER_NOT_FOUND',
-                    [
-                        '#IBLOCK_ID#' => $iblockId,
-                        '#NAME#'      => $uniqFilter['NAME'],
-                    ]
-                )
-            );
-        }
-
-        return $elementId;
+        return $item;
     }
 }

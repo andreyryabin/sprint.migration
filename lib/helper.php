@@ -114,7 +114,7 @@ class Helper
     /**
      * @throws HelperException
      */
-    protected function getEqualFilter(array $fields, array $equalKeys = []): array
+    protected function makeEqualFilter(array $fields, array $equalKeys = []): array
     {
         $this->checkRequiredKeys($fields, $equalKeys);
 
@@ -124,6 +124,13 @@ class Helper
         }
 
         return $filter;
+    }
+
+    protected function makeNonEmptyArray(string|int|array $ids): array
+    {
+        $ids = is_array($ids) ? $ids : [$ids];
+        $ids = array_filter($ids);
+        return array_values($ids);
     }
 
     protected function fetchAll(CDBResult $dbres, string $indexKey = '', string $valueKey = ''): array
