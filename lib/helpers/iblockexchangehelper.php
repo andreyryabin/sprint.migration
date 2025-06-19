@@ -85,51 +85,6 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $res;
     }
 
-    /**
-     * @throws HelperException
-     */
-    public function getSectionIdByUniqName(int $iblockId, string $uniqName): int
-    {
-        if (!str_contains($uniqName, '|')) {
-            throw new HelperException('Invalid section unique name: ' . $uniqName);
-        }
-
-        [$sectionName, $depthLevel, $code] = explode('|', $uniqName);
-        $uniqName = [];
-        if ($sectionName) {
-            $uniqName['NAME'] = $sectionName;
-        }
-        if ($depthLevel) {
-            $uniqName['DEPTH_LEVEL'] = $depthLevel;
-        }
-        if ($code) {
-            $uniqName['CODE'] = $code;
-        }
-
-        return $this->getSectionIdByUniqFilter($iblockId, $uniqName);
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getSectionUniqNameById(int $iblockId, int $sectionId): string
-    {
-        $filter = $this->getSectionUniqFilterById($iblockId, $sectionId);
-        return $filter['NAME'] . '|' . $filter['DEPTH_LEVEL'] . '|' . $filter['CODE'];
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getSectionUniqNamesByIds(int $iblockId, int|array $sectionIds): array
-    {
-        $uniqNames = [];
-        foreach ($this->makeNonEmptyArray($sectionIds) as $sectionId) {
-            $uniqNames[] = $this->getSectionUniqNameById($iblockId, $sectionId);
-        }
-        return $uniqNames;
-    }
-
     public function getElementFields(_CIBElement $element): array
     {
         return $this->prepareElement($element->GetFields());
@@ -239,11 +194,8 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
             $tag->addFile($field['VALUE'], false);
         } elseif ($field['NAME'] == 'DETAIL_PICTURE') {
             $tag->addFile($field['VALUE'], false);
-        } elseif ($field['NAME'] == 'IBLOCK_SECTION' && $field['VALUE']) {
-            $tag->addValue(
-                $this->getSectionUniqNamesByIds($field['IBLOCK_ID'], $field['VALUE']),
-                true
-            );
+        } elseif ($field['NAME'] == 'IBLOCK_SECTION') {
+            $this->addFieldValueSection($tag, $field);
         } elseif ($field['NAME'] == 'IPROPERTY_TEMPLATES') {
             foreach ($field['VALUE'] as $ikey => $ivalue) {
                 $tag->addValueTag($ivalue, ['name' => $ikey]);
@@ -252,6 +204,18 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
             $tag->addValue($field['VALUE'], false);
         }
         return $tag;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    private function addFieldValueSection(WriterTag $tag, array $field): void
+    {
+        if (!empty($field['VALUE']) && !empty($field['IBLOCK_ID'])) {
+            foreach ($this->makeNonEmptyArray($field['VALUE']) as $sectionId) {
+                $this->addValueTagIblockSection($tag, $field['IBLOCK_ID'], $sectionId);
+            }
+        }
     }
 
     /**
@@ -319,10 +283,27 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     protected function addPropertyValueSection(WriterTag $tag, $prop): void
     {
-        if (!empty($prop['VALUE'])) {
-            $tag->addValue(
-                $this->getSectionUniqNamesByIds($prop['LINK_IBLOCK_ID'], $prop['VALUE']),
-                true
+        if (!empty($prop['VALUE']) && !empty($prop['LINK_IBLOCK_ID'])) {
+            foreach ($this->makeNonEmptyArray($prop['VALUE']) as $sectionId) {
+                $this->addValueTagIblockSection($tag, $prop['LINK_IBLOCK_ID'], $sectionId);
+            }
+        }
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function addValueTagIblockSection(WriterTag $tag, int $iblockId, int $sectionId): void
+    {
+        if (!empty($iblockId) && !empty($sectionId)) {
+            $item = $this->getSectionIfExists($iblockId, ['ID' => $sectionId]);
+
+            $tag->addValueTag(
+                $item['NAME'],
+                [
+                    'section_depth_level' => $item['DEPTH_LEVEL'],
+                    'section_code'        => $item['CODE'],
+                ]
             );
         }
     }
@@ -332,18 +313,18 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     protected function addPropertyValueElement(WriterTag $tag, $prop): void
     {
-        if (!empty($prop['VALUE'])) {
+        if (!empty($prop['VALUE']) && !empty($prop['LINK_IBLOCK_ID'])) {
             foreach ($this->makeNonEmptyArray($prop['VALUE']) as $elementId) {
-                $element = $this->getElementIfExists(
+                $item = $this->getElementIfExists(
                     $prop['LINK_IBLOCK_ID'],
                     ['ID' => $elementId]
                 );
 
                 $tag->addValueTag(
-                    $element['NAME'],
+                    $item['NAME'],
                     [
-                        'element_xml_id' => $element['XML_ID'],
-                        'element_code'   => $element['CODE'],
+                        'element_xml_id' => $item['XML_ID'],
+                        'element_code'   => $item['CODE'],
                     ]
                 );
             }
@@ -381,7 +362,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         $convertedFields = [];
         foreach ($record['fields'] as $field) {
             if ($field['name'] == 'IBLOCK_SECTION') {
-                $convertedFields[$field['name']] = $this->convertFieldIblockSection($iblockId, $field);
+                $convertedFields[$field['name']] = $this->convertFieldSection($iblockId, $field);
             } elseif ($field['name'] == 'IPROPERTY_TEMPLATES') {
                 $convertedFields[$field['name']] = $this->convertFieldIpropertyTemplates($field);
             } else {
@@ -424,14 +405,12 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    protected function convertFieldIblockSection(int $iblockId, array $field): array
+    protected function convertFieldSection(int $iblockId, array $field): array
     {
-        $value = [];
-        foreach ($field['value'] as $val) {
-            $value[] = $this->getSectionIdByUniqName($iblockId, $val['value']);
-        }
-
-        return $value;
+        return array_map(
+            fn($val) => $this->convertValueIblockSection($iblockId, $val),
+            $field['value']
+        );
     }
 
     protected function convertFieldIpropertyTemplates(array $field): array
@@ -491,11 +470,25 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
         $elementId = $this->getElementIdIfExists($iblockId, [
             'NAME'   => $val['value'],
-            'XML_ID' => $val['element_xml_id'],
             'CODE'   => $val['element_code'],
+            'XML_ID' => $val['element_xml_id'],
         ]);
 
         return ['VALUE' => $elementId];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function convertValueIblockSection(int $iblockId, array $val): int
+    {
+        $this->checkRequiredKeys($val, ['section_depth_level', 'section_code', 'value']);
+
+        return $this->getSectionIdIfExists($iblockId, [
+            'NAME'        => $val['value'],
+            'CODE'        => $val['section_code'],
+            'DEPTH_LEVEL' => $val['section_depth_level'],
+        ]);
     }
 
     /**
@@ -506,15 +499,15 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
         $linkIblockId = $this->getPropertyLinkIblockId($iblockId, $prop['name']);
 
-        $res = [];
         if ($linkIblockId) {
-            foreach ($prop['value'] as $val) {
-                $val['value'] = $this->getSectionIdByUniqName($linkIblockId, $val['value']);
-                $res[] = $this->makePropertyValue($val);
-            }
+            $res = array_map(
+                fn($val) => ['VALUE' => $this->convertValueIblockSection($iblockId, $val)],
+                $prop['value']
+            );
+            return ($isMultiple) ? $res : ($res[0] ?? false);
         }
 
-        return ($isMultiple) ? $res : $res[0];
+        return ($isMultiple) ? [] : false;
     }
 
     /**

@@ -33,12 +33,7 @@ trait IblockElementTrait
      */
     public function getElement(int $iblockId, array|string $code, array $select = []): bool|array
     {
-        /** @compatibility filter or code */
-        $filter = is_array($code)
-            ? $code
-            : [
-                '=CODE' => $code,
-            ];
+        $filter = is_array($code) ? $code : ['=CODE' => $code];
 
         $select = array_merge(
             [
@@ -67,7 +62,7 @@ trait IblockElementTrait
     {
         $element = $this->getElement($iblockId, $code, $select);
 
-        if ($element && $element['ID']) {
+        if (!empty($element['ID'])) {
             return $element;
         }
 
