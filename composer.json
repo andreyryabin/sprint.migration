@@ -2,7 +2,7 @@
   "name": "andreyryabin/sprint.migration",
   "description": "bitrix migration module",
   "homepage": "https://marketplace.1c-bitrix.ru/solutions/sprint.migration/",
-  "type": "bitrix-d7-module",
+  "type": "bitrix-module",
   "keywords": [
     "bitrix",
     "sprint",
@@ -24,10 +24,5 @@
     "ext-json": "*",
     "ext-xmlreader": "*",
     "ext-xmlwriter": "*"
-  },
-  "config": {
-    "allow-plugins": {
-      "composer/installers": true
-    }
   }
 }
