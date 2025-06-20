@@ -163,7 +163,7 @@ trait HlblockTrait
      * @throws HelperException
      * @return string
      */
-    public function getEntityId($hlblockName)
+    public function getEntityId($hlblockName): string
     {
         $hlblockId = is_numeric($hlblockName) ? $hlblockName : $this->getHlblockId($hlblockName);
         return 'HLBLOCK_' . $hlblockId;
@@ -175,9 +175,8 @@ trait HlblockTrait
      * @param $hlblockName - id, имя или фильтр
      *
      * @throws HelperException
-     * @return int|mixed
      */
-    public function getHlblockId($hlblockName)
+    public function getHlblockId($hlblockName): int
     {
         $item = $this->getHlblock($hlblockName);
         return ($item && isset($item['ID'])) ? $item['ID'] : 0;
@@ -350,7 +349,7 @@ trait HlblockTrait
      */
     public function getFieldEnumXmlIdsByIds($hlblockName, $fieldName, $valueIds): array
     {
-        $valueIds = is_array($valueIds) ? $valueIds : [$valueIds];
+        $valueIds = $this->makeNonEmptyArray($valueIds);
 
         $field = $this->getField($hlblockName, $fieldName);
         if (empty($field['ENUM_VALUES']) || !is_array($field['ENUM_VALUES'])) {

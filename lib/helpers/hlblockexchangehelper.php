@@ -80,12 +80,11 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
             $fieldType = $this->getFieldType($hlblockId, $field['name']);
 
             if ($fieldType == 'enumeration') {
-                $convertedFields[$field['name']] = $this->convertFieldEnumeration($hlblockId, $field);
+                $convertedFields[$field['name']] = $this->readFieldEnumeration($hlblockId, $field);
             } else {
-                $convertedFields[$field['name']] = $this->convertFieldValue($hlblockId, $field);
+                $convertedFields[$field['name']] = $this->readFieldValue($hlblockId, $field);
             }
         }
-
         return [
             'hlblock_id' => $hlblockId,
             'fields'     => $convertedFields,
@@ -95,7 +94,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     /**
      * @throws HelperException
      */
-    protected function convertFieldValue(int $hlblockId, array $field)
+    protected function readFieldValue(int $hlblockId, array $field)
     {
         if ($this->isFieldMultiple($hlblockId, $field['name'])) {
             $res = [];
@@ -111,18 +110,14 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     /**
      * @throws HelperException
      */
-    protected function convertFieldEnumeration(int $hlblockId, array $field)
+    protected function readFieldEnumeration(int $hlblockId, array $field)
     {
         if ($this->isFieldMultiple($hlblockId, $field['name'])) {
-            $res = [];
-            foreach ($field['value'] as $val) {
-                $res[] = $this->getFieldEnumIdByXmlId(
-                    $hlblockId,
-                    $field['name'],
-                    $val['value']
-                );
-            }
-            return $res;
+            return array_map(fn($val) => $this->getFieldEnumIdByXmlId(
+                $hlblockId,
+                $field['name'],
+                $val['value']
+            ), $field['value']);
         } else {
             return $this->getFieldEnumIdByXmlId(
                 $hlblockId,
@@ -177,7 +172,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         $tag = new WriterTag('tmp');
         foreach ($elements as $element) {
             $tag->addChild(
-                $this->createRecordTag(
+                $this->createWriterRecordTag(
                     $hlblockId,
                     $element,
                     $exportFields
@@ -191,14 +186,14 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     /**
      * @throws HelperException
      */
-    private function createRecordTag($hlblockId, array $element, array $exportFields): WriterTag
+    private function createWriterRecordTag($hlblockId, array $element, array $exportFields): WriterTag
     {
         $item = new WriterTag('item');
 
         foreach ($element as $code => $val) {
             if (in_array($code, $exportFields)) {
                 $item->addChild(
-                    $this->createFieldTag([
+                    $this->createWriterFieldTag([
                         'NAME'         => $code,
                         'VALUE'        => $val,
                         'HLBLOCK_ID'   => $hlblockId,
@@ -214,7 +209,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     /**
      * @throws HelperException
      */
-    private function createFieldTag(array $field): WriterTag
+    private function createWriterFieldTag(array $field): WriterTag
     {
         $tag = new WriterTag('field', ['name' => $field['NAME']]);
 
@@ -224,7 +219,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                 $field['NAME'],
                 $field['VALUE']
             );
-            $tag->addValue($xmlIds, $field['MULTIPLE']);
+            $tag->addValue($xmlIds, true);
         } elseif ($field['USER_TYPE_ID'] == 'file') {
             $tag->addFile($field['VALUE'], $field['MULTIPLE']);
         } else {
