@@ -28,7 +28,7 @@ trait IblockTrait
         throw new HelperException(
             Locale::getMessage(
                 'ERR_IB_NOT_FOUND',
-                ['#IBLOCK#' => is_array($code) ? var_export($code, true) : $code]
+                ['#IBLOCK#' => print_r($code, true)]
             )
         );
     }
@@ -49,31 +49,18 @@ trait IblockTrait
             return $item['ID'];
         }
 
-        if (is_array($code)) {
-            $iblockUid = var_export($code, true);
-        } elseif ($typeId) {
-            $iblockUid = $typeId . ':' . $code;
-        } else {
-            $iblockUid = $code;
-        }
-
         throw new HelperException(
             Locale::getMessage(
                 'ERR_IB_NOT_FOUND',
-                ['#IBLOCK#' => $iblockUid]
+                ['#IBLOCK#' => print_r([$code, $typeId], true)]
             )
         );
     }
 
     /**
-     * Получает инфоблок
-     *
-     * @param        $code int|string|array - id, код или фильтр
-     * @param string $typeId
-     *
-     * @return array|false
+     * Получает инфоблок по id, коду или фильтру
      */
-    public function getIblock($code, $typeId = '')
+    public function getIblock(array|int|string $code, string $typeId = ''): bool|array
     {
         if (is_array($code)) {
             $filter = $code;
@@ -90,7 +77,8 @@ trait IblockTrait
         $filter['CHECK_PERMISSIONS'] = 'N';
 
         $item = CIBlock::GetList(['SORT' => 'ASC'], $filter)->Fetch();
-        return $this->prepareIblock($item);
+
+        return $item ? $this->prepareIblock($item) : false;
     }
 
     /**
@@ -122,21 +110,17 @@ trait IblockTrait
 
     /**
      * Получает список инфоблоков
-     *
-     * @param array $filter
-     *
-     * @return array
      */
-    public function getIblocks($filter = [])
+    public function getIblocks(array $filter = []): array
     {
         $filter['CHECK_PERMISSIONS'] = 'N';
 
         $dbres = CIBlock::GetList(['SORT' => 'ASC'], $filter);
-        $list = [];
-        while ($item = $dbres->Fetch()) {
-            $list[] = $this->prepareIblock($item);
-        }
-        return $list;
+
+        return array_map(
+            fn($item) => $this->prepareIblock($item),
+            $this->fetchAll($dbres)
+        );
     }
 
     /**
@@ -516,16 +500,8 @@ trait IblockTrait
         return $iblockId;
     }
 
-    /**
-     * @param $item
-     *
-     * @return mixed
-     */
-    protected function prepareIblock($item)
+    protected function prepareIblock(array $item): array
     {
-        if (empty($item['ID'])) {
-            return $item;
-        }
         $item['LID'] = $this->getIblockSites($item['ID']);
 
         $messages = CIBlock::GetMessages($item['ID']);
@@ -547,10 +523,12 @@ trait IblockTrait
             return $iblock;
         }
 
-        unset($iblock['ID']);
-        unset($iblock['TIMESTAMP_X']);
-        unset($iblock['TMP_ID']);
-        unset($iblock['SERVER_NAME']);
+        $this->unsetKeys($iblock, [
+            'ID',
+            'TIMESTAMP_X',
+            'TMP_ID',
+            'SERVER_NAME',
+        ]);
 
         return $iblock;
     }

@@ -325,6 +325,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_EVENT_TYPE_NOT_ADDED"           => "Event type \"#NAME#\" not created",
         "ERR_EVENT_MESSAGE_NOT_ADDED"        => "Event message \"#NAME#\" not created",
         "ERR_HLBLOCK_NOT_FOUND"              => "Highload block \"#HLBLOCK#\" not found",
+        "ERR_HLBLOCK_ELEMENT_NOT_FOUND"        => "Element \"#ELEMENT_ID#\" in highload-block \"#HLBLOCK_ID#\" not found",
         "ERR_HLBLOCK_FIELD_NOT_FOUND"        => "Highload block field not found",
         "ERR_DEFAULT_LANGUAGE_NOT_FOUND"     => "Default language not found",
         "ERR_ACTIVE_LANGUAGES_NOT_FOUND"     => "Active languages not found",

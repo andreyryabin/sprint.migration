@@ -24,8 +24,8 @@ class AgentHelper extends Helper
      */
     public function exportAgents(array $filter = []): array
     {
-        return array_map(function ($agent) {
-            return $this->prepareExportAgent($agent);
+        return array_map(function ($item) {
+            return $this->prepareExportAgent($item);
         }, $this->getList($filter));
     }
 
@@ -33,18 +33,18 @@ class AgentHelper extends Helper
      * Получает агента
      * Данные подготовлены для экспорта в миграцию или схему
      */
-    public function exportAgent(string $moduleId, string $name)
+    public function exportAgent(string $moduleId, string $name): bool|array
     {
-        return $this->prepareExportAgent(
-            $this->getAgent($moduleId, $name)
-        );
+        $item = $this->getAgent($moduleId, $name);
+
+        return $item ? $this->prepareExportAgent($item) : false;
     }
 
-    public function exportAgentById(int $agentId)
+    public function exportAgentById(int $agentId): bool|array
     {
-        return $this->prepareExportAgent(
-            $this->getAgentById($agentId)
-        );
+        $item = $this->getAgentById($agentId);
+
+        return $item ? $this->prepareExportAgent($item) : false;
     }
 
     /**
@@ -210,19 +210,17 @@ class AgentHelper extends Helper
         );
     }
 
-    protected function prepareExportAgent($item)
+    protected function prepareExportAgent(array $item): array
     {
-        if (empty($item)) {
-            return $item;
-        }
-
-        unset($item['ID']);
-        unset($item['LOGIN']);
-        unset($item['USER_NAME']);
-        unset($item['LAST_NAME']);
-        unset($item['RUNNING']);
-        unset($item['DATE_CHECK']);
-        unset($item['LAST_EXEC']);
+        $this->unsetKeys($item, [
+            'ID',
+            'LOGIN',
+            'USER_NAME',
+            'LAST_NAME',
+            'RUNNING',
+            'DATE_CHECK',
+            'LAST_EXEC',
+        ]);
 
         return $item;
     }

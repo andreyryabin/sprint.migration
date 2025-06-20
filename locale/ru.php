@@ -326,6 +326,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_EVENT_TYPE_NOT_ADDED"           => "Тип почтового события \"#NAME#\" не добавлен",
         "ERR_EVENT_MESSAGE_NOT_ADDED"        => "Почтовый шаблон \"#NAME#\" не добавлен",
         "ERR_HLBLOCK_NOT_FOUND"              => "Highload-блок \"#HLBLOCK#\" не найден",
+        "ERR_HLBLOCK_ELEMENT_NOT_FOUND"      => "Элемент \"#ELEMENT_ID#\" в highload-блоке \"#HLBLOCK_ID#\" не найден",
         "ERR_HLBLOCK_FIELD_NOT_FOUND"        => "Поле для highload-блока не найдено",
         "ERR_DEFAULT_LANGUAGE_NOT_FOUND"     => "Основной яык не найден",
         "ERR_ACTIVE_LANGUAGES_NOT_FOUND"     => "Языки не найдены",

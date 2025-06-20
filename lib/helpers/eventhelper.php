@@ -99,14 +99,13 @@ class EventHelper extends Helper
 
         try {
             $result = SmsTemplateTable::getList([
-                'filter' => $filter
+                'filter' => $filter,
             ])->fetchAll();
 
             return array_map(
                 fn($item) => $this->prepareEventSmsTemplate($item),
                 $result
             );
-
         } catch (Exception $e) {
             throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
@@ -128,7 +127,7 @@ class EventHelper extends Helper
         if ($item) {
             return [
                 'EVENT_NAME' => $item['EVENT_NAME'],
-                'SUBJECT' => $item['SUBJECT'],
+                'SUBJECT'    => $item['SUBJECT'],
             ];
         }
         throw new HelperException("Event message with ID=\"$messageId\" not found");
@@ -165,6 +164,7 @@ class EventHelper extends Helper
 
     /**
      * Получает список сайтов для смс
+     *
      * @throws HelperException
      */
     public function getEventSmsTemplateSites(int $templateId): array
@@ -174,7 +174,6 @@ class EventHelper extends Helper
         } catch (Exception $e) {
             throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
-
     }
 
     /**
@@ -214,6 +213,7 @@ class EventHelper extends Helper
 
     /**
      * Добавляет тип почтового события если его не существует
+     *
      * @throws HelperException
      */
     public function addEventTypeIfNotExists(string $eventName, array $fields)
@@ -222,7 +222,7 @@ class EventHelper extends Helper
 
         $item = $this->getEventType([
             'EVENT_NAME' => $eventName,
-            'LID' => $fields['LID'],
+            'LID'        => $fields['LID'],
         ]);
 
         if ($item) {
@@ -234,6 +234,7 @@ class EventHelper extends Helper
 
     /**
      * Добавляет почтовый шаблон если его не существует
+     *
      * @throws HelperException
      */
     public function addEventMessageIfNotExists(string $eventName, array $fields): int
@@ -243,7 +244,7 @@ class EventHelper extends Helper
         $item = $this->getEventMessage(
             [
                 'EVENT_NAME' => $eventName,
-                'SUBJECT' => $fields['SUBJECT'],
+                'SUBJECT'    => $fields['SUBJECT'],
             ]
         );
 
@@ -256,6 +257,7 @@ class EventHelper extends Helper
 
     /**
      * Обновляет почтовые шаблоны по типу почтового события или фильтру
+     *
      * @throws HelperException
      */
     public function updateEventMessage(array|string $eventName, array $fields): bool
@@ -271,6 +273,7 @@ class EventHelper extends Helper
 
     /**
      * Обновляет почтовый шаблон по id
+     *
      * @throws HelperException
      */
     public function updateEventMessageById(int $id, array $fields): int
@@ -281,11 +284,13 @@ class EventHelper extends Helper
         //Код удаления взят из соседнего метода \CAllEventMessage::Add() (bitrix\modules\main\classes\general\event.php#310), который сам удаляет эти значения,
         //а в \CAllEventMessage::Update() Битрикс видимо забыл это перенести
 
-        unset($fields['EVENT_MESSAGE_TYPE_ID']);
-        unset($fields['EVENT_MESSAGE_TYPE_NAME']);
-        unset($fields['EVENT_MESSAGE_TYPE_EVENT_NAME']);
-        unset($fields['SITE_ID']);
-        unset($fields['EVENT_TYPE']);
+        $this->unsetKeys($fields, [
+            'EVENT_MESSAGE_TYPE_ID',
+            'EVENT_MESSAGE_TYPE_NAME',
+            'EVENT_MESSAGE_TYPE_EVENT_NAME',
+            'SITE_ID',
+            'EVENT_TYPE',
+        ]);
 
         if ($event->Update($id, $fields)) {
             $this->outNotice(Locale::getMessage('EVENT_MESSAGE_UPDATED', ['#NAME#' => $id]));
@@ -297,6 +302,7 @@ class EventHelper extends Helper
 
     /**
      * Обновляет тип почтового события по id
+     *
      * @throws HelperException
      */
     public function updateEventTypeById(int $id, array $fields): int
@@ -319,9 +325,9 @@ class EventHelper extends Helper
 
         $exists = $this->getEventSmsTemplate([
             'EVENT_NAME' => $eventName,
-            'SENDER' => $fields['SENDER'],
-            'RECEIVER' => $fields['RECEIVER'],
-            'MESSAGE' => $fields['MESSAGE'],
+            'SENDER'     => $fields['SENDER'],
+            'RECEIVER'   => $fields['RECEIVER'],
+            'MESSAGE'    => $fields['MESSAGE'],
         ]);
 
         if (empty($exists)) {
@@ -390,6 +396,7 @@ class EventHelper extends Helper
     /**
      * Сохраняет почтовый шаблон.
      * Создаст, если не было, обновит если существует и отличается
+     *
      * @throws HelperException
      */
     public function saveEventMessage(string $eventName, array $fields): int
@@ -399,7 +406,7 @@ class EventHelper extends Helper
         $exists = $this->getEventMessage(
             [
                 'EVENT_NAME' => $eventName,
-                'SUBJECT' => $fields['SUBJECT'],
+                'SUBJECT'    => $fields['SUBJECT'],
             ]
         );
 
@@ -430,7 +437,7 @@ class EventHelper extends Helper
 
         $exists = $this->getEventType([
             'EVENT_NAME' => $eventName,
-            'LID' => $fields['LID'],
+            'LID'        => $fields['LID'],
         ]);
 
         $fields = $this->prepareExportEventType($fields);
@@ -450,6 +457,7 @@ class EventHelper extends Helper
 
     /**
      * Удаляет тип почтового события
+     *
      * @throws HelperException
      */
     public function deleteEventType(array $fields): bool
@@ -458,7 +466,7 @@ class EventHelper extends Helper
 
         $exists = $this->getEventType([
             'EVENT_NAME' => $fields['EVENT_NAME'],
-            'LID' => $fields['LID'],
+            'LID'        => $fields['LID'],
         ]);
 
         if (empty($exists)) {
@@ -481,6 +489,7 @@ class EventHelper extends Helper
 
     /**
      * Удаляет почтовый шаблон
+     *
      * @throws HelperException
      */
     public function deleteEventMessage(array $fields): bool
@@ -490,7 +499,7 @@ class EventHelper extends Helper
         $exists = $this->getEventMessage(
             [
                 'EVENT_NAME' => $fields['EVENT_NAME'],
-                'SUBJECT' => $fields['SUBJECT'],
+                'SUBJECT'    => $fields['SUBJECT'],
             ]
         );
 
@@ -514,6 +523,7 @@ class EventHelper extends Helper
 
     /**
      * Добавляет тип почтового события
+     *
      * @throws HelperException
      */
     public function addEventType(string $eventName, array $fields): int
@@ -535,6 +545,7 @@ class EventHelper extends Helper
 
     /**
      * Добавляет почтовый шаблон
+     *
      * @throws HelperException
      */
     public function addEventMessage(string $eventName, array $fields): int
@@ -542,12 +553,12 @@ class EventHelper extends Helper
         $this->checkRequiredKeys($fields, ['LID', 'SUBJECT']);
 
         $default = [
-            'ACTIVE' => 'Y',
+            'ACTIVE'     => 'Y',
             'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
-            'EMAIL_TO' => '#EMAIL_TO#',
-            'BCC' => '',
-            'BODY_TYPE' => 'text',
-            'MESSAGE' => '',
+            'EMAIL_TO'   => '#EMAIL_TO#',
+            'BCC'        => '',
+            'BODY_TYPE'  => 'text',
+            'MESSAGE'    => '',
         ];
 
         $fields = array_merge($default, $fields);
@@ -584,30 +595,36 @@ class EventHelper extends Helper
 
     protected function prepareExportEventType(array $item): array
     {
-        unset($item['ID']);
-        unset($item['EVENT_NAME']);
+        $this->unsetKeys($item, [
+            'ID',
+            'EVENT_NAME',
+        ]);
 
         return $item;
     }
 
     protected function prepareExportEventMessage(array $item): array
     {
-        unset($item['ID']);
-        unset($item['SITE_ID']);
-        unset($item['TIMESTAMP_X']);
-        unset($item['MESSAGE_PHP']);
-        unset($item['EVENT_NAME']);
-        unset($item['EVENT_MESSAGE_TYPE_ID']);
-        unset($item['EVENT_MESSAGE_TYPE_NAME']);
-        unset($item['EVENT_MESSAGE_TYPE_EVENT_NAME']);
+        $this->unsetKeys($item, [
+            'ID',
+            'SITE_ID',
+            'TIMESTAMP_X',
+            'MESSAGE_PHP',
+            'EVENT_NAME',
+            'EVENT_MESSAGE_TYPE_ID',
+            'EVENT_MESSAGE_TYPE_NAME',
+            'EVENT_MESSAGE_TYPE_EVENT_NAME',
+        ]);
 
         return $item;
     }
 
     protected function prepareExportEventSmsTemplate(array $item): array
     {
-        unset($item['ID']);
-        unset($item['EVENT_NAME']);
+        $this->unsetKeys($item, [
+            'ID',
+            'EVENT_NAME',
+        ]);
         return $item;
     }
 }

@@ -315,13 +315,15 @@ trait IblockSectionTrait
                 $childs = $this->buildSectionsTree($sections, $section['ID'], $export);
 
                 if ($export) {
-                    unset($section['ID']);
-                    unset($section['IBLOCK_SECTION_ID']);
-                    unset($section['LEFT_MARGIN']);
-                    unset($section['RIGHT_MARGIN']);
-                    unset($section['DEPTH_LEVEL']);
-                    unset($section['PICTURE']);
-                    unset($section['DETAIL_PICTURE']);
+                    $this->unsetKeys($section, [
+                        'ID',
+                        'IBLOCK_SECTION_ID',
+                        'LEFT_MARGIN',
+                        'RIGHT_MARGIN',
+                        'DEPTH_LEVEL',
+                        'PICTURE',
+                        'DETAIL_PICTURE',
+                    ]);
                 }
 
                 if (!empty($childs)) {

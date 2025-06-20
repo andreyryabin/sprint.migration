@@ -179,28 +179,41 @@ class Helper
         }, $collection);
     }
 
-    protected function export(array $item, array $unsetDefault, array $unsetKeys): array
+    protected function unsetKeys(array &$item, array $unsetKeys): void
     {
         foreach ($unsetKeys as $key) {
             if (array_key_exists($key, $item)) {
                 unset($item[$key]);
             }
         }
+    }
 
+    /**
+     * Удаляет в $item совпадающие ключ=>значение из $defaultItem
+     */
+    protected function unsetItem(array &$item, array $defaultItem): void
+    {
         //value может быть null
         foreach ($item as $key => $value) {
-            if (array_key_exists($key, $unsetDefault) && $unsetDefault[$key] === $value) {
+            if (array_key_exists($key, $defaultItem) && $defaultItem[$key] === $value) {
                 unset($item[$key]);
             }
         }
+    }
+
+    protected function export(array $item, array $defaultItem, array $unsetKeys): array
+    {
+        $this->unsetKeys($item, $unsetKeys);
+
+        $this->unsetItem($item, $defaultItem);
 
         return $item;
     }
 
-    protected function exportCollection(array $collection, array $unsetDefault, array $unsetKeys): array
+    protected function exportCollection(array $collection, array $defaultItem, array $unsetKeys): array
     {
-        return array_map(function ($item) use ($unsetDefault, $unsetKeys) {
-            return $this->export($item, $unsetDefault, $unsetKeys);
+        return array_map(function ($item) use ($defaultItem, $unsetKeys) {
+            return $this->export($item, $defaultItem, $unsetKeys);
         }, $collection);
     }
 }

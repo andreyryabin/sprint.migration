@@ -7,17 +7,14 @@ use Bitrix\Main\Entity\DataManager;
 use Bitrix\Main\Entity\ExpressionField;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Locale;
 
 trait HlblockElementTrait
 {
     /**
-     * @param       $hlblockName
-     * @param array $params
-     *
      * @throws HelperException
-     * @return array|void
      */
-    public function getElements($hlblockName, $params = [])
+    public function getElements($hlblockName, array $params = []): array
     {
         $dataManager = $this->getDataManager($hlblockName);
         try {
@@ -28,30 +25,27 @@ trait HlblockElementTrait
     }
 
     /**
-     * @param $hlblockName
-     *
      * @throws HelperException
-     * @return DataManager|void
      */
-    public function getDataManager($hlblockName)
+    public function getDataManager($hlblockName): DataManager
     {
         try {
             $hlblock = $this->getHlblockIfExists($hlblockName);
+
             $entity = HighloadBlockTable::compileEntity($hlblock);
-            return $entity->getDataClass();
+
+            $dataManager = $entity->getDataClass();
+
+            return ($dataManager instanceof DataManager) ? $dataManager : (new $dataManager);
         } catch (Exception $e) {
             throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
     /**
-     * @param string $hlblockName
-     * @param string $xmlId
-     *
      * @throws HelperException
-     * @return array|void
      */
-    public function getElementByXmlId($hlblockName, $xmlId)
+    public function getElementByXmlId($hlblockName, $xmlId): bool|array
     {
         return $this->getElement($hlblockName, ['UF_XML_ID' => $xmlId]);
     }
@@ -59,7 +53,7 @@ trait HlblockElementTrait
     /**
      * @throws HelperException
      */
-    public function getElement($hlblockName, array $filter)
+    public function getElement($hlblockName, array $filter): array|false
     {
         $dataManager = $this->getDataManager($hlblockName);
         try {
@@ -71,6 +65,27 @@ trait HlblockElementTrait
         } catch (Exception $e) {
             throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getElementIfExists($hlblockName, array $filter): array
+    {
+        $element = $this->getElement($hlblockName, $filter);
+        if (!empty($element['ID'])) {
+            return $element;
+        }
+
+        throw new HelperException(
+            Locale::getMessage(
+                'ERR_ERR_HLBLOCK_ELEMENT_NOT_FOUND',
+                [
+                    '#HLBLOCK_ID#' => $hlblockName,
+                    '#ELEMENT_ID#' => print_r($filter, true),
+                ]
+            )
+        );
     }
 
     /**
@@ -130,14 +145,18 @@ trait HlblockElementTrait
     }
 
     /**
-     * @param $hlblockName
-     * @param $elementId
-     * @param $fields
-     *
      * @throws HelperException
-     * @return int|void
      */
-    public function updateElement($hlblockName, $elementId, $fields)
+    public function getElementIdIfExists($hlblockName, array $filter): int
+    {
+        $item = $this->getElementIfExists($hlblockName, $filter);
+        return (int)($item['ID'] ?? 0);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function updateElement($hlblockName, $elementId, $fields): int
     {
         $dataManager = $this->getDataManager($hlblockName);
 
@@ -155,13 +174,9 @@ trait HlblockElementTrait
     }
 
     /**
-     * @param $hlblockName
-     * @param $fields
-     *
      * @throws HelperException
-     * @return int|void
      */
-    public function addElement($hlblockName, $fields)
+    public function addElement($hlblockName, array $fields): int
     {
         $dataManager = $this->getDataManager($hlblockName);
 
@@ -178,7 +193,10 @@ trait HlblockElementTrait
         }
     }
 
-    public function deleteElementByXmlId($hlblockName, $xmlId)
+    /**
+     * @throws HelperException
+     */
+    public function deleteElementByXmlId($hlblockName, $xmlId): bool
     {
         if (!empty($xmlId)) {
             $id = $this->getElementIdByXmlId($hlblockName, $xmlId);
@@ -189,12 +207,18 @@ trait HlblockElementTrait
         return false;
     }
 
+    /**
+     * @throws HelperException
+     */
     public function getElementIdByXmlId($hlblockName, $xmlId): int
     {
         return $this->getElementId($hlblockName, ['UF_XML_ID' => $xmlId]);
     }
 
-    public function deleteElement($hlblockName, $elementId)
+    /**
+     * @throws HelperException
+     */
+    public function deleteElement($hlblockName, $elementId): bool
     {
         $dataManager = $this->getDataManager($hlblockName);
         try {

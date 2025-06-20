@@ -347,8 +347,10 @@ class UserGroupHelper extends Helper
             return $item;
         }
 
-        unset($item['ID']);
-        unset($item['TIMESTAMP_X']);
+        $this->unsetKeys($item, [
+            'ID',
+            'TIMESTAMP_X',
+        ]);
 
         return $item;
     }

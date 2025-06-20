@@ -16,6 +16,7 @@ trait IblockPropertyTrait
     /**
      * Сохраняет свойство инфоблока.
      * Создаст если не было, обновит если существует и отличается
+     *
      * @throws HelperException
      */
     public function saveProperty(int $iblockId, array $fields)
@@ -223,10 +224,12 @@ trait IblockPropertyTrait
             $prop['LINK_IBLOCK_ID'] = $this->getIblockUid($prop['LINK_IBLOCK_ID']);
         }
 
-        unset($prop['ID']);
-        unset($prop['IBLOCK_ID']);
-        unset($prop['TIMESTAMP_X']);
-        unset($prop['TMP_ID']);
+        $this->unsetKeys($prop, [
+            'ID',
+            'IBLOCK_ID',
+            'TIMESTAMP_X',
+            'TMP_ID',
+        ]);
 
         return $prop;
     }
@@ -237,8 +240,8 @@ trait IblockPropertyTrait
      * @param $iblockId
      * @param $fields
      *
-     * @return int|void
      * @throws HelperException
+     * @return int|void
      */
     public function addProperty($iblockId, $fields)
     {
@@ -292,6 +295,7 @@ trait IblockPropertyTrait
 
     /**
      * Обновляет свойство инфоблока
+     *
      * @throws HelperException
      */
     public function updatePropertyById(int $propertyId, array $fields): int
@@ -383,11 +387,11 @@ trait IblockPropertyTrait
     /**
      * Добавляет свойство инфоблока если его не существует
      *
-     * @param int $iblockId
+     * @param int   $iblockId
      * @param array $fields
      *
-     * @return bool
      * @throws HelperException
+     * @return bool
      */
     public function addPropertyIfNotExists($iblockId, $fields)
     {
@@ -408,8 +412,8 @@ trait IblockPropertyTrait
      * @param      $iblockId
      * @param bool $code
      *
-     * @return array|void
      * @throws HelperException
+     * @return array|void
      */
     public function exportProperty($iblockId, $code = false)
     {
@@ -480,6 +484,7 @@ trait IblockPropertyTrait
 
     /**
      * Удаляет свойство инфоблока если оно существует
+     *
      * @throws HelperException
      */
     public function deletePropertyIfExists(int $iblockId, array|string $code): bool
@@ -490,6 +495,7 @@ trait IblockPropertyTrait
 
     /**
      * Удаляет свойство инфоблока
+     *
      * @throws HelperException
      */
     public function deletePropertyById(int $propertyId): bool
@@ -504,6 +510,7 @@ trait IblockPropertyTrait
 
     /**
      * Обновляет свойство инфоблока если оно существует
+     *
      * @throws HelperException
      */
     public function updatePropertyIfExists(int $iblockId, array|string $code, array $fields): int
