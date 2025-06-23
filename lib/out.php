@@ -6,37 +6,36 @@ use Throwable;
 
 class Out
 {
-    protected static $colors = [
-        '/' => ["\x1b[0m", '</span>'],
-        'tab' => ["\x1b[0m", '<span class="sp-indent-20">'],
-        'unknown' => ["\x1b[0;34m", '<span class="sp-blue"">'],
-        'installed' => ["\x1b[0;32m", '<span class="sp-green">'],
-        'new' => ["\x1b[0;31m", '<span class="sp-red">'],
-        'blue' => ["\x1b[0;34m", '<span class="sp-blue">'],
-        'pink' => ["\x1b[0;35m", '<span class="sp-pink">'],
-        'green' => ["\x1b[0;32m", '<span class="sp-green">'],
-        'up' => ["\x1b[0;32m", '<span class="sp-green">'],
-        'red' => ["\x1b[0;31m", '<span class="sp-red">'],
-        'down' => ["\x1b[0;31m", '<span class="sp-red">'],
-        'yellow' => ["\x1b[0;93m", '<span class="sp-yellow">'],
-        'label' => ["\x1b[47;30m", '<span class="sp-label">'],
-        'label:blue' => ["\x1b[104;30m", '<span class="sp-label sp-label-blue">'],
-        'label:pink' => ["\x1b[105;30m", '<span class="sp-label sp-label-pink">'],
-        'label:red' => ["\x1b[41;37m", '<span class="sp-label sp-label-red">'],
-        'label:green' => ["\x1b[102;30m", '<span class="sp-label sp-label-green">'],
+    protected static $colors  = [
+        '/'            => ["\x1b[0m", '</span>'],
+        'tab'          => ["\x1b[0m", '<span class="sp-indent-20">'],
+        'unknown'      => ["\x1b[0;34m", '<span class="sp-blue"">'],
+        'installed'    => ["\x1b[0;32m", '<span class="sp-green">'],
+        'new'          => ["\x1b[0;31m", '<span class="sp-red">'],
+        'blue'         => ["\x1b[0;34m", '<span class="sp-blue">'],
+        'pink'         => ["\x1b[0;35m", '<span class="sp-pink">'],
+        'green'        => ["\x1b[0;32m", '<span class="sp-green">'],
+        'up'           => ["\x1b[0;32m", '<span class="sp-green">'],
+        'red'          => ["\x1b[0;31m", '<span class="sp-red">'],
+        'down'         => ["\x1b[0;31m", '<span class="sp-red">'],
+        'yellow'       => ["\x1b[0;93m", '<span class="sp-yellow">'],
+        'label'        => ["\x1b[47;30m", '<span class="sp-label">'],
+        'label:blue'   => ["\x1b[104;30m", '<span class="sp-label sp-label-blue">'],
+        'label:pink'   => ["\x1b[105;30m", '<span class="sp-label sp-label-pink">'],
+        'label:red'    => ["\x1b[41;37m", '<span class="sp-label sp-label-red">'],
+        'label:green'  => ["\x1b[102;30m", '<span class="sp-label sp-label-green">'],
         'label:yellow' => ["\x1b[103;30m", '<span class="sp-label sp-label-yellow">'],
-        'b' => ["\x1b[1m", '<span class="sp-bold">'],
+        'b'            => ["\x1b[1m", '<span class="sp-bold">'],
     ];
     protected static $needEol = false;
 
     public static function outProgress(string $msg, int $val, int $total): void
     {
         self::$needEol = true;
-
         $msg = '[label]' . $msg . ' ' . $val . ' / ' . $total . '[/]';
-
         if (self::canOutAsHtml()) {
-            self::outToHtml($msg, ['class' => 'sp-out sp-progress']);
+            $msg = self::prepareToHtml($msg);
+            echo '<div class="sp-progress">' . $msg . '</div>';
         } else {
             $msg = self::prepareToConsole($msg);
             fwrite(STDOUT, "\r$msg");

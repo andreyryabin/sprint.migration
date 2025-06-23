@@ -56,8 +56,8 @@ $getOnclickMenu = function () {
                 <div id="migration_loading"><?= Locale::getMessage('LOADING_TEXT') ?></div>
             </div>
             <div class="sp-col">
-                <div id="migration_actions"></div>
                 <div id="migration_progress"></div>
+                <div id="migration_actions"></div>
             </div>
         </div>
     </div>

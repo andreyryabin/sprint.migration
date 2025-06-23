@@ -71,13 +71,11 @@ function migrationMigrationDelete(version) {
 }
 
 function migrationOutLog(result) {
-    var $el = jQuery('#migration_log');
-    var $pg = jQuery('#migration_progress');
-    var $res = jQuery('<div>'+result+'</div>');
+    let $res = jQuery('<div>' + result + '</div>');
+    let $el = jQuery('#migration_log');
+    let $pg = jQuery('#migration_progress');
 
-    $res.children('.sp-progress').each(function(){
-        $pg.html(jQuery(this));
-    });
+    $pg.html($res.children('.sp-progress'));
 
     $el.append($res.children());
 
@@ -126,7 +124,6 @@ function migrationEnableButtons(enable) {
 
 function migrationListRefresh(callbackAfterRefresh) {
     jQuery('#migration_actions').empty();
-    jQuery('#migration_progress').empty();
     migrationExecuteStep(
         jQuery('#migration_view').val(),
         {},

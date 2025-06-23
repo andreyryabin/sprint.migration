@@ -258,8 +258,17 @@ trait IblockSectionTrait
 
     /**
      * @throws HelperException
+     * @deprecated use saveSectionsFromTree
      */
     public function addSectionsFromTree(int $iblockId, array $tree, $parentId = false): void
+    {
+        $this->saveSectionsFromTree($iblockId, $tree, $parentId);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function saveSectionsFromTree(int $iblockId, array $tree, $parentId = false): void
     {
         foreach ($tree as $item) {
             if (empty($item['NAME'])) {
@@ -285,12 +294,14 @@ trait IblockSectionTrait
                 ]
             );
 
-            if (empty($sectionId)) {
+            if ($sectionId) {
+                $sectionId = $this->updateSection($sectionId, $item);
+            } else {
                 $sectionId = $this->addSection($iblockId, $item);
             }
 
             if (!empty($childs)) {
-                $this->addSectionsFromTree($iblockId, $childs, $sectionId);
+                $this->saveSectionsFromTree($iblockId, $childs, $sectionId);
             }
         }
     }
@@ -321,8 +332,6 @@ trait IblockSectionTrait
                         'LEFT_MARGIN',
                         'RIGHT_MARGIN',
                         'DEPTH_LEVEL',
-                        'PICTURE',
-                        'DETAIL_PICTURE',
                     ]);
                 }
 

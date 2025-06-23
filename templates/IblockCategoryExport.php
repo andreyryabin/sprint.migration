@@ -39,7 +39,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
             '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>'
         );
 
-        $helper->Iblock()->addSectionsFromTree(
+        $helper->Iblock()->saveSectionsFromTree(
             $iblockId,
             <?php echo var_export($sectionTree, 1) ?>
         );

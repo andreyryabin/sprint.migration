@@ -118,11 +118,11 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid()) {
             ?>
             <script>
                 (function () {
-                    let $btn = $('<input type="button" value="<?= Locale::getMessage('RESTART_AGAIN') ?>">');
+                    let $btn = jQuery('<input type="button" value="<?= Locale::getMessage('RESTART_AGAIN') ?>">');
                     $btn.bind('click', function () {
                         migrationExecuteStep('migration_execute', <?=$json?>);
                     })
-                    $('#migration_actions').empty().append($btn);
+                    jQuery('#migration_actions').html($btn);
                 })();
 
                 migrationEnableButtons(1);
