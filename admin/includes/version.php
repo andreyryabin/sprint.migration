@@ -25,8 +25,7 @@ $getOnclickMenu = function () use ($versionConfig) {
         <div class="sp-row2">
             <div class="sp-col sp-col-scroll sp-white">
                 <div class="sp-search">
-                    <input id="migration_search" placeholder="<?= Locale::getMessage('SEARCH') ?>" type="text" value=""
-                           class="adm-input"/>
+                    <input id="migration_search" placeholder="<?= Locale::getMessage('SEARCH') ?>" type="text" value="" class="adm-input"/>
                     <select id="migration_view">
                         <option value="migration_view_actual"><?= Locale::getMessage('TOGGLE_ACTUAL') ?></option>
                         <option value="migration_view_all"><?= Locale::getMessage('TOGGLE_LIST') ?></option>
@@ -43,7 +42,7 @@ $getOnclickMenu = function () use ($versionConfig) {
                 </div>
                 <div id="migration_migrations"></div>
             </div>
-            <div class="sp-col sp-col-scroll" id="migration_progress"></div>
+            <div class="sp-col sp-col-scroll" id="migration_log"></div>
         </div>
     </div>
     <?php if ($versionConfig->getCurrent()->getVal('show_admin_updown')) { ?>
@@ -59,7 +58,10 @@ $getOnclickMenu = function () use ($versionConfig) {
                        class="adm-btn"
                        hidefocus="true">&equiv;</a>
                 </div>
-                <div class="sp-col" id="migration_actions"></div>
+                <div class="sp-col">
+                    <div id="migration_progress"></div>
+                    <div id="migration_actions"></div>
+                </div>
             </div>
         </div>
     <?php } ?>

@@ -128,7 +128,7 @@ class Reader
     {
         $val = $this->getTagAttributes($reader);
         $reader->read();
-        $text = htmlspecialchars_decode($reader->value);
+        $text = $reader->value;
 
         if (isset($val['type']) && $val['type'] == 'json') {
             $val['value'] = $this->decodeJson($text);
@@ -137,7 +137,7 @@ class Reader
         } elseif (isset($val['name']) && $this->isFile($text)) {
             $val['value'] = $this->makeFileValue($text, $val);
         } else {
-            $val['value'] = $text;
+            $val['value'] = htmlspecialchars_decode($text);
         }
 
         return $val;
@@ -176,7 +176,7 @@ class Reader
         $attrs = [];
         if ($reader->hasAttributes) {
             while ($reader->moveToNextAttribute()) {
-                $attrs[$reader->name] = $reader->value;
+                $attrs[$reader->name] = htmlspecialchars_decode($reader->value);
             }
         }
         return $attrs;

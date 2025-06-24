@@ -36,18 +36,15 @@ class OptionHelper extends Helper
     }
 
     /**
-     * @param array $filter
-     *
      * @throws HelperException
-     * @return array
      */
-    public function getOptions($filter = [])
+    public function getOptions(array $filter = []): array
     {
         $this->checkRequiredKeys($filter, ['MODULE_ID']);
 
         try {
             $values = Option::getForModule($filter['MODULE_ID']);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $values = [];
         }
 
@@ -64,12 +61,9 @@ class OptionHelper extends Helper
     }
 
     /**
-     * @param array $filter
-     *
      * @throws HelperException
-     * @return array
      */
-    public function getOption($filter = [])
+    public function getOption(array $filter = []): array
     {
         $this->checkRequiredKeys($filter, ['MODULE_ID', 'NAME']);
 
@@ -86,12 +80,9 @@ class OptionHelper extends Helper
     }
 
     /**
-     * @param $fields
-     *
      * @throws HelperException
-     * @return bool
      */
-    public function saveOption($fields)
+    public function saveOption(array $fields): bool
     {
         $this->checkRequiredKeys($fields, ['MODULE_ID', 'NAME']);
 
@@ -133,12 +124,9 @@ class OptionHelper extends Helper
     }
 
     /**
-     * @param array $filter
-     *
      * @throws HelperException
-     * @return bool
      */
-    public function deleteOptions($filter = [])
+    public function deleteOptions(array $filter = []): bool
     {
         $this->checkRequiredKeys($filter, ['MODULE_ID']);
 
@@ -151,34 +139,24 @@ class OptionHelper extends Helper
         try {
             Option::delete($filter['MODULE_ID'], $params);
             return true;
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
 
         return false;
     }
 
-    /**
-     * @param $fields
-     *
-     * @return bool
-     */
-    protected function setOption($fields)
+    protected function setOption(array $fields): bool
     {
         $fields = $this->revertOption($fields);
         try {
             Option::set($fields['MODULE_ID'], $fields['NAME'], $fields['VALUE']);
             return true;
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
         return false;
     }
 
-    /**
-     * @param $item
-     *
-     * @return array
-     */
-    protected function prepareOption($item)
+    protected function prepareOption(array $item): array
     {
         if (!empty($item['VALUE']) && !is_numeric($item['VALUE'])) {
             if ($this->isSerialize($item['VALUE'])) {
@@ -191,7 +169,7 @@ class OptionHelper extends Helper
         return $item;
     }
 
-    protected function revertOption($item)
+    protected function revertOption(array $item): array
     {
         $type = '';
         if (isset($item['TYPE'])) {
@@ -210,12 +188,12 @@ class OptionHelper extends Helper
         return $item;
     }
 
-    protected function isSerialize($string)
+    protected function isSerialize($string): bool
     {
         return (unserialize($string) !== false || $string == 'b:0;');
     }
 
-    protected function isJson($string)
+    protected function isJson($string): bool
     {
         json_decode($string);
         return (json_last_error() == JSON_ERROR_NONE);

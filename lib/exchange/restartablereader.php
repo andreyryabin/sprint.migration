@@ -11,18 +11,17 @@ use Sprint\Migration\Out;
 
 class RestartableReader
 {
-    private int $limit = 10;
-    private string $file = '';
-    private array $attributes = [];
-    private int $totalCount = 0;
+    private int     $limit      = 10;
+    private string  $file       = '';
+    private array   $attributes = [];
+    private int     $totalCount = 0;
     private ?Reader $reader;
 
     public function __construct(
-        private readonly RestartableInterface  $restartable,
+        private readonly RestartableInterface $restartable,
         private readonly ReaderHelperInterface $helper,
-        private readonly string                $directory,
-    )
-    {
+        private readonly string $directory,
+    ) {
     }
 
     public function setExchangeResource(string $exchangeResource): RestartableReader
@@ -66,14 +65,13 @@ class RestartableReader
 
         array_map($userfunc, $records);
 
+        //вынести прогресс в отдельный настраиваемый метод
+        Out::outProgress('Progress: ', $offset + 1, $this->totalCount);
+
         $readCount = count($records);
 
         $offset += $readCount;
 
-        Out::outProgress('Progress: ', $offset, $this->totalCount);
-
         return ($readCount >= $this->limit) ? $offset : 0;
     }
-
-
 }

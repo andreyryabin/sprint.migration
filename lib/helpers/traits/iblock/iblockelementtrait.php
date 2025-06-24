@@ -20,16 +20,20 @@ trait IblockElementTrait
     }
 
     /**
+     * @throws HelperException
+     */
+    public function getElementIdIfExists(int $iblockId, array|string $code): int
+    {
+        $item = $this->getElementIfExists($iblockId, $code);
+        return (int)($item['ID'] ?? 0);
+    }
+
+    /**
      * Получает элемент инфоблока
      */
     public function getElement(int $iblockId, array|string $code, array $select = []): bool|array
     {
-        /** @compatibility filter or code */
-        $filter = is_array($code)
-            ? $code
-            : [
-                '=CODE' => $code,
-            ];
+        $filter = is_array($code) ? $code : ['=CODE' => $code];
 
         $select = array_merge(
             [
@@ -45,21 +49,32 @@ trait IblockElementTrait
         $item = $this->getElementsList($iblockId, [
             'filter' => $filter,
             'select' => $select,
-            'limit' => 1,
+            'limit'  => 1,
         ])->Fetch();
 
         return $item ? $this->prepareElement($item) : false;
     }
 
     /**
+     * @throws HelperException
      */
-    protected function prepareElement(array $item): array
+    public function getElementIfExists(int $iblockId, array|string $code, array $select = []): bool|array
     {
-        $item['IBLOCK_SECTION'] = $this->getElementSectionIds($item['ID']);
+        $element = $this->getElement($iblockId, $code, $select);
 
-        $item['IPROPERTY_TEMPLATES'] = $this->getElementIpropertyTemplates($item['IBLOCK_ID'], $item['ID']);
+        if (!empty($element['ID'])) {
+            return $element;
+        }
 
-        return $item;
+        throw new HelperException(
+            Locale::getMessage(
+                'ERR_IB_ELEMENT_ID_NOT_FOUND',
+                [
+                    '#IBLOCK_ID#'  => $iblockId,
+                    '#ELEMENT_ID#' => print_r($code, true),
+                ]
+            )
+        );
     }
 
     public function getElementSectionIds(int $elementId): array
@@ -104,11 +119,10 @@ trait IblockElementTrait
             ]
         );
 
-        $list = [];
-        while ($item = $dbres->Fetch()) {
-            $list[] = $this->prepareElement($item);
-        }
-        return $list;
+        return array_map(
+            fn($item) => $this->prepareElement($item),
+            $this->fetchAll($dbres)
+        );
     }
 
     public function getElementsList(int $iblockId, array $params = []): CIBlockResult
@@ -116,17 +130,17 @@ trait IblockElementTrait
         $params = array_merge(
             [
                 'offset' => 0,
-                'limit' => 0,
+                'limit'  => 0,
                 'filter' => [],
                 'select' => [],
-                'order' => ['ID' => 'ASC'],
+                'order'  => ['ID' => 'ASC'],
             ], $params
         );
 
         $params['filter'] = array_merge(
             $params['filter'],
             [
-                'IBLOCK_ID' => $iblockId,
+                'IBLOCK_ID'         => $iblockId,
                 'CHECK_PERMISSIONS' => 'N',
             ]
         );
@@ -136,8 +150,8 @@ trait IblockElementTrait
             if ($params['offset'] > 0) {
                 $pageNum = (int)floor($params['offset'] / $params['limit']) + 1;
                 $navParams = [
-                    'nPageSize' => $params['limit'],
-                    'iNumPage' => $pageNum,
+                    'nPageSize'       => $params['limit'],
+                    'iNumPage'        => $pageNum,
                     'checkOutOfRange' => true,
                 ];
             } else {
@@ -180,17 +194,41 @@ trait IblockElementTrait
     }
 
     /**
-     * Сохраняет элемент инфоблока.
-     * Создаст элемент если не было, обновит если существует (поиск по коду)
      * @throws HelperException
      */
     public function saveElement(int $iblockId, array $fields = [], array $props = []): int
     {
+        return $this->saveElementByCode($iblockId, $fields, $props);
+    }
+
+    /**
+     * Сохраняет элемент инфоблока.
+     * Создаст элемент если не было, обновит если существует (поиск по коду)
+     *
+     * @throws HelperException
+     */
+    public function saveElementByCode(int $iblockId, array $fields = [], array $props = []): int
+    {
         $this->checkRequiredKeys($fields, ['CODE']);
 
-        $item = $this->getElement($iblockId, $fields['CODE']);
-        if (!empty($item['ID'])) {
-            return $this->updateElement($item['ID'], $fields, $props);
+        $elementId = $this->getElementId($iblockId, $fields['CODE']);
+        if ($elementId) {
+            return $this->updateElement($elementId, $fields, $props);
+        }
+
+        return $this->addElement($iblockId, $fields, $props);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function saveElementByXmlId(int $iblockId, array $fields = [], array $props = []): int
+    {
+        $this->checkRequiredKeys($fields, ['XML_ID']);
+
+        $elementId = $this->getElementId($iblockId, ['=XML_ID' => $fields['XML_ID']]);
+        if ($elementId) {
+            return $this->updateElement($elementId, $fields, $props);
         }
 
         return $this->addElement($iblockId, $fields, $props);
@@ -198,6 +236,7 @@ trait IblockElementTrait
 
     /**
      * Обновляет элемент инфоблока
+     *
      * @throws HelperException
      */
     public function updateElement(int $elementId, array $fields = [], array $props = []): int
@@ -221,16 +260,17 @@ trait IblockElementTrait
 
     /**
      * Добавляет элемент инфоблока
+     *
      * @throws HelperException
      */
     public function addElement(int $iblockId, array $fields = [], array $props = []): int
     {
         $default = [
-            'NAME' => 'element',
+            'NAME'              => 'element',
             'IBLOCK_SECTION_ID' => false,
-            'ACTIVE' => 'Y',
-            'PREVIEW_TEXT' => '',
-            'DETAIL_TEXT' => '',
+            'ACTIVE'            => 'Y',
+            'PREVIEW_TEXT'      => '',
+            'DETAIL_TEXT'       => '',
         ];
 
         $fields = array_replace_recursive($default, $fields);
@@ -251,22 +291,8 @@ trait IblockElementTrait
     }
 
     /**
-     * @throws HelperException
-     */
-    public function saveElementByXmlId(int $iblockId, array $fields = [], array $props = []): int
-    {
-        $this->checkRequiredKeys($fields, ['XML_ID']);
-
-        $elementId = $this->getElementId($iblockId, ['=XML_ID' => $fields['XML_ID']]);
-        if ($elementId) {
-            return $this->updateElement($elementId, $fields, $props);
-        }
-
-        return $this->addElement($iblockId, $fields, $props);
-    }
-
-    /**
      * Добавляет элемент инфоблока если он не существует
+     *
      * @throws HelperException
      */
     public function addElementIfNotExists(int $iblockId, array $fields, array $props = []): int
@@ -314,6 +340,7 @@ trait IblockElementTrait
 
     /**
      * Удаляет элемент инфоблока
+     *
      * @throws HelperException
      */
     public function deleteElement(int $elementId): bool
@@ -328,6 +355,7 @@ trait IblockElementTrait
 
     /**
      * Удаляет элемент инфоблока если он существует
+     *
      * @throws HelperException
      */
     public function deleteElementIfExists(int $iblockId, string $code): bool
@@ -349,75 +377,12 @@ trait IblockElementTrait
         return false;
     }
 
-    /**
-     * @throws HelperException
-     */
-    public function getElementUniqFilterById(int $iblockId, int $elementId): array
+    protected function prepareElement(array $item): array
     {
-        if (empty($elementId)) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_IB_ELEMENT_ID_EMPTY',
-                    [
-                        '#IBLOCK_ID#' => $iblockId,
-                    ]
-                )
-            );
-        }
+        $item['IBLOCK_SECTION'] = $this->getElementSectionIds($item['ID']);
 
-        $element = $this->getElement($iblockId, ['ID' => $elementId]);
+        $item['IPROPERTY_TEMPLATES'] = $this->getElementIpropertyTemplates($item['IBLOCK_ID'], $item['ID']);
 
-        if (empty($element['ID'])) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_IB_ELEMENT_ID_NOT_FOUND',
-                    [
-                        '#IBLOCK_ID#' => $iblockId,
-                        '#ELEMENT_ID#' => $elementId,
-                    ]
-                )
-            );
-        }
-
-        return [
-            'NAME' => $element['NAME'],
-            'XML_ID' => $element['XML_ID'],
-            'CODE' => $element['CODE'],
-        ];
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getElementIdByUniqFilter(int $iblockId, array $uniqFilter): int
-    {
-        if (empty($uniqFilter)) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_IB_ELEMENT_ID_EMPTY',
-                    [
-                        '#IBLOCK_ID#' => $iblockId,
-                    ]
-                )
-            );
-        }
-
-        $uniqFilter['IBLOCK_ID'] = $iblockId;
-
-        $elementId = $this->getElementId($iblockId, $uniqFilter);
-
-        if (empty($elementId)) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_IB_ELEMENT_BY_FILTER_NOT_FOUND',
-                    [
-                        '#IBLOCK_ID#' => $iblockId,
-                        '#NAME#' => $uniqFilter['NAME'],
-                    ]
-                )
-            );
-        }
-
-        return $elementId;
+        return $item;
     }
 }

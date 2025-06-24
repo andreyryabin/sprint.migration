@@ -91,18 +91,46 @@ class Helper
      */
     protected function checkRequiredKeys(array $fields, array $reqKeys = []): void
     {
+        if (empty($reqKeys)) {
+            throw new HelperException(
+                Locale::getMessage(
+                    'ERR_EMPTY_REQ_FIELDS'
+                )
+            );
+        }
+
         foreach ($reqKeys as $name) {
             if (empty($fields[$name])) {
                 throw new HelperException(
                     Locale::getMessage(
                         'ERR_EMPTY_REQ_FIELD',
-                        [
-                            '#NAME#' => $name,
-                        ]
+                        ['#NAME#' => $name]
                     )
                 );
             }
         }
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function makeEqualFilter(array $fields, array $equalKeys = []): array
+    {
+        $this->checkRequiredKeys($fields, $equalKeys);
+
+        $filter = [];
+        foreach ($equalKeys as $key) {
+            $filter['=' . $key] = $fields[$key];
+        }
+
+        return $filter;
+    }
+
+    protected function makeNonEmptyArray(string|int|array $ids): array
+    {
+        $ids = is_array($ids) ? $ids : [$ids];
+        $ids = array_filter($ids);
+        return array_values($ids);
     }
 
     protected function fetchAll(CDBResult $dbres, string $indexKey = '', string $valueKey = ''): array
@@ -151,28 +179,41 @@ class Helper
         }, $collection);
     }
 
-    protected function export(array $item, array $unsetDefault, array $unsetKeys): array
+    protected function unsetKeys(array &$item, array $unsetKeys): void
     {
         foreach ($unsetKeys as $key) {
             if (array_key_exists($key, $item)) {
                 unset($item[$key]);
             }
         }
+    }
 
+    /**
+     * Удаляет в $item совпадающие ключ=>значение из $defaultItem
+     */
+    protected function unsetItem(array &$item, array $defaultItem): void
+    {
         //value может быть null
         foreach ($item as $key => $value) {
-            if (array_key_exists($key, $unsetDefault) && $unsetDefault[$key] === $value) {
+            if (array_key_exists($key, $defaultItem) && $defaultItem[$key] === $value) {
                 unset($item[$key]);
             }
         }
+    }
+
+    protected function export(array $item, array $defaultItem, array $unsetKeys): array
+    {
+        $this->unsetKeys($item, $unsetKeys);
+
+        $this->unsetItem($item, $defaultItem);
 
         return $item;
     }
 
-    protected function exportCollection(array $collection, array $unsetDefault, array $unsetKeys): array
+    protected function exportCollection(array $collection, array $defaultItem, array $unsetKeys): array
     {
-        return array_map(function ($item) use ($unsetDefault, $unsetKeys) {
-            return $this->export($item, $unsetDefault, $unsetKeys);
+        return array_map(function ($item) use ($defaultItem, $unsetKeys) {
+            return $this->export($item, $defaultItem, $unsetKeys);
         }, $collection);
     }
 }

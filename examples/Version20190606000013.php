@@ -16,7 +16,7 @@ class Version20190606000013 extends Version
 
         $iblockId = $helper->Iblock()->getIblockIdIfExists('content_news');
 
-        $helper->Iblock()->addSectionsFromTree($iblockId, [
+        $helper->Iblock()->saveSectionsFromTree($iblockId, [
             [
                 'NAME' => 'Корневая категория 1',
             ],

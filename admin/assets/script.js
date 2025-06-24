@@ -71,14 +71,15 @@ function migrationMigrationDelete(version) {
 }
 
 function migrationOutLog(result) {
-    var $el = jQuery('#migration_progress');
-    var lastOutElem = $el.children('div').last();
-    if (lastOutElem.hasClass('sp-progress') && jQuery(result).first().hasClass('sp-progress')) {
-        lastOutElem.replaceWith(result);
-    } else {
-        $el.append(result);
-        $el.scrollTop($el.prop("scrollHeight"));
-    }
+    let $res = jQuery('<div>' + result + '</div>');
+    let $el = jQuery('#migration_log');
+    let $pg = jQuery('#migration_progress');
+
+    $pg.html($res.children('.sp-progress'));
+
+    $el.append($res.children());
+
+    $el.scrollTop($el.prop("scrollHeight"));
 }
 
 function migrationExecuteStep(step_code, postData, succesCallback) {
@@ -141,10 +142,12 @@ function migrationBuilder(postData) {
         migrationBuilderRender(result)
     });
 }
-function migrationBuilderRestart(){
+
+function migrationBuilderRestart() {
     let postData = jQuery('#migration_builder form').serializeFormJSON();
     migrationBuilder(postData);
 }
+
 function migrationReset(postData) {
     migrationExecuteStep('migration_reset', postData, function (result) {
         migrationBuilderRender(result, {})

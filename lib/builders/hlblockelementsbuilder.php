@@ -13,8 +13,9 @@ use Sprint\Migration\VersionBuilder;
 
 class HlblockElementsBuilder extends VersionBuilder
 {
-    const UPDATE_MODE_NOT = 'not';
-    const UPDATE_MODE_XML_ID = 'xml_id';
+    const UPDATE_METHOD_NOT      = 'not';
+    const UPDATE_METHOD_XML_ID     = 'xml_id';
+    const UPDATE_METHOD_EQUAL_KEYS = 'equal_keys';
 
     /**
      * @return bool
@@ -46,41 +47,48 @@ class HlblockElementsBuilder extends VersionBuilder
         $hlblockId = $this->addFieldAndReturn(
             'hlblock_id',
             [
-                'title' => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
+                'title'       => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
                 'placeholder' => '',
-                'width' => 250,
-                'select' => $exhelper->getHlblocksStructure(),
+                'width'       => 250,
+                'select'      => $exhelper->getHlblocksStructure(),
             ]
         );
 
-        $fields = $exhelper->getHlblockFieldsCodes($hlblockId);
+        $fieldsSelect = $exhelper->getHlblockFieldsStructure($hlblockId);
+        $exportFields = array_column($fieldsSelect, 'value');
 
-        $updateMode = $this->getFieldValueUpdateMode();
+        $exportFilter = $this->getFieldValueExportFilter($exportFields);
+        $updateMethod = $this->getFieldValueUpdateMethod($exportFields);
 
-        if ($updateMode == self::UPDATE_MODE_XML_ID) {
-            if (!in_array('UF_XML_ID', $fields)) {
-                throw new HelperException('Field UF_XML_ID not found');
-            }
-        }
+        $equalKeys = $this->getFieldValueEqualKeys($updateMethod, $fieldsSelect);
 
         (new RestartableWriter($this, $this->getVersionExchangeDir()))
             ->setExchangeResource('hlblock_elements.xml')
             ->execute(
                 attributesFn: fn() => $exhelper->getWriterAttributes($hlblockId),
-                totalCountFn: fn() => $exhelper->getWriterRecordsCount($hlblockId),
+                totalCountFn: fn() => $exhelper->getWriterRecordsCount(
+                    $hlblockId,
+                    $exportFilter
+                ),
                 recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
                     $offset,
                     $limit,
                     $hlblockId,
-                    $fields
+                    $exportFilter,
+                    $exportFields
+                ),
+                progressFn: fn($value, $totalCount) => $this->outProgress(
+                    'Progress: ',
+                    $value,
+                    $totalCount
                 )
             );
-
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('HlblockElementsExport'),
             [
-                'updateMode' => $updateMode,
+                'updateMethod' => $updateMethod,
+                'equalKeys'    => $equalKeys,
             ]
         );
     }
@@ -88,25 +96,111 @@ class HlblockElementsBuilder extends VersionBuilder
     /**
      * @throws RebuildException
      */
-    protected function getFieldValueUpdateMode()
+    protected function getFieldValueUpdateMethod(array $exportFields)
     {
-        return $this->addFieldAndReturn(
-            'update_mode',
+        $updateMethodSelect = [
             [
-                'title' => Locale::getMessage('BUILDER_IblockElementsExport_UpdateMode'),
+                'title' => Locale::getMessage('BUILDER_HlblockElementsExport_NotUpdate'),
+                'value' => self::UPDATE_METHOD_NOT,
+            ],
+            [
+                'title' => Locale::getMessage('BUILDER_HlblockElementsExport_SaveElementWithEqualKeys'),
+                'value' => self::UPDATE_METHOD_EQUAL_KEYS,
+            ],
+        ];
+
+        if (in_array('UF_XML_ID', $exportFields)) {
+            $updateMethodSelect[] = [
+                'title' => Locale::getMessage('BUILDER_HlblockElementsExport_SaveElementByXmlId'),
+                'value' => self::UPDATE_METHOD_XML_ID,
+            ];
+        }
+
+        return $this->addFieldAndReturn(
+            'update_method',
+            [
+                'title'       => Locale::getMessage('BUILDER_HlblockElementsExport_UpdateMethod'),
                 'placeholder' => '',
-                'width' => 250,
-                'select' => [
-                    [
-                        'title' => Locale::getMessage('BUILDER_IblockElementsExport_NotUpdate'),
-                        'value' => self::UPDATE_MODE_NOT,
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_IblockElementsExport_UpdateByXmlId'),
-                        'value' => self::UPDATE_MODE_XML_ID,
-                    ],
-                ],
+                'width'       => 250,
+                'select'      => $updateMethodSelect,
             ]
         );
+    }
+
+    protected function getFieldValueExportFilter(array $exportFields): array
+    {
+        $filterModeSelect = [
+            [
+                'title' => Locale::getMessage('BUILDER_SelectAll'),
+                'value' => 'all',
+            ],
+            [
+                'title' => Locale::getMessage('BUILDER_HlblockElementsExport_SelectSomeId'),
+                'value' => 'list_id',
+            ],
+        ];
+
+        if (in_array('UF_XML_ID', $exportFields)) {
+            $filterModeSelect[] = [
+                'title' => Locale::getMessage('BUILDER_HlblockElementsExport_SelectSomeXmlId'),
+                'value' => 'list_xml_id',
+            ];
+        }
+
+        $elementsMode = $this->addFieldAndReturn(
+            'filter_mode',
+            [
+                'title'  => Locale::getMessage('BUILDER_HlblockElementsExport_Filter'),
+                'width'  => 250,
+                'select' => $filterModeSelect,
+            ]
+        );
+
+        if ($elementsMode == 'list_id') {
+            $filterIds = $this->addFieldAndReturn(
+                'export_filter_list_id', [
+                    'title'  => Locale::getMessage('BUILDER_HlblockElementsExport_FilterListId'),
+                    'width'  => 350,
+                    'height' => 40,
+                ]
+            );
+
+            $exportFilter = [
+                'ID' => $this->explodeString($filterIds),
+            ];
+        } elseif ($elementsMode == 'list_xml_id') {
+            $filterXmlIds = $this->addFieldAndReturn(
+                'export_filter_list_xml_id',
+                [
+                    'title'  => Locale::getMessage('BUILDER_HlblockElementsExport_FilterListXmlId'),
+                    'width'  => 350,
+                    'height' => 40,
+                ]
+            );
+
+            $exportFilter = [
+                'UF_XML_ID' => $this->explodeString($filterXmlIds),
+            ];
+        } else {
+            $exportFilter = [];
+        }
+
+        return $exportFilter;
+    }
+
+    private function getFieldValueEqualKeys($updateMethod, $fieldsSelect)
+    {
+        if ($updateMethod == self::UPDATE_METHOD_EQUAL_KEYS) {
+            return $this->addFieldAndReturn(
+                'equal_keys', [
+                    'title'    => Locale::getMessage('BUILDER_HlblockElementsExport_EqualKeys'),
+                    'width'    => 250,
+                    'multiple' => 1,
+                    'value'    => [],
+                    'select'   => $fieldsSelect,
+                ]
+            );
+        }
+        return [];
     }
 }

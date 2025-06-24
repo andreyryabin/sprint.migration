@@ -314,4 +314,11 @@ class Builder implements RestartableInterface
 
         return $select;
     }
+
+    protected function explodeString(string $string, string $delimiter = ' '): array
+    {
+        return array_filter(
+            explode($delimiter, trim($string))
+        );
+    }
 }

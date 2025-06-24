@@ -3,7 +3,7 @@
 /**
  * @var $version
  * @var $description
- * @var $updateMode
+ * @var $updateMethod
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion
@@ -38,15 +38,15 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
              ->IblockElementsImport()
              ->setLimit(20)
              ->execute(function ($item) {
-<?php if ($updateMode == IblockElementsBuilder::UPDATE_MODE_CODE) { ?>
+<?php if ($updateMethod == IblockElementsBuilder::UPDATE_METHOD_CODE) { ?>
                  $this->getHelperManager()
                       ->Iblock()
-                      ->saveElement(
+                      ->saveElementByCode(
                           $item['iblock_id'],
                           $item['fields'],
                           $item['properties']
                       );
-<?php } elseif($updateMode == IblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
+<?php } elseif($updateMethod == IblockElementsBuilder::UPDATE_METHOD_XML_ID) { ?>
                  $this->getHelperManager()
                       ->Iblock()
                       ->saveElementByXmlId(
@@ -73,7 +73,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function down()
     {
-<?php if ($updateMode == IblockElementsBuilder::UPDATE_MODE_CODE) { ?>
+<?php if ($updateMethod == IblockElementsBuilder::UPDATE_METHOD_CODE) { ?>
         $this->getExchangeManager()
              ->IblockElementsImport()
              ->setLimit(10)
@@ -85,7 +85,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                           $item['fields']['CODE']
                  );
              });
-<?php } elseif($updateMode == IblockElementsBuilder::UPDATE_MODE_XML_ID) { ?>
+<?php } elseif($updateMethod == IblockElementsBuilder::UPDATE_METHOD_XML_ID) { ?>
         $this->getExchangeManager()
              ->IblockElementsImport()
              ->setLimit(10)

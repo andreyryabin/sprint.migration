@@ -91,7 +91,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
         $tag = new WriterTag('tmp');
         foreach ($elements as $element) {
             $tag->addChild(
-                $this->createRecordTag(
+                $this->createWriterRecordTag(
                     $element,
                     $exportFields,
                 )
@@ -101,13 +101,13 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
     }
 
 
-    private function createRecordTag(array $element, array $exportFields): WriterTag
+    private function createWriterRecordTag(array $element, array $exportFields): WriterTag
     {
         $item = new WriterTag('item');
         foreach ($element as $code => $val) {
             if (in_array($code, $exportFields)) {
                 $item->addChild(
-                    $this->createFieldTag([
+                    $this->createWriterFieldTag([
                         'NAME' => $code,
                         'VALUE' => $val,
                     ])
@@ -117,7 +117,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
         return $item;
     }
 
-    private function createFieldTag(array $field): WriterTag
+    private function createWriterFieldTag(array $field): WriterTag
     {
         $tag = new WriterTag('field', ['name' => $field['NAME']]);
 
@@ -156,9 +156,9 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
         $fields = [];
         foreach ($record['fields'] as $field) {
             if ($field['name'] == 'COLLECTION_PATH') {
-                $fields['COLLECTION_ID'] = $this->convertFieldCollectionPath($field);
+                $fields['COLLECTION_ID'] = $this->readFieldCollectionPath($field);
             } else {
-                $fields[$field['name']] = $this->convertFieldValue($field);
+                $fields[$field['name']] = $this->readFieldValue($field);
             }
         }
         return $fields;
@@ -167,7 +167,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
     /**
      * @throws HelperException
      */
-    protected function convertFieldCollectionPath($field): int
+    protected function readFieldCollectionPath($field): int
     {
         $paths = array_column($field['value'], 'value');
         return $this->saveCollectionByPath(
@@ -176,7 +176,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
         );
     }
 
-    protected function convertFieldValue(array $field)
+    protected function readFieldValue(array $field)
     {
         return $field['value'][0]['value'];
     }
