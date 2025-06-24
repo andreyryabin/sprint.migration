@@ -60,13 +60,20 @@ class RestartableWriter
 
         $this->restartable->restartOnce('step1', fn() => $this->writer->createFile($attributesFn()));
 
-        $this->totalCount = $this->restartable->restartOnce('step2', fn() => $totalCountFn());
+        $this->totalCount = $this->restartable->restartOnce('step2', fn() => $this->start($totalCountFn, $progressFn));
 
         $this->restartable->restartWhile('step3', fn(int $offset) => $this->write($offset, $recordsFn, $progressFn));
 
         $this->restartable->restartOnce('step4', fn() => $this->writer->closeFile());
     }
+    private function start(Closure $totalCountFn, Closure $progressFn): int
+    {
+        $totalCount = $totalCountFn();
 
+        $progressFn(0, $totalCount);
+
+        return $totalCount;
+    }
     /**
      * @throws MigrationException
      */
@@ -77,9 +84,9 @@ class RestartableWriter
 
         $fetchedCount = $this->writer->appendTagsToFile($tags);
 
-        $progressFn($offset + 1, $this->totalCount);
-
         $offset += $fetchedCount;
+
+        $progressFn($offset, $this->totalCount);
 
         return ($fetchedCount >= $this->limit) ? $offset : 0;
     }

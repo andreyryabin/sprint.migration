@@ -49,14 +49,25 @@ class RestartableReader
     {
         $this->reader = new Reader($this->file);
 
+        $progressFn = fn($value, $totalCount) => Out::outProgress('Progress: ', $value, $totalCount);
+
         $this->attributes = $this->restartable->restartOnce('step1', fn() => $this->reader->getAttributes());
 
-        $this->totalCount = $this->restartable->restartOnce('step2', fn() => $this->reader->getRecordsCount());
+        $this->totalCount = $this->restartable->restartOnce('step2', fn() => $this->start($progressFn));
 
-        $this->restartable->restartWhile('step3', fn(int $offset) => $this->read($offset, $userFn));
+        $this->restartable->restartWhile('step3', fn(int $offset) => $this->read($offset, $userFn, $progressFn));
     }
 
-    private function read(int $offset, Closure $userfunc): int
+    private function start(Closure $progressFn): int
+    {
+        $totalCount = $this->reader->getRecordsCount();
+
+        $progressFn(0, $totalCount);
+
+        return $totalCount;
+    }
+
+    private function read(int $offset, Closure $userfunc, Closure $progressFn): int
     {
         $records = $this->helper->convertReaderRecords(
             $this->attributes,
@@ -65,12 +76,11 @@ class RestartableReader
 
         array_map($userfunc, $records);
 
-        //вынести прогресс в отдельный настраиваемый метод
-        Out::outProgress('Progress: ', $offset + 1, $this->totalCount);
-
         $readCount = count($records);
 
         $offset += $readCount;
+
+        $progressFn($offset, $this->totalCount);
 
         return ($readCount >= $this->limit) ? $offset : 0;
     }
