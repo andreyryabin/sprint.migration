@@ -62,31 +62,21 @@ class VersionConfig
         return $this->configList->getIterator();
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function getVersionExchangeDir(string $versionName): string
     {
         $dir = $this->getCurrent()->getVal('exchange_dir');
         return $dir . '/' . $versionName . '_files/';
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function createConfig(string $configName): bool
     {
-        $fileName = 'migrations.' . $configName . '.php';
-        if (!$this->getConfigName($fileName)) {
-            return false;
-        }
-
-        $configPath = Module::getPhpInterfaceDir() . '/' . $fileName;
-        if (is_file($configPath)) {
-            return false;
-        }
-
-        $configValues = [
-            'migration_dir'   => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
-            'migration_table' => 'sprint_migration_' . $configName,
-        ];
-
-        file_put_contents($configPath, '<?php return ' . var_export($configValues, 1) . ';');
-        return is_file($configPath);
+        return $this->configList->create($configName);
     }
 
     /**
@@ -94,27 +84,7 @@ class VersionConfig
      */
     public function deleteConfig(string $configName): bool
     {
-        $fileName = 'migrations.' . $configName . '.php';
-        if (!$this->getConfigName($fileName)) {
-            return false;
-        }
-
-        if (!isset($this->configList[$configName])) {
-            return false;
-        }
-
-        $configFile = $this->configList[$configName]['file'];
-
-        $vmFrom = new VersionManager(
-            new VersionConfig($configName)
-        );
-        $vmFrom->clean();
-
-        if (!empty($configFile) && is_file($configFile)) {
-            unlink($configFile);
-        }
-
-        return true;
+        return $this->configList->delete($configName);
     }
 
     /**

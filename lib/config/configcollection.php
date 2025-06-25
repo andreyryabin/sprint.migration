@@ -6,6 +6,8 @@ use DirectoryIterator;
 use Sprint\Migration\Enum\EventsEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Module;
+use Sprint\Migration\VersionConfig;
+use Sprint\Migration\VersionManager;
 
 class ConfigCollection
 {
@@ -118,5 +120,54 @@ class ConfigCollection
             return $matches[1];
         }
         return '';
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function create(string $configName): bool
+    {
+        $fileName = 'migrations.' . $configName . '.php';
+        if (!$this->makeConfigName($fileName)) {
+            return false;
+        }
+
+        $configPath = Module::getPhpInterfaceDir() . '/' . $fileName;
+        if (is_file($configPath)) {
+            return false;
+        }
+
+        $configValues = [
+            'migration_dir'   => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
+            'migration_table' => 'sprint_migration_' . $configName,
+        ];
+
+        file_put_contents($configPath, '<?php return ' . var_export($configValues, 1) . ';');
+
+        return is_file($configPath);
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function delete(string $configName): bool
+    {
+        $fileName = 'migrations.' . $configName . '.php';
+        if (!$this->makeConfigName($fileName)) {
+            return false;
+        }
+
+        $config = $this->get($configName);
+
+        $vmFrom = new VersionManager(
+            new VersionConfig($configName)
+        );
+        $vmFrom->clean();
+
+        if ($config->getPath() && is_file($config->getPath())) {
+            unlink($config->getPath());
+        }
+
+        return true;
     }
 }
