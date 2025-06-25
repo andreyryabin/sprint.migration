@@ -510,7 +510,7 @@ class UserTypeEntityHelper extends Helper
         return $this->fetchAll($dbres);
     }
 
-    protected function searchEnum(int|string $enum, array $haystack = []): array|false
+    protected function searchEnum(array $enum, array $haystack = []): array|false
     {
         foreach ($haystack as $item) {
             if (isset($item['XML_ID']) && strlen($item['XML_ID']) > 0 && $item['XML_ID'] == $enum['XML_ID']) {
