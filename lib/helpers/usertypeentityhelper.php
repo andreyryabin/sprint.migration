@@ -525,7 +525,10 @@ class UserTypeEntityHelper extends Helper
      */
     private function transformSettings(&$fields): void
     {
-        if ($fields['USER_TYPE_ID'] == 'iblock_element') {
+        if (
+            $fields['USER_TYPE_ID'] == 'iblock_element'
+            || $fields['USER_TYPE_ID'] == 'iblock_section'
+        ) {
             if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
                 $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockUid(
                     $fields['SETTINGS']['IBLOCK_ID']
@@ -552,7 +555,10 @@ class UserTypeEntityHelper extends Helper
      */
     private function revertSettings(&$fields): void
     {
-        if ($fields['USER_TYPE_ID'] == 'iblock_element') {
+        if (
+            $fields['USER_TYPE_ID'] == 'iblock_element'
+            || $fields['USER_TYPE_ID'] == 'iblock_section'
+        ) {
             if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
                 $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockIdByUid(
                     $fields['SETTINGS']['IBLOCK_ID']
