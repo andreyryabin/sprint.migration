@@ -154,16 +154,11 @@ abstract class AbstractTable
 
     private function fetchDataModifier(array $item): array
     {
+        $result = [];
         foreach ($item as $key => $val) {
-            $newkey = strtolower($key);
-
-            if ($newkey !== $key) {
-                $item[$newkey] = $val;
-                unset($item[$key]);
-            }
+            $result[strtolower($key)] = $val;
         }
-
-        return $item;
+        return $result;
     }
 
     /**
