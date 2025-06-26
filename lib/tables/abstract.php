@@ -15,10 +15,10 @@ use Sprint\Migration\Module;
 
 abstract class AbstractTable
 {
-    protected int $tableVersion = 1;
-    private string   $tableName;
-    private string   $entityName;
-    private Entity   $entity;
+    protected int  $tableVersion = 1;
+    private string $tableName;
+    private string $entityName;
+    private Entity $entity;
 
     /**
      * @throws MigrationException
@@ -55,7 +55,7 @@ abstract class AbstractTable
     /**
      * @throws MigrationException
      */
-    public function createTable()
+    public function createTable(): void
     {
         $version = (int)Module::getDbOption($this->entityName);
         if ($version !== $this->tableVersion) {
@@ -72,7 +72,7 @@ abstract class AbstractTable
     /**
      * @throws HelperException
      */
-    protected function createDbTable()
+    protected function createDbTable(): void
     {
         $helper = HelperManager::getInstance();
 
@@ -93,7 +93,7 @@ abstract class AbstractTable
     /**
      * @throws MigrationException
      */
-    public function dropTable()
+    public function dropTable(): void
     {
         try {
             $this->dropDbTable();
@@ -107,7 +107,7 @@ abstract class AbstractTable
     /**
      * @throws HelperException
      */
-    protected function dropDbTable()
+    protected function dropDbTable(): void
     {
         $helper = HelperManager::getInstance();
 
@@ -124,7 +124,13 @@ abstract class AbstractTable
     protected function getOnce(array $filter = []): ?array
     {
         try {
-            return $this->getDataManager()::getRow(['filter' => $filter]);
+            $res = $this->getDataManager()::getList(['filter' => $filter, 'limit' => 1]);
+
+            $res->addFetchDataModifier(fn($item) => $this->fetchDataModifier($item));
+
+            $row = $res->fetch();
+
+            return is_array($row) ? $row : null;
         } catch (Exception $e) {
             throw new MigrationException($e->getMessage(), $e->getCode(), $e);
         }
@@ -136,10 +142,23 @@ abstract class AbstractTable
     protected function getAll(array $filter = []): array
     {
         try {
-            return $this->getDataManager()::getList(['filter' => $filter])->fetchAll();
+            $res = $this->getDataManager()::getList(['filter' => $filter]);
+
+            $res->addFetchDataModifier(fn($item) => $this->fetchDataModifier($item));
+
+            return $res->fetchAll();
         } catch (Exception $e) {
             throw new MigrationException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    private function fetchDataModifier(array $item): array
+    {
+        $result = [];
+        foreach ($item as $key => $val) {
+            $result[strtolower($key)] = $val;
+        }
+        return $result;
     }
 
     /**
@@ -181,7 +200,7 @@ abstract class AbstractTable
     /**
      * @return DataManager|string
      */
-    private function getDataManager()
+    private function getDataManager(): DataManager|string
     {
         return $this->entity->getDataClass();
     }
