@@ -115,7 +115,7 @@ class StorageTable extends AbstractTable
     }
 
 
-    protected function createDbTable()
+    protected function createDbTable(): void
     {
         parent::createDbTable();
 
