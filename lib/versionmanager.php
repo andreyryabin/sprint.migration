@@ -16,33 +16,18 @@ use Throwable;
 
 class VersionManager
 {
-    private VersionConfig $versionConfig;
     private VersionTable $versionTable;
-    private bool $isRestart = false;
-    private array $lastRestartParams = [];
-    private ?Throwable $lastException;
-    private string $versionTimestampPattern;
-    private string $versionTimestampFormat;
+    private bool         $isRestart         = false;
+    private array        $lastRestartParams = [];
+    private ?Throwable   $lastException;
 
     /**
      * @throws MigrationException
      */
-    public function __construct($configName = '')
+    public function __construct(private VersionConfig $versionConfig)
     {
-        if ($configName instanceof VersionConfig) {
-            $this->versionConfig = $configName;
-        } else {
-            $this->versionConfig = new VersionConfig($configName);
-        }
-
-        $this->versionTimestampPattern = $this
-            ->versionConfig->getCurrent()->getVal('version_timestamp_pattern');
-
-        $this->versionTimestampFormat = $this
-            ->versionConfig->getCurrent()->getVal('version_timestamp_format');
-
         $this->versionTable = new VersionTable(
-            $this->versionConfig->getCurrent()->getVal('migration_table')
+            $this->versionConfig->getVal('migration_table')
         );
     }
 
@@ -59,10 +44,9 @@ class VersionManager
     public function startMigration(
         string $versionName,
         string $action = VersionEnum::ACTION_UP,
-        array  $params = [],
+        array $params = [],
         string $tag = ''
-    ): bool
-    {
+    ): bool {
         $this->isRestart = false;
         $this->lastRestartParams = [];
         $this->lastException = null;
@@ -127,9 +111,9 @@ class VersionManager
         $ts = $this->getVersionTimestamp($versionName);
 
         if ($ts) {
-            $fileName = $this->getVersionFile($versionName);
+            $fileName = $this->versionConfig->getVersionFile($versionName);
             $file = file_exists($fileName) ? [
-                'version' => $versionName,
+                'version'  => $versionName,
                 'location' => $fileName,
             ] : 0;
 
@@ -256,7 +240,7 @@ class VersionManager
      */
     public function createBuilder(string $name, array $params = []): Builder
     {
-        $builders = $this->getVersionConfig()->getCurrent()->getVal('version_builders', []);
+        $builders = $this->getVersionConfig()->getVal('version_builders', []);
 
         $class = $builders[$name] ?? '';
 
@@ -318,12 +302,6 @@ class VersionManager
         return $result;
     }
 
-    public function getVersionFile(string $versionName): string
-    {
-        $dir = $this->getVersionConfig()->getCurrent()->getVal('migration_dir');
-        return $dir . '/' . $versionName . '.php';
-    }
-
     public function checkVersionName(string $versionName): bool
     {
         return (bool)$this->getVersionTimestamp($versionName);
@@ -331,21 +309,14 @@ class VersionManager
 
     public function getVersionTimestamp(string $versionName)
     {
+        $pattern = $this->versionConfig->getVal('version_timestamp_pattern');
+
         $matches = [];
-        if (preg_match($this->versionTimestampPattern, $versionName, $matches)) {
+        if (preg_match($pattern, $versionName, $matches)) {
             return end($matches);
         }
 
         return false;
-    }
-
-    public function getWebDir(): string
-    {
-        $dir = $this->getVersionConfig()->getCurrent()->getVal('migration_dir');
-        if (str_starts_with($dir, Module::getDocRoot())) {
-            return substr($dir, strlen(Module::getDocRoot()));
-        }
-        return '';
     }
 
     /**
@@ -376,7 +347,7 @@ class VersionManager
 
     public function getFiles(): array
     {
-        $dir = $this->getVersionConfig()->getCurrent()->getVal('migration_dir');
+        $dir = $this->getVersionConfig()->getVal('migration_dir');
         $files = [];
 
         /* @var $item SplFileInfo */
@@ -398,9 +369,9 @@ class VersionManager
             }
 
             $files[$filename] = [
-                'version' => $filename,
+                'version'  => $filename,
                 'location' => $item->getPathname(),
-                'ts' => $timestamp,
+                'ts'       => $timestamp,
             ];
         }
 
@@ -412,7 +383,7 @@ class VersionManager
      */
     public function clean(): void
     {
-        $dir = $this->getVersionConfig()->getCurrent()->getVal('migration_dir');
+        $dir = $this->getVersionConfig()->getVal('migration_dir');
 
         $files = $this->getFiles();
         foreach ($files as $meta) {
@@ -500,7 +471,7 @@ class VersionManager
     {
         $result = [];
 
-        if ($this->getVersionConfig()->getCurrent()->getName() == $vmTo->getVersionConfig()->getCurrent()->getName()) {
+        if ($this->getVersionConfig()->getName() == $vmTo->getVersionConfig()->getName()) {
             $result[] = [
                 'message' => Locale::getMessage('TRANSFER_ERROR2'),
                 'success' => 0,
@@ -631,14 +602,14 @@ class VersionManager
         $isRecord = ($record) ? 1 : 0;
 
         $meta = [
-            'is_file' => $isFile,
-            'is_record' => $isRecord,
-            'version' => $versionName,
-            'modified' => false,
-            'older' => false,
-            'hash' => '',
-            'tag' => '',
-            'file_status' => '',
+            'is_file'       => $isFile,
+            'is_record'     => $isRecord,
+            'version'       => $versionName,
+            'modified'      => false,
+            'older'         => false,
+            'hash'          => '',
+            'tag'           => '',
+            'file_status'   => '',
             'record_status' => '',
         ];
 
@@ -684,7 +655,10 @@ class VersionManager
                 $versionInstance->getDescription()
             );
 
-            $humanTs = DateTime::createFromFormat($this->versionTimestampFormat, $ts);
+            $humanTs = DateTime::createFromFormat(
+                $this->versionConfig->getVal('version_timestamp_format'),
+                $ts
+            );
             $meta['file_status'] = $this->humanStatus(
                 Locale::getMessage('META_NEW'),
                 $humanTs->format(VersionTable::DATE_FORMAT),
@@ -702,7 +676,7 @@ class VersionManager
                 $meta['older'] = $v1;
             }
 
-            $algo = $this->getVersionConfig()->getCurrent()->getVal('migration_hash_algo');
+            $algo = $this->getVersionConfig()->getVal('migration_hash_algo');
 
             $meta['hash'] = hash($algo, file_get_contents($meta['location']));
             $meta['modified'] = $record['hash'] && ($meta['hash'] != $record['hash']);
@@ -740,7 +714,7 @@ class VersionManager
         if ($meta['is_file']) {
             Module::movePath(
                 $meta['location'],
-                $vmTo->getVersionFile($meta['version'])
+                $vmTo->getVersionConfig()->getVersionFile($meta['version'])
             );
 
             Module::movePath(

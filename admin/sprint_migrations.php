@@ -1,6 +1,8 @@
 <?php
 
 use Bitrix\Main\Loader;
+use Sprint\Migration\ConfigManager;
+use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\Out;
@@ -23,9 +25,11 @@ try {
 
     Module::checkHealth();
 
-    $versionConfig = new Sprint\Migration\VersionConfig($_REQUEST['config'] ?? '');
+    $versionConfig = ConfigManager::getInstance()->get(
+        $_REQUEST['config'] ?? VersionEnum::CONFIG_DEFAULT
+    );
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && $versionConfig->getCurrent()->getVal('show_admin_interface')) {
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && $versionConfig->getVal('show_admin_interface')) {
         require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
         try {
@@ -45,20 +49,19 @@ try {
         die();
     }
 
-
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 
-    $APPLICATION->SetTitle($versionConfig->getCurrent()->getTitle());
+    $APPLICATION->SetTitle($versionConfig->getTitle());
 
     CJSCore::Init(["jquery3"]);
 
-    if ($versionConfig->getCurrent()->getVal('show_admin_interface')) {
+    if ($versionConfig->getVal('show_admin_interface')) {
         include __DIR__ . '/includes/version.php';
         include __DIR__ . '/assets/version.php';
     }
 
     $sperrors = [];
-    if (!$versionConfig->getCurrent()->getVal('show_admin_interface')) {
+    if (!$versionConfig->getVal('show_admin_interface')) {
         $sperrors[] = Locale::getMessage('ADMIN_INTERFACE_HIDDEN');
     }
 

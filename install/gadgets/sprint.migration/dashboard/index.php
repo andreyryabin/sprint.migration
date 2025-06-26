@@ -6,9 +6,9 @@
 use Bitrix\Main\Loader;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
-use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 use Sprint\Migration\Enum\VersionEnum;
+use Sprint\Migration\ConfigManager;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
@@ -30,8 +30,7 @@ try {
 
     $results = [];
 
-    $versionConfig = new VersionConfig();
-    foreach ($versionConfig->getConfigList() as $configItem) {
+    foreach (ConfigManager::getInstance()->getList() as $configItem) {
         if (!empty($arGadgetParams['SELECT_CONFIGS'])) {
             if (!in_array($configItem->getName(), $arGadgetParams['SELECT_CONFIGS'])) {
                 continue;

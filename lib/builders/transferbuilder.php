@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\Builder;
+use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
@@ -56,7 +57,7 @@ class TransferBuilder extends Builder
         );
 
         $vmTo = new VersionManager(
-            new VersionConfig($transferTo)
+            ConfigManager::getInstance()->get($transferTo)
         );
 
         $transferresult = $vmFrom->transferMigration(
@@ -84,8 +85,8 @@ class TransferBuilder extends Builder
     protected function getConfigs(): array
     {
         $structure = [];
-        $configFrom = $this->getVersionConfig()->getCurrent()->getName();
-        foreach ($this->getVersionConfig()->getConfigList() as $configItem) {
+        $configFrom = $this->getVersionConfig()->getName();
+        foreach (ConfigManager::getInstance()->getList() as $configItem) {
             if ($configItem->getName() != $configFrom) {
                 $structure[] = [
                     'title' => $configItem->getTitle(),

@@ -15,7 +15,7 @@ abstract class VersionBuilder extends Builder
         $this->addField(
             'prefix', [
                 'title' => Locale::getMessage('FORM_PREFIX'),
-                'value' => $this->getVersionConfig()->getCurrent()->getVal('version_prefix'),
+                'value' => $this->getVersionConfig()->getVal('version_prefix'),
                 'width' => 250,
             ]
         );
@@ -33,7 +33,7 @@ abstract class VersionBuilder extends Builder
     {
         $prefix = trim($prefix);
         if (empty($prefix)) {
-            $prefix = $this->getVersionConfig()->getCurrent()->getVal('version_prefix');
+            $prefix = $this->getVersionConfig()->getVal('version_prefix');
             $prefix = trim($prefix);
         }
 
@@ -50,12 +50,6 @@ abstract class VersionBuilder extends Builder
         return addslashes(strip_tags(trim($descr)));
     }
 
-    protected function getVersionFile(string $versionName): string
-    {
-        $dir = $this->getVersionConfig()->getCurrent()->getVal('migration_dir');
-        return $dir . '/' . $versionName . '.php';
-    }
-
     protected function getVersionName(): string
     {
         if (!isset($this->params['~version_name'])) {
@@ -67,11 +61,11 @@ abstract class VersionBuilder extends Builder
     protected function createVersionName(): string
     {
         return strtr(
-            $this->getVersionConfig()->getCurrent()->getVal('version_name_template'),
+            $this->getVersionConfig()->getVal('version_name_template'),
             [
                 '#NAME#' => $this->purifyPrefix($this->getFieldValue('prefix')),
                 '#TIMESTAMP#' => $this->getTimestamp(
-                    $this->getVersionConfig()->getCurrent()->getVal('version_timestamp_format')
+                    $this->getVersionConfig()->getVal('version_timestamp_format')
                 ),
             ]
         );
@@ -96,7 +90,7 @@ abstract class VersionBuilder extends Builder
             $templateVars['version'] = $this->getVersionName();
         }
 
-        [$extendUse, $extendClass] = explode(' as ', $this->getVersionConfig()->getCurrent()->getVal('migration_extend_class'));
+        [$extendUse, $extendClass] = explode(' as ', $this->getVersionConfig()->getVal('migration_extend_class'));
         $extendUse = trim($extendUse);
         $extendClass = trim($extendClass);
 
@@ -115,7 +109,7 @@ abstract class VersionBuilder extends Builder
             $templateFile = Module::getModuleTemplateFile('version');
         }
 
-        $fileName = $this->getVersionFile($templateVars['version']);
+        $fileName = $this->getVersionConfig()->getVersionFile($templateVars['version']);
         $fileContent = $this->renderFile($templateFile, $templateVars);
 
         file_put_contents($fileName, $fileContent);

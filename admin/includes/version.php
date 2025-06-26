@@ -7,7 +7,7 @@ use Sprint\Migration\VersionConfig;
 
 $getOnclickMenu = function () use ($versionConfig) {
     $menu = [];
-    if ($versionConfig->getCurrent()->getVal('show_admin_updown')) {
+    if ($versionConfig->getVal('show_admin_updown')) {
         $menu[] = [
             'TEXT' => Locale::getMessage('UP_START_WITH_TAG'),
             'ONCLICK' => 'migrationMigrationsUpWithTag()',
@@ -20,7 +20,7 @@ $getOnclickMenu = function () use ($versionConfig) {
     return CUtil::PhpToJSObject($menu);
 }
 ?>
-<div id="migration_container" data-sessid="<?= bitrix_sessid() ?>" data-config="<?= $versionConfig->getCurrent()->getName() ?>">
+<div id="migration_container" data-sessid="<?= bitrix_sessid() ?>" data-config="<?= $versionConfig->getName() ?>">
     <div class="sp-table">
         <div class="sp-row2">
             <div class="sp-col sp-col-scroll sp-white">
@@ -45,7 +45,7 @@ $getOnclickMenu = function () use ($versionConfig) {
             <div class="sp-col sp-col-scroll" id="migration_log"></div>
         </div>
     </div>
-    <?php if ($versionConfig->getCurrent()->getVal('show_admin_updown')) { ?>
+    <?php if ($versionConfig->getVal('show_admin_updown')) { ?>
         <div class="sp-table">
             <div class="sp-row2">
                 <div class="sp-col">

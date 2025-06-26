@@ -4,7 +4,7 @@ global $APPLICATION;
 use Bitrix\Main\Loader;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
-use Sprint\Migration\Module;
+use Sprint\Migration\ConfigManager;
 
 if ($APPLICATION->GetGroupRight('sprint.migration') == 'D') {
     return false;
@@ -15,10 +15,8 @@ if (!Loader::includeModule('sprint.migration')) {
 }
 
 try {
-    $versionConfig = new Sprint\Migration\VersionConfig();
-
     $menuItems = [];
-    foreach ($versionConfig->getConfigList() as $configItem) {
+    foreach (ConfigManager::getInstance()->getList() as $configItem) {
         $menuItems[] = [
             'text' => $configItem->getTitle(),
             'url'  => 'sprint_migrations.php?' . http_build_query([

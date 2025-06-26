@@ -23,7 +23,7 @@ class BlankBuilder extends VersionBuilder
 
     protected function execute()
     {
-        $template = $this->getVersionConfig()->getCurrent()->getVal('migration_template');
+        $template = $this->getVersionConfig()->getVal('migration_template');
         if ($template && is_file(Module::getDocRoot() . $template)) {
             $template = Module::getDocRoot() . $template;
         } else {

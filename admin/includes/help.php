@@ -25,7 +25,7 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
         <div class="sp-col">
             <div style="margin-bottom: 10px;">
                 <?= Locale::getMessage('LINK_MP') ?> <br/>
-                <a href="http://marketplace.1c-bitrix.ru/solutions/sprint.migration/" target="_blank">http://marketplace.1c-bitrix.ru/solutions/sprint.migration/</a>
+                <a href="https://marketplace.1c-bitrix.ru/solutions/sprint.migration/" target="_blank">https://marketplace.1c-bitrix.ru/solutions/sprint.migration/</a>
             </div>
             <div style="margin-bottom: 10px;">
                 <?= Locale::getMessage('LINK_COMPOSER') ?>

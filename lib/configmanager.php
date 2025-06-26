@@ -1,39 +1,56 @@
 <?php
 
-namespace Sprint\Migration\Config;
+namespace Sprint\Migration;
 
 use DirectoryIterator;
 use Sprint\Migration\Enum\EventsEnum;
+use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\Module;
-use Sprint\Migration\VersionConfig;
-use Sprint\Migration\VersionManager;
 
-class ConfigCollection
+class ConfigManager
 {
-    private array $collection = [];
+    private array                 $collection = [];
+    private static ?ConfigManager $instance   = null;
+
+    public static function getInstance(): ConfigManager
+    {
+        if (is_null(static::$instance)) {
+            static::$instance = new static();
+        }
+        return static::$instance;
+    }
 
     /**
      * @throws MigrationException
      */
-    public function add(string $name, array $values, string $path): ConfigCollection
+    public function __construct()
     {
-        $config = new Config($name, $values, $path);
+        $this->addFromEventHandlers()
+             ->addDefault()
+             ->resort();
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    private function add(string $name, array $values, string $path): void
+    {
+        $config = new VersionConfig($name, $values, $path);
 
         if (isset($this->collection[$name])) {
             throw new MigrationException('Config already exists: ' . $name);
         }
 
         $this->collection[$name] = $config;
-
-        return $this;
     }
 
     /**
      * @throws MigrationException
      */
-    public function addDefault(string $name): ConfigCollection
+    private function addDefault(): static
     {
+        $name = VersionEnum::CONFIG_DEFAULT;
+
         if (!isset($this->collection[$name])) {
             $this->add($name, [], '');
         }
@@ -44,7 +61,7 @@ class ConfigCollection
     /**
      * @throws MigrationException
      */
-    public function get(string $name): Config
+    public function get(string $name): VersionConfig
     {
         if (isset($this->collection[$name])) {
             return $this->collection[$name];
@@ -54,24 +71,34 @@ class ConfigCollection
     }
 
     /**
-     * @return array|Config[]
+     * @return array|VersionConfig[]
      */
-    public function getIterator(): array
+    public function getList(): array
     {
         return $this->collection;
     }
 
-    public function resort(): ConfigCollection
+    public function getListAssoc(): array
     {
-        uasort($this->collection, fn(Config $a, Config $b) => ($a->getSort() <=> $b->getSort()));
+        $map = [];
+        foreach ($this->getList() as $config) {
+            $map[$config->getName()] = $config->getTitle();
+        }
+        return $map;
+    }
 
-        return $this;
+    private function resort(): void
+    {
+        uasort(
+            $this->collection,
+            fn(VersionConfig $a, VersionConfig $b) => ($a->getSort() <=> $b->getSort())
+        );
     }
 
     /**
      * @throws MigrationException
      */
-    public function addFromEventHandlers(): ConfigCollection
+    private function addFromEventHandlers(): static
     {
         $events = GetModuleEvents(
             Module::ID,
@@ -90,7 +117,7 @@ class ConfigCollection
     /**
      * @throws MigrationException
      */
-    public function addFromDirectory(string $directory): ConfigCollection
+    private function addFromDirectory(string $directory): void
     {
         $directory = new DirectoryIterator($directory);
         foreach ($directory as $item) {
@@ -110,22 +137,9 @@ class ConfigCollection
 
             $this->add($configName, $values, $item->getPathname());
         }
-
-        return $this;
     }
 
-    private function makeConfigName(string $fileName): string
-    {
-        if (preg_match('/^migrations\.([a-z0-9_-]*)\.php$/i', $fileName, $matches)) {
-            return $matches[1];
-        }
-        return '';
-    }
-
-    /**
-     * @throws MigrationException
-     */
-    public function create(string $configName): bool
+    public function createConfig(string $configName): bool
     {
         $fileName = 'migrations.' . $configName . '.php';
         if (!$this->makeConfigName($fileName)) {
@@ -144,13 +158,18 @@ class ConfigCollection
 
         file_put_contents($configPath, '<?php return ' . var_export($configValues, 1) . ';');
 
-        return is_file($configPath);
+        if (is_file($configPath)) {
+            $this->add($configName, $configValues, $configPath);
+            return true;
+        }
+
+        return false;
     }
 
     /**
      * @throws MigrationException
      */
-    public function delete(string $configName): bool
+    public function deleteConfig(string $configName): bool
     {
         $fileName = 'migrations.' . $configName . '.php';
         if (!$this->makeConfigName($fileName)) {
@@ -159,15 +178,24 @@ class ConfigCollection
 
         $config = $this->get($configName);
 
-        $vmFrom = new VersionManager(
-            new VersionConfig($configName)
-        );
+        $vmFrom = new VersionManager($config);
+
         $vmFrom->clean();
 
         if ($config->getPath() && is_file($config->getPath())) {
             unlink($config->getPath());
         }
 
+        unset($this->collection[$configName]);
+
         return true;
+    }
+
+    private function makeConfigName(string $fileName): string
+    {
+        if (preg_match('/^migrations\.([a-z0-9_-]*)\.php$/i', $fileName, $matches)) {
+            return $matches[1];
+        }
+        return '';
     }
 }

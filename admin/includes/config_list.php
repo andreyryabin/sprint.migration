@@ -3,10 +3,9 @@
 
 use Sprint\Migration\Locale;
 use Sprint\Migration\VersionConfig;
+use Sprint\Migration\ConfigManager;
 
-$versionConfig = new VersionConfig();
-
-?><?php foreach ($versionConfig->getConfigList() as $configItem) { ?>
+?><?php foreach (ConfigManager::getInstance()->getList() as $configItem) { ?>
     <div class="sp-table">
         <div class="sp-row">
             <div class="sp-col sp-white">

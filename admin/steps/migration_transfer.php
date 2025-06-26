@@ -1,5 +1,6 @@
 <?php
 
+use Sprint\Migration\ConfigManager;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 
@@ -12,13 +13,14 @@ $existsEvents = (
 );
 
 if ($existsEvents && check_bitrix_sessid()) {
-
     $version = !empty($_POST['version']) ? $_POST['version'] : '';
     $transferTo = !empty($_POST['transfer_to']) ? $_POST['transfer_to'] : '';
 
+    $transferConfig = ConfigManager::getInstance()->get($transferTo);
+
     /** @var $versionConfig VersionConfig */
     $vmFrom = new VersionManager($versionConfig);
-    $vmTo = new VersionManager($transferTo);
+    $vmTo = new VersionManager($transferConfig);
 
     $transferresult = $vmFrom->transferMigration(
         $version,

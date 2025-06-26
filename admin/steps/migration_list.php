@@ -5,6 +5,7 @@ use Sprint\Migration\Locale;
 use Sprint\Migration\Out;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
+use Sprint\Migration\ConfigManager;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
@@ -70,13 +71,11 @@ if ($_POST["step_code"] == "migration_view_new") {
     ]);
 }
 
-$webdir = $versionManager->getWebDir();
-
-$getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
+$getOnclickMenu = function ($item) use ($versionConfig) {
     $menu = [];
 
     if ($item['status'] == VersionEnum::STATUS_NEW) {
-        if ($versionConfig->getCurrent()->getVal('show_admin_updown')) {
+        if ($versionConfig->getVal('show_admin_updown')) {
             $menu[] = [
                 'TEXT' => Locale::getMessage('UP'),
                 'ONCLICK' => 'migrationMigrationUp(\'' . $item['version'] . '\')',
@@ -88,7 +87,7 @@ $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
         ];
     }
     if ($item['status'] == VersionEnum::STATUS_INSTALLED) {
-        if ($versionConfig->getCurrent()->getVal('show_admin_updown')) {
+        if ($versionConfig->getVal('show_admin_updown')) {
             $menu[] = [
                 'TEXT' => Locale::getMessage('DOWN'),
                 'ONCLICK' => 'migrationMigrationDown(\'' . $item['version'] . '\')',
@@ -111,6 +110,7 @@ $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
         ];
     }
 
+    $webdir = $versionConfig->getWebDir();
     if ($item['status'] != VersionEnum::STATUS_UNKNOWN && $webdir) {
         $viewUrl = '/bitrix/admin/fileman_file_view.php?' . http_build_query([
                 'lang' => LANGUAGE_ID,
@@ -126,8 +126,8 @@ $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
 
     $transferMenu = [];
 
-    foreach ($versionConfig->getConfigList() as $configItem) {
-        if ($configItem->getName() != $versionConfig->getCurrent()->getName()) {
+    foreach (ConfigManager::getInstance()->getList() as $configItem) {
+        if ($configItem->getName() != $versionConfig->getName()) {
             $transferMenu[] = [
                 'TEXT' => $configItem->getTitle(),
                 'ONCLICK' => 'migrationMigrationTransfer(\'' . $item['version'] . '\',\'' . $configItem->getName() . '\')',
@@ -201,7 +201,7 @@ if (empty($versions)) {
                     Out::outToHtml(implode(' ', $versionLabels));
                 }
                 Out::outToHtml($item['description'], [
-                    'tracker_task_url' => $versionConfig->getCurrent()->getVal('tracker_task_url'),
+                    'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),
                     'make_links' => true,
                 ]);
                 ?>

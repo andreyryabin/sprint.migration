@@ -44,13 +44,13 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  */
 class HelperManager
 {
-    private static $instance = null;
-    private array $registered = [];
-    private array $cache = [];
+    private static ?HelperManager $instance   = null;
+    private array                 $registered = [];
+    private array                 $cache      = [];
 
     public static function getInstance(): HelperManager
     {
-        if (!isset(static::$instance)) {
+        if (is_null(static::$instance)) {
             static::$instance = new static();
         }
         return static::$instance;
@@ -60,8 +60,8 @@ class HelperManager
      * @param $name
      * @param $arguments
      *
-     * @return Helper
      * @throws HelperException
+     * @return Helper
      */
     public function __call($name, $arguments)
     {

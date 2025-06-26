@@ -1,9 +1,9 @@
 <?php
 
+use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\Out;
-use Sprint\Migration\VersionConfig;
 
 $request = Bitrix\Main\Context::getCurrent()->getRequest();
 
@@ -16,8 +16,9 @@ if ($request->isPost() && check_bitrix_sessid()) {
     }
 
     if ($request->getPost("configuration_remove")) {
-        $versionConfig = new VersionConfig();
-        if ($versionConfig->deleteConfig($request->getPost('configuration_name'))) {
+        if (ConfigManager::getInstance()->deleteConfig(
+            $request->getPost('configuration_name')
+        )) {
             Out::outSuccess(
                 Locale::getMessage('BUILDER_Cleaner_success')
             );
@@ -29,8 +30,9 @@ if ($request->isPost() && check_bitrix_sessid()) {
     }
 
     if ($request->getPost("configuration_create")) {
-        $versionConfig = new VersionConfig();
-        if ($versionConfig->createConfig($request->getPost('configuration_name'))) {
+        if (ConfigManager::getInstance()->createConfig(
+            $request->getPost('configuration_name')
+        )) {
             Out::outSuccess(
                 Locale::getMessage('BUILDER_Configurator_success')
             );

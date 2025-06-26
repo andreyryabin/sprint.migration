@@ -6,6 +6,7 @@ use Bitrix\Main\EventManager;
 use CGroup;
 use CUser;
 use Sprint\Migration\Enum\VersionEnum;
+use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Traits\CurrentUserTrait;
 
@@ -28,12 +29,15 @@ class Console
 
         $this->command = $this->initializeArgs($args);
 
-        $this->versionConfig = new VersionConfig($this->getArg('--config='));
+        $this->versionConfig = ConfigManager::getInstance()->get(
+            $this->getArg('--config=', VersionEnum::CONFIG_DEFAULT)
+        );
+
         $this->versionManager = new VersionManager($this->versionConfig);
 
         $this->disableAuthHandlersIfNeed();
 
-        $userlogin = $this->versionConfig->getCurrent()->getVal('console_user');
+        $userlogin = $this->versionConfig->getVal('console_user');
         if ($userlogin == 'admin') {
             $this->authorizeAsAdmin();
         } elseif (str_starts_with($userlogin, 'login:')) {
@@ -45,7 +49,7 @@ class Console
     /**
      * @throws MigrationException
      */
-    public function executeConsoleCommand()
+    public function executeConsoleCommand(): void
     {
         if (empty($this->command)) {
             $this->commandInfo();
@@ -62,7 +66,7 @@ class Console
         }
     }
 
-    public function authorizeAsLogin($login)
+    public function authorizeAsLogin($login): void
     {
         global $USER;
         $dbres = CUser::GetByLogin($login);
@@ -72,7 +76,7 @@ class Console
         }
     }
 
-    public function authorizeAsAdmin()
+    public function authorizeAsAdmin(): void
     {
         global $USER;
 
@@ -102,17 +106,17 @@ class Console
 
     /**
      * @noinspection PhpUnused
-     * @throws MigrationException
+     * @throws BuilderException
      */
-    public function commandRun()
+    public function commandRun(): void
     {
         $this->executeBuilder($this->getArg(0));
     }
 
     /**
-     * @throws MigrationException
+     * @throws BuilderException
      */
-    public function commandCreate()
+    public function commandCreate(): void
     {
         /** @compability */
         $descr = $this->getArg(0);
@@ -137,7 +141,7 @@ class Console
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function commandMark()
+    public function commandMark(): void
     {
         $search = $this->getArg(0);
         $status = $this->getArg('--as=');
@@ -156,7 +160,7 @@ class Console
     /**
      * @throws MigrationException
      */
-    public function commandDelete()
+    public function commandDelete(): void
     {
         Out::outMessages(
             $this->versionManager->deleteMigration($this->getArg(0))
@@ -167,7 +171,7 @@ class Console
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function commandDel()
+    public function commandDel(): void
     {
         $this->commandDelete();
     }
@@ -175,7 +179,7 @@ class Console
     /**
      * @throws MigrationException
      */
-    public function commandList()
+    public function commandList(): void
     {
         if ($this->getArg('--new')) {
             $status = VersionEnum::STATUS_NEW;
@@ -217,7 +221,7 @@ class Console
             $descrColumn = Out::prepareToConsole(
                 $item['description'],
                 [
-                    'tracker_task_url' => $this->versionConfig->getCurrent()->getVal('tracker_task_url'),
+                    'tracker_task_url' => $this->versionConfig->getVal('tracker_task_url'),
                 ]
             );
 
@@ -265,15 +269,16 @@ class Console
     }
 
     /**
-     * @throws MigrationException
+     * @noinspection PhpUnused
      */
-    public function commandConfig()
+    public function commandConfig(): void
     {
-        $currentConfig = $this->versionConfig->getCurrent();
+        Out::out('%s: %s',
+            Locale::getMessage('CONFIG'),
+            $this->versionConfig->getTitle()
+        );
 
-        Out::out('%s: %s', Locale::getMessage('CONFIG'), $currentConfig->getTitle());
-
-        foreach ($currentConfig->humanValues() as $configKey => $configValue) {
+        foreach ($this->versionConfig->humanValues() as $configKey => $configValue) {
             Out::out('┌─');
             Out::out('│ ' . Locale::getMessage('CONFIG_' . $configKey));
             Out::out('│ ' . $configKey);
@@ -294,7 +299,7 @@ class Console
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function commandUp()
+    public function commandUp(): void
     {
         if ($this->hasArguments()) {
             foreach ($this->getArguments() as $versionName) {
@@ -315,7 +320,7 @@ class Console
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function commandDown()
+    public function commandDown(): void
     {
         if ($this->hasArguments()) {
             foreach ($this->getArguments() as $versionName) {
@@ -335,7 +340,7 @@ class Console
     /**
      * @noinspection PhpUnused
      */
-    public function commandRedo()
+    public function commandRedo(): void
     {
         foreach ($this->getArguments() as $versionName) {
             $this->executeVersion($versionName, VersionEnum::ACTION_DOWN);
@@ -343,7 +348,7 @@ class Console
         }
     }
 
-    public function commandInfo()
+    public function commandInfo(): void
     {
         Out::out(
             Locale::getMessage('MODULE_NAME')
@@ -364,11 +369,12 @@ class Console
 
         Out::out('');
         Out::out(Locale::getMessage('CONFIG_LIST') . ':');
-        foreach ($this->versionConfig->getConfigList() as $configItem) {
-            if ($configItem['name'] == $this->versionConfig->getCurrent()->getName()) {
-                Out::out('  ' . $configItem['title'] . ' *');
+
+        foreach (ConfigManager::getInstance()->getList() as $configItem) {
+            if ($configItem->getName() == $this->versionConfig->getName()) {
+                Out::out('  ' . $configItem->getTitle() . ' *');
             } else {
-                Out::out('  ' . $configItem['title']);
+                Out::out('  ' . $configItem->getTitle());
             }
         }
         Out::out('');
@@ -389,7 +395,7 @@ class Console
     /**
      * @noinspection PhpUnused
      */
-    public function commandHelp()
+    public function commandHelp(): void
     {
         if (Locale::getLang() == 'en') {
             Out::out(file_get_contents(Module::getModuleDir() . '/commands-en.txt'));
@@ -402,16 +408,16 @@ class Console
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function commandLs()
+    public function commandLs(): void
     {
         $this->commandList();
     }
 
     /**
      * @noinspection PhpUnused
-     * @throws MigrationException
+     * @throws BuilderException
      */
-    public function commandAdd()
+    public function commandAdd(): void
     {
         $this->commandCreate();
     }
@@ -420,7 +426,7 @@ class Console
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function commandMigrate()
+    public function commandMigrate(): void
     {
         $this->executeAll([
             'search'   => $this->getArg('--search='),
@@ -435,16 +441,17 @@ class Console
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function commandMi()
+    public function commandMi(): void
     {
         /** @compability */
         $this->commandMigrate();
     }
 
     /**
+     * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function commandExecute()
+    public function commandExecute(): void
     {
         foreach ($this->getArguments() as $versionName) {
             if ($this->getArg('--down')) {
@@ -458,7 +465,7 @@ class Console
     /**
      * @throws MigrationException
      */
-    protected function executeAll($filter, $action)
+    protected function executeAll($filter, $action): void
     {
         $success = 0;
         $fails = 0;
@@ -491,7 +498,7 @@ class Console
     /**
      * @throws MigrationException
      */
-    protected function executeOnce(string $version, string $action)
+    protected function executeOnce(string $version, string $action): void
     {
         $ok = $this->executeVersion($version, $action);
 
@@ -540,9 +547,9 @@ class Console
     }
 
     /**
-     * @throws MigrationException
+     * @throws BuilderException
      */
-    protected function executeBuilder(string $from, array $postvars = [])
+    protected function executeBuilder(string $from, array $postvars = []): void
     {
         do {
             $builder = $this->versionManager->createBuilder($from, $postvars);
@@ -582,7 +589,7 @@ class Console
         return $command;
     }
 
-    protected function addArg($arg)
+    protected function addArg($arg): void
     {
         [$name, $val] = explode('=', $arg);
 
@@ -606,25 +613,25 @@ class Console
         }
     }
 
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return $this->arguments;
     }
 
-    protected function hasArguments()
+    protected function hasArguments(): bool
     {
         return !empty($this->arguments);
     }
 
-    private function disableAuthHandlersIfNeed()
+    private function disableAuthHandlersIfNeed(): void
     {
-        if ($this->versionConfig->getCurrent()->getVal('console_auth_events_disable')) {
+        if ($this->versionConfig->getVal('console_auth_events_disable')) {
             $this->disableHandler('main', 'OnAfterUserAuthorize');
             $this->disableHandler('main', 'OnUserLogin');
         }
     }
 
-    private function disableHandler(string $moduleId, string $eventType)
+    private function disableHandler(string $moduleId, string $eventType): void
     {
         $eventManager = EventManager::getInstance();
         $handlers = $eventManager->findEventHandlers($moduleId, $eventType);
