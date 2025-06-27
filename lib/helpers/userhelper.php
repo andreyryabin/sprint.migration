@@ -11,7 +11,7 @@ class UserHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function getUserIdByLoginIfExists(string $userLogin): int
+    public function getUserIdByLogin(string $userLogin): int
     {
         $item = CUser::GetByLogin($userLogin)->Fetch();
 
@@ -25,7 +25,7 @@ class UserHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function getUserLoginByIdIfExists(int $userId): string
+    public function getUserLoginById(int $userId): string
     {
         $item = CUser::GetByID($userId)->Fetch();
 

@@ -341,7 +341,7 @@ trait IblockTrait
         $result = [];
         foreach ($permissions as $permissionId => $permission) {
             $permission['ID'] = $permissionId;
-            $permission['TASK_ID'] = $taskHelper->getTaskNameByIdIfExists('iblock', $permission['TASK_ID']);
+            $permission['TASK_ID'] = $taskHelper->getTaskNameById('iblock', $permission['TASK_ID']);
             $permission['GROUP_CODE'] = $taskHelper->transformExtendedGroupCode($permission['GROUP_CODE']);
 
             $this->unsetKeys($permission, ['ENTITY_TYPE', 'ENTITY_ID', 'ID']);
@@ -364,7 +364,7 @@ trait IblockTrait
         foreach ($permissions as $index => $permission) {
             $permission = $this->merge($permission, $this->getDefaultExtendedPermission());
 
-            $permission['TASK_ID'] = $taskHelper->getTaskIdByNameIfExists('iblock', $permission['TASK_ID']);
+            $permission['TASK_ID'] = $taskHelper->getTaskIdByName('iblock', $permission['TASK_ID']);
             $permission['GROUP_CODE'] = $taskHelper->revertExtendedGroupCode($permission['GROUP_CODE']);
 
             $result['n' . $index] = $permission;

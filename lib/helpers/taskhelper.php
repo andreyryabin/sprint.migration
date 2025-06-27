@@ -11,12 +11,12 @@ class TaskHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function getTaskNameByIdIfExists(string $moduleId, int $taskId)
+    public function getTaskNameById(string $moduleId, int $taskId): string
     {
         $task = CTask::GetList([], ['ID' => $taskId, 'MODULE_ID' => $moduleId])->Fetch();
 
         if (!empty($task['NAME'])) {
-            return $task['NAME'];
+            return (string)$task['NAME'];
         }
 
         throw new HelperException("Task with id=\"$taskId\" in module=\"$moduleId\ not found");
@@ -25,12 +25,12 @@ class TaskHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function getTaskIdByNameIfExists(string $moduleId, string $taskName)
+    public function getTaskIdByName(string $moduleId, string $taskName): int
     {
         $task = CTask::GetList([], ['NAME' => $taskName, 'MODULE_ID' => $moduleId])->Fetch();
 
         if (!empty($task['ID'])) {
-            return $task['ID'];
+            return (int)$task['ID'];
         }
 
         throw new HelperException("Task with name=\"$taskName\" in module=\"$moduleId\ not found");
@@ -55,7 +55,7 @@ class TaskHelper extends Helper
             $userId = mb_substr($groupCode, 1);
 
             $userHelper = new UserHelper();
-            $userLogin = $userHelper->getUserLoginByIdIfExists($userId);
+            $userLogin = $userHelper->getUserLoginById($userId);
 
             return $prefix . $userLogin;
         }
@@ -82,7 +82,7 @@ class TaskHelper extends Helper
             $userLogin = mb_substr($groupCode, 1);
 
             $userHelper = new UserHelper();
-            $userId = $userHelper->getUserIdByLoginIfExists($userLogin);
+            $userId = $userHelper->getUserIdByLogin($userLogin);
 
             return $prefix . $userId;
         }
