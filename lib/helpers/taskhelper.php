@@ -46,7 +46,7 @@ class TaskHelper extends Helper
             $groupId = mb_substr($groupCode, 1);
 
             $groupHelper = new UserGroupHelper();
-            $stringId = $groupHelper->getGroupCodeByIdIfExists($groupId);
+            $stringId = $groupHelper->getGroupCodeIfExists($groupId);
 
             return $prefix . $stringId;
         }
@@ -73,7 +73,7 @@ class TaskHelper extends Helper
             $stringId = mb_substr($groupCode, 1);
 
             $groupHelper = new UserGroupHelper();
-            $groupId = $groupHelper->getGroupIdByCodeIfExists($stringId);
+            $groupId = $groupHelper->getGroupIdIfExists($stringId);
 
             return $prefix . $groupId;
         }

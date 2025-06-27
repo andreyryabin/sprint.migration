@@ -89,7 +89,7 @@ class UserGroupHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function getGroupIdByCodeIfExists(int|string $code): int
+    public function getGroupIdIfExists(int|string $code): int
     {
         $group = $this->getGroupIfExists($code);
         return (int)$group['ID'];
@@ -98,7 +98,7 @@ class UserGroupHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function getGroupCodeByIdIfExists(int|string $id): string
+    public function getGroupCodeIfExists(int|string $id): string
     {
         $group = $this->getGroupIfExists($id);
         return (string)$group['STRING_ID'];
