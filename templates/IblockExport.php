@@ -47,6 +47,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 <?php if (!empty($iblockPermissions)): ?>
     $helper->Iblock()->saveGroupPermissions($iblockId, <?php echo var_export($iblockPermissions, 1) ?>);
 <?php endif; ?>
+<?php if (!empty($extendedPermissions)): ?>
+    $helper->Iblock()->saveExtendedPermissions($iblockId, <?php echo var_export($extendedPermissions, 1) ?>);
+<?php endif; ?>
 <?php if (!empty($iblockProperties)): ?>
 <?php foreach ($iblockProperties as $iblockProperty) { ?>
         $helper->Iblock()->saveProperty($iblockId, <?php echo var_export($iblockProperty, 1) ?>);

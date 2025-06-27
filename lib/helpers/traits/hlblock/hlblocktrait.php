@@ -627,7 +627,7 @@ trait HlblockTrait
         throw new HelperException(
             Locale::getMessage(
                 'ERR_HLBLOCK_NOT_FOUND',
-                ['#HLBLOCK#' => is_array($hlblockName) ? var_export($hlblockName, true) : $hlblockName]
+                ['#HLBLOCK#' => is_array($hlblockName) ? print_r($hlblockName, true) : $hlblockName]
             )
         );
     }
@@ -710,17 +710,8 @@ trait HlblockTrait
      */
     public function getHlblockUid(int|string $hlblockName)
     {
-        $hlblock = $this->getHlblock($hlblockName);
-        if (!empty($hlblock['NAME'])) {
-            return $hlblock['NAME'];
-        }
-
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_HLBLOCK_NOT_FOUND',
-                ['#HLBLOCK#' => is_array($hlblock) ? print_r($hlblock, true) : $hlblock]
-            )
-        );
+        $hlblock = $this->getHlblockIfExists($hlblockName);
+        return $hlblock['NAME'];
     }
 
     /**
