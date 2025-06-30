@@ -11,21 +11,17 @@ use Sprint\Migration\Helpers\UserGroupHelper;
 trait HlblockGroupTrait
 {
     /**
-     * @param $hlblockId
-     *
      * @throws HelperException
-     * @return array
      */
-    public function exportGroupPermissions($hlblockId)
+    public function exportGroupPermissions(int $hlblockId): array
     {
         $groupHelper = new UserGroupHelper();
         $permissions = $this->getGroupPermissions($hlblockId);
 
         $result = [];
         foreach ($permissions as $groupId => $letter) {
-            $groupCode = $groupHelper->getGroupCode($groupId);
-            $groupCode = !empty($groupCode) ? $groupCode : $groupId;
-            $result[$groupCode] = $letter;
+            $stringId = $groupHelper->getGroupCodeIfExists($groupId);
+            $result[$stringId] = $letter;
         }
 
         return $result;
@@ -35,47 +31,25 @@ trait HlblockGroupTrait
      * Получает права доступа к highload-блоку для групп
      * возвращает массив вида [$groupId => $letter]
      *
-     * @param $hlblockId
-     *
-     * @return array
+     * @throws HelperException
      */
-    public function getGroupPermissions($hlblockId)
+    public function getGroupPermissions(int $hlblockId): array
     {
         $permissions = [];
-        $rights = $this->getGroupRights($hlblockId);
-        foreach ($rights as $right) {
+        foreach ($this->getGroupRightsWithLetters($hlblockId) as $right) {
             $permissions[$right['GROUP_ID']] = $right['LETTER'];
         }
         return $permissions;
     }
 
     /**
-     * @param int $hlblockId
-     *
      * @throws HelperException
-     * @return array
      */
-    protected function getGroupRights($hlblockId)
+    protected function getGroupRightsWithLetters(int $hlblockId): array
     {
         $result = [];
-        if (!class_exists('\Bitrix\Highloadblock\HighloadBlockRightsTable')) {
-            return $result;
-        }
-
-        try {
-            $items = HighloadBlockRightsTable::getList(
-                [
-                    'filter' => [
-                        'HL_ID' => $hlblockId,
-                    ],
-                ]
-            )->fetchAll();
-        } catch (Exception $e) {
-            throw new HelperException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        foreach ($items as $item) {
-            if (strpos($item['ACCESS_CODE'], 'G') !== 0) {
+        foreach ($this->getHlblockRights($hlblockId) as $item) {
+            if (!str_starts_with($item['ACCESS_CODE'], 'G')) {
                 continue;
             }
 
@@ -98,13 +72,16 @@ trait HlblockGroupTrait
         return $result;
     }
 
-    public function saveGroupPermissions($hlblockId, $permissions = [])
+    /**
+     * @throws HelperException
+     */
+    public function saveGroupPermissions(int $hlblockId, array $permissions = []): void
     {
         $groupHelper = new UserGroupHelper();
 
         $result = [];
         foreach ($permissions as $groupCode => $letter) {
-            $groupId = is_numeric($groupCode) ? $groupCode : $groupHelper->getGroupId($groupCode);
+            $groupId = $groupHelper->getGroupIdIfExists($groupCode);
             $result[$groupId] = $letter;
         }
 
@@ -113,25 +90,16 @@ trait HlblockGroupTrait
 
     /**
      * Устанавливает права доступа к highload-блоку для групп
-     * предыдущие права сбрасываются
-     * принимает массив вида [$groupId => $letter]
-     *
-     * @param int   $hlblockId
-     * @param array $permissions
+     * предыдущие права сбрасываются, принимает массив вида [$groupId => $letter]
      *
      * @throws HelperException
-     * @return bool
      */
-    public function setGroupPermissions($hlblockId, $permissions = [])
+    public function setGroupPermissions(int $hlblockId, array $permissions = []): void
     {
-        if (!class_exists('\Bitrix\Highloadblock\HighloadBlockRightsTable')) {
-            return false;
-        }
-
-        $rights = $this->getGroupRights($hlblockId);
+        $this->checkHlblockRightsTable();
 
         try {
-            foreach ($rights as $right) {
+            foreach ($this->getGroupRightsWithLetters($hlblockId) as $right) {
                 HighloadBlockRightsTable::delete($right['ID']);
             }
 
@@ -151,7 +119,5 @@ trait HlblockGroupTrait
         } catch (Exception $e) {
             throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
-
-        return true;
     }
 }

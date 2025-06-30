@@ -31,6 +31,9 @@ class Helper
         }
     }
 
+    /**
+     * @return bool
+     */
     public function isEnabled()
     {
         return true;

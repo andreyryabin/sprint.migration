@@ -89,7 +89,7 @@ class HlblockBuilder extends VersionBuilder
         }
 
         if (in_array('hlblockPermissions', $what)) {
-            $hlblockPermissions = $helper->Hlblock()->exportGroupPermissions($hlblockId);
+            $hlblockPermissions = $helper->Hlblock()->exportExtendedPermissions($hlblockId);
         }
 
         if (in_array('hlblockUserOptions', $what)) {

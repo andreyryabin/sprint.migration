@@ -18,10 +18,8 @@ class DeliveryServiceHelper extends Helper
 {
     /**
      * DeliveryServiceHelper constructor.
-     *
-     * @return bool
      */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->checkModules(['sale']);
     }
