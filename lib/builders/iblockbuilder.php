@@ -88,6 +88,7 @@ class IblockBuilder extends VersionBuilder
         $iblockProperties = [];
         $iblockFields = [];
         $iblockPermissions = [];
+        $extendedPermissions = [];
 
         $exportElementForm = [];
         $exportSectionForm = [];
@@ -133,7 +134,12 @@ class IblockBuilder extends VersionBuilder
         }
 
         if (in_array('iblockPermissions', $what)) {
-            $iblockPermissions = $helper->Iblock()->exportGroupPermissions($iblockId);
+            //\Bitrix\Iblock\IblockTable::RIGHTS_EXTENDED
+            if ($iblock['RIGHTS_MODE'] == 'E') {
+                $extendedPermissions = $helper->Iblock()->exportExtendedPermissions($iblockId);
+            } else {
+                $iblockPermissions = $helper->Iblock()->exportGroupPermissions($iblockId);
+            }
         }
 
         if (in_array('iblockUserOptions', $what)) {
@@ -148,18 +154,19 @@ class IblockBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockExport'),
             [
-                'iblockExport'      => $iblockExport,
-                'iblock'            => $iblock,
-                'iblockType'        => $iblockType,
-                'iblockFields'      => $iblockFields,
-                'iblockPermissions' => $iblockPermissions,
-                'iblockProperties'  => $iblockProperties,
-                'exportElementForm' => $exportElementForm,
-                'exportSectionForm' => $exportSectionForm,
-                'exportElementList' => $exportElementList,
-                'exportSectionList' => $exportSectionList,
-                'exportElementGrid' => $exportElementGrid,
-                'exportSectionGrid' => $exportSectionGrid,
+                'iblockExport'        => $iblockExport,
+                'iblock'              => $iblock,
+                'iblockType'          => $iblockType,
+                'iblockFields'        => $iblockFields,
+                'iblockPermissions'   => $iblockPermissions,
+                'extendedPermissions' => $extendedPermissions,
+                'iblockProperties'    => $iblockProperties,
+                'exportElementForm'   => $exportElementForm,
+                'exportSectionForm'   => $exportSectionForm,
+                'exportElementList'   => $exportElementList,
+                'exportSectionList'   => $exportSectionList,
+                'exportElementGrid'   => $exportElementGrid,
+                'exportSectionGrid'   => $exportSectionGrid,
             ]
         );
     }

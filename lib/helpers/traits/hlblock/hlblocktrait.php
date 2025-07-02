@@ -187,41 +187,34 @@ trait HlblockTrait
     /**
      * @throws HelperException
      */
-    public function getFieldUid(array|int|string $hlblockName, $field): string
+    public function getFieldNameById(int $hlblockId, int $fieldId): string
     {
         $entityHelper = new UserTypeEntityHelper();
 
-        if (!is_array($field)) {
-            //на вход пришел id или название поля
-            if (is_numeric($field)) {
-                $field = $entityHelper->getUserTypeEntityById($field);
-            } else {
-                $field = $entityHelper->getUserTypeEntity(
-                    $this->getEntityId($hlblockName),
-                    $field
-                );
-            }
-        }
+        $field = $entityHelper->getUserTypeEntityById($fieldId);
 
-        if (!empty($field['FIELD_NAME'])) {
+        $entityId = $this->getEntityId($hlblockId);
+
+        if (!empty($field['FIELD_NAME']) && $entityId == $field['ENTITY_ID']) {
             return $field['FIELD_NAME'];
         }
+
         throw new HelperException(Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND'));
     }
 
     /**
      * @throws HelperException
      */
-    public function getFieldType(array|int|string $hlblockName, $fieldName)
+    public function getFieldType(int $hlblockId, string $fieldName)
     {
-        $field = $this->getField($hlblockName, $fieldName);
+        $field = $this->getField($hlblockId, $fieldName);
         return $field['USER_TYPE_ID'];
     }
 
     /**
      * @throws HelperException
      */
-    public function getFieldSettings(array|int|string $hlblockName, $fieldName)
+    public function getFieldSettings(int $hlblockName, string $fieldName)
     {
         $field = $this->getField($hlblockName, $fieldName);
         return $field['SETTINGS'];
@@ -262,29 +255,20 @@ trait HlblockTrait
     }
 
     /**
-     * @param $hlblockName
-     * @param $fieldName
-     *
      * @throws HelperException
-     * @return bool
      */
-    public function isFieldMultiple($hlblockName, $fieldName): bool
+    public function isFieldMultiple(int $hlblockId, string $fieldName): bool
     {
-        $field = $this->getField($hlblockName, $fieldName);
+        $field = $this->getField($hlblockId, $fieldName);
         return ($field['MULTIPLE'] == 'Y');
     }
 
     /**
-     * @param $hlblockName
-     * @param $fieldName
-     * @param $xmlId
-     *
      * @throws HelperException
-     * @return mixed|string
      */
-    public function getFieldEnumIdByXmlId($hlblockName, $fieldName, $xmlId)
+    public function getFieldEnumIdByXmlId(int $hlblockId, string $fieldName, $xmlId)
     {
-        $field = $this->getField($hlblockName, $fieldName);
+        $field = $this->getField($hlblockId, $fieldName);
         if (empty($field['ENUM_VALUES']) || !is_array($field['ENUM_VALUES'])) {
             return '';
         }
@@ -301,9 +285,9 @@ trait HlblockTrait
     /**
      * @throws HelperException
      */
-    public function getFieldEnumXmlIdById($hlblockName, $fieldName, $valueId)
+    public function getFieldEnumXmlIdById(int $hlblockId, string $fieldName, $valueId)
     {
-        $field = $this->getField($hlblockName, $fieldName);
+        $field = $this->getField($hlblockId, $fieldName);
         if (empty($field['ENUM_VALUES']) || !is_array($field['ENUM_VALUES'])) {
             return '';
         }
@@ -340,21 +324,11 @@ trait HlblockTrait
     /**
      * @throws HelperException
      */
-    public function getFieldIdByUid($hlblockName, $fieldUid)
+    public function getFieldIdByName(string $hlblockName, string $fieldName): int
     {
-        $fieldId = 0;
+        $field = $this->getField($hlblockName, $fieldName);
 
-        if (empty($fieldUid)) {
-            return $fieldId;
-        }
-
-        if (is_numeric($fieldUid)) {
-            return $fieldUid;
-        }
-
-        $field = $this->getField($hlblockName, $fieldUid);
-
-        return ($field) ? (int)$field['ID'] : 0;
+        return !empty($field['ID']) ? (int)$field['ID'] : 0;
     }
 
     /**
@@ -364,11 +338,13 @@ trait HlblockTrait
      */
     public function saveField($hlblockName, array $field = []): int
     {
-        $field['ENTITY_ID'] = $this->getEntityId($hlblockName);
-
         $field = $this->prepareExportField($field);
 
         $entityHelper = new UserTypeEntityHelper();
+
+        $field['ENTITY_ID'] = $entityHelper->transformEntityId(
+            $this->getEntityId($hlblockName)
+        );
 
         return $entityHelper->saveUserTypeEntity($field);
     }
@@ -425,12 +401,9 @@ trait HlblockTrait
     /**
      * Добавляет highload-блок
      *
-     * @param array $fields
-     *
      * @throws HelperException
-     * @return int|void
      */
-    public function addHlblock($fields)
+    public function addHlblock(array $fields): int
     {
         $this->checkRequiredKeys($fields, ['NAME', 'TABLE_NAME']);
         $fields['NAME'] = ucfirst($fields['NAME']);
@@ -445,7 +418,7 @@ trait HlblockTrait
             $result = HighloadBlockTable::add($fields);
             if ($result->isSuccess()) {
                 $this->replaceHblockLangs($result->getId(), $lang);
-                return $result->getId();
+                return (int)$result->getId();
             }
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
@@ -455,12 +428,9 @@ trait HlblockTrait
     }
 
     /**
-     * @param int   $hlblockId
-     * @param array $lang
-     *
      * @throws Exception
      */
-    protected function replaceHblockLangs($hlblockId, $lang = [])
+    protected function replaceHblockLangs(int $hlblockId, array $lang = []): void
     {
         if (!empty($lang) && is_array($lang)) {
             $this->deleteHblockLangs($hlblockId);
@@ -469,12 +439,9 @@ trait HlblockTrait
     }
 
     /**
-     * @param int $hlblockId
-     *
-     * @throws Exception
-     * @return int
+     * @throws HelperException
      */
-    protected function deleteHblockLangs($hlblockId)
+    protected function deleteHblockLangs(int $hlblockId): int
     {
         $del = 0;
 
@@ -488,26 +455,22 @@ trait HlblockTrait
                     'filter' => ['ID' => $hlblockId],
                 ]
             )->fetchAll();
-        } catch (Exception $e) {
-            $items = [];
-        }
 
-        foreach ($items as $item) {
-            HighloadBlockLangTable::delete(['ID' => $item['ID'], 'LID' => $item['LID']]);
-            $del++;
+            foreach ($items as $item) {
+                HighloadBlockLangTable::delete(['ID' => $item['ID'], 'LID' => $item['LID']]);
+                $del++;
+            }
+        } catch (Exception $e) {
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
 
         return $del;
     }
 
     /**
-     * @param int   $hlblockId
-     * @param array $lang
-     *
      * @throws Exception
-     * @return int
      */
-    protected function addHblockLangs($hlblockId, $lang = [])
+    protected function addHblockLangs(int $hlblockId, array $lang = []): int
     {
         $add = 0;
 
@@ -562,15 +525,12 @@ trait HlblockTrait
     /**
      * Удаляет поле highload-блока
      *
-     * @param $hlblockName
-     * @param $fieldName
-     *
      * @throws HelperException
-     * @return bool
      */
-    public function deleteField($hlblockName, $fieldName)
+    public function deleteField(int|string $hlblockName, string $fieldName): bool
     {
         $entityHelper = new UserTypeEntityHelper();
+
         return $entityHelper->deleteUserTypeEntity(
             $this->getEntityId($hlblockName),
             $fieldName
@@ -579,14 +539,11 @@ trait HlblockTrait
 
     /**
      * Получает список полей highload-блока
-     * Данные подготовлены для экспорта в миграцию или схему
-     *
-     * @param $hlblockName
+     * Данные подготовлены для экспорта в миграцию
      *
      * @throws HelperException
-     * @return array
      */
-    public function exportFields($hlblockName)
+    public function exportFields(int|string $hlblockName): array
     {
         $entityHelper = new UserTypeEntityHelper();
         $fields = $entityHelper->exportUserTypeEntities(
@@ -607,7 +564,7 @@ trait HlblockTrait
      *
      * @throws HelperException
      */
-    public function exportHlblock($hlblockName): false|array
+    public function exportHlblock(int|string $hlblockName): false|array
     {
         $item = $this->getHlblock($hlblockName);
 
@@ -620,14 +577,14 @@ trait HlblockTrait
     public function getHlblockIfExists($hlblockName): array
     {
         $item = $this->getHlblock($hlblockName);
-        if ($item && isset($item['ID'])) {
+        if (!empty($item['ID'])) {
             return $item;
         }
 
         throw new HelperException(
             Locale::getMessage(
                 'ERR_HLBLOCK_NOT_FOUND',
-                ['#HLBLOCK#' => is_array($hlblockName) ? var_export($hlblockName, true) : $hlblockName]
+                ['#HLBLOCK#' => is_array($hlblockName) ? print_r($hlblockName, true) : $hlblockName]
             )
         );
     }
@@ -708,31 +665,19 @@ trait HlblockTrait
     /**
      * @throws HelperException
      */
-    public function getHlblockUid(int|string $hlblockName)
+    public function getHlblockNameById(int $hlblockId): string
     {
-        $hlblock = $this->getHlblock($hlblockName);
-        if (!empty($hlblock['NAME'])) {
-            return $hlblock['NAME'];
-        }
-
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_HLBLOCK_NOT_FOUND',
-                ['#HLBLOCK#' => is_array($hlblock) ? print_r($hlblock, true) : $hlblock]
-            )
-        );
+        $hlblock = $this->getHlblockIfExists($hlblockId);
+        return $hlblock['NAME'];
     }
 
     /**
      * @throws HelperException
      */
-    public function getHlblockIdByUid($hlblockUid): int
+    public function getHlblockIdByName(string $hlblockName): int
     {
-        if (empty($hlblockUid)) {
-            return 0;
-        }
-
-        return $this->getHlblockIdIfExists($hlblockUid);
+        $hlblock = $this->getHlblockIfExists($hlblockName);
+        return $hlblock['ID'];
     }
 
     /**
@@ -742,16 +687,7 @@ trait HlblockTrait
      */
     public function getHlblockIdIfExists($hlblockName): int
     {
-        $item = $this->getHlblock($hlblockName);
-        if ($item && isset($item['ID'])) {
-            return (int)$item['ID'];
-        }
-
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_HLBLOCK_NOT_FOUND',
-                ['#HLBLOCK#' => print_r($hlblockName, true)]
-            )
-        );
+        $hlblock = $this->getHlblockIfExists($hlblockName);
+        return $hlblock['ID'];
     }
 }

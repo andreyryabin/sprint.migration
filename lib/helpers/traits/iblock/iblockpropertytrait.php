@@ -24,6 +24,7 @@ trait IblockPropertyTrait
         $this->checkRequiredKeys($fields, ['CODE']);
 
         $exists = $this->getProperty($iblockId, $fields['CODE']);
+
         $fields = $this->prepareExportProperty($fields);
 
         if (empty($exists)) {
@@ -73,23 +74,26 @@ trait IblockPropertyTrait
 
     /**
      * Получает свойство инфоблока
+     *
+     * @throws HelperException
      */
     public function getProperty(int $iblockId, array|string $code): bool|array
     {
-        /** @compatibility filter or code */
-        $filter = is_array($code)
-            ? $code
-            : [
-                'CODE' => $code,
-            ];
+        /* do not use =CODE in filter */
+
+        $filter = is_array($code) ? $code : ['CODE' => $code];
 
         $filter['IBLOCK_ID'] = $iblockId;
         $filter['CHECK_PERMISSIONS'] = 'N';
-        /* do not use =CODE in filter */
+
         $property = CIBlockProperty::GetList(['SORT' => 'ASC'], $filter)->Fetch();
+
         return $property ? $this->prepareProperty($property) : false;
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function prepareProperty(array $property): array
     {
         if (!empty($property['ID']) && !empty($property['IBLOCK_ID'])) {
@@ -118,24 +122,16 @@ trait IblockPropertyTrait
 
     /**
      * Получает значения списков для свойств инфоблоков
-     *
-     * @param array $filter
-     *
-     * @return array
      */
-    public function getPropertyEnums($filter = [])
+    public function getPropertyEnums(array $filter = []): array
     {
-        $result = [];
         $dbres = CIBlockPropertyEnum::GetList(
             [
                 'SORT'  => 'ASC',
                 'VALUE' => 'ASC',
             ], $filter
         );
-        while ($item = $dbres->Fetch()) {
-            $result[] = $item;
-        }
-        return $result;
+        return $this->fetchAll($dbres);
     }
 
     /**
@@ -163,7 +159,10 @@ trait IblockPropertyTrait
         return $features;
     }
 
-    public function getSectionProperty($propertyId)
+    /**
+     * @throws HelperException
+     */
+    public function getSectionProperty(int $propertyId): array
     {
         try {
             $link = SectionPropertyTable::getList([
@@ -179,19 +178,15 @@ trait IblockPropertyTrait
                 'FILTER_HINT'      => $link['FILTER_HINT'],
             ] : [];
         } catch (Exception $e) {
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
-        return [];
     }
 
     /**
      * @throws HelperException
      */
-    protected function prepareExportProperty($prop)
+    protected function prepareExportProperty(array $prop): array
     {
-        if (empty($prop)) {
-            return $prop;
-        }
-
         if (!empty($prop['VALUES']) && is_array($prop['VALUES'])) {
             $exportValues = [];
 
@@ -220,7 +215,7 @@ trait IblockPropertyTrait
             $prop['FEATURES'] = $exportFeatures;
         }
 
-        if (!empty($prop['LINK_IBLOCK_ID'])) {
+        if (!empty($prop['LINK_IBLOCK_ID']) && is_numeric($prop['LINK_IBLOCK_ID'])) {
             $prop['LINK_IBLOCK_ID'] = $this->getIblockUid($prop['LINK_IBLOCK_ID']);
         }
 
@@ -237,13 +232,9 @@ trait IblockPropertyTrait
     /**
      * Добавляет свойство инфоблока
      *
-     * @param $iblockId
-     * @param $fields
-     *
      * @throws HelperException
-     * @return int|void
      */
-    public function addProperty($iblockId, $fields)
+    public function addProperty(int $iblockId, array $fields): int
     {
         $default = [
             'NAME'           => '',
@@ -271,13 +262,13 @@ trait IblockPropertyTrait
 
         $fields = array_replace_recursive($default, $fields);
 
-        if (false !== strpos($fields['PROPERTY_TYPE'], ':')) {
+        if (str_contains($fields['PROPERTY_TYPE'], ':')) {
             [$ptype, $utype] = explode(':', $fields['PROPERTY_TYPE']);
             $fields['PROPERTY_TYPE'] = $ptype;
             $fields['USER_TYPE'] = $utype;
         }
 
-        if (false !== strpos($fields['LINK_IBLOCK_ID'], ':')) {
+        if (str_contains($fields['LINK_IBLOCK_ID'], ':')) {
             $fields['LINK_IBLOCK_ID'] = $this->getIblockIdByUid($fields['LINK_IBLOCK_ID']);
         }
 
@@ -287,7 +278,7 @@ trait IblockPropertyTrait
         $propertyId = $ib->Add($fields);
 
         if ($propertyId) {
-            return $propertyId;
+            return (int)$propertyId;
         }
 
         throw new HelperException($ib->LAST_ERROR);
@@ -354,13 +345,8 @@ trait IblockPropertyTrait
 
     /**
      * Получает значения списков для свойства инфоблока
-     *
-     * @param $iblockId
-     * @param $propertyId
-     *
-     * @return array
      */
-    public function getPropertyEnumValues($iblockId, $propertyId)
+    public function getPropertyEnumValues(int $iblockId, int $propertyId): array
     {
         return $this->getPropertyEnums(
             [
@@ -373,56 +359,42 @@ trait IblockPropertyTrait
     /**
      * Получает свойство инфоблока
      *
-     * @param $iblockId
-     * @param $code int|array - код или фильтр
-     *
-     * @return int
+     * @throws HelperException
      */
-    public function getPropertyId($iblockId, $code)
+    public function getPropertyId(int $iblockId, array|string $code): int
     {
         $item = $this->getProperty($iblockId, $code);
-        return ($item && isset($item['ID'])) ? $item['ID'] : 0;
+        return !empty($item['ID']) ? (int)$item['ID'] : 0;
     }
 
     /**
      * Добавляет свойство инфоблока если его не существует
      *
-     * @param int   $iblockId
-     * @param array $fields
-     *
      * @throws HelperException
-     * @return bool
      */
-    public function addPropertyIfNotExists($iblockId, $fields)
+    public function addPropertyIfNotExists(int $iblockId, array $fields): int
     {
         $this->checkRequiredKeys($fields, ['CODE']);
 
         $property = $this->getProperty($iblockId, $fields['CODE']);
-        if ($property) {
-            return $property['ID'];
+        if (!empty($property['ID'])) {
+            return (int)$property['ID'];
         }
 
         return $this->addProperty($iblockId, $fields);
     }
 
     /**
-     * Получает свойство инфоблока
-     * Данные подготовлены для экспорта в миграцию или схему
-     *
-     * @param      $iblockId
-     * @param bool $code
+     * Получает свойство инфоблока, данные подготовлены для экспорта в миграцию
      *
      * @throws HelperException
-     * @return array|void
      */
-    public function exportProperty($iblockId, $code = false)
+    public function exportProperty(int $iblockId, array|string $code): array
     {
-        $export = $this->prepareExportProperty(
-            $this->getProperty($iblockId, $code)
-        );
+        $item = $this->getProperty($iblockId, $code);
 
-        if (!empty($export['CODE'])) {
-            return $export;
+        if (!empty($item['CODE'])) {
+            return $this->prepareExportProperty($item);
         }
 
         throw new HelperException(
@@ -435,26 +407,25 @@ trait IblockPropertyTrait
     /**
      * Получает свойства инфоблока
      * Данные подготовлены для экспорта в миграцию или схему
+     *
+     * @throws HelperException
      */
     public function exportProperties(int $iblockId, array $filter = []): array
     {
-        $exports = [];
-        $items = $this->getProperties($iblockId, $filter);
-        foreach ($items as $item) {
-            if (!empty($item['CODE'])) {
-                if (!empty($item['LINK_IBLOCK_ID'])) {
-                    try {
-                        $item['LINK_IBLOCK_ID'] = $this->getIblockUid($item['LINK_IBLOCK_ID']);
-                    } catch (HelperException $e) {
-                        continue;
-                    }
-                }
-                $exports[] = $this->prepareExportProperty($item);
-            }
-        }
-        return $exports;
+        $properties = array_filter(
+            $this->getProperties($iblockId, $filter),
+            fn($item) => !empty($item['CODE'])
+        );
+
+        return array_map(
+            fn($item) => $this->prepareExportProperty($item),
+            $properties
+        );
     }
 
+    /**
+     * @throws HelperException
+     */
     public function getProperties(int $iblockId, array $filter = []): array
     {
         $filter['IBLOCK_ID'] = $iblockId;
@@ -468,18 +439,13 @@ trait IblockPropertyTrait
 
         $dbres = CIBlockProperty::GetList(['SORT' => 'ASC', 'ID' => 'ASC'], $filter);
 
-        $result = [];
+        $properties = array_map(fn($item) => $this->prepareProperty($item), $this->fetchAll($dbres));
 
-        while ($property = $dbres->Fetch()) {
-            if ($filterIds) {
-                if (in_array($property['ID'], $filterIds)) {
-                    $result[] = $this->prepareProperty($property);
-                }
-            } else {
-                $result[] = $this->prepareProperty($property);
-            }
+        if ($filterIds) {
+            return array_filter($properties, fn($item) => in_array($item['ID'], $filterIds));
         }
-        return $result;
+
+        return $properties;
     }
 
     /**
@@ -524,31 +490,46 @@ trait IblockPropertyTrait
         return 0;
     }
 
-    public function getPropertyType($iblockId, $code)
+    /**
+     * @throws HelperException
+     */
+    public function getPropertyType(int $iblockId, string $code): string
     {
         $prop = $this->getProperty($iblockId, $code);
-        return $prop['PROPERTY_TYPE'];
+        return (string)$prop['PROPERTY_TYPE'];
     }
 
-    public function getPropertyUserType($iblockId, $code)
+    /**
+     * @throws HelperException
+     */
+    public function getPropertyUserType(int $iblockId, string $code): string
     {
         $prop = $this->getProperty($iblockId, $code);
-        return $prop['USER_TYPE'];
+        return (string)$prop['USER_TYPE'];
     }
 
-    public function getPropertyLinkIblockId($iblockId, $code)
+    /**
+     * @throws HelperException
+     */
+    public function getPropertyLinkIblockId(int $iblockId, string $code): int
     {
         $prop = $this->getProperty($iblockId, $code);
-        return $prop['LINK_IBLOCK_ID'];
+        return (int)$prop['LINK_IBLOCK_ID'];
     }
 
-    public function isPropertyMultiple($iblockId, $code)
+    /**
+     * @throws HelperException
+     */
+    public function isPropertyMultiple(int $iblockId, string $code): bool
     {
         $prop = $this->getProperty($iblockId, $code);
         return ($prop['MULTIPLE'] == 'Y');
     }
 
-    public function getPropertyEnumIdByXmlId($iblockId, $code, $xmlId)
+    /**
+     * @throws HelperException
+     */
+    public function getPropertyEnumIdByXmlId(int $iblockId, string $code, string|int $xmlId)
     {
         $prop = $this->getProperty($iblockId, $code);
         if (empty($prop['VALUES']) || !is_array($prop['VALUES'])) {

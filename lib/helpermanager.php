@@ -17,8 +17,10 @@ use Sprint\Migration\Helpers\MedialibHelper;
 use Sprint\Migration\Helpers\OptionHelper;
 use Sprint\Migration\Helpers\SiteHelper;
 use Sprint\Migration\Helpers\SqlHelper;
+use Sprint\Migration\Helpers\TaskHelper;
 use Sprint\Migration\Helpers\TextHelper;
 use Sprint\Migration\Helpers\UserGroupHelper;
+use Sprint\Migration\Helpers\UserHelper;
 use Sprint\Migration\Helpers\UserOptionsHelper;
 use Sprint\Migration\Helpers\UserTypeEntityHelper;
 
@@ -32,6 +34,8 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  * @method UserOptionsHelper        UserOptions()
  * @method UserTypeEntityHelper     UserTypeEntity()
  * @method UserGroupHelper          UserGroup()
+ * @method UserHelper               User()
+ * @method TaskHelper               Task()
  * @method OptionHelper             Option()
  * @method FormHelper               Form()
  * @method DeliveryServiceHelper    DeliveryService()

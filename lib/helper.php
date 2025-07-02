@@ -31,6 +31,9 @@ class Helper
         }
     }
 
+    /**
+     * @return bool
+     */
     public function isEnabled()
     {
         return true;
@@ -167,15 +170,15 @@ class Helper
         );
     }
 
-    protected function merge(array $item, array $default): array
+    protected function merge(array $item, array $defaultItem): array
     {
-        return array_merge($default, $item);
+        return array_merge($defaultItem, $item);
     }
 
-    protected function mergeCollection(array $collection, array $default): array
+    protected function mergeCollection(array $collection, array $defaultItem): array
     {
-        return array_map(function ($item) use ($default) {
-            return $this->merge($item, $default);
+        return array_map(function ($item) use ($defaultItem) {
+            return $this->merge($item, $defaultItem);
         }, $collection);
     }
 

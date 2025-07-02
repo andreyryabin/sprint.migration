@@ -23,7 +23,7 @@ class MedialibHelper extends Helper
         CMedialib::Init();
     }
 
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->checkModules(['fileman']);
     }

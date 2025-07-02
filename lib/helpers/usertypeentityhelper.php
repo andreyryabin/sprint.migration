@@ -192,9 +192,9 @@ class UserTypeEntityHelper extends Helper
      */
     public function exportUserTypeEntity(int $fieldId): bool|array
     {
-        return $this->prepareExportUserTypeEntity(
-            $this->getUserTypeEntityById($fieldId)
-        );
+        $item = $this->getUserTypeEntityById($fieldId);
+
+        return $item ? $this->prepareExportUserTypeEntity($item) : false;
     }
 
     /**
@@ -327,7 +327,7 @@ class UserTypeEntityHelper extends Helper
         if (str_starts_with($entityId, 'HLBLOCK_')) {
             $hlblockId = substr($entityId, 8);
             if (!is_numeric($hlblockId)) {
-                $hlblockId = (new HlblockHelper())->getHlblockIdByUid($hlblockId);
+                $hlblockId = (new HlblockHelper())->getHlblockIdByName($hlblockId);
             }
             return 'HLBLOCK_' . $hlblockId;
         }
@@ -345,7 +345,7 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
-     * Кодирует название объекта в вид удобный для экспорта в миграцию или схему
+     * Кодирует название объекта в вид удобный для экспорта в миграцию
      *
      * @throws HelperException
      */
@@ -354,7 +354,7 @@ class UserTypeEntityHelper extends Helper
         if (str_starts_with($entityId, 'HLBLOCK_')) {
             $hlblockId = substr($entityId, 8);
             if (is_numeric($hlblockId)) {
-                $hlblockId = (new HlblockHelper())->getHlblockUid($hlblockId);
+                $hlblockId = (new HlblockHelper())->getHlblockNameById($hlblockId);
             }
             return 'HLBLOCK_' . $hlblockId;
         }
@@ -408,7 +408,7 @@ class UserTypeEntityHelper extends Helper
      *
      * @throws HelperException
      */
-    public function saveUserTypeEntity($fields = []): int
+    public function saveUserTypeEntity(array $fields = []): int
     {
         if (func_num_args() > 1) {
             /** @compability */
@@ -423,8 +423,6 @@ class UserTypeEntityHelper extends Helper
             $this->revertEntityId($fields['ENTITY_ID']),
             $fields['FIELD_NAME']
         );
-
-        $fields = $this->prepareExportUserTypeEntity($fields);
 
         if (empty($exists)) {
             $ok = $this->addUserTypeEntity(
@@ -475,17 +473,12 @@ class UserTypeEntityHelper extends Helper
     /**
      * @throws HelperException
      */
-    protected function prepareExportUserTypeEntity(array|false $fields): array|false
+    protected function prepareExportUserTypeEntity(array $fields): array
     {
-        if (empty($fields)) {
-            return $fields;
-        }
-
         // Расширенные ошибки экспорта пользовательских полей
         try {
             $this->transformSettings($fields);
             $this->transformEnums($fields);
-
             $fields['ENTITY_ID'] = $this->transformEntityId($fields['ENTITY_ID']);
         } catch (HelperException $e) {
             $userTypeMessage = Locale::getMessage(
@@ -525,27 +518,20 @@ class UserTypeEntityHelper extends Helper
      */
     private function transformSettings(&$fields): void
     {
-        if (
-            $fields['USER_TYPE_ID'] == 'iblock_element'
-            || $fields['USER_TYPE_ID'] == 'iblock_section'
-        ) {
-            if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
-                $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockUid(
-                    $fields['SETTINGS']['IBLOCK_ID']
-                );
-            }
+        //USER_TYPE_ID = iblock_element|iblock_section|hlblock|...
+
+        if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
+            $iblockId = $fields['SETTINGS']['IBLOCK_ID'];
+            $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockUid($iblockId);
         }
-        if ($fields['USER_TYPE_ID'] == 'hlblock') {
-            if (!empty($fields['SETTINGS']['HLBLOCK_ID'])) {
-                $fields['SETTINGS']['HLBLOCK_ID'] = (new HlblockHelper())->getHlblockUid(
-                    $fields['SETTINGS']['HLBLOCK_ID']
-                );
-                if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
-                    $fields['SETTINGS']['HLFIELD_ID'] = (new HlblockHelper())->getFieldUid(
-                        $fields['SETTINGS']['HLBLOCK_ID'],
-                        $fields['SETTINGS']['HLFIELD_ID']
-                    );
-                }
+
+        if (!empty($fields['SETTINGS']['HLBLOCK_ID'])) {
+            $hlblockId = $fields['SETTINGS']['HLBLOCK_ID'];
+            $fields['SETTINGS']['HLBLOCK_ID'] = (new HlblockHelper())->getHlblockNameById($hlblockId);
+
+            if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
+                $fieldId = $fields['SETTINGS']['HLFIELD_ID'];
+                $fields['SETTINGS']['HLFIELD_ID'] = (new HlblockHelper())->getFieldNameById($hlblockId, $fieldId);
             }
         }
     }
@@ -555,27 +541,20 @@ class UserTypeEntityHelper extends Helper
      */
     private function revertSettings(&$fields): void
     {
-        if (
-            $fields['USER_TYPE_ID'] == 'iblock_element'
-            || $fields['USER_TYPE_ID'] == 'iblock_section'
-        ) {
-            if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
-                $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockIdByUid(
-                    $fields['SETTINGS']['IBLOCK_ID']
-                );
-            }
+        //USER_TYPE_ID = iblock_element|iblock_section|hlblock|...
+
+        if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
+            $iblockUid = $fields['SETTINGS']['IBLOCK_ID'];
+            $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockIdByUid($iblockUid);
         }
-        if ($fields['USER_TYPE_ID'] == 'hlblock') {
-            if (!empty($fields['SETTINGS']['HLBLOCK_ID'])) {
-                $fields['SETTINGS']['HLBLOCK_ID'] = (new HlblockHelper())->getHlblockIdByUid(
-                    $fields['SETTINGS']['HLBLOCK_ID']
-                );
-                if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
-                    $fields['SETTINGS']['HLFIELD_ID'] = (new HlblockHelper())->getFieldIdByUid(
-                        $fields['SETTINGS']['HLBLOCK_ID'],
-                        $fields['SETTINGS']['HLFIELD_ID']
-                    );
-                }
+
+        if (!empty($fields['SETTINGS']['HLBLOCK_ID'])) {
+            $hlblockName = $fields['SETTINGS']['HLBLOCK_ID'];
+            $fields['SETTINGS']['HLBLOCK_ID'] = (new HlblockHelper())->getHlblockIdByName($hlblockName);
+
+            if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
+                $fieldName = $fields['SETTINGS']['HLFIELD_ID'];
+                $fields['SETTINGS']['HLFIELD_ID'] = (new HlblockHelper())->getFieldIdByName($hlblockName, $fieldName);
             }
         }
     }

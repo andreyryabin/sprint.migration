@@ -26,23 +26,11 @@ class AgentBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $allAgents = array_map(function ($item) {
-            $item['MODULE_ID'] = $item['MODULE_ID'] ?: Locale::getMessage('BUILDER_AgentExport_empty_module');
-            return $item;
-        }, $this->getHelperManager()->Agent()->getList());
-
-        $moduleIds = $this->addFieldAndReturn('module_id', [
-            'title'       => Locale::getMessage('BUILDER_AgentExport_module_id'),
-            'placeholder' => '',
-            'multiple'    => 1,
-            'value'       => [],
-            'width'       => 250,
-            'select'      => $this->createSelect($allAgents, 'MODULE_ID', 'MODULE_ID'),
-        ]);
-
-        $selectAgents = array_filter($allAgents, function ($item) use ($moduleIds) {
-            return in_array($item['MODULE_ID'], $moduleIds);
-        });
+        $agents = array_map(fn($item) => [
+            'MODULE_ID' => $item['MODULE_ID'] ?: Locale::getMessage('BUILDER_AgentExport_empty_module'),
+            'ID'        => $item['ID'],
+            'NAME'      => $item['NAME'],
+        ], $helper->Agent()->getList());
 
         $agentIds = $this->addFieldAndReturn('agent_id', [
             'title'       => Locale::getMessage('BUILDER_AgentExport_agent_id'),
@@ -50,16 +38,13 @@ class AgentBuilder extends VersionBuilder
             'multiple'    => 1,
             'value'       => [],
             'width'       => 250,
-            'items'       => $this->createSelectWithGroups($selectAgents, 'ID', 'NAME', 'MODULE_ID'),
+            'items'       => $this->createSelectWithGroups($agents, 'ID', 'NAME', 'MODULE_ID'),
         ]);
 
-        $items = [];
-        foreach ($agentIds as $agentId) {
-            $agent = $helper->Agent()->exportAgentById($agentId);
-            if (!empty($agent)) {
-                $items[] = $agent;;
-            }
-        }
+        $items = array_map(
+            fn($agentId) => $helper->Agent()->exportAgentById($agentId),
+            $agentIds
+        );
 
         if (empty($items)) {
             $this->rebuildField('agent_id');

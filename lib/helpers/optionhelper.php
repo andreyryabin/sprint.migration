@@ -11,7 +11,7 @@ use Sprint\Migration\Locale;
 
 class OptionHelper extends Helper
 {
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return (
             class_exists('\Bitrix\Main\ModuleManager')
