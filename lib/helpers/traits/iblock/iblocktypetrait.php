@@ -11,14 +11,13 @@ trait IblockTypeTrait
 {
     /**
      * Получает тип инфоблока, бросает исключение если его не существует
-     * @param $typeId
+     *
      * @throws HelperException
-     * @return array|void
      */
-    public function getIblockTypeIfExists($typeId)
+    public function getIblockTypeIfExists($typeId): array
     {
         $item = $this->getIblockType($typeId);
-        if ($item && isset($item['ID'])) {
+        if (!empty($item['ID'])) {
             return $item;
         }
 
@@ -31,15 +30,14 @@ trait IblockTypeTrait
 
     /**
      * Получает id типа инфоблока, бросает исключение если его не существует
-     * @param $typeId
+     *
      * @throws HelperException
-     * @return int|void
      */
-    public function getIblockTypeIdIfExists($typeId)
+    public function getIblockTypeIdIfExists(array|string $typeId): string
     {
         $item = $this->getIblockType($typeId);
-        if ($item && isset($item['ID'])) {
-            return $item['ID'];
+        if (!empty($item['ID'])) {
+            return (string)$item['ID'];
         }
 
         throw new HelperException(
@@ -51,43 +49,35 @@ trait IblockTypeTrait
 
     /**
      * Получает тип инфоблока
-     * @param $typeId
-     * @return array
      */
-    public function getIblockType($typeId)
+    public function getIblockType(array|string $typeId): bool|array
     {
-        /** @compatibility filter or $typeId */
-        $filter = is_array($typeId) ? $typeId : [
-            '=ID' => $typeId,
-        ];
+        $filter = is_array($typeId) ? $typeId : ['=ID' => $typeId];
 
         $filter['CHECK_PERMISSIONS'] = 'N';
         $item = CIBlockType::GetList(['SORT' => 'ASC'], $filter)->Fetch();
 
-        if ($item) {
+        if (is_array($item) && !empty($item['ID'])) {
             $item['LANG'] = $this->getIblockTypeLangs($item['ID']);
+            return $item;
         }
 
-        return $item;
+        return false;
     }
 
     /**
      * Получает id типа инфоблока
-     * @param $typeId
-     * @return int|mixed
      */
-    public function getIblockTypeId($typeId)
+    public function getIblockTypeId($typeId): string
     {
-        $iblockType = $this->getIblockType($typeId);
-        return ($iblockType && isset($iblockType['ID'])) ? $iblockType['ID'] : 0;
+        $item = $this->getIblockType($typeId);
+        return !empty($item['ID']) ? (string)$item['ID'] : '';
     }
 
     /**
      * Получает типы инфоблоков
-     * @param array $filter
-     * @return array
      */
-    public function getIblockTypes($filter = [])
+    public function getIblockTypes(array $filter = []): array
     {
         $filter['CHECK_PERMISSIONS'] = 'N';
         $dbres = CIBlockType::GetList(['SORT' => 'ASC'], $filter);
@@ -102,17 +92,16 @@ trait IblockTypeTrait
 
     /**
      * Добавляет тип инфоблока, если его не существует
-     * @param array $fields
+     *
      * @throws HelperException
-     * @return mixed
      */
-    public function addIblockTypeIfNotExists($fields = [])
+    public function addIblockTypeIfNotExists(array $fields = []): string
     {
         $this->checkRequiredKeys($fields, ['ID']);
 
-        $iblockType = $this->getIblockType($fields['ID']);
-        if ($iblockType) {
-            return $iblockType['ID'];
+        $item = $this->getIblockType($fields['ID']);
+        if (!empty($item['ID'])) {
+            return (string)$item['ID'];
         }
 
         return $this->addIblockType($fields);
@@ -120,11 +109,10 @@ trait IblockTypeTrait
 
     /**
      * Добавляет тип инфоблока
-     * @param array $fields
+     *
      * @throws HelperException
-     * @return int|void
      */
-    public function addIblockType($fields = [])
+    public function addIblockType(array $fields = []): string
     {
         $default = [
             'ID'       => '',
@@ -149,7 +137,7 @@ trait IblockTypeTrait
 
         $ib = new CIBlockType;
         if ($ib->Add($fields)) {
-            return $fields['ID'];
+            return (string)$fields['ID'];
         }
 
         throw new HelperException($ib->LAST_ERROR);
@@ -157,16 +145,14 @@ trait IblockTypeTrait
 
     /**
      * Обновляет тип инфоблока
-     * @param $iblockTypeId
-     * @param array $fields
+     *
      * @throws HelperException
-     * @return int|void
      */
-    public function updateIblockType($iblockTypeId, $fields = [])
+    public function updateIblockType(string $typeId, array $fields): string
     {
         $ib = new CIBlockType;
-        if ($ib->Update($iblockTypeId, $fields)) {
-            return $iblockTypeId;
+        if ($ib->Update($typeId, $fields)) {
+            return $typeId;
         }
 
         throw new HelperException($ib->LAST_ERROR);
@@ -174,27 +160,24 @@ trait IblockTypeTrait
 
     /**
      * Удаляет тип инфоблока, если существует
-     * @param $typeId
+     *
      * @throws HelperException
-     * @return bool
      */
-    public function deleteIblockTypeIfExists($typeId)
+    public function deleteIblockTypeIfExists(array|string $typeId): bool
     {
-        $iblockType = $this->getIblockType($typeId);
-        if (!$iblockType) {
-            return false;
+        $item = $this->getIblockType($typeId);
+        if (!empty($item['ID'])) {
+            return $this->deleteIblockType($item['ID']);
         }
-
-        return $this->deleteIblockType($iblockType['ID']);
+        return false;
     }
 
     /**
      * Удаляет тип инфоблока
-     * @param $typeId
+     *
      * @throws HelperException
-     * @return bool
      */
-    public function deleteIblockType($typeId)
+    public function deleteIblockType(string $typeId): bool
     {
         if (CIBlockType::Delete($typeId)) {
             return true;
@@ -211,10 +194,8 @@ trait IblockTypeTrait
 
     /**
      * Получает языковые названия для типа инфоблока
-     * @param $typeId
-     * @return array
      */
-    public function getIblockTypeLangs($typeId)
+    public function getIblockTypeLangs(string $typeId): array
     {
         $lby = 'sort';
         $lorder = 'asc';
@@ -235,18 +216,15 @@ trait IblockTypeTrait
     }
 
     /**
-     * Сохраняет тип инфоблока
-     * Создаст если не было, обновит если существует и отличается
-     * @param array $fields
+     * Сохраняет тип инфоблока, создаст если не было, обновит если существует и отличается
+     *
      * @throws HelperException
-     * @return bool|mixed
      */
-    public function saveIblockType($fields = [])
+    public function saveIblockType(array $fields = []): string
     {
         $this->checkRequiredKeys($fields, ['ID']);
 
         $exists = $this->getIblockType($fields['ID']);
-        $fields = $this->prepareExportIblockType($fields);
 
         if (empty($exists)) {
             $ok = $this->addIblockType($fields);
@@ -262,8 +240,7 @@ trait IblockTypeTrait
             return $ok;
         }
 
-        $exportExists = $this->prepareExportIblockType($exists);
-        if ($this->hasDiff($exportExists, $fields)) {
+        if ($this->hasDiff($exists, $fields)) {
             $ok = $this->updateIblockType($exists['ID'], $fields);
             $this->outNoticeIf(
                 $ok,
@@ -274,33 +251,19 @@ trait IblockTypeTrait
                     ]
                 )
             );
-            $this->outDiffIf($ok, $exportExists, $fields);
+            $this->outDiffIf($ok, $exists, $fields);
 
             return $ok;
         }
 
-        return $fields['ID'];
+        return (string)$fields['ID'];
     }
 
     /**
-     * Получает тип инфоблока
-     * Данные подготовлены для экспорта в миграцию или схему
-     * @param $typeId
-     * @return mixed
+     * Получает тип инфоблока.
      */
-    public function exportIblockType($typeId)
+    public function exportIblockType(array|string $typeId): bool|array
     {
-        return $this->prepareExportIblockType(
-            $this->getIblockType($typeId)
-        );
-    }
-
-    protected function prepareExportIblockType($item)
-    {
-        if (empty($item)) {
-            return $item;
-        }
-
-        return $item;
+        return $this->getIblockType($typeId);
     }
 }

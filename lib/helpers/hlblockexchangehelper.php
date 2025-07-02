@@ -33,7 +33,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         return array_map(
             fn($hlblock) => [
                 'title' => Locale::getMessage('HLBLOCK_TITLE', $hlblock),
-                'value' => $hlblock['ID'],
+                'value' => (int)$hlblock['ID'],
             ],
             $this->getHlblocks()
         );
@@ -42,14 +42,14 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     /**
      * @throws HelperException
      */
-    public function getHlblockFieldsStructure($hlblockName): array
+    public function getHlblockFieldsStructure(int $hlblockId): array
     {
         return array_map(
             fn($field) => [
                 'title' => Locale::getMessage('HLBLOCK_FIELD', $field),
                 'value' => $field['FIELD_NAME'],
             ],
-            $this->getFields($hlblockName)
+            $this->getFields($hlblockId)
         );
     }
 
@@ -223,7 +223,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         [$hlblockId] = $vars;
 
         return [
-            'hlblockUid' => $this->getHlblockUid($hlblockId),
+            'hlblockUid' => $this->getHlblockNameById($hlblockId),
         ];
     }
 

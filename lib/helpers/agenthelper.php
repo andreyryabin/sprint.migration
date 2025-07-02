@@ -32,25 +32,38 @@ class AgentHelper extends Helper
     /**
      * Получает агента
      * Данные подготовлены для экспорта в миграцию или схему
+     *
+     * @throws HelperException
      */
-    public function exportAgent(string $moduleId, string $name): bool|array
+    public function exportAgent(string $moduleId, string $name): array
     {
         $item = $this->getAgent($moduleId, $name);
 
-        return $item ? $this->prepareExportAgent($item) : false;
+        if (!empty($item)) {
+            return $this->prepareExportAgent($item);
+        }
+
+        throw new HelperException("Agent with NAME=$name and MODULE_ID=$moduleId not found");
     }
 
-    public function exportAgentById(int $agentId): bool|array
+    /**
+     * @throws HelperException
+     */
+    public function exportAgentById(int $agentId): array
     {
         $item = $this->getAgentById($agentId);
 
-        return $item ? $this->prepareExportAgent($item) : false;
+        if (!empty($item)) {
+            return $this->prepareExportAgent($item);
+        }
+
+        throw new HelperException("Agent with ID=$agentId not found");
     }
 
     /**
      * Получает агента
      */
-    public function getAgent(string $moduleId, string $name)
+    public function getAgent(string $moduleId, string $name): bool|array
     {
         return CAgent::GetList(
             ['MODULE_ID' => 'ASC'],
@@ -58,20 +71,15 @@ class AgentHelper extends Helper
         )->Fetch();
     }
 
-    public function getAgentById(int $agentId)
+    public function getAgentById(int $agentId): bool|array
     {
         return CAgent::GetById($agentId)->Fetch();
     }
 
     /**
      * Удаляет агента
-     *
-     * @param $moduleId
-     * @param $name
-     *
-     * @return bool
      */
-    public function deleteAgent($moduleId, $name)
+    public function deleteAgent(string $moduleId, string $name): bool
     {
         CAgent::RemoveAgent($name, $moduleId);
         return true;
@@ -79,13 +87,8 @@ class AgentHelper extends Helper
 
     /**
      * Удаляет агента если существует
-     *
-     * @param $moduleId
-     * @param $name
-     *
-     * @return bool
      */
-    public function deleteAgentIfExists($moduleId, $name)
+    public function deleteAgentIfExists(string $moduleId, string $name): bool
     {
         $item = $this->getAgent($moduleId, $name);
         if (empty($item)) {
@@ -96,15 +99,11 @@ class AgentHelper extends Helper
     }
 
     /**
-     * Сохраняет агента
-     * Создаст если не было, обновит если существует и отличается
-     *
-     * @param array $fields
+     * Сохраняет агента, создаст если не было, обновит если существует и отличается
      *
      * @throws HelperException
-     * @return bool|mixed
      */
-    public function saveAgent(array $fields = [])
+    public function saveAgent(array $fields = []): int
     {
         $this->checkRequiredKeys($fields, ['NAME']);
 
@@ -150,7 +149,7 @@ class AgentHelper extends Helper
             return $ok;
         }
 
-        return $exists['ID'];
+        return (int)$exists['ID'];
     }
 
     /**
@@ -158,7 +157,7 @@ class AgentHelper extends Helper
      *
      * @throws HelperException
      */
-    public function updateAgent(array $fields)
+    public function updateAgent(array $fields): int
     {
         $this->checkRequiredKeys($fields, ['NAME']);
 
@@ -171,9 +170,8 @@ class AgentHelper extends Helper
      * Создание агента, бросает исключение в случае неудачи
      *
      * @throws HelperException
-     * @return bool|int
      */
-    public function addAgent(array $fields)
+    public function addAgent(array $fields): int
     {
         $this->checkRequiredKeys($fields, ['NAME']);
 
@@ -196,7 +194,7 @@ class AgentHelper extends Helper
         );
 
         if ($agentId) {
-            return $agentId;
+            return (int)$agentId;
         }
 
         $this->throwApplicationExceptionIfExists();
