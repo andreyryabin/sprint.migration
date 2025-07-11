@@ -34,12 +34,9 @@ class MedialibHelper extends Helper
     }
 
     /**
-     * @param string $code
-     *
      * @throws HelperException
-     * @return int|void
      */
-    public function getTypeIdByCode($code)
+    public function getTypeIdByCode(string $code): int
     {
         foreach ($this->getTypes() as $type) {
             if ($type['code'] == $code) {
@@ -50,13 +47,9 @@ class MedialibHelper extends Helper
     }
 
     /**
-     * @param string|int $typeId
-     * @param array      $params
-     *
      * @throws HelperException
-     * @return array
      */
-    public function getCollections($typeId, $params = [])
+    public function getCollections(int|string $typeId, array $params = []): array
     {
         $params = array_merge(
             [
@@ -85,15 +78,9 @@ class MedialibHelper extends Helper
     }
 
     /**
-     * @param       $typeId
-     * @param int   $parentId
-     * @param int   $depth
-     * @param array $path
-     *
      * @throws HelperException
-     * @return array
      */
-    public function getCollectionsTree($typeId, $parentId = 0, $depth = 0, $path = [])
+    public function getCollectionsTree(int|string $typeId, int $parentId = 0, int $depth = 0, array $path = []): array
     {
         $result = $this->getCollections($typeId, ['filter' => ['PARENT_ID' => $parentId]]);
         foreach ($result as $index => $item) {
@@ -106,7 +93,10 @@ class MedialibHelper extends Helper
         return $result;
     }
 
-    public function getCollectionsFlatTree($typeId)
+    /**
+     * @throws HelperException
+     */
+    public function getCollectionsFlatTree(int|string $typeId): array
     {
         $tree = $this->getCollectionsTree($typeId);
         $flat = [];
@@ -117,13 +107,9 @@ class MedialibHelper extends Helper
     }
 
     /**
-     * @param array|int $collectionId
-     * @param array     $params
-     *
      * @throws HelperException
-     * @return array|void
      */
-    public function getElements($collectionId, $params = [])
+    public function getElements(array|int $collectionId, array $params = []): array
     {
         $sqlhelper = (new SqlHelper());
 
@@ -146,7 +132,7 @@ SELECT MI.ID, MI.NAME, MI.DESCRIPTION, MI.KEYWORDS, MI.SOURCE_ID, MCI.COLLECTION
             b_medialib_item MI ON (MI.ID=MCI.ITEM_ID)
         INNER JOIN 
             b_file F ON (F.ID=MI.SOURCE_ID) 
-        WHERE {$whereQuery} {$limitQuery} ;
+        WHERE $whereQuery $limitQuery ;
 TAG;
 
         try {
@@ -157,13 +143,9 @@ TAG;
     }
 
     /**
-     * @param array|int $collectionId
-     * @param array     $params
-     *
      * @throws HelperException
-     * @return int
      */
-    public function getElementsCount($collectionId, $params = [])
+    public function getElementsCount(array|int $collectionId, array $params = []): int
     {
         $sqlhelper = (new SqlHelper());
 
@@ -176,7 +158,7 @@ SELECT COUNT(*) CNT
             b_medialib_item MI ON (MI.ID=MCI.ITEM_ID)
         INNER JOIN 
             b_file F ON (F.ID=MI.SOURCE_ID) 
-        WHERE {$where};
+        WHERE $where;
 TAG;
 
         try {
@@ -188,13 +170,9 @@ TAG;
     }
 
     /**
-     * @param $typeId
-     * @param $fields
-     *
      * @throws HelperException
-     * @return false|mixed
      */
-    public function addCollection($typeId, $fields)
+    public function addCollection(int|string $typeId, array $fields): bool|int
     {
         $this->checkRequiredKeys($fields, ['NAME']);
 
@@ -204,7 +182,7 @@ TAG;
 
         $fields = array_merge(
             [
-                //'ID'          => 0, // ID элемента для обновления, 0 для добавления
+                //'ID' => 0, // ID элемента для обновления, 0 для добавления
                 'NAME'        => '',
                 'DESCRIPTION' => '',
                 'OWNER_ID'    => $GLOBALS['USER']->GetId(),
@@ -221,13 +199,9 @@ TAG;
     }
 
     /**
-     * @param $typeId
-     * @param $fields
-     *
      * @throws HelperException
-     * @return false|mixed
      */
-    public function saveCollection($typeId, $fields)
+    public function saveCollection(int|string $typeId, array $fields): bool|int
     {
         $this->checkRequiredKeys($fields, ['NAME']);
 
@@ -245,7 +219,7 @@ TAG;
         );
 
         if (!empty($collections[0]['ID'])) {
-            return $collections[0]['ID'];
+            return (int)$collections[0]['ID'];
         } else {
             return $this->addCollection(
                 $typeId,
@@ -258,13 +232,9 @@ TAG;
     }
 
     /**
-     * @param $typeId
-     * @param $path
-     *
      * @throws HelperException
-     * @return int
      */
-    public function saveCollectionByPath($typeId, $path): int
+    public function saveCollectionByPath(int|string $typeId, array $path): int
     {
         $parentId = 0;
         foreach ($path as $name) {
@@ -331,14 +301,14 @@ TAG;
         }
     }
 
-    public function deleteElement($id): void
+    public function deleteElement(int $id): void
     {
         CMedialibItem::Delete($id, false, false);
     }
 
-    public function deleteCollection($id): void
+    public function deleteCollection(int $id): void
     {
-        CMedialibCollection::Delete($id, true);
+        CMedialibCollection::Delete($id );
     }
 
     /**
@@ -352,12 +322,8 @@ TAG;
      * V - Редактирование элементов
      * W - Редактирование элементов и коллекций
      * X - Полный доступ
-     *
-     * @param int $collectionId
-     *
-     * @return array
      */
-    public function getGroupPermissions($collectionId = 0)
+    public function getGroupPermissions(int $collectionId = 0): array
     {
         $collectionTree = CMedialib::GetCollectionTree(['CheckAccessFunk' => '__CanDoAccess']);
         $accessRights = CMedialib::GetAccessPermissionsArray($collectionId, $collectionTree['Collections']);
@@ -386,11 +352,8 @@ TAG;
      * V - Редактирование элементов
      * W - Редактирование элементов и коллекций
      * X - Полный доступ
-     *
-     * @param       $collectionId
-     * @param array $permissions
      */
-    public function setGroupPermissions($collectionId = 0, $permissions = [])
+    public function setGroupPermissions(int $collectionId = 0, array $permissions = []): void
     {
         $accessRights = [];
         foreach ($permissions as $groupId => $letter) {
@@ -435,7 +398,7 @@ TAG;
     }
 
     /** @noinspection PhpUnusedParameterInspection */
-    private function createLimitQuery($collectionId, $params = [])
+    private function createLimitQuery($collectionId, array $params = []): string
     {
         if ($params['limit'] > 0) {
             return 'LIMIT ' . (int)$params['offset'] . ',' . (int)$params['limit'];
@@ -443,7 +406,7 @@ TAG;
         return '';
     }
 
-    private function createWhereQuery($collectionId, $params = [])
+    private function createWhereQuery(array|int $collectionId, array $params = []): string
     {
         $sqlhelper = (new SqlHelper());
 
@@ -452,7 +415,7 @@ TAG;
             $collectionId = array_map('intval', $collectionId);
             $parts[] = 'MCI.COLLECTION_ID IN (' . implode(',', $collectionId) . ')';
         } else {
-            $parts[] = 'MCI.COLLECTION_ID = "' . (int)$collectionId . '"';
+            $parts[] = 'MCI.COLLECTION_ID = "' . $collectionId . '"';
         }
 
         if (isset($params['filter']['NAME'])) {
@@ -462,7 +425,7 @@ TAG;
         return implode(' AND ', $parts);
     }
 
-    private function flatTree($collection, &$flat)
+    private function flatTree(array $collection, array &$flat): void
     {
         $childs = $collection['CHILDS'];
         unset($collection['CHILDS']);

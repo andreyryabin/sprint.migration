@@ -12,7 +12,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
     private array $cachedFlatTree = [];
     private array $cachedPaths = [];
 
-    public function getCollectionsFlatTree($typeId)
+    public function getCollectionsFlatTree(int|string $typeId): array
     {
         if (!isset($this->cachedFlatTree[$typeId])) {
             $this->cachedFlatTree[$typeId] = parent::getCollectionsFlatTree($typeId);
@@ -23,7 +23,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
     /**
      * @throws HelperException
      */
-    public function saveCollectionByPath($typeId, $path): int
+    public function saveCollectionByPath(int|string $typeId, array $path): int
     {
         $uid = md5($typeId . implode('', $path));
         if (!isset($this->cachedPaths[$uid])) {
@@ -32,21 +32,21 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
         return $this->cachedPaths[$uid];
     }
 
-    public function getCollectionStructure($typeId): array
+    /**
+     * @throws HelperException
+     */
+    public function getCollectionStructure(int|string $typeId): array
     {
-        $items = $this->getCollectionsFlatTree($typeId);
-
-        $res = [];
-        foreach ($items as $item) {
-            $res[] = [
-                'title' => $item['DEPTH_NAME'],
-                'value' => $item['ID'],
-            ];
-        }
-        return $res;
+        return array_map(fn($item) => [
+            'title' => $item['DEPTH_NAME'],
+            'value' => $item['ID'],
+        ], $this->getCollectionsFlatTree($typeId));
     }
 
-    public function getCollectionPath($typeId, $collectionId)
+    /**
+     * @throws HelperException
+     */
+    public function getCollectionPath(int|string $typeId, int $collectionId)
     {
         foreach ($this->getCollectionsFlatTree($typeId) as $item) {
             if ($item['ID'] == $collectionId) {
@@ -84,7 +84,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
             $collectionId,
             [
                 'offset' => $offset,
-                'limit' => $limit,
+                'limit'  => $limit,
             ],
         );
 
@@ -101,6 +101,9 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
     }
 
 
+    /**
+     * @throws HelperException
+     */
     private function createWriterRecordTag(array $element, array $exportFields): WriterTag
     {
         $item = new WriterTag('item');
@@ -108,7 +111,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
             if (in_array($code, $exportFields)) {
                 $item->addChild(
                     $this->createWriterFieldTag([
-                        'NAME' => $code,
+                        'NAME'  => $code,
                         'VALUE' => $val,
                     ])
                 );
@@ -117,6 +120,9 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
         return $item;
     }
 
+    /**
+     * @throws HelperException
+     */
     private function createWriterFieldTag(array $field): WriterTag
     {
         $tag = new WriterTag('field', ['name' => $field['NAME']]);
@@ -125,14 +131,10 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
             $tag->setAttribute('name', 'FILE');
             $tag->addFile($field['VALUE'], false);
         } elseif ($field['NAME'] == 'COLLECTION_ID') {
-            $path = $this->getCollectionPath(
-                self::TYPE_IMAGE,
-                $field['VALUE']
-            );
             $tag->setAttribute('name', 'COLLECTION_PATH');
-            $tag->addValue($path, false);
+            $tag->addValue($this->getCollectionPath(self::TYPE_IMAGE, $field['VALUE']), true);
         } else {
-            $tag->addValue($field['VALUE'],false);
+            $tag->addValue($field['VALUE'], false);
         }
 
         return $tag;
@@ -167,13 +169,10 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
     /**
      * @throws HelperException
      */
-    protected function readFieldCollectionPath($field): int
+    protected function readFieldCollectionPath(array $field): int
     {
         $paths = array_column($field['value'], 'value');
-        return $this->saveCollectionByPath(
-            self::TYPE_IMAGE,
-            $paths
-        );
+        return $this->saveCollectionByPath(self::TYPE_IMAGE, $paths);
     }
 
     protected function readFieldValue(array $field)
