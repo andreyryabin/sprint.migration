@@ -8,7 +8,7 @@ use Sprint\Migration\Exceptions\MigrationException;
 
 class Installer
 {
-    private $versionManager;
+    private VersionManager $versionManager;
 
     /**
      * Installer constructor.
@@ -17,7 +17,7 @@ class Installer
      *
      * @throws Exception
      */
-    public function __construct($configValues = [])
+    public function __construct(array $configValues = [])
     {
         $this->versionManager = new VersionManager(
             new VersionConfig('installer', $configValues)
@@ -27,7 +27,7 @@ class Installer
     /**
      * @throws MigrationException
      */
-    public function up()
+    public function up(): void
     {
         $this->executeAll([], VersionEnum::ACTION_UP);
     }
@@ -35,7 +35,7 @@ class Installer
     /**
      * @throws MigrationException
      */
-    public function down()
+    public function down(): void
     {
         $this->executeAll([], VersionEnum::ACTION_DOWN);
     }
@@ -43,23 +43,17 @@ class Installer
     /**
      * @throws MigrationException
      */
-    protected function executeAll($filter, $action)
+    public function executeAll(array $filter, string $action, string $tag = ''): void
     {
-        $versionNames = $this->versionManager->getListForExecute($filter, $action);
-
-        foreach ($versionNames as $versionName) {
-            $this->executeVersion($versionName, $action);
+        foreach ($this->versionManager->getListForExecute($filter, $action) as $version) {
+            $this->executeVersion($version, $action, $tag);
         }
     }
 
     /**
-     * @param string $version
-     * @param string $action
-     *
      * @throws MigrationException
-     * @return bool
      */
-    protected function executeVersion($version, $action = VersionEnum::ACTION_UP)
+    public function executeVersion(string $version, string $action, string $tag = ''): bool
     {
         $params = [];
         do {
@@ -68,7 +62,8 @@ class Installer
             $success = $this->versionManager->startMigration(
                 $version,
                 $action,
-                $params
+                $params,
+                $tag
             );
 
             $restart = $this->versionManager->needRestart();
