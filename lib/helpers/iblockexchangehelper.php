@@ -55,6 +55,9 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $res;
     }
 
+    /**
+     * @throws HelperException
+     */
     public function getIblockPropertiesStructure(int $iblockId): array
     {
         return array_map(fn($prop) => [
@@ -63,11 +66,16 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         ], $this->exportProperties($iblockId));
     }
 
-    public function getIblockElementFieldsStructure(int $iblockId): array
+    public function getIblockElementFieldsStructure(int $iblockId, bool $withShowCounter = false): array
     {
         $fields = $this->exportIblockElementFields($iblockId);
 
         $fields['IPROPERTY_TEMPLATES'] = ['NAME' => 'SEO'];
+
+        if ($withShowCounter) {
+            $fields['SHOW_COUNTER'] = ['NAME' => 'SHOW_COUNTER'];
+            $fields['SHOW_COUNTER_START'] = ['NAME' => 'SHOW_COUNTER_START'];
+        }
 
         $res = [];
         foreach ($fields as $fieldName => $field) {

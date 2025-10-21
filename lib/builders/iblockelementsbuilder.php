@@ -182,8 +182,8 @@ class IblockElementsBuilder extends VersionBuilder
         } elseif ($filterMode == 'list_section_id') {
             $filterSectionId = $this->addFieldAndReturn(
                 'export_filter_list_section_id', [
-                    'title'  => Locale::getMessage('BUILDER_IblockElementsExport_FilterListSectionId'),
-                    'width'  => 100,
+                    'title' => Locale::getMessage('BUILDER_IblockElementsExport_FilterListSectionId'),
+                    'width' => 100,
                 ]
             );
 
@@ -246,11 +246,16 @@ class IblockElementsBuilder extends VersionBuilder
                     'width'    => 250,
                     'multiple' => 1,
                     'value'    => [],
-                    'select'   => $iblockExchangeHelper->getIblockElementFieldsStructure($iblockId),
+                    'select'   => $iblockExchangeHelper->getIblockElementFieldsStructure(
+                        iblockId: $iblockId,
+                        withShowCounter: true
+                    ),
                 ]
             );
         } elseif ($fieldsMode == 'all') {
-            $exportFields = $iblockExchangeHelper->getIblockElementFieldsStructure($iblockId);
+            $exportFields = $iblockExchangeHelper->getIblockElementFieldsStructure(
+                iblockId: $iblockId,
+            );
             $exportFields = array_column($exportFields, 'value');
         } else {
             $exportFields = [];
