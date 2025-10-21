@@ -71,20 +71,6 @@ trait HlblockTrait
         return $item;
     }
 
-    protected function prepareField(array $item): array
-    {
-        $lang = Locale::getLang();
-        if (!empty($item['EDIT_FORM_LABEL'][$lang])) {
-            $item['TITLE'] = $item['EDIT_FORM_LABEL'][$lang];
-        } elseif (!empty($item['EDIT_FORM_LABEL']['ru'])) {
-            $item['TITLE'] = $item['EDIT_FORM_LABEL']['ru'];
-        } else {
-            $item['TITLE'] = $item['FIELD_NAME'];
-        }
-
-        return $item;
-    }
-
     /**
      * @throws HelperException
      */
@@ -232,7 +218,7 @@ trait HlblockTrait
         );
 
         if (!empty($field)) {
-            return $this->prepareField($field);
+            return $field;
         }
 
         throw new HelperException(Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND'));
@@ -248,10 +234,7 @@ trait HlblockTrait
         $entityHelper = new UserTypeEntityHelper();
         $entityId = $this->getEntityId($hlblockName);
 
-        return array_map(
-            fn($field) => $this->prepareField($field),
-            $entityHelper->getUserTypeEntities($entityId, $filter)
-        );
+        return $entityHelper->getUserTypeEntities($entityId, $filter);
     }
 
     /**

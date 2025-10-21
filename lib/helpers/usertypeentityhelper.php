@@ -4,12 +4,41 @@ namespace Sprint\Migration\Helpers;
 
 use CUserFieldEnum;
 use CUserTypeEntity;
+use CUserTypeManager;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
 
 class UserTypeEntityHelper extends Helper
 {
+    /**
+     * @throws HelperException
+     */
+    public function getUserTypes(): array
+    {
+        return array_map(
+            fn($userType) => $this->prepareUserType($userType),
+            $this->getUserFieldManager()->GetUserType()
+        );
+    }
+
+    private function prepareUserType(array $userType): array
+    {
+        return $userType;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    private function getUserFieldManager(): CUserTypeManager
+    {
+        if (isset($GLOBALS['USER_FIELD_MANAGER']) && $GLOBALS['USER_FIELD_MANAGER'] instanceof CUserTypeManager) {
+            return $GLOBALS['USER_FIELD_MANAGER'];
+        }
+
+        throw new HelperException("USER_FIELD_MANAGER not initialized");
+    }
+
     /**
      * Добавляет пользовательские поля к объекту
      *
@@ -172,16 +201,24 @@ class UserTypeEntityHelper extends Helper
     {
         $filter['ENTITY_ID'] = $entityId;
 
+        return $this->getUserTypeEntitiesByFilter($filter);
+    }
+
+    public function getUserTypeEntitiesByFilter(array $filter = []): array
+    {
+        $dbres = CUserTypeEntity::GetList([], $filter);
         return array_map(
             fn($item) => $this->getUserTypeEntityById($item['ID']),
-            $this->getList($filter)
+            $this->fetchAll($dbres)
         );
     }
 
+    /**
+     * @deprecated
+     */
     public function getList(array $filter = []): array
     {
-        $dbres = CUserTypeEntity::GetList([], $filter);
-        return $this->fetchAll($dbres);
+        return $this->getUserTypeEntitiesByFilter($filter);
     }
 
     /**
@@ -195,6 +232,19 @@ class UserTypeEntityHelper extends Helper
         $item = $this->getUserTypeEntityById($fieldId);
 
         return $item ? $this->prepareExportUserTypeEntity($item) : false;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function exportUserTypeEntitiesByIds(array $fieldIds): array
+    {
+        $result = array_map(
+            fn($fieldId) => $this->exportUserTypeEntity($fieldId),
+            $fieldIds
+        );
+
+        return array_filter($result);
     }
 
     /**
@@ -239,6 +289,15 @@ class UserTypeEntityHelper extends Helper
 
         if ($item['USER_TYPE_ID'] == 'enumeration') {
             $item['ENUM_VALUES'] = $this->getEnumValues($fieldId);
+        }
+
+        $lang = Locale::getLang();
+        if (!empty($item['EDIT_FORM_LABEL'][$lang])) {
+            $item['TITLE'] = $item['EDIT_FORM_LABEL'][$lang];
+        } elseif (!empty($item['EDIT_FORM_LABEL']['ru'])) {
+            $item['TITLE'] = $item['EDIT_FORM_LABEL']['ru'];
+        } else {
+            $item['TITLE'] = $item['FIELD_NAME'];
         }
 
         return $item;
@@ -376,6 +435,12 @@ class UserTypeEntityHelper extends Helper
      */
     public function getEntityTitle(string $entityId): string
     {
+        static $cache = [];
+
+        if (isset($cache[$entityId])) {
+            return $cache[$entityId];
+        }
+
         $title = Locale::getMessage('ENTITY_TITLE_' . $entityId, [], $entityId);
 
         if (str_starts_with($entityId, 'HLBLOCK_')) {
@@ -399,7 +464,9 @@ class UserTypeEntityHelper extends Helper
             }
         }
 
-        return ($title == $entityId) ? $entityId : '[' . $entityId . '] ' . $title;
+        $cache[$entityId] = ($title == $entityId) ? $entityId : '[' . $entityId . '] ' . $title;
+
+        return $cache[$entityId];
     }
 
     /**
@@ -491,7 +558,7 @@ class UserTypeEntityHelper extends Helper
             throw new HelperException($extendedMessage);
         }
 
-        $this->unsetKeys($fields, ['ID']);
+        $this->unsetKeys($fields, ['ID','TITLE']);
 
         return $fields;
     }

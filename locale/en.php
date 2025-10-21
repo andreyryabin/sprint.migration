@@ -132,46 +132,58 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "en",
     [
-        "BUILDER_IblockExport1"                           => "Create migration for information block",
-        "BUILDER_IblockExport2"                           => implode(PHP_EOL, [
+        "BUILDER_IblockExport1"                            => "Create migration for information block",
+        "BUILDER_IblockExport2"                            => implode(PHP_EOL, [
             "Set iblock codes and property codes to see them in the list",
         ]),
-        "BUILDER_IblockExport_IblockId"                   => "Select information block",
-        "BUILDER_IblockExport_Properties"                 => "Select properties",
-        "BUILDER_IblockExport_What"                       => "Select export items",
-        "BUILDER_IblockExport_WhatIblock"                 => "Information block",
-        "BUILDER_IblockExport_WhatIblockType"             => "Information block type",
-        "BUILDER_IblockExport_WhatIblockFields"           => "Information block fields",
-        "BUILDER_IblockExport_WhatIblockProperties"       => "Information block properties",
-        "BUILDER_IblockExport_WhatIblockUserOptions"      => "User options for form and list",
-        "BUILDER_IblockExport_WhatIblockPermissions"      => "Information block permissions",
-        "BUILDER_IblockElementsExport1"                   => "Export information block elements",
-        "BUILDER_IblockElementsExport2"                   => implode(PHP_EOL, [
+        "BUILDER_IblockExport_IblockId"                    => "Select information block",
+        "BUILDER_IblockExport_Properties"                  => "Select properties",
+        "BUILDER_IblockExport_What"                        => "What to export?",
+        "BUILDER_IblockExport_WhatIblock"                  => "Information block",
+        "BUILDER_IblockExport_WhatIblockType"              => "Information block type",
+        "BUILDER_IblockExport_WhatIblockFields"            => "Information block fields",
+        "BUILDER_IblockExport_WhatIblockProperties"        => "Information block properties",
+        "BUILDER_IblockExport_WhatIblockUserOptions"       => "User options for form and list",
+        "BUILDER_IblockExport_WhatIblockPermissions"       => "Information block permissions",
+        "BUILDER_IblockElementsExport1"                    => "Export information block elements",
+        "BUILDER_IblockElementsExport2"                    => implode(PHP_EOL, [
             "Export elements with fields and properties",
             "Export images, files and lists",
             "Set iblock codes and property codes to see them in the list",
         ]),
-        "BUILDER_IblockElementsExport_IblockId"           => "Select information block",
-        "BUILDER_IblockElementsExport_Properties"         => "Select properties",
-        "BUILDER_IblockElementsExport_Fields"             => "Select fields",
-        "BUILDER_IblockElementsExport_Filter"             => "Select elements",
-        "BUILDER_IblockElementsExport_SelectSomeId"       => "Enter elements ID",
-        "BUILDER_IblockElementsExport_FilterListId"       => "Enter elements ID by space",
-        "BUILDER_IblockElementsExport_SelectSomeXmlId"    => "Enter elements XML_ID",
-        "BUILDER_IblockElementsExport_FilterListXmlId"    => "Enter elements XML_ID by space",
-        "BUILDER_IblockElementsExport_UpdateMethod"       => "Export settings",
-        "BUILDER_IblockElementsExport_NotUpdate"          => "Only add elements",
-        "BUILDER_IblockElementsExport_SaveElementByCode"  => "Add or update existing elements by CODE",
-        "BUILDER_IblockElementsExport_saveElementByXmlId" => "Add or update existing elements by XML_ID",
-        "BUILDER_IblockCategoryExport1"                   => "Export information block categories",
-        "BUILDER_IblockCategoryExport2"                   => implode(PHP_EOL, [
+        "BUILDER_IblockElementsExport_IblockId"            => "Select information block",
+        "BUILDER_IblockElementsExport_Properties"          => "Select properties",
+        "BUILDER_IblockElementsExport_Fields"              => "Select fields",
+        "BUILDER_IblockElementsExport_Filter"              => "Select elements",
+        "BUILDER_IblockElementsExport_SelectSomeId"        => "Enter elements ID",
+        "BUILDER_IblockElementsExport_FilterListId"        => "Enter elements ID by space",
+        "BUILDER_IblockElementsExport_FilterListSectionId" => "Enter category ID",
+        "BUILDER_IblockElementsExport_SelectSomeXmlId"     => "Enter elements XML_ID",
+        "BUILDER_IblockElementsExport_SelectSomeSectionId" => "Enter section id for elements",
+        "BUILDER_IblockElementsExport_FilterListXmlId"     => "Enter elements XML_ID by space",
+        "BUILDER_IblockElementsExport_UpdateMethod"        => "Export settings",
+        "BUILDER_IblockElementsExport_NotUpdate"           => "Only add elements",
+        "BUILDER_IblockElementsExport_SaveElementByCode"   => "Add or update existing elements by CODE",
+        "BUILDER_IblockElementsExport_saveElementByXmlId"  => "Add or update existing elements by XML_ID",
+        "BUILDER_IblockCategoryExport1"                    => "Export information block categories",
+        "BUILDER_IblockCategoryExport2"                    => implode(PHP_EOL, [
             "Export information block categories without images",
             "Set iblock codes to see them in the list",
         ]),
-        "BUILDER_IblockCategoryExport_IblockId"           => "Select information block",
-        "BUILDER_IblockDelete"                            => "Delete information blocks",
+        "BUILDER_IblockCategoryExport_IblockId"            => "Select information block",
+        "BUILDER_IblockDelete"                             => "Delete information blocks",
     ]
 );
+
+\Sprint\Migration\Locale::loadLocale(
+    "en",
+    [
+        "BUILDER_IblockPropertyExport1"           => "Create migration for information block properties",
+        "BUILDER_IblockPropertyExport_UserType"   => "Select property type",
+        "BUILDER_IblockPropertyExport_Properties" => "Select properties",
+    ]
+);
+
 \Sprint\Migration\Locale::loadLocale(
     "en",
     [
@@ -193,7 +205,7 @@ require_once __DIR__ . "/../lib/locale.php";
     "en",
     [
         "BUILDER_UserOptionsExport_Title"         => "Create migration for user options",
-        "BUILDER_UserOptionsExport_What"          => "Select export items",
+        "BUILDER_UserOptionsExport_What"          => "What to export?",
         "BUILDER_UserOptionsExport_WhatUserForm"  => "User form",
         "BUILDER_UserOptionsExport_WhatUserList"  => "User list",
         "BUILDER_UserOptionsExport_WhatGroupList" => "User group list",
@@ -204,7 +216,7 @@ require_once __DIR__ . "/../lib/locale.php";
     [
         "BUILDER_HlblockExport1"                       => "Create migration for highload block",
         "BUILDER_HlblockExport_HlblockId"              => "Select highload blocks",
-        "BUILDER_HlblockExport_What"                   => "Select export items",
+        "BUILDER_HlblockExport_What"                   => "What to export?",
         "BUILDER_HlblockExport_WhatHlblock"            => "Highload block",
         "BUILDER_HlblockExport_WhatHlblockFields"      => "Highload block fields",
         "BUILDER_HlblockExport_WhatHlblockUserOptions" => "User options for form and list",
@@ -214,9 +226,13 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "en",
     [
-        "BUILDER_UserTypeEntities1"             => "Create migration for user type entities",
-        "BUILDER_UserTypeEntities_EntityIds"    => "Select entities",
-        "BUILDER_UserTypeEntities_EntityFields" => "Select fields",
+        "BUILDER_UserTypeEntities1"               => "Create migration for user type entities",
+        "BUILDER_UserTypeEntities_What"           => "What to export?",
+        "BUILDER_UserTypeEntities_WhatEntityId"   => "Fields by entities",
+        "BUILDER_UserTypeEntities_WhatUserTypeId" => "Fields by data type",
+        "BUILDER_UserTypeEntities_EntityId"       => "Select entities",
+        "BUILDER_UserTypeEntities_UserTypeId"     => "Select data type",
+        "BUILDER_UserTypeEntities_EntityFields"   => "Select fields",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -224,7 +240,7 @@ require_once __DIR__ . "/../lib/locale.php";
     [
         "BUILDER_FormExport1"              => "Create migration for web form",
         "BUILDER_FormExport_FormId"        => "Select web form",
-        "BUILDER_FormExport_What"          => "Select export items",
+        "BUILDER_FormExport_What"          => "What to export?",
         "BUILDER_FormExport_Form"          => "Form",
         "BUILDER_FormExport_Fields"        => "Form fields",
         "BUILDER_FormExport_Statuses"      => "Form statuses",
@@ -325,7 +341,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_EVENT_TYPE_NOT_ADDED"           => "Event type \"#NAME#\" not created",
         "ERR_EVENT_MESSAGE_NOT_ADDED"        => "Event message \"#NAME#\" not created",
         "ERR_HLBLOCK_NOT_FOUND"              => "Highload block \"#HLBLOCK#\" not found",
-        "ERR_HLBLOCK_ELEMENT_NOT_FOUND"        => "Element \"#ELEMENT_ID#\" in highload-block \"#HLBLOCK_ID#\" not found",
+        "ERR_HLBLOCK_ELEMENT_NOT_FOUND"      => "Element \"#ELEMENT_ID#\" in highload-block \"#HLBLOCK_ID#\" not found",
         "ERR_HLBLOCK_FIELD_NOT_FOUND"        => "Highload block field not found",
         "ERR_DEFAULT_LANGUAGE_NOT_FOUND"     => "Default language not found",
         "ERR_ACTIVE_LANGUAGES_NOT_FOUND"     => "Active languages not found",

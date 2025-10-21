@@ -14,6 +14,7 @@ use Sprint\Migration\Builders\IblockBuilder;
 use Sprint\Migration\Builders\IblockCategoryBuilder;
 use Sprint\Migration\Builders\IblockDeleteBuilder;
 use Sprint\Migration\Builders\IblockElementsBuilder;
+use Sprint\Migration\Builders\IblockPropertyBuilder;
 use Sprint\Migration\Builders\MarkerBuilder;
 use Sprint\Migration\Builders\MedialibElementsBuilder;
 use Sprint\Migration\Builders\OptionBuilder;
@@ -399,6 +400,7 @@ class VersionConfig
         return [
             'UserGroupBuilder' => UserGroupBuilder::class,
             'IblockBuilder' => IblockBuilder::class,
+            'IblockPropertyBuilder' => IblockPropertyBuilder::class,
             'IblockCategoryBuilder' => IblockCategoryBuilder::class,
             'IblockElementsBuilder' => IblockElementsBuilder::class,
             'IblockDeleteBuilder' => IblockDeleteBuilder::class,
