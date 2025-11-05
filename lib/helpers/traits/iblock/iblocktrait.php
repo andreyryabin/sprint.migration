@@ -81,6 +81,21 @@ trait IblockTrait
         return !empty($iblock['ID']) ? (int)$iblock['ID'] : 0;
     }
 
+    public function getIblockTitle(int $iblockId): string
+    {
+        static $cache = [];
+
+        if (isset($cache[$iblockId])) {
+            return $cache[$iblockId];
+        }
+
+        $iblock = $this->getIblock($iblockId);
+
+        $cache[$iblockId] = !empty($iblock) ? '[' . $iblock['CODE'] . '] ' . $iblock['NAME'] : $iblockId;
+
+        return $cache[$iblockId];
+    }
+
     /**
      * Получает список инфоблоков
      */

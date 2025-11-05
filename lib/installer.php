@@ -23,7 +23,7 @@ class Installer
     /**
      * @throws MigrationException
      */
-    public function up()
+    public function up(): void
     {
         $this->executeAll([], VersionEnum::ACTION_UP);
     }
@@ -31,7 +31,7 @@ class Installer
     /**
      * @throws MigrationException
      */
-    public function down()
+    public function down(): void
     {
         $this->executeAll([], VersionEnum::ACTION_DOWN);
     }
@@ -39,19 +39,17 @@ class Installer
     /**
      * @throws MigrationException
      */
-    protected function executeAll(array $filter, string $action)
+    public function executeAll(array $filter, string $action, string $tag = ''): void
     {
-        $versionNames = $this->versionManager->getListForExecute($filter, $action);
-
-        foreach ($versionNames as $versionName) {
-            $this->executeVersion($versionName, $action);
+        foreach ($this->versionManager->getListForExecute($filter, $action) as $version) {
+            $this->executeVersion($version, $action, $tag);
         }
     }
 
     /**
      * @throws MigrationException
      */
-    protected function executeVersion(string $version, string $action = VersionEnum::ACTION_UP): bool
+    public function executeVersion(string $version, string $action, string $tag = ''): bool
     {
         $params = [];
         do {
@@ -60,7 +58,8 @@ class Installer
             $success = $this->versionManager->startMigration(
                 $version,
                 $action,
-                $params
+                $params,
+                $tag
             );
 
             $restart = $this->versionManager->needRestart();

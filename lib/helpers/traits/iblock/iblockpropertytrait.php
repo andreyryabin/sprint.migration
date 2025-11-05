@@ -13,6 +13,19 @@ use Sprint\Migration\Locale;
 
 trait IblockPropertyTrait
 {
+    public function getPropertyUserTypes(): array
+    {
+        return array_map(
+            fn($userType) => $this->preparePropertyUserType($userType),
+            CIBlockProperty::GetUserType()
+        );
+    }
+
+    private function preparePropertyUserType(array $userType): array
+    {
+        return $userType;
+    }
+
     /**
      * Сохраняет свойство инфоблока.
      * Создаст если не было, обновит если существует и отличается
@@ -397,11 +410,7 @@ trait IblockPropertyTrait
             return $this->prepareExportProperty($item);
         }
 
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_IB_PROPERTY_CODE_NOT_FOUND'
-            )
-        );
+        throw new HelperException(Locale::getMessage('ERR_IB_PROPERTY_CODE_NOT_FOUND'));
     }
 
     /**
@@ -412,8 +421,18 @@ trait IblockPropertyTrait
      */
     public function exportProperties(int $iblockId, array $filter = []): array
     {
+        $filter['IBLOCK_ID'] = $iblockId;
+
+        return $this->exportPropertiesByFilter($filter);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function exportPropertiesByFilter(array $filter = []): array
+    {
         $properties = array_filter(
-            $this->getProperties($iblockId, $filter),
+            $this->getPropertiesByFilter($filter),
             fn($item) => !empty($item['CODE'])
         );
 
@@ -429,6 +448,15 @@ trait IblockPropertyTrait
     public function getProperties(int $iblockId, array $filter = []): array
     {
         $filter['IBLOCK_ID'] = $iblockId;
+
+        return $this->getPropertiesByFilter($filter);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getPropertiesByFilter(array $filter = []): array
+    {
         $filter['CHECK_PERMISSIONS'] = 'N';
 
         $filterIds = false;

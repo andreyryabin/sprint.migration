@@ -131,44 +131,54 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "ru",
     [
-        "BUILDER_IblockExport1"                           => "Создать миграцию для инфоблока",
-        "BUILDER_IblockExport2"                           => implode(PHP_EOL, [
+        "BUILDER_IblockExport1"                            => "Создать миграцию для инфоблока",
+        "BUILDER_IblockExport2"                            => implode(PHP_EOL, [
             "Задайте символьные коды у инфоблоков и свойств, чтобы увидеть их в списке",
         ]),
-        "BUILDER_IblockExport_IblockId"                   => "Выберите инфоблок",
-        "BUILDER_IblockExport_Properties"                 => "Выберите свойства",
-        "BUILDER_IblockExport_What"                       => "Что переносим",
-        "BUILDER_IblockExport_WhatIblock"                 => "Инфоблок",
-        "BUILDER_IblockExport_WhatIblockType"             => "Тип инфоблока",
-        "BUILDER_IblockExport_WhatIblockFields"           => "Поля инфоблока",
-        "BUILDER_IblockExport_WhatIblockProperties"       => "Свойства инфоблока",
-        "BUILDER_IblockExport_WhatIblockUserOptions"      => "Настройки формы редактирования и списка",
-        "BUILDER_IblockExport_WhatIblockPermissions"      => "Доступ к инфоблоку",
-        "BUILDER_IblockElementsExport1"                   => "Перенести элементы инфоблоков",
-        "BUILDER_IblockElementsExport2"                   => implode(PHP_EOL, [
+        "BUILDER_IblockExport_IblockId"                    => "Выберите инфоблок",
+        "BUILDER_IblockExport_Properties"                  => "Выберите свойства",
+        "BUILDER_IblockExport_What"                        => "Что переносим?",
+        "BUILDER_IblockExport_WhatIblock"                  => "Инфоблок",
+        "BUILDER_IblockExport_WhatIblockType"              => "Тип инфоблока",
+        "BUILDER_IblockExport_WhatIblockFields"            => "Поля инфоблока",
+        "BUILDER_IblockExport_WhatIblockProperties"        => "Свойства инфоблока",
+        "BUILDER_IblockExport_WhatIblockUserOptions"       => "Настройки формы редактирования и списка",
+        "BUILDER_IblockExport_WhatIblockPermissions"       => "Доступ к инфоблоку",
+        "BUILDER_IblockElementsExport1"                    => "Перенести элементы инфоблоков",
+        "BUILDER_IblockElementsExport2"                    => implode(PHP_EOL, [
             "Переносит элементы с полями и свойствами",
             "Переносит изображения, файлы и списки",
             "Задайте символьные коды у инфоблоков и свойств, чтобы увидеть их в списке",
         ]),
-        "BUILDER_IblockElementsExport_IblockId"           => "Выберите инфоблок",
-        "BUILDER_IblockElementsExport_Properties"         => "Выберите свойства",
-        "BUILDER_IblockElementsExport_Fields"             => "Выберите поля",
-        "BUILDER_IblockElementsExport_Filter"             => "Выберите элементы",
-        "BUILDER_IblockElementsExport_SelectSomeId"       => "Указать ID элементов",
-        "BUILDER_IblockElementsExport_FilterListId"       => "Укажите ID элементов через пробел",
-        "BUILDER_IblockElementsExport_SelectSomeXmlId"    => "Указать XML_ID элементов",
-        "BUILDER_IblockElementsExport_FilterListXmlId"    => "Укажите XML_ID элементов через пробел",
-        "BUILDER_IblockElementsExport_UpdateMethod"       => "Настройка переноса",
-        "BUILDER_IblockElementsExport_NotUpdate"          => "Простое добавление элементов",
-        "BUILDER_IblockElementsExport_SaveElementByCode"  => "Добавить или обновить элементы с совпадающими CODE",
-        "BUILDER_IblockElementsExport_SaveElementByXmlId" => "Добавить или обновить элементы с совпадающими XML_ID",
-        "BUILDER_IblockCategoryExport1"                   => "Перенести категории инфоблоков",
-        "BUILDER_IblockCategoryExport2"                   => implode(PHP_EOL, [
+        "BUILDER_IblockElementsExport_IblockId"            => "Выберите инфоблок",
+        "BUILDER_IblockElementsExport_Properties"          => "Выберите свойства",
+        "BUILDER_IblockElementsExport_Fields"              => "Выберите поля",
+        "BUILDER_IblockElementsExport_Filter"              => "Выберите элементы",
+        "BUILDER_IblockElementsExport_SelectSomeId"        => "Указать ID элементов",
+        "BUILDER_IblockElementsExport_FilterListId"        => "Укажите ID элементов через пробел",
+        "BUILDER_IblockElementsExport_FilterListSectionId" => "Укажите ID категории",
+        "BUILDER_IblockElementsExport_SelectSomeXmlId"     => "Указать XML_ID элементов",
+        "BUILDER_IblockElementsExport_SelectSomeSectionId" => "Указать ID категории с элементами",
+        "BUILDER_IblockElementsExport_FilterListXmlId"     => "Укажите XML_ID элементов через пробел",
+        "BUILDER_IblockElementsExport_UpdateMethod"        => "Настройка переноса",
+        "BUILDER_IblockElementsExport_NotUpdate"           => "Простое добавление элементов",
+        "BUILDER_IblockElementsExport_SaveElementByCode"   => "Добавить или обновить элементы с совпадающими CODE",
+        "BUILDER_IblockElementsExport_SaveElementByXmlId"  => "Добавить или обновить элементы с совпадающими XML_ID",
+        "BUILDER_IblockCategoryExport1"                    => "Перенести категории инфоблоков",
+        "BUILDER_IblockCategoryExport2"                    => implode(PHP_EOL, [
             "Переносит категории инфоблоков без изображений",
             "Задайте символьные коды у инфоблоков, чтобы увидеть их в списке",
         ]),
-        "BUILDER_IblockCategoryExport_IblockId"           => "Выберите инфоблок",
-        "BUILDER_IblockDelete"                            => "Удалить инфоблоки",
+        "BUILDER_IblockCategoryExport_IblockId"            => "Выберите инфоблок",
+        "BUILDER_IblockDelete"                             => "Удалить инфоблоки",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "ru",
+    [
+        "BUILDER_IblockPropertyExport1"           => "Создать миграцию свойств инфоблоков",
+        "BUILDER_IblockPropertyExport_UserType"   => "Выберите тип свойства",
+        "BUILDER_IblockPropertyExport_Properties" => "Выберите свойства",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -192,7 +202,7 @@ require_once __DIR__ . "/../lib/locale.php";
     "ru",
     [
         "BUILDER_UserOptionsExport_Title"         => "Создать миграцию для пользовательских настроек",
-        "BUILDER_UserOptionsExport_What"          => "Что переносим",
+        "BUILDER_UserOptionsExport_What"          => "Что переносим?",
         "BUILDER_UserOptionsExport_WhatUserForm"  => "Настрока формы редактирования пользователей",
         "BUILDER_UserOptionsExport_WhatUserList"  => "Настрока списка пользователей",
         "BUILDER_UserOptionsExport_WhatGroupList" => "Настрока списка групп",
@@ -203,7 +213,7 @@ require_once __DIR__ . "/../lib/locale.php";
     [
         "BUILDER_HlblockExport1"                       => "Создать миграцию для highload-блока",
         "BUILDER_HlblockExport_HlblockId"              => "Выберите highload-блоки",
-        "BUILDER_HlblockExport_What"                   => "Что переносим",
+        "BUILDER_HlblockExport_What"                   => "Что переносим?",
         "BUILDER_HlblockExport_WhatHlblock"            => "Highload-блок",
         "BUILDER_HlblockExport_WhatHlblockFields"      => "Поля highload-блока",
         "BUILDER_HlblockExport_WhatHlblockUserOptions" => "Настройки формы редактирования и списка",
@@ -213,9 +223,13 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "ru",
     [
-        "BUILDER_UserTypeEntities1"             => "Создать миграцию для пользовательских полей",
-        "BUILDER_UserTypeEntities_EntityIds"    => "Выберите объекты",
-        "BUILDER_UserTypeEntities_EntityFields" => "Укажите поля для выгрузки",
+        "BUILDER_UserTypeEntities1"               => "Создать миграцию для пользовательских полей",
+        "BUILDER_UserTypeEntities_What"           => "Что переносим?",
+        "BUILDER_UserTypeEntities_WhatEntityId"   => "Поля по списку объектов",
+        "BUILDER_UserTypeEntities_WhatUserTypeId" => "Поля по типу данных",
+        "BUILDER_UserTypeEntities_EntityId"       => "Выберите объекты",
+        "BUILDER_UserTypeEntities_UserTypeId"     => "Выберите тип данных",
+        "BUILDER_UserTypeEntities_EntityFields"   => "Укажите поля для выгрузки",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
