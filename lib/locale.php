@@ -2,11 +2,9 @@
 
 namespace Sprint\Migration;
 
-use Bitrix\Main\Text\Encoding;
-
 class Locale
 {
-    public static function loadLocale($lang, $loc)
+    public static function loadLocale(string $lang, array $loc): void
     {
         global $MESS;
         foreach ($loc as $shortName => $msg) {
@@ -14,10 +12,8 @@ class Locale
         }
     }
 
-    public static function getMessageName($shortName, $lang = false): string
+    public static function getMessageName(string $shortName, string $lang = 'ru'): string
     {
-        $lang = ($lang) ?: self::getLang();
-
         return strtoupper('SPRINT_MIGRATION_' . $lang . '_' . $shortName);
     }
 
@@ -26,9 +22,14 @@ class Locale
         return defined('LANGUAGE_ID') ? LANGUAGE_ID : 'ru';
     }
 
-    public static function getMessage($shortName, $replaces = [], $default = '')
+    public static function getMessage(string $shortName, array $replaces = [], $default = '')
     {
-        $msg = GetMessage(self::getMessageName($shortName), $replaces);
+        $replaces = array_filter($replaces, fn($v) => is_scalar($v));
+
+        $lang = self::getLang();
+
+        $msg = GetMessage(self::getMessageName($shortName, $lang), $replaces);
+
         return ($msg) ?: ($default ?: $shortName);
     }
 }
