@@ -158,12 +158,6 @@ class VersionConfig
             $values['show_admin_interface'] = true;
         }
 
-        if (isset($values['show_admin_updown'])) {
-            $values['show_admin_updown'] = (bool)$values['show_admin_updown'];
-        } else {
-            $values['show_admin_updown'] = true;
-        }
-
         if (isset($values['console_auth_events_disable'])) {
             $values['console_auth_events_disable'] = (bool)$values['console_auth_events_disable'];
         } else {

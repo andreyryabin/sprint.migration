@@ -291,7 +291,7 @@ class UserTypeEntityHelper extends Helper
             $item['ENUM_VALUES'] = $this->getEnumValues($fieldId);
         }
 
-        $lang = Locale::getLang();
+        $lang = Locale::getDefaultLang();
         if (!empty($item['EDIT_FORM_LABEL'][$lang])) {
             $item['TITLE'] = $item['EDIT_FORM_LABEL'][$lang];
         } elseif (!empty($item['EDIT_FORM_LABEL']['ru'])) {

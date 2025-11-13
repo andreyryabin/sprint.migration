@@ -17,19 +17,37 @@ class Locale
         return strtoupper('SPRINT_MIGRATION_' . $lang . '_' . $shortName);
     }
 
-    public static function getLang()
+    public static function getDefaultLang(): string
     {
-        return defined('LANGUAGE_ID') ? LANGUAGE_ID : 'ru';
+        $lang = defined('LANGUAGE_ID') ? LANGUAGE_ID : 'ru';
+
+        return $lang === 'en' ? 'en' : 'ru';
     }
 
     public static function getMessage(string $shortName, array $replaces = [], $default = '')
     {
         $replaces = array_filter($replaces, fn($v) => is_scalar($v));
 
-        $lang = self::getLang();
+        $lang = self::getDefaultLang();
 
         $msg = GetMessage(self::getMessageName($shortName, $lang), $replaces);
 
         return ($msg) ?: ($default ?: $shortName);
+    }
+
+    public static function loadDefault(): void
+    {
+        $lang = self::getDefaultLang();
+
+        $files = [
+            'ru' => __DIR__ . '/../locale/ru.php',
+            'en' => __DIR__ . '/../locale/en.php',
+        ];
+
+        if (isset($files[$lang])) {
+            include($files[$lang]);
+        } else {
+            include($files['ru']);
+        }
     }
 }

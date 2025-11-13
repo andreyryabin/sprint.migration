@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . "/../lib/locale.php";
-
 \Sprint\Migration\Locale::loadLocale(
     "ru",
     [
@@ -88,7 +86,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_version_prefix"              => "Заголовок класса миграции",
         "CONFIG_version_builders"            => "Конструкторы",
         "CONFIG_show_admin_interface"        => "Показывать сервис миграций в админке",
-        "CONFIG_show_admin_updown"           => "Показывать кнопки запуска в админке",
         "CONFIG_console_user"                => "Пользователь, от которого запускаются миграции в консоли",
         "CONFIG_console_auth_events_disable" => "Отключить обработчики авторизации в консоли",
         "CONFIG_config_file"                 => "Файл конфигурации",

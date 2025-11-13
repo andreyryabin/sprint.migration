@@ -59,7 +59,7 @@ trait HlblockTrait
             $item['LANG'] = $langs;
         }
 
-        $lang = Locale::getLang();
+        $lang = Locale::getDefaultLang();
         if (!empty($item['LANG'][$lang]['NAME'])) {
             $item['TITLE'] = $item['LANG'][$lang]['NAME'];
         } elseif (!empty($item['LANG']['ru']['NAME'])) {

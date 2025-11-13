@@ -7,16 +7,14 @@ use Sprint\Migration\VersionConfig;
 
 $getOnclickMenu = function () use ($versionConfig) {
     $menu = [];
-    if ($versionConfig->getVal('show_admin_updown')) {
-        $menu[] = [
-            'TEXT' => Locale::getMessage('UP_START_WITH_TAG'),
+    $menu[] = [
+            'TEXT'    => Locale::getMessage('UP_START_WITH_TAG'),
             'ONCLICK' => 'migrationMigrationsUpWithTag()',
-        ];
-        $menu[] = [
-            'TEXT' => Locale::getMessage('DOWN_START'),
+    ];
+    $menu[] = [
+            'TEXT'    => Locale::getMessage('DOWN_START'),
             'ONCLICK' => 'migrationMigrationsDownConfirm()',
-        ];
-    }
+    ];
     return CUtil::PhpToJSObject($menu);
 }
 ?>
@@ -45,26 +43,24 @@ $getOnclickMenu = function () use ($versionConfig) {
             <div class="sp-col sp-col-scroll" id="migration_log"></div>
         </div>
     </div>
-    <?php if ($versionConfig->getVal('show_admin_updown')) { ?>
-        <div class="sp-table">
-            <div class="sp-row2">
-                <div class="sp-col">
-                    <input type="button"
-                           value="<?= Locale::getMessage('UP_START') ?>"
-                           onclick="migrationMigrationsUpConfirm();"
-                           class="adm-btn-green"/>
-                    <a onclick="this.blur();BX.adminShowMenu(this, <?= $getOnclickMenu() ?>, {active_class: 'adm-btn-active',public_frame: '0'}); return false;"
-                       href="javascript:void(0)"
-                       class="adm-btn"
-                       hidefocus="true">&equiv;</a>
-                </div>
-                <div class="sp-col">
-                    <div id="migration_progress"></div>
-                    <div id="migration_actions"></div>
-                </div>
+    <div class="sp-table">
+        <div class="sp-row2">
+            <div class="sp-col">
+                <input type="button"
+                       value="<?= Locale::getMessage('UP_START') ?>"
+                       onclick="migrationMigrationsUpConfirm();"
+                       class="adm-btn-green"/>
+                <a onclick="this.blur();BX.adminShowMenu(this, <?= $getOnclickMenu() ?>, {active_class: 'adm-btn-active',public_frame: '0'}); return false;"
+                   href="javascript:void(0)"
+                   class="adm-btn"
+                   hidefocus="true">&equiv;</a>
+            </div>
+            <div class="sp-col">
+                <div id="migration_progress"></div>
+                <div id="migration_actions"></div>
             </div>
         </div>
-    <?php } ?>
+    </div>
     <div class="sp-separator"></div>
     <?php include __DIR__ . '/builder_group.php' ?>
 </div>

@@ -4,7 +4,7 @@ use Sprint\Migration\Locale;
 
 class sprint_migration extends CModule
 {
-    var $MODULE_ID = "sprint.migration";
+    var $MODULE_ID           = "sprint.migration";
     var $MODULE_NAME;
     var $MODULE_VERSION;
     var $MODULE_VERSION_DATE;
@@ -22,8 +22,8 @@ class sprint_migration extends CModule
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
 
-        include(__DIR__ . '/../locale/ru.php');
-        include(__DIR__ . '/../locale/en.php');
+        require_once __DIR__ . '/../lib/locale.php';
+        Locale::loadDefault();
 
         $this->MODULE_NAME = GetMessage("SPRINT_MIGRATION_RU_MODULE_NAME");
         $this->MODULE_DESCRIPTION = GetMessage("SPRINT_MIGRATION_RU_MODULE_DESCRIPTION");

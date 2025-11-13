@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . "/../lib/locale.php";
-
 \Sprint\Migration\Locale::loadLocale(
     "en",
     [
@@ -88,7 +86,6 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_version_prefix"              => "Name prefix for migrations",
         "CONFIG_version_builders"            => "Builders",
         "CONFIG_show_admin_interface"        => "Show admin interface",
-        "CONFIG_show_admin_updown"           => "Show admin up&down buttons",
         "CONFIG_console_user"                => "User who run migrations from console",
         "CONFIG_console_auth_events_disable" => "Disable auth events in console",
         "CONFIG_config_file"                 => "Config file",

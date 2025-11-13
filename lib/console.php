@@ -397,7 +397,7 @@ class Console
      */
     public function commandHelp(): void
     {
-        if (Locale::getLang() == 'en') {
+        if (Locale::getDefaultLang() == 'en') {
             Out::out(file_get_contents(Module::getModuleDir() . '/commands-en.txt'));
         } else {
             Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
