@@ -130,7 +130,13 @@ class VersionManager
      */
     public function getVersions(array $filter = []): array
     {
-        $filter = array_merge(['status' => ''], $filter);
+        $filter = array_merge([
+            'status' => '',
+            'sort'   => '',
+            'actual' => 0,
+            'limit'  => 0,
+        ], $filter);
+
         $merge = [];
 
         $records = $this->getRecords();
@@ -596,7 +602,7 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    protected function makeVersion(string $versionName, $file, $record, $ts)
+    protected function makeVersion(string $versionName, $file, $record, $ts): bool|array
     {
         $isFile = ($file) ? 1 : 0;
         $isRecord = ($record) ? 1 : 0;
