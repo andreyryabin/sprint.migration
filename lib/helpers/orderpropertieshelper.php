@@ -42,7 +42,7 @@ class OrderPropertiesHelper extends Helper
         return current($this->getOrderPropertiesByFilter([
             ['PERSON_TYPE_ID', '=', $personTypeId],
             [$identifierField, '=', $value],
-        ]) ? : []);
+        ])) ?: [];
     }
 
     /**
