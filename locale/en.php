@@ -238,6 +238,18 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "en",
     [
+        "BUILDER_OrderProperties"                     => "Create a migration for order properties",
+        "BUILDER_OrderProperties_PersonType"          => "Select person type",
+        "BUILDER_OrderProperties_Properties"          => "Select properties",
+        "BUILDER_OrderProperties_UpdateMethod"        => "Export settings",
+        "BUILDER_OrderProperties_NotUpdate"           => "Only add elements",
+        "BUILDER_OrderProperties_SavePropertyByCode"  => "Add or update existing elements by CODE",
+        "BUILDER_OrderProperties_SavePropertyByXmlId" => "Add or update existing elements by XML_ID",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "en",
+    [
         "BUILDER_FormExport1"              => "Create migration for web form",
         "BUILDER_FormExport_FormId"        => "Select web form",
         "BUILDER_FormExport_What"          => "What to export?",
@@ -352,6 +364,9 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_USERTYPE_NOT_ADDED"             => "User type entity \"#NAME#\" not created",
         "ERR_USERTYPE_NOT_UPDATED"           => "User type entity \"#NAME#\" not updated",
         "ERR_USERTYPE_NOT_DELETED"           => "User type entity \"#NAME#\" not deleted",
+        "ERR_ORDER_PROPERTY_NOT_ADDED"       => "Order property \"#NAME#\" not created (#MESSAGE#)",
+        "ERR_ORDER_PROPERTY_NOT_UPDATED"     => "Order property \"#NAME#\" not updated (#MESSAGE#)",
+        "ERR_ORDER_PROPERTY_NOT_DELETED"     => "Order property \"#NAME#\" not deleted (#MESSAGE#)",
         "ERR_USERTYPE_EXPORT"                => "Error exporting user type \"#USER_TYPE_ID#\":",
         "ERR_IB_PROPERTY_CODE_NOT_FOUND"     => "Information block property code not found",
         "ERR_IB_CODE_NOT_FOUND"              => "Information block \"#IBLOCK_ID#\" code not found",
@@ -412,6 +427,9 @@ require_once __DIR__ . "/../lib/locale.php";
         "USER_TYPE_ENTITY_UPDATED"   => "User type entity \"#NAME#\" updated",
         "USER_TYPE_ENTITY_EQUAL"     => "User type entity \"#NAME#\" equivalent",
         "USER_TYPE_ENTITY_DELETED"   => "User type entity \"#NAME#\" deleted",
+        "ORDER_PROPERTY_ADDED"       => "Order property \"#NAME#\" created",
+        "ORDER_PROPERTY_UPDATED"     => "Order property \"#NAME#\" updated",
+        "ORDER_PROPERTY_DELETED"     => "Order property \"#NAME#\" deleted",
         "IB_PROPERTY_CREATED"        => "Information block \"#IBLOCK_ID#\": property \"#NAME#\" created",
         "IB_PROPERTY_UPDATED"        => "Information block \"#IBLOCK_ID#\": property \"#NAME#\" updated",
         "IB_PROPERTY_EQUAL"          => "Information block \"#IBLOCK_ID#\": property \"#NAME#\" equivalent",
@@ -454,6 +472,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_GROUP_Main"     => "Main module",
         "BUILDER_GROUP_Iblock"   => "Information blocks",
         "BUILDER_GROUP_Hlblock"  => "Highload information blocks",
+        "BUILDER_GROUP_Sale"     => "Sale module",
         "BUILDER_GROUP_Form"     => "Web Forms",
         "BUILDER_GROUP_Medialib" => "Media Library",
         "BUILDER_GROUP_Tools"    => "Tools",

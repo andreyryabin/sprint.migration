@@ -235,6 +235,18 @@ require_once __DIR__ . "/../lib/locale.php";
 \Sprint\Migration\Locale::loadLocale(
     "ru",
     [
+        "BUILDER_OrderProperties"                     => "Создать миграцию для свойств заказов",
+        "BUILDER_OrderProperties_PersonType"          => "Выберите тип плательщика",
+        "BUILDER_OrderProperties_Properties"          => "Выберите свойства",
+        "BUILDER_OrderProperties_UpdateMethod"        => "Настройка переноса",
+        "BUILDER_OrderProperties_NotUpdate"           => "Простое добавление свойств",
+        "BUILDER_OrderProperties_SavePropertyByCode"  => "Добавить или обновить свойства с совпадающими CODE",
+        "BUILDER_OrderProperties_SavePropertyByXmlId" => "Добавить или обновить свойства с совпадающими XML_ID",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "ru",
+    [
         "BUILDER_FormExport1"              => "Создать миграцию для веб-формы",
         "BUILDER_FormExport_FormId"        => "Выберите форму",
         "BUILDER_FormExport_What"          => "Что переносим?",
@@ -351,6 +363,9 @@ require_once __DIR__ . "/../lib/locale.php";
         "ERR_USERTYPE_NOT_ADDED"             => "Пользовательское поле \"#NAME#\" не добавлено",
         "ERR_USERTYPE_NOT_UPDATED"           => "Пользовательское поле \"#NAME#\" не обновлено",
         "ERR_USERTYPE_NOT_DELETED"           => "Пользовательское поле \"#NAME#\" не удалено",
+        "ERR_ORDER_PROPERTY_NOT_ADDED"       => "Свойство заказа \"#NAME#\" не добавлено (#MESSAGE#)",
+        "ERR_ORDER_PROPERTY_NOT_UPDATED"     => "Свойство заказа \"#NAME#\" не обновлено (#MESSAGE#)",
+        "ERR_ORDER_PROPERTY_NOT_DELETED"     => "Свойство заказа \"#NAME#\" не удалено (#MESSAGE#)",
         "ERR_USERTYPE_EXPORT"                => "Ошибка экспорта пользовательского поля \"#USER_TYPE_ID#\":",
         "ERR_IB_PROPERTY_CODE_NOT_FOUND"     => "Не заполнен символьный код свойства",
         "ERR_IB_CODE_NOT_FOUND"              => "Не заполнен символьный код инфоблока \"#IBLOCK_ID#\"",
@@ -410,6 +425,9 @@ require_once __DIR__ . "/../lib/locale.php";
         "USER_TYPE_ENTITY_UPDATED"   => "Пользовательское поле \"#NAME#\" обновлено",
         "USER_TYPE_ENTITY_EQUAL"     => "Пользовательское поле \"#NAME#\" совпадает",
         "USER_TYPE_ENTITY_DELETED"   => "Пользовательское поле \"#NAME#\" удалено",
+        "ORDER_PROPERTY_ADDED"       => "Свойство заказа \"#NAME#\" добавлено",
+        "ORDER_PROPERTY_UPDATED"     => "Свойство заказа \"#NAME#\" обновлено",
+        "ORDER_PROPERTY_DELETED"     => "Свойство заказа \"#NAME#\" удалено",
         "IB_PROPERTY_CREATED"        => "Инфоблок \"#IBLOCK_ID#\": свойство \"#NAME#\" добавлено",
         "IB_PROPERTY_UPDATED"        => "Инфоблок \"#IBLOCK_ID#\": свойство \"#NAME#\" обновлено",
         "IB_PROPERTY_EQUAL"          => "Инфоблок \"#IBLOCK_ID#\": свойство \"#NAME#\" совпадает",
@@ -452,6 +470,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "BUILDER_GROUP_Main"     => "Главный модуль",
         "BUILDER_GROUP_Iblock"   => "Инфоблоки",
         "BUILDER_GROUP_Hlblock"  => "Highload-блоки",
+        "BUILDER_GROUP_Sale"     => "Интернет-магазин",
         "BUILDER_GROUP_Form"     => "Веб-формы",
         "BUILDER_GROUP_Medialib" => "Медиабиблиотека",
         "BUILDER_GROUP_Tools"    => "Инструменты",
