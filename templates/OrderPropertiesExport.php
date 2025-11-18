@@ -5,6 +5,7 @@
  * @var $description
  * @var $updateMethod
  * @var $properties
+ * @var $propertyVariants
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion
@@ -36,12 +37,17 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     {
         $helper = $this->getHelperManager();
 <?php foreach ($properties as $property) { ?>
-    <?php if ($updateMethod === OrderPropertiesBuilder::UPDATE_METHOD_CODE) { ?>
-        $helper->OrderProperties()->saveOrderProperty(<?php echo var_export($property, 1) ?>, 'CODE');
-    <?php } elseif ($updateMethod === OrderPropertiesBuilder::UPDATE_METHOD_XML_ID) { ?>
-        $helper->OrderProperties()->saveOrderProperty(<?php echo var_export($property, 1) ?>, 'XML_ID');
+    <?php $updateMethod = $updateMethod !== OrderPropertiesBuilder::UPDATE_METHOD_NOT ? $updateMethod : null;?>
+    <?php $variants = $propertyVariants[$property['ID']];?>
+    <?php if(!empty($variants)) {?>
+    $propertyId = $helper->OrderProperties()->saveOrderProperty(<?php echo var_export($property, 1) ?>, <?php echo var_export($updateMethod, 1)?>);
+    <?php if($variants = $propertyVariants[$property['ID']]) { ?>
+        if($propertyId > 0) {
+            $helper->OrderProperties()->saveOrderPropertyVariants($propertyId, <?php echo var_export($variants, 1) ?>);
+        }
+    <?php } ?>
     <?php } else { ?>
-        $helper->OrderProperties()->saveOrderProperty(<?php echo var_export($property, 1) ?>);
+    $helper->OrderProperties()->saveOrderProperty(<?php echo var_export($property, 1) ?>, <?php echo var_export($updateMethod, 1)?>);
     <?php } ?>
 <?php } ?>
     }

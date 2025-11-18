@@ -50,7 +50,7 @@ class OrderPropertiesBuilder extends VersionBuilder
 
         $properties = $helper->OrderProperties()->getOrderPropertiesByPersonType($personTypeId);
 
-        $propertiesIds = $this->addFieldAndReturn(
+        $propertyIds = $this->addFieldAndReturn(
             'properties',
             [
                 'title'       => Locale::getMessage('BUILDER_OrderProperties_Properties'),
@@ -84,14 +84,37 @@ class OrderPropertiesBuilder extends VersionBuilder
             ]
         );
 
+        $propertyVariants = [];
+        $migratePropertyVariants = $this->addFieldAndReturn(
+            'migrate_property_variants', [
+                'title'       => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants'),
+                'placeholder' => '',
+                'width'       => 250,
+                'select'      => [
+                    [
+                        'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_No'),
+                        'value' => 0,
+                    ],
+                    [
+                        'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_Yes'),
+                        'value' => 1,
+                    ],
+                ],
+            ]
+        );
+        if((int) $migratePropertyVariants > 0) {
+            $propertyVariants = $helper->OrderProperties()->getOrderPropertyVariants($propertyIds);
+        }
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('OrderPropertiesExport'),
             [
                 'updateMethod' => $updateMethod,
                 'properties' => array_filter(
                     $properties,
-                    fn($property) => in_array($property['ID'], $propertiesIds)
+                    fn($property) => in_array($property['ID'], $propertyIds)
                 ),
+                'propertyVariants' => $propertyVariants,
             ]
         );
     }
