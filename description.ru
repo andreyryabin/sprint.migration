@@ -1,1 +1,1 @@
-1) Исправление метода Locale::getMessage, предложил @KotkinRoman <br/>
+1) Добавлена возможность миграций свойств заказов, реализовал @ashirchkov - Alexey Shirchkov <br/>

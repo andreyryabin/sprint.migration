@@ -15,6 +15,7 @@ use Sprint\Migration\Helpers\LangHelper;
 use Sprint\Migration\Helpers\MedialibExchangeHelper;
 use Sprint\Migration\Helpers\MedialibHelper;
 use Sprint\Migration\Helpers\OptionHelper;
+use Sprint\Migration\Helpers\OrderPropertiesHelper;
 use Sprint\Migration\Helpers\SiteHelper;
 use Sprint\Migration\Helpers\SqlHelper;
 use Sprint\Migration\Helpers\TaskHelper;
@@ -45,6 +46,7 @@ use Sprint\Migration\Helpers\UserTypeEntityHelper;
  * @method IblockExchangeHelper     IblockExchange()
  * @method HlblockExchangeHelper    HlblockExchange()
  * @method MedialibExchangeHelper   MedialibExchange()
+ * @method OrderPropertiesHelper   OrderProperties()
  */
 class HelperManager
 {

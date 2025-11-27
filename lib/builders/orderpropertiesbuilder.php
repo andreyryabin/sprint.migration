@@ -23,6 +23,7 @@ class OrderPropertiesBuilder extends VersionBuilder
     {
         $this->setTitle(Locale::getMessage('BUILDER_OrderProperties'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Sale'));
+        $this->setDescription("Форму разработал @ashirchkov\nhttps://github.com/andreyryabin/sprint.migration/pull/170");
 
         $this->addVersionFields();
     }
