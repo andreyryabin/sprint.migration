@@ -3,7 +3,7 @@
 use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
-use Sprint\Migration\Out;
+use Sprint\Migration\Output\HtmlOutput;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 
@@ -28,6 +28,8 @@ if (!($listView && check_bitrix_sessid())) {
 
 /** @var $versionConfig VersionConfig */
 $versionManager = new VersionManager($versionConfig);
+
+$output = new HtmlOutput;
 
 $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
 
@@ -149,7 +151,7 @@ $getOnclickMenu = function ($item) use ($versionConfig) {
 };
 
 if (empty($versions)) {
-    Out::outToHtml(Locale::getMessage('LIST_EMPTY'), ['class' => 'sp-out-list-empty']);
+    $output->out(Locale::getMessage('LIST_EMPTY'));
     return;
 }
 
@@ -187,19 +189,14 @@ if (empty($versions)) {
             </td>
             <td class="sp-list-td__content">
                 <?php
-                Out::outToHtml($item['version'], [
-                        'class' => 'sp-out sp-item-' . $item['status'],
-                ]);
-                Out::outToHtml($item['file_status']);
-                Out::outToHtml($item['record_status']);
-                Out::outToHtml($tagMsg);
+                $output->out('[%s]%s[/]', $item['status'], $item['version']);
+                $output->out($item['file_status'] ?? '');
+                $output->out($item['record_status'] ?? '');
+                $output->out($tagMsg);
                 if (!empty($versionLabels)) {
-                    Out::outToHtml(implode(' ', $versionLabels));
+                    $output->out(implode(' ', $versionLabels));
                 }
-                Out::outToHtml($item['description'], [
-                        'tracker_task_url' => $versionConfig->getVal('tracker_task_url'),
-                        'make_links'       => true,
-                ]);
+                $output->out($item['description'] ?? '');
                 ?>
             </td>
         </tr>

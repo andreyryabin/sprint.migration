@@ -174,10 +174,6 @@ class VersionConfig
             $values['version_builders'] = VersionConfig::getDefaultBuilders();
         }
 
-        if (empty($values['tracker_task_url'])) {
-            $values['tracker_task_url'] = '';
-        }
-
         if (empty($values['version_name_template'])) {
             $values['version_name_template'] = '#NAME##TIMESTAMP#';
         }

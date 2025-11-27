@@ -41,19 +41,7 @@ trait IblockPropertyTrait
         $fields = $this->prepareExportProperty($fields);
 
         if (empty($exists)) {
-            $ok = $this->addProperty($iblockId, $fields);
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'IB_PROPERTY_CREATED',
-                    [
-                        '#IBLOCK_ID#' => $iblockId,
-                        '#NAME#'      => $fields['CODE'],
-                    ]
-                )
-            );
-
-            return $ok;
+            return $this->addProperty($iblockId, $fields);
         }
 
         try {
@@ -63,23 +51,10 @@ trait IblockPropertyTrait
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->updatePropertyById(
+            return $this->updatePropertyById(
                 $exists['ID'],
                 array_merge($fields, ['IBLOCK_ID' => $iblockId])
             );
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'IB_PROPERTY_UPDATED',
-                    [
-                        '#IBLOCK_ID#' => $iblockId,
-                        '#NAME#'      => $fields['CODE'],
-                    ]
-                )
-            );
-            $this->outDiffIf($ok, $exportExists, $fields);
-
-            return $ok;
         }
 
         return $exists['ID'];
@@ -291,6 +266,10 @@ trait IblockPropertyTrait
         $propertyId = $ib->Add($fields);
 
         if ($propertyId) {
+            $this->notice('IB_PROPERTY_CREATED', [
+                '#IBLOCK_ID#' => $iblockId,
+                '#NAME#'      => $fields['CODE'],
+            ]);
             return (int)$propertyId;
         }
 
@@ -350,6 +329,11 @@ trait IblockPropertyTrait
 
         $ib = new CIBlockProperty();
         if ($ib->Update($propertyId, $fields)) {
+            $this->notice('IB_PROPERTY_UPDATED', [
+                '#IBLOCK_ID#' => $fields['IBLOCK_ID'],
+                '#NAME#'      => $fields['CODE'],
+            ]);
+
             return $propertyId;
         }
 

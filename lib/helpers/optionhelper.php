@@ -7,7 +7,6 @@ use Bitrix\Main\ModuleManager;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
-use Sprint\Migration\Locale;
 
 class OptionHelper extends Helper
 {
@@ -92,32 +91,11 @@ class OptionHelper extends Helper
         ]);
 
         if (empty($exists)) {
-            $ok = $this->setOption($fields);
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'OPTION_CREATED',
-                    [
-                        '#NAME#' => $fields['MODULE_ID'] . ':' . $fields['NAME'],
-                    ]
-                )
-            );
-            return $ok;
+            return $this->setOption($fields);
         }
 
         if ($this->hasDiff($exists, $fields)) {
-            $ok = $this->setOption($fields);
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'OPTION_UPDATED',
-                    [
-                        '#NAME#' => $fields['MODULE_ID'] . ':' . $fields['NAME'],
-                    ]
-                )
-            );
-            $this->outDiffIf($ok, $exists, $fields);
-            return $ok;
+            return $this->setOption($fields);
         }
 
         return true;
@@ -150,6 +128,7 @@ class OptionHelper extends Helper
         $fields = $this->revertOption($fields);
         try {
             Option::set($fields['MODULE_ID'], $fields['NAME'], $fields['VALUE']);
+            $this->notice('OPTION_UPDATED', ['#NAME#' => $fields['MODULE_ID'] . ':' . $fields['NAME']]);
             return true;
         } catch (Exception) {
         }

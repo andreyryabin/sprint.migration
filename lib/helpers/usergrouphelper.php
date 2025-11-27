@@ -160,34 +160,13 @@ class UserGroupHelper extends Helper
         $fields = $this->prepareExportGroup($fields);
 
         if (empty($exists)) {
-            $ok = $this->addGroup($fields['STRING_ID'], $fields);
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'USER_GROUP_CREATED',
-                    [
-                        '#NAME#' => $fields['NAME'],
-                    ]
-                )
-            );
-            return $ok;
+            return $this->addGroup($fields['STRING_ID'], $fields);
         }
 
         $exportExists = $this->prepareExportGroup($exists);
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->updateGroup($exists['ID'], $fields);
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'USER_GROUP_UPDATED',
-                    [
-                        '#NAME#' => $fields['NAME'],
-                    ]
-                )
-            );
-            $this->outDiffIf($ok, $exportExists, $fields);
-            return $ok;
+            return $this->updateGroup($exists['ID'], $fields);
         }
 
         return (int)$exists['ID'];
@@ -237,6 +216,8 @@ class UserGroupHelper extends Helper
         $groupId = $group->Add($this->prepareFields($fields));
 
         if ($groupId) {
+            $this->notice('USER_GROUP_CREATED', ['#NAME#' => $fields['NAME']]);
+
             return (int)$groupId;
         }
 
@@ -258,6 +239,7 @@ class UserGroupHelper extends Helper
 
         $group = new CGroup;
         if ($group->Update($groupId, $this->prepareFields($fields))) {
+            $this->notice('USER_GROUP_UPDATED', ['#NAME#' => $fields['NAME']]);
             return $groupId;
         }
 

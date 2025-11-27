@@ -293,7 +293,7 @@ class EventHelper extends Helper
         ]);
 
         if ($event->Update($id, $fields)) {
-            $this->outNotice(Locale::getMessage('EVENT_MESSAGE_UPDATED', ['#NAME#' => $id]));
+            $this->notice('EVENT_MESSAGE_UPDATED', ['#NAME#' => $id]);
             return $id;
         }
 
@@ -309,7 +309,7 @@ class EventHelper extends Helper
     {
         $event = new CEventType();
         if ($event->Update(['ID' => $id], $fields)) {
-            $this->outNotice(Locale::getMessage('EVENT_TYPE_UPDATED', ['#NAME#' => $id]));
+            $this->notice('EVENT_TYPE_UPDATED', ['#NAME#' => $id]);
             return $id;
         }
 
@@ -336,7 +336,6 @@ class EventHelper extends Helper
 
         $exportExists = $this->prepareExportEventSmsTemplate($exists);
         if ($this->hasDiff($exportExists, $fields)) {
-            $this->outDiff($this->prepareExportEventSmsTemplate($exists), $fields);
             return $this->updateEventSmsTemplate($exists['ID'], $fields);
         }
 
@@ -359,7 +358,7 @@ class EventHelper extends Helper
 
             SmsTemplateSiteTable::updateSites($templateId, $siteIds);
 
-            $this->outNotice(Locale::getMessage('EVENT_SMS_TEMPLATE_UPDATED', ['#NAME#' => $templateId]));
+            $this->notice('EVENT_SMS_TEMPLATE_UPDATED', ['#NAME#' => $templateId]);
 
             return $templateId;
         } catch (Exception $e) {
@@ -385,7 +384,7 @@ class EventHelper extends Helper
 
             SmsTemplateSiteTable::updateSites($templateId, $siteIds);
 
-            $this->outNotice(Locale::getMessage('EVENT_SMS_TEMPLATE_CREATED', ['#NAME#' => $templateId]));
+            $this->notice('EVENT_SMS_TEMPLATE_CREATED', ['#NAME#' => $templateId]);
 
             return $templateId;
         } catch (Exception $e) {
@@ -418,7 +417,6 @@ class EventHelper extends Helper
 
         $exportExists = $this->prepareExportEventMessage($exists);
         if ($this->hasDiff($exportExists, $fields)) {
-            $this->outDiff($exportExists, $fields);
             return $this->updateEventMessageById($exists['ID'], $fields);
         }
 
@@ -448,7 +446,6 @@ class EventHelper extends Helper
 
         $exportExists = $this->prepareExportEventType($exists);
         if ($this->hasDiff($exportExists, $fields)) {
-            $this->outDiff($exportExists, $fields);
             return $this->updateEventTypeById($exists['ID'], $fields);
         }
 
@@ -535,7 +532,7 @@ class EventHelper extends Helper
         $id = (int)$event->Add($fields);
 
         if ($id) {
-            $this->outNotice(Locale::getMessage('EVENT_TYPE_CREATED', ['#NAME#' => $id]));
+            $this->notice('EVENT_TYPE_CREATED', ['#NAME#' => $id]);
             return $id;
         }
 
@@ -568,7 +565,7 @@ class EventHelper extends Helper
         $id = (int)$event->Add($fields);
 
         if ($id) {
-            $this->outNotice(Locale::getMessage('EVENT_MESSAGE_CREATED', ['#NAME#' => $id]));
+            $this->notice('EVENT_MESSAGE_CREATED', ['#NAME#' => $id]);
             return $id;
         }
 

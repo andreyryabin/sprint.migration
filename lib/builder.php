@@ -6,26 +6,27 @@ use Exception;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Interfaces\RestartableInterface;
+use Sprint\Migration\Output\ConsoleOutput;
 use Sprint\Migration\Traits\HelperManagerTrait;
-use Sprint\Migration\Traits\OutTrait;
+use Sprint\Migration\Output\OutputTrait;
 use Sprint\Migration\Traits\RestartableTrait;
 use Sprint\Migration\Traits\VersionConfigTrait;
 
 class Builder implements RestartableInterface
 {
     use HelperManagerTrait;
-    use OutTrait;
     use RestartableTrait;
     use VersionConfigTrait;
 
     private string $name;
-    private array $info = [
-        'title' => '',
+    private array  $info       = [
+        'title'       => '',
         'description' => '',
-        'group' => '',
+        'group'       => '',
     ];
-    private array $fields = [];
+    private array  $fields     = [];
     private string $execStatus = '';
+    use OutputTrait;
 
     public function __construct(VersionConfig $versionConfig, string $name, array $params = [])
     {
@@ -35,19 +36,21 @@ class Builder implements RestartableInterface
         $this->setRestartParams($params);
 
         $this->addField('builder_name', [
-            'type' => 'hidden',
-            'value' => $name
+            'type'  => 'hidden',
+            'value' => $name,
         ]);
     }
 
-    protected function initialize(){
+    protected function initialize()
+    {
         //your code
     }
 
     /**
      * @throws RestartException|RebuildException|Exception
      */
-    protected function execute(){
+    protected function execute()
+    {
         //your code
     }
 
@@ -77,7 +80,7 @@ class Builder implements RestartableInterface
             [
                 'title' => '',
                 'value' => $value,
-                'bind' => 0,
+                'bind'  => 0,
             ], $param
         );
 
@@ -147,14 +150,14 @@ class Builder implements RestartableInterface
 
     public function renderConsole(): void
     {
+        $output = new ConsoleOutput();
         foreach ($this->fields as $code => $field) {
             if (empty($field['bind'])) {
-                $val = Out::input($field);
+                $val = $output->input($field);
 
                 $this->fields[$code]['bind'] = 1;
                 $this->fields[$code]['value'] = $val;
                 $this->params[$code] = $val;
-
             }
         }
     }
@@ -271,11 +274,10 @@ class Builder implements RestartableInterface
     }
 
     protected function createSelect(
-        array  $items,
+        array $items,
         string $idKey,
         string $titleKey
-    ): array
-    {
+    ): array {
         $select = [];
         foreach ($items as $item) {
             $itemId = $item[$idKey];
@@ -288,12 +290,11 @@ class Builder implements RestartableInterface
     }
 
     protected function createSelectWithGroups(
-        array  $items,
+        array $items,
         string $idKey,
         string $titleKey,
         string $groupKey = '-'
-    ): array
-    {
+    ): array {
         $select = [];
         foreach ($items as $item) {
             $groupId = $item[$groupKey] ?? 'Group';

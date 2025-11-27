@@ -8,6 +8,8 @@ use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\RestartableInterface;
 use Sprint\Migration\Out;
+use Sprint\Migration\Output\OutputFactory;
+use Sprint\Migration\Output\OutputInterface;
 
 class RestartableReader
 {
@@ -16,12 +18,14 @@ class RestartableReader
     private array   $attributes = [];
     private int     $totalCount = 0;
     private ?Reader $reader;
+    private OutputInterface $output;
 
     public function __construct(
         private readonly RestartableInterface $restartable,
         private readonly ReaderHelperInterface $helper,
         private readonly string $directory,
     ) {
+        $this->output = OutputFactory::create();
     }
 
     public function setExchangeResource(string $exchangeResource): RestartableReader
@@ -49,7 +53,7 @@ class RestartableReader
     {
         $this->reader = new Reader($this->file);
 
-        $progressFn = fn($value, $totalCount) => Out::outProgress('Progress: ', $value, $totalCount);
+        $progressFn = fn($value, $totalCount) => $this->output->outProgress('Progress: ', $value, $totalCount);
 
         $this->attributes = $this->restartable->restartOnce('step1', fn() => $this->reader->getAttributes());
 

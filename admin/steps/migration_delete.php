@@ -15,11 +15,12 @@ if ($existsEvents && check_bitrix_sessid()) {
 
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
+    $output = new \Sprint\Migration\Output\HtmlOutput();
 
     $version = !empty($_POST['version']) ? $_POST['version'] : '';
 
     $deleteresult = $versionManager->deleteMigration($version);
-    Sprint\Migration\Out::outMessages($deleteresult);
+    $output->outMessages($deleteresult);
 
     ?>
     <script>

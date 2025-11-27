@@ -20,9 +20,8 @@ if ($updater && $updater instanceof CUpdater) {
 
     $filesToRemove = [
         'admin/includes/interface.php',
-//        '.github/FUNDING.yml',
-//        'admin/assets/....js',
-//        'lib/traits/....php',
+        'lib/out.php',
+        'lib/traits/outtrait.php',
     ];
 
     $moduleRootDir = $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/';

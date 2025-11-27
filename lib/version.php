@@ -6,15 +6,15 @@ use ReflectionClass;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exchange\ExchangeManager;
 use Sprint\Migration\Interfaces\RestartableInterface;
+use Sprint\Migration\Output\OutputTrait;
 use Sprint\Migration\Traits\HelperManagerTrait;
-use Sprint\Migration\Traits\OutTrait;
 use Sprint\Migration\Traits\RestartableTrait;
 use Sprint\Migration\Traits\VersionConfigTrait;
 
 class Version implements RestartableInterface
 {
     use HelperManagerTrait;
-    use OutTrait;
+    use OutputTrait;
     use RestartableTrait;
     use VersionConfigTrait;
 

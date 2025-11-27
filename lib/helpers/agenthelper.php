@@ -112,17 +112,7 @@ class AgentHelper extends Helper
         $fields = $this->prepareExportAgent($fields);
 
         if (empty($exists)) {
-            $ok = $this->addAgent($fields);
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'AGENT_CREATED',
-                    [
-                        '#NAME#' => $fields['NAME'],
-                    ]
-                )
-            );
-            return $ok;
+            return $this->addAgent($fields);
         }
 
         $exportExists = $this->prepareExportAgent($exists);
@@ -133,20 +123,7 @@ class AgentHelper extends Helper
         }
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->updateAgent($fields);
-
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'AGENT_UPDATED',
-                    [
-                        '#NAME#' => $fields['NAME'],
-                    ]
-                )
-            );
-
-            $this->outDiffIf($ok, $exportExists, $fields);
-            return $ok;
+            return $this->updateAgent($fields);
         }
 
         return (int)$exists['ID'];
@@ -194,6 +171,7 @@ class AgentHelper extends Helper
         );
 
         if ($agentId) {
+            $this->notice('AGENT_UPDATED', ['#NAME#' => $fields['NAME']]);
             return (int)$agentId;
         }
 

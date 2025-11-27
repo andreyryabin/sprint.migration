@@ -5,7 +5,6 @@ use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
-use Sprint\Migration\Out;
 
 ini_set('zend.exception_ignore_args', 0);
 
@@ -42,7 +41,7 @@ try {
             include __DIR__ . '/steps/migration_settag.php';
             include __DIR__ . '/steps/migration_transfer.php';
         } catch (Throwable $e) {
-            Out::outException($e);
+            (new \Sprint\Migration\Output\HtmlOutput())->outException($e);
         }
 
         require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");

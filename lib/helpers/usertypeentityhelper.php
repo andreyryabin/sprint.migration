@@ -124,6 +124,7 @@ class UserTypeEntityHelper extends Helper
         }
 
         if ($userFieldId && $enumsCreated) {
+            $this->notice('USER_TYPE_ENTITY_CREATED', ['#NAME#' => $fields['FIELD_NAME'],]);
             return $userFieldId;
         }
 
@@ -163,16 +164,14 @@ class UserTypeEntityHelper extends Helper
         }
 
         if ($userFieldUpdated && $enumsCreated) {
+            $this->notice('USER_TYPE_ENTITY_UPDATED', ['#NAME#' => $fieldId]);
             return $fieldId;
         }
 
         $this->throwApplicationExceptionIfExists();
         throw new HelperException(
             Locale::getMessage(
-                'ERR_USERTYPE_NOT_UPDATED',
-                [
-                    '#NAME#' => $fieldId,
-                ]
+                'ERR_USERTYPE_NOT_UPDATED', ['#NAME#' => $fieldId]
             )
         );
     }
@@ -492,22 +491,11 @@ class UserTypeEntityHelper extends Helper
         );
 
         if (empty($exists)) {
-            $ok = $this->addUserTypeEntity(
+            return $this->addUserTypeEntity(
                 $fields['ENTITY_ID'],
                 $fields['FIELD_NAME'],
                 $fields
             );
-
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'USER_TYPE_ENTITY_CREATED',
-                    [
-                        '#NAME#' => $fields['FIELD_NAME'],
-                    ]
-                )
-            );
-            return $ok;
         }
 
         try {
@@ -520,18 +508,7 @@ class UserTypeEntityHelper extends Helper
         $this->unsetKeys($fields, ['MULTIPLE']);
 
         if ($this->hasDiff($exportExists, $fields)) {
-            $ok = $this->updateUserTypeEntity($exists['ID'], $fields);
-            $this->outNoticeIf(
-                $ok,
-                Locale::getMessage(
-                    'USER_TYPE_ENTITY_UPDATED',
-                    [
-                        '#NAME#' => $fields['FIELD_NAME'],
-                    ]
-                )
-            );
-            $this->outDiffIf($ok, $exportExists, $fields);
-            return $ok;
+            return $this->updateUserTypeEntity($exists['ID'], $fields);
         }
 
         return (int)$exists['ID'];
@@ -558,7 +535,7 @@ class UserTypeEntityHelper extends Helper
             throw new HelperException($extendedMessage);
         }
 
-        $this->unsetKeys($fields, ['ID','TITLE']);
+        $this->unsetKeys($fields, ['ID', 'TITLE']);
 
         return $fields;
     }

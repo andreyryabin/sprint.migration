@@ -17,6 +17,7 @@ if ($existsEvents && check_bitrix_sessid()) {
     $transferTo = !empty($_POST['transfer_to']) ? $_POST['transfer_to'] : '';
 
     $transferConfig = ConfigManager::getInstance()->get($transferTo);
+    $output = new \Sprint\Migration\Output\HtmlOutput();
 
     /** @var $versionConfig VersionConfig */
     $vmFrom = new VersionManager($versionConfig);
@@ -27,7 +28,7 @@ if ($existsEvents && check_bitrix_sessid()) {
         $vmTo
     );
 
-    Sprint\Migration\Out::outMessages($transferresult);
+    $output->outMessages($transferresult);
     ?>
     <script>
         migrationListRefresh(function () {

@@ -12,7 +12,9 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
     <div class="sp-row2">
         <div class="sp-col">
             <div style="margin-bottom: 10px;">
-                <?= Locale::getMessage('MODULE_VERSION') ?>: <?= Module::getVersion() ?>
+                <?= Locale::getMessage('MODULE_VERSION') ?>: <?= Module::getVersion() ?><br/>
+                <?= Locale::getMessage('PHP_VERSION') ?>: <?= (defined('PHP_VERSION') ? PHP_VERSION : '') ?><br/>
+                <?= Locale::getMessage('BITRIX_VERSION') ?>: <?= (defined('SM_VERSION') ? SM_VERSION : '') ?>
             </div>
             <div style="margin-bottom: 10px;">
                 <?php if ($isSettinsPage): ?>

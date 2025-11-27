@@ -3,7 +3,9 @@
 
 use Sprint\Migration\Builder;
 use Sprint\Migration\Locale;
-use Sprint\Migration\Out;
+use Sprint\Migration\Output\HtmlOutput;
+
+$output = new HtmlOutput;
 
 echo '<form method="post">';
 foreach ($builder->getFields() as $fieldCode => $fieldItem) {
@@ -40,7 +42,7 @@ echo '<div class="sp-field">' .
 
 if ($builder->hasDescription()) {
     echo '<div class="sp-field sp-info-message">';
-    Out::outToHtml($builder->getDescription(), ['make_links' => true]);
+    $output->out($builder->getDescription());
     echo '</div>';
 }
 

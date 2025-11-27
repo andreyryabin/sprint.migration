@@ -339,10 +339,6 @@ a.sp-item-unknown:visited {
     margin-bottom: 0;
 }
 
-.sp-out-list-empty {
-    padding: 0 0 10px
-}
-
 #migration_container {
     position: relative;
 }

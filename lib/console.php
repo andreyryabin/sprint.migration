@@ -8,6 +8,8 @@ use CUser;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Output\ConsoleOutput;
+use Sprint\Migration\Output\OutputInterface;
 use Sprint\Migration\Traits\CurrentUserTrait;
 
 class Console
@@ -17,6 +19,7 @@ class Console
     private array          $arguments  = [];
     private VersionConfig  $versionConfig;
     private VersionManager $versionManager;
+    private OutputInterface $output;
     private array          $argoptions = [];
     use CurrentUserTrait;
 
@@ -34,6 +37,8 @@ class Console
         );
 
         $this->versionManager = new VersionManager($this->versionConfig);
+
+        $this->output = new ConsoleOutput();
 
         $this->disableAuthHandlersIfNeed();
 
@@ -147,7 +152,7 @@ class Console
         $status = $this->getArg('--as=');
 
         if ($search && $status) {
-            Out::outMessages(
+            $this->output->outMessages(
                 $this->versionManager->markMigration($search, $status)
             );
         } else {
@@ -162,7 +167,7 @@ class Console
      */
     public function commandDelete(): void
     {
-        Out::outMessages(
+        $this->output->outMessages(
             $this->versionManager->deleteMigration($this->getArg(0))
         );
     }
@@ -218,44 +223,37 @@ class Console
             if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
                 $versionLabels[] = '[label]' . Locale::getMessage('VERSION_UNKNOWN') . '[/]';
             }
-            $descrColumn = Out::prepareToConsole(
-                $item['description'],
-                [
-                    'tracker_task_url' => $this->versionConfig->getVal('tracker_task_url'),
-                ]
-            );
 
-            Out::out('┌─');
-            Out::out('│ [%s]%s[/]', $item['status'], $item['version']);
+            $this->output->out('┌─');
+            $this->output->out('│ [%s]%s[/]', $item['status'], $item['version']);
 
             if ($item['file_status']) {
-                Out::out('│ ' . $item['file_status']);
+                $this->output->out('│ ' . $item['file_status']);
             }
 
             if ($item['record_status']) {
-                Out::out('│ ' . $item['record_status']);
+                $this->output->out('│ ' . $item['record_status']);
             }
 
             if ($item['tag']) {
                 $tagMsg = Locale::getMessage('RELEASE_TAG', [
                     '#TAG#' => '[label:green]' . $item['tag'] . '[/]',
                 ]);
-                Out::out('│ ' . $tagMsg);
+                $this->output->out('│ ' . $tagMsg);
             }
 
             if (!empty($versionLabels)) {
-                Out::out('│ ' . implode(' ', $versionLabels));
+                $this->output->out('│ ' . implode(' ', $versionLabels));
             }
 
-            if ($descrColumn) {
-                Out::out('├─');
-                $descrColumn = explode(PHP_EOL, $descrColumn);
-                foreach ($descrColumn as $descStr) {
-                    Out::out('│ ' . $descStr);
+            if (!empty($item['description'])) {
+                $this->output->out('├─');
+                foreach (explode(PHP_EOL, $item['description']) as $descStr) {
+                    $this->output->out('│ ' . $descStr);
                 }
             }
 
-            Out::out('└─');
+            $this->output->out('└─');
 
             $stval = $item['status'];
             $summary[$stval]++;
@@ -263,7 +261,7 @@ class Console
 
         foreach ($summary as $k => $v) {
             if ($v > 0) {
-                Out::out(Locale::getMessage('META_' . $k) . ':' . $v);
+                $this->output->out(Locale::getMessage('META_' . $k) . ':' . $v);
             }
         }
     }
@@ -273,25 +271,25 @@ class Console
      */
     public function commandConfig(): void
     {
-        Out::out('%s: %s',
+        $this->output->out('%s: %s',
             Locale::getMessage('CONFIG'),
             $this->versionConfig->getTitle()
         );
 
         foreach ($this->versionConfig->humanValues() as $configKey => $configValue) {
-            Out::out('┌─');
-            Out::out('│ ' . Locale::getMessage('CONFIG_' . $configKey));
-            Out::out('│ ' . $configKey);
+            $this->output->out('┌─');
+            $this->output->out('│ ' . Locale::getMessage('CONFIG_' . $configKey));
+            $this->output->out('│ ' . $configKey);
 
             if ($configValue) {
-                Out::out('├─');
+                $this->output->out('├─');
                 $configValue = explode(PHP_EOL, $configValue);
                 foreach ($configValue as $valueStr) {
-                    Out::out('│ ' . $valueStr);
+                    $this->output->out('│ ' . $valueStr);
                 }
             }
 
-            Out::out('└─');
+            $this->output->out('└─');
         }
     }
 
@@ -350,43 +348,47 @@ class Console
 
     public function commandInfo(): void
     {
-        Out::out(
+        $this->output->out(
             Locale::getMessage('MODULE_NAME')
         );
-        Out::out(
-            Locale::getMessage('BITRIX_VERSION') . ': %s',
-            defined('SM_VERSION') ? SM_VERSION : ''
-        );
-        Out::out(
+        $this->output->out(
             Locale::getMessage('MODULE_VERSION') . ': %s',
             Module::getVersion()
         );
-        Out::out(
+        $this->output->out(
+            Locale::getMessage('PHP_VERSION') . ': %s',
+            defined('PHP_VERSION') ? PHP_VERSION : ''
+        );
+        $this->output->out(
+            Locale::getMessage('BITRIX_VERSION') . ': %s',
+            defined('SM_VERSION') ? SM_VERSION : ''
+        );
+        $this->output->out(
             Locale::getMessage('CURRENT_USER') . ': [%d] %s',
             $this->getCurrentUserId(),
             $this->getCurrentUserLogin()
         );
 
-        Out::out('');
-        Out::out(Locale::getMessage('CONFIG_LIST') . ':');
+        $this->output->out('');
+        $this->output->out(Locale::getMessage('CONFIG_LIST') . ':');
 
         foreach (ConfigManager::getInstance()->getList() as $configItem) {
             if ($configItem->getName() == $this->versionConfig->getName()) {
-                Out::out('  ' . $configItem->getTitle() . ' *');
+                $this->output->out('  ' . $configItem->getTitle() . ' *');
             } else {
-                Out::out('  ' . $configItem->getTitle());
+                $this->output->out('  ' . $configItem->getTitle());
             }
         }
-        Out::out('');
-        Out::out(
+        $this->output->out('');
+        $this->output->out(
             Locale::getMessage('COMMAND_CONFIG') . ':' . PHP_EOL . '  php %s config' . PHP_EOL,
             $this->script
         );
-        Out::out(
+        $this->output->out(
             Locale::getMessage('COMMAND_RUN') . ':' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL,
             $this->script
         );
-        Out::out(
+        $this->output->out(
             Locale::getMessage('COMMAND_HELP') . ':' . PHP_EOL . '  php %s help' . PHP_EOL,
             $this->script
         );
@@ -398,9 +400,9 @@ class Console
     public function commandHelp(): void
     {
         if (Locale::getDefaultLang() == 'en') {
-            Out::out(file_get_contents(Module::getModuleDir() . '/commands-en.txt'));
+            $this->output->out(file_get_contents(Module::getModuleDir() . '/commands-en.txt'));
         } else {
-            Out::out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
+            $this->output->out(file_get_contents(Module::getModuleDir() . '/commands.txt'));
         }
     }
 
@@ -486,7 +488,7 @@ class Console
             }
         }
 
-        Out::out('migrations (%s): %d', $action, $success);
+        $this->output->out('migrations (%s): %d', $action, $success);
 
         if ($fails) {
             throw new MigrationException(
@@ -515,7 +517,7 @@ class Console
 
         $params = [];
 
-        Out::out('%s (%s) start', $version, $action);
+        $this->output->out('%s (%s) start', $version, $action);
 
         do {
             $exec = 0;
@@ -535,11 +537,11 @@ class Console
             }
 
             if ($success && !$restart) {
-                Out::out('%s (%s) success', $version, $action);
+                $this->output->out('%s (%s) success', $version, $action);
             }
 
             if (!$success && !$restart) {
-                Out::outException($this->versionManager->getLastException());
+                $this->output->outException($this->versionManager->getLastException());
             }
         } while ($exec == 1);
 

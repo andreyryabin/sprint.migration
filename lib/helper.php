@@ -8,17 +8,20 @@ use CDBResult;
 use CMain;
 use ReflectionClass;
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Traits\OutTrait;
+use Sprint\Migration\Output\OutputFactory;
+use Sprint\Migration\Output\OutputInterface;
 
 class Helper
 {
-    use OutTrait;
+    private OutputInterface $output;
 
     /**
      * @throws HelperException
      */
     public function __construct()
     {
+        $this->output = OutputFactory::create();
+
         if (!$this->isEnabled()) {
             throw new HelperException(
                 Locale::getMessage(
@@ -73,20 +76,20 @@ class Helper
         return (new ReflectionClass($this))->getShortName();
     }
 
-    protected function hasDiff($exists, $fields): bool
+    protected function hasDiff(array $exists, array $fields, bool $strict = false): bool
     {
-        return ($exists != $fields);
+        $ok = $strict ? ($exists !== $fields) : ($exists != $fields);
+
+        if ($ok) {
+            $this->output->outDiff($exists, $fields);
+        }
+
+        return $ok;
     }
 
-    /**
-     * @param $exists
-     * @param $fields
-     *
-     * @return bool
-     */
-    protected function hasDiffStrict($exists, $fields): bool
+    protected function notice(string $message, array $replaces = []): void
     {
-        return ($exists !== $fields);
+        $this->output->outNotice(Locale::getMessage($message, $replaces));
     }
 
     /**
