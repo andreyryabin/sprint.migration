@@ -172,7 +172,7 @@ class OrderPropertiesHelper extends Helper
                 $result = $this->addOrderProperty($property);
             } else {
                 $result = $this->updateOrderProperty((int) $exists['ID'], $property);
-                $this->outDiff($this->prepareProperty($exists), $property);
+                $this->checkDiff($this->prepareProperty($exists), $property);
             }
 
         } else {

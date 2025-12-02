@@ -6,63 +6,53 @@ use Throwable;
 
 trait OutputTrait
 {
-    private ?OutputInterface $output = null;
-
-    private function getOutput(): OutputInterface
-    {
-        if ($this->output === null) {
-            $this->output = OutputFactory::create();
-        }
-        return $this->output;
-    }
-
     protected function out(string $msg, ...$vars): void
     {
-        $this->getOutput()->out($msg, ...$vars);
+        OutputFactory::getInstance()->out($msg, ...$vars);
     }
 
-    protected function outProgress(string $msg, $val, $total): void
+    protected function outProgress(string $msg, int $val, int $total): void
     {
-        $this->getOutput()->outProgress(...func_get_args());
+        OutputFactory::getInstance()->outProgress($msg, $val, $total);
     }
 
     protected function outNotice(string $msg, ...$vars): void
     {
-        $this->getOutput()->outNotice(...func_get_args());
+        OutputFactory::getInstance()->outNotice($msg, ...$vars);
     }
 
     protected function outInfo(string $msg, ...$vars): void
     {
-        $this->getOutput()->outInfo(...func_get_args());
+        OutputFactory::getInstance()->outInfo($msg, ...$vars);
     }
 
     protected function outSuccess(string $msg, ...$vars): void
     {
-        $this->getOutput()->outSuccess(...func_get_args());
+        OutputFactory::getInstance()->outSuccess($msg, ...$vars);
     }
 
     protected function outWarning(string $msg, ...$vars): void
     {
-        $this->getOutput()->outWarning(...func_get_args());
+        OutputFactory::getInstance()->outWarning($msg, ...$vars);
     }
 
     protected function outError(string $msg, ...$vars): void
     {
-        $this->getOutput()->outError(...func_get_args());
+        OutputFactory::getInstance()->outError($msg, ...$vars);
     }
 
     protected function outDiff(array $arr1, array $arr2): void
     {
-        $this->getOutput()->outDiff(...func_get_args());
+        OutputFactory::getInstance()->outDiff($arr1, $arr2);
     }
 
     protected function outMessages(array $messages = []): void
     {
-        $this->getOutput()->outMessages(...func_get_args());
+        OutputFactory::getInstance()->outMessages($messages);
     }
 
     protected function outException(Throwable $exception): void
     {
-        $this->getOutput()->outException(...func_get_args());
+        OutputFactory::getInstance()->outException($exception);
     }
 }

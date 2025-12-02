@@ -124,7 +124,7 @@ class UserTypeEntityHelper extends Helper
         }
 
         if ($userFieldId && $enumsCreated) {
-            $this->notice('USER_TYPE_ENTITY_CREATED', ['#NAME#' => $fields['FIELD_NAME'],]);
+            $this->outNotice(Locale::getMessage('USER_TYPE_ENTITY_CREATED', ['#NAME#' => $fields['FIELD_NAME']]));
             return $userFieldId;
         }
 
@@ -164,7 +164,7 @@ class UserTypeEntityHelper extends Helper
         }
 
         if ($userFieldUpdated && $enumsCreated) {
-            $this->notice('USER_TYPE_ENTITY_UPDATED', ['#NAME#' => $fieldId]);
+            $this->outNotice(Locale::getMessage('USER_TYPE_ENTITY_UPDATED', ['#NAME#' => $fieldId]));
             return $fieldId;
         }
 
@@ -507,7 +507,7 @@ class UserTypeEntityHelper extends Helper
         $this->unsetKeys($exportExists, ['MULTIPLE']);
         $this->unsetKeys($fields, ['MULTIPLE']);
 
-        if ($this->hasDiff($exportExists, $fields)) {
+        if ($this->checkDiff($exportExists, $fields)) {
             return $this->updateUserTypeEntity($exists['ID'], $fields);
         }
 

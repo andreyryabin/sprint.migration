@@ -61,7 +61,7 @@ class ConsoleOutput extends AbstractOutput
         }
     }
 
-    public function input($field)
+    public function input($field): string
     {
         if (!empty($field['items'])) {
             $this->outStructure($field);
@@ -82,7 +82,7 @@ class ConsoleOutput extends AbstractOutput
         return $val;
     }
 
-    private function outStructure($field)
+    private function outStructure($field): void
     {
         foreach ($field['items'] as $group) {
             $this->out('---' . $group['title']);
@@ -92,7 +92,7 @@ class ConsoleOutput extends AbstractOutput
         }
     }
 
-    private function outSelect($field)
+    private function outSelect($field): void
     {
         foreach ($field['select'] as $item) {
             $this->out(' > ' . $item['value'] . ' (' . $item['title'] . ')');

@@ -15,9 +15,9 @@ use Sprint\Migration\Builders\IblockDeleteBuilder;
 use Sprint\Migration\Builders\IblockElementsBuilder;
 use Sprint\Migration\Builders\IblockPropertyBuilder;
 use Sprint\Migration\Builders\MarkerBuilder;
-use Sprint\Migration\Builders\OrderPropertiesBuilder;
 use Sprint\Migration\Builders\MedialibElementsBuilder;
 use Sprint\Migration\Builders\OptionBuilder;
+use Sprint\Migration\Builders\OrderPropertiesBuilder;
 use Sprint\Migration\Builders\TransferBuilder;
 use Sprint\Migration\Builders\UserGroupBuilder;
 use Sprint\Migration\Builders\UserOptionsBuilder;
@@ -110,6 +110,11 @@ class VersionConfig
             return substr($dir, strlen(Module::getDocRoot()));
         }
         return '';
+    }
+
+    public function getLogger()
+    {
+        return $this->getVal('logger', null);
     }
 
     /**
@@ -212,7 +217,7 @@ class VersionConfig
         return [
             'UserGroupBuilder'        => UserGroupBuilder::class,
             'IblockBuilder'           => IblockBuilder::class,
-            'IblockPropertyBuilder' => IblockPropertyBuilder::class,
+            'IblockPropertyBuilder'   => IblockPropertyBuilder::class,
             'IblockCategoryBuilder'   => IblockCategoryBuilder::class,
             'IblockElementsBuilder'   => IblockElementsBuilder::class,
             'IblockDeleteBuilder'     => IblockDeleteBuilder::class,
@@ -224,7 +229,7 @@ class VersionConfig
             'FormBuilder'             => FormBuilder::class,
             'EventBuilder'            => EventBuilder::class,
             'UserOptionsBuilder'      => UserOptionsBuilder::class,
-            'OrderPropertiesBuilder' => OrderPropertiesBuilder::class,
+            'OrderPropertiesBuilder'  => OrderPropertiesBuilder::class,
             'MedialibElementsBuilder' => MedialibElementsBuilder::class,
             'BlankBuilder'            => BlankBuilder::class,
             'CacheCleanerBuilder'     => CacheCleanerBuilder::class,

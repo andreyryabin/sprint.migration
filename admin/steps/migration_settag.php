@@ -14,13 +14,13 @@ $existsEvents = (
 if ($existsEvents && check_bitrix_sessid()) {
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
-    $output = new \Sprint\Migration\Output\HtmlOutput();
+    $logger = \Sprint\Migration\Output\OutputFactory::getInstance();
 
     $version = !empty($_POST['version']) ? $_POST['version'] : '';
     $settag = !empty($_POST['settag']) ? $_POST['settag'] : '';
 
     $settagresult = $versionManager->setMigrationTag($version, $settag);
-    $output->outMessages($settagresult);
+    $logger->outMessages($settagresult);
     ?>
     <script>
         migrationListRefresh(function () {

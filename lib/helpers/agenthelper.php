@@ -115,14 +115,13 @@ class AgentHelper extends Helper
             return $this->addAgent($fields);
         }
 
-        $exportExists = $this->prepareExportAgent($exists);
-
-        if (strtotime($fields['NEXT_EXEC']) <= strtotime($exportExists['NEXT_EXEC'])) {
+        if (strtotime($fields['NEXT_EXEC']) <= strtotime($exists['NEXT_EXEC'])) {
             unset($fields['NEXT_EXEC']);
-            unset($exportExists['NEXT_EXEC']);
+            unset($exists['NEXT_EXEC']);
         }
 
-        if ($this->hasDiff($exportExists, $fields)) {
+        $exportExists = $this->prepareExportAgent($exists);
+        if ($this->checkDiff($exportExists, $fields)) {
             return $this->updateAgent($fields);
         }
 
@@ -171,7 +170,7 @@ class AgentHelper extends Helper
         );
 
         if ($agentId) {
-            $this->notice('AGENT_UPDATED', ['#NAME#' => $fields['NAME']]);
+            $this->outNotice(Locale::getMessage('AGENT_UPDATED', ['#NAME#' => $fields['NAME']]));
             return (int)$agentId;
         }
 

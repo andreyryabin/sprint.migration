@@ -349,8 +349,7 @@ trait HlblockTrait
         }
 
         $exportExists = $this->prepareExportHlblock($exists);
-
-        if ($this->hasDiff($exportExists, $fields)) {
+        if ($this->checkDiff($exportExists, $fields)) {
             return $this->updateHlblock($exists['ID'], $fields);
         }
 
@@ -377,7 +376,7 @@ trait HlblockTrait
             $result = HighloadBlockTable::add($fields);
             if ($result->isSuccess()) {
                 $this->replaceHblockLangs($result->getId(), $lang);
-                $this->notice('HLBLOCK_CREATED', ['#NAME#' => $fields['NAME']]);
+                $this->outNotice(Locale::getMessage('HLBLOCK_CREATED', ['#NAME#' => $fields['NAME']]));
                 return (int)$result->getId();
             }
 
@@ -474,7 +473,7 @@ trait HlblockTrait
             if ($result->isSuccess()) {
                 $this->replaceHblockLangs($hlblockId, $lang);
 
-                $this->notice('HLBLOCK_UPDATED', ['#NAME#' => $fields['NAME']]);
+                $this->outNotice(Locale::getMessage('HLBLOCK_UPDATED', ['#NAME#' => $fields['NAME']]));
 
                 return $hlblockId;
             }

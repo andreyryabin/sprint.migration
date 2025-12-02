@@ -6,22 +6,23 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
 use CDBResult;
 use CMain;
+use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Output\OutputFactory;
 use Sprint\Migration\Output\OutputInterface;
+use Sprint\Migration\Output\OutputTrait;
 
 class Helper
 {
-    private OutputInterface $output;
+
+    use OutputTrait;
 
     /**
      * @throws HelperException
      */
     public function __construct()
     {
-        $this->output = OutputFactory::create();
-
         if (!$this->isEnabled()) {
             throw new HelperException(
                 Locale::getMessage(
@@ -76,20 +77,13 @@ class Helper
         return (new ReflectionClass($this))->getShortName();
     }
 
-    protected function hasDiff(array $exists, array $fields, bool $strict = false): bool
+    protected function checkDiff(array $exists, array $fields, bool $strict = false): bool
     {
-        $ok = $strict ? ($exists !== $fields) : ($exists != $fields);
-
-        if ($ok) {
-            $this->output->outDiff($exists, $fields);
+        $hasDiff = $strict ? ($exists !== $fields) : ($exists != $fields);
+        if ($hasDiff) {
+            $this->outDiff($exists, $fields);
         }
-
-        return $ok;
-    }
-
-    protected function notice(string $message, array $replaces = []): void
-    {
-        $this->output->outNotice(Locale::getMessage($message, $replaces));
+        return $hasDiff;
     }
 
     /**

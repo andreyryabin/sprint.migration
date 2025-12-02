@@ -50,7 +50,7 @@ trait IblockPropertyTrait
             $exportExists = [];
         }
 
-        if ($this->hasDiff($exportExists, $fields)) {
+        if ($this->checkDiff($exportExists, $fields)) {
             return $this->updatePropertyById(
                 $exists['ID'],
                 array_merge($fields, ['IBLOCK_ID' => $iblockId])
@@ -266,10 +266,10 @@ trait IblockPropertyTrait
         $propertyId = $ib->Add($fields);
 
         if ($propertyId) {
-            $this->notice('IB_PROPERTY_CREATED', [
+            $this->outNotice(Locale::getMessage('IB_PROPERTY_CREATED', [
                 '#IBLOCK_ID#' => $iblockId,
                 '#NAME#'      => $fields['CODE'],
-            ]);
+            ]));
             return (int)$propertyId;
         }
 
@@ -329,10 +329,10 @@ trait IblockPropertyTrait
 
         $ib = new CIBlockProperty();
         if ($ib->Update($propertyId, $fields)) {
-            $this->notice('IB_PROPERTY_UPDATED', [
+            $this->outNotice(Locale::getMessage('IB_PROPERTY_UPDATED', [
                 '#IBLOCK_ID#' => $fields['IBLOCK_ID'],
                 '#NAME#'      => $fields['CODE'],
-            ]);
+            ]));
 
             return $propertyId;
         }

@@ -10,6 +10,7 @@ use Sprint\Migration\Helpers\Traits\UserOptions\HlblockTrait;
 use Sprint\Migration\Helpers\Traits\UserOptions\IblockTrait;
 use Sprint\Migration\Helpers\Traits\UserOptions\UserGroupTrait;
 use Sprint\Migration\Helpers\Traits\UserOptions\UserTrait;
+use Sprint\Migration\Locale;
 
 /*
 Example $formData for buildForm
@@ -160,7 +161,7 @@ class UserOptionsHelper extends Helper
             true
         );
 
-        $this->notice('USER_OPTION_LIST_CREATED', ['#NAME#' => $params['name']]);
+        $this->outNotice(Locale::getMessage('USER_OPTION_LIST_CREATED', ['#NAME#' => $params['name']]));
 
         return true;
     }
@@ -175,7 +176,7 @@ class UserOptionsHelper extends Helper
     public function saveList($data = [], $params = [])
     {
         $exists = $this->exportList($params);
-        if ($this->hasDiff($exists, $data)) {
+        if ($this->checkDiff($exists, $data)) {
             return $this->buildList($data, $params);
         }
 
@@ -222,14 +223,14 @@ class UserOptionsHelper extends Helper
             true
         );
 
-        $this->notice('USER_OPTION_GRID_CREATED', ['#NAME#' => $gridId]);
+        $this->outNotice(Locale::getMessage('USER_OPTION_GRID_CREATED', ['#NAME#' => $gridId]));
         return true;
     }
 
     public function saveGrid($gridId, $params = [])
     {
         $exists = $this->exportGrid($gridId);
-        if ($this->hasDiff($exists, $params)) {
+        if ($this->checkDiff($exists, $params)) {
             return $this->buildGrid($gridId, $params);
         }
 
@@ -390,7 +391,7 @@ class UserOptionsHelper extends Helper
             true
         );
 
-        $this->notice('USER_OPTION_FORM_CREATED', ['#NAME#' => $params['name']]);
+        $this->outNotice(Locale::getMessage('USER_OPTION_FORM_CREATED', ['#NAME#' => $params['name']]));
 
         return true;
     }
@@ -405,7 +406,7 @@ class UserOptionsHelper extends Helper
     public function saveForm($formData = [], $params = [])
     {
         $exists = $this->exportForm($params);
-        if ($this->hasDiff($exists, $formData, true)) {
+        if ($this->checkDiff($exists, $formData, true)) {
             return $this->buildForm($formData, $params);
         }
         return true;

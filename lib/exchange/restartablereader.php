@@ -7,25 +7,23 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\RestartableInterface;
-use Sprint\Migration\Out;
 use Sprint\Migration\Output\OutputFactory;
-use Sprint\Migration\Output\OutputInterface;
 
 class RestartableReader
 {
-    private int     $limit      = 10;
-    private string  $file       = '';
-    private array   $attributes = [];
-    private int     $totalCount = 0;
-    private ?Reader $reader;
-    private OutputInterface $output;
+    private int           $limit      = 10;
+    private string        $file       = '';
+    private array         $attributes = [];
+    private int           $totalCount = 0;
+    private ?Reader       $reader;
+    private OutputFactory $output;
 
     public function __construct(
         private readonly RestartableInterface $restartable,
         private readonly ReaderHelperInterface $helper,
         private readonly string $directory,
     ) {
-        $this->output = OutputFactory::create();
+        $this->output = OutputFactory::getInstance();
     }
 
     public function setExchangeResource(string $exchangeResource): RestartableReader

@@ -3,8 +3,10 @@
 namespace Sprint\Migration\Helpers\Traits\Hlblock;
 
 use Bitrix\Highloadblock\HighloadBlockTable;
-use Bitrix\Main\Entity\DataManager;
-use Bitrix\Main\Entity\ExpressionField;
+
+use Bitrix\Main\ORM\Data\DataManager;
+
+use Bitrix\Main\ORM\Fields\ExpressionField;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;

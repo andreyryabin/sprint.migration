@@ -23,4 +23,6 @@ interface OutputInterface
     public function outDiff(array $arr1, array $arr2): void;
 
     public function outException(Throwable $exception): void;
+
+    public function outMessages(array $messages = []): void;
 }

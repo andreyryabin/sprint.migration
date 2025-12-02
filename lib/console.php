@@ -9,7 +9,7 @@ use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Output\ConsoleOutput;
-use Sprint\Migration\Output\OutputInterface;
+use Sprint\Migration\Output\OutputFactory;
 use Sprint\Migration\Traits\CurrentUserTrait;
 
 class Console
@@ -19,8 +19,9 @@ class Console
     private array          $arguments  = [];
     private VersionConfig  $versionConfig;
     private VersionManager $versionManager;
-    private OutputInterface $output;
+    private ConsoleOutput  $output;
     private array          $argoptions = [];
+    private OutputFactory  $logger;
     use CurrentUserTrait;
 
     /**
@@ -39,6 +40,10 @@ class Console
         $this->versionManager = new VersionManager($this->versionConfig);
 
         $this->output = new ConsoleOutput();
+
+        $this->logger = OutputFactory::getInstance();
+        $this->logger->addOutput($this->output)
+                     ->addLogger($this->versionConfig->getLogger());
 
         $this->disableAuthHandlersIfNeed();
 
@@ -152,7 +157,7 @@ class Console
         $status = $this->getArg('--as=');
 
         if ($search && $status) {
-            $this->output->outMessages(
+            $this->logger->outMessages(
                 $this->versionManager->markMigration($search, $status)
             );
         } else {
@@ -167,7 +172,7 @@ class Console
      */
     public function commandDelete(): void
     {
-        $this->output->outMessages(
+        $this->logger->outMessages(
             $this->versionManager->deleteMigration($this->getArg(0))
         );
     }
@@ -271,7 +276,8 @@ class Console
      */
     public function commandConfig(): void
     {
-        $this->output->out('%s: %s',
+        $this->output->out(
+            '%s: %s',
             Locale::getMessage('CONFIG'),
             $this->versionConfig->getTitle()
         );
@@ -488,7 +494,7 @@ class Console
             }
         }
 
-        $this->output->out('migrations (%s): %d', $action, $success);
+        $this->logger->out('migrations (%s): %d', $action, $success);
 
         if ($fails) {
             throw new MigrationException(
@@ -517,7 +523,7 @@ class Console
 
         $params = [];
 
-        $this->output->out('%s (%s) start', $version, $action);
+        $this->logger->out('%s (%s) start', $version, $action);
 
         do {
             $exec = 0;
@@ -537,11 +543,11 @@ class Console
             }
 
             if ($success && !$restart) {
-                $this->output->out('%s (%s) success', $version, $action);
+                $this->logger->out('%s (%s) success', $version, $action);
             }
 
             if (!$success && !$restart) {
-                $this->output->outException($this->versionManager->getLastException());
+                $this->logger->outException($this->versionManager->getLastException());
             }
         } while ($exec == 1);
 

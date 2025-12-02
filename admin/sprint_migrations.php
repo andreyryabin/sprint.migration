@@ -5,6 +5,8 @@ use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
+use Sprint\Migration\Output\HtmlOutput;
+use Sprint\Migration\Output\OutputFactory;
 
 ini_set('zend.exception_ignore_args', 0);
 
@@ -28,6 +30,10 @@ try {
         $_REQUEST['config'] ?? VersionEnum::CONFIG_DEFAULT
     );
 
+    OutputFactory::getInstance()
+                 ->addOutput(new HtmlOutput())
+                 ->addLogger($versionConfig->getLogger());
+
     if ($_SERVER["REQUEST_METHOD"] == "POST" && $versionConfig->getVal('show_admin_interface')) {
         require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_js.php");
 
@@ -41,7 +47,7 @@ try {
             include __DIR__ . '/steps/migration_settag.php';
             include __DIR__ . '/steps/migration_transfer.php';
         } catch (Throwable $e) {
-            (new \Sprint\Migration\Output\HtmlOutput())->outException($e);
+            (new HtmlOutput())->outException($e);
         }
 
         require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin_js.php");

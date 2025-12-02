@@ -166,7 +166,7 @@ trait IblockTrait
         $iblockId = $ib->Add($fields);
 
         if ($iblockId) {
-            $this->notice('IB_CREATED', ['#NAME#' => $fields['CODE']]);
+            $this->outNotice(Locale::getMessage('IB_CREATED', ['#NAME#' => $fields['CODE']]));
             return (int)$iblockId;
         }
 
@@ -182,7 +182,7 @@ trait IblockTrait
     {
         $ib = new CIBlock;
         if ($ib->Update($iblockId, $fields)) {
-            $this->notice('IB_UPDATED', ['#NAME#' => $fields['CODE']]);
+            $this->outNotice(Locale::getMessage('IB_UPDATED', ['#NAME#' => $fields['CODE']]));
             return $iblockId;
         }
 
@@ -255,7 +255,7 @@ trait IblockTrait
         }
 
         $exists = $this->prepareExportIblock($item);
-        if ($this->hasDiff($exists, $fields)) {
+        if ($this->checkDiff($exists, $fields)) {
             return $this->updateIblock($item['ID'], $fields);
         }
 

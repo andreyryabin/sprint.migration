@@ -165,7 +165,7 @@ class UserGroupHelper extends Helper
 
         $exportExists = $this->prepareExportGroup($exists);
 
-        if ($this->hasDiff($exportExists, $fields)) {
+        if ($this->checkDiff($exportExists, $fields)) {
             return $this->updateGroup($exists['ID'], $fields);
         }
 
@@ -216,7 +216,7 @@ class UserGroupHelper extends Helper
         $groupId = $group->Add($this->prepareFields($fields));
 
         if ($groupId) {
-            $this->notice('USER_GROUP_CREATED', ['#NAME#' => $fields['NAME']]);
+            $this->outNotice(Locale::getMessage('USER_GROUP_CREATED', ['#NAME#' => $fields['NAME']]));
 
             return (int)$groupId;
         }
@@ -239,7 +239,7 @@ class UserGroupHelper extends Helper
 
         $group = new CGroup;
         if ($group->Update($groupId, $this->prepareFields($fields))) {
-            $this->notice('USER_GROUP_UPDATED', ['#NAME#' => $fields['NAME']]);
+            $this->outNotice(Locale::getMessage('USER_GROUP_UPDATED', ['#NAME#' => $fields['NAME']]));
             return $groupId;
         }
 

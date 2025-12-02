@@ -15,13 +15,13 @@ if ($existsEvents && check_bitrix_sessid()) {
 
     /** @var $versionConfig VersionConfig */
     $versionManager = new VersionManager($versionConfig);
-    $output = new \Sprint\Migration\Output\HtmlOutput();
+    $logger = \Sprint\Migration\Output\OutputFactory::getInstance();
 
     $version = !empty($_POST['version']) ? $_POST['version'] : '';
     $status = !empty($_POST['status']) ? $_POST['status'] : '';
 
     $markresult = $versionManager->markMigration($version, $status);
-    $output->outMessages($markresult);
+    $logger->outMessages($markresult);
 
     ?>
     <script>

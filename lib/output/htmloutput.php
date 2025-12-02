@@ -62,7 +62,7 @@ class HtmlOutput extends AbstractOutput
 
     private static function makeLinksHtml($msg)
     {
-        $regex = "/(http|https)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
+        $regex = "/(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
         if (preg_match_all($regex, $msg, $urls)) {
             foreach (array_unique($urls[0]) as $url) {
                 $msg = str_replace($url, '<a target="_blank" href="' . $url . '">' . $url . '</a>', $msg);
