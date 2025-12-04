@@ -36,7 +36,6 @@ $getOnclickMenu = function () use ($versionConfig) {
                         <option value="migration_view_status"><?= Locale::getMessage('TOGGLE_STATUS') ?></option>
                     </select>
                     <input id="migration_refresh" type="button" value="<?= Locale::getMessage('SEARCH') ?>"/>
-                    <span id="migration_loading"><?= Locale::getMessage('LOADING_TEXT') ?></span>
                 </div>
                 <div id="migration_migrations"></div>
             </div>
@@ -54,6 +53,7 @@ $getOnclickMenu = function () use ($versionConfig) {
                    href="javascript:void(0)"
                    class="adm-btn"
                    hidefocus="true">&equiv;</a>
+                <span id="migration_loading"><?= Locale::getMessage('LOADING_TEXT') ?></span>
             </div>
             <div class="sp-col">
                 <div id="migration_progress"></div>

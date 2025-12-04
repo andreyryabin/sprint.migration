@@ -9,7 +9,7 @@ use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Output\ConsoleOutput;
-use Sprint\Migration\Output\OutputFactory;
+use Sprint\Migration\Output;
 use Sprint\Migration\Traits\CurrentUserTrait;
 
 class Console
@@ -20,8 +20,8 @@ class Console
     private VersionConfig  $versionConfig;
     private VersionManager $versionManager;
     private ConsoleOutput  $output;
-    private array          $argoptions = [];
-    private OutputFactory  $logger;
+    private array  $argoptions = [];
+    private Output $logger;
     use CurrentUserTrait;
 
     /**
@@ -41,7 +41,7 @@ class Console
 
         $this->output = new ConsoleOutput();
 
-        $this->logger = OutputFactory::getInstance();
+        $this->logger = Output::getInstance();
         $this->logger->addOutput($this->output)
                      ->addLogger($this->versionConfig->getLogger());
 
@@ -523,7 +523,7 @@ class Console
 
         $params = [];
 
-        $this->logger->out('%s (%s) start', $version, $action);
+        $this->logger->outInfo('%s (%s) start', $version, $action);
 
         do {
             $exec = 0;
@@ -543,7 +543,7 @@ class Console
             }
 
             if ($success && !$restart) {
-                $this->logger->out('%s (%s) success', $version, $action);
+                $this->logger->outSuccess('%s (%s) success', $version, $action);
             }
 
             if (!$success && !$restart) {

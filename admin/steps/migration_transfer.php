@@ -3,6 +3,7 @@
 use Sprint\Migration\ConfigManager;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
+use Sprint\Migration\Output;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
@@ -17,7 +18,7 @@ if ($existsEvents && check_bitrix_sessid()) {
     $transferTo = !empty($_POST['transfer_to']) ? $_POST['transfer_to'] : '';
 
     $transferConfig = ConfigManager::getInstance()->get($transferTo);
-    $logger = \Sprint\Migration\Output\OutputFactory::getInstance();
+    $logger = Output::getInstance();
 
     /** @var $versionConfig VersionConfig */
     $vmFrom = new VersionManager($versionConfig);

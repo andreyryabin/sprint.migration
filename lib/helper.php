@@ -6,16 +6,12 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
 use CDBResult;
 use CMain;
-use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use Sprint\Migration\Exceptions\HelperException;
-use Sprint\Migration\Output\OutputFactory;
-use Sprint\Migration\Output\OutputInterface;
 use Sprint\Migration\Output\OutputTrait;
 
 class Helper
 {
-
     use OutputTrait;
 
     /**
@@ -51,7 +47,7 @@ class Helper
                 if (!Loader::includeModule($name)) {
                     return false;
                 }
-            } catch (LoaderException $e) {
+            } catch (LoaderException) {
                 return false;
             }
         }

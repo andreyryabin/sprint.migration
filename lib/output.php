@@ -1,14 +1,15 @@
 <?php
 
-namespace Sprint\Migration\Output;
+namespace Sprint\Migration;
 
 use Psr\Log\LoggerInterface;
-use Sprint\Migration\Logger\LoggerOutput;
+use Sprint\Migration\Output\LoggerOutput;
+use Sprint\Migration\Output\OutputInterface;
 use Throwable;
 
-class OutputFactory
+class Output
 {
-    private static ?OutputFactory $instance = null;
+    private static ?Output $instance = null;
     /**
      * @var OutputInterface[]
      */
@@ -40,60 +41,73 @@ class OutputFactory
         return $this;
     }
 
-    private function each(\Closure $fn): void
-    {
-        foreach ($this->handlers as $handler) {
-            $fn($handler);
-        }
-    }
-
     public function out(string $msg, ...$vars): void
     {
-        $this->each(fn(OutputInterface $output) => $output->out($msg, ...$vars));
+        foreach ($this->handlers as $handler) {
+            $handler->out($msg, ...$vars);
+        }
     }
 
     public function outProgress(string $msg, int $val, int $total): void
     {
-        $this->each(fn(OutputInterface $output) => $output->outProgress($msg, $val, $total));
+        foreach ($this->handlers as $handler) {
+            $handler->outProgress($msg, $val, $total);
+        }
     }
 
     public function outNotice(string $msg, ...$vars): void
     {
-        $this->each(fn(OutputInterface $output) => $output->outNotice($msg, ...$vars));
+        foreach ($this->handlers as $handler) {
+            $handler->outNotice($msg, ...$vars);
+        }
     }
 
     public function outInfo(string $msg, ...$vars): void
     {
-        $this->each(fn(OutputInterface $output) => $output->outInfo($msg, ...$vars));
+        foreach ($this->handlers as $handler) {
+            $handler->outInfo($msg, ...$vars);
+        }
     }
 
     public function outSuccess(string $msg, ...$vars): void
     {
-        $this->each(fn(OutputInterface $output) => $output->outSuccess($msg, ...$vars));
+        foreach ($this->handlers as $handler) {
+            $handler->outSuccess($msg, ...$vars);
+        }
     }
 
     public function outWarning(string $msg, ...$vars): void
     {
-        $this->each(fn(OutputInterface $output) => $output->outWarning($msg, ...$vars));
+        foreach ($this->handlers as $handler) {
+            $handler->outWarning($msg, ...$vars);
+        }
     }
 
     public function outError(string $msg, ...$vars): void
     {
-        $this->each(fn(OutputInterface $output) => $output->outError($msg, ...$vars));
+        foreach ($this->handlers as $handler) {
+            $handler->outError($msg, ...$vars);
+        }
     }
 
     public function outDiff(array $arr1, array $arr2): void
     {
-        $this->each(fn(OutputInterface $output) => $output->outDiff($arr1, $arr2));
+        foreach ($this->handlers as $handler) {
+            $handler->outDiff($arr1, $arr2);
+        }
     }
 
     public function outMessages(array $messages = []): void
     {
-        $this->each(fn(OutputInterface $output) => $output->outMessages($messages));
+        foreach ($this->handlers as $handler) {
+            $handler->outMessages($messages);
+        }
     }
 
     public function outException(Throwable $exception): void
     {
-        $this->each(fn(OutputInterface $output) => $output->outException($exception));
+        foreach ($this->handlers as $handler) {
+            $handler->outException($exception);
+        }
     }
 }

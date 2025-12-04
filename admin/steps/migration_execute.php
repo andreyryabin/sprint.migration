@@ -4,6 +4,7 @@ use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
+use Sprint\Migration\Output;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
@@ -13,7 +14,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
 if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid()) {
 
     $versionManager = new VersionManager($versionConfig);
-    $logger = \Sprint\Migration\Output\OutputFactory::getInstance();
+    $logger = Output::getInstance();
 
     $params = !empty($_POST['params']) ? $_POST['params'] : [];
     $restart = !empty($_POST['restart']) ? 1 : 0;
@@ -50,7 +51,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid()) {
 
     if ($versionName && $action) {
         if (!$restart) {
-            $logger->out('[%s]%s (%s) start[/]', $action, $versionName, $action);
+            $logger->outInfo('%s (%s) start', $versionName, $action);
         }
 
         $success = $versionManager->startMigration(
@@ -63,7 +64,7 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid()) {
         $restart = ($success) ? $versionManager->needRestart() : $restart;
 
         if ($success && !$restart) {
-            $logger->out('%s (%s) success', $versionName, $action);
+            $logger->outNotice('%s (%s) success', $versionName, $action);
 
             if ($nextAction) {
                 $json = json_encode([

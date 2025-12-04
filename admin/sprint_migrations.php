@@ -6,7 +6,7 @@ use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\Output\HtmlOutput;
-use Sprint\Migration\Output\OutputFactory;
+use Sprint\Migration\Output;
 
 ini_set('zend.exception_ignore_args', 0);
 
@@ -30,7 +30,7 @@ try {
         $_REQUEST['config'] ?? VersionEnum::CONFIG_DEFAULT
     );
 
-    OutputFactory::getInstance()
+    Output::getInstance()
                  ->addOutput(new HtmlOutput())
                  ->addLogger($versionConfig->getLogger());
 

@@ -30,6 +30,7 @@ class ConsoleOutput extends AbstractOutput
     public function outProgress(string $msg, int $val, int $total): void
     {
         $this->needEol = true;
+
         $msg = '[label]' . $msg . ' ' . $val . ' / ' . $total . '[/]';
 
         fwrite(STDOUT, "\r" . $this->applyFormat($msg));

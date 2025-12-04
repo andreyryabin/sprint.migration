@@ -1,14 +1,13 @@
 <?php
 
-namespace Sprint\Migration\Logger;
+namespace Sprint\Migration\Output;
 
 use Psr\Log\LoggerInterface;
-use Sprint\Migration\Output\OutputInterface;
 use Throwable;
 
 class LoggerOutput implements OutputInterface
 {
-    public function __construct(private readonly LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger)
     {
     }
 
@@ -19,7 +18,7 @@ class LoggerOutput implements OutputInterface
 
     public function outProgress(string $msg, int $val, int $total): void
     {
-        // TODO: Implement outProgress() method.
+        $this->logger->debug($msg . ' ' . $val . ' / ' . $total);
     }
 
     public function outNotice(string $msg, ...$vars): void
