@@ -14,6 +14,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "TITLE"                    => "Миграции",
         "FORM_DESCR"               => "Описание",
         "FORM_PREFIX"              => "Заголовок",
+        "FORM_TAG"                 => "Тег",
         "LIST_EMPTY"               => "нет",
         "UP"                       => "Установить",
         "DOWN"                     => "Откатить",
