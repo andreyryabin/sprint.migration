@@ -1,0 +1,2 @@
+bitrix build
+

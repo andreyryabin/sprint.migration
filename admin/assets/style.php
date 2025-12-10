@@ -1,3 +1,3 @@
 <style>
-    <?php include __DIR__ . '/style.css' ?>
+    <?php include __DIR__ . '/dist/index.bundle.css' ?>
 </style>

@@ -20,6 +20,7 @@ if ($updater && $updater instanceof CUpdater) {
 
     $filesToRemove = [
         'admin/includes/interface.php',
+        'admin/assets/version.php',
         'lib/out.php',
         'lib/traits/outtrait.php',
     ];

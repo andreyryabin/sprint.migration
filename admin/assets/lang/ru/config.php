@@ -1,0 +1,2 @@
+<?php
+$MESS["UP_START_WITH_TAG"] = "UP_START_WITH_TAG 123";

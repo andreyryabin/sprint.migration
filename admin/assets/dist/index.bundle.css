@@ -1,0 +1,366 @@
+/* colors */
+.sp-blue {
+    color: #00a
+}
+
+.sp-green {
+    color: #080;
+}
+
+.sp-red {
+    color: #a00;
+}
+
+.sp-yellow {
+    color: #aa0;
+}
+
+.sp-pink {
+    color: #ea00ff;
+}
+
+.sp-bold {
+    font-weight: bold;
+    color: #000
+}
+
+.sp-indent-10 {
+    padding-left: 10px
+}
+
+.sp-indent-20 {
+    padding-left: 20px
+}
+
+.sp-col {
+    background-color: #f5f9f9;
+    border: 1px solid;
+    border-color: #c4ced2 #dce7ed #dce7ed;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+    min-height: 55px;
+}
+
+.sp-col-scroll {
+    padding-right: 0;
+    padding-bottom: 0;
+}
+
+.sp-col.sp-col_builders {
+    padding: 0;
+}
+
+.sp-col:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.sp-col.sp-white {
+    background: #fff;
+}
+
+.sp-search {
+    height: 45px;
+}
+
+#migration_migrations {
+    overflow: auto;
+    max-height: 440px;
+}
+
+/* sp-search + migration_migrations + 12 */
+#migration_log{
+    overflow: auto;
+    max-height: 497px;
+}
+
+.sp-noblock_body {
+    display: block;
+}
+
+.sp-noblock_title {
+    color: #000;
+    font-size: 20px;
+    position: relative;
+    min-height: 25px;
+}
+
+.sp-builder_group {
+    font-weight: bold;
+    padding: 5px 10px;
+}
+
+.sp-builder_title {
+    /*color: #000;*/
+    /*font-size: 20px;*/
+    /*position: relative;*/
+    /*min-height: 25px;*/
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.sp-builder_title:hover {
+    background: #eee;
+}
+
+.sp-builder_title.sp-active {
+    background: #ccc;
+}
+
+.sp-optgroup-item {
+    display: block;
+}
+
+
+.sp-separator {
+    display: block;
+    padding: 10px;
+}
+
+.sp-table {
+    /*display: table;*/
+    width: 100%;
+}
+
+.sp-table .sp-row1,
+.sp-table .sp-row2,
+.sp-table .sp-row3 {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    /*display: table-row;*/
+}
+
+.sp-table .sp-row1 .sp-col {
+    /*display: table-cell;*/
+    /*vertical-align: top;*/
+    width: 100%;
+}
+
+.sp-table .sp-row2 .sp-col {
+    /*display: table-cell;*/
+    /*vertical-align: top;*/
+    width: 50%;
+    /*float: left;*/
+    /*width: 350px;*/
+}
+
+.sp-table .sp-row3 .sp-col {
+    /*display: table-cell;*/
+    /*vertical-align: top;*/
+    /*float: left;*/
+    width: 33%;
+}
+
+.sp-table:after,
+.sp-clear:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+table.sp-config {
+    border-collapse: collapse;
+}
+
+table.sp-config td {
+    padding: 5px;
+}
+
+table.sp-list {
+    border-collapse: collapse;
+}
+
+table.sp-summary {
+    border-collapse: collapse;
+}
+
+.sp-list-td__content {
+    vertical-align: top;
+    text-align: left;
+    padding: 0 10px 10px;
+    /*width: 50px;*/
+}
+
+.sp-list-td__buttons {
+    white-space: nowrap;
+    text-align: right;
+    vertical-align: top;
+}
+
+td.sp-summary-l {
+    vertical-align: middle;
+    text-align: left;
+    padding: 5px 5px 5px 0;
+}
+
+td.sp-summary-r {
+    vertical-align: middle;
+    text-align: left;
+    padding: 5px 0 5px 5px;
+}
+
+.sp-item-installed,
+.sp-item-new,
+.sp-item-unknown {
+    text-decoration: none;
+}
+
+.sp-item-installed,
+.sp-item-installed:link,
+.sp-item-installed:hover,
+.sp-item-installed:visited,
+a.sp-item-installed,
+a.sp-item-installed:link,
+a.sp-item-installed:hover,
+a.sp-item-installed:visited {
+    color: #080;
+}
+
+.sp-item-new,
+.sp-item-new:link,
+.sp-item-new:hover,
+.sp-item-new:visited,
+a.sp-item-new,
+a.sp-item-new:link,
+a.sp-item-new:hover,
+a.sp-item-new:visited {
+    color: #a00;
+}
+
+.sp-item-unknown,
+.sp-item-unknown:link,
+.sp-item-unknown:hover,
+.sp-item-unknown:visited,
+a.sp-item-unknown,
+a.sp-item-unknown:link,
+a.sp-item-unknown:hover,
+a.sp-item-unknown:visited {
+    color: #00a;
+}
+
+
+.sp-label {
+    padding: 0 10px;
+    background: #eee;
+    color: #000;
+    border-radius: 4px;
+    border-bottom: 1px solid #555;
+    border-right: 1px solid #555;
+    cursor: default;
+    display: inline-block;
+}
+
+.sp-label-blue {
+    background: #d1d1ff;
+    border-bottom: 1px solid #00a;
+    border-right: 1px solid #00a;
+}
+
+.sp-label-pink {
+    background: #ffbbff;
+    border-bottom: 1px solid #ea00ff;
+    border-right: 1px solid #ea00ff;
+}
+
+.sp-label-green {
+    background: #a7e7a7;
+    border-bottom: 1px solid #080;
+    border-right: 1px solid #080;
+}
+
+.sp-label-yellow {
+    background: #ffcc00;
+    border-bottom: 1px solid #999;
+    border-right: 1px solid #999;
+}
+
+.sp-label-red {
+    background: #fdbaba;
+    color: #000;
+    border-bottom: 1px solid #b00;
+    border-right: 1px solid #b00;
+}
+
+.sp-optgroup-group {
+    margin-bottom: 10px;
+}
+
+.sp-optgroup-head {
+    margin-bottom: 10px;
+}
+
+.sp-optgroup-scroll {
+    max-height: 300px;
+    overflow: auto;
+}
+
+.sp-optgroup-title {
+    /*font-weight: bold;*/
+}
+
+.sp-field {
+    margin-bottom: 10px;
+}
+
+.sp-field-title {
+    font-weight: bold;
+}
+
+.sp-info-message {
+    border-radius: 4px;
+    border: 1px solid;
+    border-color: #d3c6a3 #cabc90 #c1b37f #c9bc8f;
+    -webkit-box-shadow: inset 0 1px 0 #fff;
+            box-shadow: inset 0 1px 0 #fff;
+    color: #716536;
+    background: #e6e5be;
+    display: inline-block;
+    font-size: 13px;
+    line-height: 18px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+    padding: 15px 30px 15px 18px;
+    position: relative;
+}
+
+#bx-admin-prefix #migration_container .adm-info-message {
+    margin: 5px 0 5px 0;
+}
+
+.sp-disabled {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.sp-out {
+    white-space: pre-wrap;
+    margin-bottom: 5px;
+}
+
+.sp-out:last-child {
+    margin-bottom: 0;
+}
+
+#migration_container {
+    position: relative;
+}
+
+#migration_loading {
+    /*position: fixed;*/
+    /*top: 20px;*/
+    /*right: 40px;*/
+    /*z-index: 200;*/
+    display: inline-block;
+    background: url("/bitrix/js/main/core/images/wait.gif") 10px center no-repeat scroll rgb(252, 247, 209);
+    border: 1px solid rgb(225, 181, 45);
+    color: black;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    /*padding: 8px 30px 8px 38px;*/
+    padding: 7px 18px 9px 38px;
+    text-align: center;
+    border-radius: 4px;
+    margin-left: 2px;
+}

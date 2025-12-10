@@ -18,6 +18,8 @@ $getOnclickMenu = function () use ($versionConfig) {
     return CUtil::PhpToJSObject($menu);
 }
 ?>
+
+
 <div id="migration_container" data-sessid="<?= bitrix_sessid() ?>" data-config="<?= $versionConfig->getName() ?>">
     <div class="sp-table">
         <div class="sp-row2">
