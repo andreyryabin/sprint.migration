@@ -146,7 +146,13 @@ class VersionManager
      */
     public function getVersions(array $filter = []): array
     {
-        $filter = array_merge(['status' => ''], $filter);
+        $filter = array_merge([
+            'status' => '',
+            'sort'   => '',
+            'actual' => 0,
+            'limit'  => 0,
+        ], $filter);
+
         $merge = [];
 
         $records = $this->getRecords();
@@ -169,6 +175,11 @@ class VersionManager
         $result = [];
         $newFound = false;
 
+        $actTs = date(
+            $this->getVersionConfig()->getVal('version_timestamp_format'),
+            time() - 8 * 3600
+        );
+
         foreach ($merge as $version => $ts) {
             $record = $records[$version] ?? 0;
             $file = $files[$version] ?? 0;
@@ -177,7 +188,7 @@ class VersionManager
                 if (!$newFound && $file && !$record) {
                     $newFound = true;
                 }
-                if (!$newFound) {
+                if (!$newFound && $ts < $actTs) {
                     continue;
                 }
             }

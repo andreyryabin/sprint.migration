@@ -74,8 +74,8 @@ class FormHelper extends Helper
      * @param $sid
      *
      * @noinspection PhpUnused
-     * @throws HelperException
      * @return int
+     * @throws HelperException
      */
     public function getFormIdIfExists($sid): int
     {
@@ -250,7 +250,7 @@ class FormHelper extends Helper
      */
     public function updateStatus(int $formId, int $statusId, array $fields): int
     {
-        $fields = $this->merge($fields, $this->getDefaultStatus());
+        $fields = $this->merge($this->revertStatus($fields), $this->getDefaultStatus());
 
         $fields['FORM_ID'] = $formId;
 
@@ -267,7 +267,7 @@ class FormHelper extends Helper
      */
     public function addStatus(int $formId, array $fields): int
     {
-        $fields = $this->merge($fields, $this->getDefaultStatus());
+        $fields = $this->merge($this->revertStatus($fields), $this->getDefaultStatus());
 
         $fields['FORM_ID'] = $formId;
 
@@ -315,6 +315,9 @@ class FormHelper extends Helper
         return true;
     }
 
+    /**
+     * @throws HelperException
+     */
     public function getFormStatuses(int $formId): array
     {
         $by = 's_sort';
@@ -323,12 +326,15 @@ class FormHelper extends Helper
         $statuses = [];
         $dbres = CFormStatus::GetList($formId, $by, $order);
         while ($item = $dbres->Fetch()) {
-            $statuses[] = $this->prepareStatus($item);
+            $statuses[] = $this->exportStatus($item);
         }
         return $statuses;
     }
 
-    protected function prepareStatus(array $item): array
+    /**
+     * @throws HelperException
+     */
+    protected function exportStatus(array $item): array
     {
         //см. \bitrix\modules\form\admin\form_edit.php#295
 
@@ -340,13 +346,62 @@ class FormHelper extends Helper
             $arPERMISSION_DELETE
         );
 
-        $item['arPERMISSION_VIEW'] = $arPERMISSION_VIEW;
-        $item['arPERMISSION_MOVE'] = $arPERMISSION_MOVE;
-        $item['arPERMISSION_EDIT'] = $arPERMISSION_EDIT;
-        $item['arPERMISSION_DELETE'] = $arPERMISSION_DELETE;
+        $item['arPERMISSION_VIEW'] = $this->exportPermissions($arPERMISSION_VIEW);
+        $item['arPERMISSION_MOVE'] = $this->exportPermissions($arPERMISSION_MOVE);
+        $item['arPERMISSION_EDIT'] = $this->exportPermissions($arPERMISSION_EDIT);
+        $item['arPERMISSION_DELETE'] = $this->exportPermissions($arPERMISSION_DELETE);
         return $item;
     }
 
+    /**
+     * @throws HelperException
+     */
+    private function revertStatus(array $item): array
+    {
+
+        $permissionKeys = [
+            'arPERMISSION_VIEW',
+            'arPERMISSION_MOVE',
+            'arPERMISSION_EDIT',
+            'arPERMISSION_DELETE',
+        ];
+
+        foreach ($permissionKeys as $pkey) {
+            if (isset($item[$pkey]) && is_array($item[$pkey])) {
+                $item[$pkey] = $this->revertPermissions($item[$pkey]);
+            }
+        }
+
+        return $item;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    private function exportPermissions(array $permissions): array
+    {
+        $groupHelper = new UserGroupHelper();
+        foreach ($permissions as $index => $groupId) {
+            $permissions[$index] = ($groupId > 0) ? $groupHelper->getGroupCodeIfExists($groupId) : 0;
+        }
+        return $permissions;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    private function revertPermissions(array $permissions): array
+    {
+        $groupHelper = new UserGroupHelper();
+        foreach ($permissions as $index => $groupId) {
+            $permissions[$index] = ($groupId > 0) ? $groupHelper->getGroupIdIfExists($groupId) : 0;
+        }
+        return $permissions;
+    }
+
+    /**
+     * @throws HelperException
+     */
     public function exportFormStatuses(int $formId): array
     {
         return $this->exportCollection(

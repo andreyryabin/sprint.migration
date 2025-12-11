@@ -6,6 +6,7 @@ use Sprint\Migration\Locale;
 use Sprint\Migration\Out;
 
 echo '<form method="post">';
+echo $builder->getTitle();
 foreach ($builder->getFields() as $fieldCode => $fieldItem) {
     if ($fieldItem['type'] == 'hidden') {
         include __DIR__ . '/../fields/input_hidden.php';
