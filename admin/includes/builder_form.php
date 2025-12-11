@@ -8,6 +8,7 @@ use Sprint\Migration\Output\HtmlOutput;
 $output = new HtmlOutput;
 
 echo '<form method="post">';
+echo $builder->getTitle();
 foreach ($builder->getFields() as $fieldCode => $fieldItem) {
     if ($fieldItem['type'] == 'hidden') {
         include __DIR__ . '/../fields/input_hidden.php';
