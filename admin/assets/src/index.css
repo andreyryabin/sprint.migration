@@ -343,7 +343,7 @@ a.sp-item-unknown:visited {
     position: relative;
 }
 
-#migration_loading {
+.migration_loading {
     /*position: fixed;*/
     /*top: 20px;*/
     /*right: 40px;*/

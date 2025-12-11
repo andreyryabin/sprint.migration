@@ -1,6 +1,6 @@
-import {ajax, Loc} from "main.core";
+import {ajax} from "main.core";
+import {getMessage} from "../helpers";
 import {MigrationSearch} from "./MigrationSearch"
-
 
 export const MigrationApp = {
     components: {
@@ -37,22 +37,16 @@ export const MigrationApp = {
     },
     watch: {},
     methods: {
-        mess(text) {
-            return Loc.hasMessage(text) ? Loc.getMessage(text) : text;
-        },
-
-        showForm() {
-        },
-
-        deleteRow(index) {
-        }
+        getMessage,
     },
     template: `
       <div>
         <div class="sp-table">
           <div class="sp-row2">
             <div class="sp-col sp-col-scroll sp-white">
-              <MigrationSearch/>
+              <MigrationSearch
+                  @change=""
+              />
               <MigrationList/>
             </div>
             <div class="sp-col sp-col-scroll">
@@ -64,10 +58,11 @@ export const MigrationApp = {
           <div class="sp-row2">
             <div class="sp-col">
               <input type="button"
-                     :value="mess('UP_START')"
+                     :value="getMessage('UP_START')"
                      class="adm-btn-green"/>
-              <span id="migration_loading"
-                    v-text="mess('LOADING_TEXT')"
+              <span
+                  class="migration_loading"
+                  v-text="getMessage('LOADING_TEXT')"
               />
             </div>
             <div class="sp-col">

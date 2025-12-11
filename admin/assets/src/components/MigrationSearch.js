@@ -1,9 +1,12 @@
-import {Loc} from "main.core";
+import {getMessage} from "../helpers";
+
 export const MigrationSearch = {
-    props: {
-    },
+    props: {},
     data() {
         return {
+            search: '',
+            view: 'actual'
+
         };
     },
     created() {
@@ -12,25 +15,33 @@ export const MigrationSearch = {
     },
     watch: {},
     methods: {
-        mess(text) {
-            return Loc.hasMessage(text) ? Loc.getMessage(text) : text;
-        },
+        getMessage,
     },
     template: `
       <div class="sp-search">
-        <input id="migration_search" :placeholder="mess('SEARCH')" type="text" value="" class="adm-input"/>
-        <select id="migration_view">
-          <option value="migration_view_actual" v-text="mess('TOGGLE_ACTUAL')"/>
-          <option value="migration_view_all" v-text="mess('TOGGLE_LIST')"/>
-          <option value="migration_view_new" v-text="mess('TOGGLE_NEW')"/>
-          <option value="migration_view_installed" v-text="mess('TOGGLE_INSTALLED')"/>
-          <option value="migration_view_unknown" v-text="mess('TOGGLE_UNKNOWN')"/>
-          <option value="migration_view_tag" v-text="mess('TOGGLE_TAG')"/>
-          <option value="migration_view_modified" v-text="mess('TOGGLE_MODIFIED')"/>
-          <option value="migration_view_older" v-text="mess('TOGGLE_OLDER')"/>
-          <option value="migration_view_status" v-text=" mess('TOGGLE_STATUS')"/>
+        <input
+            v-model="search"
+            :placeholder="getMessage('SEARCH')"
+            type="text"
+            class="adm-input"
+        />
+        <select
+            v-model="view"
+        >
+          <option value="actual" v-text="getMessage('TOGGLE_ACTUAL')"/>
+          <option value="all" v-text="getMessage('TOGGLE_LIST')"/>
+          <option value="new" v-text="getMessage('TOGGLE_NEW')"/>
+          <option value="installed" v-text="getMessage('TOGGLE_INSTALLED')"/>
+          <option value="unknown" v-text="getMessage('TOGGLE_UNKNOWN')"/>
+          <option value="tag" v-text="getMessage('TOGGLE_TAG')"/>
+          <option value="modified" v-text="getMessage('TOGGLE_MODIFIED')"/>
+          <option value="older" v-text="getMessage('TOGGLE_OLDER')"/>
         </select>
-        <input id="migration_refresh" type="button" :value="mess('SEARCH')"/>
+        <input
+            :value="getMessage('SEARCH')"
+            type="button"
+            @click="$emit('change', {search, view})"
+        />
       </div>
     `
 };
