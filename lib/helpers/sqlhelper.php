@@ -184,7 +184,14 @@ class SqlHelper extends Helper
         $columnName = $scalarField->getName();
         $columnType = $sqlHelper->getColumnTypeByField($scalarField);
 
-        $this->query("ALTER TABLE $tableName ADD COLUMN $columnName $columnType $attributes");
+        $def = $scalarField->getDefaultValue();
+        if ($def && is_string($def)) {
+            $attributes .= " DEFAULT '$def'";
+        } elseif ($def) {
+            $attributes .= " DEFAULT $def";
+        }
+
+        $this->query("ALTER TABLE $tableName ADD COLUMN $columnName $columnType $attributes;");
     }
 
     /**

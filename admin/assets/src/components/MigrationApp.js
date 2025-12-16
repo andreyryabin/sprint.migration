@@ -1,5 +1,5 @@
 import {ajax} from "main.core";
-import {getMessage} from "../helpers";
+import {getMessage, getResponseErrors} from "../helpers";
 import {MigrationSearch} from "./MigrationSearch"
 
 export const MigrationApp = {
@@ -22,14 +22,28 @@ export const MigrationApp = {
     created() {
 
         ajax.runAction(
-            '/123',
-            {
-                data: {}
-            }
+            'sprint:migration.controller.main.refresh',
+            {data: {payload: this.taskPayload}}
         ).then((response) => {
+            this.responseError = getResponseErrors(response);
+            return response.data;
+        }).then((task) => {
+            this.taskTitle = task.title;
 
+            task.values.forEach((item) => {
+                this.taskValues[item.id] = item.value;
+            });
+
+            task.fields.forEach((item) => {
+                this.taskFields[item.id] = item;
+                this.toolbar[item.id] = item.title;
+            });
+
+            this.value.forEach((item) => this.addValue(item));
+
+            this.isMounted = true;
         }).catch((response) => {
-
+            this.responseError = getResponseErrors(response);
         });
 
     },
