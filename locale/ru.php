@@ -397,6 +397,8 @@
         "AGENT_UPDATED"                  => "Агент \"#NAME#\" обновлен",
         "AGENT_EQUAL"                    => "Агент \"#NAME#\" совпадает",
         "AGENT_DELETED"                  => "Агент \"#NAME#\" удален",
+        "WEBFORM_CREATED"                => "Форма \"#NAME#\" добавлена",
+        "WEBFORM_UPDATED"                => "Форма \"#NAME#\" обновлена",
         "EVENT_MESSAGE_CREATED"          => "Почтовый шаблон \"#NAME#\" добавлен",
         "EVENT_MESSAGE_UPDATED"          => "Почтовый шаблон \"#NAME#\" обновлен",
         "EVENT_MESSAGE_EQUAL"            => "Почтовый шаблон \"#NAME#\" совпадает",

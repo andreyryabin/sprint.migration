@@ -124,13 +124,14 @@ class FormHelper extends Helper
 
         $formId = $this->getFormId($form['SID']);
 
-        $formId = CForm::Set($form, $formId, 'N');
+        $newId = CForm::Set($form, $formId, 'N');
 
-        if ($formId) {
-            return $formId;
+        if (empty($newId)) {
+            throw new HelperException($GLOBALS['strError']);
         }
 
-        throw new HelperException($GLOBALS['strError']);
+        $this->outNotice($formId ? "Webform $newId updated" : "Webform $newId created");
+        return $newId;
     }
 
     /**
@@ -259,6 +260,7 @@ class FormHelper extends Helper
             throw new HelperException($GLOBALS['strError']);
         }
 
+        $this->outNotice("Form status $statusId updated");
         return $statusId;
     }
 
@@ -276,6 +278,7 @@ class FormHelper extends Helper
             throw new HelperException($GLOBALS['strError']);
         }
 
+        $this->outNotice("Form status $statusId created");
         return $statusId;
     }
 
@@ -300,6 +303,8 @@ class FormHelper extends Helper
         if (!$success) {
             throw new HelperException($GLOBALS['strError']);
         }
+
+        $this->outNotice("Form status $statusId deleted");
         return true;
     }
 
@@ -312,6 +317,8 @@ class FormHelper extends Helper
         if (!$success) {
             throw new HelperException($GLOBALS['strError']);
         }
+
+        $this->outNotice("Form field $fieldId deleted");
         return true;
     }
 
@@ -345,6 +352,7 @@ class FormHelper extends Helper
             $arPERMISSION_EDIT,
             $arPERMISSION_DELETE
         );
+
 
         $item['arPERMISSION_VIEW'] = $this->exportPermissions($arPERMISSION_VIEW);
         $item['arPERMISSION_MOVE'] = $this->exportPermissions($arPERMISSION_MOVE);
@@ -634,17 +642,18 @@ class FormHelper extends Helper
             unset($field['VALIDATORS']);
         }
 
-        $fieldId = CFormField::Set($field, $fieldId, 'N');
+        $newId = CFormField::Set($field, $fieldId, 'N');
 
-        if (empty($fieldId)) {
+        if (empty($newId)) {
             throw new HelperException($GLOBALS['strError']);
         }
 
-        $this->saveFieldAnswers($fieldId, $answers);
+        $this->saveFieldAnswers($newId, $answers);
 
-        $this->saveFieldValidators($formId, $fieldId, $validators);
+        $this->saveFieldValidators($formId, $newId, $validators);
 
-        return $fieldId;
+        $this->outNotice($fieldId ? "Form field $newId updated" : "Form field $newId created");
+        return $newId;
     }
 
     private function getUnsetKeysForm(): array

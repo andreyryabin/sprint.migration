@@ -399,6 +399,8 @@
         "AGENT_UPDATED"                  => "Agent \"#NAME#\" updated",
         "AGENT_EQUAL"                    => "Agent \"#NAME#\" equivalent",
         "AGENT_DELETED"                  => "Agent \"#NAME#\" deleted",
+        "WEBFORM_CREATED"                => "Webform \"#NAME#\" created",
+        "WEBFORM_UPDATED"                => "Webform \"#NAME#\" updated",
         "EVENT_MESSAGE_CREATED"          => "Event message \"#NAME#\" created",
         "EVENT_MESSAGE_UPDATED"          => "Event message \"#NAME#\" updated",
         "EVENT_MESSAGE_EQUAL"            => "Event message \"#NAME#\" equivalent",
