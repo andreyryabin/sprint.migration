@@ -1,10 +1,14 @@
 import {ajax} from "main.core";
 import {getMessage, getResponseErrors} from "../helpers";
 import {MigrationSearch} from "./MigrationSearch"
+import {MigrationList} from "./MigrationList"
+import {MigrationLog} from "./MigrationLog"
 
 export const MigrationApp = {
     components: {
-        MigrationSearch
+        MigrationSearch,
+        MigrationList,
+        MigrationLog,
     },
 
     props: {
@@ -15,33 +19,19 @@ export const MigrationApp = {
     },
     data() {
         return {
-            xxx: 123
-
+            versions: [],
         };
     },
     created() {
 
         ajax.runAction(
             'sprint:migration.controller.main.refresh',
-            {data: {payload: this.taskPayload}}
+            {data: {config, filter: []}}
         ).then((response) => {
             this.responseError = getResponseErrors(response);
             return response.data;
-        }).then((task) => {
-            this.taskTitle = task.title;
-
-            task.values.forEach((item) => {
-                this.taskValues[item.id] = item.value;
-            });
-
-            task.fields.forEach((item) => {
-                this.taskFields[item.id] = item;
-                this.toolbar[item.id] = item.title;
-            });
-
-            this.value.forEach((item) => this.addValue(item));
-
-            this.isMounted = true;
+        }).then((data) => {
+            this.versions = data.versions || [];
         }).catch((response) => {
             this.responseError = getResponseErrors(response);
         });
@@ -61,7 +51,10 @@ export const MigrationApp = {
               <MigrationSearch
                   @change=""
               />
-              <MigrationList/>
+              <MigrationList
+                  :config="config"
+                  :items="versions"
+              />
             </div>
             <div class="sp-col sp-col-scroll">
               <MigrationLog/>
