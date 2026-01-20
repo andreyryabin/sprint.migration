@@ -99,7 +99,7 @@ trait IblockSectionTrait
      *
      * @throws HelperException
      */
-    public function saveSection(int $iblockId, array $fields): int
+    public function saveSectionByCode(int $iblockId, array $fields): int
     {
         $this->checkRequiredKeys($fields, ['CODE']);
 
@@ -109,6 +109,15 @@ trait IblockSectionTrait
         }
 
         return $this->addSection($iblockId, $fields);
+    }
+
+    /**
+     * @throws HelperException
+     * @deprecated use saveSectionByCode
+     */
+    public function saveSection(int $iblockId, array $fields): int
+    {
+        return $this->saveSectionByCode($iblockId, $fields);
     }
 
     /**
@@ -230,12 +239,13 @@ trait IblockSectionTrait
      * Пример:
      * ищем Категория3 которая находится по пути Категория1/Категория2/Категория3
      * то $path = ['Категория1','Категория2','Категория3']
+     * @throws HelperException
      */
     public function getSectionIdByNamePath(int $iblockId, array $path = []): int
     {
         $sectionId = 0;
         foreach ($path as $name) {
-            $sectionId = $this->getSectionId($iblockId, [
+            $sectionId = $this->getSectionIdIfExists($iblockId, [
                 '=NAME'      => $name,
                 'SECTION_ID' => $sectionId,
             ]);
@@ -245,15 +255,28 @@ trait IblockSectionTrait
 
     /**
      * Возвращает путь из названий категорий до заданной
+     * @throws HelperException
      */
-    public function getSectionNamePathById(int $iblockId, int $sectionId): array
+    public function getSectionNamePathById(int $iblockId, int $sectionId, string $nameKey = 'NAME'): array
     {
-        if ($sectionId > 0) {
-            $items = CIBlockSection::GetNavChain($iblockId, $sectionId, ['ID', 'NAME'], true);
-            return array_column($items, 'NAME');
-        } else {
+        if ($sectionId <= 0) {
             return [];
         }
+
+        $items = $this->getSectionNavChain($iblockId, $sectionId, ['ID', $nameKey]);
+
+        foreach ($items as $item) {
+            if (empty($item[$nameKey])) {
+                throw new HelperException("Section with ID={$item['ID']} has empty $nameKey");
+            }
+        }
+
+        return array_column($items, $nameKey);
+    }
+
+    public function getSectionNavChain(int $iblockId, int $sectionId, array $select = []): array
+    {
+        return CIBlockSection::GetNavChain($iblockId, $sectionId, $select, true);
     }
 
     /**

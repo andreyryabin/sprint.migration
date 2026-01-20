@@ -24,6 +24,10 @@ class Version20190606000012 extends Version
             $helper->Iblock()->addElement($iblockId, ['NAME' => 'Новость1']);
         });
 
+        //
+        $field = $helper->Sql()->getColumn('b_table_123', 'name');
+        $def = $field->getDefaultValue();
+
         //Пример работы с индексами
         $helper->Sql()->addIndexIfNotExists('b_table_123', 'index_name', ['NAME']);
     }

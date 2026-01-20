@@ -194,6 +194,7 @@ trait IblockElementTrait
     }
 
     /**
+     * @deprecated use saveElementByCode
      * @throws HelperException
      */
     public function saveElement(int $iblockId, array $fields = [], array $props = []): int
