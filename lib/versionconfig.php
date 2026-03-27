@@ -28,7 +28,7 @@ use Sprint\Migration\Exceptions\MigrationException;
 class VersionConfig
 {
     private string $name;
-    private array  $values;
+    private array $values;
     private string $path;
 
     /**
@@ -63,7 +63,9 @@ class VersionConfig
 
     public function getSort(): int
     {
-        return ($this->getName() == VersionEnum::CONFIG_DEFAULT) ? 100 : 200;
+        $sort = (int)$this->getVal('sort', 200);
+
+        return ($this->getName() == VersionEnum::CONFIG_DEFAULT) ? 100 : $sort;
     }
 
     public function getVal(string $name, mixed $default = ''): mixed
