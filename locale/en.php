@@ -14,6 +14,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "TITLE"                    => "Migrations",
         "FORM_DESCR"               => "Description",
         "FORM_PREFIX"              => "Name prefix",
+        "FORM_TAG"                 => "Tag",
         "LIST_EMPTY"               => "empty",
         "UP"                       => "Install",
         "DOWN"                     => "Rollback",

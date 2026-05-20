@@ -27,6 +27,14 @@ abstract class VersionBuilder extends Builder
                 'height' => 40,
             ]
         );
+
+        $this->addField(
+            'tag', [
+                'title' => Locale::getMessage('FORM_TAG'),
+                'value' => $this->getVersionConfig()->getVal('version_tag'),
+                'width' => 250,
+            ]
+        );
     }
 
     protected function purifyPrefix(string $prefix = ''): string
@@ -91,6 +99,9 @@ abstract class VersionBuilder extends Builder
         );
         $templateVars['author'] = $this->addslashes(
             $this->getCurrentUserLogin()
+        );
+        $templateVars['tag'] = $this->addslashes(
+            $this->getFieldValue('tag')
         );
         if (empty($templateVars['version'])) {
             $templateVars['version'] = $this->getVersionName();
