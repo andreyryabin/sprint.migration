@@ -151,7 +151,7 @@ $getOnclickMenu = function ($item) use ($versionConfig) {
 };
 
 if (empty($versions)) {
-    $output->out(Locale::getMessage('LIST_EMPTY')."\n\n");
+    $output->out(Locale::getMessage('LIST_EMPTY') . "\n\n");
     return;
 }
 
@@ -160,11 +160,7 @@ if (empty($versions)) {
     <?php foreach ($versions as $item) {
         $versionLabels = [];
         if ($item['older']) {
-            $olderMsg = Locale::getMessage('OLDER_VERSION', [
-                    '#V1#' => $item['older'],
-            ]);
-
-            $versionLabels[] = '[label:red]' . $olderMsg . '[/]';
+            $versionLabels[] = '[label:red]' . Locale::getMessage('OLDER_VERSION', ['#V1#' => $item['older']]) . '[/]';
         }
         if ($item['modified']) {
             $versionLabels[] = '[label:yellow]' . Locale::getMessage('MODIFIED_VERSION') . '[/]';
@@ -175,7 +171,7 @@ if (empty($versions)) {
         $tagMsg = '';
         if ($item['tag']) {
             $tagMsg = Locale::getMessage('RELEASE_TAG', [
-                    '#TAG#' => '[label:green]' . $item['tag'] . '[/]',
+                    '#TAG#' => '[label:green]' . htmlspecialcharsbx($item['tag']) . '[/]',
             ]);
         }
 
