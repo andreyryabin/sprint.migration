@@ -1,3 +1,5 @@
+## 5.12.0
+- Совместимость с PHP 8.5, fix nullable deprecation in HelperException
 ## 5.11.0
 - Миграция для языков и региональных настроек (реализовала @yanochka_dev)
 - Экспорт блогов (реализовал @temi4)
