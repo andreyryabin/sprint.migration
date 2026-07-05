@@ -3,10 +3,12 @@
 namespace Sprint\Migration\Helpers;
 
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exchange\FileExchange;
 use Sprint\Migration\Exchange\WriterTag;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\WriterHelperInterface;
 use Sprint\Migration\Locale;
+use Sprint\Migration\Module;
 
 class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterface, WriterHelperInterface
 {
@@ -71,6 +73,8 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
      */
     protected function convertReaderRecord(int $hlblockId, array $record): array
     {
+        $fileLinks = $this->groupReaderFileLinks($record['file_links'] ?? []);
+
         $convertedFields = [];
         foreach ($record['fields'] as $field) {
             $fieldType = $this->getFieldType($hlblockId, $field['name']);
@@ -83,6 +87,12 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                 $convertedFields[$field['name']] = $this->readFieldIblockSection($hlblockId, $field);
             } elseif ($fieldType == 'hlblock') {
                 $convertedFields[$field['name']] = $this->readFieldHlblockElement($hlblockId, $field);
+            } elseif ($this->isTextFileLinksFieldType($fieldType)) {
+                $convertedFields[$field['name']] = $this->readFieldTextFileLinks(
+                    $hlblockId,
+                    $field,
+                    $fileLinks['field'][$field['name']] ?? []
+                );
             } else {
                 $convertedFields[$field['name']] = $this->readFieldValue($hlblockId, $field);
             }
@@ -91,6 +101,32 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
             'hlblock_id' => $hlblockId,
             'fields'     => $convertedFields,
         ];
+    }
+
+    protected function groupReaderFileLinks(array $items): array
+    {
+        $result = [];
+
+        foreach ($items as $item) {
+            $scope = (string)($item['scope'] ?? '');
+            $name = (string)($item['name'] ?? '');
+            $index = (int)($item['index'] ?? 0);
+
+            if ($scope === '' || $name === '') {
+                continue;
+            }
+
+            foreach (($item['value'] ?? []) as $value) {
+                $source = (string)($value['source'] ?? '');
+                if ($source === '' || empty($value['value']) || !is_array($value['value'])) {
+                    continue;
+                }
+
+                $result[$scope][$name][$index][$source] = $value['value'];
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -107,6 +143,63 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         } else {
             return $field['value'][0]['value'];
         }
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function readFieldTextFileLinks(int $hlblockId, array $field, array $fileLinks = []): mixed
+    {
+        $value = $this->readFieldValue($hlblockId, $field);
+        if (empty($fileLinks)) {
+            return $value;
+        }
+
+        if ($this->isFieldMultiple($hlblockId, $field['name'])) {
+            $values = array_values((array)$value);
+            foreach ($values as $index => $item) {
+                if (!empty($fileLinks[$index])) {
+                    $values[$index] = $this->importFieldTextFileLinks($item, $fileLinks[$index]);
+                }
+            }
+            return $values;
+        }
+
+        return $this->importFieldTextFileLinks($value, $fileLinks[0] ?? []);
+    }
+
+    protected function importFieldTextFileLinks(mixed $value, array $fileLinks = []): mixed
+    {
+        if (empty($fileLinks)) {
+            return $value;
+        }
+
+        $isFormatted = is_array($value) && (array_key_exists('TEXT', $value) || array_key_exists('TYPE', $value));
+        $text = $isFormatted ? (string)($value['TEXT'] ?? '') : (string)$value;
+
+        $linkMap = [];
+        foreach ($fileLinks as $oldLink => $fileRef) {
+            if (!is_array($fileRef)) {
+                continue;
+            }
+
+            Module::prepareLongDatabaseConnection();
+            $fileId = \CFile::SaveFile($fileRef, 'sprint_migration/hlblock_text');
+            Module::reconnectDatabase();
+
+            if ($fileId) {
+                $linkMap[$oldLink] = (string)\CFile::GetPath($fileId);
+            }
+        }
+
+        $text = (new FileExchange())->replaceTextFileLinks($text, $linkMap);
+
+        if ($isFormatted) {
+            $value['TEXT'] = $text;
+            return $value;
+        }
+
+        return $text;
     }
 
     /**
@@ -243,6 +336,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     public function getWriterRecordsTag(int $offset, int $limit, ...$vars): WriterTag
     {
         [$hlblockId, $filter, $exportFields] = $vars;
+        $exchangeDir = (string)($vars[3] ?? '');
 
         $elements = $this->getElements(
             $hlblockId,
@@ -260,7 +354,8 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                 $this->createWriterRecordTag(
                     $hlblockId,
                     $element,
-                    $exportFields
+                    $exportFields,
+                    $exchangeDir
                 )
             );
         }
@@ -271,23 +366,35 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     /**
      * @throws HelperException
      */
-    protected function createWriterRecordTag($hlblockId, array $element, array $exportFields): WriterTag
-    {
+    protected function createWriterRecordTag(
+        $hlblockId,
+        array $element,
+        array $exportFields,
+        string $exchangeDir = ''
+    ): WriterTag {
         $item = new WriterTag('item');
 
         foreach ($element as $code => $val) {
             if (in_array($code, $exportFields)) {
-                $item->addChild(
-                    $this->createWriterFieldTag(
-                        array_merge(
-                            $this->getField($hlblockId, $code),
-                            [
-                                'HLBLOCK_ID' => $hlblockId,
-                                'VALUE'      => $val,
-                            ]
-                        )
-                    )
+                $field = array_merge(
+                    $this->getField($hlblockId, $code),
+                    [
+                        'HLBLOCK_ID' => $hlblockId,
+                        'VALUE'      => $val,
+                    ]
                 );
+
+                $item->addChild(
+                    $this->createWriterFieldTag($field)
+                );
+
+                if (
+                    Module::EXCHANGE_VERSION > Module::EXCHANGE_VERSION_LEGACY
+                    && $exchangeDir !== ''
+                    && $this->isTextFileLinksFieldType((string)$field['USER_TYPE_ID'])
+                ) {
+                    $this->addTextFileLinksTags($item, $field, $exchangeDir);
+                }
             }
         }
         return $item;
@@ -315,6 +422,64 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         }
 
         return $tag;
+    }
+
+    protected function addTextFileLinksTags(WriterTag $item, array $field, string $exchangeDir): void
+    {
+        $multiple = (($field['MULTIPLE'] ?? 'N') === 'Y');
+        $values = $multiple ? array_values((array)$field['VALUE']) : [$field['VALUE']];
+
+        foreach ($values as $index => $value) {
+            $text = $this->normalizeTextFieldValue($value);
+            if ($text === '') {
+                continue;
+            }
+
+            $fileLinks = (new FileExchange())->exportTextFileLinks(
+                $text,
+                $exchangeDir,
+                'hlblock_text'
+            );
+
+            if (empty($fileLinks)) {
+                continue;
+            }
+
+            $tag = new WriterTag('file_links', [
+                'scope' => 'field',
+                'name'  => $field['FIELD_NAME'],
+                'index' => $index,
+            ]);
+
+            foreach ($fileLinks as $source => $fileRef) {
+                $tag->addFileRefTag($fileRef, ['source' => $source]);
+            }
+
+            $item->addChild($tag);
+        }
+    }
+
+    protected function normalizeTextFieldValue(mixed $value): string
+    {
+        if (is_array($value)) {
+            return $this->decodeHtmlValue((string)($value['TEXT'] ?? ''));
+        }
+
+        return $this->decodeHtmlValue((string)$value);
+    }
+
+    protected function decodeHtmlValue(string $value): string
+    {
+        if (function_exists('htmlspecialcharsback')) {
+            return htmlspecialcharsback($value);
+        }
+
+        return html_entity_decode($value, ENT_QUOTES | ENT_HTML5);
+    }
+
+    protected function isTextFileLinksFieldType(string $fieldType): bool
+    {
+        return in_array($fieldType, ['string', 'html', 'string_formatted']);
     }
 
     /**

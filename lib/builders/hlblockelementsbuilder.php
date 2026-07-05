@@ -70,12 +70,13 @@ class HlblockElementsBuilder extends VersionBuilder
                     $hlblockId,
                     $exportFilter
                 ),
-                recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
+                recordsFn: fn($offset, $limit, $exchangeDir) => $exhelper->getWriterRecordsTag(
                     $offset,
                     $limit,
                     $hlblockId,
                     $exportFilter,
-                    $exportFields
+                    $exportFields,
+                    $exchangeDir
                 ),
                 progressFn: fn($value, $totalCount) => $this->outProgress(
                     'Progress: ',
