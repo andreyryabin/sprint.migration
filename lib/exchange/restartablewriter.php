@@ -6,6 +6,7 @@ use Closure;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Interfaces\RestartableInterface;
+use Sprint\Migration\Module;
 
 class RestartableWriter
 {
@@ -79,10 +80,14 @@ class RestartableWriter
      */
     private function write(int $offset, Closure $recordsFn, Closure $progressFn): int
     {
+        Module::prepareLongDatabaseConnection();
+
         /** @var WriterTag $tags */
-        $tags = $recordsFn($offset, $this->limit);
+        $tags = $recordsFn($offset, $this->limit, $this->directory);
 
         $fetchedCount = $this->writer->appendTagsToFile($tags);
+
+        Module::reconnectDatabase();
 
         $offset += $fetchedCount;
 

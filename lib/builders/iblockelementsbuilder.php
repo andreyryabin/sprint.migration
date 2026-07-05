@@ -63,13 +63,14 @@ class IblockElementsBuilder extends VersionBuilder
                     $iblockId,
                     $exportFilter
                 ),
-                recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
+                recordsFn: fn($offset, $limit, $exchangeDir) => $exhelper->getWriterRecordsTag(
                     $offset,
                     $limit,
                     $iblockId,
                     $exportFilter,
                     $exportFields,
-                    $exportProps
+                    $exportProps,
+                    $exchangeDir
                 ),
                 progressFn: fn($value, $totalCount) => $this->outProgress(
                     'Progress: ',

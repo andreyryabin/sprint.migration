@@ -4,9 +4,11 @@ namespace Sprint\Migration\Helpers;
 
 use _CIBElement;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exchange\FileExchange;
 use Sprint\Migration\Exchange\WriterTag;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\WriterHelperInterface;
+use Sprint\Migration\Module;
 
 class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface, WriterHelperInterface
 {
@@ -123,7 +125,12 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     public function getWriterRecordsTag(int $offset, int $limit, ...$vars): WriterTag
     {
-        [$iblockId, $filter, $exportFields, $exportProps] = $vars;
+        [$iblockId, $filter, $exportFields, $exportProps, $exchangeDir] = array_pad($vars, 5, '');
+
+        $select = array_values(array_unique(array_merge(
+            ['ID', 'IBLOCK_ID'],
+            array_diff($exportFields, ['IBLOCK_SECTION', 'IPROPERTY_TEMPLATES'])
+        )));
 
         $dbres = $this->getElementsList(
             $iblockId,
@@ -132,6 +139,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                 'offset' => $offset,
                 'limit'  => $limit,
                 'filter' => $filter,
+                'select' => $select,
             ]
         );
 
@@ -143,7 +151,8 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                     $this->getElementFields($element),
                     $this->getElementProps($element),
                     $exportFields,
-                    $exportProps
+                    $exportProps,
+                    (string)$exchangeDir
                 )
             );
         }
@@ -194,18 +203,36 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         array $fields,
         array $props,
         array $exportFields,
-        array $exportProperties
+        array $exportProperties,
+        string $exchangeDir = ''
     ): WriterTag {
         $item = new WriterTag('item');
 
-        foreach ($fields as $code => $val) {
-            if (in_array($code, $exportFields)) {
-                $item->addChild(
-                    $this->createWriterFieldTag([
-                        'NAME'      => $code,
-                        'VALUE'     => $val,
-                        'IBLOCK_ID' => $iblockId,
-                    ])
+        foreach ($exportFields as $code) {
+            if (!array_key_exists($code, $fields) && !array_key_exists('~' . $code, $fields)) {
+                continue;
+            }
+
+            $val = $this->getWriterFieldValueForExport($code, $fields);
+            $item->addChild(
+                $this->createWriterFieldTag([
+                    'NAME'      => $code,
+                    'VALUE'     => $val,
+                    'IBLOCK_ID' => $iblockId,
+                ])
+            );
+
+            if (
+                Module::EXCHANGE_VERSION > Module::EXCHANGE_VERSION_LEGACY
+                && $exchangeDir !== ''
+                && in_array($code, ['PREVIEW_TEXT', 'DETAIL_TEXT'])
+            ) {
+                $this->addTextFileLinksTag(
+                    $item,
+                    'field',
+                    $code,
+                    (string)$val,
+                    $exchangeDir
                 );
             }
         }
@@ -215,10 +242,120 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                 $item->addChild(
                     $this->createWriterPropertyTag($prop)
                 );
+
+                if (
+                    Module::EXCHANGE_VERSION > Module::EXCHANGE_VERSION_LEGACY
+                    && $exchangeDir !== ''
+                    && $prop['PROPERTY_TYPE'] == 'S'
+                    && $prop['USER_TYPE'] == 'HTML'
+                ) {
+                    $this->addPropertyHtmlFileLinksTags($item, $prop, $exchangeDir);
+                }
             }
         }
 
         return $item;
+    }
+
+    protected function getWriterFieldValueForExport(string $code, array $fields): mixed
+    {
+        $value = $fields['~' . $code] ?? $fields[$code] ?? null;
+
+        if (in_array($code, ['PREVIEW_TEXT', 'DETAIL_TEXT'])) {
+            $type = (string)($fields[$code . '_TYPE'] ?? $fields['~' . $code . '_TYPE'] ?? '');
+            if (strtolower($type) == 'html' && !array_key_exists('~' . $code, $fields)) {
+                return $this->decodeHtmlValue((string)$value);
+            }
+        }
+
+        return $value;
+    }
+
+    protected function decodeHtmlValue(string $value): string
+    {
+        if (function_exists('htmlspecialcharsback')) {
+            return htmlspecialcharsback($value);
+        }
+
+        return html_entity_decode($value, ENT_QUOTES | ENT_HTML5);
+    }
+
+    protected function addTextFileLinksTag(
+        WriterTag $item,
+        string $scope,
+        string $name,
+        string $text,
+        string $exchangeDir,
+        int $index = 0
+    ): void {
+        $fileLinks = (new FileExchange())->exportTextFileLinks(
+            $text,
+            $exchangeDir,
+            'iblock_element_text'
+        );
+
+        if (empty($fileLinks)) {
+            return;
+        }
+
+        $tag = new WriterTag('file_links', [
+            'scope' => $scope,
+            'name'  => $name,
+            'index' => $index,
+        ]);
+
+        foreach ($fileLinks as $source => $fileRef) {
+            $tag->addFileRefTag($fileRef, ['source' => $source]);
+        }
+
+        $item->addChild($tag);
+    }
+
+    protected function addPropertyHtmlFileLinksTags(WriterTag $item, array $prop, string $exchangeDir): void
+    {
+        if ($prop['MULTIPLE'] == 'Y') {
+            foreach ($this->getPropertyHtmlValues($prop) as $index => $value) {
+                $htmlValue = $this->normalizeHtmlPropertyValue($value);
+                $this->addTextFileLinksTag(
+                    $item,
+                    'property',
+                    $prop['CODE'],
+                    $htmlValue['TEXT'],
+                    $exchangeDir,
+                    $index
+                );
+            }
+            return;
+        }
+
+        $htmlValue = $this->normalizeHtmlPropertyValue($prop['VALUE']);
+        $this->addTextFileLinksTag(
+            $item,
+            'property',
+            $prop['CODE'],
+            $htmlValue['TEXT'],
+            $exchangeDir
+        );
+    }
+
+    protected function normalizeHtmlPropertyValue(mixed $value): array
+    {
+        if (is_array($value)) {
+            return [
+                'TEXT' => $this->decodeHtmlValue((string)($value['TEXT'] ?? '')),
+                'TYPE' => (string)($value['TYPE'] ?? 'html'),
+            ];
+        }
+
+        return [
+            'TEXT' => $this->decodeHtmlValue((string)$value),
+            'TYPE' => 'html',
+        ];
+    }
+
+    protected function getPropertyHtmlValues(array $prop): array
+    {
+        return array_values(is_array($prop['VALUE']) ? $prop['VALUE'] : [$prop['VALUE']]);
     }
 
     /**
@@ -296,20 +433,22 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     protected function writePropertyHtml(WriterTag $tag, $prop): void
     {
         if ($prop['MULTIPLE'] == 'Y') {
-            foreach ($prop['VALUE'] as $index => $val1) {
+            foreach ($this->getPropertyHtmlValues($prop) as $index => $val1) {
+                $htmlValue = $this->normalizeHtmlPropertyValue($val1);
                 $tag->addValueTag(
-                    $val1['TEXT'],
+                    $htmlValue['TEXT'],
                     [
-                        'text-type'   => $val1['TYPE'],
+                        'text-type'   => $htmlValue['TYPE'],
                         'description' => $prop['DESCRIPTION'][$index] ?? '',
                     ]
                 );
             }
         } else {
+            $htmlValue = $this->normalizeHtmlPropertyValue($prop['VALUE']);
             $tag->addValueTag(
-                $prop['VALUE']['TEXT'] ?? '',
+                $htmlValue['TEXT'],
                 [
-                    'text-type'   => $prop['VALUE']['TYPE'] ?? '',
+                    'text-type'   => $htmlValue['TYPE'],
                     'description' => $prop['DESCRIPTION'],
                 ]
             );
@@ -396,12 +535,19 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     protected function convertReaderRecord(int $iblockId, array $record): array
     {
+        $fileLinks = $this->groupReaderFileLinks($record['file_links'] ?? []);
+
         $convertedFields = [];
         foreach ($record['fields'] as $field) {
             if ($field['name'] == 'IBLOCK_SECTION') {
                 $convertedFields[$field['name']] = $this->readFieldSection($iblockId, $field);
             } elseif ($field['name'] == 'IPROPERTY_TEMPLATES') {
                 $convertedFields[$field['name']] = $this->readFieldIpropertyTemplates($field);
+            } elseif (in_array($field['name'], ['PREVIEW_TEXT', 'DETAIL_TEXT'])) {
+                $convertedFields[$field['name']] = $this->importXmlTextFileLinks(
+                    $this->readFieldValue($field),
+                    $fileLinks['field'][$field['name']][0] ?? []
+                );
             } else {
                 $convertedFields[$field['name']] = $this->readFieldValue($field);
             }
@@ -421,7 +567,11 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
             } elseif ($propType == 'E') {
                 $convertedProperties[$prop['name']] = $this->readPropertyElement($iblockId, $prop);
             } elseif ($propType == 'S' && $userType == 'HTML') {
-                $convertedProperties[$prop['name']] = $this->readPropertyHtml($iblockId, $prop);
+                $convertedProperties[$prop['name']] = $this->readPropertyHtml(
+                    $iblockId,
+                    $prop,
+                    $fileLinks['property'][$prop['name']] ?? []
+                );
             } else {
                 $convertedProperties[$prop['name']] = $this->readPropertyString($iblockId, $prop);
             }
@@ -432,6 +582,32 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
             'fields'     => $convertedFields,
             'properties' => $convertedProperties,
         ];
+    }
+
+    protected function groupReaderFileLinks(array $items): array
+    {
+        $result = [];
+
+        foreach ($items as $item) {
+            $scope = (string)($item['scope'] ?? '');
+            $name = (string)($item['name'] ?? '');
+            $index = (int)($item['index'] ?? 0);
+
+            if ($scope === '' || $name === '') {
+                continue;
+            }
+
+            foreach (($item['value'] ?? []) as $value) {
+                $source = (string)($value['source'] ?? '');
+                if ($source === '' || empty($value['value']) || !is_array($value['value'])) {
+                    continue;
+                }
+
+                $result[$scope][$name][$index][$source] = $value['value'];
+            }
+        }
+
+        return $result;
     }
 
     protected function readFieldValue(array $field)
@@ -459,14 +635,17 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $iproperty;
     }
 
-    protected function readPropertyHtml(int $iblockId, array $prop)
+    protected function readPropertyHtml(int $iblockId, array $prop, array $fileLinks = [])
     {
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
         $res = [];
-        foreach ($prop['value'] as $val) {
+        foreach ($prop['value'] as $index => $val) {
             $res[] = [
                 'VALUE'       => [
-                    'TEXT' => $val['value'],
+                    'TEXT' => $this->importXmlTextFileLinks(
+                        $val['value'],
+                        $fileLinks[$index] ?? []
+                    ),
                     'TYPE' => $val['text-type'] ?? 'html',
                 ],
                 'DESCRIPTION' => $val['description'] ?? '',
@@ -474,6 +653,30 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         }
 
         return ($isMultiple) ? $res : $res[0];
+    }
+
+    protected function importXmlTextFileLinks(string $text, array $fileLinks): string
+    {
+        if (empty($fileLinks)) {
+            return $text;
+        }
+
+        $linkMap = [];
+        foreach ($fileLinks as $oldLink => $file) {
+            if (!is_array($file)) {
+                continue;
+            }
+
+            Module::prepareLongDatabaseConnection();
+            $fileId = \CFile::SaveFile($file, 'sprint_migration/iblock_element_text');
+            Module::reconnectDatabase();
+
+            if ($fileId) {
+                $linkMap[$oldLink] = (string)\CFile::GetPath($fileId);
+            }
+        }
+
+        return (new FileExchange())->replaceTextFileLinks($text, $linkMap);
     }
 
     protected function readPropertyString(int $iblockId, array $prop)
@@ -557,4 +760,5 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         }
         return ($isMultiple) ? $res : $res[0];
     }
+
 }

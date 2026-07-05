@@ -82,15 +82,19 @@ class VersionManager
             $versionInstance->setVersionConfig($this->versionConfig);
             $versionInstance->setRestartParams($params);
 
+            Module::prepareLongDatabaseConnection();
+
             if ($action == VersionEnum::ACTION_UP) {
                 $this->checkResultAfterStart($versionInstance->up());
 
                 $meta['tag'] = $tag;
 
+                Module::reconnectDatabase();
                 $this->getVersionTable()->addRecord($meta);
             } else {
                 $this->checkResultAfterStart($versionInstance->down());
 
+                Module::reconnectDatabase();
                 $this->getVersionTable()->removeRecord($meta);
             }
         } catch (RestartException $e) {

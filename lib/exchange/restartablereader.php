@@ -7,6 +7,7 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\RestartableInterface;
+use Sprint\Migration\Module;
 use Sprint\Migration\Output;
 
 class RestartableReader
@@ -71,12 +72,18 @@ class RestartableReader
 
     private function read(int $offset, Closure $userfunc, Closure $progressFn): int
     {
+        Module::prepareLongDatabaseConnection();
+
         $records = $this->helper->convertReaderRecords(
             $this->attributes,
             $this->reader->readRecords($offset, $this->limit)
         );
 
-        array_map($userfunc, $records);
+        foreach ($records as $record) {
+            Module::prepareLongDatabaseConnection();
+            $userfunc($record);
+            Module::reconnectDatabase();
+        }
 
         $readCount = count($records);
 

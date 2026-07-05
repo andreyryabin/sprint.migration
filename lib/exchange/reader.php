@@ -81,7 +81,7 @@ class Reader
     {
         $attrs = $this->readAttributes();
 
-        if (!$attrs['exchangeVersion'] || $attrs['exchangeVersion'] < Module::EXCHANGE_VERSION) {
+        if (empty($attrs['exchangeVersion']) || (int)$attrs['exchangeVersion'] < Module::EXCHANGE_VERSION_LEGACY) {
             throw new HelperException(
                 Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->file])
             );
@@ -95,6 +95,7 @@ class Reader
         $record = $this->getTagAttributes($reader);
         $record['fields'] = [];
         $record['properties'] = [];
+        $record['file_links'] = [];
 
         do {
             $reader->read();
@@ -103,6 +104,9 @@ class Reader
             }
             if ($this->isOpenTag($reader, 'property')) {
                 $record['properties'][] = $this->readRecordField($reader, 'property');
+            }
+            if ($this->isOpenTag($reader, 'file_links')) {
+                $record['file_links'][] = $this->readRecordField($reader, 'file_links');
             }
         } while (!$this->isCloseTag($reader, 'item'));
 
@@ -216,6 +220,9 @@ class Reader
         }
         if (!empty($attrs['description'])) {
             $file['description'] = $attrs['description'];
+        }
+        if (!empty($attrs['content_type'])) {
+            $file['type'] = $attrs['content_type'];
         }
         return $file;
     }

@@ -4,11 +4,13 @@ namespace Sprint\Migration;
 
 use COption;
 use Sprint\Migration\Exceptions\MigrationException;
+use Throwable;
 
 class Module
 {
     const ID = 'sprint.migration';
-    const EXCHANGE_VERSION = 2;
+    const EXCHANGE_VERSION_LEGACY = 2;
+    const EXCHANGE_VERSION = 3;
     private static string $version = '';
 
     public static function getDbOption($name, $default = '')
@@ -36,6 +38,40 @@ class Module
     public static function getDocRoot(): string
     {
         return rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
+    }
+
+    public static function prepareLongDatabaseConnection(int $waitTimeout = 28800): void
+    {
+        if (!class_exists('\Bitrix\Main\Application')) {
+            return;
+        }
+
+        try {
+            $connection = \Bitrix\Main\Application::getConnection();
+            $waitTimeout = max(1, $waitTimeout);
+            $connection->queryExecute('SET SESSION wait_timeout=' . $waitTimeout);
+            $connection->queryExecute('SET SESSION interactive_timeout=' . $waitTimeout);
+        } catch (Throwable) {
+        }
+    }
+
+    public static function reconnectDatabase(int $waitTimeout = 28800): void
+    {
+        if (!class_exists('\Bitrix\Main\Application')) {
+            return;
+        }
+
+        try {
+            \Bitrix\Main\Application::getConnection()->disconnect();
+
+            global $DB;
+            if (is_object($DB) && method_exists($DB, 'DoConnect')) {
+                $DB->DoConnect();
+            }
+        } catch (Throwable) {
+        }
+
+        self::prepareLongDatabaseConnection($waitTimeout);
     }
 
     public static function getPhpInterfaceDir($absolute = true): string
@@ -150,6 +186,3 @@ class Module
         }
     }
 }
-
-
-

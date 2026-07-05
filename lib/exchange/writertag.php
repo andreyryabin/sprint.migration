@@ -135,13 +135,35 @@ class WriterTag
         $this->addValueTag(
             $file['SUBDIR'] . '/' . $file['FILE_NAME'],
             [
-                'name'        => $file['ORIGINAL_NAME'],
-                'description' => $file['DESCRIPTION'],
-                'type'        => 'file',
+                'id'           => $file['ID'] ?? $fileId,
+                'name'         => $file['ORIGINAL_NAME'],
+                'description'  => $file['DESCRIPTION'],
+                'content_type' => $file['CONTENT_TYPE'] ?? '',
+                'type'         => 'file',
             ]
         );
 
         $this->files[] = $file;
+    }
+
+    public function addFileRefTag(array $fileRef, array $attributes = []): void
+    {
+        if (empty($fileRef['path'])) {
+            return;
+        }
+
+        $this->addValueTag(
+            $fileRef['path'],
+            array_merge(
+                [
+                    'name'         => $fileRef['name'] ?? '',
+                    'description'  => $fileRef['description'] ?? '',
+                    'content_type' => $fileRef['content_type'] ?? '',
+                    'type'         => 'file',
+                ],
+                $attributes
+            )
+        );
     }
 
     public function getFiles(): array

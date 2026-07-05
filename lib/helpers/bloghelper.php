@@ -9,22 +9,23 @@ use CBlogImage;
 use CBlogPost;
 use CBlogPostCategory;
 use CBlogUserGroup;
-use CFile;
 use CUserFieldEnum;
 use CUserTypeEntity;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exchange\FileExchange;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
-use Sprint\Migration\Module;
 
 class BlogHelper extends Helper
 {
 
     private UserHelper $userHelper;
+    private FileExchange $fileExchange;
 
     public function __construct()
     {
         $this->userHelper = new UserHelper();
+        $this->fileExchange = new FileExchange();
     }
 
     public function isEnabled(): bool
@@ -172,7 +173,7 @@ class BlogHelper extends Helper
         $post['CATEGORIES'] = $this->exportPostCategories((int)$post['BLOG_ID'], (int)$post['ID']);
         $post['PERMS_POST'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_POST);
         $post['PERMS_COMMENT'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_COMMENT);
-        $post['ATTACH_IMG'] = $this->exportFileRef((int)$post['ATTACH_IMG'], $exchangeDir, 'blog_post_files');
+        $post['ATTACH_IMG'] = $this->fileExchange->exportFileById((int)$post['ATTACH_IMG'], $exchangeDir, 'blog_post_files');
         $post['UF_VALUES'] = $this->exportPostUserFields((int)$post['ID'], $exchangeDir);
         $post['TEXT_IMAGES'] = $this->exportPostTextImages($post, $exchangeDir);
 
@@ -516,10 +517,7 @@ class BlogHelper extends Helper
 
     protected function prepareGroupFields(array $fields): array
     {
-        return array_intersect_key(
-            $fields,
-            array_flip(array_keys($this->getDefaultGroup()))
-        );
+        return array_intersect_key($fields, $this->getDefaultGroup());
     }
 
     /**
@@ -540,7 +538,7 @@ class BlogHelper extends Helper
         if (!$hasAttachImg) {
             unset($fields['ATTACH_IMG']);
         } elseif (!empty($fields['ATTACH_IMG']) && is_array($fields['ATTACH_IMG'])) {
-            $fields['ATTACH_IMG'] = $this->makeFileArrayByRef($fields['ATTACH_IMG'], $exchangeDir);
+            $fields['ATTACH_IMG'] = $this->fileExchange->makeFileArrayByRef($fields['ATTACH_IMG'], $exchangeDir);
         }
 
         $this->unsetKeys($fields, [
@@ -758,7 +756,7 @@ class BlogHelper extends Helper
 
             $values = array_filter($this->makeNonEmptyArray($value));
             $items = array_map(
-                fn($fileId) => $this->exportFileRef((int)$fileId, $exchangeDir, 'blog_post_files'),
+                fn($fileId) => $this->fileExchange->exportFileById((int)$fileId, $exchangeDir, 'blog_post_files'),
                 $values
             );
             $items = array_values(array_filter($items));
@@ -839,7 +837,7 @@ class BlogHelper extends Helper
 
         foreach ($this->makeNonEmptyArray($value) as $fileRef) {
             if (is_array($fileRef)) {
-                $file = $this->makeFileArrayByRef($fileRef, $exchangeDir);
+                $file = $this->fileExchange->makeFileArrayByRef($fileRef, $exchangeDir);
                 if ($file) {
                     $values[] = $file;
                 }
@@ -887,56 +885,6 @@ class BlogHelper extends Helper
         return $result;
     }
 
-    protected function exportFileRef(int $fileId, string $exchangeDir = '', string $subdir = 'files'): array|false
-    {
-        if (!$fileId || $exchangeDir === '') {
-            return false;
-        }
-
-        $file = CFile::GetFileArray($fileId);
-        if (empty($file['SRC'])) {
-            return false;
-        }
-
-        $source = Module::getDocRoot() . $file['SRC'];
-        if (!is_file($source)) {
-            return false;
-        }
-
-        $relativePath = trim($subdir . '/' . $file['SUBDIR'] . '/' . $file['FILE_NAME'], '/');
-        $target = rtrim($exchangeDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
-        Module::createDir(dirname($target));
-        copy($source, $target);
-
-        return [
-            'path'        => $relativePath,
-            'name'        => $file['ORIGINAL_NAME'] ?? $file['FILE_NAME'],
-            'description' => $file['DESCRIPTION'] ?? '',
-        ];
-    }
-
-    protected function makeFileArrayByRef(array $fileRef, string $exchangeDir = ''): array|false
-    {
-        if (empty($fileRef['path']) || $exchangeDir === '') {
-            return false;
-        }
-
-        $path = rtrim($exchangeDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim($fileRef['path'], DIRECTORY_SEPARATOR);
-        $file = CFile::MakeFileArray($path);
-        if (empty($file)) {
-            return false;
-        }
-
-        if (!empty($fileRef['name'])) {
-            $file['name'] = $fileRef['name'];
-        }
-        if (!empty($fileRef['description'])) {
-            $file['description'] = $fileRef['description'];
-        }
-
-        return $file;
-    }
-
     protected function exportPostTextImages(array $post, string $exchangeDir = ''): array
     {
         $texts = [
@@ -972,7 +920,7 @@ class BlogHelper extends Helper
                 continue;
             }
 
-            $file = $this->exportFileRef((int)$image['FILE_ID'], $exchangeDir, 'blog_post_text_images');
+            $file = $this->fileExchange->exportFileById((int)$image['FILE_ID'], $exchangeDir, 'blog_post_text_images');
             if ($file) {
                 $result[$imageId] = [
                     'FILE'       => $file,
@@ -988,74 +936,7 @@ class BlogHelper extends Helper
 
     protected function exportPostTextFileLinks(array $texts, string $exchangeDir = ''): array
     {
-        $links = [];
-        foreach ($texts as $text) {
-            foreach ($this->extractLocalUploadLinks((string)$text) as $link) {
-                $file = $this->exportLocalFileRef($link, $exchangeDir, 'blog_post_text_links');
-                if ($file) {
-                    $links[$link] = $file;
-                }
-            }
-        }
-
-        return $links;
-    }
-
-    protected function extractLocalUploadLinks(string $text): array
-    {
-        $links = [];
-
-        if (preg_match_all('/<img\b[^>]*\bsrc\s*=\s*([\'"])(.*?)\1/iu', $text, $matches)) {
-            foreach ($matches[2] as $link) {
-                $links[] = html_entity_decode($link, ENT_QUOTES | ENT_HTML5);
-            }
-        }
-
-        if (preg_match_all('/\[IMG\]([^\[]+)\[\/IMG\]/iu', $text, $matches)) {
-            foreach ($matches[1] as $link) {
-                $links[] = trim($link);
-            }
-        }
-
-        return array_values(array_unique(array_filter(
-            $links,
-            fn($link) => $this->isLocalUploadLink((string)$link)
-        )));
-    }
-
-    protected function isLocalUploadLink(string $link): bool
-    {
-        $path = parse_url($link, PHP_URL_PATH);
-        return is_string($path) && str_starts_with($path, '/upload/');
-    }
-
-    protected function exportLocalFileRef(string $link, string $exchangeDir = '', string $subdir = 'files'): array|false
-    {
-        if ($exchangeDir === '') {
-            return false;
-        }
-
-        $path = parse_url($link, PHP_URL_PATH);
-        if (!is_string($path) || !str_starts_with($path, '/upload/')) {
-            return false;
-        }
-
-        $source = Module::getDocRoot() . rawurldecode($path);
-        if (!is_file($source)) {
-            return false;
-        }
-
-        $fileName = basename($source);
-        $relativePath = trim($subdir . '/' . md5($path) . '_' . $fileName, '/');
-        $target = rtrim($exchangeDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
-        Module::createDir(dirname($target));
-        copy($source, $target);
-
-        return [
-            'path'   => $relativePath,
-            'name'   => $fileName,
-            'source' => $link,
-        ];
+        return $this->fileExchange->exportTextFileLinks($texts, $exchangeDir, 'blog_post_text_links');
     }
 
     /**
@@ -1097,7 +978,7 @@ class BlogHelper extends Helper
 
         foreach ($updates as $fieldName => $text) {
             $text = $this->replacePostBlogImageIds($text, $imageMap);
-            $text = str_replace(array_keys($linkMap), array_values($linkMap), $text);
+            $text = $this->fileExchange->replaceTextFileLinks($text, $linkMap);
             $updates[$fieldName] = $text;
         }
 
@@ -1128,7 +1009,7 @@ class BlogHelper extends Helper
                 continue;
             }
 
-            $file = $this->makeFileArrayByRef($image['FILE'], $exchangeDir);
+            $file = $this->fileExchange->makeFileArrayByRef($image['FILE'], $exchangeDir);
             if (!$file) {
                 continue;
             }
@@ -1203,33 +1084,17 @@ class BlogHelper extends Helper
                 continue;
             }
 
-            $newLink = $this->restoreFileRefToUpload($fileRef, $exchangeDir, 'sprint_migration/blog_post_text');
+            $newLink = $this->fileExchange->saveFileRefAndGetPath(
+                $fileRef,
+                $exchangeDir,
+                'sprint_migration/blog_post_text'
+            );
             if ($newLink) {
                 $result[$oldLink] = $newLink;
             }
         }
 
         return $result;
-    }
-
-    protected function restoreFileRefToUpload(array $fileRef, string $exchangeDir = '', string $subdir = 'sprint_migration'): string
-    {
-        if (empty($fileRef['path']) || $exchangeDir === '') {
-            return '';
-        }
-
-        $source = rtrim($exchangeDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim($fileRef['path'], DIRECTORY_SEPARATOR);
-        if (!is_file($source)) {
-            return '';
-        }
-
-        $fileName = basename($fileRef['name'] ?? $source);
-        $relativePath = '/upload/' . trim($subdir, '/') . '/' . md5((string)$fileRef['path']) . '_' . $fileName;
-        $target = Module::getDocRoot() . $relativePath;
-        Module::createDir(dirname($target));
-        copy($source, $target);
-
-        return $relativePath;
     }
 
     protected function exportPostCategories(int $blogId, int $postId): array
