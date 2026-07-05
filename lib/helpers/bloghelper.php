@@ -835,7 +835,7 @@ class BlogHelper extends Helper
 
         $values = [];
 
-        foreach ($this->makeNonEmptyArray($value) as $fileRef) {
+        foreach ($this->makePostUserFieldFileRefs($value, $multiple) as $fileRef) {
             if (is_array($fileRef)) {
                 $file = $this->fileExchange->makeFileArrayByRef($fileRef, $exchangeDir);
                 if ($file) {
@@ -845,6 +845,15 @@ class BlogHelper extends Helper
         }
 
         return $multiple ? $values : ($values[0] ?? false);
+    }
+
+    protected function makePostUserFieldFileRefs(mixed $value, bool $multiple): array
+    {
+        if (!$multiple && is_array($value) && isset($value['path'])) {
+            return [$value];
+        }
+
+        return $this->makeNonEmptyArray($value);
     }
 
     protected function getPostUserField(string $fieldName): array

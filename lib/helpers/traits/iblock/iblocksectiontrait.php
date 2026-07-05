@@ -4,6 +4,7 @@ namespace Sprint\Migration\Helpers\Traits\Iblock;
 
 use CIBlockSection;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exchange\FileExchange;
 use Sprint\Migration\Locale;
 
 trait IblockSectionTrait
@@ -291,7 +292,7 @@ trait IblockSectionTrait
     /**
      * @throws HelperException
      */
-    public function saveSectionsFromTree(int $iblockId, array $tree, $parentId = false): void
+    public function saveSectionsFromTree(int $iblockId, array $tree, $parentId = false, string $exchangeDir = ''): void
     {
         foreach ($tree as $item) {
             if (empty($item['NAME'])) {
@@ -309,6 +310,8 @@ trait IblockSectionTrait
             }
 
             $item['IBLOCK_SECTION_ID'] = $parentId;
+            $item = $this->prepareSectionForSave($iblockId, $item, $exchangeDir);
+            $userFields = $this->extractSectionUserFields($item);
 
             $sectionId = $this->getSectionId(
                 $iblockId, [
@@ -323,8 +326,10 @@ trait IblockSectionTrait
                 $sectionId = $this->addSection($iblockId, $item);
             }
 
+            $this->saveSectionUserFields($iblockId, $sectionId, $userFields);
+
             if (!empty($childs)) {
-                $this->saveSectionsFromTree($iblockId, $childs, $sectionId);
+                $this->saveSectionsFromTree($iblockId, $childs, $sectionId, $exchangeDir);
             }
         }
     }
@@ -335,20 +340,27 @@ trait IblockSectionTrait
         return $this->buildSectionsTree($sections);
     }
 
-    public function exportSectionsTree(int $iblockId): array
+    public function exportSectionsTree(int $iblockId, string $exchangeDir = ''): array
     {
         $sections = $this->getSections($iblockId);
-        return $this->buildSectionsTree($sections, 0, true);
+        return $this->buildSectionsTree($sections, 0, true, $exchangeDir, $iblockId);
     }
 
-    protected function buildSectionsTree(array &$sections, int $parentId = 0, bool $export = false): array
+    protected function buildSectionsTree(
+        array &$sections,
+        int $parentId = 0,
+        bool $export = false,
+        string $exchangeDir = '',
+        int $iblockId = 0
+    ): array
     {
         $branch = [];
         foreach ($sections as $section) {
             if ((int)$section['IBLOCK_SECTION_ID'] == $parentId) {
-                $childs = $this->buildSectionsTree($sections, $section['ID'], $export);
+                $childs = $this->buildSectionsTree($sections, $section['ID'], $export, $exchangeDir, $iblockId);
 
                 if ($export) {
+                    $section = $this->prepareSectionForExport($iblockId, $section, $exchangeDir);
                     $this->unsetKeys($section, [
                         'ID',
                         'IBLOCK_SECTION_ID',
@@ -365,5 +377,369 @@ trait IblockSectionTrait
             }
         }
         return $branch;
+    }
+
+    protected function prepareSectionForExport(int $iblockId, array $section, string $exchangeDir = ''): array
+    {
+        if ($exchangeDir === '') {
+            return $section;
+        }
+
+        $fileExchange = new FileExchange();
+
+        foreach (['PICTURE', 'DETAIL_PICTURE'] as $fieldName) {
+            if (!empty($section[$fieldName]) && is_numeric($section[$fieldName])) {
+                $section[$fieldName] = $fileExchange->exportFileById(
+                    (int)$section[$fieldName],
+                    $exchangeDir,
+                    'iblock_section_files'
+                );
+            }
+        }
+
+        $section = $this->exportSectionTextFileLinks($section, 'DESCRIPTION', $exchangeDir);
+        $userFields = $this->getSectionUserFields($iblockId);
+
+        foreach ($section as $fieldName => $value) {
+            if (!str_starts_with((string)$fieldName, 'UF_') || empty($userFields[$fieldName])) {
+                continue;
+            }
+
+            $section[$fieldName] = $this->exportSectionUserFieldValue(
+                $userFields[$fieldName],
+                $value,
+                $exchangeDir
+            );
+
+            if ($this->isSectionUserFieldText($userFields[$fieldName])) {
+                $section = $this->exportSectionUserFieldTextLinks(
+                    $section,
+                    $userFields[$fieldName],
+                    (string)$fieldName,
+                    $exchangeDir
+                );
+            }
+        }
+
+        return $section;
+    }
+
+    protected function prepareSectionForSave(int $iblockId, array $section, string $exchangeDir = ''): array
+    {
+        $fileLinks = [];
+        if (isset($section['__FILE_LINKS']) && is_array($section['__FILE_LINKS'])) {
+            $fileLinks = $section['__FILE_LINKS'];
+        }
+        unset($section['__FILE_LINKS']);
+
+        if ($exchangeDir === '') {
+            return $section;
+        }
+
+        $fileExchange = new FileExchange();
+
+        foreach (['PICTURE', 'DETAIL_PICTURE'] as $fieldName) {
+            if (!empty($section[$fieldName]) && is_array($section[$fieldName])) {
+                $section[$fieldName] = $fileExchange->makeFileArrayByRef($section[$fieldName], $exchangeDir);
+            }
+        }
+
+        if (!empty($fileLinks['DESCRIPTION'])) {
+            $section['DESCRIPTION'] = $this->importSectionTextFileLinks(
+                (string)($section['DESCRIPTION'] ?? ''),
+                $fileLinks['DESCRIPTION'],
+                $exchangeDir
+            );
+        }
+
+        $userFields = $this->getSectionUserFields($iblockId);
+
+        foreach ($section as $fieldName => $value) {
+            if (!str_starts_with((string)$fieldName, 'UF_') || empty($userFields[$fieldName])) {
+                continue;
+            }
+
+            $section[$fieldName] = $this->importSectionUserFieldValue(
+                $userFields[$fieldName],
+                $value,
+                $exchangeDir
+            );
+
+            if (!empty($fileLinks[$fieldName])) {
+                $section[$fieldName] = $this->importSectionUserFieldTextLinks(
+                    $section[$fieldName],
+                    $fileLinks[$fieldName],
+                    $exchangeDir
+                );
+            }
+        }
+
+        return $section;
+    }
+
+    protected function exportSectionTextFileLinks(array $section, string $fieldName, string $exchangeDir): array
+    {
+        if (empty($section[$fieldName])) {
+            return $section;
+        }
+
+        $value = $section[$fieldName];
+        $text = is_array($value) ? (string)($value['TEXT'] ?? '') : (string)$value;
+        $links = (new FileExchange())->exportTextFileLinks($text, $exchangeDir, 'iblock_section_text');
+        if (!empty($links)) {
+            $section['__FILE_LINKS'][$fieldName][0] = $links;
+        }
+
+        return $section;
+    }
+
+    protected function exportSectionUserFieldTextLinks(
+        array $section,
+        array $field,
+        string $fieldName,
+        string $exchangeDir
+    ): array {
+        if (empty($section[$fieldName])) {
+            return $section;
+        }
+
+        $multiple = (($field['MULTIPLE'] ?? 'N') === 'Y');
+        $values = $multiple ? array_values((array)$section[$fieldName]) : [$section[$fieldName]];
+
+        foreach ($values as $index => $value) {
+            $text = is_array($value) ? (string)($value['TEXT'] ?? '') : (string)$value;
+            $links = (new FileExchange())->exportTextFileLinks($text, $exchangeDir, 'iblock_section_text');
+            if (!empty($links)) {
+                $section['__FILE_LINKS'][$fieldName][$index] = $links;
+            }
+        }
+
+        return $section;
+    }
+
+    protected function importSectionTextFileLinks(string $text, array $fileLinks, string $exchangeDir): string
+    {
+        $linkMap = [];
+        foreach ($fileLinks as $indexLinks) {
+            foreach ((array)$indexLinks as $oldLink => $fileRef) {
+                if (!is_array($fileRef)) {
+                    continue;
+                }
+
+                $newLink = (new FileExchange())->saveFileRefAndGetPath(
+                    $fileRef,
+                    $exchangeDir,
+                    'sprint_migration/iblock_section_text'
+                );
+                if ($newLink !== '') {
+                    $linkMap[$oldLink] = $newLink;
+                }
+            }
+        }
+
+        return (new FileExchange())->replaceTextFileLinks($text, $linkMap);
+    }
+
+    protected function exportSectionUserFieldValue(array $field, mixed $value, string $exchangeDir): mixed
+    {
+        if ($field['USER_TYPE_ID'] === 'file') {
+            return $this->exportSectionUserFieldFileValue($field, $value, $exchangeDir);
+        }
+
+        if ($field['USER_TYPE_ID'] === 'enumeration') {
+            return $this->exportSectionUserFieldEnumValue($field, $value);
+        }
+
+        return $value;
+    }
+
+    protected function importSectionUserFieldValue(array $field, mixed $value, string $exchangeDir): mixed
+    {
+        if ($field['USER_TYPE_ID'] === 'file') {
+            return $this->importSectionUserFieldFileValue($field, $value, $exchangeDir);
+        }
+
+        if ($field['USER_TYPE_ID'] === 'enumeration') {
+            return $this->importSectionUserFieldEnumValue($field, $value);
+        }
+
+        return $value;
+    }
+
+    protected function exportSectionUserFieldFileValue(array $field, mixed $value, string $exchangeDir): mixed
+    {
+        $multiple = (($field['MULTIPLE'] ?? 'N') === 'Y');
+        if (empty($value)) {
+            return $multiple ? [] : false;
+        }
+
+        $items = [];
+        foreach ($this->makeNonEmptyArray($value) as $fileId) {
+            $fileRef = (new FileExchange())->exportFileById((int)$fileId, $exchangeDir, 'iblock_section_files');
+            if ($fileRef) {
+                $items[] = $fileRef;
+            }
+        }
+
+        return $multiple ? $items : ($items[0] ?? false);
+    }
+
+    protected function importSectionUserFieldFileValue(array $field, mixed $value, string $exchangeDir): mixed
+    {
+        $multiple = (($field['MULTIPLE'] ?? 'N') === 'Y');
+        if (empty($value)) {
+            return $multiple ? [] : false;
+        }
+
+        $items = [];
+        foreach ($this->makeSectionUserFieldFileRefs($value, $multiple) as $fileRef) {
+            if (!is_array($fileRef)) {
+                continue;
+            }
+
+            $file = (new FileExchange())->makeFileArrayByRef($fileRef, $exchangeDir);
+            if ($file) {
+                $items[] = $file;
+            }
+        }
+
+        return $multiple ? $items : ($items[0] ?? false);
+    }
+
+    protected function makeSectionUserFieldFileRefs(mixed $value, bool $multiple): array
+    {
+        if (!$multiple && is_array($value) && isset($value['path'])) {
+            return [$value];
+        }
+
+        return $this->makeNonEmptyArray($value);
+    }
+
+    protected function exportSectionUserFieldEnumValue(array $field, mixed $value): mixed
+    {
+        $multiple = (($field['MULTIPLE'] ?? 'N') === 'Y');
+        if (empty($value)) {
+            return $multiple ? [] : '';
+        }
+
+        $map = $this->getSectionUserFieldEnumExportMap((int)$field['ID']);
+        $items = [];
+        foreach ($this->makeNonEmptyArray($value) as $enumId) {
+            if (isset($map[(int)$enumId])) {
+                $items[] = $map[(int)$enumId];
+            }
+        }
+
+        return $multiple ? $items : ($items[0] ?? '');
+    }
+
+    protected function importSectionUserFieldEnumValue(array $field, mixed $value): mixed
+    {
+        $multiple = (($field['MULTIPLE'] ?? 'N') === 'Y');
+        if (empty($value)) {
+            return $multiple ? [] : false;
+        }
+
+        $map = $this->getSectionUserFieldEnumImportMap((int)$field['ID']);
+        $items = [];
+        foreach ($this->makeNonEmptyArray($value) as $enumXmlId) {
+            if (isset($map[(string)$enumXmlId])) {
+                $items[] = $map[(string)$enumXmlId];
+            }
+        }
+
+        return $multiple ? $items : ($items[0] ?? false);
+    }
+
+    protected function importSectionUserFieldTextLinks(mixed $value, array $fileLinks, string $exchangeDir): mixed
+    {
+        $isFormattedSingle = is_array($value) && (array_key_exists('TEXT', $value) || array_key_exists('TYPE', $value));
+        $values = (is_array($value) && !$isFormattedSingle) ? array_values($value) : [$value];
+
+        foreach ($values as $index => $item) {
+            if (empty($fileLinks[$index])) {
+                continue;
+            }
+
+            $text = is_array($item) ? (string)($item['TEXT'] ?? '') : (string)$item;
+            $text = $this->importSectionTextFileLinks($text, [$fileLinks[$index]], $exchangeDir);
+
+            if (is_array($item)) {
+                $item['TEXT'] = $text;
+                $values[$index] = $item;
+            } else {
+                $values[$index] = $text;
+            }
+        }
+
+        return (is_array($value) && !$isFormattedSingle) ? $values : ($values[0] ?? $value);
+    }
+
+    protected function getSectionUserFields(int $iblockId): array
+    {
+        $result = [];
+        if (!class_exists('\CUserTypeEntity')) {
+            return $result;
+        }
+
+        $dbres = \CUserTypeEntity::GetList([], ['ENTITY_ID' => 'IBLOCK_' . $iblockId . '_SECTION']);
+        while ($field = $dbres->Fetch()) {
+            $result[$field['FIELD_NAME']] = $field;
+        }
+
+        return $result;
+    }
+
+    protected function getSectionUserFieldEnumExportMap(int $fieldId): array
+    {
+        $result = [];
+        $dbres = (new \CUserFieldEnum())->GetList([], ['USER_FIELD_ID' => $fieldId]);
+        while ($enum = $dbres->Fetch()) {
+            $result[(int)$enum['ID']] = (string)$enum['XML_ID'];
+        }
+
+        return $result;
+    }
+
+    protected function getSectionUserFieldEnumImportMap(int $fieldId): array
+    {
+        $result = [];
+        $dbres = (new \CUserFieldEnum())->GetList([], ['USER_FIELD_ID' => $fieldId]);
+        while ($enum = $dbres->Fetch()) {
+            $result[(string)$enum['XML_ID']] = (int)$enum['ID'];
+        }
+
+        return $result;
+    }
+
+    protected function isSectionUserFieldText(array $field): bool
+    {
+        return in_array($field['USER_TYPE_ID'], ['string', 'string_formatted', 'html']);
+    }
+
+    protected function extractSectionUserFields(array &$section): array
+    {
+        $userFields = [];
+        foreach ($section as $fieldName => $value) {
+            if (str_starts_with((string)$fieldName, 'UF_')) {
+                $userFields[$fieldName] = $value;
+                unset($section[$fieldName]);
+            }
+        }
+
+        return $userFields;
+    }
+
+    protected function saveSectionUserFields(int $iblockId, int $sectionId, array $userFields): void
+    {
+        if (empty($userFields) || empty($GLOBALS['USER_FIELD_MANAGER'])) {
+            return;
+        }
+
+        $GLOBALS['USER_FIELD_MANAGER']->Update(
+            'IBLOCK_' . $iblockId . '_SECTION',
+            $sectionId,
+            $userFields
+        );
     }
 }

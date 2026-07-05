@@ -33,6 +33,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     public function up()
     {
         $helper = $this->getHelperManager();
+        $exchangeDir = $this->getVersionConfig()->getVersionExchangeDir($this->getVersionName());
 
         $iblockId = $helper->Iblock()->getIblockIdIfExists(
             '<?php echo $iblock['CODE'] ?>',
@@ -41,7 +42,9 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
         $helper->Iblock()->saveSectionsFromTree(
             $iblockId,
-            <?php echo var_export($sectionTree, 1) ?>
+            <?php echo var_export($sectionTree, 1) ?>,
+            false,
+            $exchangeDir
         );
     }
 }
