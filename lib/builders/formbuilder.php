@@ -39,7 +39,9 @@ class FormBuilder extends VersionBuilder
             'select' => $this->getFormsSelect(),
         ]);
 
-        $form = $helper->Form()->exportFormById($formId);
+        $exchangeDir = $this->getVersionExchangeDir();
+
+        $form = $helper->Form()->exportFormById($formId, $exchangeDir);
 
         $what = $this->addFieldAndReturn('what', [
             'title'    => Locale::getMessage('BUILDER_FormExport_What'),
@@ -95,10 +97,10 @@ class FormBuilder extends VersionBuilder
                         'select'   => $this->getFieldsSelect($formId),
                     ]
                 );
-                $fields = $helper->Form()->exportFormFields($formId, $fieldsSomeSids);
+                $fields = $helper->Form()->exportFormFields($formId, $fieldsSomeSids, $exchangeDir);
             }
             if ($fieldsMode == 'all') {
-                $fields = $helper->Form()->exportFormFields($formId);
+                $fields = $helper->Form()->exportFormFields($formId, [], $exchangeDir);
             }
         }
 

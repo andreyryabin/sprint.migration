@@ -9,6 +9,7 @@ use CFormStatus;
 use CFormValidator;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exchange\FileExchange;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Tables\FormGroupTable;
@@ -33,13 +34,14 @@ class FormHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function exportFormById(int $formId): array
+    public function exportFormById(int $formId, string $exchangeDir = ''): array
     {
         $form = $this->export(
             $this->getFormById($formId),
             $this->getDefaultForm(),
             $this->getUnsetKeysForm()
         );
+        $form = $this->exportImageField($form, $exchangeDir, 'form_images');
 
         $form['arSITE'] = $this->exportSites($formId);
 
@@ -90,11 +92,12 @@ class FormHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function saveForm(array $form): int
+    public function saveForm(array $form, string $exchangeDir = ''): int
     {
         $this->checkRequiredKeys($form, ['SID']);
 
         $form = $this->merge($form, $this->getDefaultForm());
+        $form = $this->prepareImageField($form, $exchangeDir);
 
         $form['VARNAME'] = $form['SID'];
 
@@ -138,13 +141,13 @@ class FormHelper extends Helper
      * @noinspection PhpUnused
      * @throws HelperException
      */
-    public function saveField(int $formId, array $field): int
+    public function saveField(int $formId, array $field, string $exchangeDir = ''): int
     {
         $this->checkRequiredKeys($field, ['SID']);
 
         $fieldId = $this->getFormFieldIdBySid($formId, $field['SID']);
 
-        return $this->replaceField($formId, $fieldId, $field);
+        return $this->replaceField($formId, $fieldId, $field, $exchangeDir);
     }
 
     public function getFormFieldIdBySid(int $formId, string $fieldSid)
@@ -156,16 +159,20 @@ class FormHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function saveFields(int $formId, array $fields): array
+    public function saveFields(int $formId, array $fields, string $exchangeDir = ''): array
     {
-        return $this->updateFields($formId, $fields, true);
+        return $this->updateFields($formId, $fields, true, $exchangeDir);
     }
 
     /**
      * @throws HelperException
      */
-    public function updateFields(int $formId, array $fields, bool $deleteOldFields = false): array
-    {
+    public function updateFields(
+        int $formId,
+        array $fields,
+        bool $deleteOldFields = false,
+        string $exchangeDir = ''
+    ): array {
         $currentIdsBySid = [];
         foreach ($this->getFormFields($formId) as $currentField) {
             $currentIdsBySid[$currentField['SID']] = $currentField['ID'];
@@ -178,7 +185,7 @@ class FormHelper extends Helper
 
             $fieldId = $currentIdsBySid[$field['SID']] ?? 0;
 
-            $updatedIds[] = $this->replaceField($formId, $fieldId, $field);
+            $updatedIds[] = $this->replaceField($formId, $fieldId, $field, $exchangeDir);
         }
 
         if ($deleteOldFields) {
@@ -434,9 +441,9 @@ class FormHelper extends Helper
         return $fields;
     }
 
-    public function exportFormFields(int $formId, array $fieldSids = []): array
+    public function exportFormFields(int $formId, array $fieldSids = [], string $exchangeDir = ''): array
     {
-        return array_map(function ($field) {
+        return array_map(function ($field) use ($exchangeDir) {
             $field['ANSWERS'] = $this->exportCollection(
                 $this->getFieldAnswers($field['ID']),
                 $this->getDefaultAnswer(),
@@ -448,11 +455,13 @@ class FormHelper extends Helper
                 $this->getUnsetKeysValidator(),
             );
 
-            return $this->export(
+            $field = $this->export(
                 $field,
                 $this->getDefaultField(),
                 $this->getUnsetKeysField(),
             );
+
+            return $this->exportImageField($field, $exchangeDir, 'form_field_images');
         }, $this->getFormFields($formId, $fieldSids));
     }
 
@@ -613,9 +622,10 @@ class FormHelper extends Helper
     /**
      * @throws HelperException
      */
-    private function replaceField(int $formId, int $fieldId, array $field): int
+    private function replaceField(int $formId, int $fieldId, array $field, string $exchangeDir = ''): int
     {
         $field = $this->merge($field, $this->getDefaultField());
+        $field = $this->prepareImageField($field, $exchangeDir);
 
         $field['FORM_ID'] = $formId;
         $field['VARNAME'] = $field['SID'];
@@ -654,6 +664,33 @@ class FormHelper extends Helper
 
         $this->outNotice($fieldId ? "Form field $newId updated" : "Form field $newId created");
         return $newId;
+    }
+
+    private function exportImageField(array $fields, string $exchangeDir, string $subdir): array
+    {
+        if (!empty($fields['IMAGE_ID']) && is_numeric($fields['IMAGE_ID'])) {
+            $fileRef = (new FileExchange())->exportFileById((int)$fields['IMAGE_ID'], $exchangeDir, $subdir);
+            if ($fileRef) {
+                $fields['IMAGE_ID'] = $fileRef;
+            }
+        }
+
+        return $fields;
+    }
+
+    private function prepareImageField(array $fields, string $exchangeDir): array
+    {
+        if (!empty($fields['IMAGE_ID']) && is_array($fields['IMAGE_ID'])) {
+            $file = (new FileExchange())->makeFileArrayByRef($fields['IMAGE_ID'], $exchangeDir);
+            if ($file) {
+                $file['MODULE_ID'] = 'form';
+                $fields['arIMAGE'] = $file;
+            }
+
+            unset($fields['IMAGE_ID']);
+        }
+
+        return $fields;
     }
 
     private function getUnsetKeysForm(): array
