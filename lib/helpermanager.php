@@ -4,6 +4,7 @@ namespace Sprint\Migration;
 
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helpers\AgentHelper;
+use Sprint\Migration\Helpers\BlogExchangeHelper;
 use Sprint\Migration\Helpers\BlogHelper;
 use Sprint\Migration\Helpers\CultureHelper;
 use Sprint\Migration\helpers\DeliveryServiceHelper;
@@ -36,6 +37,7 @@ use Sprint\Migration\Helpers\VoteHelper;
  * @method HlblockHelper            Hlblock()
  * @method AgentHelper              Agent()
  * @method BlogHelper               Blog()
+ * @method BlogExchangeHelper       BlogExchange()
  * @method EventHelper              Event()
  * @method LangHelper               Lang()
  * @method SiteHelper               Site()
