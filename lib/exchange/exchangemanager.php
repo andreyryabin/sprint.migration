@@ -26,6 +26,15 @@ class ExchangeManager
         ))->setExchangeResource('iblock_elements.xml');
     }
 
+    public function IblockSectionsImport(): RestartableReader
+    {
+        return (new RestartableReader(
+            $this->restartable,
+            $this->getHelperManager()->IblockSectionExchange(),
+            $this->directory
+        ))->setExchangeResource('iblock_sections.xml');
+    }
+
     public function HlblockElementsImport(): RestartableReader
     {
         return (new RestartableReader(

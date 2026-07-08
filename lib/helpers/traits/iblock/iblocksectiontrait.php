@@ -329,6 +329,23 @@ trait IblockSectionTrait
         }
     }
 
+    /**
+     * @throws HelperException
+     */
+    public function saveSectionRecord(int $iblockId, array $fields): int
+    {
+        $this->checkRequiredKeys($fields, ['XML_ID', 'NAME']);
+
+        unset($fields['IBLOCK_ID']);
+
+        $sectionId = $this->getSectionId($iblockId, ['=XML_ID' => $fields['XML_ID']]);
+        if ($sectionId) {
+            return $this->updateSection($sectionId, $fields);
+        }
+
+        return $this->addSection($iblockId, $fields);
+    }
+
     public function getSectionsTree(int $iblockId): array
     {
         $sections = $this->getSections($iblockId);
