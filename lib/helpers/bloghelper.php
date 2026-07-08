@@ -5,22 +5,19 @@ namespace Sprint\Migration\Helpers;
 use CBlog;
 use CBlogCategory;
 use CBlogGroup;
-use CBlogImage;
 use CBlogPost;
 use CBlogPostCategory;
 use CBlogUserGroup;
-use CFile;
 use CUserFieldEnum;
 use CUserTypeEntity;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
-use Sprint\Migration\Module;
 
 class BlogHelper extends Helper
 {
 
-    private UserHelper $userHelper;
+    protected UserHelper $userHelper;
 
     public function __construct()
     {
@@ -159,7 +156,7 @@ class BlogHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function exportPostById(int $postId, string $exchangeDir = ''): array
+    protected function exportPostById(int $postId): array
     {
         $post = $this->getPostById($postId);
 
@@ -172,21 +169,10 @@ class BlogHelper extends Helper
         $post['CATEGORIES'] = $this->exportPostCategories((int)$post['BLOG_ID'], (int)$post['ID']);
         $post['PERMS_POST'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_POST);
         $post['PERMS_COMMENT'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_COMMENT);
-        $post['ATTACH_IMG'] = $this->exportFileRef((int)$post['ATTACH_IMG'], $exchangeDir, 'blog_post_files');
-        $post['UF_VALUES'] = $this->exportPostUserFields((int)$post['ID'], $exchangeDir);
-        $post['TEXT_IMAGES'] = $this->exportPostTextImages($post, $exchangeDir);
 
-        return $this->prepareExportPost($post);
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function exportPosts(array $postIds, string $exchangeDir = ''): array
-    {
-        return array_map(
-            fn($postId) => $this->exportPostById((int)$postId, $exchangeDir),
-            $this->makeNonEmptyArray($postIds)
+        return array_merge(
+            $this->prepareExportPost($post),
+            $this->exportPostUserFields((int)$post['ID'])
         );
     }
 
@@ -241,7 +227,7 @@ class BlogHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function savePost(int $blogId, array $fields, string $exchangeDir = ''): int
+    public function savePost(int $blogId, array $fields): int
     {
         $this->checkRequiredKeys($fields, ['TITLE', 'DETAIL_TEXT', 'DATE_CREATE', 'DATE_PUBLISH', 'AUTHOR_LOGIN', 'CODE']);
 
@@ -249,22 +235,20 @@ class BlogHelper extends Helper
             throw new HelperException("Blog \"$blogId\" not found");
         }
 
-        $fieldsForSave = $this->preparePostFieldsForSave($blogId, $fields, $exchangeDir);
+        $fieldsForSave = $this->preparePostFieldsForSave($blogId, $fields);
         $postId = $this->getPostIdByCode($blogId, $fieldsForSave['CODE']);
 
         if (!$postId) {
             $postId = $this->addPost($fieldsForSave);
         } else {
-            $exists = $this->exportPostById($postId, $exchangeDir);
+            $exists = $this->exportPostById($postId);
             $export = $this->prepareExportPost(array_merge($fieldsForSave, [
                 'AUTHOR_LOGIN'  => $fields['AUTHOR_LOGIN'],
                 'CATEGORIES'    => $fields['CATEGORIES'] ?? [],
                 'PERMS_POST'    => $fields['PERMS_POST'] ?? [],
                 'PERMS_COMMENT' => $fields['PERMS_COMMENT'] ?? [],
                 'ATTACH_IMG'    => $fields['ATTACH_IMG'] ?? false,
-                'UF_VALUES'     => $fields['UF_VALUES'] ?? [],
-                'TEXT_IMAGES'   => $fields['TEXT_IMAGES'] ?? [],
-            ]));
+            ])) + $this->extractPostUserFields($fields);
 
             if ($this->checkDiff($exists, $export)) {
                 $postId = $this->updatePost($postId, $fieldsForSave);
@@ -272,8 +256,6 @@ class BlogHelper extends Helper
         }
 
         $this->savePostCategories($blogId, $postId, $fields['CATEGORIES'] ?? []);
-        $this->savePostTextImages($blogId, $postId, $fieldsForSave, $fields['TEXT_IMAGES'] ?? [], $exchangeDir);
-
         return $postId;
     }
 
@@ -525,7 +507,7 @@ class BlogHelper extends Helper
     /**
      * @throws HelperException
      */
-    protected function preparePostFieldsForSave(int $blogId, array $fields, string $exchangeDir = ''): array
+    protected function preparePostFieldsForSave(int $blogId, array $fields): array
     {
         $hasAttachImg = array_key_exists('ATTACH_IMG', $fields);
         $fields = array_merge($this->getDefaultPost(), $fields);
@@ -535,19 +517,15 @@ class BlogHelper extends Helper
         $fields['CATEGORY_ID'] = implode(',', $this->getCategoryIdsByNames($blogId, $fields['CATEGORIES'] ?? []));
         $fields['PERMS_POST'] = $this->revertPostPerms($blogId, $fields['PERMS_POST'] ?? []);
         $fields['PERMS_COMMENT'] = $this->revertPostPerms($blogId, $fields['PERMS_COMMENT'] ?? []);
-        $userFields = $this->revertPostUserFields($fields['UF_VALUES'] ?? [], $exchangeDir);
+        $userFields = $this->revertPostUserFields($this->extractPostUserFields($fields));
 
         if (!$hasAttachImg) {
             unset($fields['ATTACH_IMG']);
-        } elseif (!empty($fields['ATTACH_IMG']) && is_array($fields['ATTACH_IMG'])) {
-            $fields['ATTACH_IMG'] = $this->makeFileArrayByRef($fields['ATTACH_IMG'], $exchangeDir);
         }
 
         $this->unsetKeys($fields, [
             'AUTHOR_LOGIN',
             'CATEGORIES',
-            'UF_VALUES',
-            'TEXT_IMAGES',
         ]);
 
         $fields = array_intersect_key(
@@ -560,6 +538,18 @@ class BlogHelper extends Helper
         }
 
         return $fields;
+    }
+
+    protected function extractPostUserFields(array $fields): array
+    {
+        $result = [];
+        foreach ($fields as $name => $value) {
+            if (str_starts_with((string)$name, 'UF_')) {
+                $result[$name] = $value;
+            }
+        }
+
+        return $result;
     }
 
     protected function prepareExportBlog(array $fields): array
@@ -718,22 +708,12 @@ class BlogHelper extends Helper
         ]);
     }
 
-    protected function exportPostUserFields(int $postId, string $exchangeDir = ''): array
+    protected function exportPostUserFields(int $postId): array
     {
-        global $USER_FIELD_MANAGER;
-
-        if (empty($USER_FIELD_MANAGER)) {
-            return [];
-        }
-
         $result = [];
-        $fields = $USER_FIELD_MANAGER->GetUserFields('BLOG_POST', $postId, LANGUAGE_ID);
+        $fields = $this->getPostUserFieldsWithValues($postId);
         foreach ($fields as $fieldName => $field) {
-            if (!str_starts_with($fieldName, 'UF_')) {
-                continue;
-            }
-
-            $value = $this->exportPostUserFieldValue($field, $exchangeDir);
+            $value = $this->exportPostUserFieldValue($field);
             if ($value !== null && $value !== [] && $value !== '') {
                 $result[$fieldName] = $value;
             }
@@ -742,7 +722,38 @@ class BlogHelper extends Helper
         return $result;
     }
 
-    protected function exportPostUserFieldValue(array $field, string $exchangeDir = ''): mixed
+    /**
+     * @throws HelperException
+     */
+    protected function getPostUserFieldsWithValues(int $postId): array
+    {
+        $post = CBlogPost::GetList(
+            ['ID' => 'ASC'],
+            ['ID' => $postId],
+            false,
+            false,
+            ['ID', 'UF_*']
+        )->Fetch();
+
+        if (empty($post)) {
+            return [];
+        }
+
+        $fields = [];
+        foreach ((new UserTypeEntityHelper())->getUserTypeEntities('BLOG_POST') as $field) {
+            $fieldName = (string)($field['FIELD_NAME'] ?? '');
+            if (!str_starts_with($fieldName, 'UF_') || !array_key_exists($fieldName, $post)) {
+                continue;
+            }
+
+            $field['VALUE'] = $post[$fieldName];
+            $fields[$fieldName] = $field;
+        }
+
+        return $fields;
+    }
+
+    protected function exportPostUserFieldValue(array $field): mixed
     {
         $value = $field['VALUE'] ?? null;
         $multiple = (($field['MULTIPLE'] ?? 'N') === 'Y');
@@ -757,12 +768,7 @@ class BlogHelper extends Helper
             }
 
             $values = array_filter($this->makeNonEmptyArray($value));
-            $items = array_map(
-                fn($fileId) => $this->exportFileRef((int)$fileId, $exchangeDir, 'blog_post_files'),
-                $values
-            );
-            $items = array_values(array_filter($items));
-            return $multiple ? $items : ($items[0] ?? false);
+            return $multiple ? $values : ((int)($values[0] ?? 0) ?: false);
         }
 
         return $value;
@@ -787,7 +793,7 @@ class BlogHelper extends Helper
         return $multiple ? $values : ($values[0] ?? '');
     }
 
-    protected function revertPostUserFields(array $fields, string $exchangeDir = ''): array
+    protected function revertPostUserFields(array $fields): array
     {
         $result = [];
         foreach ($fields as $fieldName => $value) {
@@ -799,7 +805,7 @@ class BlogHelper extends Helper
             if ($field['USER_TYPE_ID'] === 'enumeration') {
                 $value = $this->revertUserFieldEnumValue($field, $value);
             } elseif ($field['USER_TYPE_ID'] === 'file') {
-                $value = $this->revertUserFieldFileValue($field, $value, $exchangeDir);
+                $value = $this->revertUserFieldFileValue($field, $value);
             }
 
             $result[$fieldName] = $value;
@@ -828,25 +834,14 @@ class BlogHelper extends Helper
         return $multiple ? $values : ($values[0] ?? false);
     }
 
-    protected function revertUserFieldFileValue(array $field, mixed $value, string $exchangeDir = ''): mixed
+    protected function revertUserFieldFileValue(array $field, mixed $value): mixed
     {
         $multiple = (($field['MULTIPLE'] ?? 'N') === 'Y');
         if (empty($value)) {
             return $multiple ? [] : false;
         }
 
-        $values = [];
-
-        foreach ($this->makeNonEmptyArray($value) as $fileRef) {
-            if (is_array($fileRef)) {
-                $file = $this->makeFileArrayByRef($fileRef, $exchangeDir);
-                if ($file) {
-                    $values[] = $file;
-                }
-            }
-        }
-
-        return $multiple ? $values : ($values[0] ?? false);
+        return $multiple ? $this->makeNonEmptyArray($value) : $value;
     }
 
     protected function getPostUserField(string $fieldName): array
@@ -885,351 +880,6 @@ class BlogHelper extends Helper
         }
 
         return $result;
-    }
-
-    protected function exportFileRef(int $fileId, string $exchangeDir = '', string $subdir = 'files'): array|false
-    {
-        if (!$fileId || $exchangeDir === '') {
-            return false;
-        }
-
-        $file = CFile::GetFileArray($fileId);
-        if (empty($file['SRC'])) {
-            return false;
-        }
-
-        $source = Module::getDocRoot() . $file['SRC'];
-        if (!is_file($source)) {
-            return false;
-        }
-
-        $relativePath = trim($subdir . '/' . $file['SUBDIR'] . '/' . $file['FILE_NAME'], '/');
-        $target = rtrim($exchangeDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
-        Module::createDir(dirname($target));
-        copy($source, $target);
-
-        return [
-            'path'        => $relativePath,
-            'name'        => $file['ORIGINAL_NAME'] ?? $file['FILE_NAME'],
-            'description' => $file['DESCRIPTION'] ?? '',
-        ];
-    }
-
-    protected function makeFileArrayByRef(array $fileRef, string $exchangeDir = ''): array|false
-    {
-        if (empty($fileRef['path']) || $exchangeDir === '') {
-            return false;
-        }
-
-        $path = rtrim($exchangeDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim($fileRef['path'], DIRECTORY_SEPARATOR);
-        $file = CFile::MakeFileArray($path);
-        if (empty($file)) {
-            return false;
-        }
-
-        if (!empty($fileRef['name'])) {
-            $file['name'] = $fileRef['name'];
-        }
-        if (!empty($fileRef['description'])) {
-            $file['description'] = $fileRef['description'];
-        }
-
-        return $file;
-    }
-
-    protected function exportPostTextImages(array $post, string $exchangeDir = ''): array
-    {
-        $texts = [
-            $post['DETAIL_TEXT'] ?? '',
-            $post['PREVIEW_TEXT'] ?? '',
-        ];
-
-        return array_filter([
-            'BLOG_IMAGES' => $this->exportPostBlogImages($post, $texts, $exchangeDir),
-            'FILE_LINKS'  => $this->exportPostTextFileLinks($texts, $exchangeDir),
-        ]);
-    }
-
-    protected function exportPostBlogImages(array $post, array $texts, string $exchangeDir = ''): array
-    {
-        $imageIds = [];
-        foreach ($texts as $text) {
-            if (preg_match_all('/\[IMG\s+ID=(\d+)[^\]]*\]/i', (string)$text, $matches)) {
-                foreach ($matches[1] as $imageId) {
-                    $imageIds[(int)$imageId] = (int)$imageId;
-                }
-            }
-        }
-
-        $result = [];
-        foreach ($imageIds as $imageId) {
-            $image = CBlogImage::GetByID($imageId);
-            if (empty($image['FILE_ID'])) {
-                continue;
-            }
-
-            if ((int)$image['POST_ID'] !== (int)$post['ID'] || (int)$image['BLOG_ID'] !== (int)$post['BLOG_ID']) {
-                continue;
-            }
-
-            $file = $this->exportFileRef((int)$image['FILE_ID'], $exchangeDir, 'blog_post_text_images');
-            if ($file) {
-                $result[$imageId] = [
-                    'FILE'       => $file,
-                    'TITLE'      => $image['TITLE'] ?? '',
-                    'USER_LOGIN' => $this->userHelper->getUserLoginById((int)($image['USER_ID'] ?? $post['AUTHOR_ID'])),
-                    'IMAGE_SIZE' => $image['IMAGE_SIZE'] ?? '',
-                ];
-            }
-        }
-
-        return $result;
-    }
-
-    protected function exportPostTextFileLinks(array $texts, string $exchangeDir = ''): array
-    {
-        $links = [];
-        foreach ($texts as $text) {
-            foreach ($this->extractLocalUploadLinks((string)$text) as $link) {
-                $file = $this->exportLocalFileRef($link, $exchangeDir, 'blog_post_text_links');
-                if ($file) {
-                    $links[$link] = $file;
-                }
-            }
-        }
-
-        return $links;
-    }
-
-    protected function extractLocalUploadLinks(string $text): array
-    {
-        $links = [];
-
-        if (preg_match_all('/<img\b[^>]*\bsrc\s*=\s*([\'"])(.*?)\1/iu', $text, $matches)) {
-            foreach ($matches[2] as $link) {
-                $links[] = html_entity_decode($link, ENT_QUOTES | ENT_HTML5);
-            }
-        }
-
-        if (preg_match_all('/\[IMG\]([^\[]+)\[\/IMG\]/iu', $text, $matches)) {
-            foreach ($matches[1] as $link) {
-                $links[] = trim($link);
-            }
-        }
-
-        return array_values(array_unique(array_filter(
-            $links,
-            fn($link) => $this->isLocalUploadLink((string)$link)
-        )));
-    }
-
-    protected function isLocalUploadLink(string $link): bool
-    {
-        $path = parse_url($link, PHP_URL_PATH);
-        return is_string($path) && str_starts_with($path, '/upload/');
-    }
-
-    protected function exportLocalFileRef(string $link, string $exchangeDir = '', string $subdir = 'files'): array|false
-    {
-        if ($exchangeDir === '') {
-            return false;
-        }
-
-        $path = parse_url($link, PHP_URL_PATH);
-        if (!is_string($path) || !str_starts_with($path, '/upload/')) {
-            return false;
-        }
-
-        $source = Module::getDocRoot() . rawurldecode($path);
-        if (!is_file($source)) {
-            return false;
-        }
-
-        $fileName = basename($source);
-        $relativePath = trim($subdir . '/' . md5($path) . '_' . $fileName, '/');
-        $target = rtrim($exchangeDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
-        Module::createDir(dirname($target));
-        copy($source, $target);
-
-        return [
-            'path'   => $relativePath,
-            'name'   => $fileName,
-            'source' => $link,
-        ];
-    }
-
-    /**
-     * @throws HelperException
-     */
-    protected function savePostTextImages(
-        int    $blogId,
-        int    $postId,
-        array  $fieldsForSave,
-        array  $textImages,
-        string $exchangeDir = ''
-    ): void
-    {
-        if (empty($textImages)) {
-            return;
-        }
-
-        $updates = [];
-        foreach (['DETAIL_TEXT', 'PREVIEW_TEXT'] as $fieldName) {
-            if (!array_key_exists($fieldName, $fieldsForSave)) {
-                continue;
-            }
-
-            $updates[$fieldName] = (string)$fieldsForSave[$fieldName];
-        }
-
-        if (empty($updates)) {
-            return;
-        }
-
-        $imageMap = $this->importPostBlogImages(
-            $blogId,
-            $postId,
-            (int)$fieldsForSave['AUTHOR_ID'],
-            $textImages['BLOG_IMAGES'] ?? [],
-            $exchangeDir
-        );
-        $linkMap = $this->importPostTextFileLinks($textImages['FILE_LINKS'] ?? [], $exchangeDir);
-
-        foreach ($updates as $fieldName => $text) {
-            $text = $this->replacePostBlogImageIds($text, $imageMap);
-            $text = str_replace(array_keys($linkMap), array_values($linkMap), $text);
-            $updates[$fieldName] = $text;
-        }
-
-        $result = CBlogPost::Update($postId, $updates);
-        if (!$result) {
-            $this->throwApplicationExceptionIfExists();
-            throw new HelperException("Blog post \"$postId\" text images not updated");
-        }
-    }
-
-    protected function importPostBlogImages(
-        int    $blogId,
-        int    $postId,
-        int    $authorId,
-        array  $blogImages,
-        string $exchangeDir = ''
-    ): array
-    {
-        if (empty($blogImages)) {
-            return [];
-        }
-
-        $this->deletePostBlogImages($blogId, $postId);
-
-        $result = [];
-        foreach ($blogImages as $oldImageId => $image) {
-            if (empty($image['FILE']) || !is_array($image['FILE'])) {
-                continue;
-            }
-
-            $file = $this->makeFileArrayByRef($image['FILE'], $exchangeDir);
-            if (!$file) {
-                continue;
-            }
-
-            $userId = $authorId;
-            if (!empty($image['USER_LOGIN'])) {
-                $userId = $this->userHelper->getUserIdByLogin((string)$image['USER_LOGIN']);
-            }
-
-            $newImageId = CBlogImage::Add([
-                'BLOG_ID'    => $blogId,
-                'POST_ID'    => $postId,
-                'USER_ID'    => $userId,
-                'TITLE'      => $image['TITLE'] ?? '',
-                'IMAGE_SIZE' => $image['IMAGE_SIZE'] ?? ($file['size'] ?? ''),
-                'IS_COMMENT' => 'N',
-                'FILE_ID'    => $file,
-            ]);
-
-            if ($newImageId) {
-                $result[(int)$oldImageId] = (int)$newImageId;
-            }
-        }
-
-        return $result;
-    }
-
-    protected function deletePostBlogImages(int $blogId, int $postId): void
-    {
-        $dbres = CBlogImage::GetList(
-            ['ID' => 'ASC'],
-            [
-                'BLOG_ID'    => $blogId,
-                'POST_ID'    => $postId,
-                'IS_COMMENT' => 'N',
-            ],
-            false,
-            false,
-            ['ID']
-        );
-
-        while ($image = $dbres->Fetch()) {
-            CBlogImage::Delete((int)$image['ID']);
-        }
-    }
-
-    protected function replacePostBlogImageIds(string $text, array $imageMap): string
-    {
-        if (empty($imageMap)) {
-            return $text;
-        }
-
-        return preg_replace_callback(
-            '/\[IMG\s+ID=(\d+)([^\]]*)\]/i',
-            function ($matches) use ($imageMap) {
-                $oldImageId = (int)$matches[1];
-                if (empty($imageMap[$oldImageId])) {
-                    return $matches[0];
-                }
-
-                return '[IMG ID=' . $imageMap[$oldImageId] . ($matches[2] ?? '') . ']';
-            },
-            $text
-        );
-    }
-
-    protected function importPostTextFileLinks(array $fileLinks, string $exchangeDir = ''): array
-    {
-        $result = [];
-        foreach ($fileLinks as $oldLink => $fileRef) {
-            if (!is_array($fileRef)) {
-                continue;
-            }
-
-            $newLink = $this->restoreFileRefToUpload($fileRef, $exchangeDir, 'sprint_migration/blog_post_text');
-            if ($newLink) {
-                $result[$oldLink] = $newLink;
-            }
-        }
-
-        return $result;
-    }
-
-    protected function restoreFileRefToUpload(array $fileRef, string $exchangeDir = '', string $subdir = 'sprint_migration'): string
-    {
-        if (empty($fileRef['path']) || $exchangeDir === '') {
-            return '';
-        }
-
-        $source = rtrim($exchangeDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim($fileRef['path'], DIRECTORY_SEPARATOR);
-        if (!is_file($source)) {
-            return '';
-        }
-
-        $fileName = basename($fileRef['name'] ?? $source);
-        $relativePath = '/upload/' . trim($subdir, '/') . '/' . md5((string)$fileRef['path']) . '_' . $fileName;
-        $target = Module::getDocRoot() . $relativePath;
-        Module::createDir(dirname($target));
-        copy($source, $target);
-
-        return $relativePath;
     }
 
     protected function exportPostCategories(int $blogId, int $postId): array
@@ -1447,8 +1097,6 @@ class BlogHelper extends Helper
             'CATEGORIES'        => [],
             'PERMS_POST'        => [],
             'PERMS_COMMENT'     => [],
-            'UF_VALUES'         => [],
-            'TEXT_IMAGES'       => [],
         ];
     }
 
