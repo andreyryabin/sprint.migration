@@ -710,19 +710,9 @@ class BlogHelper extends Helper
 
     protected function exportPostUserFields(int $postId): array
     {
-        global $USER_FIELD_MANAGER;
-
-        if (empty($USER_FIELD_MANAGER)) {
-            return [];
-        }
-
         $result = [];
-        $fields = $USER_FIELD_MANAGER->GetUserFields('BLOG_POST', $postId, LANGUAGE_ID);
+        $fields = $this->getPostUserFieldsWithValues($postId);
         foreach ($fields as $fieldName => $field) {
-            if (!str_starts_with($fieldName, 'UF_')) {
-                continue;
-            }
-
             $value = $this->exportPostUserFieldValue($field);
             if ($value !== null && $value !== [] && $value !== '') {
                 $result[$fieldName] = $value;
@@ -730,6 +720,37 @@ class BlogHelper extends Helper
         }
 
         return $result;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function getPostUserFieldsWithValues(int $postId): array
+    {
+        $post = CBlogPost::GetList(
+            ['ID' => 'ASC'],
+            ['ID' => $postId],
+            false,
+            false,
+            ['ID', 'UF_*']
+        )->Fetch();
+
+        if (empty($post)) {
+            return [];
+        }
+
+        $fields = [];
+        foreach ((new UserTypeEntityHelper())->getUserTypeEntities('BLOG_POST') as $field) {
+            $fieldName = (string)($field['FIELD_NAME'] ?? '');
+            if (!str_starts_with($fieldName, 'UF_') || !array_key_exists($fieldName, $post)) {
+                continue;
+            }
+
+            $field['VALUE'] = $post[$fieldName];
+            $fields[$fieldName] = $field;
+        }
+
+        return $fields;
     }
 
     protected function exportPostUserFieldValue(array $field): mixed

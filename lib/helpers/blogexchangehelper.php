@@ -112,7 +112,6 @@ class BlogExchangeHelper extends BlogHelper implements ReaderHelperInterface, Wr
         $post['CATEGORIES'] = $this->exportPostCategories((int)$post['BLOG_ID'], (int)$post['ID']);
         $post['PERMS_POST'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_POST);
         $post['PERMS_COMMENT'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_COMMENT);
-
         return array_merge(
             $this->prepareExportPost($post),
             $this->exportPostUserFieldsForXml((int)$post['ID'])
@@ -168,19 +167,9 @@ class BlogExchangeHelper extends BlogHelper implements ReaderHelperInterface, Wr
 
     protected function exportPostUserFieldsForXml(int $postId): array
     {
-        global $USER_FIELD_MANAGER;
-
-        if (empty($USER_FIELD_MANAGER)) {
-            return [];
-        }
-
         $result = [];
-        $fields = $USER_FIELD_MANAGER->GetUserFields('BLOG_POST', $postId, LANGUAGE_ID);
+        $fields = $this->getPostUserFieldsWithValues($postId);
         foreach ($fields as $fieldName => $field) {
-            if (!str_starts_with($fieldName, 'UF_')) {
-                continue;
-            }
-
             $value = $this->exportPostUserFieldValueForXml($field);
             if ($value !== null && $value !== [] && $value !== '' && $value !== false) {
                 $result[$fieldName] = $value;
