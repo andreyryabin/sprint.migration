@@ -54,28 +54,13 @@ class FileExchange
 
     private function getSourcePath(array $file): string
     {
-        if (!empty($file['ID'])) {
-            $fileArray = CFile::MakeFileArray((int)$file['ID']);
-            $tmpName = (string)($fileArray['tmp_name'] ?? '');
-            if ($tmpName !== '' && is_file($tmpName)) {
-                return $tmpName;
-            }
-        }
-
-        return $this->getLocalSourcePath($file);
-    }
-
-    private function getLocalSourcePath(array $file): string
-    {
-        if (empty($file['SRC'])) {
+        if (empty($file['ID'])) {
             return '';
         }
 
-        $src = (string)$file['SRC'];
-        if (str_starts_with($src, 'http://') || str_starts_with($src, 'https://')) {
-            return '';
-        }
+        $fileArray = CFile::MakeFileArray((int)$file['ID']);
+        $tmpName = (string)($fileArray['tmp_name'] ?? '');
 
-        return Module::getDocRoot() . rawurldecode($src);
+        return ($tmpName !== '' && is_file($tmpName)) ? $tmpName : '';
     }
 }
