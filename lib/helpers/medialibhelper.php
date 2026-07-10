@@ -16,11 +16,6 @@ class MedialibHelper extends Helper
 {
     const TYPE_IMAGE = 'image';
 
-    public function __construct()
-    {
-        CMedialib::Init();
-    }
-
     public function isEnabled(): bool
     {
         return $this->checkModules(['fileman']);

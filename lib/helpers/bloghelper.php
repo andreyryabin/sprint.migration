@@ -19,14 +19,6 @@ use Sprint\Migration\Module;
 
 class BlogHelper extends Helper
 {
-
-    private UserHelper $userHelper;
-
-    public function __construct()
-    {
-        $this->userHelper = new UserHelper();
-    }
-
     public function isEnabled(): bool
     {
         return $this->checkModules(['blog']);
@@ -138,7 +130,7 @@ class BlogHelper extends Helper
             throw new HelperException("Socialnetwork blog \"$blogId\" is not supported");
         }
 
-        $blog['OWNER_LOGIN'] = $this->userHelper->getUserLoginById((int)$blog['OWNER_ID']);
+        $blog['OWNER_LOGIN'] = (new UserHelper)->getUserLoginById((int)$blog['OWNER_ID']);
 
         $blog['USER_GROUPS'] = $this->exportUserGroups($blog);
 
@@ -167,7 +159,7 @@ class BlogHelper extends Helper
             throw new HelperException("Blog post \"$postId\" has empty CODE");
         }
 
-        $post['AUTHOR_LOGIN'] = $this->userHelper->getUserLoginById((int)$post['AUTHOR_ID']);
+        $post['AUTHOR_LOGIN'] = (new UserHelper)->getUserLoginById((int)$post['AUTHOR_ID']);
 
         $post['CATEGORIES'] = $this->exportPostCategories((int)$post['BLOG_ID'], (int)$post['ID']);
         $post['PERMS_POST'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_POST);
@@ -417,7 +409,7 @@ class BlogHelper extends Helper
         $fields['GROUP_ID'] = $groupId;
 
         if (isset($fields['OWNER_LOGIN'])) {
-            $fields['OWNER_ID'] = $this->userHelper->getUserIdByLogin((string)$fields['OWNER_LOGIN']);
+            $fields['OWNER_ID'] = (new UserHelper)->getUserIdByLogin((string)$fields['OWNER_LOGIN']);
             unset($fields['OWNER_LOGIN']);
         }
 
@@ -458,7 +450,7 @@ class BlogHelper extends Helper
         global $DB;
 
         if (isset($fields['OWNER_LOGIN'])) {
-            $fields['OWNER_ID'] = $this->userHelper->getUserIdByLogin((string)$fields['OWNER_LOGIN']);
+            $fields['OWNER_ID'] = (new UserHelper)->getUserIdByLogin((string)$fields['OWNER_LOGIN']);
             unset($fields['OWNER_LOGIN']);
         }
 
@@ -530,7 +522,7 @@ class BlogHelper extends Helper
         $hasAttachImg = array_key_exists('ATTACH_IMG', $fields);
         $fields = array_merge($this->getDefaultPost(), $fields);
         $fields['BLOG_ID'] = $blogId;
-        $fields['AUTHOR_ID'] = $this->userHelper->getUserIdByLogin((string)$fields['AUTHOR_LOGIN']);
+        $fields['AUTHOR_ID'] = (new UserHelper)->getUserIdByLogin((string)$fields['AUTHOR_LOGIN']);
 
         $fields['CATEGORY_ID'] = implode(',', $this->getCategoryIdsByNames($blogId, $fields['CATEGORIES'] ?? []));
         $fields['PERMS_POST'] = $this->revertPostPerms($blogId, $fields['PERMS_POST'] ?? []);
@@ -977,7 +969,7 @@ class BlogHelper extends Helper
                 $result[$imageId] = [
                     'FILE'       => $file,
                     'TITLE'      => $image['TITLE'] ?? '',
-                    'USER_LOGIN' => $this->userHelper->getUserLoginById((int)($image['USER_ID'] ?? $post['AUTHOR_ID'])),
+                    'USER_LOGIN' => (new UserHelper)->getUserLoginById((int)($image['USER_ID'] ?? $post['AUTHOR_ID'])),
                     'IMAGE_SIZE' => $image['IMAGE_SIZE'] ?? '',
                 ];
             }
@@ -1135,7 +1127,7 @@ class BlogHelper extends Helper
 
             $userId = $authorId;
             if (!empty($image['USER_LOGIN'])) {
-                $userId = $this->userHelper->getUserIdByLogin((string)$image['USER_LOGIN']);
+                $userId = (new UserHelper)->getUserIdByLogin((string)$image['USER_LOGIN']);
             }
 
             $newImageId = CBlogImage::Add([

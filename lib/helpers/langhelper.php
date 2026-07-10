@@ -11,13 +11,6 @@ use Sprint\Migration\Locale;
 class LangHelper extends Helper
 {
 
-    private CultureHelper $cultureHelper;
-
-    public function __construct()
-    {
-        $this->cultureHelper = new CultureHelper();
-    }
-
     public function getLangs(array $filter = []): array
     {
         $by = 'def';
@@ -70,6 +63,9 @@ class LangHelper extends Helper
         );
     }
 
+    /**
+     * @throws HelperException
+     */
     private function exportItem(array $item): array
     {
         $this->unsetKeys($item, [
@@ -84,7 +80,7 @@ class LangHelper extends Helper
         ]);
 
         if (isset($item['CULTURE_ID'])) {
-            $item['CULTURE_CODE'] = $this->cultureHelper->getCultureCodeById($item['CULTURE_ID']);
+            $item['CULTURE_CODE'] = (new CultureHelper)->getCultureCodeById($item['CULTURE_ID']);
             unset($item['CULTURE_ID']);
         }
 
@@ -118,11 +114,10 @@ class LangHelper extends Helper
     public function addLang(array $fields): string
     {
         $this->checkRequiredKeys($fields, ['LID']);
-
         try {
 
             if (isset($fields['CULTURE_CODE'])) {
-                $fields['CULTURE_ID'] = $this->cultureHelper->getCultureIdByCode($fields['CULTURE_CODE']);
+                $fields['CULTURE_ID'] = (new CultureHelper)->getCultureIdByCode($fields['CULTURE_CODE']);
                 unset($fields['CULTURE_CODE']);
             }
 
@@ -153,7 +148,7 @@ class LangHelper extends Helper
         try {
 
             if (isset($fields['CULTURE_CODE'])) {
-                $fields['CULTURE_ID'] = $this->cultureHelper->getCultureIdByCode($fields['CULTURE_CODE']);
+                $fields['CULTURE_ID'] = (new CultureHelper)->getCultureIdByCode($fields['CULTURE_CODE']);
                 unset($fields['CULTURE_CODE']);
             }
 

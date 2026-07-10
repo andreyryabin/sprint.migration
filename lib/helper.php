@@ -15,6 +15,23 @@ class Helper
     use OutputTrait;
 
     /**
+     * @throws HelperException
+     */
+    public function __construct()
+    {
+        if (!$this->isEnabled()) {
+            throw new HelperException(
+                Locale::getMessage(
+                    'ERR_HELPER_DISABLED',
+                    [
+                        '#NAME#' => $this->getHelperName(),
+                    ]
+                )
+            );
+        }
+    }
+
+    /**
      * @return bool
      */
     public function isEnabled()
