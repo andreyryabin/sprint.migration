@@ -25,6 +25,9 @@ use Sprint\Migration\Builders\MarkerBuilder;
 use Sprint\Migration\Builders\MedialibElementsBuilder;
 use Sprint\Migration\Builders\OptionBuilder;
 use Sprint\Migration\Builders\OrderPropertiesBuilder;
+use Sprint\Migration\Builders\OrmFieldDeleteBuilder;
+use Sprint\Migration\Builders\OrmTableBuilder;
+use Sprint\Migration\Builders\OrmTableDeleteBuilder;
 use Sprint\Migration\Builders\SaleDiscountBuilder;
 use Sprint\Migration\Builders\SubscribeBuilder;
 use Sprint\Migration\Builders\TransferBuilder;
@@ -279,6 +282,9 @@ class VersionConfig
             'IblockDeleteBuilder'         => IblockDeleteBuilder::class,
             'HlblockBuilder'              => HlblockBuilder::class,
             'HlblockElementsBuilder'      => HlblockElementsBuilder::class,
+            'OrmTableBuilder'             => OrmTableBuilder::class,
+            'OrmFieldDeleteBuilder'       => OrmFieldDeleteBuilder::class,
+            'OrmTableDeleteBuilder'       => OrmTableDeleteBuilder::class,
             'UserTypeEntitiesBuilder'     => UserTypeEntitiesBuilder::class,
             'AgentBuilder'                => AgentBuilder::class,
             'BlogBuilder'                 => BlogBuilder::class,
