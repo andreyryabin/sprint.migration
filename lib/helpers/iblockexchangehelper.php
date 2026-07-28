@@ -368,7 +368,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     public function readValueIblockElement(int $iblockId, array $val): int
     {
-        $this->checkRequiredKeys($val, ['element_xml_id', 'element_code', 'value']);
+        $this->checkRequiredKeys($val, ['element_xml_id', 'value']);
 
         return $this->getElementIdIfExists($iblockId, array_filter([
             'NAME'   => $val['value'],
