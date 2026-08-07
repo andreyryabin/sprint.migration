@@ -148,6 +148,18 @@ function migrationBuilderRestart() {
     migrationBuilder(postData);
 }
 
+function migrationBuilderRebuild($field) {
+    let postData = jQuery('#migration_builder form').serializeFormJSON();
+
+    if ($field.attr('name') === 'table_mode') {
+        delete postData.table_name;
+        delete postData.new_table_name;
+        delete postData.fields_json;
+    }
+
+    migrationBuilder(postData);
+}
+
 function migrationReset(postData) {
     migrationExecuteStep('migration_reset', postData, function (result) {
         migrationBuilderRender(result, {})
@@ -164,6 +176,7 @@ function migrationBuilderRender(html) {
     let formAttrs = $builder.serializeFormAttrs();
 
     $builder.html(html);
+    migrationInitOrmFields($builder);
 
     jQuery.each(formAttrs, function (name, value) {
         let $el = $builder.find('[data-attrs=' + name + ']');
@@ -171,6 +184,195 @@ function migrationBuilderRender(html) {
             $el.val(value).trigger('input');
         }
     });
+}
+
+function migrationAutocompleteValidate($input) {
+    let value = $input.val();
+    let selectedValue = $input.attr('data-autocomplete-selected-value') || '';
+    let $root = $input.closest('.sp-autocomplete');
+    let $message = $root.find('.sp-autocomplete-message');
+
+    if (!value || value === selectedValue) {
+        $root.removeClass('sp-autocomplete-invalid');
+        $message.empty().hide();
+        return true;
+    }
+
+    $root.addClass('sp-autocomplete-invalid');
+    $message.text($input.data('autocomplete-message') || 'Select item from list').show();
+    return false;
+}
+
+function migrationAutocompleteSelect($input, value) {
+    $input.val(value);
+    $input.attr('data-autocomplete-selected-value', value);
+    migrationAutocompleteValidate($input);
+}
+
+function migrationAutocompleteSearch($input) {
+    let source = $input.data('autocomplete-source');
+    let search = $input.val();
+    let $items = $input.closest('.sp-autocomplete').find('.sp-autocomplete-items');
+
+    $input.attr('data-autocomplete-selected-value', '');
+
+    if (!source || search.length < 2) {
+        $items.empty().hide();
+        migrationAutocompleteValidate($input);
+        return;
+    }
+
+    clearTimeout($input.data('autocomplete-timeout'));
+    $input.data('autocomplete-timeout', setTimeout(function () {
+        jQuery.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                step_code: 'migration_autocomplete',
+                sessid: jQuery('#migration_container').data('sessid'),
+                source: source,
+                search: search
+            },
+            success: function (result) {
+                $items.empty();
+                jQuery.each(result.items || [], function (_, item) {
+                    jQuery('<button type="button" class="sp-autocomplete-item"></button>')
+                        .text(item.title)
+                        .attr('data-value', item.value)
+                        .appendTo($items);
+                });
+
+                if ($items.children().length > 0) {
+                    $items.show();
+                } else {
+                    $items.hide();
+                }
+            }
+        });
+    }, 250));
+}
+
+function migrationInitOrmFields($container) {
+    $container.find('.sp-orm-fields').each(function () {
+        let $root = jQuery(this);
+        let $input = $root.find('input[type=hidden]');
+        let items = [];
+
+        try {
+            items = JSON.parse($input.val() || '[]');
+        } catch (e) {
+            items = [];
+        }
+
+        $root.find('.sp-orm-fields-list').empty();
+        jQuery.each(items, function (_, item) {
+            migrationAddOrmFieldRow($root, item);
+        });
+
+        if (items.length === 0) {
+            migrationAddOrmFieldRow($root, {});
+        }
+
+        migrationSyncOrmFields($root);
+    });
+}
+
+function migrationAddOrmFieldRow($root, item) {
+    item = item || {};
+    let labels = $root.data('labels') || {};
+    let options = $root.data('options') || {};
+    if (typeof labels === 'string') {
+        try {
+            labels = JSON.parse(labels);
+        } catch (e) {
+            labels = {};
+        }
+    }
+    if (typeof options === 'string') {
+        try {
+            options = JSON.parse(options);
+        } catch (e) {
+            options = {};
+        }
+    }
+    let types = ['integer', 'string', 'text', 'float', 'boolean', 'date', 'datetime'];
+    let $card = jQuery('<div class="sp-orm-field-card"></div>');
+    let $grid = jQuery('<div class="sp-orm-field-grid"></div>');
+
+    let $name = jQuery('<input type="text" class="sp-orm-field-name"/>').val(item.name || '');
+    let $type = jQuery('<select class="sp-orm-field-type"></select>');
+    jQuery.each(types, function (_, type) {
+        jQuery('<option></option>').attr('value', type).text(type).appendTo($type);
+    });
+    $type.val(item.type || 'string');
+
+    $grid.append(migrationOrmFieldControl(labels.name || 'Name', $name));
+    $grid.append(migrationOrmFieldControl(labels.type || 'Type', $type));
+    $grid.append(migrationOrmFieldControl(
+        labels.length || 'Length',
+        jQuery('<input type="number" class="sp-orm-field-length" min="0"/>').val(item.length || '')
+    ));
+    $grid.append(migrationOrmFieldControl(
+        labels.default || 'Default',
+        jQuery('<input type="text" class="sp-orm-field-default"/>').val(item.default || '')
+    ));
+
+    $card.append($grid);
+    $card.append(jQuery('<label class="sp-orm-field-check"></label>').append(
+        jQuery('<input type="checkbox" class="sp-orm-field-nullable"/>')
+            .prop('checked', item.nullable === undefined ? true : !!item.nullable),
+        document.createTextNode(labels.nullable || 'Nullable')
+    ));
+
+    if (options.primary_enabled !== false) {
+        $card.append(jQuery('<label class="sp-orm-field-check"></label>').append(
+            jQuery('<input type="checkbox" class="sp-orm-field-primary"/>').prop('checked', !!item.primary),
+            document.createTextNode(labels.primary || 'Primary key')
+        ));
+    }
+
+    if (options.autoincrement_enabled !== false) {
+        $card.append(jQuery('<label class="sp-orm-field-check"></label>').append(
+            jQuery('<input type="checkbox" class="sp-orm-field-autoincrement"/>').prop('checked', !!item.autoincrement),
+            document.createTextNode(labels.autoincrement || 'Autoincrement')
+        ));
+    }
+
+    $card.append(jQuery('<button type="button" class="adm-btn sp-orm-fields-remove"></button>').text(labels.delete || 'Delete field'));
+
+    $root.find('.sp-orm-fields-list').append($card);
+}
+
+function migrationOrmFieldControl(title, $control) {
+    return jQuery('<label class="sp-orm-field-control"></label>').append(
+        jQuery('<span></span>').text(title),
+        $control
+    );
+}
+
+function migrationSyncOrmFields($root) {
+    let items = [];
+
+    $root.find('.sp-orm-field-card').each(function () {
+        let $card = jQuery(this);
+        let name = $card.find('.sp-orm-field-name').val();
+
+        if (!name) {
+            return;
+        }
+
+        items.push({
+            name: name,
+            type: $card.find('.sp-orm-field-type').val(),
+            length: $card.find('.sp-orm-field-length').val(),
+            nullable: $card.find('.sp-orm-field-nullable').is(':checked') ? 1 : 0,
+            default: $card.find('.sp-orm-field-default').val(),
+            primary: $card.find('.sp-orm-field-primary').is(':checked') ? 1 : 0,
+            autoincrement: $card.find('.sp-orm-field-autoincrement').is(':checked') ? 1 : 0
+        });
+    });
+
+    $root.find('input[type=hidden]').val(JSON.stringify(items));
 }
 
 jQuery(document).ready(function ($) {
@@ -285,8 +487,60 @@ jQuery(document).ready(function ($) {
         });
     });
 
+    $('#migration_builder').on('change', '[data-rebuild-on-change]', function () {
+        migrationBuilderRebuild($(this));
+    });
+
+    $('#migration_builder').on('input', '[data-autocomplete-source]', function () {
+        migrationAutocompleteSearch($(this));
+    });
+
+    $('#migration_builder').on('keydown', '[data-autocomplete-source]', function (e) {
+        if (e.keyCode === 13 && !migrationAutocompleteValidate($(this))) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
+
+    $('#migration_builder').on('click', '.sp-autocomplete-item', function () {
+        let $item = $(this);
+        let $root = $item.closest('.sp-autocomplete');
+        migrationAutocompleteSelect($root.find('[data-autocomplete-source]'), $item.data('value'));
+        $root.find('.sp-autocomplete-items').empty().hide();
+    });
+
+    $('#migration_builder').on('click', '.sp-orm-fields-add', function (e) {
+        e.preventDefault();
+        let $root = $(this).closest('.sp-orm-fields');
+        migrationAddOrmFieldRow($root, {});
+        migrationSyncOrmFields($root);
+    });
+
+    $('#migration_builder').on('click', '.sp-orm-fields-remove', function (e) {
+        e.preventDefault();
+        let $root = $(this).closest('.sp-orm-fields');
+        $(this).closest('.sp-orm-field-card').remove();
+        if ($root.find('.sp-orm-field-card').length === 0) {
+            migrationAddOrmFieldRow($root, {});
+        }
+        migrationSyncOrmFields($root);
+    });
+
+    $('#migration_builder').on('input change', '.sp-orm-fields input, .sp-orm-fields select', function () {
+        migrationSyncOrmFields($(this).closest('.sp-orm-fields'));
+    });
+
     $('#migration_builder').on('submit', 'form', function (e) {
         e.preventDefault();
+        let autocompleteValid = true;
+        $(this).find('[data-autocomplete-source]').each(function () {
+            autocompleteValid = migrationAutocompleteValidate($(this)) && autocompleteValid;
+        });
+        if (!autocompleteValid) {
+            return;
+        }
+
         let postData = $(this).serializeFormJSON();
         migrationBuilder(postData);
     });

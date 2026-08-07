@@ -224,6 +224,37 @@
 \Sprint\Migration\Locale::loadLocale(
     "ru",
     [
+        "BUILDER_OrmTable"              => "Добавить ORM-таблицу / поле",
+        "BUILDER_OrmTable_Info"         => "Создает таблицу, если ее нет, и добавляет отсутствующие поля. Существующие поля не изменяются. Повторное применение миграции не вызывает ошибку. Миграция не применяется автоматически, после создания ее нужно применить вручную.",
+        "BUILDER_OrmTable_Mode"         => "Выберите таблицу",
+        "BUILDER_OrmTable_ModeExists"   => "Существующая таблица",
+        "BUILDER_OrmTable_ModeNew"      => "Новая таблица",
+        "BUILDER_OrmTable_TableName"    => "Таблица",
+        "BUILDER_OrmTable_TableSearch"  => "Начните вводить название таблицы",
+        "BUILDER_OrmTable_TableSelectRequired" => "Выберите таблицу из списка.",
+        "BUILDER_OrmTable_NewTableName" => "Название новой таблицы",
+        "BUILDER_OrmTable_Fields"       => "Поля таблицы",
+        "BUILDER_OrmFieldDelete"        => "Удалить поле ORM-таблицы",
+        "BUILDER_OrmFieldDelete_Info"   => "Удаляет выбранные поля таблицы. Отсутствие поля не считается ошибкой. Миграция не применяется автоматически, после создания ее нужно применить вручную. После применения миграцию нельзя будет отменить: удаленные поля не восстанавливаются автоматически.",
+        "BUILDER_OrmFieldDelete_Fields" => "Поля для удаления",
+        "BUILDER_OrmTableDelete"        => "Удалить ORM-таблицу",
+        "BUILDER_OrmTableDelete_Info"   => "Удаляет выбранную таблицу. Отсутствие таблицы не считается ошибкой. Миграция не применяется автоматически, после создания ее нужно применить вручную. После применения миграцию нельзя будет отменить: удаленная таблица не восстанавливается автоматически.",
+        "ORM_FIELD_NAME"                => "Название",
+        "ORM_FIELD_TYPE"                => "Тип",
+        "ORM_FIELD_LENGTH"              => "Длина",
+        "ORM_FIELD_NULLABLE"            => "Разрешить NULL",
+        "ORM_FIELD_DEFAULT"             => "По умолчанию",
+        "ORM_FIELD_PRIMARY"             => "Первичный ключ",
+        "ORM_FIELD_AUTOINCREMENT"       => "Автоинкремент",
+        "ORM_FIELD_ADD"                 => "Добавить поле",
+        "ORM_FIELD_DELETE"              => "Удалить поле",
+        "AUTOCOMPLETE_SELECT_FROM_LIST" => "Выберите значение из списка.",
+    ]
+);
+
+\Sprint\Migration\Locale::loadLocale(
+    "ru",
+    [
         "BUILDER_UserOptionsExport_Title"         => "Создать миграцию для пользовательских настроек",
         "BUILDER_UserOptionsExport_What"          => "Что переносим?",
         "BUILDER_UserOptionsExport_WhatUserForm"  => "Настрока формы редактирования пользователей",
@@ -525,6 +556,7 @@
         "BUILDER_GROUP_Blog"      => "Блоги",
         "BUILDER_GROUP_Iblock"    => "Инфоблоки",
         "BUILDER_GROUP_Hlblock"   => "Highload-блоки",
+        "BUILDER_GROUP_Orm"       => "ORM",
         "BUILDER_GROUP_Sale"      => "Интернет-магазин",
         "BUILDER_GROUP_Form"      => "Веб-формы",
         "BUILDER_GROUP_Forum"     => "Форумы",

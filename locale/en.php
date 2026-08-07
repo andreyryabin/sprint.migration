@@ -227,6 +227,37 @@
 \Sprint\Migration\Locale::loadLocale(
     "en",
     [
+        "BUILDER_OrmTable"              => "Add ORM table / field",
+        "BUILDER_OrmTable_Info"         => "Creates a table if it does not exist and adds missing fields. Existing fields are not changed. Reapplying the migration is not an error. The migration is not applied automatically; after creating it, apply it manually.",
+        "BUILDER_OrmTable_Mode"         => "Select table",
+        "BUILDER_OrmTable_ModeExists"   => "Existing table",
+        "BUILDER_OrmTable_ModeNew"      => "New table",
+        "BUILDER_OrmTable_TableName"    => "Table",
+        "BUILDER_OrmTable_TableSearch"  => "Start typing table name",
+        "BUILDER_OrmTable_TableSelectRequired" => "Select a table from the list.",
+        "BUILDER_OrmTable_NewTableName" => "New table name",
+        "BUILDER_OrmTable_Fields"       => "Table fields",
+        "BUILDER_OrmFieldDelete"        => "Delete ORM table field",
+        "BUILDER_OrmFieldDelete_Info"   => "Deletes selected table fields. Missing field is not an error. The migration is not applied automatically; after creating it, apply it manually. After applying this migration it cannot be rolled back automatically.",
+        "BUILDER_OrmFieldDelete_Fields" => "Fields to delete",
+        "BUILDER_OrmTableDelete"        => "Delete ORM table",
+        "BUILDER_OrmTableDelete_Info"   => "Deletes selected table. Missing table is not an error. The migration is not applied automatically; after creating it, apply it manually. After applying this migration it cannot be rolled back automatically.",
+        "ORM_FIELD_NAME"                => "Name",
+        "ORM_FIELD_TYPE"                => "Type",
+        "ORM_FIELD_LENGTH"              => "Length",
+        "ORM_FIELD_NULLABLE"            => "Allow NULL",
+        "ORM_FIELD_DEFAULT"             => "Default",
+        "ORM_FIELD_PRIMARY"             => "Primary key",
+        "ORM_FIELD_AUTOINCREMENT"       => "Autoincrement",
+        "ORM_FIELD_ADD"                 => "Add field",
+        "ORM_FIELD_DELETE"              => "Delete field",
+        "AUTOCOMPLETE_SELECT_FROM_LIST" => "Select a value from the list.",
+    ]
+);
+
+\Sprint\Migration\Locale::loadLocale(
+    "en",
+    [
         "BUILDER_UserOptionsExport_Title"         => "Create migration for user options",
         "BUILDER_UserOptionsExport_What"          => "What to export?",
         "BUILDER_UserOptionsExport_WhatUserForm"  => "User form",
@@ -527,6 +558,7 @@
         "BUILDER_GROUP_Blog"      => "Blogs",
         "BUILDER_GROUP_Iblock"    => "Information blocks",
         "BUILDER_GROUP_Hlblock"   => "Highload information blocks",
+        "BUILDER_GROUP_Orm"       => "ORM",
         "BUILDER_GROUP_Sale"      => "Sale module",
         "BUILDER_GROUP_Form"      => "Web Forms",
         "BUILDER_GROUP_Forum"     => "Forums",

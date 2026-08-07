@@ -20,7 +20,11 @@ foreach ($builder->getFields() as $fieldCode => $fieldItem) {
     echo !empty($fieldItem['title']) ? '<div class="sp-field-title">' . $fieldItem['title'] . '</div>' : '';
     echo !empty($fieldItem['note']) ? '<div class="sp-field-note">' . $fieldItem['note'] . '</div>' : '';
 
-    if (!empty($fieldItem['height'])) {
+    if (($fieldItem['type'] ?? '') == 'autocomplete') {
+        include __DIR__ . '/../fields/autocomplete.php';
+    } elseif (($fieldItem['type'] ?? '') == 'orm_fields') {
+        include __DIR__ . '/../fields/orm_fields.php';
+    } elseif (!empty($fieldItem['height'])) {
         include __DIR__ . '/../fields/textarea.php';
     } elseif (isset($fieldItem['select']) && !$fieldItem['multiple']) {
         include __DIR__ . '/../fields/select.php';
