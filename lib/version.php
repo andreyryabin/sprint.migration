@@ -22,6 +22,7 @@ class Version implements RestartableInterface
     protected $author        = "";
     protected $description   = "";
     protected $moduleVersion = "";
+    protected $tag = "";
     /**
      * @deprecated Используете $this->checkRequiredVersions(['Version1','Version1'])
      */
@@ -51,6 +52,11 @@ class Version implements RestartableInterface
     public function getAuthor(): string
     {
         return $this->author;
+    }
+
+    public function getTag(): string
+    {
+        return $this->tag;
     }
 
     public function getModuleVersion(): string
