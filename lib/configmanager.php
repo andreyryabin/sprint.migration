@@ -107,8 +107,10 @@ class ConfigManager
         );
 
         foreach ($events as $aEvent) {
-            $customPath = (string)ExecuteModuleEventEx($aEvent);
-            $this->addFromDirectory($customPath);
+            $customPath = ExecuteModuleEventEx($aEvent);
+            if ($customPath !== null) {
+                $this->addFromDirectory((string)$customPath);
+            }
         }
 
         return $this;
