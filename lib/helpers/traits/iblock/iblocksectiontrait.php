@@ -5,6 +5,7 @@ namespace Sprint\Migration\Helpers\Traits\Iblock;
 use CIBlockSection;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
+use Bitrix\Iblock\SectionPropertyTable;
 
 trait IblockSectionTrait
 {
@@ -310,6 +311,13 @@ trait IblockSectionTrait
 
             $item['IBLOCK_SECTION_ID'] = $parentId;
 
+            if (!empty($item['SECTION_PROPERTY']) && is_array($item['SECTION_PROPERTY'])) {
+                $item['SECTION_PROPERTY'] = $this->importSectionPropertyLinks(
+                    $iblockId,
+                    $item['SECTION_PROPERTY']
+                );
+            }
+
             $sectionId = $this->getSectionId(
                 $iblockId, [
                     '=NAME'      => $item['NAME'],
@@ -332,23 +340,28 @@ trait IblockSectionTrait
     public function getSectionsTree(int $iblockId): array
     {
         $sections = $this->getSections($iblockId);
-        return $this->buildSectionsTree($sections);
+        return $this->buildSectionsTree($iblockId, $sections);
     }
 
     public function exportSectionsTree(int $iblockId): array
     {
         $sections = $this->getSections($iblockId);
-        return $this->buildSectionsTree($sections, 0, true);
+        return $this->buildSectionsTree($iblockId, $sections, 0, true);
     }
 
-    protected function buildSectionsTree(array &$sections, int $parentId = 0, bool $export = false): array
+    protected function buildSectionsTree(int $iblockId, array &$sections, int $parentId = 0, bool $export = false): array
     {
         $branch = [];
         foreach ($sections as $section) {
             if ((int)$section['IBLOCK_SECTION_ID'] == $parentId) {
-                $childs = $this->buildSectionsTree($sections, $section['ID'], $export);
+                $childs = $this->buildSectionsTree($iblockId, $sections, $section['ID'], $export);
 
                 if ($export) {
+                    $sectionProperty = $this->exportSectionPropertyLinks($iblockId, (int)$section['ID']);
+                    if (!empty($sectionProperty)) {
+                        $section['SECTION_PROPERTY'] = $sectionProperty;
+                    }
+
                     $this->unsetKeys($section, [
                         'ID',
                         'IBLOCK_SECTION_ID',
@@ -366,4 +379,57 @@ trait IblockSectionTrait
         }
         return $branch;
     }
+
+    protected function exportSectionPropertyLinks(int $iblockId, int $sectionId): array
+    {
+        if ($sectionId <= 0) {
+            return [];
+        }
+
+        $result = [];
+        $links = SectionPropertyTable::getList([
+            'filter' => [
+                'IBLOCK_ID'   => $iblockId,
+                'SECTION_ID'  => $sectionId,
+            ],
+        ])->fetchAll();
+
+        foreach ($links as $link) {
+            $property = $this->getProperty($iblockId, ['ID' => (int)$link['PROPERTY_ID']]);
+            if (empty($property['CODE'])) {
+                continue;
+            }
+
+            $result[$property['CODE']] = [
+                'SMART_FILTER'     => $link['SMART_FILTER'] === true || $link['SMART_FILTER'] === 'Y' ? 'Y' : 'N',
+                'DISPLAY_TYPE'     => (string)$link['DISPLAY_TYPE'],
+                'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'] === true || $link['DISPLAY_EXPANDED'] === 'Y' ? 'Y' : 'N',
+                'FILTER_HINT'      => (string)$link['FILTER_HINT'],
+            ];
+        }
+
+        return $result;
+    }
+
+    protected function importSectionPropertyLinks(int $iblockId, array $links): array
+    {
+        $result = [];
+
+        foreach ($links as $code => $link) {
+            $propertyId = $this->getPropertyId($iblockId, $code);
+            if ($propertyId <= 0) {
+                continue;
+            }
+
+            $result[$propertyId] = [
+                'SMART_FILTER'     => $link['SMART_FILTER'] ?? null,
+                'DISPLAY_TYPE'     => $link['DISPLAY_TYPE'] ?? null,
+                'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'] ?? null,
+                'FILTER_HINT'      => $link['FILTER_HINT'] ?? null,
+            ];
+        }
+
+        return $result;
+    }
+
 }
