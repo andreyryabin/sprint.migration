@@ -109,6 +109,7 @@
         "CONFIG_version_timestamp_format"    => "Timestamp format for creating migration file",
         "CONFIG_version_timestamp_pattern"   => "Timestamp pattern for search migration files by timestamp format",
         "CONFIG_migration_hash_algo"         => "Hash algorithm for checking changes in the migration file",
+        "CONFIG_logger"                      => "Logger class",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
