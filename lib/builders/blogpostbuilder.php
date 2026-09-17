@@ -5,6 +5,8 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Exchange\RestartableWriter;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -36,46 +38,51 @@ class BlogPostBuilder extends VersionBuilder
      * @throws HelperException
      * @throws MigrationException
      * @throws RebuildException
+     * @throws RestartException
      */
     protected function execute()
     {
         $helper = $this->getHelperManager();
+        $exhelper = $this->getHelperManager()->BlogExchange();
+
         $blogId = (int)$this->addFieldAndReturn('blog_id', [
             'title' => Locale::getMessage('BUILDER_BlogPostExport_blog_id'),
             'width' => 350,
             'items' => $this->getBlogsSelect(),
         ]);
 
-        $blog = $helper->Blog()->exportBlogById($blogId);
-        $blogRef = [
-            'GROUP' => $blog['GROUP'],
-            'URL'   => $blog['URL'],
-        ];
+        $helper->Blog()->exportBlogById($blogId);
 
-        $version = $this->getVersionName();
-        $exchangeDir = $this->getVersionConfig()->getVersionExchangeDir($version);
-
-        $postIds = $this->getPostIds($blogId);
-        $posts = $helper->Blog()->exportPosts($postIds, $exchangeDir);
-
-        if (empty($posts)) {
+        $filter = $this->getPostFilter();
+        if (!$exhelper->getWriterRecordsCount($blogId, $filter)) {
             $this->rebuildField('post_filter_mode');
         }
 
-        $this->createVersionFile(
-            Module::getModuleTemplateFile('BlogPostExport'),
-            [
-                'version' => $version,
-                'blog'    => $blogRef,
-                'posts'   => $posts,
-            ]
-        );
+        (new RestartableWriter($this, $this->getVersionExchangeDir()))
+            ->setExchangeResource('blog_posts.xml')
+            ->execute(
+                attributesFn: fn() => $exhelper->getWriterAttributes($blogId),
+                totalCountFn: fn() => $exhelper->getWriterRecordsCount($blogId, $filter),
+                recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
+                    $offset,
+                    $limit,
+                    $blogId,
+                    $filter
+                ),
+                progressFn: fn($value, $totalCount) => $this->outProgress(
+                    'Progress: ',
+                    $value,
+                    $totalCount
+                )
+            );
+
+        $this->createVersionFile(Module::getModuleTemplateFile('BlogPostExport'));
     }
 
     /**
      * @throws RebuildException
      */
-    protected function getPostIds(int $blogId): array
+    protected function getPostFilter(): array
     {
         $mode = $this->addFieldAndReturn('post_filter_mode', [
             'title' => Locale::getMessage('BUILDER_BlogPostExport_filter'),
@@ -103,7 +110,8 @@ class BlogPostBuilder extends VersionBuilder
                 'height' => 40,
             ]);
 
-            return array_map('intval', $this->explodeString($ids));
+            $ids = array_values(array_filter(array_map('intval', $this->explodeString($ids))));
+            return empty($ids) ? ['ID' => 0] : ['@ID' => $ids];
         }
 
         $filter = [];
@@ -116,13 +124,13 @@ class BlogPostBuilder extends VersionBuilder
 
             $codes = $this->explodeString($codes);
             if (empty($codes)) {
-                return [];
+                return ['ID' => 0];
             }
 
             $filter['@CODE'] = $codes;
         }
 
-        return array_column($this->getHelperManager()->Blog()->getPosts($blogId, $filter), 'ID');
+        return $filter;
     }
 
     protected function getBlogsSelect(): array

@@ -3,8 +3,6 @@
 /**
  * @var $version
  * @var $description
- * @var $blog
- * @var $posts
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion
@@ -33,16 +31,16 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function up()
     {
-        $helper = $this->getHelperManager();
-        $exchangeDir = $this->getVersionConfig()->getVersionExchangeDir($this->getVersionName());
-
-        $blogId = $helper->Blog()->getBlogId(<?php echo var_export($blog['URL'], 1) ?>);
-        if (!$blogId) {
-            throw new Exceptions\HelperException('Blog <?php echo addslashes($blog['URL']) ?> not found');
-        }
-
-<?php foreach ($posts as $post) { ?>
-        $helper->Blog()->savePost($blogId, <?php echo var_export($post, 1) ?>, $exchangeDir);
-<?php } ?>
+        $this->getExchangeManager()
+             ->BlogPostsImport()
+             ->setLimit(20)
+             ->execute(function ($item) {
+                 $this->getHelperManager()
+                      ->Blog()
+                      ->savePost(
+                          $item['blog_id'],
+                          $item['fields']
+                      );
+             });
     }
 }
