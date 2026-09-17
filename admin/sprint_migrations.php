@@ -7,7 +7,6 @@ use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\Output;
 use Sprint\Migration\Output\HtmlOutput;
-use function Sprint\Migration\Output\null;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 

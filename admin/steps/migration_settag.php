@@ -20,7 +20,7 @@ if ($existsEvents && check_bitrix_sessid()) {
     $versionName = !empty($_POST['version']) ? (string)$_POST['version'] : '';
     $versionConfig->tryVersionName($versionName);
 
-    $settag = !empty($_POST['settag']) ? $_POST['settag'] : '';
+    $settag = !empty($_POST['settag']) ? htmlspecialcharsbx(trim($_POST['settag'])) : '';
 
     $settagresult = $versionManager->setMigrationTag($versionName, $settag);
     $logger->outMessages($settagresult);
