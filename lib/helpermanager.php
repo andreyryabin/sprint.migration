@@ -15,6 +15,7 @@ use Sprint\Migration\Helpers\HlblockExchangeHelper;
 use Sprint\Migration\Helpers\HlblockHelper;
 use Sprint\Migration\Helpers\IblockExchangeHelper;
 use Sprint\Migration\Helpers\IblockHelper;
+use Sprint\Migration\Helpers\IblockSectionExchangeHelper;
 use Sprint\Migration\Helpers\LangHelper;
 use Sprint\Migration\Helpers\MedialibExchangeHelper;
 use Sprint\Migration\Helpers\MedialibHelper;
@@ -56,8 +57,9 @@ use Sprint\Migration\Helpers\VoteHelper;
  * @method SubscribeHelper          Subscribe()
  * @method MedialibHelper           Medialib()
  * @method TextHelper               Text()
- * @method IblockExchangeHelper     IblockExchange()
- * @method HlblockExchangeHelper    HlblockExchange()
+ * @method IblockExchangeHelper        IblockExchange()
+ * @method IblockSectionExchangeHelper IblockSectionExchange()
+ * @method HlblockExchangeHelper       HlblockExchange()
  * @method MedialibExchangeHelper   MedialibExchange()
  * @method OrderPropertiesHelper   OrderProperties()
  * @method CultureHelper   Culture()

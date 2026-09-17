@@ -5,8 +5,6 @@
  * @var $extendUse
  * @var $extendClass
  * @var $moduleVersion
- * @var $iblock
- * @var $sectionTree
  * @var $author
  * @formatter:off
  */
@@ -32,16 +30,16 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
      */
     public function up()
     {
-        $helper = $this->getHelperManager();
-
-        $iblockId = $helper->Iblock()->getIblockIdIfExists(
-            '<?php echo $iblock['CODE'] ?>',
-            '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>'
-        );
-
-        $helper->Iblock()->saveSectionsFromTree(
-            $iblockId,
-            <?php echo var_export($sectionTree, 1) ?>
-        );
+        $this->getExchangeManager()
+             ->IblockSectionsImport()
+             ->setLimit(20)
+             ->execute(function ($item) {
+                 $this->getHelperManager()
+                      ->Iblock()
+                      ->saveSectionRecord(
+                          $item['iblock_id'],
+                          $item['fields']
+                      );
+             });
     }
 }
