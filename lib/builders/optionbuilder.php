@@ -24,7 +24,6 @@ class OptionBuilder extends VersionBuilder
 
         $this->setTitle(implode(' ', [
             Locale::getMessage('BUILDER_OptionExport1'),
-            Locale::getMessage('DEVELOPER_LABEL'),
         ]));
 
         $this->setDescription(implode(PHP_EOL, [

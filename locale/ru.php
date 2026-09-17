@@ -7,7 +7,7 @@
         "MODULE_DESCRIPTION"       => "Модуль для управления миграциями бд, создание, установка, откат миграций",
         "PARTNER_NAME"             => "Андрей Рябин",
         "PARTNER_URI"              => "https://packagist.org/packages/andreyryabin/sprint.migration",
-        "DEVELOPER_NAME"           => "Разработчик: #VALUE#",
+        "DEVELOPER_NAME"           => "Разработчик: [label:yellow]#VALUE#[/]",
         "DEVELOPER_URI"            => "#VALUE#",
         "DEVELOPER_LABEL"          => "[label:yellow]Community[/]",
         "ACCESS_DENIED"            => "Доступ запрещен",

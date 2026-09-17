@@ -108,7 +108,7 @@ class BlogExchangeHelper extends BlogHelper implements ReaderHelperInterface, Wr
             throw new HelperException("Blog post \"$postId\" has empty CODE");
         }
 
-        $post['AUTHOR_LOGIN'] = $this->userHelper->getUserLoginById((int)$post['AUTHOR_ID']);
+        $post['AUTHOR_LOGIN'] = (new UserHelper)->getUserLoginById((int)$post['AUTHOR_ID']);
         $post['CATEGORIES'] = $this->exportPostCategories((int)$post['BLOG_ID'], (int)$post['ID']);
         $post['PERMS_POST'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_POST);
         $post['PERMS_COMMENT'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_COMMENT);

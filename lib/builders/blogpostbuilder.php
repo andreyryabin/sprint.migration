@@ -23,11 +23,11 @@ class BlogPostBuilder extends VersionBuilder
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Blog'));
         $this->setTitle(implode(' ', [
             Locale::getMessage('BUILDER_BlogPostExport1'),
-            Locale::getMessage('DEVELOPER_LABEL'),
         ]));
 
         $this->setDescription(implode(PHP_EOL, [
             Locale::getMessage('DEVELOPER_NAME', ['#VALUE#' => '@temi4']),
+            Locale::getMessage('DEVELOPER_URI', ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/187']),
             Locale::getMessage('BUILDER_BlogPostExport_Info'),
         ]));
 

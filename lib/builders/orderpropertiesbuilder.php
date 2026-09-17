@@ -23,7 +23,6 @@ class OrderPropertiesBuilder extends VersionBuilder
     {
         $this->setTitle(implode(' ', [
             Locale::getMessage('BUILDER_OrderProperties'),
-            Locale::getMessage('DEVELOPER_LABEL'),
         ]));
 
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Sale'));

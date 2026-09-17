@@ -21,7 +21,6 @@ class BlogUserTypeEntitiesBuilder extends VersionBuilder
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Blog'));
         $this->setTitle(implode(' ', [
             Locale::getMessage('BUILDER_BlogUserTypeEntitiesExport1'),
-            Locale::getMessage('DEVELOPER_LABEL'),
         ]));
 
         $this->setDescription(implode(PHP_EOL, [

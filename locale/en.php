@@ -7,7 +7,7 @@
         "MODULE_DESCRIPTION"       => "Module for managing migration, creating, installing, rolling back migration",
         "PARTNER_NAME"             => "Andrey Ryabin",
         "PARTNER_URI"              => "https://packagist.org/packages/andreyryabin/sprint.migration",
-        "DEVELOPER_NAME"           => "Developer: #VALUE#",
+        "DEVELOPER_NAME"           => "Developer: [label:yellow]#VALUE#[/]",
         "DEVELOPER_URI"            => "#VALUE#",
         "DEVELOPER_LABEL"          => "[label:yellow]Community[/]",
         "ACCESS_DENIED"            => "Access denied",

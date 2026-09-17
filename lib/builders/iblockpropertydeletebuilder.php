@@ -22,7 +22,6 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
 
         $this->setTitle(implode(' ', [
             Locale::getMessage('BUILDER_IblockPropertyDelete'),
-            Locale::getMessage('DEVELOPER_LABEL'),
         ]));
 
         $this->setDescription(implode(PHP_EOL, [
