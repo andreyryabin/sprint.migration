@@ -45,6 +45,7 @@ try {
             include __DIR__ . '/steps/migration_delete.php';
             include __DIR__ . '/steps/migration_settag.php';
             include __DIR__ . '/steps/migration_transfer.php';
+            include __DIR__ . '/steps/migration_autocomplete.php';
         } catch (Throwable $e) {
             (new HtmlOutput())->outException($e);
         }
