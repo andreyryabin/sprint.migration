@@ -19,6 +19,9 @@ use Sprint\Migration\Builder;
             <label class="sp-optgroup-item">
                 <input name="<?= htmlspecialcharsbx($fieldCode) ?>"
                        value="<?= htmlspecialcharsbx($item['value']) ?>"
+                    <?php if (!empty($fieldItem['rebuild_on_change'])) { ?>
+                        data-rebuild-on-change="1"
+                    <?php } ?>
                     <?php if ($item['value'] == $fieldItem['value']) { ?>
                         checked="checked"
                     <?php } ?>
