@@ -5,6 +5,8 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Exchange\RestartableWriter;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -32,10 +34,12 @@ class IblockCategoryBuilder extends VersionBuilder
      * @throws HelperException
      * @throws RebuildException
      * @throws MigrationException
+     * @throws RestartException
      */
     protected function execute()
     {
         $helper = $this->getHelperManager();
+        $exhelper = $this->getHelperManager()->IblockSectionExchange();
 
         $iblockId = $this->addFieldAndReturn(
             'iblock_id',
@@ -52,14 +56,23 @@ class IblockCategoryBuilder extends VersionBuilder
             $this->rebuildField('iblock_id');
         }
 
-        $sectionTree = $helper->Iblock()->exportSectionsTree($iblockId);
+        (new RestartableWriter($this, $this->getVersionExchangeDir()))
+            ->setExchangeResource('iblock_sections.xml')
+            ->execute(
+                attributesFn: fn() => $exhelper->getWriterAttributes($iblockId),
+                totalCountFn: fn() => $exhelper->getWriterRecordsCount($iblockId),
+                recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
+                    $offset,
+                    $limit,
+                    $iblockId
+                ),
+                progressFn: fn($value, $totalCount) => $this->outProgress(
+                    'Progress: ',
+                    $value,
+                    $totalCount
+                )
+            );
 
-        $this->createVersionFile(
-            Module::getModuleTemplateFile('IblockCategoryExport'),
-            [
-                'iblock'      => $iblock,
-                'sectionTree' => $sectionTree,
-            ]
-        );
+        $this->createVersionFile(Module::getModuleTemplateFile('IblockCategoryExport'));
     }
 }
