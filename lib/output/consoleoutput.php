@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration\Output;
 
+use Sprint\Migration\Exceptions\ConsoleException;
+
 class ConsoleOutput extends AbstractOutput
 {
     private array $colors  = [
@@ -62,7 +64,10 @@ class ConsoleOutput extends AbstractOutput
         }
     }
 
-    public function input($field): string
+    /**
+     * @throws ConsoleException
+     */
+    public function input($field): string|array
     {
         if (!empty($field['items'])) {
             $this->outStructure($field);
@@ -73,6 +78,11 @@ class ConsoleOutput extends AbstractOutput
         fwrite(STDOUT, PHP_EOL . $field['title'] . ':');
 
         $val = fgets(STDIN);
+        if ($val === false) {
+            // stdin закрыт (запуск без терминала, перенаправление из /dev/null или конец ввода):
+            // новых ответов не будет, иначе конструктор бесконечно повторял бы вопрос
+            throw new ConsoleException('Input stream is closed, run the command in a terminal or pass the answers via stdin');
+        }
         $val = trim($val);
 
         if ($field['multiple']) {
