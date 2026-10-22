@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Helpers;
 
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\WriterException;
 use Sprint\Migration\Exchange\WriterTag;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\WriterHelperInterface;
@@ -277,17 +278,25 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
 
         foreach ($element as $code => $val) {
             if (in_array($code, $exportFields)) {
-                $item->addChild(
-                    $this->createWriterFieldTag(
-                        array_merge(
-                            $this->getField($hlblockId, $code),
-                            [
-                                'HLBLOCK_ID' => $hlblockId,
-                                'VALUE'      => $val,
-                            ]
+                try {
+                    $item->addChild(
+                        $this->createWriterFieldTag(
+                            array_merge(
+                                $this->getField($hlblockId, $code),
+                                [
+                                    'HLBLOCK_ID' => $hlblockId,
+                                    'VALUE'      => $val,
+                                ]
+                            )
                         )
-                    )
-                );
+                    );
+                } catch (WriterException $e) {
+                    throw new HelperException($e->getMessage() . " in " . print_r([
+                            'HLBLOCK_ID' => $hlblockId,
+                            'ID'         => $element['ID'],
+                            'FIELD'      => $code,
+                        ], true));
+                }
             }
         }
         return $item;
@@ -295,6 +304,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     protected function createWriterFieldTag(array $field): WriterTag
     {
@@ -319,6 +329,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     protected function writeFieldEnumeration(WriterTag $tag, array $field): void
     {
@@ -332,6 +343,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     protected function writeFieldIblockElement(WriterTag $tag, array $field): void
     {
@@ -349,6 +361,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     protected function writeFieldIblockSection(WriterTag $tag, array $field): void
     {
@@ -366,6 +379,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     protected function writeFieldHlblockElement(WriterTag $tag, array $field): void
     {
@@ -379,6 +393,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     public function writeValueHlblockElement(WriterTag $tag, int $hlblockId, int $elementId): void
     {

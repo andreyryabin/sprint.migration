@@ -1,7 +1,6 @@
-<b> 5.15.0</b><br/>
+<b> 5.16.0</b><br/>
 <ul>
-    <li>Проверка директории конфига (реализовал @karedum Дмитрий Воротынцев)</li>
-    <li>Экспорт свойств элементов инофблока в зависимости от раздела (реализовала @arinamirosha Arina)</li>
-    <li>Добавлена поддержка файлов из S3/cloud-хранилища Битрикса (реализовал @temi4 Artem)</li>
-    <li>Исправлена проверка наличия символьного кода у связанных элементов (нашёл @zhenikhovs)</li>
+    <li>Исправление в ConsoleOutput <a href="https://github.com/andreyryabin/sprint.migration/pull/200">pull/200</a> (реализовал @razzhivine Eugene)</li>
+    <li>Учитываем LID при поиске по EVENT_NAME+SUBJECT <a href="https://github.com/andreyryabin/sprint.migration/pull/197">pull/197</a> (реализовал @nafilimonov Nikita Filimonov)</li>
+    <li>Проверка на CDATA при создании xml-выгрузки <a href="https://github.com/andreyryabin/sprint.migration/pull/197">pull/197</a> (нашел @Bezzzpalov Dmitry Bespalov)</li>
 </ul>

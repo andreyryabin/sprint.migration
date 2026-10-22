@@ -3,15 +3,16 @@
 namespace Sprint\Migration\Exchange;
 
 use CFile;
+use Sprint\Migration\Exceptions\WriterException;
 
 class WriterTag
 {
     private string $name;
-    private array  $attributes = [];
-    private string $text       = '';
-    private array  $childs     = [];
-    private array  $files      = [];
-    private bool   $cdata      = false;
+    private array $attributes = [];
+    private string $text = '';
+    private array $childs = [];
+    private array $files = [];
+    private bool $cdata = false;
 
     public function __construct(string $name, array $attributes = [])
     {
@@ -63,10 +64,17 @@ class WriterTag
         return count($this->childs);
     }
 
+    /**
+     * @throws WriterException
+     */
     public function setText(string $text): void
     {
         $this->text = htmlspecialchars_decode($text);
         $this->cdata = $this->text != $text;
+
+        if (str_contains($this->text, '<![CDATA[') || str_contains($this->text, ']]>')) {
+            throw new WriterException('Text contains CDATA');
+        }
 
         if (!$this->cdata) {
             if (preg_match('/[\[\]{}\"\'<>]/', $this->text)) {
@@ -87,6 +95,9 @@ class WriterTag
         return $this->cdata;
     }
 
+    /**
+     * @throws WriterException
+     */
     public function addFile(mixed $val, bool $multiple): void
     {
         if ($multiple) {
@@ -98,6 +109,9 @@ class WriterTag
         }
     }
 
+    /**
+     * @throws WriterException
+     */
     public function addValue(mixed $val, bool $multiple): void
     {
         if ($multiple) {
@@ -109,6 +123,9 @@ class WriterTag
         }
     }
 
+    /**
+     * @throws WriterException
+     */
     public function addValueTag($val, $attributes = []): void
     {
         if (empty($val)) {
@@ -125,6 +142,9 @@ class WriterTag
         $this->addChild($tag);
     }
 
+    /**
+     * @throws WriterException
+     */
     public function addFileTag(int $fileId): void
     {
         $file = CFile::GetFileArray($fileId);
