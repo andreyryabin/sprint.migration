@@ -7,6 +7,9 @@
         "MODULE_DESCRIPTION"       => "Module for managing migration, creating, installing, rolling back migration",
         "PARTNER_NAME"             => "Andrey Ryabin",
         "PARTNER_URI"              => "https://packagist.org/packages/andreyryabin/sprint.migration",
+        "DEVELOPER_NAME"           => "Developer: [label:yellow]#VALUE#[/]",
+        "DEVELOPER_URI"            => "#VALUE#",
+        "DEVELOPER_LABEL"          => "[label:yellow]Community[/]",
         "ACCESS_DENIED"            => "Access denied",
         "MENU_SPRINT"              => "Migrations for developers",
         "TITLE"                    => "Migrations",
@@ -73,6 +76,15 @@
         "WRITE_UP_CODE"            => "Write migration code in method up()",
         "WRITE_DOWN_CODE"          => "Write migration code in method down()",
         "LOADING_TEXT"             => "Loading...",
+        "BLOG_GROUP_CREATED"       => "Blog group #NAME# created",
+        "BLOG_GROUP_UPDATED"       => "Blog group #NAME# updated",
+        "BLOG_CREATED"             => "Blog #NAME# created",
+        "BLOG_UPDATED"             => "Blog #NAME# updated",
+        "BLOG_POST_UPDATED"        => "Blog post #NAME# saved",
+        "SALE_DISCOUNT_UPDATED"    => "Cart rule #NAME# saved",
+        "SUBSCRIBE_RUBRIC_UPDATED" => "Subscription rubric #NAME# saved",
+        "FORUM_GROUP_UPDATED"      => "Forum group #NAME# saved",
+        "FORUM_UPDATED"            => "Forum #NAME# saved",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -97,6 +109,7 @@
         "CONFIG_version_timestamp_format"    => "Timestamp format for creating migration file",
         "CONFIG_version_timestamp_pattern"   => "Timestamp pattern for search migration files by timestamp format",
         "CONFIG_migration_hash_algo"         => "Hash algorithm for checking changes in the migration file",
+        "CONFIG_logger"                      => "Logger class",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -111,6 +124,16 @@
         "BUILDER_TransferSelect"             => "Select migrations",
         "BUILDER_EventExport1"               => "Create migration for event types",
         "BUILDER_EventExport_event_types"    => "Select event types",
+        "BUILDER_ForumExport1"               => "Create migration for forums",
+        "BUILDER_ForumExport_group_ids"      => "Select forum groups",
+        "BUILDER_ForumExport_forum_ids"      => "Select forums",
+        "BUILDER_ForumExport_Info"           => "Forum group is exported with the forum automatically when it is set for the selected forum. If XML_ID is empty, it will be generated before export",
+        "BUILDER_ForumExport_RootGroups"     => "Root groups",
+        "BUILDER_ForumExport_NestedGroups"   => "Nested groups",
+        "BUILDER_ForumExport_WithoutGroup"   => "Without group",
+        "BUILDER_SubscribeExport1"           => "Create migration for subscription rubrics",
+        "BUILDER_SubscribeExport_rubric_ids" => "Select subscription rubrics",
+        "BUILDER_SubscribeExport_Info"       => "Subscription rubric must have a symbolic code filled in",
         "BUILDER_AgentExport1"               => "Create migration for agents",
         "BUILDER_AgentExport2"               => "Set agent module and name (MODULE_ID, NAME), to see it in the list",
         "BUILDER_AgentExport_agent_id"       => "Select agents",
@@ -178,6 +201,10 @@
         "BUILDER_IblockPropertyExport1"           => "Create migration for information block properties",
         "BUILDER_IblockPropertyExport_UserType"   => "Select property type",
         "BUILDER_IblockPropertyExport_Properties" => "Select properties",
+        "BUILDER_IblockPropertyDelete"            => "Delete information block properties",
+        "BUILDER_IblockPropertyDelete_Info"       => "Deletes selected properties and properties with specified CODE. Missing property is not an error.",
+        "BUILDER_IblockPropertyDelete_Properties" => "Select properties",
+        "BUILDER_IblockPropertyDelete_Codes"      => "Property codes to delete",
     ]
 );
 
@@ -245,37 +272,53 @@
         "BUILDER_OrderProperties_MigratePropertyVariants"     => "Transfer property values (for properties of type Enumeration [ENUM])",
         "BUILDER_OrderProperties_MigratePropertyVariants_No"  => "Do not transfer",
         "BUILDER_OrderProperties_MigratePropertyVariants_Yes" => "Transfer",
+        "BUILDER_SaleDiscount"                                => "Create a migration for cart rules",
+        "BUILDER_SaleDiscount_Discounts"                      => "Select cart rules",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
     "en",
     [
-        "BUILDER_FormExport1"              => "Create migration for web form",
-        "BUILDER_FormExport_FormId"        => "Select web form",
-        "BUILDER_FormExport_What"          => "What to export?",
-        "BUILDER_FormExport_Form"          => "Form",
-        "BUILDER_FormExport_Fields"        => "Form fields",
-        "BUILDER_FormExport_Statuses"      => "Form statuses",
-        "BUILDER_FormExport_SelectFields"  => "Select form fields",
-        "BUILDER_OptionExport1"            => "Create migration for module options",
-        "BUILDER_OptionExport_module_id"   => "Select modules",
-        "BUILDER_CacheCleaner1"            => "Cache clean",
-        "BUILDER_CacheCleaner2"            => "Execute BXClearCache(true)",
-        "BUILDER_Configurator"             => "Create configuration",
-        "BUILDER_Configurator_config_name" => "Name",
-        "BUILDER_Configurator_error"       => "Error creating configuration",
-        "BUILDER_Configurator_success"     => "Configuration created",
-        "BUILDER_Cleaner"                  => "Delete configuration",
-        "BUILDER_Cleaner_desc"             => "Delete configuration file, migration files and migration records",
-        "BUILDER_Cleaner_config_name"      => "Name",
-        "BUILDER_Cleaner_error"            => "Error deleting configuration",
-        "BUILDER_Cleaner_success"          => "Configuration deleted",
+        "BUILDER_FormExport1"               => "Create migration for web form",
+        "BUILDER_FormExport_FormId"         => "Select web form",
+        "BUILDER_FormExport_What"           => "What to export?",
+        "BUILDER_FormExport_Form"           => "Form",
+        "BUILDER_FormExport_Fields"         => "Form fields",
+        "BUILDER_FormExport_Statuses"       => "Form statuses",
+        "BUILDER_FormExport_SelectFields"   => "Select form fields",
+        "BUILDER_VoteExport1"               => "Create migration for poll",
+        "BUILDER_VoteExport_VoteId"         => "Select poll",
+        "BUILDER_VoteExport_Info"           => "Poll must have a symbolic identifier filled in and at least one poll list created",
+        "BUILDER_VoteExport_UnknownChannel" => "Unknown channel",
+        "BUILDER_OptionExport1"             => "Create migration for module options",
+        "BUILDER_OptionExport_Info"         => "Export module options, for each site",
+        "BUILDER_OptionExport_module_id"    => "Select modules",
+        "BUILDER_OptionExport_site_id"      => "Select sites",
+        "BUILDER_CacheCleaner1"             => "Cache clean",
+        "BUILDER_CacheCleaner2"             => "Execute BXClearCache(true)",
+        "BUILDER_Configurator"              => "Create configuration",
+        "BUILDER_Configurator_config_name"  => "Name",
+        "BUILDER_Configurator_error"        => "Error creating configuration",
+        "BUILDER_Configurator_success"      => "Configuration created",
+        "BUILDER_Cleaner"                   => "Delete configuration",
+        "BUILDER_Cleaner_desc"              => "Delete configuration file, migration files and migration records",
+        "BUILDER_Cleaner_config_name"       => "Name",
+        "BUILDER_Cleaner_error"             => "Error deleting configuration",
+        "BUILDER_Cleaner_success"           => "Configuration deleted",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
     "en", [
         "BUILDER_MedialibElements1"             => "Export media library images",
         "BUILDER_MedialibElements_CollectionId" => "Select collections",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "en", [
+        "BUILDER_LanguageExport"            => "Create migration for languages and cultures settings",
+        "BUILDER_LanguageExport_cult_codes" => "Select cultures",
+        "BUILDER_LanguageExport_lang_ids"   => "Select languages",
+        "BUILDER_LanguageExport_Info"       => "Set culture codes to see them in the list",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -338,13 +381,13 @@
         "ERR_SOME_MIGRATIONS_FAILS"              => "Some migrations fails",
         "ERR_VERSION_NOT_FOUND"                  => "Migration not found",
         "ERR_INVALID_ARGUMENTS"                  => "Invalid arguments, see help",
-        "ERR_COMMAND_NOT_FOUND"                  => "Command \"#NAME#\" not found, смотрите помощь",
+        "ERR_COMMAND_NOT_FOUND"                  => "Command \"#NAME#\" not found, see help",
         "ERR_METHOD_NOT_FOUND"                   => "Method \"#NAME#\"  not found",
+        "ERR_TEMPLATE_NOT_FOUND"                 => "Migration template \"#NAME#\" not found",
         "ERR_CANT_CREATE_FILE"                   => "Cant create file \"#NAME#\"",
         "ERR_FORM_NOT_FOUND"                     => "Form \"#NAME#\" not found",
         "ERR_EMPTY_REQ_FIELD"                    => "Required field \"#NAME#\" is empty",
         "ERR_EMPTY_REQ_FIELDS"                   => "Required fields empty",
-        "ERR_HELPER_DISABLED"                    => "Helper disabled",
         "ERR_AGENT_NOT_ADDED"                    => "Agent \"#NAME#\" not created",
         "ERR_EVENT_TYPE_NOT_UPDATED"             => "Event type not updated",
         "ERR_CANT_DELETE_FORM"                   => "Error deleting form \"#NAME#\"",
@@ -356,7 +399,7 @@
         "ERR_HLBLOCK_ELEMENT_NOT_FOUND"          => "Element \"#ELEMENT_ID#\" in highload-block \"#HLBLOCK_ID#\" not found",
         "ERR_HLBLOCK_FIELD_NOT_FOUND"            => "Highload block field not found",
         "ERR_DEFAULT_LANGUAGE_NOT_FOUND"         => "Default language not found",
-        "ERR_ACTIVE_LANGUAGES_NOT_FOUND"         => "Active languages not found",
+        "ERR_LANGUAGES_NOT_FOUND"                => "Languages not found",
         "ERR_DEFAULT_SITE_NOT_FOUND"             => "Default site not found",
         "ERR_ACTIVE_SITES_NOT_FOUND"             => "Active sites not found",
         "ERR_USER_GROUP_CODE_NOT_FOUND"          => "User group code not found",
@@ -454,6 +497,10 @@
         "IB_TYPE_UPDATED"                => "Information block type \"#NAME#\" updated",
         "IB_TYPE_EQUAL"                  => "Information block type \"#NAME#\" equivalent",
         "IB_TYPE_DELETED"                => "Information block type \"#NAME#\" deleted",
+        "LANG_CREATED"                   => "Language created",
+        "LANG_UPDATED"                   => "Language updated",
+        "CULTURE_CREATED"                => "Culture created",
+        "CULTURE_UPDATED"                => "Culture updated",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -477,13 +524,38 @@
 \Sprint\Migration\Locale::loadLocale(
     "en",
     [
-        "BUILDER_GROUP_Main"     => "Main module",
-        "BUILDER_GROUP_Iblock"   => "Information blocks",
-        "BUILDER_GROUP_Hlblock"  => "Highload information blocks",
-        "BUILDER_GROUP_Sale"     => "Sale module",
-        "BUILDER_GROUP_Form"     => "Web Forms",
-        "BUILDER_GROUP_Medialib" => "Media Library",
-        "BUILDER_GROUP_Tools"    => "Tools",
+        "BUILDER_GROUP_Main"      => "Main module",
+        "BUILDER_GROUP_Blog"      => "Blogs",
+        "BUILDER_GROUP_Iblock"    => "Information blocks",
+        "BUILDER_GROUP_Hlblock"   => "Highload information blocks",
+        "BUILDER_GROUP_Sale"      => "Sale module",
+        "BUILDER_GROUP_Form"      => "Web Forms",
+        "BUILDER_GROUP_Forum"     => "Forums",
+        "BUILDER_GROUP_Vote"      => "Polls",
+        "BUILDER_GROUP_Subscribe" => "Subscriptions",
+        "BUILDER_GROUP_Medialib"  => "Media Library",
+        "BUILDER_GROUP_Tools"     => "Tools",
+    ]
+);
+
+\Sprint\Migration\Locale::loadLocale(
+    "en",
+    [
+        "BUILDER_BlogExport1"                              => "Export blogs",
+        "BUILDER_BlogExport_Info"                          => "Transfers blog groups and blog settings.",
+        "BUILDER_BlogExport_group_id"                      => "Select blog group",
+        "BUILDER_BlogExport_blog_ids"                      => "Select blogs",
+        "BUILDER_BlogUserTypeEntitiesExport1"              => "Export blog custom fields",
+        "BUILDER_BlogUserTypeEntitiesExport_Info"          => "Transfers blog custom fields.",
+        "BUILDER_BlogUserTypeEntitiesExport_entity_fields" => "Select blog custom fields",
+        "BUILDER_BlogPostExport1"                          => "Export blog posts",
+        "BUILDER_BlogPostExport_Info"                      => "Transfers selected blog posts.",
+        "BUILDER_BlogPostExport_blog_id"                   => "Select blog",
+        "BUILDER_BlogPostExport_filter"                    => "Select posts",
+        "BUILDER_BlogPostExport_SelectSomeId"              => "ID list",
+        "BUILDER_BlogPostExport_SelectSomeCode"            => "CODE list",
+        "BUILDER_BlogPostExport_FilterListId"              => "Enter post IDs separated by spaces",
+        "BUILDER_BlogPostExport_FilterListCode"            => "Enter post CODEs separated by spaces",
     ]
 );
 

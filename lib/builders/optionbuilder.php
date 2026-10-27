@@ -20,8 +20,16 @@ class OptionBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(Locale::getMessage('BUILDER_OptionExport1'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Main'));
+
+        $this->setTitle(implode(' ', [
+            Locale::getMessage('BUILDER_OptionExport1'),
+        ]));
+
+        $this->setDescription(implode(PHP_EOL, [
+            Locale::getMessage('DEVELOPER_NAME', ['#VALUE#' => '@KotkinRoman']),
+            Locale::getMessage('BUILDER_OptionExport_Info')
+        ]));
 
         $this->addVersionFields();
     }
@@ -34,6 +42,23 @@ class OptionBuilder extends VersionBuilder
     protected function execute()
     {
         $helper = $this->getHelperManager();
+
+        $this->addField(
+            'site_id',
+            [
+                'title'       => Locale::getMessage('BUILDER_OptionExport_site_id'),
+                'placeholder' => '',
+                'multiple'    => 1,
+                'value'       => [],
+                'width'       => 250,
+                'select'      => $this->createSelect(
+                    $helper->Site()->getSites(),
+                    'ID',
+                    'NAME',
+                    true
+                ),
+            ]
+        );
 
         $moduleIds = $this->addFieldAndReturn(
             'module_id',
@@ -51,11 +76,13 @@ class OptionBuilder extends VersionBuilder
             ]
         );
 
+
         $items = [];
         foreach ($moduleIds as $moduleId) {
             $options = $helper->Option()->getOptions(
                 [
                     'MODULE_ID' => $moduleId,
+                    'SITE_ID'   => $this->getFieldValue('site_id', [false])
                 ]
             );
 

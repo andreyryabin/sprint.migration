@@ -13,9 +13,8 @@ class SiteHelper extends Helper
 
     /**
      * @throws HelperException
-     * @return mixed
      */
-    public function getDefaultSiteIdIfExists()
+    public function getDefaultSiteIdIfExists(): string
     {
         $by = 'def';
         $order = 'desc';
@@ -23,23 +22,16 @@ class SiteHelper extends Helper
         $item = CSite::GetList($by, $order, ['ACTIVE' => 'Y'])->Fetch();
 
         if ($item) {
-            return $item['LID'];
+            return (string)$item['LID'];
         }
         throw new HelperException(
-            Locale::getMessage(
-                'ERR_DEFAULT_SITE_NOT_FOUND'
-            )
-        );
+            Locale::getMessage('ERR_DEFAULT_SITE_NOT_FOUND'));
     }
 
-    /**
-     * @param array $filter
-     * @return array
-     */
-    public function getSites($filter = [])
+    public function getSites(array $filter = []): array
     {
-        $by = 'def';
-        $order = 'desc';
+        $by = 'sort';
+        $order = 'asc';
 
         $sids = [];
         $dbres = CSite::GetList($by, $order, $filter);
@@ -52,9 +44,8 @@ class SiteHelper extends Helper
 
     /**
      * @throws HelperException
-     * @return array
      */
-    public function getSitesIfExists()
+    public function getSitesIfExists(): array
     {
         $items = $this->getSites(['ACTIVE' => 'Y']);
         if (!empty($items)) {
@@ -67,19 +58,15 @@ class SiteHelper extends Helper
         );
     }
 
-    /**
-     * @param $siteId
-     * @return array
-     */
-    public function getSiteTemplates($siteId)
+    public function getSiteTemplates(string $siteId): array
     {
         $templates = [];
 
         $dbres = CSite::GetTemplateList($siteId);
         while ($item = $dbres->Fetch()) {
             $templates[] = [
-                "TEMPLATE" => $item['TEMPLATE'],
-                "SORT" => $item['SORT'],
+                "TEMPLATE"  => $item['TEMPLATE'],
+                "SORT"      => $item['SORT'],
                 "CONDITION" => $item['CONDITION'],
             ];
         }
@@ -89,11 +76,8 @@ class SiteHelper extends Helper
 
     /**
      * Устанавливает шаблоны сайта
-     * @param $siteId
-     * @param array $templates
-     * @return bool
      */
-    public function setSiteTemplates($siteId, $templates = [])
+    public function setSiteTemplates(string $siteId, array $templates = []): bool
     {
         $sort = 150;
 
@@ -133,18 +117,21 @@ class SiteHelper extends Helper
             }
 
             $validTemplates[] = [
-                'TEMPLATE' => $template['TEMPLATE'],
+                'TEMPLATE'  => $template['TEMPLATE'],
                 'CONDITION' => $template['CONDITION'],
-                'SORT' => $sort,
+                'SORT'      => $sort,
             ];
 
             $sort++;
         }
 
         $langs = new CLang;
-        return $langs->Update($siteId, [
-            'TEMPLATE' => $validTemplates,
-        ]);
+        return $langs->Update(
+            $siteId,
+            [
+                'TEMPLATE' => $validTemplates,
+            ]
+        );
     }
 
 }

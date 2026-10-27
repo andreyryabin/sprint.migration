@@ -128,6 +128,7 @@ class EventHelper extends Helper
             return [
                 'EVENT_NAME' => $item['EVENT_NAME'],
                 'SUBJECT'    => $item['SUBJECT'],
+                'LID'        => $this->getEventMessageSites($messageId),
             ];
         }
         throw new HelperException("Event message with ID=\"$messageId\" not found");
@@ -245,6 +246,7 @@ class EventHelper extends Helper
             [
                 'EVENT_NAME' => $eventName,
                 'SUBJECT'    => $fields['SUBJECT'],
+                'LID'        => $fields['LID'],
             ]
         );
 
@@ -394,7 +396,10 @@ class EventHelper extends Helper
 
     /**
      * Сохраняет почтовый шаблон.
-     * Создаст, если не было, обновит если существует и отличается
+     * Создаст, если не было, обновит если существует и отличается.
+     * Ищет по EVENT_NAME + SUBJECT + LID — иначе несколько шаблонов с
+     * одинаковой темой на разных сайтах формы схлопнутся в один
+     * (см. https://github.com/nafilimonov/sprint.migration/issues/196).
      *
      * @throws HelperException
      */
@@ -406,6 +411,7 @@ class EventHelper extends Helper
             [
                 'EVENT_NAME' => $eventName,
                 'SUBJECT'    => $fields['SUBJECT'],
+                'LID'        => $fields['LID'],
             ]
         );
 
@@ -485,7 +491,10 @@ class EventHelper extends Helper
     }
 
     /**
-     * Удаляет почтовый шаблон
+     * Удаляет почтовый шаблон.
+     * Если передан LID — используется вместе с EVENT_NAME + SUBJECT для
+     * поиска, чтобы не задеть чужой сайтовый шаблон с той же темой
+     * (см. saveEventMessage()). Без LID — поведение как раньше.
      *
      * @throws HelperException
      */
@@ -493,12 +502,16 @@ class EventHelper extends Helper
     {
         $this->checkRequiredKeys($fields, ['SUBJECT', 'EVENT_NAME']);
 
-        $exists = $this->getEventMessage(
-            [
-                'EVENT_NAME' => $fields['EVENT_NAME'],
-                'SUBJECT'    => $fields['SUBJECT'],
-            ]
-        );
+        $filter = [
+            'EVENT_NAME' => $fields['EVENT_NAME'],
+            'SUBJECT'    => $fields['SUBJECT'],
+        ];
+
+        if (isset($fields['LID'])) {
+            $filter['LID'] = $fields['LID'];
+        }
+
+        $exists = $this->getEventMessage($filter);
 
         if (empty($exists)) {
             return false;

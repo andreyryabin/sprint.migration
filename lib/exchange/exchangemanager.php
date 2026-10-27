@@ -43,4 +43,13 @@ class ExchangeManager
             $this->directory
         ))->setExchangeResource('medialib_elements.xml');
     }
+
+    public function BlogPostsImport(): RestartableReader
+    {
+        return (new RestartableReader(
+            $this->restartable,
+            $this->getHelperManager()->BlogExchange(),
+            $this->directory
+        ))->setExchangeResource('blog_posts.xml');
+    }
 }

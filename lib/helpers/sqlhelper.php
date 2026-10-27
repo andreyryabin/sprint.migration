@@ -63,7 +63,7 @@ class SqlHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function addIndexIfNotExists(string $tableName, string $indexName, $columnNames): void
+    public function addIndexIfNotExists(string $tableName, string $indexName, $columnNames)
     {
         if ($this->hasIndex($tableName, $columnNames)) {
             $this->addIndex($tableName, $indexName, $columnNames);
@@ -87,7 +87,7 @@ class SqlHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function addIndex(string $tableName, string $indexName, array $columnNames): void
+    public function addIndex(string $tableName, string $indexName, array $columnNames)
     {
         $connection = Application::getConnection();
 
@@ -108,7 +108,7 @@ class SqlHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function dropTable(string $tableName): void
+    public function dropTable(string $tableName)
     {
         $connection = Application::getConnection();
 
@@ -122,7 +122,7 @@ class SqlHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function createTable(Entity $entity): void
+    public function createTable(Entity $entity)
     {
         try {
             $entity->createDbTable();
@@ -141,7 +141,7 @@ class SqlHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function restoreColumns(Entity $entity): void
+    public function restoreColumns(Entity $entity)
     {
         foreach ($entity->getScalarFields() as $entityField) {
             $this->addColumnIfNotExists($entity->getDBTableName(), $entityField);
@@ -151,7 +151,7 @@ class SqlHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function addColumnIfNotExists(string $tableName, ScalarField $scalarField, string $attributes = ''): void
+    public function addColumnIfNotExists(string $tableName, ScalarField $scalarField, string $attributes = '')
     {
         if (!$this->hasColumn($tableName, $scalarField->getName())) {
             $this->addColumn($tableName, $scalarField, $attributes);
@@ -176,7 +176,7 @@ class SqlHelper extends Helper
     /**
      * @throws HelperException
      */
-    public function addColumn(string $tableName, ScalarField $scalarField, string $attributes = ''): void
+    public function addColumn(string $tableName, ScalarField $scalarField, string $attributes = '')
     {
         $connection = Application::getConnection();
         $sqlHelper = $connection->getSqlHelper();

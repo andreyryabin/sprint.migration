@@ -6,16 +6,16 @@ trait CurrentUserTrait
 {
     public function getCurrentUserLogin(): string
     {
-        if (isset($GLOBALS['USER'])) {
-            return $GLOBALS['USER']->GetLogin();
+        if (isset($GLOBALS['USER']) && $GLOBALS['USER'] instanceof \CUser) {
+            return $GLOBALS['USER']->GetLogin() ?? '';
         }
         return '';
     }
 
     public function getCurrentUserId(): string
     {
-        if (isset($GLOBALS['USER'])) {
-            return $GLOBALS['USER']->GetId();
+        if (isset($GLOBALS['USER']) && $GLOBALS['USER'] instanceof \CUser) {
+            return $GLOBALS['USER']->GetId() ?? '';
         }
         return '';
     }

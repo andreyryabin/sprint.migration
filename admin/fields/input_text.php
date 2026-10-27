@@ -8,13 +8,13 @@ use Sprint\Migration\Builder;
  * @var $builder   Builder
  */
 ?>
-<input name="<?= $fieldCode ?>"
+<input name="<?= htmlspecialcharsbx($fieldCode) ?>"
        type="text"
-       value="<?= htmlspecialchars($fieldItem['value']) ?>"
+       value="<?= htmlspecialcharsbx($fieldItem['value']) ?>"
     <?php if (!empty($fieldItem['placeholder'])) { ?>
-        placeholder="<?= $fieldItem['placeholder'] ?>"
+        placeholder="<?= htmlspecialcharsbx($fieldItem['placeholder']) ?>"
     <?php } ?>
     <?php if (!empty($fieldItem['width'])) { ?>
-        style="width: <?= $fieldItem['width'] ?>px;"
+        style="width: <?= htmlspecialcharsbx($fieldItem['width']) ?>px;"
     <?php } ?>
 />

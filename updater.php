@@ -20,9 +20,9 @@ if ($updater && $updater instanceof CUpdater) {
 
     $filesToRemove = [
         'admin/includes/interface.php',
-        'admin/assets/version.php',
         'lib/out.php',
         'lib/traits/outtrait.php',
+        'admin/assets/version.php',
     ];
 
     $moduleRootDir = $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/sprint.migration/';
@@ -37,5 +37,5 @@ if ($updater && $updater instanceof CUpdater) {
         $updater->CopyFiles("install/gadgets/", "gadgets/");
     }
 
-    //v 5.3
+    //v 5.16
 }

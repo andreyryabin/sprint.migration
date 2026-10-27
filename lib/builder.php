@@ -276,14 +276,17 @@ class Builder implements RestartableInterface
     protected function createSelect(
         array $items,
         string $idKey,
-        string $titleKey
+        string $titleKey,
+        bool $withIdInTitle = false,
     ): array {
         $select = [];
         foreach ($items as $item) {
-            $itemId = $item[$idKey];
-            $select[$itemId] = [
-                'title' => $item[$titleKey],
-                'value' => $itemId,
+            $itemValue = $item[$idKey];
+            $itemTitle = $withIdInTitle ? "[$itemValue] $item[$titleKey]" : $item[$titleKey];
+
+            $select[$itemValue] = [
+                'title' => $itemTitle,
+                'value' => $itemValue,
             ];
         }
         return $select;

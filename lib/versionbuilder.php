@@ -22,8 +22,8 @@ abstract class VersionBuilder extends Builder
 
         $this->addField(
             'description', [
-                'title' => Locale::getMessage('FORM_DESCR'),
-                'width' => 350,
+                'title'  => Locale::getMessage('FORM_DESCR'),
+                'width'  => 350,
                 'height' => 40,
             ]
         );
@@ -63,7 +63,7 @@ abstract class VersionBuilder extends Builder
         return strtr(
             $this->getVersionConfig()->getVal('version_name_template'),
             [
-                '#NAME#' => $this->purifyPrefix($this->getFieldValue('prefix')),
+                '#NAME#'      => $this->purifyPrefix($this->getFieldValue('prefix')),
                 '#TIMESTAMP#' => $this->getTimestamp(
                     $this->getVersionConfig()->getVal('version_timestamp_format')
                 ),
@@ -75,7 +75,7 @@ abstract class VersionBuilder extends Builder
      * @throws MigrationException
      */
     protected function createVersionFile(
-        string $templateFile = '',
+        string $templateFile,
         array  $templateVars = [],
         bool   $markAsInstalled = true
     ): string
@@ -106,7 +106,13 @@ abstract class VersionBuilder extends Builder
         $templateVars['moduleVersion'] = Module::getVersion();
 
         if (!is_file($templateFile)) {
-            $templateFile = Module::getModuleTemplateFile('version');
+            throw new MigrationException(
+                Locale::getMessage(
+                    'ERR_TEMPLATE_NOT_FOUND', [
+                        '#NAME#' => $templateFile,
+                    ]
+                )
+            );
         }
 
         $fileName = $this->getVersionConfig()->getVersionFile($templateVars['version']);

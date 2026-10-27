@@ -17,10 +17,12 @@ if ($existsEvents && check_bitrix_sessid()) {
     $versionManager = new VersionManager($versionConfig);
     $logger = Output::getInstance();
 
-    $version = !empty($_POST['version']) ? $_POST['version'] : '';
-    $settag = !empty($_POST['settag']) ? $_POST['settag'] : '';
+    $versionName = !empty($_POST['version']) ? (string)$_POST['version'] : '';
+    $versionConfig->tryVersionName($versionName);
 
-    $settagresult = $versionManager->setMigrationTag($version, $settag);
+    $settag = !empty($_POST['settag']) ? htmlspecialcharsbx(trim($_POST['settag'])) : '';
+
+    $settagresult = $versionManager->setMigrationTag($versionName, $settag);
     $logger->outMessages($settagresult);
     ?>
     <script>

@@ -5,15 +5,15 @@
     <table class="sp-db-table">
         <?php foreach ($results as $item) { ?>
             <tr>
-                <td class="sp-db-col-type"><?= $item['title'] ?></td>
+                <td class="sp-db-col-type"><?= htmlspecialcharsbx($item['title']) ?></td>
                 <td class="sp-db-col-value">
-                    <div class="lamp-<?= $item['state'] ?>" title="<?= $item['text'] ?>"></div>
+                    <div class="lamp-<?= htmlspecialcharsbx($item['state']) ?>" title="<?= htmlspecialcharsbx($item['text']) ?>"></div>
                 </td>
-                <td class="sp-db-col-text"><?= $item['text'] ?></td>
+                <td class="sp-db-col-text"><?= htmlspecialcharsbx($item['text']) ?></td>
                 <td>
                     <?php foreach ($item['buttons'] as $button) { ?>
-                        <a href="<?= $button['url'] ?>" class="adm-btn" title="<?= $button['title'] ?>">
-                            <?= $button['text'] ?>
+                        <a href="<?= htmlspecialcharsbx($button['url']) ?>" class="adm-btn" title="<?= htmlspecialcharsbx($button['title']) ?>">
+                            <?= htmlspecialcharsbx($button['text']) ?>
                         </a>
                     <?php } ?>
                 </td>

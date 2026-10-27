@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration\Exchange;
 
-use CFile;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Locale;
@@ -206,17 +205,11 @@ class Reader
             return false;
         }
 
-        $file = CFile::MakeFileArray($this->path . '/' . $value);
+        $file = (new FileExchange())->makeFileArray($this->path . '/' . $value, $attrs);
         if (empty($file)) {
             return false;
         }
 
-        if (!empty($attrs['name'])) {
-            $file['name'] = $attrs['name'];
-        }
-        if (!empty($attrs['description'])) {
-            $file['description'] = $attrs['description'];
-        }
         return $file;
     }
 }

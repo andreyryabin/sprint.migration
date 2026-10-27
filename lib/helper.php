@@ -175,6 +175,7 @@ class Helper
         }, $collection);
     }
 
+    /** Удаляет выбранные ключи */
     protected function unsetKeys(array &$item, array $unsetKeys): void
     {
         foreach ($unsetKeys as $key) {
@@ -184,9 +185,7 @@ class Helper
         }
     }
 
-    /**
-     * Удаляет в $item совпадающие ключ=>значение из $defaultItem
-     */
+    /** Удаляет совпадающие ключ=>значение из $defaultItem */
     protected function unsetItem(array &$item, array $defaultItem): void
     {
         //value может быть null
@@ -195,6 +194,23 @@ class Helper
                 unset($item[$key]);
             }
         }
+    }
+
+    /** Оставляет разрешенные ключи */
+    protected function keepKeys(array &$item, array $keepKeys): void
+    {
+        $keepKeys = array_flip($keepKeys);
+        foreach ($item as $key => $value) {
+            if (!array_key_exists($key, $keepKeys)) {
+                unset($item[$key]);
+            }
+        }
+    }
+
+    /** Оставляет разрешенные ключи и заполняет недостающие дефолтами */
+    protected function keepItem(array &$item, array $defaultItem): void
+    {
+        $item = array_merge($defaultItem, array_intersect_key($item, $defaultItem));
     }
 
     protected function export(array $item, array $defaultItem, array $unsetKeys): array

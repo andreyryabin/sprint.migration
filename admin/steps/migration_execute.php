@@ -16,14 +16,16 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid()) {
     $versionManager = new VersionManager($versionConfig);
     $logger = Output::getInstance();
 
+    $versionName = !empty($_POST['version']) ? (string)$_POST['version'] : '';
     $params = !empty($_POST['params']) ? $_POST['params'] : [];
     $restart = !empty($_POST['restart']) ? 1 : 0;
-    $versionName = !empty($_POST['version']) ? $_POST['version'] : '';
+
     $action = !empty($_POST['action']) ? $_POST['action'] : '';
     $nextAction = !empty($_POST['next_action']) ? $_POST['next_action'] : '';
-    $settag = !empty($_POST['settag']) ? trim($_POST['settag']) : '';
+    $settag = !empty($_POST['settag']) ? htmlspecialcharsbx(trim($_POST['settag'])) : '';
     $search = !empty($_POST['search']) ? trim($_POST['search']) : '';
     $migrationView = !empty($_POST['migration_view']) ? trim($_POST['migration_view']) : '';
+
 
     $filter = [
         'search'   => $search,
@@ -50,6 +52,8 @@ if ($_POST["step_code"] == "migration_execute" && check_bitrix_sessid()) {
     }
 
     if ($versionName && $action) {
+        $versionConfig->tryVersionName($versionName);
+
         if (!$restart) {
             $logger->outInfo('%s (%s) start', $versionName, $action);
         }

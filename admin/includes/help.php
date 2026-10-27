@@ -44,7 +44,7 @@ $isSettinsPage = strpos($APPLICATION->GetCurPage(), 'settings.php');
                 <br/>
                 <a href="https://dev.1c-bitrix.ru/community/webdev/user/39653/blog/" target="_blank">https://dev.1c-bitrix.ru/community/webdev/user/39653/blog/</a>
             </div>
-            <div style="margin-bottom: 10px;">
+             <div style="margin-bottom: 10px;">
                 <?= Locale::getMessage('LINK_TELEGRAM') ?>
                 <br/>
                 <a href="https://t.me/sprint_migration_bitrix">https://t.me/sprint_migration_bitrix</a>

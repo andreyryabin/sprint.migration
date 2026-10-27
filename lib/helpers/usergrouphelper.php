@@ -122,7 +122,7 @@ class UserGroupHelper extends Helper
         }
 
         if (!empty($item['SECURITY_POLICY'])) {
-            $item['SECURITY_POLICY'] = unserialize($item['SECURITY_POLICY']);
+            $item['SECURITY_POLICY'] = unserialize($item['SECURITY_POLICY'], ['allowed_classes' => false]);
         }
 
         if ($item['ID'] == 1) {

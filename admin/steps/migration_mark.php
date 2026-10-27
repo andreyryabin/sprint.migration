@@ -18,10 +18,10 @@ if ($existsEvents && check_bitrix_sessid()) {
     $versionManager = new VersionManager($versionConfig);
     $logger = Output::getInstance();
 
-    $version = !empty($_POST['version']) ? $_POST['version'] : '';
+    $versionOrSearch = !empty($_POST['version']) ? $_POST['version'] : '';
     $status = !empty($_POST['status']) ? $_POST['status'] : '';
 
-    $markresult = $versionManager->markMigration($version, $status);
+    $markresult = $versionManager->markMigration($versionOrSearch, $status);
     $logger->outMessages($markresult);
 
     ?>

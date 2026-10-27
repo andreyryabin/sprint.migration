@@ -4,6 +4,7 @@ namespace Sprint\Migration\Helpers;
 
 use _CIBElement;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\WriterException;
 use Sprint\Migration\Exchange\WriterTag;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\WriterHelperInterface;
@@ -152,6 +153,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     public function writeValueIblockSection(WriterTag $tag, int $iblockId, int $sectionId): void
     {
@@ -170,6 +172,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     public function writeValueIblockElement(WriterTag $tag, int $iblockId, int $elementId): void
     {
@@ -195,26 +198,43 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         array $props,
         array $exportFields,
         array $exportProperties
-    ): WriterTag {
+    ): WriterTag
+    {
         $item = new WriterTag('item');
 
         foreach ($fields as $code => $val) {
             if (in_array($code, $exportFields)) {
-                $item->addChild(
-                    $this->createWriterFieldTag([
-                        'NAME'      => $code,
-                        'VALUE'     => $val,
-                        'IBLOCK_ID' => $iblockId,
-                    ])
-                );
+                try {
+                    $item->addChild(
+                        $this->createWriterFieldTag([
+                            'NAME'      => $code,
+                            'VALUE'     => $val,
+                            'IBLOCK_ID' => $iblockId,
+                        ])
+                    );
+                } catch (WriterException $e) {
+                    throw new HelperException($e->getMessage() . " in " . print_r([
+                            'IBLOCK_ID' => $iblockId,
+                            'ID'        => $fields['ID'],
+                            'FIELD'     => $code,
+                        ], true));
+                }
             }
         }
 
         foreach ($props as $prop) {
             if (in_array($prop['CODE'], $exportProperties)) {
-                $item->addChild(
-                    $this->createWriterPropertyTag($prop)
-                );
+                try {
+                    $item->addChild(
+                        $this->createWriterPropertyTag($prop)
+                    );
+                } catch (WriterException $e) {
+                    throw new HelperException($e->getMessage() . " in " . print_r([
+                            'IBLOCK_ID' => $iblockId,
+                            'ID'        => $fields['ID'],
+                            'PROPERTY'  => $prop['CODE'],
+                        ], true));
+                }
             }
         }
 
@@ -223,6 +243,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     protected function createWriterFieldTag(array $field): WriterTag
     {
@@ -246,6 +267,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     protected function writeFieldValueSection(WriterTag $tag, array $field): void
     {
@@ -258,6 +280,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     protected function createWriterPropertyTag(array $prop): WriterTag
     {
@@ -282,6 +305,9 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $tag;
     }
 
+    /**
+     * @throws WriterException
+     */
     protected function writePropertyString(WriterTag $tag, $prop): void
     {
         if ($prop['MULTIPLE'] == 'Y') {
@@ -293,6 +319,9 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         }
     }
 
+    /**
+     * @throws WriterException
+     */
     protected function writePropertyHtml(WriterTag $tag, $prop): void
     {
         if ($prop['MULTIPLE'] == 'Y') {
@@ -318,6 +347,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     protected function writePropertySection(WriterTag $tag, $prop): void
     {
@@ -330,6 +360,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     protected function writePropertyElement(WriterTag $tag, $prop): void
     {
@@ -340,11 +371,17 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         }
     }
 
+    /**
+     * @throws WriterException
+     */
     protected function writePropertyList(WriterTag $tag, $prop): void
     {
         $tag->addValue($prop['VALUE_XML_ID'], $prop['MULTIPLE'] == 'Y');
     }
 
+    /**
+     * @throws WriterException
+     */
     protected function writePropertyFile(WriterTag $tag, $prop): void
     {
         $tag->addFile($prop['VALUE'], $prop['MULTIPLE'] == 'Y');
@@ -368,7 +405,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     public function readValueIblockElement(int $iblockId, array $val): int
     {
-        $this->checkRequiredKeys($val, ['element_xml_id', 'element_code', 'value']);
+        $this->checkRequiredKeys($val, ['element_xml_id', 'value']);
 
         return $this->getElementIdIfExists($iblockId, array_filter([
             'NAME'   => $val['value'],
@@ -459,6 +496,9 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $iproperty;
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function readPropertyHtml(int $iblockId, array $prop)
     {
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
@@ -476,6 +516,9 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return ($isMultiple) ? $res : $res[0];
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function readPropertyString(int $iblockId, array $prop)
     {
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
@@ -533,6 +576,9 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return ($isMultiple) ? [] : false;
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function readPropertyFile(int $iblockId, array $prop)
     {
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
@@ -542,6 +588,9 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return ($isMultiple) ? $res : $res[0];
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function readPropertyList(int $iblockId, array $prop)
     {
         $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);

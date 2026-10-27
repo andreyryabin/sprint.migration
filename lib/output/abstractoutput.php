@@ -2,8 +2,6 @@
 
 namespace Sprint\Migration\Output;
 
-use Sprint\Migration\VersionManager;
-
 abstract class AbstractOutput implements OutputInterface
 {
     public function outInfo(string $msg, ...$vars): void
@@ -139,67 +137,26 @@ abstract class AbstractOutput implements OutputInterface
             return;
         }
 
-        $trace = $exception->getTrace();
-        $offset = $this->startMigrationOffset($trace);
+        $makeRelative = function (string $path, int $depth = 0) {
+            $chunks = explode(DIRECTORY_SEPARATOR, $path);
+            $chunks = array_slice($chunks, -($depth + 1));
 
-        $file = $exception->getFile();
-        $line = $exception->getLine();
-
-        if ($offset >= 0) {
-            $trace = array_slice($trace, 0, $offset);
-            if (count($trace) > 1) {
-                $first = $trace[0];
-                $file = $first['file'];
-                $line = $first['line'];
-            }
-        }
+            return '.../' . implode('/', $chunks);
+        };
 
         $this->outWarning(
             "[%s] %s (%s) in %s:%d",
             get_class($exception),
             $exception->getMessage(),
             $exception->getCode(),
-            $file,
-            $line
-
+            $makeRelative($exception->getFile(), 2),
+            $exception->getLine()
         );
-        $this->outExceptionTrace($trace);
-    }
 
-    private function startMigrationOffset(array $trace): int
-    {
-        foreach ($trace as $index => $item) {
-            if ($item['class'] == VersionManager::class && $item['function'] == 'startMigration') {
-                return (int)$index;
-            }
-        }
-        return -1;
-    }
-
-    private function outExceptionTrace(array $trace): void
-    {
-        foreach ($trace as $index => $err) {
-            $name = '';
-            if ($err['class'] && $err['function']) {
-                $name = '[b]' . $err['class'] . '[/]::' . $err['function'];
-            } elseif ($err['function']) {
-                $name = '[b]' . $err['function'] . '[/]';
-            }
-
-            $err['args'] = (array)($err['args'] ?? []);
-            $cntArgs = count($err['args']);
-
-            if ($cntArgs == 0) {
-                $this->out('[b]#' . $index . '[/] ' . $name . '();');
-                continue;
-            }
-
-            $this->out('[b]#' . $index . '[/] ' . $name . '(');
-            foreach ($err['args'] as $argi => $argval) {
-                $del = $argi < $cntArgs - 1 ? ', ' : '';
-                $this->out('[tab]' . htmlspecialchars(var_export($argval, 1)) . $del . '[/]');
-            }
-            $this->out(');');
+        foreach ($exception->getTrace() as $err) {
+            $this->out('%s:%d', $makeRelative($err['file'], 2), $err['line']);
         }
     }
+
+
 }

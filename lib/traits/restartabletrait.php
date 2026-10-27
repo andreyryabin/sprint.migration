@@ -52,7 +52,7 @@ trait RestartableTrait
             $this->params[$name] = serialize($res);
             $this->restart();
         }
-        return unserialize($this->params[$name]);
+        return unserialize($this->params[$name], ['allowed_classes' => false]);
     }
 
     /**

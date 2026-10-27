@@ -7,6 +7,9 @@
         "MODULE_DESCRIPTION"       => "Модуль для управления миграциями бд, создание, установка, откат миграций",
         "PARTNER_NAME"             => "Андрей Рябин",
         "PARTNER_URI"              => "https://packagist.org/packages/andreyryabin/sprint.migration",
+        "DEVELOPER_NAME"           => "Разработчик: [label:yellow]#VALUE#[/]",
+        "DEVELOPER_URI"            => "#VALUE#",
+        "DEVELOPER_LABEL"          => "[label:yellow]Community[/]",
         "ACCESS_DENIED"            => "Доступ запрещен",
         "MENU_SPRINT"              => "Миграции для разработчиков",
         "TITLE"                    => "Миграции",
@@ -73,6 +76,15 @@
         "WRITE_UP_CODE"            => "Укажите код установки миграции в методе up()",
         "WRITE_DOWN_CODE"          => "Укажите код отката миграции в методе down()",
         "LOADING_TEXT"             => "Загрузка...",
+        "BLOG_GROUP_CREATED"       => "Группа блогов #NAME# добавлена",
+        "BLOG_GROUP_UPDATED"       => "Группа блогов #NAME# обновлена",
+        "BLOG_CREATED"             => "Блог #NAME# добавлен",
+        "BLOG_UPDATED"             => "Блог #NAME# обновлён",
+        "BLOG_POST_UPDATED"        => "Запись блога #NAME# сохранена",
+        "SALE_DISCOUNT_UPDATED"    => "Правило корзины #NAME# сохранено",
+        "SUBSCRIBE_RUBRIC_UPDATED" => "Рубрика подписки #NAME# сохранена",
+        "FORUM_GROUP_UPDATED"      => "Группа форумов #NAME# сохранена",
+        "FORUM_UPDATED"            => "Форум #NAME# сохранен",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -97,6 +109,7 @@
         "CONFIG_version_timestamp_format"    => "Формат даты для создания файла миграции",
         "CONFIG_version_timestamp_pattern"   => "Регулярное выражение для поиска миграций по формату даты",
         "CONFIG_migration_hash_algo"         => "Алгоритм подсчета хеша для проверки изменений в файле миграции",
+        "CONFIG_logger"                      => "Класс для логирования",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -111,6 +124,16 @@
         "BUILDER_TransferSelect"             => "Выбрать миграции",
         "BUILDER_EventExport1"               => "Создать миграцию для почтовых событий",
         "BUILDER_EventExport_event_types"    => "Выберите типы почтовых событий",
+        "BUILDER_ForumExport1"               => "Создать миграцию для форумов",
+        "BUILDER_ForumExport_group_ids"      => "Выберите группы форумов",
+        "BUILDER_ForumExport_forum_ids"      => "Выберите форумы",
+        "BUILDER_ForumExport_Info"           => "Группа форума переносится вместе с форумом автоматически, если она указана у выбранного форума. Если XML_ID не заполнен, он будет сгенерирован перед экспортом",
+        "BUILDER_ForumExport_RootGroups"     => "Корневые группы",
+        "BUILDER_ForumExport_NestedGroups"   => "Вложенные группы",
+        "BUILDER_ForumExport_WithoutGroup"   => "Без группы",
+        "BUILDER_SubscribeExport1"           => "Создать миграцию для рубрик подписок",
+        "BUILDER_SubscribeExport_rubric_ids" => "Выберите рубрики подписок",
+        "BUILDER_SubscribeExport_Info"       => "У подписки должен быть заполнен Символьный код",
         "BUILDER_AgentExport1"               => "Создать миграцию для агентов",
         "BUILDER_AgentExport2"               => "Задайте модуль и функцию агента (MODULE_ID, NAME), чтобы увидеть его в списке",
         "BUILDER_AgentExport_agent_id"       => "Выберите агенты",
@@ -176,6 +199,10 @@
         "BUILDER_IblockPropertyExport1"           => "Создать миграцию свойств инфоблоков",
         "BUILDER_IblockPropertyExport_UserType"   => "Выберите тип свойства",
         "BUILDER_IblockPropertyExport_Properties" => "Выберите свойства",
+        "BUILDER_IblockPropertyDelete"            => "Удалить свойства инфоблока",
+        "BUILDER_IblockPropertyDelete_Info"       => "Удаляет выбранные свойства и свойства с указанными CODE. Отсутствие свойства не считается ошибкой.",
+        "BUILDER_IblockPropertyDelete_Properties" => "Выберите свойства",
+        "BUILDER_IblockPropertyDelete_Codes"      => "Коды свойств для удаления",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -242,32 +269,40 @@
         "BUILDER_OrderProperties_MigratePropertyVariants"     => "Перенести значения свойств (для свойств типа Перечисление [ENUM])",
         "BUILDER_OrderProperties_MigratePropertyVariants_No"  => "Не переносить",
         "BUILDER_OrderProperties_MigratePropertyVariants_Yes" => "Переносить",
+        "BUILDER_SaleDiscount"                                => "Создать миграцию для правил корзины",
+        "BUILDER_SaleDiscount_Discounts"                      => "Выберите правила корзины",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
     "ru",
     [
-        "BUILDER_FormExport1"              => "Создать миграцию для веб-формы",
-        "BUILDER_FormExport_FormId"        => "Выберите форму",
-        "BUILDER_FormExport_What"          => "Что переносим?",
-        "BUILDER_FormExport_Form"          => "Форму",
-        "BUILDER_FormExport_Fields"        => "Поля формы",
-        "BUILDER_FormExport_Statuses"      => "Статусы",
-        "BUILDER_FormExport_SelectFields"  => "Выберите поля формы",
-        "BUILDER_OptionExport1"            => "Создать миграцию для настроек модулей",
-        "BUILDER_OptionExport_module_id"   => "Выберите модули",
-        "BUILDER_CacheCleaner1"            => "Очистка кеша",
-        "BUILDER_CacheCleaner2"            => "Выполнить BXClearCache(true)",
-        "BUILDER_Configurator"             => "Создать конфигурацию",
-        "BUILDER_Configurator_config_name" => "Название (лат буквы и цифры)",
-        "BUILDER_Configurator_error"       => "Ошибка создания конфигурации",
-        "BUILDER_Configurator_success"     => "Конфигурация создана",
-        "BUILDER_Cleaner"                  => "Удалить конфигурацию",
-        "BUILDER_Cleaner_desc"             => "Удаление файла конфигурации, файлов миграций и записей в таблице миграций",
-        "BUILDER_Cleaner_config_name"      => "Название (лат буквы и цифры)",
-        "BUILDER_Cleaner_error"            => "Ошибка удаления конфигурации",
-        "BUILDER_Cleaner_success"          => "Конфигурация удалена",
-        "BUILDER_CommonSettings"           => "Общие настройки",
+        "BUILDER_FormExport1"               => "Создать миграцию для веб-формы",
+        "BUILDER_FormExport_FormId"         => "Выберите форму",
+        "BUILDER_FormExport_What"           => "Что переносим?",
+        "BUILDER_FormExport_Form"           => "Форму",
+        "BUILDER_FormExport_Fields"         => "Поля формы",
+        "BUILDER_FormExport_Statuses"       => "Статусы",
+        "BUILDER_FormExport_SelectFields"   => "Выберите поля формы",
+        "BUILDER_VoteExport1"               => "Создать миграцию для опроса",
+        "BUILDER_VoteExport_VoteId"         => "Выберите опрос",
+        "BUILDER_VoteExport_Info"           => "У опроса должен быть заполнен Символьный идентификатор и создан хотя бы один Список опросов",
+        "BUILDER_VoteExport_UnknownChannel" => "Неизвестный канал",
+        "BUILDER_OptionExport1"             => "Создать миграцию для настроек модулей",
+        "BUILDER_OptionExport_Info"         => "Переносит настройки модулей для выбранных сайтов или сайта по умолчанию (если не выбирать)",
+        "BUILDER_OptionExport_module_id"    => "Выберите модули",
+        "BUILDER_OptionExport_site_id"      => "Выберите сайты",
+        "BUILDER_CacheCleaner1"             => "Очистка кеша",
+        "BUILDER_CacheCleaner2"             => "Выполнить BXClearCache(true)",
+        "BUILDER_Configurator"              => "Создать конфигурацию",
+        "BUILDER_Configurator_config_name"  => "Название (лат буквы и цифры)",
+        "BUILDER_Configurator_error"        => "Ошибка создания конфигурации",
+        "BUILDER_Configurator_success"      => "Конфигурация создана",
+        "BUILDER_Cleaner"                   => "Удалить конфигурацию",
+        "BUILDER_Cleaner_desc"              => "Удаление файла конфигурации, файлов миграций и записей в таблице миграций",
+        "BUILDER_Cleaner_config_name"       => "Название (лат буквы и цифры)",
+        "BUILDER_Cleaner_error"             => "Ошибка удаления конфигурации",
+        "BUILDER_Cleaner_success"           => "Конфигурация удалена",
+        "BUILDER_CommonSettings"            => "Общие настройки",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -275,6 +310,14 @@
         "BUILDER_MedialibElements1"             => "Перенести изображения медиабиблиотеки",
         "BUILDER_MedialibElements2"             => "Переносит изображения по коллекциям\nСоздает коллекции если их не было\nОбновляет изображения и коллекции с таким же названием",
         "BUILDER_MedialibElements_CollectionId" => "Выбрать коллекции",
+    ]
+);
+\Sprint\Migration\Locale::loadLocale(
+    "ru", [
+        "BUILDER_LanguageExport"            => "Создать миграцию для языков и региональных настроек",
+        "BUILDER_LanguageExport_cult_codes" => "Выберите региональные настройки",
+        "BUILDER_LanguageExport_lang_ids"   => "Выберите языки интерфейса",
+        "BUILDER_LanguageExport_Info"       => "Задайте символьные коды региональным настройкам",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -339,11 +382,11 @@
         "ERR_INVALID_ARGUMENTS"                  => "Укажите корректные аргументы, смотрите помощь",
         "ERR_COMMAND_NOT_FOUND"                  => "Команда \"#NAME#\" не найдена, смотрите помощь",
         "ERR_METHOD_NOT_FOUND"                   => "Метод \"#NAME#\"  не найден",
+        "ERR_TEMPLATE_NOT_FOUND"                 => "Шаблон миграции \"#NAME#\" не найден",
         "ERR_CANT_CREATE_FILE"                   => "Ошибка создания файла \"#NAME#\"",
         "ERR_FORM_NOT_FOUND"                     => "Форма \"#NAME#\" не найдена",
         "ERR_EMPTY_REQ_FIELD"                    => "Обязательное поле \"#NAME#\" не заполнено",
         "ERR_EMPTY_REQ_FIELDS"                   => "Укажите обязательные поля",
-        "ERR_HELPER_DISABLED"                    => "Помощник отключен",
         "ERR_AGENT_NOT_ADDED"                    => "Агент \"#NAME#\" не добавлен",
         "ERR_EVENT_TYPE_NOT_UPDATED"             => "Тип почтового события не обновлен",
         "ERR_CANT_DELETE_FORM"                   => "Ошибка удаления формы \"#NAME#\"",
@@ -355,7 +398,7 @@
         "ERR_HLBLOCK_ELEMENT_NOT_FOUND"          => "Элемент \"#ELEMENT_ID#\" в highload-блоке \"#HLBLOCK_ID#\" не найден",
         "ERR_HLBLOCK_FIELD_NOT_FOUND"            => "Поле для highload-блока не найдено",
         "ERR_DEFAULT_LANGUAGE_NOT_FOUND"         => "Основной яык не найден",
-        "ERR_ACTIVE_LANGUAGES_NOT_FOUND"         => "Языки не найдены",
+        "ERR_LANGUAGES_NOT_FOUND"                => "Языки не найдены",
         "ERR_DEFAULT_SITE_NOT_FOUND"             => "Основной сайт не найден",
         "ERR_ACTIVE_SITES_NOT_FOUND"             => "Сайты не найдены",
         "ERR_USER_GROUP_CODE_NOT_FOUND"          => "Не найден код группы",
@@ -452,6 +495,10 @@
         "IB_TYPE_UPDATED"                => "Тип инфоблока \"#NAME#\" обновлен",
         "IB_TYPE_EQUAL"                  => "Тип инфоблока \"#NAME#\" совпадает",
         "IB_TYPE_DELETED"                => "Тип инфоблока \"#NAME#\" удален",
+        "LANG_CREATED"                   => "Язык добавлен",
+        "LANG_UPDATED"                   => "Язык обновлён",
+        "CULTURE_CREATED"                => "Региональная настройка добавлена",
+        "CULTURE_UPDATED"                => "Региональная настройка обновлена",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -475,13 +522,38 @@
 \Sprint\Migration\Locale::loadLocale(
     "ru",
     [
-        "BUILDER_GROUP_Main"     => "Главный модуль",
-        "BUILDER_GROUP_Iblock"   => "Инфоблоки",
-        "BUILDER_GROUP_Hlblock"  => "Highload-блоки",
-        "BUILDER_GROUP_Sale"     => "Интернет-магазин",
-        "BUILDER_GROUP_Form"     => "Веб-формы",
-        "BUILDER_GROUP_Medialib" => "Медиабиблиотека",
-        "BUILDER_GROUP_Tools"    => "Инструменты",
+        "BUILDER_GROUP_Main"      => "Главный модуль",
+        "BUILDER_GROUP_Blog"      => "Блоги",
+        "BUILDER_GROUP_Iblock"    => "Инфоблоки",
+        "BUILDER_GROUP_Hlblock"   => "Highload-блоки",
+        "BUILDER_GROUP_Sale"      => "Интернет-магазин",
+        "BUILDER_GROUP_Form"      => "Веб-формы",
+        "BUILDER_GROUP_Forum"     => "Форумы",
+        "BUILDER_GROUP_Subscribe" => "Подписки",
+        "BUILDER_GROUP_Vote"      => "Опросы",
+        "BUILDER_GROUP_Medialib"  => "Медиабиблиотека",
+        "BUILDER_GROUP_Tools"     => "Инструменты",
+    ]
+);
+
+\Sprint\Migration\Locale::loadLocale(
+    "ru",
+    [
+        "BUILDER_BlogExport1"                              => "Экспорт блогов",
+        "BUILDER_BlogExport_Info"                          => "Переносит группы блогов и настройки блогов.",
+        "BUILDER_BlogExport_group_id"                      => "Выберите группу блогов",
+        "BUILDER_BlogExport_blog_ids"                      => "Выберите блоги",
+        "BUILDER_BlogUserTypeEntitiesExport1"              => "Экспорт пользовательских свойств блогов",
+        "BUILDER_BlogUserTypeEntitiesExport_Info"          => "Переносит пользовательские свойства блогов.",
+        "BUILDER_BlogUserTypeEntitiesExport_entity_fields" => "Выберите пользовательские свойства блогов",
+        "BUILDER_BlogPostExport1"                          => "Экспорт записей блога",
+        "BUILDER_BlogPostExport_Info"                      => "Переносит записи выбранного блога.",
+        "BUILDER_BlogPostExport_blog_id"                   => "Выберите блог",
+        "BUILDER_BlogPostExport_filter"                    => "Выберите записи",
+        "BUILDER_BlogPostExport_SelectSomeId"              => "Список ID",
+        "BUILDER_BlogPostExport_SelectSomeCode"            => "Список CODE",
+        "BUILDER_BlogPostExport_FilterListId"              => "Укажите ID записей через пробел",
+        "BUILDER_BlogPostExport_FilterListCode"            => "Укажите CODE записей через пробел",
     ]
 );
 

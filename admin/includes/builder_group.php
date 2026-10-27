@@ -1,11 +1,12 @@
 <?php
 
+use Sprint\Migration\Output\HtmlOutput;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 
 /** @var $versionConfig VersionConfig */
 $versionManager = new VersionManager($versionConfig);
-
+$output = new HtmlOutput;
 $builderList = $versionConfig->getVal('version_builders', []);
 
 $builderTree = [];
@@ -34,7 +35,9 @@ foreach ($builderList as $builderName => $builderClass) {
                         <?= $groupName ?>
                     </div>
                     <?php foreach ($groupItems as $item) { ?>
-                        <div class="sp-builder_title" data-builder="<?= $item['NAME'] ?>"><?= $item['TITLE'] ?></div>
+                        <div class="sp-builder_title" data-builder="<?= $item['NAME'] ?>">
+                            <?php $output->out($item['TITLE']) ?>
+                        </div>
                     <?php } ?>
                 <?php } ?>
             </div>

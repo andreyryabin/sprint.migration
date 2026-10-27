@@ -71,13 +71,9 @@ class Writer
      */
     private function copyTagsFiles(WriterTag $tag): void
     {
+        $fileExchange = new FileExchange();
         foreach ($tag->getFiles() as $file) {
-            $filePath = Module::getDocRoot() . $file['SRC'];
-            if (file_exists($filePath)) {
-                $newPath = $this->getFileDir() . '/' . $file['SUBDIR'] . '/' . $file['FILE_NAME'];
-                Module::createDir(dirname($newPath));
-                copy($filePath, $newPath);
-            }
+            $fileExchange->copyFileToExchange($file, $this->getFileDir());
         }
 
     }

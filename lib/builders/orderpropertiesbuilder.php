@@ -10,8 +10,8 @@ use Sprint\Migration\VersionBuilder;
 
 class OrderPropertiesBuilder extends VersionBuilder
 {
-    const UPDATE_METHOD_NOT    = 'not';
-    const UPDATE_METHOD_CODE   = 'code';
+    const UPDATE_METHOD_NOT = 'not';
+    const UPDATE_METHOD_CODE = 'code';
     const UPDATE_METHOD_XML_ID = 'xml_id';
 
     protected function isBuilderEnabled(): bool
@@ -21,9 +21,16 @@ class OrderPropertiesBuilder extends VersionBuilder
 
     protected function initialize()
     {
-        $this->setTitle(Locale::getMessage('BUILDER_OrderProperties'));
+        $this->setTitle(implode(' ', [
+            Locale::getMessage('BUILDER_OrderProperties'),
+        ]));
+
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Sale'));
-        $this->setDescription("Форму разработал @ashirchkov\nhttps://github.com/andreyryabin/sprint.migration/pull/170");
+
+        $this->setDescription(implode(PHP_EOL, [
+            Locale::getMessage('DEVELOPER_NAME', ['#VALUE#' => '@ashirchkov']),
+            Locale::getMessage('DEVELOPER_URI', ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/170']),
+        ]));
 
         $this->addVersionFields();
     }
@@ -45,7 +52,7 @@ class OrderPropertiesBuilder extends VersionBuilder
             ]
         );
 
-        if(empty($personTypeId)) {
+        if (empty($personTypeId)) {
             return;
         }
 
@@ -58,7 +65,7 @@ class OrderPropertiesBuilder extends VersionBuilder
                 'placeholder' => '',
                 'width'       => 250,
                 'multiple'    => 1,
-                'select'       => $this->getPropertiesSelect($personTypeId),
+                'select'      => $this->getPropertiesSelect($personTypeId),
                 'value'       => [],
             ]
         );
@@ -103,15 +110,15 @@ class OrderPropertiesBuilder extends VersionBuilder
                 ],
             ]
         );
-        if((int) $migratePropertyVariants > 0) {
+        if ((int)$migratePropertyVariants > 0) {
             $propertyVariants = $helper->OrderProperties()->getOrderPropertyVariants($propertyIds);
         }
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('OrderPropertiesExport'),
             [
-                'updateMethod' => $updateMethod,
-                'properties' => array_filter(
+                'updateMethod'     => $updateMethod,
+                'properties'       => array_filter(
                     $properties,
                     fn($property) => in_array($property['ID'], $propertyIds)
                 ),
@@ -131,7 +138,7 @@ class OrderPropertiesBuilder extends VersionBuilder
         $properties = array_map(
             fn($property) => array_merge(
                 $property,
-                ['NAME' => sprintf('[%s] %s', $property['CODE'] ? : $property['ID'], $property['NAME'])]
+                ['NAME' => sprintf('[%s] %s', $property['CODE'] ?: $property['ID'], $property['NAME'])]
             ),
             $helper->OrderProperties()->getOrderPropertiesByPersonType($personTypeId)
         );

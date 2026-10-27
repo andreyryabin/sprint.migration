@@ -1,12 +1,7 @@
-<?php if (isset($exception) && $exception instanceof Throwable) { ?>
-    <div class="sp-col">
-        <?= sprintf(
-                "[%s] %s (%s) in %s:%d \n",
-                get_class($exception),
-                $exception->getMessage(),
-                $exception->getCode(),
-                $exception->getFile(),
-                $exception->getLine()
-        ); ?>
-    </div>
-<?php } ?>
+<?php if (isset($sperrors) && is_array($sperrors)): ?>
+    <?php foreach ($sperrors as $sperror) { ?>
+        <div class="sp-col">
+            <?= htmlspecialcharsbx($sperror) ?>
+        </div>
+    <?php } ?>
+<?php endif; ?>

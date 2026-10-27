@@ -156,15 +156,19 @@ trait IblockPropertyTrait
             $link = SectionPropertyTable::getList([
                 'filter' => [
                     'PROPERTY_ID' => $propertyId,
+                    'SECTION_ID'  => 0,
                 ],
             ])->fetch();
 
             return $link ? [
+                'SECTION_PROPERTY' => 'Y',
                 'SMART_FILTER'     => $link['SMART_FILTER'],
                 'DISPLAY_TYPE'     => $link['DISPLAY_TYPE'],
                 'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'],
                 'FILTER_HINT'      => $link['FILTER_HINT'],
-            ] : [];
+            ] : [
+                'SECTION_PROPERTY' => 'N',
+            ];
         } catch (Exception $e) {
             throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
