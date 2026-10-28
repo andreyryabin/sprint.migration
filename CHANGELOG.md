@@ -1,3 +1,9 @@
+## 5.16.1
+- Иправление работы чекбокса "Перенести значения свойств" (нашел @mvaice)
+## 5.16.0
+- Исправление в ConsoleOutput pull/200 (реализовал @razzhivine Eugene)
+- Учитываем LID при поиске по EVENT_NAME+SUBJECT pull/197 (реализовал @nafilimonov Nikita Filimonov)
+- Проверка на CDATA при создании xml-выгрузки pull/197 (нашел @Bezzzpalov Dmitry Bespalov)
 ## 5.15.0
 - Проверка директории конфига (реализовал @karedum Дмитрий Воротынцев)
 - Экспорт свойств элементов инофблока в зависимости от раздела (реализовала @arinamirosha Arina)

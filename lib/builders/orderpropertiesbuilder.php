@@ -101,16 +101,16 @@ class OrderPropertiesBuilder extends VersionBuilder
                 'select'      => [
                     [
                         'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_No'),
-                        'value' => 0,
+                        'value' => 'N',
                     ],
                     [
                         'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_Yes'),
-                        'value' => 1,
+                        'value' => 'Y',
                     ],
                 ],
             ]
         );
-        if ((int)$migratePropertyVariants > 0) {
+        if ($migratePropertyVariants === 'Y') {
             $propertyVariants = $helper->OrderProperties()->getOrderPropertyVariants($propertyIds);
         }
 
