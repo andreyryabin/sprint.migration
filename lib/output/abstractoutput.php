@@ -124,9 +124,9 @@ abstract class AbstractOutput implements OutputInterface
     {
         foreach ($messages as $val) {
             if ($val['success']) {
-                $this->outSuccess($val['message']);
+                $this->outNotice($val['message']);
             } else {
-                $this->outError($val['message']);
+                $this->outWarning($val['message']);
             }
         }
     }

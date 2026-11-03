@@ -124,12 +124,16 @@ class VersionManager
         $record = $this->getVersionTable()->getRecord($versionName);
         $record = !empty($record) ? $record : 0;
 
-        return $this->makeVersion(
+        $meta = $this->makeVersion(
             $versionName,
             $file,
             $record,
             $this->versionConfig->getVersionTimestamp($versionName)
         );
+
+        $this->appendVersionLabels($meta);
+
+        return $meta;
 
     }
 
@@ -209,6 +213,8 @@ class VersionManager
 
             $meta = $this->makeVersion($version, $file, $record, $ts);
 
+            $this->appendVersionLabels($meta);
+
             $check = (
                 $this->containsFilterStatus($meta, $filter)
                 && $this->containsFilterSearch($meta, $filter)
@@ -221,7 +227,7 @@ class VersionManager
                 continue;
             }
 
-            $result[] = $this->appendVersionLabels($meta);
+            $result[] = $meta;
 
             if ($filter['limit'] && count($result) == $filter['limit']) {
                 break;
@@ -231,7 +237,7 @@ class VersionManager
         return $result;
     }
 
-    private function appendVersionLabels(array $item)
+    private function appendVersionLabels(array &$item)
     {
         $labels = [];
         if ($item['older']) {
@@ -251,8 +257,6 @@ class VersionManager
         }
 
         $item['labels'] = implode(' ', $labels);
-
-        return $item;
     }
 
     /**
@@ -643,6 +647,7 @@ class VersionManager
             'tag'           => '',
             'file_status'   => '',
             'record_status' => '',
+            'labels'        => [],
         ];
 
         if ($isRecord && $isFile) {

@@ -21,7 +21,6 @@ use Sprint\Migration\Builders\IblockElementsBuilder;
 use Sprint\Migration\Builders\IblockPropertyBuilder;
 use Sprint\Migration\Builders\IblockPropertyDeleteBuilder;
 use Sprint\Migration\Builders\LanguageBuilder;
-use Sprint\Migration\Builders\MarkerBuilder;
 use Sprint\Migration\Builders\MedialibElementsBuilder;
 use Sprint\Migration\Builders\OptionBuilder;
 use Sprint\Migration\Builders\OrderPropertiesBuilder;
@@ -298,7 +297,6 @@ class VersionConfig
             'MedialibElementsBuilder'     => MedialibElementsBuilder::class,
             'BlankBuilder'                => BlankBuilder::class,
             'CacheCleanerBuilder'         => CacheCleanerBuilder::class,
-            'MarkerBuilder'               => MarkerBuilder::class,
             'TransferBuilder'             => TransferBuilder::class,
         ];
     }

@@ -71,20 +71,23 @@ class Main extends Controller
      * @throws MigrationException
      */
 
-    public function versionMarkAction(string $version, string $status): array
+    public function markVersionAction(string $version, string $status): array
     {
         $res = $this->versionManager->markMigration($version, $status);
 
         $this->logger->outMessages($res);
 
-        return ['messages' => $this->logger->getMessages()];
+        return [
+            'messages' => $this->logger->getMessages(),
+            'meta'     => $this->versionManager->getVersionByName($version)
+        ];
     }
 
     /**
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function versionDeleteAction(string $version): array
+    public function deleteVersionAction(string $version): array
     {
         $res = $this->versionManager->deleteMigration($version);
 
@@ -97,7 +100,7 @@ class Main extends Controller
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function versionTransferAction(string $version, string $toConfig): array
+    public function moveVersionAction(string $version, string $toConfig): array
     {
         $res = $this->versionManager->transferMigration($version, $toConfig);
 
@@ -110,13 +113,16 @@ class Main extends Controller
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function versionSetTagAction(string $version, string $settag): array
+    public function setTagVersionAction(string $version, string $settag): array
     {
         $res = $this->versionManager->setMigrationTag($version, $settag);
 
         $this->logger->outMessages($res);
 
-        return ['messages' => $this->logger->getMessages()];
+        return [
+            'messages' => $this->logger->getMessages(),
+            'meta'     => $this->versionManager->getVersionByName($version)
+        ];
     }
 
     /**
@@ -124,7 +130,7 @@ class Main extends Controller
      * @throws MigrationException
      * @throws Throwable
      */
-    public function versionStartAction(string $version, string $action, array $params = [], string $settag = ''): array
+    public function execVersionAction(string $version, string $action, array $params = [], string $settag = ''): array
     {
         $action = ($action === VersionEnum::ACTION_DOWN) ? VersionEnum::ACTION_DOWN : VersionEnum::ACTION_UP;
 
@@ -139,6 +145,7 @@ class Main extends Controller
             'restart'  => $this->versionManager->needRestart(),
             'params'   => $this->versionManager->getRestartParams(),
             'messages' => $this->logger->getMessages(),
+            'meta'     => $this->versionManager->getVersionByName($version)
         ];
     }
 }
