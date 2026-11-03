@@ -42,6 +42,7 @@ export const MigrationApp = {
             selectedBuilder: '',
             loading: 0,
             running: false,
+            restart: false,
         };
     },
     created() {
@@ -100,6 +101,7 @@ export const MigrationApp = {
 
         async execVersion(version, action, params, settag) {
             this.running = true;
+            this.restart = false;
             try {
                 this.execLog(version, action, 'start');
 
@@ -117,14 +119,26 @@ export const MigrationApp = {
                         settag
                     });
 
-                    if (!data.restart) {
-                        this.pickVersion(data.meta);
-                        this.execLog(version, action, 'finish');
-                        return data.success;
+                    if (data.restart) {
+                        currentParams = data.params;
+                        continue;
                     }
 
-                    currentParams = data.params;
+                    if (!data.success) {
+                        this.execLog(version, action, 'error');
+                        this.restart = {
+                            version,
+                            action,
+                            params: currentParams,
+                            settag
+                        }
+                        return false;
+                    }
+
+                    this.pickVersion(data.meta);
+                    return true;
                 }
+
             } finally {
                 this.running = false;
             }
@@ -174,6 +188,17 @@ export const MigrationApp = {
 
         downVersion(version, params) {
             this.execVersion(version, VersionAction.ACTION_DOWN, {}, '');
+        },
+
+        restartVersion() {
+            if (this.restart && this.restart.version) {
+                this.execVersion(
+                    this.restart.version,
+                    this.restart.action,
+                    this.restart.params,
+                    this.restart.settag
+                );
+            }
         },
 
         upAll() {
@@ -333,14 +358,14 @@ export const MigrationApp = {
               <div class="sp-migration_list" ref="migration_list">
                 <table v-if="versions.length > 0" class="sp-list">
                   <tr v-for="item in versions" :key="item.version">
-                    <td class="sp-list-td__buttons">
+                    <td class="sp-list_buttons">
                     <span
                         :class="{'adm-btn': true, 'sp-disabled':running}"
                         v-text="'&equiv;'"
                         @click="buildVersionMenu($event, item)"
                     />
                     </td>
-                    <td class="sp-list-td__content">
+                    <td class="sp-list_content">
                       <div v-html="colorize('['+item.status+']'+ item.version +'[/]')"/>
                       <div v-if="item.file_status" v-text="item.file_status"/>
                       <div v-if="item.record_status" v-text="item.record_status"/>
@@ -388,10 +413,11 @@ export const MigrationApp = {
                     @click="running = false"
                 />
                 <input
-                    v-if="running"
+                    v-if="restart"
                     :value="getMessage('VERSION_RESTART')"
                     type="button"
                     :class="{'adm-btn': true}"
+                    @click="restartVersion"
                 />
               </div>
             </div>

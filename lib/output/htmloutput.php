@@ -19,8 +19,6 @@ class HtmlOutput extends AbstractOutput
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $msg = $this->applyFormat($msg);
-
         $this->messages[] = $msg;
     }
 
@@ -28,27 +26,7 @@ class HtmlOutput extends AbstractOutput
     {
         $msg = '[label]' . $msg . ' ' . $val . ' / ' . $total . '[/]';
 
-        echo '<div class="sp-progress">' . $this->applyFormat($msg) . '</div>';
+        echo '<div class="sp-progress">' . $msg . '</div>';
     }
 
-    private function applyFormat(string $msg)
-    {
-        if (str_contains($msg, 'http')) {
-            $msg = $this->makeLinksHtml($msg);
-        }
-
-        return $msg;
-    }
-
-    private static function makeLinksHtml($msg)
-    {
-        $regex = "/(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
-        if (preg_match_all($regex, $msg, $urls)) {
-            foreach (array_unique($urls[0]) as $url) {
-                $msg = str_replace($url, '<a target="_blank" href="' . $url . '">' . $url . '</a>', $msg);
-            }
-        }
-
-        return $msg;
-    }
 }

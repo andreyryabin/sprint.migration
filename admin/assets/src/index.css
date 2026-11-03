@@ -66,13 +66,15 @@
 
 .sp-migration_list {
     overflow: auto;
-    max-height: 440px;
+    min-height: 255px;
+    max-height: 455px;
 }
 
-/* sp-search + sp-migration_list + 12 */
+/* sp-search + sp-migration_list */
 .sp-migration_log {
     overflow: auto;
-    max-height: 497px;
+    min-height: 300px;
+    max-height: 500px;
 }
 
 .sp-noblock_body {
@@ -170,28 +172,31 @@ table.sp-list {
     border-collapse: collapse;
 }
 
+td.sp-list_content {
+    vertical-align: top;
+    text-align: left;
+    /*padding: 0 10px 10px;*/
+    /*width: 50px;*/
+}
+
+td.sp-list_buttons {
+    white-space: nowrap;
+    /*text-align: right;*/
+    vertical-align: top;
+    width: 45px;
+}
+
 table.sp-summary {
     border-collapse: collapse;
 }
 
-.sp-list-td__content {
-    vertical-align: top;
-    text-align: left;
-    padding: 0 10px 10px;
-    /*width: 50px;*/
-}
 
-.sp-list-td__content > div,
-.sp-migration_log > div {
+.sp-migration_list div,
+.sp-migration_log div {
     white-space: pre-wrap;
     margin-bottom: 5px;
 }
 
-.sp-list-td__buttons {
-    white-space: nowrap;
-    text-align: right;
-    vertical-align: top;
-}
 
 td.sp-summary-l {
     vertical-align: middle;

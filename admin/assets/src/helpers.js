@@ -40,7 +40,9 @@ export function getMessage(text) {
 }
 
 export function colorize(text) {
-    let out = String(text || '');
+    let out = escapeHtml(String(text || ''));
+
+    out = makeLinksHtml(out);
     for (const [key, val] of Object.entries(TextLabels)) {
         out = out.replaceAll(key, val)
     }
@@ -55,3 +57,23 @@ export function showContextMenu(node, menu) {
     }
 }
 
+export function makeLinksHtml(msg) {
+    if (!msg.includes('http')) {
+        return msg;
+    }
+
+    return msg.replace(
+        /(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,6}(\/[^\s()\[\]{}<>"'`]*)?/g,
+        (url) => `<a target="_blank" rel="noopener noreferrer" href="${url}">${url}</a>`
+    );
+
+}
+
+export function escapeHtml(str) {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
