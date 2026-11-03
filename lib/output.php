@@ -110,4 +110,9 @@ class Output
             $handler->outException($exception);
         }
     }
+
+    public function getMessages(): array
+    {
+        return $this->handlers[0]?->getMessages();
+    }
 }

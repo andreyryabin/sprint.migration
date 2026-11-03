@@ -22,11 +22,10 @@ if ($existsEvents && check_bitrix_sessid()) {
 
     /** @var $versionConfig VersionConfig */
     $vmFrom = new VersionManager($versionConfig);
-    $vmTo = new VersionManager($transferConfig);
 
     $transferresult = $vmFrom->transferMigration(
         $version,
-        $vmTo
+        $transferTo
     );
 
     $logger->outMessages($transferresult);

@@ -64,13 +64,13 @@
     height: 45px;
 }
 
-#migration_migrations {
+.sp-migration_list {
     overflow: auto;
     max-height: 440px;
 }
 
-/* sp-search + migration_migrations + 12 */
-#migration_log{
+/* sp-search + sp-migration_list + 12 */
+.sp-migration_log {
     overflow: auto;
     max-height: 497px;
 }
@@ -179,6 +179,12 @@ table.sp-summary {
     text-align: left;
     padding: 0 10px 10px;
     /*width: 50px;*/
+}
+
+.sp-list-td__content > div,
+.sp-migration_log > div {
+    white-space: pre-wrap;
+    margin-bottom: 5px;
 }
 
 .sp-list-td__buttons {

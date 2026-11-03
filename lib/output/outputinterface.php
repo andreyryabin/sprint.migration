@@ -25,4 +25,5 @@ interface OutputInterface
     public function outException(Throwable $exception): void;
 
     public function outMessages(array $messages = []): void;
+    public function getMessages(): array;
 }

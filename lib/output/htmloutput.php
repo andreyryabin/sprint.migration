@@ -4,27 +4,13 @@ namespace Sprint\Migration\Output;
 
 class HtmlOutput extends AbstractOutput
 {
-    private array $colors = [
-        '/'            => '</span>',
-        'tab'          => '<span class="sp-indent-20">',
-        'unknown'      => '<span class="sp-blue"">',
-        'installed'    => '<span class="sp-green">',
-        'new'          => '<span class="sp-red">',
-        'blue'         => '<span class="sp-blue">',
-        'pink'         => '<span class="sp-pink">',
-        'green'        => '<span class="sp-green">',
-        'up'           => '<span class="sp-green">',
-        'red'          => '<span class="sp-red">',
-        'down'         => '<span class="sp-red">',
-        'yellow'       => '<span class="sp-yellow">',
-        'label'        => '<span class="sp-label">',
-        'label:blue'   => '<span class="sp-label sp-label-blue">',
-        'label:pink'   => '<span class="sp-label sp-label-pink">',
-        'label:red'    => '<span class="sp-label sp-label-red">',
-        'label:green'  => '<span class="sp-label sp-label-green">',
-        'label:yellow' => '<span class="sp-label sp-label-yellow">',
-        'b'            => '<span class="sp-bold">',
-    ];
+
+    private array $messages = [];
+
+    public function getMessages(): array
+    {
+        return $this->messages;
+    }
 
     public function out(string $msg, ...$vars): void
     {
@@ -35,9 +21,7 @@ class HtmlOutput extends AbstractOutput
 
         $msg = $this->applyFormat($msg);
 
-        $class = $options['class'] ?? 'sp-out';
-
-        echo $msg ? '<div class="' . $class . '">' . $msg . '</div>' : '';
+        $this->messages[] = $msg;
     }
 
     public function outProgress(string $msg, int $val, int $total): void
@@ -49,10 +33,6 @@ class HtmlOutput extends AbstractOutput
 
     private function applyFormat(string $msg)
     {
-        foreach ($this->colors as $key => $val) {
-            $msg = str_replace('[' . $key . ']', $val, $msg);
-        }
-
         if (str_contains($msg, 'http')) {
             $msg = $this->makeLinksHtml($msg);
         }

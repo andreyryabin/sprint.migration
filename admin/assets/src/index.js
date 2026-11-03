@@ -5,5 +5,7 @@ import "./index.css";
 BX.ready(() => {
     let $app = BX('sprint_migration_app');
 
-    BitrixVue.createApp(MigrationApp, $app.dataset).mount($app);
+    let props = JSON.parse($app.dataset.props || '{}');
+
+    BitrixVue.createApp(MigrationApp, props).mount($app);
 });

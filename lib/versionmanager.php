@@ -53,6 +53,8 @@ class VersionManager
         $this->lastException = null;
 
         try {
+            $this->versionConfig->tryVersionName($versionName);
+
             $meta = $this->getVersionByName($versionName);
 
             if (!$meta || empty($meta['class'])) {
@@ -136,12 +138,34 @@ class VersionManager
      */
     public function getVersions(array $filter = []): array
     {
-        $filter = array_merge([
-            'status' => '',
-            'sort'   => '',
-            'actual' => 0,
-            'limit'  => 0,
-        ], $filter);
+        $view = $filter['view'] ?? '';
+
+        $filter = [
+            'status'   => $filter['status'] ?? '',
+            'tag'      => $filter['tag'] ?? '',
+            'search'   => $filter['search'] ?? '',
+            'sort'     => $filter['sort'] ?? '',
+            'actual'   => (int)($filter['actual'] ?? ''),
+            'older'    => (int)($filter['older'] ?? ''),
+            'modified' => (int)($filter['modified'] ?? ''),
+            'limit'    => (int)($filter['limit'] ?? ''),
+        ];
+
+        if ($view == "new") {
+            $filter['status'] = VersionEnum::STATUS_NEW;
+        } elseif ($view == "installed") {
+            $filter['status'] = VersionEnum::STATUS_INSTALLED;
+        } elseif ($view == "unknown") {
+            $filter['status'] = VersionEnum::STATUS_UNKNOWN;
+        } elseif ($view == "actual") {
+            $filter['actual'] = 1;
+        } elseif ($view == "tag") {
+            $filter['tag'] = $filter['search'] ?? '';
+        } elseif ($view == "modified") {
+            $filter['modified'] = 1;
+        } elseif ($view == "older") {
+            $filter['older'] = 1;
+        }
 
         $merge = [];
 
@@ -197,7 +221,7 @@ class VersionManager
                 continue;
             }
 
-            $result[] = $meta;
+            $result[] = $this->appendVersionLabels($meta);
 
             if ($filter['limit'] && count($result) == $filter['limit']) {
                 break;
@@ -205,6 +229,30 @@ class VersionManager
         }
 
         return $result;
+    }
+
+    private function appendVersionLabels(array $item)
+    {
+        $labels = [];
+        if ($item['older']) {
+            $labels[] = '[label:red]' . Locale::getMessage('OLDER_VERSION', ['#V1#' => $item['older']]) . '[/]';
+        }
+        if ($item['modified']) {
+            $labels[] = '[label:yellow]' . Locale::getMessage('MODIFIED_VERSION') . '[/]';
+        }
+        if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
+            $labels[] = '[label]' . Locale::getMessage('VERSION_UNKNOWN') . '[/]';
+        }
+
+        if ($item['tag']) {
+            $labels[] = Locale::getMessage('RELEASE_TAG', [
+                '#TAG#' => '[label:green]' . htmlspecialcharsbx($item['tag']) . '[/]',
+            ]);
+        }
+
+        $item['labels'] = implode(' ', $labels);
+
+        return $item;
     }
 
     /**
@@ -434,25 +482,12 @@ class VersionManager
     {
         $result = [];
 
-        if (in_array(
-            $versionName, [
-                VersionEnum::STATUS_INSTALLED,
-                VersionEnum::STATUS_UNKNOWN,
-            ]
-        )) {
-            $metas = $this->getVersions(['status' => $versionName]);
-        } elseif ($meta = $this->getVersionByName($versionName)) {
-            $metas = [$meta];
-        }
-
-        if (!empty($metas)) {
-            foreach ($metas as $meta) {
-                $result[] = $this->setMigrationTagByMeta($meta, $tag);
-            }
+        if ($meta = $this->getVersionByName($versionName)) {
+            $result[] = $this->setMigrationTagByMeta($meta, $tag);
         } else {
             $result[] = [
                 'message' => Locale::getMessage('SETTAG_ERROR1'),
-                'success' => 0,
+                'success' => false,
             ];
         }
 
@@ -462,9 +497,11 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function transferMigration(string $versionName, VersionManager $vmTo): array
+    public function transferMigration(string $versionName, string $toConfig): array
     {
         $result = [];
+
+        $vmTo = new VersionManager(ConfigManager::getInstance()->get($toConfig));
 
         if ($this->getVersionConfig()->getName() == $vmTo->getVersionConfig()->getName()) {
             $result[] = [
@@ -704,6 +741,7 @@ class VersionManager
      */
     protected function transferMigrationByMeta(array $meta, VersionManager $vmTo): array
     {
+
         $success = 0;
 
         if ($meta['is_file']) {

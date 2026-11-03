@@ -6,7 +6,7 @@ use Sprint\Migration\Exceptions\ConsoleException;
 
 class ConsoleOutput extends AbstractOutput
 {
-    private array $colors  = [
+    private array $colors = [
         '/'            => "\x1b[0m",
         'tab'          => "\x1b[0m",
         'unknown'      => "\x1b[0;34m",
@@ -27,7 +27,12 @@ class ConsoleOutput extends AbstractOutput
         'label:yellow' => "\x1b[103;30m",
         'b'            => "\x1b[1m",
     ];
-    private bool  $needEol = false;
+    private bool $needEol = false;
+
+    public function getMessages(): array
+    {
+        return [];
+    }
 
     public function outProgress(string $msg, int $val, int $total): void
     {

@@ -153,9 +153,9 @@ abstract class AbstractOutput implements OutputInterface
             $exception->getLine()
         );
 
-        foreach ($exception->getTrace() as $err) {
-            $this->out('%s:%d', $makeRelative($err['file'], 2), $err['line']);
-        }
+//        foreach ($exception->getTrace() as $err) {
+//            $this->out('%s:%d', $makeRelative($err['file']??'', 2), $err['line']);
+//        }
     }
 
 
