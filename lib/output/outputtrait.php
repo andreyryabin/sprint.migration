@@ -47,11 +47,6 @@ trait OutputTrait
         Output::getInstance()->outDiff($arr1, $arr2);
     }
 
-    protected function outMessages(array $messages = []): void
-    {
-        Output::getInstance()->outMessages($messages);
-    }
-
     protected function outException(Throwable $exception): void
     {
         Output::getInstance()->outException($exception);

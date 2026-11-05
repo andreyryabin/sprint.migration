@@ -55,15 +55,4 @@ class LoggerOutput implements OutputInterface
     {
         $this->logger->error($exception->getMessage());
     }
-
-    public function outMessages(array $messages = []): void
-    {
-        foreach ($messages as $val) {
-            if ($val['success']) {
-                $this->logger->notice($val['message']);
-            } else {
-                $this->logger->error($val['message']);
-            }
-        }
-    }
 }

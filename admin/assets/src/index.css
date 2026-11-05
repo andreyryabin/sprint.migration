@@ -60,9 +60,6 @@
     background: #fff;
 }
 
-.sp-search {
-    height: 45px;
-}
 
 .sp-migration_list {
     overflow: auto;
@@ -186,29 +183,13 @@ td.sp-list_buttons {
     width: 45px;
 }
 
-table.sp-summary {
-    border-collapse: collapse;
+.sp-search_summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px 10px 0;
 }
 
-
-.sp-migration_list div,
-.sp-migration_log div {
-    white-space: pre-wrap;
-    margin-bottom: 5px;
-}
-
-
-td.sp-summary-l {
-    vertical-align: middle;
-    text-align: left;
-    padding: 5px 5px 5px 0;
-}
-
-td.sp-summary-r {
-    vertical-align: middle;
-    text-align: left;
-    padding: 5px 0 5px 5px;
-}
 
 .sp-item-installed,
 .sp-item-new,
@@ -341,17 +322,16 @@ a.sp-item-unknown:visited {
     opacity: 0.7;
 }
 
-.sp-out {
+.sp-migration_log > div,
+.sp-list_content > div {
     white-space: pre-wrap;
     margin-bottom: 5px;
 }
 
-.sp-out:last-child {
-    margin-bottom: 0;
-}
-
-#migration_container {
-    position: relative;
+.sp-migration_buttons {
+    /*display: flex;*/
+    /*justify-content: space-between;*/
+    /*align-content: center;*/
 }
 
 .migration_loading {

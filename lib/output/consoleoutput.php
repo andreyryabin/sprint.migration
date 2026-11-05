@@ -29,37 +29,19 @@ class ConsoleOutput extends AbstractOutput
     ];
     private bool $needEol = false;
 
-    public function getMessages(): array
-    {
-        return [];
-    }
-
     public function outProgress(string $msg, int $val, int $total): void
     {
         $this->needEol = true;
 
         $msg = '[label]' . $msg . ' ' . $val . ' / ' . $total . '[/]';
 
-        fwrite(STDOUT, "\r" . $this->applyFormat($msg));
+        fwrite(STDOUT, "\r" . $this->colorize($msg));
     }
 
-    private function applyFormat($msg)
+
+    protected function makeMessage(string $msg, string $type): void
     {
-        foreach ($this->colors as $key => $val) {
-            $msg = str_replace('[' . $key . ']', $val, $msg);
-        }
-
-        return $msg;
-    }
-
-    public function out(string $msg, ...$vars): void
-    {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-
-        $msg = $this->applyFormat($msg);
+        $msg = $this->colorize('[' . $type . ']' . $msg . '[/]');
 
         if ($this->needEol) {
             $this->needEol = false;
@@ -113,5 +95,14 @@ class ConsoleOutput extends AbstractOutput
         foreach ($field['select'] as $item) {
             $this->out(' > ' . $item['value'] . ' (' . $item['title'] . ')');
         }
+    }
+
+    private function colorize($msg)
+    {
+        foreach ($this->colors as $key => $val) {
+            $msg = str_replace('[' . $key . ']', $val, $msg);
+        }
+
+        return $msg;
     }
 }

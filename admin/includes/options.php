@@ -6,7 +6,7 @@ use Sprint\Migration\Module;
 use Sprint\Migration\Out;
 
 $request = Bitrix\Main\Context::getCurrent()->getRequest();
-$output = new \Sprint\Migration\Output\HtmlOutput();
+$output = new \Sprint\Migration\Output\BrowserOutput();
 
 if ($request->isPost() && check_bitrix_sessid()) {
     if ($request->getPost("options_remove")) {

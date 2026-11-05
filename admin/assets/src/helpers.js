@@ -1,16 +1,6 @@
 import {Loc} from "main.core";
 
-export const VersionStatus = {
-    'STATUS_INSTALLED': 'installed',
-    'STATUS_NEW': 'new',
-    'STATUS_UNKNOWN': 'unknown',
-}
-export const VersionAction = {
-    'ACTION_UP': 'up',
-    'ACTION_DOWN': 'down',
-}
-
-export const TextLabels = {
+const MessageLabels = {
     '[/]': '</span>',
     '[tab]': '<span class="sp-indent-20">',
     '[unknown]': '<span class="sp-blue">',
@@ -35,6 +25,17 @@ export const TextLabels = {
     '[b]': '<span class="sp-bold">',
 }
 
+const MessageTypes = {
+    'new': 'sp-red',
+    'installed': 'sp-green',
+    'unknown': 'sp-blue',
+    'info': 'sp-blue',
+    'error': 'sp-red',
+    'warning': 'sp-red',
+    'success': 'sp-green',
+    'notice': 'sp-green',
+}
+
 export function getMessage(text) {
     return Loc.hasMessage('SPRINT_MIGRATION_RU_' + text) ? Loc.getMessage('SPRINT_MIGRATION_RU_' + text) : text;
 }
@@ -43,10 +44,18 @@ export function colorize(text) {
     let out = escapeHtml(String(text || ''));
 
     out = makeLinksHtml(out);
-    for (const [key, val] of Object.entries(TextLabels)) {
+    for (const [key, val] of Object.entries(MessageLabels)) {
         out = out.replaceAll(key, val)
     }
     return out
+}
+
+export function colorbind(type) {
+    return MessageTypes[type] ? {'class': MessageTypes[type]} : {};
+}
+
+export function progressMessage(item) {
+    return `${item.message}: ${item.value} / ${item.total}`;
 }
 
 export function showContextMenu(node, menu) {

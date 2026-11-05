@@ -1,14 +1,19 @@
 import {ajax} from "main.core";
-
-import {colorize, getMessage, showContextMenu, VersionAction, VersionStatus} from "../helpers";
+import {markRaw} from "ui.vue3";
+import {colorbind, colorize, getMessage, progressMessage, showContextMenu,} from "../helpers";
 
 import {MigrationFilter} from "./MigrationFilter"
-import {MigrationLog} from "./MigrationLog"
+
+const STATUS_INSTALLED = 'installed';
+const STATUS_NEW = 'new';
+const STATUS_UNKNOWN = 'unknown';
+
+const ACTION_UP = 'up';
+const ACTION_DOWN = 'down';
 
 export const MigrationApp = {
     components: {
         MigrationFilter,
-        MigrationLog,
     },
 
     props: {
@@ -33,16 +38,18 @@ export const MigrationApp = {
             default: ''
         },
     },
+
     data() {
         return {
             versions: [],
-            builders: [],
             messages: [],
+            progress: [],
+            builders: [],
             filter: {},
             selectedBuilder: '',
             loading: 0,
             running: false,
-            restart: false,
+            replay: false,
         };
     },
     created() {
@@ -50,25 +57,74 @@ export const MigrationApp = {
             localStorage.getItem('sprint_migration_filter_' + this.config) || '{"view":"actual"}'
         );
     },
+
+    computed: {
+        summaryCount() {
+            let summary = {'new': 0, 'installed': 0, 'unknown': 0};
+            this.versions.forEach(({status}) => {
+                if (status === STATUS_NEW) summary.new++;
+                if (status === STATUS_INSTALLED) summary.installed++;
+                if (status === STATUS_UNKNOWN) summary.unknown++;
+            });
+            return summary;
+        },
+
+        summaryLabels() {
+            return colorize([
+                `[label:red]${this.summaryCount.new}[/]`,
+                `[label:green]${this.summaryCount.installed}[/]`,
+            ].join(''));
+        },
+
+        versionsCount() {
+            return this.versions.length;
+        },
+        messagesCount() {
+            return this.messages.length;
+        },
+
+    },
+
     watch: {
         filter(newValue, oldValue) {
             if (newValue !== oldValue) {
                 localStorage.setItem('sprint_migration_filter_' + this.config, JSON.stringify(newValue));
                 this.refresh();
             }
-        }
+        },
+        versionsCount() {
+            this.$nextTick(() => {
+                const div = this.$refs.migration_list;
+                if (div) div.scrollTop = div.scrollHeight;
+            });
+        },
+        messagesCount() {
+            this.$nextTick(() => {
+                const div = this.$refs.migration_log;
+                if (div) div.scrollTop = div.scrollHeight;
+            });
+        },
     },
     methods: {
         getMessage,
+        progressMessage,
         colorize,
+        colorbind,
 
         processResponse(resp) {
             if (resp.data && resp.data.messages) {
-                resp.data.messages.forEach(message => this.messages.push(message));
+                this.messages.push(...resp.data.messages.map(markRaw));
+            }
+
+            if (resp.data && resp.data.progress) {
+                this.progress = resp.data.progress.map(markRaw);
             }
 
             if (resp && resp.errors) {
-                resp.errors.forEach(item => this.messages.push('[error]' + item.message + '[/]'));
+                resp.errors.forEach(item => this.messages.push(markRaw({
+                    type: 'error',
+                    message: item.message
+                })));
             }
         },
 
@@ -91,17 +147,12 @@ export const MigrationApp = {
             this.execAction('refresh', {filter: this.filter})
                 .then((data) => {
                     this.versions = data.versions || [];
-
-                    this.$nextTick(() => {
-                        const log = this.$refs.migration_list;
-                        if (log) log.scrollTop = log.scrollHeight;
-                    });
                 });
         },
 
         async execVersion(version, action, params, settag) {
             this.running = true;
-            this.restart = false;
+            this.replay = false;
             try {
                 this.execLog(version, action, 'start');
 
@@ -109,6 +160,12 @@ export const MigrationApp = {
                 while (true) {
                     if (!this.running) {
                         this.execLog(version, action, 'canceled');
+                        this.replay = {
+                            version,
+                            action,
+                            params: currentParams,
+                            settag
+                        }
                         return false;
                     }
 
@@ -126,7 +183,7 @@ export const MigrationApp = {
 
                     if (!data.success) {
                         this.execLog(version, action, 'error');
-                        this.restart = {
+                        this.replay = {
                             version,
                             action,
                             params: currentParams,
@@ -135,6 +192,7 @@ export const MigrationApp = {
                         return false;
                     }
 
+                    this.execLog(version, action, 'finish');
                     this.pickVersion(data.meta);
                     return true;
                 }
@@ -157,18 +215,18 @@ export const MigrationApp = {
         },
 
         execLog(version, action, msg) {
-            this.messages.push('[info]' + version + '::' + action + '() ' + msg + '[/]');
+            this.messages.push(markRaw({type: 'info', message: version + '::' + action + '() ' + msg}));
         },
 
         getVersionsByAction(action) {
-            if (action === VersionAction.ACTION_DOWN) {
+            if (action === ACTION_DOWN) {
                 return this.versions
-                    .filter((item) => item.status === VersionStatus.STATUS_INSTALLED)
+                    .filter((item) => item.status === STATUS_INSTALLED)
                     .map((item) => item.version)
                     .reverse();
             }
             return this.versions
-                .filter(item => item.status === VersionStatus.STATUS_NEW)
+                .filter(item => item.status === STATUS_NEW)
                 .map((item) => item.version);
         },
 
@@ -183,40 +241,40 @@ export const MigrationApp = {
         },
 
         upVersion(version) {
-            this.execVersion(version, VersionAction.ACTION_UP, {}, '');
+            this.execVersion(version, ACTION_UP, {}, '');
         },
 
         downVersion(version, params) {
-            this.execVersion(version, VersionAction.ACTION_DOWN, {}, '');
+            this.execVersion(version, ACTION_DOWN, {}, '');
         },
 
-        restartVersion() {
-            if (this.restart && this.restart.version) {
+        replayVersion() {
+            if (this.replay && this.replay.version) {
                 this.execVersion(
-                    this.restart.version,
-                    this.restart.action,
-                    this.restart.params,
-                    this.restart.settag
+                    this.replay.version,
+                    this.replay.action,
+                    this.replay.params,
+                    this.replay.settag
                 );
             }
         },
 
         upAll() {
             if (confirm('Confirm install migrations')) {
-                this.execAll(VersionAction.ACTION_UP, '')
+                this.execAll(ACTION_UP, '')
             }
         },
 
         downAll() {
             if (confirm('Confirm rollback migrations')) {
-                this.execAll(VersionAction.ACTION_DOWN, '')
+                this.execAll(ACTION_DOWN, '')
             }
         },
 
         upAllWithTag() {
             let settag = prompt('Set migrations tag');
             if (settag) {
-                this.execAll(VersionAction.ACTION_UP, settag)
+                this.execAll(ACTION_UP, settag)
             }
         },
 
@@ -230,10 +288,10 @@ export const MigrationApp = {
             });
         },
 
-        setTagVersion(version, defaultTag) {
+        setVersionTag(version, defaultTag) {
             let settag = prompt('Set migration tag', defaultTag);
             if (settag) {
-                this.execAction('setTagVersion', {
+                this.execAction('setVersionTag', {
                     version: version,
                     settag: settag
                 }).then((data) => {
@@ -279,40 +337,40 @@ export const MigrationApp = {
         buildVersionMenu(e, item) {
             let menu = [];
 
-            if (item.status === VersionStatus.STATUS_NEW) {
+            if (item.status === STATUS_NEW) {
                 menu.push({
                     TEXT: getMessage('VERSION_UP'),
                     ONCLICK: () => this.upVersion(item.version),
                 });
                 menu.push({
                     TEXT: getMessage('MARK_AS_INSTALLED'),
-                    ONCLICK: () => this.markVersion(item.version, VersionStatus.STATUS_INSTALLED),
+                    ONCLICK: () => this.markVersion(item.version, STATUS_INSTALLED),
                 });
             }
 
-            if (item.status === VersionStatus.STATUS_INSTALLED) {
+            if (item.status === STATUS_INSTALLED) {
                 menu.push({
                     TEXT: getMessage('VERSION_DOWN'),
                     ONCLICK: () => this.downVersion(item.version),
                 });
                 menu.push({
                     TEXT: getMessage('SETTAG'),
-                    ONCLICK: () => this.setTagVersion(item.version, item.tag),
+                    ONCLICK: () => this.setVersionTag(item.version, item.tag),
                 });
                 menu.push({
                     TEXT: getMessage('MARK_AS_NEW'),
-                    ONCLICK: () => this.markVersion(item.version, VersionStatus.STATUS_NEW),
+                    ONCLICK: () => this.markVersion(item.version, STATUS_NEW),
                 });
             }
 
-            if (item.status === VersionStatus.STATUS_UNKNOWN) {
+            if (item.status === STATUS_UNKNOWN) {
                 menu.push({
                     TEXT: getMessage('SETTAG'),
-                    ONCLICK: () => this.setTagVersion(item.version, item.tag),
+                    ONCLICK: () => this.setVersionTag(item.version, item.tag),
                 });
             }
 
-            if (item.status !== VersionStatus.STATUS_UNKNOWN && this.webdir) {
+            if (item.status !== STATUS_UNKNOWN && this.webdir) {
                 menu.push({
                     TEXT: getMessage('VIEW_FILE'),
                     LINK: '/bitrix/admin/fileman_file_view.php?' + (new URLSearchParams({
@@ -351,10 +409,16 @@ export const MigrationApp = {
         <div class="sp-table">
           <div class="sp-row2">
             <div class="sp-col sp-col-scroll sp-white">
-              <MigrationFilter
-                  v-model:value="filter"
-                  :class="{'sp-disabled':running }"
-              />
+              <div class="sp-search_summary">
+                <MigrationFilter
+                    v-model:value="filter"
+                    :class="{'sp-disabled':running }"
+                />
+                <div
+                    class="sp-summary"
+                    v-html="summaryLabels"
+                />
+              </div>
               <div class="sp-migration_list" ref="migration_list">
                 <table v-if="versions.length > 0" class="sp-list">
                   <tr v-for="item in versions" :key="item.version">
@@ -366,7 +430,7 @@ export const MigrationApp = {
                     />
                     </td>
                     <td class="sp-list_content">
-                      <div v-html="colorize('['+item.status+']'+ item.version +'[/]')"/>
+                      <div v-bind="colorbind(item.status)" v-text="item.version"/>
                       <div v-if="item.file_status" v-text="item.file_status"/>
                       <div v-if="item.record_status" v-text="item.record_status"/>
                       <div v-if="item.labels" v-html="colorize(item.labels)"/>
@@ -374,11 +438,17 @@ export const MigrationApp = {
                     </td>
                   </tr>
                 </table>
-                <div v-if="versions.length === 0" v-text="getMessage('LIST_EMPTY')"/>
               </div>
             </div>
             <div class="sp-col sp-col-scroll">
-              <MigrationLog :messages="messages"/>
+              <div class="sp-migration_log" ref="migration_log">
+                <div
+                    v-for="(item, index) in messages"
+                    v-bind="colorbind(item.type)"
+                    :key="index"
+                    v-text="item.message"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -402,24 +472,28 @@ export const MigrationApp = {
                   v-text="getMessage('LOADING_TEXT')"
               />
             </div>
-            <div class="sp-col">
-              <div class="sp-migration_progress"></div>
-              <div class="sp-migration_buttons">
-                <input
-                    v-if="running"
-                    :value="getMessage('VERSION_STOP')"
-                    type="button"
-                    :class="{'adm-btn': true}"
-                    @click="running = false"
-                />
-                <input
-                    v-if="restart"
-                    :value="getMessage('VERSION_RESTART')"
-                    type="button"
-                    :class="{'adm-btn': true}"
-                    @click="restartVersion"
-                />
-              </div>
+            <div class="sp-col sp-migration_progress">
+              <input
+                  v-if="running"
+                  value="&#10073;&#10073;"
+                  type="button"
+                  :class="{'adm-btn': true}"
+                  @click="running = false"
+              />
+              <input
+                  v-if="replay"
+                  value="&#9658;"
+                  type="button"
+                  :class="{'adm-btn': true}"
+                  @click="replayVersion"
+              />
+
+              <div
+                  v-for="(item, index) in progress"
+                  class="migration_loading"
+                  :key="index"
+                  v-text="progressMessage(item)"
+              />
             </div>
           </div>
         </div>

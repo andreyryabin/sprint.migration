@@ -4,6 +4,27 @@ namespace Sprint\Migration\Output;
 
 abstract class AbstractOutput implements OutputInterface
 {
+
+    abstract protected function makeMessage(string $msg, string $type): void;
+
+    abstract protected function makeProgress(string $msg, int $val, int $total): void;
+
+
+    public function out(string $msg, ...$vars): void
+    {
+        if (func_num_args() > 1) {
+            $params = func_get_args();
+            $msg = call_user_func_array('sprintf', $params);
+        }
+
+        $this->makeMessage($msg, '');
+    }
+
+    public function outProgress(string $msg, int $val, int $total): void
+    {
+        $this->makeProgress($msg, $val, $total);
+    }
+
     public function outInfo(string $msg, ...$vars): void
     {
         if (func_num_args() > 1) {
@@ -11,7 +32,7 @@ abstract class AbstractOutput implements OutputInterface
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $this->out('[blue]' . $msg . '[/]');
+        $this->makeMessage($msg, 'info');
     }
 
     public function outSuccess(string $msg, ...$vars): void
@@ -21,7 +42,7 @@ abstract class AbstractOutput implements OutputInterface
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $this->out('[label:green]' . $msg . '[/]');
+        $this->makeMessage($msg, 'success');
     }
 
     public function outNotice(string $msg, ...$vars): void
@@ -31,7 +52,7 @@ abstract class AbstractOutput implements OutputInterface
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $this->out('[green]' . $msg . '[/]');
+        $this->makeMessage($msg, 'notice');
     }
 
     public function outError(string $msg, ...$vars): void
@@ -41,7 +62,7 @@ abstract class AbstractOutput implements OutputInterface
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $this->out('[label:red]' . $msg . '[/]');
+        $this->makeMessage($msg, 'error');
     }
 
     public function outWarning(string $msg, ...$vars): void
@@ -51,18 +72,14 @@ abstract class AbstractOutput implements OutputInterface
             $msg = call_user_func_array('sprintf', $params);
         }
 
-        $this->out('[red]' . $msg . '[/]');
+        $this->makeMessage($msg, 'warning');
     }
 
     public function outDiff(array $arr1, array $arr2): void
     {
-        $diff1 = $this->getArrayFlat(
-            $this->getArrayDiff($arr2, $arr1)
-        );
+        $diff1 = $this->getFlatArray($arr1);
 
-        $diff2 = $this->getArrayFlat(
-            $this->getArrayDiff($arr1, $arr2)
-        );
+        $diff2 = $this->getFlatArray($arr2);
 
         $diff = array_merge($diff1, $diff2);
 
@@ -77,59 +94,6 @@ abstract class AbstractOutput implements OutputInterface
         }
     }
 
-    private function getArrayFlat(array $arr): array
-    {
-        $out = [];
-        $this->makeArrayFlatRecursive($out, '', $arr);
-        return $out;
-    }
-
-    private function makeArrayFlatRecursive(array &$out, $key, array $in): void
-    {
-        foreach ($in as $k => $v) {
-            if (is_array($v)) {
-                $this->makeArrayFlatRecursive($out, $key . $k . '.', $v);
-            } else {
-                $out[$key . $k] = $v;
-            }
-        }
-    }
-
-    private function getArrayDiff(array $array1, array $array2): array
-    {
-        return $this->makeArrayDiffRecursive($array1, $array2);
-    }
-
-    private function makeArrayDiffRecursive(array $array1, array $array2): array
-    {
-        $diff = [];
-        foreach ($array1 as $key => $value) {
-            if (is_array($value)) {
-                if (!array_key_exists($key, $array2) || !is_array($array2[$key])) {
-                    $diff[$key] = $value;
-                } else {
-                    $newDiff = $this->makeArrayDiffRecursive($value, $array2[$key]);
-                    if (!empty($newDiff)) {
-                        $diff[$key] = $newDiff;
-                    }
-                }
-            } elseif (!array_key_exists($key, $array2) || $array2[$key] !== $value) {
-                $diff[$key] = $value;
-            }
-        }
-        return $diff;
-    }
-
-    public function outMessages(array $messages = []): void
-    {
-        foreach ($messages as $val) {
-            if ($val['success']) {
-                $this->outNotice($val['message']);
-            } else {
-                $this->outWarning($val['message']);
-            }
-        }
-    }
 
     public function outException(?\Throwable $exception = null): void
     {
@@ -158,5 +122,23 @@ abstract class AbstractOutput implements OutputInterface
 //        }
     }
 
+
+    private function getFlatArray(array $arr): array
+    {
+        $out = [];
+        $this->makeArrayFlatRecursive($out, '', $arr);
+        return $out;
+    }
+
+    private function makeArrayFlatRecursive(array &$out, $key, array $in): void
+    {
+        foreach ($in as $k => $v) {
+            if (is_array($v)) {
+                $this->makeArrayFlatRecursive($out, $key . $k . '.', $v);
+            } else {
+                $out[$key . $k] = $v;
+            }
+        }
+    }
 
 }

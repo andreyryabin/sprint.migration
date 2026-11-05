@@ -3,9 +3,9 @@
 
 use Sprint\Migration\Builder;
 use Sprint\Migration\Locale;
-use Sprint\Migration\Output\HtmlOutput;
+use Sprint\Migration\Output\BrowserOutput;
 
-$output = new HtmlOutput;
+$output = new BrowserOutput;
 
 echo '<form method="post">';
 $output->out($builder->getTitle());

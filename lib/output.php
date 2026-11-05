@@ -97,13 +97,6 @@ class Output
         }
     }
 
-    public function outMessages(array $messages = []): void
-    {
-        foreach ($this->handlers as $handler) {
-            $handler->outMessages($messages);
-        }
-    }
-
     public function outException(Throwable $exception): void
     {
         foreach ($this->handlers as $handler) {
@@ -111,8 +104,4 @@ class Output
         }
     }
 
-    public function getMessages(): array
-    {
-        return $this->handlers[0]?->getMessages();
-    }
 }

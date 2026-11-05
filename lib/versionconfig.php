@@ -26,7 +26,6 @@ use Sprint\Migration\Builders\OptionBuilder;
 use Sprint\Migration\Builders\OrderPropertiesBuilder;
 use Sprint\Migration\Builders\SaleDiscountBuilder;
 use Sprint\Migration\Builders\SubscribeBuilder;
-use Sprint\Migration\Builders\TransferBuilder;
 use Sprint\Migration\Builders\UserGroupBuilder;
 use Sprint\Migration\Builders\UserOptionsBuilder;
 use Sprint\Migration\Builders\UserTypeEntitiesBuilder;
@@ -297,7 +296,6 @@ class VersionConfig
             'MedialibElementsBuilder'     => MedialibElementsBuilder::class,
             'BlankBuilder'                => BlankBuilder::class,
             'CacheCleanerBuilder'         => CacheCleanerBuilder::class,
-            'TransferBuilder'             => TransferBuilder::class,
         ];
     }
 

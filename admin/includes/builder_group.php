@@ -1,12 +1,12 @@
 <?php
 
-use Sprint\Migration\Output\HtmlOutput;
+use Sprint\Migration\Output\BrowserOutput;
 use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 
 /** @var $versionConfig VersionConfig */
 $versionManager = new VersionManager($versionConfig);
-$output = new HtmlOutput;
+$output = new BrowserOutput;
 $builderList = $versionConfig->getVal('version_builders', []);
 
 $builderTree = [];
