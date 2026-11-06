@@ -352,7 +352,7 @@
         "RIGHT_W"                => "Full access",
         "MODIFIED_VERSION"       => "Migration file was modified after install",
         "OLDER_VERSION"          => "Migration file created in a later version of the module #V1#",
-        "RELEASE_TAG"            => "Release tag: #TAG#",
+        "RELEASE_TAG"            => "Release tag: [label:green]#TAG#[/]",
         "SETTAG"                 => "Set tag",
         "SETTAG_OK"              => "Tag for migration #VERSION# setting",
         "SETTAG_ERROR1"          => "Migration #VERSION# not found",

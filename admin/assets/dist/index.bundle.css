@@ -344,20 +344,35 @@ a.sp-item-unknown:visited {
     /*align-content: center;*/
 }
 
-.migration_loading {
-    /*position: fixed;*/
-    /*top: 20px;*/
-    /*right: 40px;*/
-    /*z-index: 200;*/
+.sp-loading {
     display: inline-block;
     background: url("/bitrix/js/main/core/images/wait.gif") 10px center no-repeat scroll rgb(252, 247, 209);
     border: 1px solid rgb(225, 181, 45);
     color: black;
     font-family: Verdana, Arial, sans-serif;
     font-size: 11px;
-    /*padding: 8px 30px 8px 38px;*/
     padding: 7px 18px 9px 38px;
     text-align: center;
     border-radius: 4px;
     margin-left: 2px;
+}
+
+.sp-progress {
+    display: inline-block;
+    background: rgb(252, 247, 209);
+    border: 1px solid rgb(225, 181, 45);
+    color: black;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    padding: 7px 10px 9px;
+    text-align: center;
+    border-radius: 4px;
+}
+
+.sp-migration_progress .sp-progress {
+    margin: 2px;
+}
+
+input.adm-btn.sp-play {
+    width: 120px;
 }

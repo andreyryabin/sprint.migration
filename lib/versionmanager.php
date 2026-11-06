@@ -250,12 +250,6 @@ class VersionManager
             $labels[] = '[label]' . Locale::getMessage('VERSION_UNKNOWN') . '[/]';
         }
 
-        if ($item['tag']) {
-            $labels[] = Locale::getMessage('RELEASE_TAG', [
-                '#TAG#' => '[label:green]' . htmlspecialcharsbx($item['tag']) . '[/]',
-            ]);
-        }
-
         $item['labels'] = implode(' ', $labels);
     }
 
@@ -582,6 +576,7 @@ class VersionManager
             'tag'           => '',
             'file_status'   => '',
             'record_status' => '',
+            'tag_status'    => '',
             'labels'        => [],
         ];
 
@@ -597,6 +592,13 @@ class VersionManager
 
         if ($isRecord) {
             $meta['tag'] = $record['tag'];
+
+            if ($meta['tag']) {
+                $meta['tag_status'] = Locale::getMessage('RELEASE_TAG', [
+                    '#TAG#' => htmlspecialcharsbx($meta['tag']),
+                ]);
+            }
+
 
             $meta['record_status'] = $this->humanStatus(
                 Locale::getMessage('META_INSTALLED'),

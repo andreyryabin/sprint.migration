@@ -240,11 +240,8 @@ class Console
                 $this->output->out('│ ' . $item['record_status']);
             }
 
-            if ($item['tag']) {
-                $tagMsg = Locale::getMessage('RELEASE_TAG', [
-                    '#TAG#' => '[label:green]' . $item['tag'] . '[/]',
-                ]);
-                $this->output->out('│ ' . $tagMsg);
+            if ($item['tag_status']) {
+                $this->output->out('│ ' . $item['tag_status']);
             }
 
             if (!empty($versionLabels)) {

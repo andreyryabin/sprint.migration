@@ -83,7 +83,7 @@ class Main extends Controller
         $success = $this->versionManager->markMigration($version, $status);
 
         if ($success) {
-            $this->output->outNotice(
+            $this->output->outInfo(
                 Locale::getMessage('MARK_OK', ['#VERSION#' => $version, '#STATUS#' => $status])
             );
         } else {
@@ -106,7 +106,7 @@ class Main extends Controller
         $success = $this->versionManager->deleteMigration($version);
 
         if ($success) {
-            $this->output->outNotice(
+            $this->output->outInfo(
                 Locale::getMessage('DELETE_OK', ['#VERSION#' => $version])
             );
         } else {
@@ -127,7 +127,7 @@ class Main extends Controller
         $success = $this->versionManager->moveMigration($version, $toConfig);
 
         if ($success) {
-            $this->output->outNotice(
+            $this->output->outInfo(
                 Locale::getMessage('TRANSFER_OK', ['#VERSION#' => $version])
             );
         } else {
@@ -148,7 +148,7 @@ class Main extends Controller
         $success = $this->versionManager->setMigrationTag($version, $settag);
 
         if ($success) {
-            $this->output->outNotice(
+            $this->output->outInfo(
                 Locale::getMessage('SETTAG_OK', ['#VERSION#' => $version])
             );
         } else {
@@ -160,6 +160,27 @@ class Main extends Controller
         return array_merge([
             'meta' => $this->versionManager->getVersionByName($version)
         ], $this->output->getLog());
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @throws MigrationException
+     */
+    public function setAllTagAction(array $versions, string $settag): array
+    {
+        foreach ($versions as $version) {
+            $success = $this->versionManager->setMigrationTag($version, $settag);
+            if ($success) {
+                $this->output->outInfo(
+                    Locale::getMessage('SETTAG_OK', ['#VERSION#' => $version])
+                );
+            } else {
+                $this->output->outWarning(
+                    Locale::getMessage('SETTAG_ERROR1', ['#VERSION#' => $version])
+                );
+            }
+        }
+        return $this->output->getLog();
     }
 
     /**
