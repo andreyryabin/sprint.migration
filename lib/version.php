@@ -7,19 +7,17 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exchange\ExchangeManager;
 use Sprint\Migration\Interfaces\RestartableInterface;
 use Sprint\Migration\Output\OutputTrait;
-use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Traits\RestartableTrait;
 use Sprint\Migration\Traits\VersionConfigTrait;
 
 class Version implements RestartableInterface
 {
-    use HelperManagerTrait;
     use OutputTrait;
     use RestartableTrait;
     use VersionConfigTrait;
 
-    protected $author        = "";
-    protected $description   = "";
+    protected $author = "";
+    protected $description = "";
     protected $moduleVersion = "";
     /**
      * @deprecated Используете $this->checkRequiredVersions(['Version1','Version1'])
@@ -102,6 +100,11 @@ class Version implements RestartableInterface
         );
 
         return new ExchangeManager($this, $dir);
+    }
+
+    public function getHelperManager(): HelperManager
+    {
+        return new HelperManager($this->getOutput());
     }
 }
 

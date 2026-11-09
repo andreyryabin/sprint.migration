@@ -31,6 +31,7 @@ use Sprint\Migration\Helpers\UserHelper;
 use Sprint\Migration\Helpers\UserOptionsHelper;
 use Sprint\Migration\Helpers\UserTypeEntityHelper;
 use Sprint\Migration\Helpers\VoteHelper;
+use Sprint\Migration\Output\OutputInterface;
 
 /**
  * @method IblockHelper             Iblock()
@@ -59,47 +60,27 @@ use Sprint\Migration\Helpers\VoteHelper;
  * @method IblockExchangeHelper     IblockExchange()
  * @method HlblockExchangeHelper    HlblockExchange()
  * @method MedialibExchangeHelper   MedialibExchange()
- * @method OrderPropertiesHelper   OrderProperties()
- * @method CultureHelper   Culture()
+ * @method OrderPropertiesHelper    OrderProperties()
+ * @method CultureHelper            Culture()
  */
 class HelperManager
 {
-    private static ?HelperManager $instance = null;
     private array $registered = [];
-    private array $cache = [];
+    private array $objects = [];
 
-    public static function getInstance(): HelperManager
+    public function __construct(
+        private ?OutputInterface $output = null,
+    )
     {
-        if (is_null(static::$instance)) {
-            static::$instance = new static();
-        }
-        return static::$instance;
-    }
-
-    /**
-     * @param $name
-     * @param $arguments
-     *
-     * @return Helper
-     * @throws HelperException
-     */
-    public function __call($name, $arguments)
-    {
-        return $this->callHelper($name);
-    }
-
-    public function registerHelper($name, $class)
-    {
-        $this->registered[$name] = $class;
     }
 
     /**
      * @throws HelperException
      */
-    protected function callHelper(string $name): Helper
+    public function __call($name, $arguments): Helper
     {
-        if (isset($this->cache[$name])) {
-            return $this->cache[$name];
+        if (isset($this->objects[$name])) {
+            return $this->objects[$name];
         }
 
         $default = '\\Sprint\\Migration\\Helpers\\' . $name . 'Helper';
@@ -114,12 +95,20 @@ class HelperManager
             throw new HelperException("Class \"$class\" is not helper");
         }
 
+        $ob->setOutput($this->output);
+
         if (!$ob->isEnabled()) {
             throw new HelperException("Helper \"$name\" disabled");
         }
 
-        $this->cache[$name] = $ob;
+        $this->objects[$name] = $ob;
+
         return $ob;
 
+    }
+
+    public function registerHelper($name, $class): void
+    {
+        $this->registered[$name] = $class;
     }
 }

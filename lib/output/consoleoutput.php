@@ -7,48 +7,49 @@ use Sprint\Migration\Exceptions\ConsoleException;
 class ConsoleOutput extends AbstractOutput
 {
     private array $colors = [
-        '/'            => "\x1b[0m",
-        'tab'          => "\x1b[0m",
-        'unknown'      => "\x1b[0;34m",
-        'installed'    => "\x1b[0;32m",
-        'new'          => "\x1b[0;31m",
-        'blue'         => "\x1b[0;34m",
-        'pink'         => "\x1b[0;35m",
-        'green'        => "\x1b[0;32m",
-        'up'           => "\x1b[0;32m",
-        'red'          => "\x1b[0;31m",
-        'down'         => "\x1b[0;31m",
-        'yellow'       => "\x1b[0;93m",
-        'label'        => "\x1b[47;30m",
-        'label:blue'   => "\x1b[104;30m",
-        'label:pink'   => "\x1b[105;30m",
-        'label:red'    => "\x1b[41;37m",
-        'label:green'  => "\x1b[102;30m",
-        'label:yellow' => "\x1b[103;30m",
-        'b'            => "\x1b[1m",
+        '[/]'         => "\x1b[0m",
+        '[new]'       => "\x1b[0;31m",
+        '[unknown]'   => "\x1b[0;34m",
+        '[installed]' => "\x1b[0;32m",
+
+        '[info]'    => "\x1b[0;34m",
+        '[warning]' => "\x1b[0;31m",
+        '[notice]'  => "\x1b[0;32m",
+        '[error]'   => "\x1b[41;37m",
+        '[success]' => "\x1b[102;30m",
+
+        '[blue]'   => "\x1b[0;34m",
+        '[pink]'   => "\x1b[0;35m",
+        '[green]'  => "\x1b[0;32m",
+        '[red]'    => "\x1b[0;31m",
+        '[yellow]' => "\x1b[0;93m",
+
+        '[label]'        => "\x1b[47;30m",
+        '[label:blue]'   => "\x1b[104;30m",
+        '[label:pink]'   => "\x1b[105;30m",
+        '[label:red]'    => "\x1b[41;37m",
+        '[label:green]'  => "\x1b[102;30m",
+        '[label:yellow]' => "\x1b[103;30m",
+
+        '[b]'   => "\x1b[1m",
+        '[tab]' => "\x1b[0m",
     ];
-    private bool $needEol = false;
 
-    public function outProgress(string $msg, int $val, int $total): void
+    protected function writeProgress(string $msg, int $val, int $total): void
     {
-        $this->needEol = true;
-
-        $msg = '[label]' . $msg . ' ' . $val . ' / ' . $total . '[/]';
-
-        fwrite(STDOUT, "\r" . $this->colorize($msg));
+        fwrite(STDOUT, "\r" . $this->colorize("$msg $val / $total", 'label'));
+        if ($val >= $total) {
+            fwrite(STDOUT, PHP_EOL);
+        }
     }
 
 
-    protected function makeMessage(string $msg, string $type): void
+    protected function writeMessage(string $msg, string $type): void
     {
-        $msg = $this->colorize('[' . $type . ']' . $msg . '[/]');
+        $msg = $this->colorize($msg, $type);
 
-        if ($this->needEol) {
-            $this->needEol = false;
-            fwrite(STDOUT, PHP_EOL . $msg . PHP_EOL);
-        } elseif ($msg) {
-            fwrite(STDOUT, $msg . PHP_EOL);
-        }
+        fwrite(STDOUT, $msg . PHP_EOL);
+
     }
 
     /**
@@ -97,8 +98,12 @@ class ConsoleOutput extends AbstractOutput
         }
     }
 
-    private function colorize($msg)
+    private function colorize(string $msg, string $type): string
     {
+        if ($type) {
+            $msg = "[$type]" . $msg . "[/]";
+        }
+
         foreach ($this->colors as $key => $val) {
             $msg = str_replace('[' . $key . ']', $val, $msg);
         }

@@ -3,56 +3,28 @@
 namespace Sprint\Migration\Output;
 
 use Psr\Log\LoggerInterface;
-use Throwable;
 
-class LoggerOutput implements OutputInterface
+class LoggerOutput extends AbstractOutput
 {
-    public function __construct(private LoggerInterface $logger)
+
+    public function __construct(private readonly LoggerInterface $logger)
     {
     }
 
-    public function out(string $msg, ...$vars): void
+    protected function writeMessage(string $msg, string $type): void
     {
-        $this->logger->debug(sprintf($msg, ...$vars));
+        match ($type) {
+            'info' => $this->logger->info($msg),
+            'notice', 'success' => $this->logger->notice($msg),
+            'warning' => $this->logger->warning($msg),
+            'error' => $this->logger->error($msg),
+            default => $this->logger->debug($msg),
+        };
     }
 
-    public function outProgress(string $msg, int $val, int $total): void
+    protected function writeProgress(string $msg, int $val, int $total): void
     {
         $this->logger->debug($msg . ' ' . $val . ' / ' . $total);
     }
 
-    public function outNotice(string $msg, ...$vars): void
-    {
-        $this->logger->notice(sprintf($msg, ...$vars));
-    }
-
-    public function outInfo(string $msg, ...$vars): void
-    {
-        $this->logger->info(sprintf($msg, ...$vars));
-    }
-
-    public function outSuccess(string $msg, ...$vars): void
-    {
-        $this->logger->notice(sprintf($msg, ...$vars));
-    }
-
-    public function outWarning(string $msg, ...$vars): void
-    {
-        $this->logger->warning(sprintf($msg, ...$vars));
-    }
-
-    public function outError(string $msg, ...$vars): void
-    {
-        $this->logger->error(sprintf($msg, ...$vars));
-    }
-
-    public function outDiff(array $arr1, array $arr2): void
-    {
-        // TODO: Implement outDiff() method.
-    }
-
-    public function outException(Throwable $exception): void
-    {
-        $this->logger->error($exception->getMessage());
-    }
 }

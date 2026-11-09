@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Output;
 
+
 class BrowserOutput extends AbstractOutput
 {
 
@@ -13,13 +14,13 @@ class BrowserOutput extends AbstractOutput
         return ['messages' => $this->messages, 'progress' => $this->progress];
     }
 
-    protected function makeMessage(string $msg, string $type): void
+    protected function writeMessage(string $msg, string $type): void
     {
         $this->messages[] = ['type' => $type, 'message' => $msg];
     }
 
 
-    protected function makeProgress(string $msg, int $val, int $total): void
+    protected function writeProgress(string $msg, int $val, int $total): void
     {
         if ($val !== $total) {
             $this->progress[] = ['message' => $msg, 'value' => $val, 'total' => $total];

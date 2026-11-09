@@ -8,6 +8,7 @@ use Bitrix\Main\ORM\Fields\TextField;
 use Bitrix\Main\SystemException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\HelperManager;
+use Sprint\Migration\Helpers\SqlHelper;
 
 class StorageTable extends AbstractTable
 {
@@ -123,15 +124,15 @@ class StorageTable extends AbstractTable
     {
         parent::createDbTable();
 
-        $helper = HelperManager::getInstance();
+        $sqlHelper = new SqlHelper();
 
-        $helper->Sql()->addIndexIfNotExists(
+        $sqlHelper->addIndexIfNotExists(
             $this->getTableName(),
             'category',
             ['category']
         );
 
-        $helper->Sql()->addIndexIfNotExists(
+        $sqlHelper->addIndexIfNotExists(
             $this->getTableName(),
             'fullname',
             ['category', 'name']

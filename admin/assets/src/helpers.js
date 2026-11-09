@@ -2,27 +2,31 @@ import {Loc} from "main.core";
 
 const MessageLabels = {
     '[/]': '</span>',
-    '[tab]': '<span class="sp-indent-20">',
+    '[new]': '<span class="sp-red">',
     '[unknown]': '<span class="sp-blue">',
     '[installed]': '<span class="sp-green">',
-    '[new]': '<span class="sp-red">',
-    '[blue]': '<span class="sp-blue">',
+
     '[info]': '<span class="sp-blue">',
+    '[warning]': '<span class="sp-red">',
+    '[notice]': '<span class="sp-green">',
+    '[error]': '<span class="sp-label sp-label-red">',
+    '[success]': '<span class="sp-label sp-label-green">',
+
+    '[blue]': '<span class="sp-blue">',
     '[pink]': '<span class="sp-pink">',
     '[green]': '<span class="sp-green">',
-    '[success]': '<span class="sp-green">',
-    '[up]': '<span class="sp-green">',
     '[red]': '<span class="sp-red">',
-    '[error]': '<span class="sp-red">',
-    '[down]': '<span class="sp-red">',
     '[yellow]': '<span class="sp-yellow">',
+
     '[label]': '<span class="sp-label">',
     '[label:blue]': '<span class="sp-label sp-label-blue">',
     '[label:pink]': '<span class="sp-label sp-label-pink">',
     '[label:red]': '<span class="sp-label sp-label-red">',
     '[label:green]': '<span class="sp-label sp-label-green">',
     '[label:yellow]': '<span class="sp-label sp-label-yellow">',
+
     '[b]': '<span class="sp-bold">',
+    '[tab]': '<span class="sp-indent-20">',
 }
 
 const MessageTypes = {

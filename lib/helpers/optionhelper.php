@@ -164,10 +164,7 @@ class OptionHelper extends Helper
             ]));
 
 
-            $this->outNotice(Locale::getMessage(
-                'OPTION_UPDATED',
-                ['#NAME#' => $optionName])
-            );
+            $this->outNotice(Locale::getMessage('OPTION_UPDATED', ['#NAME#' => $optionName]));
 
             return true;
         } catch (Exception $e) {

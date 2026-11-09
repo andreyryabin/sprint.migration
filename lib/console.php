@@ -514,6 +514,9 @@ class Console
         }
     }
 
+    /**
+     * @throws \Throwable
+     */
     protected function executeVersion(string $version, string $action): bool
     {
         $tag = $this->getArg('--add-tag=');
@@ -523,8 +526,6 @@ class Console
         $this->logger->outInfo('%s (%s) start', $version, $action);
 
         do {
-            $exec = 0;
-
             $success = $this->versionManager->startMigration(
                 $version,
                 $action,
@@ -533,20 +534,15 @@ class Console
             );
 
             $restart = $this->versionManager->needRestart();
+            $params = $this->versionManager->getRestartParams();
 
-            if ($restart) {
-                $params = $this->versionManager->getRestartParams();
-                $exec = 1;
+            if ($this->versionManager->getLastException()) {
+                throw $this->versionManager->getLastException();
             }
 
-            if ($success && !$restart) {
-                $this->logger->outSuccess('%s (%s) success', $version, $action);
-            }
+        } while ($restart);
 
-            if (!$success && !$restart) {
-                $this->logger->outException($this->versionManager->getLastException());
-            }
-        } while ($exec == 1);
+        $this->logger->outSuccess('%s (%s) finish', $version, $action);
 
         return $success;
     }

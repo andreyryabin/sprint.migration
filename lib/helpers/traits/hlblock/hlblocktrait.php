@@ -472,9 +472,7 @@ trait HlblockTrait
 
             if ($result->isSuccess()) {
                 $this->replaceHblockLangs($hlblockId, $lang);
-
                 $this->outNotice(Locale::getMessage('HLBLOCK_UPDATED', ['#NAME#' => $fields['NAME']]));
-
                 return $hlblockId;
             }
 

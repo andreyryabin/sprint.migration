@@ -11,6 +11,7 @@ use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Output\OutputInterface;
 use Sprint\Migration\Tables\VersionTable;
 use Throwable;
 
@@ -24,11 +25,15 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function __construct(private VersionConfig $versionConfig)
+    public function __construct(
+        private VersionConfig $versionConfig,
+        private ?OutputInterface      $output = null,
+    )
     {
         $this->versionTable = new VersionTable(
             $this->versionConfig->getVal('migration_table')
         );
+
     }
 
     public function getVersionConfig(): VersionConfig
@@ -82,6 +87,7 @@ class VersionManager
             /** @var $versionInstance Version */
             $versionInstance = new $meta['class'];
             $versionInstance->setVersionConfig($this->versionConfig);
+            $versionInstance->setOutput($this->output);
             $versionInstance->setRestartParams($params);
 
             if ($action == VersionEnum::ACTION_UP) {
@@ -328,15 +334,26 @@ class VersionManager
 
         $meta = $this->getVersionByName($versionName);
 
+        $success = false;
         if ($status == VersionEnum::STATUS_NEW && $meta['is_record']) {
-            return $this->getVersionTable()->removeRecord($meta);
+            $success = $this->getVersionTable()->removeRecord($meta);
         }
 
         if ($status == VersionEnum::STATUS_INSTALLED && !$meta['is_record']) {
-            return $this->getVersionTable()->addRecord($meta);
+            $success = $this->getVersionTable()->addRecord($meta);
         }
 
-        return false;
+        if ($success) {
+            $this->output->outInfo(
+                Locale::getMessage('MARK_OK', ['#VERSION#' => $versionName, '#STATUS#' => $status])
+            );
+        } else {
+            $this->output->outWarning(
+                Locale::getMessage('MARK_ERROR1', ['#VERSION#' => $versionName])
+            );
+        }
+
+        return $success;
     }
 
     /**
@@ -446,6 +463,17 @@ class VersionManager
             $success++;
         }
 
+        if ($success > 0) {
+            $this->output->outInfo(
+                Locale::getMessage('DELETE_OK', ['#VERSION#' => $versionName])
+            );
+        } else {
+            $this->output->outWarning(
+                Locale::getMessage('DELETE_ERROR1', ['#VERSION#' => $versionName])
+            );
+        }
+
+
         return ($success > 0);
     }
 
@@ -460,6 +488,17 @@ class VersionManager
 
         if ($meta['is_record'] && $this->getVersionTable()->updateTag($meta['version'], $tag)) {
             $success++;
+        }
+
+
+        if ($success > 0) {
+            $this->output->outInfo(
+                Locale::getMessage('SETTAG_OK', ['#VERSION#' => $versionName])
+            );
+        } else {
+            $this->output->outWarning(
+                Locale::getMessage('SETTAG_ERROR1', ['#VERSION#' => $versionName])
+            );
         }
 
         return ($success > 0);
@@ -501,6 +540,15 @@ class VersionManager
             $success++;
         }
 
+        if ($success > 0) {
+            $this->output->outInfo(
+                Locale::getMessage('TRANSFER_OK', ['#VERSION#' => $versionName])
+            );
+        } else {
+            $this->output->outWarning(
+                Locale::getMessage('TRANSFER_ERROR1', ['#VERSION#' => $versionName])
+            );
+        }
 
         return ($success > 0);
     }

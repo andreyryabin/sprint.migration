@@ -2,26 +2,27 @@
 
 namespace Sprint\Migration\Exchange;
 
+use Sprint\Migration\Helpers\BlogExchangeHelper;
+use Sprint\Migration\Helpers\HlblockExchangeHelper;
+use Sprint\Migration\Helpers\IblockExchangeHelper;
+use Sprint\Migration\Helpers\MedialibExchangeHelper;
 use Sprint\Migration\Interfaces\RestartableInterface;
-use Sprint\Migration\Traits\HelperManagerTrait;
 
 class ExchangeManager
 {
-    use HelperManagerTrait {
-        getHelperManager as private;
-    }
-
     public function __construct(
         private readonly RestartableInterface $restartable,
-        private readonly string $directory,
-    ) {
+        private readonly string               $directory,
+    )
+    {
+
     }
 
     public function IblockElementsImport(): RestartableReader
     {
         return (new RestartableReader(
             $this->restartable,
-            $this->getHelperManager()->IblockExchange(),
+            new IblockExchangeHelper(),
             $this->directory
         ))->setExchangeResource('iblock_elements.xml');
     }
@@ -30,7 +31,7 @@ class ExchangeManager
     {
         return (new RestartableReader(
             $this->restartable,
-            $this->getHelperManager()->HlblockExchange(),
+            new HlblockExchangeHelper(),
             $this->directory
         ))->setExchangeResource('hlblock_elements.xml');
     }
@@ -39,7 +40,7 @@ class ExchangeManager
     {
         return (new RestartableReader(
             $this->restartable,
-            $this->getHelperManager()->MedialibExchange(),
+            new MedialibExchangeHelper(),
             $this->directory
         ))->setExchangeResource('medialib_elements.xml');
     }
@@ -48,7 +49,7 @@ class ExchangeManager
     {
         return (new RestartableReader(
             $this->restartable,
-            $this->getHelperManager()->BlogExchange(),
+            new BlogExchangeHelper(),
             $this->directory
         ))->setExchangeResource('blog_posts.xml');
     }

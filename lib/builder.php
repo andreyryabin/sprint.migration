@@ -7,14 +7,12 @@ use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Interfaces\RestartableInterface;
 use Sprint\Migration\Output\ConsoleOutput;
-use Sprint\Migration\Traits\HelperManagerTrait;
 use Sprint\Migration\Output\OutputTrait;
 use Sprint\Migration\Traits\RestartableTrait;
 use Sprint\Migration\Traits\VersionConfigTrait;
 
 class Builder implements RestartableInterface
 {
-    use HelperManagerTrait;
     use RestartableTrait;
     use VersionConfigTrait;
 

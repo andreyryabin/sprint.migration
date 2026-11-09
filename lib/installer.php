@@ -53,8 +53,6 @@ class Installer
     {
         $params = [];
         do {
-            $exec = 0;
-
             $success = $this->versionManager->startMigration(
                 $version,
                 $action,
@@ -63,18 +61,13 @@ class Installer
             );
 
             $restart = $this->versionManager->needRestart();
+            $params = $this->versionManager->getRestartParams();
 
-            if ($restart) {
-                $params = $this->versionManager->getRestartParams();
-                $exec = 1;
+            if ($this->versionManager->getLastException()) {
+                throw $this->versionManager->getLastException();
             }
 
-            if (!$success && !$restart) {
-                if ($this->versionManager->getLastException()) {
-                    throw $this->versionManager->getLastException();
-                }
-            }
-        } while ($exec == 1);
+        } while ($restart);
 
         return $success;
     }

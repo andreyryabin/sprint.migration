@@ -39,7 +39,7 @@ class HlblockBuilder extends VersionBuilder
                 'title'       => Locale::getMessage('BUILDER_HlblockExport_HlblockId'),
                 'placeholder' => '',
                 'width'       => 250,
-                'select'      => $this->getHelperManager()->HlblockExchange()->getHlblocksStructure(),
+                'select'      => $helper->HlblockExchange()->getHlblocksStructure(),
             ]
         );
 

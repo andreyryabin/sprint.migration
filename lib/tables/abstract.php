@@ -11,6 +11,7 @@ use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\HelperManager;
+use Sprint\Migration\Helpers\SqlHelper;
 use Sprint\Migration\Module;
 
 abstract class AbstractTable
@@ -74,14 +75,14 @@ abstract class AbstractTable
      */
     protected function createDbTable(): void
     {
-        $helper = HelperManager::getInstance();
+        $sqlHelper = new SqlHelper();
 
         $tableName = $this->getTableName();
 
-        if ($helper->Sql()->hasTable($tableName)) {
-            $helper->Sql()->restoreColumns($this->entity);
+        if ($sqlHelper->hasTable($tableName)) {
+            $sqlHelper->restoreColumns($this->entity);
         } else {
-            $helper->Sql()->createTable($this->entity);
+            $sqlHelper->createTable($this->entity);
         }
     }
 
@@ -109,12 +110,12 @@ abstract class AbstractTable
      */
     protected function dropDbTable(): void
     {
-        $helper = HelperManager::getInstance();
+        $sqlHelper = new SqlHelper();
 
         $tableName = $this->getTableName();
 
-        if ($helper->Sql()->hasTable($tableName)) {
-            $helper->Sql()->dropTable($tableName);
+        if ($sqlHelper->hasTable($tableName)) {
+            $sqlHelper->dropTable($tableName);
         }
     }
 

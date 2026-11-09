@@ -217,7 +217,6 @@ class UserGroupHelper extends Helper
 
         if ($groupId) {
             $this->outNotice(Locale::getMessage('USER_GROUP_CREATED', ['#NAME#' => $fields['NAME']]));
-
             return (int)$groupId;
         }
 

@@ -39,7 +39,7 @@ class IblockBuilder extends VersionBuilder
                 'title'       => Locale::getMessage('BUILDER_IblockExport_IblockId'),
                 'placeholder' => '',
                 'width'       => 250,
-                'items'       => $this->getHelperManager()->IblockExchange()->getIblocksStructure(),
+                'items'       => $helper->IblockExchange()->getIblocksStructure(),
             ]
         );
 
@@ -107,7 +107,7 @@ class IblockBuilder extends VersionBuilder
         }
 
         if (in_array('iblockProperties', $what)) {
-            $struct = $this->getHelperManager()->IblockExchange()->getIblockPropertiesStructure($iblockId);
+            $struct = $helper->IblockExchange()->getIblockPropertiesStructure($iblockId);
             if (!empty($struct)) {
                 $exportProps = $this->addFieldAndReturn(
                     'export_props', [

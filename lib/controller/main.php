@@ -8,9 +8,8 @@ use Bitrix\Main\Request;
 use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\Locale;
-use Sprint\Migration\Output;
 use Sprint\Migration\Output\BrowserOutput;
+use Sprint\Migration\Output\CompositeOutput;
 use Sprint\Migration\VersionManager;
 use Throwable;
 
@@ -21,8 +20,7 @@ use Throwable;
 class Main extends Controller
 {
     protected VersionManager $versionManager;
-    protected Output $logger;
-    protected BrowserOutput $output;
+    protected BrowserOutput $browserOutput;
 
     /**
      * @throws MigrationException
@@ -37,14 +35,15 @@ class Main extends Controller
             $this->getRequest()->get('config')
         );
 
-        $this->output = new BrowserOutput();
+        $this->browserOutput = new BrowserOutput();
 
-        $this->logger = Output::getInstance();
-        $this->logger
-            ->addOutput($this->output)
-            ->addLogger($versionConfig->getLogger());
-
-        $this->versionManager = new VersionManager($versionConfig);
+        $this->versionManager = new VersionManager(
+            $versionConfig,
+            new CompositeOutput(
+                $this->browserOutput,
+                $versionConfig->getLogger()
+            )
+        );
     }
 
     public function configureActions(): array
@@ -80,21 +79,11 @@ class Main extends Controller
 
     public function markVersionAction(string $version, string $status): array
     {
-        $success = $this->versionManager->markMigration($version, $status);
-
-        if ($success) {
-            $this->output->outInfo(
-                Locale::getMessage('MARK_OK', ['#VERSION#' => $version, '#STATUS#' => $status])
-            );
-        } else {
-            $this->output->outWarning(
-                Locale::getMessage('MARK_ERROR1', ['#VERSION#' => $version])
-            );
-        }
+        $this->versionManager->markMigration($version, $status);
 
         return array_merge([
             'meta' => $this->versionManager->getVersionByName($version)
-        ], $this->output->getLog());
+        ], $this->browserOutput->getLog());
     }
 
     /**
@@ -103,19 +92,9 @@ class Main extends Controller
      */
     public function deleteVersionAction(string $version): array
     {
-        $success = $this->versionManager->deleteMigration($version);
+        $this->versionManager->deleteMigration($version);
 
-        if ($success) {
-            $this->output->outInfo(
-                Locale::getMessage('DELETE_OK', ['#VERSION#' => $version])
-            );
-        } else {
-            $this->output->outWarning(
-                Locale::getMessage('DELETE_ERROR1', ['#VERSION#' => $version])
-            );
-        }
-
-        return $this->output->getLog();
+        return $this->browserOutput->getLog();
     }
 
     /**
@@ -124,19 +103,9 @@ class Main extends Controller
      */
     public function moveVersionAction(string $version, string $toConfig): array
     {
-        $success = $this->versionManager->moveMigration($version, $toConfig);
+        $this->versionManager->moveMigration($version, $toConfig);
 
-        if ($success) {
-            $this->output->outInfo(
-                Locale::getMessage('TRANSFER_OK', ['#VERSION#' => $version])
-            );
-        } else {
-            $this->output->outWarning(
-                Locale::getMessage('TRANSFER_ERROR1', ['#VERSION#' => $version])
-            );
-        }
-
-        return $this->output->getLog();
+        return $this->browserOutput->getLog();
     }
 
     /**
@@ -145,21 +114,11 @@ class Main extends Controller
      */
     public function setVersionTagAction(string $version, string $settag): array
     {
-        $success = $this->versionManager->setMigrationTag($version, $settag);
-
-        if ($success) {
-            $this->output->outInfo(
-                Locale::getMessage('SETTAG_OK', ['#VERSION#' => $version])
-            );
-        } else {
-            $this->output->outWarning(
-                Locale::getMessage('SETTAG_ERROR1', ['#VERSION#' => $version])
-            );
-        }
+        $this->versionManager->setMigrationTag($version, $settag);
 
         return array_merge([
             'meta' => $this->versionManager->getVersionByName($version)
-        ], $this->output->getLog());
+        ], $this->browserOutput->getLog());
     }
 
     /**
@@ -169,18 +128,9 @@ class Main extends Controller
     public function setAllTagAction(array $versions, string $settag): array
     {
         foreach ($versions as $version) {
-            $success = $this->versionManager->setMigrationTag($version, $settag);
-            if ($success) {
-                $this->output->outInfo(
-                    Locale::getMessage('SETTAG_OK', ['#VERSION#' => $version])
-                );
-            } else {
-                $this->output->outWarning(
-                    Locale::getMessage('SETTAG_ERROR1', ['#VERSION#' => $version])
-                );
-            }
+            $this->versionManager->setMigrationTag($version, $settag);
         }
-        return $this->output->getLog();
+        return $this->browserOutput->getLog();
     }
 
     /**
@@ -195,7 +145,7 @@ class Main extends Controller
         $success = $this->versionManager->startMigration($version, $action, $params, $settag);
 
         if ($this->versionManager->getLastException()) {
-            $this->logger->outException($this->versionManager->getLastException());
+            $this->browserOutput->outException($this->versionManager->getLastException());
         }
 
         return array_merge([
@@ -203,6 +153,6 @@ class Main extends Controller
             'restart' => $this->versionManager->needRestart(),
             'params'  => $this->versionManager->getRestartParams(),
             'meta'    => $this->versionManager->getVersionByName($version)
-        ], $this->output->getLog());
+        ], $this->browserOutput->getLog());
     }
 }

@@ -43,7 +43,7 @@ class IblockCategoryBuilder extends VersionBuilder
                 'title'       => Locale::getMessage('BUILDER_IblockCategoryExport_IblockId'),
                 'placeholder' => '',
                 'width'       => 250,
-                'items'       => $this->getHelperManager()->IblockExchange()->getIblocksStructure(),
+                'items'       => $helper->IblockExchange()->getIblocksStructure(),
             ]
         );
 

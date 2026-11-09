@@ -125,6 +125,13 @@ export const MigrationApp = {
                     message: item.message
                 })));
             }
+
+            if (resp?.status == 'error' && resp.data?.ajaxRejectData?.xhr?.responseText) {
+                this.messages.push(markRaw({
+                    type: 'error',
+                    message: resp.data?.ajaxRejectData?.xhr?.responseText
+                }));
+            }
         },
 
         execAction(action, payload) {
@@ -163,7 +170,8 @@ export const MigrationApp = {
                             version,
                             action,
                             params: currentParams,
-                            settag
+                            settag,
+                            button: 'CONTINUE'
                         }
                         return false;
                     }
@@ -186,7 +194,8 @@ export const MigrationApp = {
                             version,
                             action,
                             params: currentParams,
-                            settag
+                            settag,
+                            button: 'RESTART'
                         }
                         return false;
                     }
@@ -508,7 +517,7 @@ export const MigrationApp = {
             </div>
             <div class="sp-col sp-migration_progress">
               <input
-                  :value="replay?'Продолжить':'Остановить'"
+                  :value="getMessage(replay ? replay.button: 'PAUSE')"
                   type="button"
                   :class="['adm-btn', 'sp-play', (!replay && !running ? 'sp-disabled':'')]"
                   @click="replayVersion"

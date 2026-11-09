@@ -43,7 +43,7 @@ class BlogPostBuilder extends VersionBuilder
     protected function execute()
     {
         $helper = $this->getHelperManager();
-        $exhelper = $this->getHelperManager()->BlogExchange();
+        $exhelper = $helper->BlogExchange();
 
         $blogId = (int)$this->addFieldAndReturn('blog_id', [
             'title' => Locale::getMessage('BUILDER_BlogPostExport_blog_id'),

@@ -4,75 +4,43 @@ namespace Sprint\Migration\Output;
 
 abstract class AbstractOutput implements OutputInterface
 {
+    abstract protected function writeMessage(string $msg, string $type): void;
 
-    abstract protected function makeMessage(string $msg, string $type): void;
-
-    abstract protected function makeProgress(string $msg, int $val, int $total): void;
-
+    abstract protected function writeProgress(string $msg, int $val, int $total): void;
 
     public function out(string $msg, ...$vars): void
     {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-
-        $this->makeMessage($msg, '');
+        $this->writeMessage($this->resolve($msg, $vars), '');
     }
 
     public function outProgress(string $msg, int $val, int $total): void
     {
-        $this->makeProgress($msg, $val, $total);
+        $this->writeProgress($msg, $val, $total);
     }
 
     public function outInfo(string $msg, ...$vars): void
     {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-
-        $this->makeMessage($msg, 'info');
+        $this->writeMessage($this->resolve($msg, $vars), 'info');
     }
 
     public function outSuccess(string $msg, ...$vars): void
     {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-
-        $this->makeMessage($msg, 'success');
+        $this->writeMessage($this->resolve($msg, $vars), 'success');
     }
 
     public function outNotice(string $msg, ...$vars): void
     {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-
-        $this->makeMessage($msg, 'notice');
+        $this->writeMessage($this->resolve($msg, $vars), 'notice');
     }
 
     public function outError(string $msg, ...$vars): void
     {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-
-        $this->makeMessage($msg, 'error');
+        $this->writeMessage($this->resolve($msg, $vars), 'error');
     }
 
     public function outWarning(string $msg, ...$vars): void
     {
-        if (func_num_args() > 1) {
-            $params = func_get_args();
-            $msg = call_user_func_array('sprintf', $params);
-        }
-
-        $this->makeMessage($msg, 'warning');
+        $this->writeMessage($this->resolve($msg, $vars), 'warning');
     }
 
     public function outDiff(array $arr1, array $arr2): void
@@ -85,7 +53,9 @@ abstract class AbstractOutput implements OutputInterface
 
         foreach ($diff as $k => $v) {
             if (isset($diff1[$k]) && isset($diff2[$k])) {
-                $this->out($k . ': [red]' . htmlspecialchars($diff2[$k]) . '[/] -> [green]' . htmlspecialchars($diff1[$k]) . '[/]');
+                if ($diff1[$k] !== $diff2[$k]) {
+                    $this->out($k . ': [red]' . htmlspecialchars($diff2[$k]) . '[/] -> [green]' . htmlspecialchars($diff1[$k]) . '[/]');
+                }
             } elseif (isset($diff1[$k])) {
                 $this->out($k . ': [green]' . htmlspecialchars($diff1[$k]) . '[/]');
             } else {
@@ -120,6 +90,11 @@ abstract class AbstractOutput implements OutputInterface
 //        foreach ($exception->getTrace() as $err) {
 //            $this->out('%s:%d', $makeRelative($err['file']??'', 2), $err['line']);
 //        }
+    }
+
+    protected function resolve(string $msg, array $vars): string
+    {
+        return $vars ? vsprintf($msg, $vars) : $msg;
     }
 
 
