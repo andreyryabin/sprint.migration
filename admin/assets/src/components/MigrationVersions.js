@@ -1,7 +1,9 @@
 import {ajax} from "main.core";
 import {markRaw} from "ui.vue3";
 import {colorbind, colorize, getMessage, progressMessage, showContextMenu,} from "../helpers";
-import {FilterVersions} from './FilterVersions';
+
+import {StringField} from '../fields/StringField';
+import {SelectField} from '../fields/SelectField';
 
 const STATUS_INSTALLED = 'installed';
 const STATUS_NEW = 'new';
@@ -12,7 +14,8 @@ const ACTION_DOWN = 'down';
 
 export const MigrationVersions = {
     components: {
-        FilterVersions
+        StringField,
+        SelectField
     },
 
     props: {
@@ -40,14 +43,33 @@ export const MigrationVersions = {
 
     data() {
         return {
-            versions: [],
-            messages: [],
-            progress: [],
-            filter: {},
             loading: 0,
             running: false,
             replay: false,
+            versions: [],
+            messages: [],
+            progress: [],
+            filter: {
+                search: '',
+                view: 'actual'
+            },
+            variants: {
+                actual: getMessage('TOGGLE_ACTUAL'),
+                all: getMessage('TOGGLE_LIST'),
+                new: getMessage('TOGGLE_NEW'),
+                installed: getMessage('TOGGLE_INSTALLED'),
+                unknown: getMessage('TOGGLE_UNKNOWN'),
+                tag: getMessage('TOGGLE_TAG'),
+                modified: getMessage('TOGGLE_MODIFIED'),
+                older: getMessage('TOGGLE_OLDER'),
+            }
         };
+    },
+
+    created() {
+        this.filter = this.getFilter(this.filter);
+
+        this.refreshVersions();
     },
 
     computed: {
@@ -88,6 +110,23 @@ export const MigrationVersions = {
         progressMessage,
         colorize,
         colorbind,
+
+        getFilter(def) {
+            try {
+                let obj = JSON.parse(
+                    localStorage.getItem('sprint_migration_filter_' + this.config)
+                ) ?? {...def};
+                return {search: obj.search ?? '', view: obj.view ?? 'actual'}
+            } catch {
+                return {...def};
+            }
+        },
+
+        saveFilter() {
+            localStorage.setItem('sprint_migration_filter_' + this.config, JSON.stringify(this.filter));
+
+            this.refreshVersions();
+        },
 
         processResponse(resp) {
             if (resp.data && resp.data.messages) {
@@ -428,11 +467,19 @@ export const MigrationVersions = {
           <div class="sp-row">
             <div class="sp-col">
               <div class="sp-search">
-                <FilterVersions
-                    :class="{'sp-search_filter':true,'sp-disabled':running }"
-                    :config="config"
-                    @changeFilter="filter=$event;refreshVersions()"
-                />
+                <div :class="{'sp-search_filter':true,'sp-disabled':running }">
+                  <StringField
+                      v-model:value="filter.search"
+                      :placeholder="getMessage('SEARCH')"
+                      @press-enter="saveFilter"
+                  />
+                  <SelectField
+                      v-model:value="filter.view"
+                      :options="variants"
+                      @update:value="saveFilter"
+                  />
+                  <input :value="getMessage('SEARCH')" type="button" @click="saveFilter"/>
+                </div>
                 <div class="sp-search_summary">
                   {{ getMessage('VERSIONS_NEW') }}:
                   <span class="sp-label sp-label-red" v-text="summaryCount.new"/>

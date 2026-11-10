@@ -1,11 +1,12 @@
 import {ajax} from "main.core";
 import {markRaw} from "ui.vue3";
 import {colorbind, colorize, getMessage, makeString, progressMessage} from "../helpers";
-import {FilterBuilders} from "./FilterBuilders";
+
+import {StringField} from '../fields/StringField';
 
 export const MigrationBuilders = {
     components: {
-        FilterBuilders
+        StringField
     },
 
     props: {
@@ -17,19 +18,22 @@ export const MigrationBuilders = {
 
     data() {
         return {
+            loading: 0,
+            running: false,
+            replay: false,
             messages: [],
             progress: [],
             builders: [],
             selected: '',
-            filter: {},
-            loading: 0,
-            running: false,
-            replay: false,
+            filter: {
+                search: ''
+            },
         };
     },
     created() {
-
         this.refreshBuilders();
+
+        this.filter = this.getFilter(this.filter);
     },
 
     computed: {
@@ -84,6 +88,14 @@ export const MigrationBuilders = {
         progressMessage,
         colorize,
         colorbind,
+
+        getFilter(def) {
+            return {...def};
+        },
+
+        saveFilter() {
+            this.refreshBuilders();
+        },
 
         processResponse(resp) {
             if (resp.data && resp.data.messages) {
@@ -202,10 +214,14 @@ export const MigrationBuilders = {
           <div class="sp-row">
             <div class="sp-col">
               <div class="sp-search">
-                <FilterBuilders
-                    :class="{'sp-search_filter':true}"
-                    @changeFilter="filter=$event"
-                />
+                <div class="sp-search_filter">
+                  <StringField
+                      v-model:value="filter.search"
+                      :placeholder="getMessage('SEARCH')"
+                      @press-enter="saveFilter"
+                  />
+                  <input :value="getMessage('SEARCH')" type="button" @click="saveFilter"/>
+                </div>
                 <div class="sp-search_summary">
                   {{ getMessage('BUILDERS_CNT') }}:
                   <span class="sp-label" v-text="summaryLabel"/>
