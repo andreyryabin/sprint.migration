@@ -90,3 +90,10 @@ export function escapeHtml(str) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 }
+
+export function makeString(val) {
+    if (val === null) {
+        return '';
+    }
+    return '' + val;
+}

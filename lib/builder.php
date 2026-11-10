@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use Exception;
+use ReflectionClass;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Interfaces\RestartableInterface;
@@ -11,46 +12,50 @@ use Sprint\Migration\Output\OutputTrait;
 use Sprint\Migration\Traits\RestartableTrait;
 use Sprint\Migration\Traits\VersionConfigTrait;
 
-class Builder implements RestartableInterface
+
+abstract class Builder implements RestartableInterface
 {
     use RestartableTrait;
     use VersionConfigTrait;
+    use OutputTrait;
 
     private string $name;
-    private array  $info       = [
+    private array $info = [
         'title'       => '',
         'description' => '',
         'group'       => '',
     ];
-    private array  $fields     = [];
+    private array $fields = [];
     private string $execStatus = '';
-    use OutputTrait;
 
-    public function __construct(VersionConfig $versionConfig, string $name, array $params = [])
+    private HelperManager $helperManager;
+
+    public function __construct(VersionConfig $versionConfig)
     {
-        $this->name = $name;
-
         $this->setVersionConfig($versionConfig);
-        $this->setRestartParams($params);
 
-        $this->addField('builder_name', [
-            'type'  => 'hidden',
-            'value' => $name,
-        ]);
+        $this->initialize();
     }
 
-    protected function initialize()
+
+    public function getName(): string
     {
-        //your code
+        return $this->name ??= (new ReflectionClass($this))->getShortName();
     }
 
-    /**
-     * @throws RestartException|RebuildException|Exception
-     */
-    protected function execute()
+    public function getFields(): array
     {
-        //your code
+        return $this->fields;
     }
+
+    protected function getHelperManager(): HelperManager
+    {
+        return $this->helperManager ??= new HelperManager($this->getOutput());
+    }
+
+    abstract protected function initialize();
+
+    abstract protected function execute();
 
     protected function isBuilderEnabled()
     {
@@ -170,11 +175,6 @@ class Builder implements RestartableInterface
         return ($this->execStatus == 'restart');
     }
 
-    public function buildInitialize(): void
-    {
-        $this->initialize();
-    }
-
     public function buildExecute(): bool
     {
         $this->execStatus = '';
@@ -226,16 +226,6 @@ class Builder implements RestartableInterface
         throw new RebuildException('rebuild form');
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function getFields(): array
-    {
-        return $this->fields;
-    }
-
     protected function setTitle(string $title = ''): void
     {
         $this->info['title'] = $title;
@@ -272,11 +262,12 @@ class Builder implements RestartableInterface
     }
 
     protected function createSelect(
-        array $items,
+        array  $items,
         string $idKey,
         string $titleKey,
-        bool $withIdInTitle = false,
-    ): array {
+        bool   $withIdInTitle = false,
+    ): array
+    {
         $select = [];
         foreach ($items as $item) {
             $itemValue = $item[$idKey];
@@ -291,11 +282,12 @@ class Builder implements RestartableInterface
     }
 
     protected function createSelectWithGroups(
-        array $items,
+        array  $items,
         string $idKey,
         string $titleKey,
         string $groupKey = '-'
-    ): array {
+    ): array
+    {
         $select = [];
         foreach ($items as $item) {
             $groupId = $item[$groupKey] ?? 'Group';

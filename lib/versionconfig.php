@@ -171,6 +171,11 @@ class VersionConfig
         return $this->getVal('logger', null);
     }
 
+    public function getBuilders(): array
+    {
+        return $this->getVal('version_builders', []);
+    }
+
     /**
      * @throws MigrationException
      */

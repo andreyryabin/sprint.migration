@@ -26,8 +26,8 @@ class VersionManager
      * @throws MigrationException
      */
     public function __construct(
-        private VersionConfig $versionConfig,
-        private ?OutputInterface      $output = null,
+        private VersionConfig    $versionConfig,
+        private ?OutputInterface $output = null,
     )
     {
         $this->versionTable = new VersionTable(
@@ -111,6 +111,37 @@ class VersionManager
 
         return true;
     }
+
+
+    /**
+     * @throws BuilderException
+     */
+    public function createBuilder(string $class): Builder
+    {
+        if ($class && class_exists($class)) {
+            $builder = new $class($this->versionConfig);
+            if (($builder instanceof Builder) && $builder->isEnabled()) {
+                return $builder;
+            }
+        }
+        throw new BuilderException(Locale::getMessage('ERR_BUILDER_NOT_FOUND', ['#NAME#' => $class]));
+    }
+
+    /**
+     * @return Builder[]
+     */
+    public function getBuilders(): array
+    {
+        $collection = [];
+        foreach ($this->versionConfig->getBuilders() as $builderClass) {
+            try {
+                $collection[] = $this->createBuilder($builderClass);
+            } catch (BuilderException) {
+            }
+        }
+        return $collection;
+    }
+
 
     /**
      * @throws MigrationException
@@ -243,7 +274,7 @@ class VersionManager
         return $result;
     }
 
-    private function appendVersionLabels(array &$item)
+    private function appendVersionLabels(array &$item): void
     {
         $labels = [];
         if ($item['older']) {
@@ -302,26 +333,6 @@ class VersionManager
     public function getLastException(): ?Throwable
     {
         return $this->lastException;
-    }
-
-    /**
-     * @throws BuilderException
-     */
-    public function createBuilder(string $name, array $params = []): Builder
-    {
-        $builders = $this->getVersionConfig()->getVal('version_builders', []);
-
-        $class = $builders[$name] ?? '';
-
-        if ($class && class_exists($class)) {
-            $builder = new $class($this->getVersionConfig(), $name, $params);
-            if ($builder instanceof Builder) {
-                $builder->buildInitialize();
-                return $builder;
-            }
-        }
-
-        throw new BuilderException(Locale::getMessage('ERR_BUILDER_NOT_FOUND', ['#NAME#' => $name]));
     }
 
     /**

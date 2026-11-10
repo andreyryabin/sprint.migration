@@ -5,11 +5,13 @@ namespace Sprint\Migration\Controller;
 use Bitrix\Main\Engine\ActionFilter;
 use Bitrix\Main\Engine\Controller;
 use Bitrix\Main\Request;
+use Sprint\Migration\Builder;
 use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Output\BrowserOutput;
 use Sprint\Migration\Output\CompositeOutput;
+use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 use Throwable;
 
@@ -21,6 +23,7 @@ class Main extends Controller
 {
     protected VersionManager $versionManager;
     protected BrowserOutput $browserOutput;
+    private VersionConfig $versionConfig;
 
     /**
      * @throws MigrationException
@@ -31,17 +34,17 @@ class Main extends Controller
 
         $configManager = ConfigManager::getInstance();
 
-        $versionConfig = $configManager->get(
+        $this->versionConfig = $configManager->get(
             $this->getRequest()->get('config')
         );
 
         $this->browserOutput = new BrowserOutput();
 
         $this->versionManager = new VersionManager(
-            $versionConfig,
+            $this->versionConfig,
             new CompositeOutput(
                 $this->browserOutput,
-                $versionConfig->getLogger()
+                $this->versionConfig->getLogger()
             )
         );
     }
@@ -65,11 +68,26 @@ class Main extends Controller
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-    public function refreshAction(array $filter = []): array
+    public function refreshVersionsAction(array $filter = []): array
     {
-        return [
-            'versions' => $this->versionManager->getVersions($filter)
-        ];
+        $versions = $this->versionManager->getVersions($filter);
+
+        return ['versions' => $versions];
+    }
+
+
+    /**
+     * @noinspection PhpUnused
+     */
+    public function refreshBuildersAction(): array
+    {
+        $builders = array_map(fn(Builder $builder) => [
+            'name'  => $builder->getName(),
+            'title' => $builder->getTitle(),
+            'group' => $builder->getGroup(),
+        ], $this->versionManager->getBuilders());
+
+        return ['builders' => $builders];
     }
 
     /**

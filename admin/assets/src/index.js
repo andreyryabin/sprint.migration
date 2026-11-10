@@ -1,5 +1,6 @@
-import {MigrationApp} from './components/MigrationApp';
 import {BitrixVue} from "ui.vue3";
+
+import {MigrationApp} from './components/MigrationApp';
 import "./index.css";
 
 BX.ready(() => {

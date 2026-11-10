@@ -14,6 +14,10 @@ trait OutputTrait
         $this->output = $output;
     }
 
+    public function getOutput(): ?OutputInterface
+    {
+        return $this->output;
+    }
 
     protected function out(string $msg, ...$vars): void
     {

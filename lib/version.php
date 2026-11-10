@@ -16,6 +16,8 @@ class Version implements RestartableInterface
     use RestartableTrait;
     use VersionConfigTrait;
 
+    private string $versionName;
+
     protected $author = "";
     protected $description = "";
     protected $moduleVersion = "";
@@ -23,6 +25,7 @@ class Version implements RestartableInterface
      * @deprecated Используете $this->checkRequiredVersions(['Version1','Version1'])
      */
     protected $requiredVersions = [];
+    private HelperManager $helperManager;
 
     /**
      * @throws MigrationException
@@ -65,7 +68,7 @@ class Version implements RestartableInterface
 
     public function getVersionName(): string
     {
-        return (new ReflectionClass($this))->getShortName();
+        return $this->versionName ??= (new ReflectionClass($this))->getShortName();
     }
 
     /**
@@ -102,9 +105,9 @@ class Version implements RestartableInterface
         return new ExchangeManager($this, $dir);
     }
 
-    public function getHelperManager(): HelperManager
+    protected function getHelperManager(): HelperManager
     {
-        return new HelperManager($this->getOutput());
+        return $this->helperManager ??= new HelperManager($this->getOutput());
     }
 }
 
