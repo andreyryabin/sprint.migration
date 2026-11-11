@@ -2,45 +2,77 @@
 
 namespace Sprint\Migration\Output;
 
+use Psr\Log\LoggerInterface;
+
 abstract class AbstractOutput implements OutputInterface
 {
+    public function __construct(private readonly ?LoggerInterface $logger = null)
+    {
+    }
+
     abstract protected function writeMessage(string $msg, string $type): void;
 
     abstract protected function writeProgress(string $msg, int $val, int $total): void;
 
     public function out(string $msg, ...$vars): void
     {
-        $this->writeMessage($this->resolve($msg, $vars), '');
+        $msg = $this->resolve($msg, $vars);
+
+        $this->writeMessage($msg, '');
+
+        $this->logger?->debug($msg);
     }
 
     public function outProgress(string $msg, int $val, int $total): void
     {
         $this->writeProgress($msg, $val, $total);
+
+        $this->logger?->debug($msg . ' ' . $val . ' / ' . $total);
     }
 
     public function outInfo(string $msg, ...$vars): void
     {
-        $this->writeMessage($this->resolve($msg, $vars), 'info');
+        $msg = $this->resolve($msg, $vars);
+
+        $this->writeMessage($msg, 'info');
+
+        $this->logger?->info($msg);
     }
 
     public function outSuccess(string $msg, ...$vars): void
     {
-        $this->writeMessage($this->resolve($msg, $vars), 'success');
+        $msg = $this->resolve($msg, $vars);
+
+        $this->writeMessage($msg, 'success');
+
+        $this->logger?->notice($msg);
     }
 
     public function outNotice(string $msg, ...$vars): void
     {
-        $this->writeMessage($this->resolve($msg, $vars), 'notice');
+        $msg = $this->resolve($msg, $vars);
+
+        $this->writeMessage($msg, 'notice');
+
+        $this->logger?->notice($msg);
     }
 
     public function outError(string $msg, ...$vars): void
     {
-        $this->writeMessage($this->resolve($msg, $vars), 'error');
+        $msg = $this->resolve($msg, $vars);
+
+        $this->writeMessage($msg, 'error');
+
+        $this->logger?->error($msg);
     }
 
     public function outWarning(string $msg, ...$vars): void
     {
-        $this->writeMessage($this->resolve($msg, $vars), 'warning');
+        $msg = $this->resolve($msg, $vars);
+
+        $this->writeMessage($msg, 'warning');
+
+        $this->logger?->warning($msg);
     }
 
     public function outDiff(array $arr1, array $arr2): void
@@ -54,12 +86,12 @@ abstract class AbstractOutput implements OutputInterface
         foreach ($diff as $k => $v) {
             if (isset($diff1[$k]) && isset($diff2[$k])) {
                 if ($diff1[$k] !== $diff2[$k]) {
-                    $this->out($k . ': [red]' . htmlspecialchars($diff2[$k]) . '[/] -> [green]' . htmlspecialchars($diff1[$k]) . '[/]');
+                    $this->writeDiff('%s: [red]%s[/] -> [green]%s[/]', $k, $diff2[$k], $diff1[$k]);
                 }
             } elseif (isset($diff1[$k])) {
-                $this->out($k . ': [green]' . htmlspecialchars($diff1[$k]) . '[/]');
-            } else {
-                $this->out($k . ': [red]' . htmlspecialchars($diff2[$k]) . '[/]');
+                $this->writeDiff('%s: [green]%s[/]', $k, $diff1[$k]);
+            } elseif (isset($diff2[$k])) {
+                $this->writeDiff('%s: [red]%s[/]', $k, $diff2[$k]);
             }
         }
     }
@@ -116,4 +148,12 @@ abstract class AbstractOutput implements OutputInterface
         }
     }
 
+    private function writeDiff(string $msg, ...$vars): void
+    {
+        $msg = $this->resolve($msg, $vars);
+
+        $this->writeMessage($msg, '');
+
+        //without log
+    }
 }

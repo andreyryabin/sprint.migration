@@ -16,16 +16,16 @@ class BrowserOutput extends AbstractOutput
 
     protected function writeMessage(string $msg, string $type): void
     {
-        $this->messages[] = ['type' => $type, 'message' => $msg];
+        $this->messages[] = ['type' => $type, 'message' => htmlspecialchars($msg)];
     }
 
 
     protected function writeProgress(string $msg, int $val, int $total): void
     {
         if ($val !== $total) {
-            $this->progress[] = ['message' => $msg, 'value' => $val, 'total' => $total];
+            $this->progress[] = ['message' => htmlspecialchars($msg), 'value' => $val, 'total' => $total];
         } else {
-            $this->messages[] = ['type' => 'info', 'message' => "$msg: $val/$total"];
+            $this->messages[] = ['type' => 'info', 'message' => htmlspecialchars("$msg: $val/$total")];
         }
     }
 }

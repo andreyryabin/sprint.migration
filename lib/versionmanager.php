@@ -8,19 +8,17 @@ use DirectoryIterator;
 use ReflectionClass;
 use SplFileInfo;
 use Sprint\Migration\Enum\VersionEnum;
-use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Output\OutputFactory;
 use Sprint\Migration\Output\OutputInterface;
+use Sprint\Migration\Results\VersionResult;
 use Sprint\Migration\Tables\VersionTable;
 use Throwable;
 
 class VersionManager
 {
     private VersionTable $versionTable;
-    private bool $isRestart = false;
-    private array $lastRestartParams = [];
-    private ?Throwable $lastException;
 
     /**
      * @throws MigrationException
@@ -34,6 +32,7 @@ class VersionManager
             $this->versionConfig->getVal('migration_table')
         );
 
+        $this->output ??= OutputFactory::create($this->versionConfig);
     }
 
     public function getVersionConfig(): VersionConfig
@@ -48,14 +47,17 @@ class VersionManager
 
     public function startMigration(
         string $versionName,
-        string $action = VersionEnum::ACTION_UP,
-        array  $params = [],
-        string $tag = ''
-    ): bool
+        string $action,
+        array  $params,
+        string $tag
+    ): VersionResult
     {
-        $this->isRestart = false;
-        $this->lastRestartParams = [];
-        $this->lastException = null;
+        $result = new VersionResult();
+
+        if (empty($params['__start__'])) {
+            $this->output->outInfo('%s::%s() start', $versionName, $action);
+            $params['__start__'] = 'ok';
+        }
 
         try {
             $this->versionConfig->tryVersionName($versionName);
@@ -70,12 +72,6 @@ class VersionManager
                 throw new MigrationException('unsupported version ' . $meta['older']);
             }
 
-            if (!empty($meta['required_versions'])) {
-                if ($action == VersionEnum::ACTION_UP) {
-                    $this->checkRequiredVersions($meta['required_versions']);
-                }
-            }
-
             if ($action == VersionEnum::ACTION_UP && $meta['status'] != VersionEnum::STATUS_NEW) {
                 throw new MigrationException('migration already up');
             }
@@ -84,64 +80,36 @@ class VersionManager
                 throw new MigrationException('migration already down');
             }
 
-            /** @var $versionInstance Version */
-            $versionInstance = new $meta['class'];
-            $versionInstance->setVersionConfig($this->versionConfig);
-            $versionInstance->setOutput($this->output);
-            $versionInstance->setRestartParams($params);
+
+            /** @var $versionObj Version */
+            $versionObj = new $meta['class'];
+            $versionObj->setVersionConfig($this->versionConfig);
+            $versionObj->setOutput($this->output);
+            $versionObj->setRestartParams($params);
 
             if ($action == VersionEnum::ACTION_UP) {
-                $this->checkResultAfterStart($versionInstance->up());
+                $this->checkResultAfterStart($versionObj->up());
 
                 $meta['tag'] = $tag;
 
                 $this->getVersionTable()->addRecord($meta);
             } else {
-                $this->checkResultAfterStart($versionInstance->down());
+                $this->checkResultAfterStart($versionObj->down());
 
                 $this->getVersionTable()->removeRecord($meta);
             }
-        } catch (RestartException $e) {
-            $this->isRestart = true;
-            $this->lastRestartParams = isset($versionInstance) ? $versionInstance->getRestartParams() : [];
+        } catch (RestartException) {
+            $result->setRestart(isset($versionObj) ? $versionObj->getRestartParams() : []);
         } catch (Throwable $e) {
-            $this->lastException = $e;
-            return false;
+            $result->setException($e);
         }
 
-        return true;
-    }
-
-
-    /**
-     * @throws BuilderException
-     */
-    public function createBuilder(string $class): Builder
-    {
-        if ($class && class_exists($class)) {
-            $builder = new $class($this->versionConfig);
-            if (($builder instanceof Builder) && $builder->isEnabled()) {
-                return $builder;
-            }
+        if (!$result->needRestart()) {
+            $this->output->outInfo('%s::%s() finish', $versionName, $action);
         }
-        throw new BuilderException(Locale::getMessage('ERR_BUILDER_NOT_FOUND', ['#NAME#' => $class]));
-    }
 
-    /**
-     * @return Builder[]
-     */
-    public function getBuilders(): array
-    {
-        $collection = [];
-        foreach ($this->versionConfig->getBuilders() as $builderClass) {
-            try {
-                $collection[] = $this->createBuilder($builderClass);
-            } catch (BuilderException) {
-            }
-        }
-        return $collection;
+        return $result;
     }
-
 
     /**
      * @throws MigrationException
@@ -320,27 +288,11 @@ class VersionManager
         return $names[0] ?? '';
     }
 
-    public function needRestart(): bool
-    {
-        return $this->isRestart;
-    }
-
-    public function getRestartParams(): array
-    {
-        return $this->lastRestartParams;
-    }
-
-    public function getLastException(): ?Throwable
-    {
-        return $this->lastException;
-    }
-
     /**
      * @throws MigrationException
      */
     public function markMigration(string $versionName, string $status): bool
     {
-
         $this->versionConfig->tryVersionName($versionName);
 
         $meta = $this->getVersionByName($versionName);
@@ -491,7 +443,7 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function setMigrationTag(string $versionName, string $tag = ''): bool
+    public function setMigrationTag(string $versionName, string $tag): bool
     {
         $meta = $this->getVersionByName($versionName);
 
@@ -680,12 +632,12 @@ class VersionManager
                 return $meta;
             }
 
-            /** @var $versionInstance Version */
-            $versionInstance = (new ReflectionClass($class))
+            /** @var $versionObj Version */
+            $versionObj = (new ReflectionClass($class))
                 ->newInstanceWithoutConstructor();
             $meta['class'] = $class;
             $meta['description'] = $this->stripslashes(
-                $versionInstance->getDescription()
+                $versionObj->getDescription()
             );
 
             $humanTs = DateTime::createFromFormat(
@@ -696,13 +648,11 @@ class VersionManager
                 Locale::getMessage('META_NEW'),
                 $humanTs->format(VersionTable::DATE_FORMAT),
                 $this->stripslashes(
-                    $versionInstance->getAuthor()
+                    $versionObj->getAuthor()
                 )
             );
 
-            $meta['required_versions'] = $versionInstance->getRequiredVersions();
-
-            $v1 = $versionInstance->getModuleVersion();
+            $v1 = $versionObj->getModuleVersion();
             $v2 = Module::getVersion();
 
             if ($v1 && version_compare($v1, $v2, '>')) {

@@ -45,7 +45,7 @@ export const MigrationBuilders = {
             if (this.filter.search) {
                 let s1 = makeString(this.filter.search).toLowerCase();
                 return this.builders.filter(item => {
-                    let s2 = [item.name, item.title].join(' ').toLowerCase();
+                    let s2 = [item.name, item.title, item.group].join(' ').toLowerCase();
                     return s2.includes(s1);
 
                 })
@@ -124,7 +124,7 @@ export const MigrationBuilders = {
         execAction(action, payload) {
             this.loading = 1;
             return ajax.runAction(
-                'sprint:migration.controller.main.' + action,
+                'sprint:migration.controller.BuilderController.' + action,
                 {data: payload, getParameters: {config: this.config}}
             ).then((response) => {
                 this.processResponse(response);
@@ -151,7 +151,6 @@ export const MigrationBuilders = {
                 let currentParams = params;
                 while (true) {
                     if (!this.running) {
-
                         this.replay = {
                             builder,
                             params: currentParams,
@@ -201,10 +200,10 @@ export const MigrationBuilders = {
             }
         },
 
-        selectBuilder(name) {
-            if (this.selected !== name) {
-                this.selected = name;
-                this.execBuilder(name, {})
+        selectBuilder(builder) {
+            if (this.selected !== builder) {
+                this.selected = builder;
+                this.execBuilder(builder, {})
             }
         },
     },
@@ -230,21 +229,35 @@ export const MigrationBuilders = {
             </div>
           </div>
           <div class="sp-row2">
-            <div class="sp-col sp-col_builders">
-              <div v-for="(groupItems, groupName) in grouped">
+            <div class="sp-col sp-col-p0">
+              <div class="sp-builder_list" ref="builder_list">
                 <div
+                    v-for="(groupItems, groupName) in grouped"
                     class="sp-builder_group"
-                    v-text="groupName"
-                />
-                <div
-                    v-for="item in groupItems"
-                    :class="['sp-builder_title', (selected===item.name ? 'sp-active':'')]"
-                    @click="selectBuilder(item.name)"
-                    v-html="colorize(item.title)"
-                />
+                >
+                  <div
+                      class="sp-builder_caption"
+                      v-text="groupName"
+                  />
+                  <div
+                      v-for="item in groupItems"
+                      :class="['sp-builder_title', (selected===item.name ? 'sp-active':'')]"
+                      @click="selectBuilder(item.name)"
+                      v-html="colorize(item.title)"
+                  />
+                </div>
               </div>
             </div>
-            <div class="sp-col" style="position: relative">
+            <div class="sp-col sp-col-p0">
+              <div class="sp-migration_log" ref="migration_log">
+                <div
+                    v-for="(item, index) in messages"
+                    v-bind="colorbind(item.type)"
+                    :key="index"
+                    v-text="item.message"
+                />
+              </div>
+
               <div v-if="selected" style="position: sticky;top: 10px"/>
             </div>
           </div>

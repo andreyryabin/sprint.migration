@@ -41,13 +41,12 @@
     min-height: 55px;
 }
 
-.sp-col-scroll {
-    padding-right: 0;
-    padding-bottom: 0;
+.sp-col-p0 {
+    padding: 0;
 }
 
-.sp-col.sp-col_builders {
-    padding: 0;
+.sp-col-p5 {
+    padding: 5px;
 }
 
 .sp-col:after {
@@ -60,10 +59,11 @@
     background: #fff;
 }
 
-
+.sp-builder_list,
 .sp-migration_list,
 .sp-migration_log {
-    overflow: auto;
+    padding: 10px 0 10px 10px;
+    overflow-y: auto;
     min-height: 300px;
     max-height: 600px;
 }
@@ -80,17 +80,17 @@
 }
 
 .sp-builder_group {
+    margin-bottom: 5px;
+}
+
+.sp-builder_caption {
     font-weight: bold;
-    padding: 5px 10px;
+    margin-bottom: 5px;
 }
 
 .sp-builder_title {
-    /*color: #000;*/
-    /*font-size: 20px;*/
-    /*position: relative;*/
-    /*min-height: 25px;*/
     cursor: pointer;
-    padding: 5px 10px;
+    padding: 5px 0;
 }
 
 .sp-builder_title:hover {

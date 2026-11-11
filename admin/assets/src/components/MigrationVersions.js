@@ -155,7 +155,7 @@ export const MigrationVersions = {
         execAction(action, payload) {
             this.loading = 1;
             return ajax.runAction(
-                'sprint:migration.controller.main.' + action,
+                'sprint:migration.controller.versioncontroller.' + action,
                 {data: payload, getParameters: {config: this.config}}
             ).then((response) => {
                 this.processResponse(response);
@@ -177,13 +177,11 @@ export const MigrationVersions = {
         async execVersion(version, action, params, settag) {
             this.running = true;
             this.replay = false;
-            try {
-                this.execVersionLog(version, action, 'start');
 
+            try {
                 let currentParams = params;
                 while (true) {
                     if (!this.running) {
-                        this.execVersionLog(version, action, 'canceled');
                         this.replay = {
                             version,
                             action,
@@ -207,7 +205,6 @@ export const MigrationVersions = {
                     }
 
                     if (!data.success) {
-                        this.execVersionLog(version, action, 'error');
                         this.replay = {
                             version,
                             action,
@@ -218,7 +215,6 @@ export const MigrationVersions = {
                         return false;
                     }
 
-                    this.execVersionLog(version, action, 'finish');
                     this.pickVersion(data.meta);
                     return true;
                 }
@@ -238,10 +234,6 @@ export const MigrationVersions = {
 
             this.refreshVersions();
             return true;
-        },
-
-        execVersionLog(version, action, msg) {
-            this.messages.push(markRaw({type: 'info', message: version + '::' + action + '() ' + msg}));
         },
 
         getVersionsByAction(action) {
@@ -372,7 +364,7 @@ export const MigrationVersions = {
             }
         },
 
-        buildContextMenu(e) {
+        makeContextMenu(e) {
             let menu = [];
 
             menu.push({
@@ -394,7 +386,7 @@ export const MigrationVersions = {
             showContextMenu(e.target, menu);
         },
 
-        buildVersionMenu(e, item) {
+        makeVersionMenu(e, item) {
             let menu = [];
 
             if (item.status === STATUS_NEW) {
@@ -490,7 +482,7 @@ export const MigrationVersions = {
             </div>
           </div>
           <div class="sp-row2">
-            <div class="sp-col sp-col-scroll sp-white">
+            <div class="sp-col sp-col-p0 sp-white">
               <div class="sp-migration_list" ref="migration_list">
                 <table v-if="versions.length > 0" class="sp-list">
                   <tr v-for="item in versions" :key="item.version">
@@ -498,7 +490,7 @@ export const MigrationVersions = {
                     <span
                         :class="{'adm-btn': true, 'sp-disabled':running}"
                         v-text="'&equiv;'"
-                        @click="buildVersionMenu($event, item)"
+                        @click="makeVersionMenu($event, item)"
                     />
                     </td>
                     <td class="sp-list_content">
@@ -513,7 +505,7 @@ export const MigrationVersions = {
                 </table>
               </div>
             </div>
-            <div class="sp-col sp-col-scroll">
+            <div class="sp-col sp-col-p0">
               <div class="sp-migration_log" ref="migration_log">
                 <div
                     v-for="(item, index) in messages"
@@ -537,7 +529,7 @@ export const MigrationVersions = {
               <span
                   :class="{'adm-btn': true,'sp-disabled':running }"
                   v-text="'&equiv;'"
-                  @click="buildContextMenu($event)"
+                  @click="makeContextMenu($event)"
               />
               <span
                   v-if="loading"

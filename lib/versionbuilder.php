@@ -116,7 +116,7 @@ abstract class VersionBuilder extends Builder
         }
 
         $fileName = $this->getVersionConfig()->getVersionFile($templateVars['version']);
-        $fileContent = $this->renderFile($templateFile, $templateVars);
+        $fileContent = Module::templater($templateFile, $templateVars);
 
         file_put_contents($fileName, $fileContent);
 
@@ -140,7 +140,9 @@ abstract class VersionBuilder extends Builder
         );
 
         if ($markAsInstalled) {
-            $vm = new VersionManager($this->getVersionConfig());
+            $vm = new VersionManager(
+                $this->getVersionConfig(),
+            );
             $vm->markMigration($templateVars['version'], VersionEnum::STATUS_INSTALLED);
         }
 

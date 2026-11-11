@@ -65,6 +65,21 @@ class Module
         return Module::getModuleDir() . '/templates/' . $name . '.php';
     }
 
+    public static function templater($file, $vars = []): string
+    {
+        if (is_array($vars)) {
+            extract($vars, EXTR_SKIP);
+        }
+
+        ob_start();
+
+        if (is_file($file)) {
+            include $file;
+        }
+
+        return ob_get_clean();
+    }
+
     /**
      * @throws MigrationException
      */

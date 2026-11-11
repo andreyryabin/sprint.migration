@@ -9,19 +9,20 @@ use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Output\ConsoleOutput;
-use Sprint\Migration\Output;
+use Sprint\Migration\Output\OutputFactory;
+use Sprint\Migration\Output\OutputInterface;
 use Sprint\Migration\Traits\CurrentUserTrait;
 
 class Console
 {
-    private string         $script;
-    private string         $command;
-    private array          $arguments  = [];
-    private VersionConfig  $versionConfig;
+    private string $script;
+    private string $command;
+    private array $arguments = [];
+    private VersionConfig $versionConfig;
     private VersionManager $versionManager;
-    private ConsoleOutput  $output;
-    private array  $argoptions = [];
-    private Output $logger;
+    private ConsoleOutput $output;
+    private array $argoptions = [];
+
     use CurrentUserTrait;
 
     /**
@@ -37,13 +38,12 @@ class Console
             $this->getArg('--config=', VersionEnum::CONFIG_DEFAULT)
         );
 
-        $this->versionManager = new VersionManager($this->versionConfig);
-
         $this->output = new ConsoleOutput();
 
-        $this->logger = Output::getInstance();
-        $this->logger->addOutput($this->output)
-                     ->addLogger($this->versionConfig->getLogger());
+        $this->versionManager = new VersionManager(
+            $this->versionConfig,
+            $this->output
+        );
 
         $this->disableAuthHandlersIfNeed();
 
@@ -157,9 +157,7 @@ class Console
         $status = $this->getArg('--as=');
 
         if ($search && $status) {
-            $this->logger->outMessages(
-                $this->versionManager->markMigration($search, $status)
-            );
+            $this->versionManager->markMigration($search, $status);
         } else {
             throw new MigrationException(
                 Locale::getMessage('ERR_INVALID_ARGUMENTS')
@@ -172,9 +170,7 @@ class Console
      */
     public function commandDelete(): void
     {
-        $this->logger->outMessages(
-            $this->versionManager->deleteMigration($this->getArg(0))
-        );
+        $this->versionManager->deleteMigration($this->getArg(0));
     }
 
     /**
@@ -304,7 +300,7 @@ class Console
     {
         if ($this->hasArguments()) {
             foreach ($this->getArguments() as $versionName) {
-                $this->executeOnce($versionName, VersionEnum::ACTION_UP);
+                $this->executeVersion($versionName, VersionEnum::ACTION_UP);
             }
         } else {
             $this->executeAll([
@@ -325,7 +321,7 @@ class Console
     {
         if ($this->hasArguments()) {
             foreach ($this->getArguments() as $versionName) {
-                $this->executeOnce($versionName, VersionEnum::ACTION_DOWN);
+                $this->executeVersion($versionName, VersionEnum::ACTION_DOWN);
             }
         } else {
             $this->executeAll([
@@ -460,9 +456,9 @@ class Console
     {
         foreach ($this->getArguments() as $versionName) {
             if ($this->getArg('--down')) {
-                $this->executeOnce($versionName, VersionEnum::ACTION_DOWN);
+                $this->executeVersion($versionName, VersionEnum::ACTION_DOWN);
             } else {
-                $this->executeOnce($versionName, VersionEnum::ACTION_UP);
+                $this->executeVersion($versionName, VersionEnum::ACTION_UP);
             }
         }
     }
@@ -472,79 +468,37 @@ class Console
      */
     protected function executeAll($filter, $action): void
     {
-        $success = 0;
-        $fails = 0;
-
         $versionNames = $this->versionManager->getListForExecute($filter, $action);
-
         foreach ($versionNames as $versionName) {
-            $ok = $this->executeVersion($versionName, $action);
-
-            if ($ok) {
-                $success++;
-            } else {
-                $fails++;
-            }
-
-            if ($fails) {
-                break;
-            }
-        }
-
-        $this->logger->out('migrations (%s): %d', $action, $success);
-
-        if ($fails) {
-            throw new MigrationException(
-                Locale::getMessage('ERR_SOME_MIGRATIONS_FAILS')
-            );
-        }
-    }
-
-    /**
-     * @throws MigrationException
-     */
-    protected function executeOnce(string $version, string $action): void
-    {
-        $ok = $this->executeVersion($version, $action);
-
-        if (!$ok) {
-            throw new MigrationException(
-                Locale::getMessage('ERR_MIGRATION_FAIL')
-            );
+            $this->executeVersion($versionName, $action);
         }
     }
 
     /**
      * @throws \Throwable
      */
-    protected function executeVersion(string $version, string $action): bool
+    protected function executeVersion(string $version, string $action): void
     {
         $tag = $this->getArg('--add-tag=');
 
         $params = [];
 
-        $this->logger->outInfo('%s (%s) start', $version, $action);
-
         do {
-            $success = $this->versionManager->startMigration(
+            $result = $this->versionManager->startMigration(
                 $version,
                 $action,
                 $params,
                 $tag
             );
 
-            $restart = $this->versionManager->needRestart();
-            $params = $this->versionManager->getRestartParams();
+            $params = $result->getRestartParams();
 
-            if ($this->versionManager->getLastException()) {
-                throw $this->versionManager->getLastException();
+            if ($result->getLastException()) {
+                throw $result->getLastException();
             }
 
-        } while ($restart);
+        } while ($result->needRestart());
 
-        $this->logger->outSuccess('%s (%s) finish', $version, $action);
-
-        return $success;
     }
 
     /**

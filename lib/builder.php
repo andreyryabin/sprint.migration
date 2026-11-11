@@ -26,9 +26,18 @@ abstract class Builder implements RestartableInterface
         'group'       => '',
     ];
     private array $fields = [];
-    private string $execStatus = '';
 
     private HelperManager $helperManager;
+
+    abstract protected function initialize();
+
+    /**
+     * @throws RebuildException
+     * @throws RestartException
+     */
+    abstract protected function execute();
+
+    abstract protected function isBuilderEnabled();
 
     public function __construct(VersionConfig $versionConfig)
     {
@@ -37,10 +46,26 @@ abstract class Builder implements RestartableInterface
         $this->initialize();
     }
 
-
+    /**
+     * @deprecated
+     */
     public function getName(): string
     {
         return $this->name ??= (new ReflectionClass($this))->getShortName();
+    }
+
+    public function getClassName(): string
+    {
+        return static::class;
+    }
+
+    public function isEnabled(): bool
+    {
+        try {
+            return (bool)$this->isBuilderEnabled();
+        } catch (Exception) {
+            return false;
+        }
     }
 
     public function getFields(): array
@@ -53,23 +78,6 @@ abstract class Builder implements RestartableInterface
         return $this->helperManager ??= new HelperManager($this->getOutput());
     }
 
-    abstract protected function initialize();
-
-    abstract protected function execute();
-
-    protected function isBuilderEnabled()
-    {
-        return false;
-    }
-
-    public function isEnabled()
-    {
-        try {
-            return $this->isBuilderEnabled();
-        } catch (Exception) {
-            return false;
-        }
-    }
 
     protected function addField($code, $param = []): void
     {
@@ -127,87 +135,14 @@ abstract class Builder implements RestartableInterface
         }
     }
 
-    protected function renderFile($file, $vars = []): string
+
+    /**
+     * @throws RebuildException
+     * @throws RestartException
+     */
+    public function start()
     {
-        if (is_array($vars)) {
-            extract($vars, EXTR_SKIP);
-        }
-
-        ob_start();
-
-        if (is_file($file)) {
-            include $file;
-        }
-
-        return ob_get_clean();
-    }
-
-    public function renderHtml(): void
-    {
-        echo $this->renderFile(
-            Module::getModuleDir() . '/admin/includes/builder_form.php', [
-                'builder' => $this,
-            ]
-        );
-    }
-
-    public function renderConsole(): void
-    {
-        $output = new ConsoleOutput();
-        foreach ($this->fields as $code => $field) {
-            if (empty($field['bind'])) {
-                $val = $output->input($field);
-
-                $this->fields[$code]['bind'] = 1;
-                $this->fields[$code]['value'] = $val;
-                $this->params[$code] = $val;
-            }
-        }
-    }
-
-    public function isRebuild(): bool
-    {
-        return ($this->execStatus == 'rebuild');
-    }
-
-    public function isRestart(): bool
-    {
-        return ($this->execStatus == 'restart');
-    }
-
-    public function buildExecute(): bool
-    {
-        $this->execStatus = '';
-
-        try {
-            $this->execute();
-        } catch (RestartException $e) {
-            $this->execStatus = 'restart';
-            return false;
-        } catch (RebuildException $e) {
-            $this->execStatus = 'rebuild';
-            return false;
-        } catch (Exception $e) {
-            $this->execStatus = 'error';
-            $this->outException($e);
-            $this->params = [];
-            return false;
-        }
-
-        $this->execStatus = 'success';
-        $this->params = [];
-        return true;
-    }
-
-    public function buildAfter(): void
-    {
-        foreach ($this->params as $code => $val) {
-            if (!isset($this->fields[$code])) {
-                if (is_numeric($val) || is_string($val)) {
-                    $this->addField($code, ['type' => 'hidden']);
-                }
-            }
-        }
+        $this->execute();
     }
 
     /**
@@ -249,11 +184,6 @@ abstract class Builder implements RestartableInterface
     public function getDescription(): string
     {
         return $this->info['description'];
-    }
-
-    public function hasDescription(): bool
-    {
-        return !empty($this->info['description']);
     }
 
     public function getGroup(): string

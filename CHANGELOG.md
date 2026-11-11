@@ -177,7 +177,7 @@
 - Перенос элементов highload-блоков по xml_id
 - Перенос привязанных элементов инфоблока (автор fenix63)
 - Добавлен метод $this->checkRequiredVersions([VersionName1]), бросающий исключение в случае, если нужные миграции неустановлены
-- Добавлено свойство $requiredVersions=[VersionName1, VersionName2], не дающее установить миграцию, если не установленызаданные
+- Добавлено свойство $requiredVersions=[VersionName1, VersionName2], не дающее установить миграцию, если не установлены заданные
 - Убраны параметр в конфиге version_filter и метод в классе миграции $this->isVersionEnabled(),некоректно фильтровавший список миграций
 - Методы в классе миграции saveData, getSavedData, deleteSavedData, перенесены внутрь объекта $this->getStorageManager()
 

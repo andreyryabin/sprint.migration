@@ -3,7 +3,9 @@
 namespace Sprint\Migration;
 
 use ReflectionClass;
+use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\ExchangeManager;
 use Sprint\Migration\Interfaces\RestartableInterface;
 use Sprint\Migration\Output\OutputTrait;
@@ -21,14 +23,13 @@ class Version implements RestartableInterface
     protected $author = "";
     protected $description = "";
     protected $moduleVersion = "";
-    /**
-     * @deprecated Используете $this->checkRequiredVersions(['Version1','Version1'])
-     */
-    protected $requiredVersions = [];
+
     private HelperManager $helperManager;
 
     /**
      * @throws MigrationException
+     * @throws RestartException
+     * @throws HelperException
      */
     public function up()
     {
@@ -37,6 +38,8 @@ class Version implements RestartableInterface
 
     /**
      * @throws MigrationException
+     * @throws RestartException
+     * @throws HelperException
      */
     public function down()
     {
@@ -80,7 +83,7 @@ class Version implements RestartableInterface
     public function checkRequiredVersions($versionNames): void
     {
         (new VersionManager(
-            $this->getVersionConfig()
+            $this->getVersionConfig(),
         ))->checkRequiredVersions($versionNames);
     }
 
