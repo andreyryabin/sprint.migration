@@ -10,11 +10,6 @@ $output = new BrowserOutput;
 echo '<form method="post">';
 $output->out($builder->getTitle());
 foreach ($builder->getFields() as $fieldCode => $fieldItem) {
-    if ($fieldItem['type'] == 'hidden') {
-        include __DIR__ . '/../fields/input_hidden.php';
-        continue;
-    }
-
     echo '<div class="sp-field">';
 
     echo !empty($fieldItem['title']) ? '<div class="sp-field-title">' . $fieldItem['title'] . '</div>' : '';

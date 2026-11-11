@@ -52,15 +52,22 @@ class ConsoleOutput extends AbstractOutput
 
     }
 
+    public function print(string $msg, ...$vars): void
+    {
+        $msg = $this->resolve($msg, $vars);
+
+        $this->writeMessage($msg, '');
+    }
+
     /**
      * @throws ConsoleException
      */
     public function input($field): string|array
     {
         if (!empty($field['items'])) {
-            $this->outStructure($field);
+            $this->printStructure($field);
         } elseif (!empty($field['select'])) {
-            $this->outSelect($field);
+            $this->printSelect($field);
         }
 
         fwrite(STDOUT, PHP_EOL . $field['title'] . ':');
@@ -81,20 +88,20 @@ class ConsoleOutput extends AbstractOutput
         return $val;
     }
 
-    private function outStructure($field): void
+    private function printStructure($field): void
     {
         foreach ($field['items'] as $group) {
-            $this->out('---' . $group['title']);
+            $this->print('---' . $group['title']);
             foreach ($group['items'] as $item) {
-                $this->out(' > ' . $item['value'] . ' (' . $item['title'] . ')');
+                $this->print(' > ' . $item['value'] . ' (' . $item['title'] . ')');
             }
         }
     }
 
-    private function outSelect($field): void
+    private function printSelect($field): void
     {
         foreach ($field['select'] as $item) {
-            $this->out(' > ' . $item['value'] . ' (' . $item['title'] . ')');
+            $this->print(' > ' . $item['value'] . ' (' . $item['title'] . ')');
         }
     }
 

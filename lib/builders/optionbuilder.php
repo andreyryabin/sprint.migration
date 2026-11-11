@@ -2,8 +2,6 @@
 
 namespace Sprint\Migration\Builders;
 
-use Bitrix\Main\ArgumentException;
-use Bitrix\Main\SystemException;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
@@ -46,35 +44,17 @@ class OptionBuilder extends VersionBuilder
         $this->addField(
             'site_id',
             [
-                'title'       => Locale::getMessage('BUILDER_OptionExport_site_id'),
-                'placeholder' => '',
-                'multiple'    => 1,
-                'value'       => [],
-                'width'       => 250,
-                'select'      => $this->createSelect(
-                    $helper->Site()->getSites(),
-                    'ID',
-                    'NAME',
-                    true
-                ),
+                'title'    => Locale::getMessage('BUILDER_OptionExport_site_id'),
+                'select'   => $this->createSelect($helper->Site()->getSites(), 'ID', 'NAME', true),
+                'multiple' => 1,
             ]
         );
 
-        $moduleIds = $this->addFieldAndReturn(
-            'module_id',
-            [
-                'title'       => Locale::getMessage('BUILDER_OptionExport_module_id'),
-                'placeholder' => '',
-                'multiple'    => 1,
-                'value'       => [],
-                'width'       => 250,
-                'select'      => $this->createSelect(
-                    $helper->Option()->getModules(),
-                    'ID',
-                    'ID'
-                ),
-            ]
-        );
+        $moduleIds = $this->addFieldAndReturn('module_id', [
+            'title'    => Locale::getMessage('BUILDER_OptionExport_module_id'),
+            'select'   => $this->createSelect($helper->Option()->getModules(), 'ID', 'ID'),
+            'multiple' => 1,
+        ]);
 
 
         $items = [];

@@ -44,8 +44,7 @@ class VoteBuilder extends VersionBuilder
 
         $voteId = $this->addFieldAndReturn('vote_id', [
             'title' => Locale::getMessage('BUILDER_VoteExport_VoteId'),
-            'width' => 250,
-            'items' => $this->getVotesSelect(),
+            'items' => $this->getVotesStructure(),
         ]);
 
         $vote = $helper->Vote()->exportVoteById($voteId);
@@ -64,7 +63,7 @@ class VoteBuilder extends VersionBuilder
         );
     }
 
-    private function getVotesSelect(): array
+    private function getVotesStructure(): array
     {
         $helper = $this->getHelperManager();
         $channels = [];
@@ -79,6 +78,6 @@ class VoteBuilder extends VersionBuilder
             return $vote;
         }, $helper->Vote()->getVotesList());
 
-        return $this->createSelectWithGroups($votes, 'ID', 'TITLE', 'CHANNEL_TITLE');
+        return $this->createStructure($votes, 'ID', 'TITLE', 'CHANNEL_TITLE');
     }
 }

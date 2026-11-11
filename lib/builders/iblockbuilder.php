@@ -34,54 +34,46 @@ class IblockBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $iblockId = $this->addFieldAndReturn(
-            'iblock_id', [
-                'title'       => Locale::getMessage('BUILDER_IblockExport_IblockId'),
-                'placeholder' => '',
-                'width'       => 250,
-                'items'       => $helper->IblockExchange()->getIblocksStructure(),
-            ]
-        );
+        $iblockId = $this->addFieldAndReturn('iblock_id', [
+            'title' => Locale::getMessage('BUILDER_IblockExport_IblockId'),
+            'items' => $helper->IblockExchange()->getIblocksStructure(),
+        ]);
 
         $iblock = $helper->Iblock()->exportIblock($iblockId);
         if (empty($iblock)) {
             $this->rebuildField('iblock_id');
         }
 
-        $what = $this->addFieldAndReturn(
-            'what', [
-                'title'    => Locale::getMessage('BUILDER_IblockExport_What'),
-                'width'    => 250,
-                'multiple' => 1,
-                'value'    => [],
-                'select'   => [
-                    [
-                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockType'),
-                        'value' => 'iblockType',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblock'),
-                        'value' => 'iblock',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockFields'),
-                        'value' => 'iblockFields',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockProperties'),
-                        'value' => 'iblockProperties',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockUserOptions'),
-                        'value' => 'iblockUserOptions',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockPermissions'),
-                        'value' => 'iblockPermissions',
-                    ],
+        $what = $this->addFieldAndReturn('what', [
+            'title'    => Locale::getMessage('BUILDER_IblockExport_What'),
+            'multiple' => 1,
+            'select'   => [
+                [
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockType'),
+                    'value' => 'iblockType',
                 ],
-            ]
-        );
+                [
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblock'),
+                    'value' => 'iblock',
+                ],
+                [
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockFields'),
+                    'value' => 'iblockFields',
+                ],
+                [
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockProperties'),
+                    'value' => 'iblockProperties',
+                ],
+                [
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockUserOptions'),
+                    'value' => 'iblockUserOptions',
+                ],
+                [
+                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockPermissions'),
+                    'value' => 'iblockPermissions',
+                ],
+            ],
+        ]);
 
         $iblockExport = false;
         $iblockType = [];
@@ -107,17 +99,13 @@ class IblockBuilder extends VersionBuilder
         }
 
         if (in_array('iblockProperties', $what)) {
-            $struct = $helper->IblockExchange()->getIblockPropertiesStructure($iblockId);
-            if (!empty($struct)) {
-                $exportProps = $this->addFieldAndReturn(
-                    'export_props', [
-                        'title'    => Locale::getMessage('BUILDER_IblockExport_Properties'),
-                        'width'    => 250,
-                        'multiple' => 1,
-                        'value'    => [],
-                        'select'   => $struct,
-                    ]
-                );
+            $propertiesSelect = $helper->IblockExchange()->getIblockPropertiesSelect($iblockId);
+            if (!empty($propertiesSelect)) {
+                $exportProps = $this->addFieldAndReturn('export_props', [
+                    'title'    => Locale::getMessage('BUILDER_IblockExport_Properties'),
+                    'multiple' => 1,
+                    'select'   => $propertiesSelect,
+                ]);
 
                 $iblockProperties = $helper->Iblock()->exportProperties($iblockId);
                 $iblockProperties = array_filter(

@@ -44,10 +44,8 @@ class ForumBuilder extends VersionBuilder
 
         $forumIds = $this->addFieldAndReturn('forum_ids', [
             'title'    => Locale::getMessage('BUILDER_ForumExport_forum_ids'),
-            'width'    => 350,
+            'items'    => $this->getForumsStructure(),
             'multiple' => 1,
-            'value'    => [],
-            'items'    => $this->getForumsSelect(),
         ]);
 
         $forums = $helper->Forum()->exportForums($forumIds);
@@ -68,7 +66,7 @@ class ForumBuilder extends VersionBuilder
     /**
      * @throws HelperException
      */
-    protected function getForumsSelect(): array
+    protected function getForumsStructure(): array
     {
         $helper = $this->getHelperManager()->Forum();
         $groups = [];
@@ -85,6 +83,6 @@ class ForumBuilder extends VersionBuilder
             return $item;
         }, $items);
 
-        return $this->createSelectWithGroups($items, 'ID', 'TITLE', 'GROUP_TITLE');
+        return $this->createStructure($items, 'ID', 'TITLE', 'GROUP_TITLE');
     }
 }

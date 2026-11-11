@@ -102,6 +102,7 @@ class VersionManager
             $result->setRestart(isset($versionObj) ? $versionObj->getRestartParams() : []);
         } catch (Throwable $e) {
             $result->setException($e);
+            $this->output->outException($e);
         }
 
         if (!$result->needRestart()) {

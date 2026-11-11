@@ -42,22 +42,10 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $iblocks = $helper->IblockExchange()->getIblocks();
-        $iblockTypes = $helper->IblockExchange()->getIblockTypes();
-        $itemsForSelect = $helper->IblockExchange()->createIblocksStructure(
-            $iblockTypes,
-            $iblocks
-        );
-
-        $iblockId = (int)$this->addFieldAndReturn(
-            'iblock_id',
-            [
-                'title'       => Locale::getMessage('BUILDER_IblockExport_IblockId'),
-                'placeholder' => '',
-                'width'       => 250,
-                'items'       => $itemsForSelect,
-            ]
-        );
+        $iblockId = (int)$this->addFieldAndReturn('iblock_id', [
+            'title' => Locale::getMessage('BUILDER_IblockExport_IblockId'),
+            'items' => $helper->IblockExchange()->getIblocksStructure(),
+        ]);
 
         $properties = $this->prepareProperties($helper->Iblock()->getProperties($iblockId));
 
@@ -65,10 +53,8 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
             'property_ids',
             [
                 'title'    => Locale::getMessage('BUILDER_IblockPropertyDelete_Properties'),
-                'width'    => 350,
-                'multiple' => 1,
-                'value'    => [],
                 'select'   => $this->createSelect($properties, 'ID', 'PROPERTY_TITLE'),
+                'multiple' => 1,
             ]
         );
 

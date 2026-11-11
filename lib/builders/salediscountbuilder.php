@@ -43,10 +43,8 @@ class SaleDiscountBuilder extends VersionBuilder
 
         $discountIds = $this->addFieldAndReturn('discounts', [
             'title'    => Locale::getMessage('BUILDER_SaleDiscount_Discounts'),
-            'width'    => 350,
+            'items'    => $this->getDiscountsStructure(),
             'multiple' => 1,
-            'value'    => [],
-            'items'    => $this->getDiscountsSelect(),
         ]);
 
         $items = $helper->SaleDiscount()->exportDiscounts($discountIds);
@@ -63,7 +61,7 @@ class SaleDiscountBuilder extends VersionBuilder
         );
     }
 
-    protected function getDiscountsSelect(): array
+    protected function getDiscountsStructure(): array
     {
         $items = $this->getHelperManager()->SaleDiscount()->getDiscounts();
         $items = $this->getHelperManager()->SaleDiscount()->ensureDiscountXmlIds($items);
@@ -73,6 +71,6 @@ class SaleDiscountBuilder extends VersionBuilder
             return $item;
         }, $items);
 
-        return $this->createSelectWithGroups($items, 'ID', 'TITLE', 'LID');
+        return $this->createStructure($items, 'ID', 'TITLE', 'LID');
     }
 }

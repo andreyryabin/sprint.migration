@@ -42,17 +42,14 @@ class BlogBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $groupId = $this->addFieldAndReturn('group_id', [
-            'title'    => Locale::getMessage('BUILDER_BlogExport_group_id'),
-            'width'    => 350,
-            'items'    => $this->getGroupsSelect(),
+            'title' => Locale::getMessage('BUILDER_BlogExport_group_id'),
+            'items' => $this->getGroupsStructure(),
         ]);
 
         $blogIds = $this->addFieldAndReturn('blog_ids', [
             'title'    => Locale::getMessage('BUILDER_BlogExport_blog_ids'),
-            'width'    => 350,
+            'items'    => $this->getBlogsStructure($groupId),
             'multiple' => 1,
-            'value'    => [],
-            'items'    => $this->getBlogsSelect($groupId),
         ]);
 
         $group = $helper->Blog()->exportGroupById($groupId);
@@ -68,17 +65,17 @@ class BlogBuilder extends VersionBuilder
         );
     }
 
-    protected function getGroupsSelect(): array
+    protected function getGroupsStructure(): array
     {
         $items = array_map(function ($item) {
             $item['TITLE'] = '[' . $item['SITE_ID'] . '] ' . $item['NAME'];
             return $item;
         }, $this->getHelperManager()->Blog()->getGroups());
 
-        return $this->createSelectWithGroups($items, 'ID', 'TITLE', 'SITE_ID');
+        return $this->createStructure($items, 'ID', 'TITLE', 'SITE_ID');
     }
 
-    protected function getBlogsSelect(int $groupIds): array
+    protected function getBlogsStructure(int $groupIds): array
     {
         $items = array_map(function ($item) {
             $item['GROUP_TITLE'] = '[' . $item['GROUP_SITE_ID'] . '] ' . $item['GROUP_NAME'];
@@ -86,6 +83,6 @@ class BlogBuilder extends VersionBuilder
             return $item;
         }, $this->getHelperManager()->Blog()->getBlogs(['GROUP_ID' => $groupIds]));
 
-        return $this->createSelectWithGroups($items, 'ID', 'TITLE', 'GROUP_TITLE');
+        return $this->createStructure($items, 'ID', 'TITLE', 'GROUP_TITLE');
     }
 }

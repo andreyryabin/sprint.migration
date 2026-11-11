@@ -7,7 +7,6 @@ use Sprint\Migration\Exceptions\RestartException;
 
 trait RestartableTrait
 {
-    /** @deprecated */
     protected array $params = [];
 
     /**

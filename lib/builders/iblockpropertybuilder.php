@@ -35,29 +35,20 @@ class IblockPropertyBuilder extends VersionBuilder
 
         $userTypes = $this->getPropertyUserTypes();
 
-        $userType = $this->addFieldAndReturn(
-            'user_type',
-            [
-                'title'       => Locale::getMessage('BUILDER_IblockPropertyExport_UserType'),
-                'placeholder' => '',
-                'width'       => 250,
-                'select'      => $this->createSelect($userTypes, 'USER_TYPE', 'TITLE'),
-            ]
-        );
+        $userType = $this->addFieldAndReturn('user_type', [
+            'title'  => Locale::getMessage('BUILDER_IblockPropertyExport_UserType'),
+            'select' => $this->createSelect($userTypes, 'USER_TYPE', 'TITLE'),
+        ]);
 
         $properties = $this->getPropertiesByFilter([
             'USER_TYPE' => $userType,
         ]);
 
-        $propertyIds = $this->addFieldAndReturn(
-            'export_props', [
-                'title'    => Locale::getMessage('BUILDER_IblockPropertyExport_Properties'),
-                'width'    => 250,
-                'multiple' => 1,
-                'value'    => [],
-                'items'    => $this->createSelectWithGroups($properties, 'ID', 'PROPERTY_TITLE', 'IBLOCK_TITLE'),
-            ]
-        );
+        $propertyIds = $this->addFieldAndReturn('export_props', [
+            'title'    => Locale::getMessage('BUILDER_IblockPropertyExport_Properties'),
+            'items'    => $this->createStructure($properties, 'ID', 'PROPERTY_TITLE', 'IBLOCK_TITLE'),
+            'multiple' => 1,
+        ]);
 
         $properties = array_filter(
             $properties,

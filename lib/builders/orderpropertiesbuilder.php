@@ -2,10 +2,10 @@
 
 namespace Sprint\Migration\Builders;
 
+use Bitrix\Main\ArgumentException;
+use Bitrix\Main\SystemException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
-use Bitrix\Main\SystemException;
-use Bitrix\Main\ArgumentException;
 use Sprint\Migration\VersionBuilder;
 
 class OrderPropertiesBuilder extends VersionBuilder
@@ -39,18 +39,12 @@ class OrderPropertiesBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $personTypeId = $this->addFieldAndReturn(
-            'person_type',
-            [
-                'title'  => Locale::getMessage('BUILDER_OrderProperties_PersonType'),
-                'width'  => 250,
-                'value'  => '',
-                'select' => array_map(fn($personType) => [
-                    'title' => $personType['NAME'],
-                    'value' => $personType['ID'],
-                ], $helper->OrderProperties()->getPersonTypes()),
-            ]
-        );
+        $personTypeId = $this->addFieldAndReturn('person_type', [
+            'title'  => Locale::getMessage('BUILDER_OrderProperties_PersonType'),
+            'width'  => 250,
+            'value'  => '',
+            'select' => $this->createSelect($helper->OrderProperties()->getPersonTypes(), 'ID', 'NAME')
+        ]);
 
         if (empty($personTypeId)) {
             return;
@@ -58,58 +52,44 @@ class OrderPropertiesBuilder extends VersionBuilder
 
         $properties = $helper->OrderProperties()->getOrderPropertiesByPersonType($personTypeId);
 
-        $propertyIds = $this->addFieldAndReturn(
-            'properties',
-            [
-                'title'       => Locale::getMessage('BUILDER_OrderProperties_Properties'),
-                'placeholder' => '',
-                'width'       => 250,
-                'multiple'    => 1,
-                'select'      => $this->getPropertiesSelect($personTypeId),
-                'value'       => [],
-            ]
-        );
+        $propertyIds = $this->addFieldAndReturn('properties', [
+            'title'    => Locale::getMessage('BUILDER_OrderProperties_Properties'),
+            'select'   => $this->getPropertiesSelect($personTypeId),
+            'multiple' => 1,
+        ]);
 
-        $updateMethod = $this->addFieldAndReturn(
-            'update_method', [
-                'title'       => Locale::getMessage('BUILDER_OrderProperties_UpdateMethod'),
-                'placeholder' => '',
-                'width'       => 250,
-                'select'      => [
-                    [
-                        'title' => Locale::getMessage('BUILDER_OrderProperties_NotUpdate'),
-                        'value' => self::UPDATE_METHOD_NOT,
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_OrderProperties_SavePropertyByCode'),
-                        'value' => self::UPDATE_METHOD_CODE,
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_OrderProperties_SavePropertyByXmlId'),
-                        'value' => self::UPDATE_METHOD_XML_ID,
-                    ],
+        $updateMethod = $this->addFieldAndReturn('update_method', [
+            'title'  => Locale::getMessage('BUILDER_OrderProperties_UpdateMethod'),
+            'select' => [
+                [
+                    'title' => Locale::getMessage('BUILDER_OrderProperties_NotUpdate'),
+                    'value' => self::UPDATE_METHOD_NOT,
                 ],
-            ]
-        );
+                [
+                    'title' => Locale::getMessage('BUILDER_OrderProperties_SavePropertyByCode'),
+                    'value' => self::UPDATE_METHOD_CODE,
+                ],
+                [
+                    'title' => Locale::getMessage('BUILDER_OrderProperties_SavePropertyByXmlId'),
+                    'value' => self::UPDATE_METHOD_XML_ID,
+                ],
+            ],
+        ]);
 
         $propertyVariants = [];
-        $migratePropertyVariants = $this->addFieldAndReturn(
-            'migrate_property_variants', [
-                'title'       => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants'),
-                'placeholder' => '',
-                'width'       => 250,
-                'select'      => [
-                    [
-                        'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_No'),
-                        'value' => 'N',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_Yes'),
-                        'value' => 'Y',
-                    ],
+        $migratePropertyVariants = $this->addFieldAndReturn('migrate_property_variants', [
+            'title'  => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants'),
+            'select' => [
+                [
+                    'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_No'),
+                    'value' => 'N',
                 ],
-            ]
-        );
+                [
+                    'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_Yes'),
+                    'value' => 'Y',
+                ],
+            ],
+        ]);
         if ($migratePropertyVariants === 'Y') {
             $propertyVariants = $helper->OrderProperties()->getOrderPropertyVariants($propertyIds);
         }

@@ -5,8 +5,6 @@ namespace Sprint\Migration;
 use Exception;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\Output\OutputFactory;
-use Throwable;
 
 class Installer
 {
@@ -23,7 +21,7 @@ class Installer
     }
 
     /**
-     * @throws MigrationException|Throwable
+     * @throws MigrationException
      */
     public function up(): void
     {
@@ -31,7 +29,7 @@ class Installer
     }
 
     /**
-     * @throws MigrationException|Throwable
+     * @throws MigrationException
      */
     public function down(): void
     {
@@ -39,19 +37,19 @@ class Installer
     }
 
     /**
-     * @throws MigrationException|Throwable
+     * @throws MigrationException
      */
     public function executeAll(array $filter, string $action, string $tag = ''): void
     {
         foreach ($this->versionManager->getListForExecute($filter, $action) as $version) {
-            $this->executeVersion($version, $action, $tag);
+            if (!$this->executeVersion($version, $action, $tag)) {
+                return;
+            }
         }
     }
 
-    /**
-     * @throws MigrationException|Throwable
-     */
-    public function executeVersion(string $version, string $action, string $tag = ''): void
+
+    public function executeVersion(string $version, string $action, string $tag = ''): bool
     {
         $params = [];
 
@@ -64,11 +62,8 @@ class Installer
             );
 
             $params = $result->getRestartParams();
-
-            if ($result->getLastException()) {
-                throw $result->getLastException();
-            }
-
         } while ($result->needRestart());
+
+        return $result->isSuccess();
     }
 }

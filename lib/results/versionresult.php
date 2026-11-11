@@ -6,14 +6,12 @@ use Throwable;
 
 class VersionResult
 {
-    private bool $isSuccess = true;
     private bool $isRestart = false;
     private array $restartParams = [];
     private ?Throwable $lastException = null;
 
     public function setRestart(array $restartParams = []): static
     {
-        $this->isSuccess = false;
         $this->isRestart = true;
         $this->restartParams = $restartParams;
 
@@ -22,14 +20,15 @@ class VersionResult
 
     public function setException(Throwable $e): static
     {
-        $this->isSuccess = false;
+        $this->isRestart = false;
         $this->lastException = $e;
         return $this;
     }
 
     public function isSuccess(): bool
     {
-        return $this->isSuccess;
+        return !$this->lastException
+            && !$this->isRestart;
     }
 
     public function needRestart(): bool

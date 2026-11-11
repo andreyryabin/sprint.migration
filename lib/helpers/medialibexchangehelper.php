@@ -35,7 +35,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
     /**
      * @throws HelperException
      */
-    public function getCollectionStructure(int|string $typeId): array
+    public function getCollectionSelect(int|string $typeId): array
     {
         return array_map(fn($item) => [
             'title' => $item['DEPTH_NAME'],

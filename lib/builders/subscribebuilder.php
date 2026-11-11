@@ -44,10 +44,8 @@ class SubscribeBuilder extends VersionBuilder
 
         $rubricIds = $this->addFieldAndReturn('rubric_ids', [
             'title'    => Locale::getMessage('BUILDER_SubscribeExport_rubric_ids'),
-            'width'    => 350,
+            'items'    => $this->getRubricsStructure(),
             'multiple' => 1,
-            'value'    => [],
-            'items'    => $this->getRubricsSelect(),
         ]);
 
         $items = $helper->Subscribe()->exportRubrics($rubricIds);
@@ -64,7 +62,7 @@ class SubscribeBuilder extends VersionBuilder
         );
     }
 
-    protected function getRubricsSelect(): array
+    protected function getRubricsStructure(): array
     {
         $items = $this->getHelperManager()->Subscribe()->getRubrics();
 
@@ -75,6 +73,6 @@ class SubscribeBuilder extends VersionBuilder
             return $item;
         }, $items);
 
-        return $this->createSelectWithGroups($items, 'ID', 'TITLE', 'LID');
+        return $this->createStructure($items, 'ID', 'TITLE', 'LID');
     }
 }

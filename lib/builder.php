@@ -7,7 +7,6 @@ use ReflectionClass;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Interfaces\RestartableInterface;
-use Sprint\Migration\Output\ConsoleOutput;
 use Sprint\Migration\Output\OutputTrait;
 use Sprint\Migration\Traits\RestartableTrait;
 use Sprint\Migration\Traits\VersionConfigTrait;
@@ -39,9 +38,10 @@ abstract class Builder implements RestartableInterface
 
     abstract protected function isBuilderEnabled();
 
-    public function __construct(VersionConfig $versionConfig)
+    public function __construct(VersionConfig $versionConfig, array $params = [])
     {
         $this->setVersionConfig($versionConfig);
+        $this->setRestartParams($params);
 
         $this->initialize();
     }
@@ -79,48 +79,49 @@ abstract class Builder implements RestartableInterface
     }
 
 
-    protected function addField($code, $param = []): void
+    protected function addField(string $code, array $config = []): void
     {
-        if (isset($param['multiple']) && $param['multiple']) {
-            $value = [];
+        $field = [];
+        $field['code'] = $code;
+        $field['title'] = $config['title'] ?: $code;
+        $field['note'] = $config['note'] ?: '';
+
+        if (!empty($config['height'])) {
+            $field['type'] = 'TextareaField';
+            $field['height'] = $config['height'];
+            $field['width'] = $config['width'] ?? '';
+        } elseif (isset($config['select']) && !$config['multiple']) {
+            $field['type'] = 'RadioListField';
+            $field['select'] = $config['select'];
+        } elseif (isset($config['select']) && $config['multiple']) {
+            $field['type'] = 'CheckboxListField';
+            $field['select'] = $config['select'];
+        } elseif (isset($config['items']) && !$config['multiple']) {
+            $field['type'] = 'RadioGroupField';
+            $field['items'] = $config['items'];
+        } elseif (isset($config['items']) && $config['multiple']) {
+            $field['type'] = 'CheckboxGroupField';
+            $field['items'] = $config['items'];
         } else {
-            $value = '';
+            $field['type'] = 'StringField';
+            $field['placeholder'] = $config['placeholder'] ?? '';
+            $field['width'] = $config['width'] ?? '';
         }
 
-        $param = array_merge(
-            [
-                'title' => '',
-                'value' => $value,
-                'bind'  => 0,
-            ], $param
-        );
-
-        if (empty($param['title'])) {
-            $param['title'] = $code;
-        }
-
-        if (isset($this->params[$code])) {
-            $param['value'] = $this->params[$code];
-            $param['bind'] = 1;
-        }
-
-        $this->fields[$code] = $param;
+        $this->fields[] = $field;
     }
 
     /**
      * @throws RebuildException
      */
-    protected function addFieldAndReturn(string $code, array $param = [])
+    protected function addFieldAndReturn(string $code, array $config = [])
     {
-        $this->addField($code, $param);
+        $this->addField($code, $config);
 
         $value = $this->getFieldValue($code);
+
         if (empty($value)) {
             $this->rebuildField($code);
-        }
-
-        if (isset($param['multiple']) && $param['multiple']) {
-            $value = is_array($value) ? $value : [$value];
         }
 
         return $value;
@@ -128,11 +129,7 @@ abstract class Builder implements RestartableInterface
 
     protected function getFieldValue(string $code, $default = '')
     {
-        if (isset($this->fields[$code]) && $this->fields[$code]['bind'] == 1) {
-            return $this->fields[$code]['value'];
-        } else {
-            return $default;
-        }
+        return $this->params[$code] ?? $default;
     }
 
 
@@ -140,7 +137,7 @@ abstract class Builder implements RestartableInterface
      * @throws RebuildException
      * @throws RestartException
      */
-    public function start()
+    public function start(): void
     {
         $this->execute();
     }
@@ -150,15 +147,10 @@ abstract class Builder implements RestartableInterface
      */
     protected function rebuildField(string $code)
     {
-        if (isset($this->fields[$code])) {
-            $this->fields[$code]['bind'] = 0;
-        }
-
         if (isset($this->params[$code])) {
             unset($this->params[$code]);
         }
-
-        throw new RebuildException('rebuild form');
+        throw new RebuildException();
     }
 
     protected function setTitle(string $title = ''): void
@@ -200,18 +192,18 @@ abstract class Builder implements RestartableInterface
     {
         $select = [];
         foreach ($items as $item) {
-            $itemValue = $item[$idKey];
-            $itemTitle = $withIdInTitle ? "[$itemValue] $item[$titleKey]" : $item[$titleKey];
+            $value = $item[$idKey];
+            $title = $withIdInTitle ? "[$value] $item[$titleKey]" : $item[$titleKey];
 
-            $select[$itemValue] = [
-                'title' => $itemTitle,
-                'value' => $itemValue,
+            $select[$value] = [
+                'title' => $title,
+                'value' => $value,
             ];
         }
         return $select;
     }
 
-    protected function createSelectWithGroups(
+    protected function createStructure(
         array  $items,
         string $idKey,
         string $titleKey,
@@ -221,7 +213,9 @@ abstract class Builder implements RestartableInterface
         $select = [];
         foreach ($items as $item) {
             $groupId = $item[$groupKey] ?? 'Group';
-            $itemId = $item[$idKey];
+
+            $value = $item[$idKey];
+            $title = $item[$titleKey];
 
             if (!isset($select[$groupId])) {
                 $select[$groupId] = [
@@ -231,8 +225,8 @@ abstract class Builder implements RestartableInterface
             }
 
             $select[$groupId]['items'][] = [
-                'title' => $item[$titleKey],
-                'value' => $itemId,
+                'title' => $title,
+                'value' => $value,
             ];
         }
 

@@ -34,17 +34,11 @@ class UserGroupBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $userGroups = $this->addFieldAndReturn(
-            'user_group',
-            [
-                'title'       => Locale::getMessage('BUILDER_UserGroupExport_user_group'),
-                'placeholder' => '',
-                'multiple'    => 1,
-                'value'       => [],
-                'width'       => 250,
-                'select'      => $this->getUserGroupsSelect(),
-            ]
-        );
+        $userGroups = $this->addFieldAndReturn('user_group', [
+            'title'    => Locale::getMessage('BUILDER_UserGroupExport_user_group'),
+            'select'   => $this->getUserGroupsSelect(),
+            'multiple' => 1,
+        ]);
 
         $items = [];
         foreach ($userGroups as $groupId) {
@@ -83,10 +77,6 @@ class UserGroupBuilder extends VersionBuilder
             return $item;
         }, $items);
 
-        return $this->createSelect(
-            $items,
-            'ID',
-            'NAME'
-        );
+        return $this->createSelect($items, 'ID', 'NAME');
     }
 }

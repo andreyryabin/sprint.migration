@@ -37,15 +37,10 @@ class IblockCategoryBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $iblockId = $this->addFieldAndReturn(
-            'iblock_id',
-            [
-                'title'       => Locale::getMessage('BUILDER_IblockCategoryExport_IblockId'),
-                'placeholder' => '',
-                'width'       => 250,
-                'items'       => $helper->IblockExchange()->getIblocksStructure(),
-            ]
-        );
+        $iblockId = $this->addFieldAndReturn('iblock_id', [
+            'title'       => Locale::getMessage('BUILDER_IblockCategoryExport_IblockId'),
+            'items'       => $helper->IblockExchange()->getIblocksStructure(),
+        ]);
 
         $iblock = $helper->Iblock()->exportIblock($iblockId);
         if (empty($iblock)) {

@@ -34,11 +34,8 @@ class AgentBuilder extends VersionBuilder
 
         $agentIds = $this->addFieldAndReturn('agent_id', [
             'title'       => Locale::getMessage('BUILDER_AgentExport_agent_id'),
-            'placeholder' => '',
+            'items'       => $this->createStructure($agents, 'ID', 'NAME', 'MODULE_ID'),
             'multiple'    => 1,
-            'value'       => [],
-            'width'       => 250,
-            'items'       => $this->createSelectWithGroups($agents, 'ID', 'NAME', 'MODULE_ID'),
         ]);
 
         $items = array_map(

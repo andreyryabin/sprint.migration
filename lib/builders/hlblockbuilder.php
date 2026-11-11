@@ -33,47 +33,38 @@ class HlblockBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $hlblockId = $this->addFieldAndReturn(
-            'hlblock_id',
-            [
-                'title'       => Locale::getMessage('BUILDER_HlblockExport_HlblockId'),
-                'placeholder' => '',
-                'width'       => 250,
-                'select'      => $helper->HlblockExchange()->getHlblocksStructure(),
-            ]
-        );
+        $hlblockId = $this->addFieldAndReturn('hlblock_id', [
+            'title'  => Locale::getMessage('BUILDER_HlblockExport_HlblockId'),
+            'select' => $helper->HlblockExchange()->getHlblocksSelect(),
+        ]);
 
         $hlblock = $helper->Hlblock()->exportHlblock($hlblockId);
         if (empty($hlblockId)) {
             $this->rebuildField('hlblock_id');
         }
 
-        $what = $this->addFieldAndReturn(
-            'what', [
-                'title'    => Locale::getMessage('BUILDER_HlblockExport_What'),
-                'width'    => 250,
-                'multiple' => 1,
-                'value'    => [],
-                'select'   => [
-                    [
-                        'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblock'),
-                        'value' => 'hlblock',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblockFields'),
-                        'value' => 'hlblockFields',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblockUserOptions'),
-                        'value' => 'hlblockUserOptions',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblockPermissions'),
-                        'value' => 'hlblockPermissions',
-                    ],
+        $what = $this->addFieldAndReturn('what', [
+            'title'    => Locale::getMessage('BUILDER_HlblockExport_What'),
+            'multiple' => 1,
+            'select'   => [
+                [
+                    'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblock'),
+                    'value' => 'hlblock',
                 ],
-            ]
-        );
+                [
+                    'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblockFields'),
+                    'value' => 'hlblockFields',
+                ],
+                [
+                    'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblockUserOptions'),
+                    'value' => 'hlblockUserOptions',
+                ],
+                [
+                    'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblockPermissions'),
+                    'value' => 'hlblockPermissions',
+                ],
+            ],
+        ]);
 
         $hlblockExport = false;
         $hlblockFields = [];

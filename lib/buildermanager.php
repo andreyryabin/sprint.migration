@@ -7,15 +7,11 @@ use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Output\OutputFactory;
 use Sprint\Migration\Output\OutputInterface;
+use Sprint\Migration\Results\BuilderResult;
 use Throwable;
 
 class BuilderManager
 {
-    private bool $isRestart = false;
-    private bool $isRebuild = false;
-    private array $lastRestartParams = [];
-    private ?Throwable $lastException;
-
     public function __construct(
         private VersionConfig    $versionConfig,
         private ?OutputInterface $output = null,
@@ -42,10 +38,10 @@ class BuilderManager
     /**
      * @throws BuilderException
      */
-    public function createBuilder(string $class): Builder
+    public function createBuilder(string $class, array $params = []): Builder
     {
         if ($class && class_exists($class) && is_subclass_of($class, Builder::class)) {
-            $builder = new $class($this->versionConfig);
+            $builder = new $class($this->versionConfig, $params);
             if ($builder->isEnabled()) {
                 return $builder;
             }
@@ -54,50 +50,26 @@ class BuilderManager
     }
 
 
-    public function startBuilder(string $builder, array $params): void
+    public function startBuilder(string $builder, array $params): BuilderResult
     {
-        $this->isRestart = false;
-        $this->isRebuild = false;
-        $this->lastRestartParams = [];
-        $this->lastException = null;
+        $builderResult = new BuilderResult();
 
         try {
-            $builderOj = $this->createBuilder($builder);
-            $builderOj->setRestartParams($params);
+            $builderOj = $this->createBuilder($builder, $params);
             $builderOj->setOutput($this->output);
 
             $builderOj->start();
 
         } catch (RebuildException) {
-            $this->isRebuild = true;
-            $this->lastRestartParams = isset($builderOj) ? $builderOj->getRestartParams() : [];
+            $builderResult->setRebuild(isset($builderOj) ? $builderOj->getRestartParams() : []);
         } catch (RestartException) {
-            $this->isRestart = true;
-            $this->lastRestartParams = isset($builderOj) ? $builderOj->getRestartParams() : [];
+            $builderResult->setRestart(isset($builderOj) ? $builderOj->getRestartParams() : []);
         } catch (Throwable $e) {
-            $this->lastException = $e;
+            $builderResult->setException($e);
+            $this->output->outException($e);
         }
 
+        $builderResult->setFields(isset($builderOj) ? $builderOj->getFields() : []);
+        return $builderResult;
     }
-
-    public function getLastException(): ?Throwable
-    {
-        return $this->lastException;
-    }
-
-    public function needRestart(): bool
-    {
-        return $this->isRestart;
-    }
-
-    public function needRebuild(): bool
-    {
-        return $this->isRebuild;
-    }
-
-    public function getRestartParams(): array
-    {
-        return $this->lastRestartParams;
-    }
-
 }

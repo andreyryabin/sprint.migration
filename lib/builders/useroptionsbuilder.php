@@ -33,29 +33,24 @@ class UserOptionsBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $what = $this->addFieldAndReturn(
-            'what',
-            [
-                'title'    => Locale::getMessage('BUILDER_UserOptionsExport_What'),
-                'width'    => 250,
-                'multiple' => 1,
-                'value'    => [],
-                'select'   => [
-                    [
-                        'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserForm'),
-                        'value' => 'userForm',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserList'),
-                        'value' => 'userList',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatGroupList'),
-                        'value' => 'groupList',
-                    ],
+        $what = $this->addFieldAndReturn('what', [
+            'title'    => Locale::getMessage('BUILDER_UserOptionsExport_What'),
+            'multiple' => 1,
+            'select'   => [
+                [
+                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserForm'),
+                    'value' => 'userForm',
                 ],
-            ]
-        );
+                [
+                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserList'),
+                    'value' => 'userList',
+                ],
+                [
+                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatGroupList'),
+                    'value' => 'groupList',
+                ],
+            ],
+        ]);
 
         $exportUserForm = [];
         $exportUserList = [];

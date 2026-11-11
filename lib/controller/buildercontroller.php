@@ -61,21 +61,17 @@ class BuilderController extends Controller
     }
 
     /**
-     * @throws BuilderException
+     * @noinspection PhpUnused
      */
-    public function execBuilderAction(string $builder, array $params = [])
+    public function execBuilderAction(string $builder, array $params = []): array
     {
-        $this->builderManager->startBuilder($builder, $params, $this->output);
-
-        if ($this->builderManager->getLastException()) {
-            $this->output->outException($this->builderManager->getLastException());
-        }
+        $result = $this->builderManager->startBuilder($builder, $params);
 
         return array_merge([
-            'restart' => $this->builderManager->needRestart(),
-            'rebuild' => $this->builderManager->needRebuild(),
-            'params'  => $this->builderManager->getRestartParams(),
-            'fields'  => $this->builderManager->getVersionByName($version)
+            'restart' => $result->needRestart(),
+            'rebuild' => $result->needRebuild(),
+            'params'  => $result->getRestartParams(),
+            'fields'  => $result->getFields()
         ], $this->output->getLog());
 
     }

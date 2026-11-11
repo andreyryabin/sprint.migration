@@ -35,7 +35,6 @@ class FormBuilder extends VersionBuilder
 
         $formId = $this->addFieldAndReturn('form_id', [
             'title'  => Locale::getMessage('BUILDER_FormExport_FormId'),
-            'width'  => 250,
             'select' => $this->getFormsSelect(),
         ]);
 
@@ -43,9 +42,7 @@ class FormBuilder extends VersionBuilder
 
         $what = $this->addFieldAndReturn('what', [
             'title'    => Locale::getMessage('BUILDER_FormExport_What'),
-            'width'    => 250,
             'multiple' => 1,
-            'value'    => [],
             'select'   => [
                 [
                     'title' => Locale::getMessage('BUILDER_FormExport_Form'),
@@ -66,35 +63,26 @@ class FormBuilder extends VersionBuilder
         $fieldsMode = '';
 
         if (in_array('fields', $what)) {
-            $fieldsMode = $this->addFieldAndReturn(
-                'fields_mode',
-                [
-                    'title'  => Locale::getMessage('BUILDER_FormExport_Fields'),
-                    'width'  => 250,
-                    'select' => [
-                        [
-                            'title' => Locale::getMessage('BUILDER_SelectAll'),
-                            'value' => 'all',
-                        ],
-                        [
-                            'title' => Locale::getMessage('BUILDER_SelectSome'),
-                            'value' => 'some',
-                        ],
+            $fieldsMode = $this->addFieldAndReturn('fields_mode', [
+                'title'  => Locale::getMessage('BUILDER_FormExport_Fields'),
+                'select' => [
+                    [
+                        'title' => Locale::getMessage('BUILDER_SelectAll'),
+                        'value' => 'all',
                     ],
-                ]
-            );
+                    [
+                        'title' => Locale::getMessage('BUILDER_SelectSome'),
+                        'value' => 'some',
+                    ],
+                ],
+            ]);
 
             if ($fieldsMode == 'some') {
-                $fieldsSomeSids = $this->addFieldAndReturn(
-                    'fields_some',
-                    [
-                        'title'    => Locale::getMessage('BUILDER_FormExport_Fields'),
-                        'width'    => 250,
-                        'multiple' => 1,
-                        'value'    => [],
-                        'select'   => $this->getFieldsSelect($formId),
-                    ]
-                );
+                $fieldsSomeSids = $this->addFieldAndReturn('fields_some', [
+                    'title'    => Locale::getMessage('BUILDER_FormExport_Fields'),
+                    'select'   => $this->getFieldsSelect($formId),
+                    'multiple' => 1,
+                ]);
                 $fields = $helper->Form()->exportFormFields($formId, $fieldsSomeSids);
             }
             if ($fieldsMode == 'all') {

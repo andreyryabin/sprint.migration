@@ -134,10 +134,6 @@ class VersionController extends Controller
             $settag
         );
 
-        if ($result->getLastException()) {
-            $this->output->outException($result->getLastException());
-        }
-
         return array_merge([
             'success' => $result->isSuccess(),
             'restart' => $result->needRestart(),

@@ -29,7 +29,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     /**
      * @throws HelperException
      */
-    public function getHlblocksStructure(): array
+    public function getHlblocksSelect(): array
     {
         return array_map(
             fn($hlblock) => [
@@ -43,7 +43,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     /**
      * @throws HelperException
      */
-    public function getHlblockFieldsStructure(int $hlblockId): array
+    public function getHlblockFieldsSelect(int $hlblockId): array
     {
         return array_map(
             fn($field) => [

@@ -47,8 +47,7 @@ class BlogPostBuilder extends VersionBuilder
 
         $blogId = (int)$this->addFieldAndReturn('blog_id', [
             'title' => Locale::getMessage('BUILDER_BlogPostExport_blog_id'),
-            'width' => 350,
-            'items' => $this->getBlogsSelect(),
+            'items' => $this->getBlogsStructure(),
         ]);
 
         $helper->Blog()->exportBlogById($blogId);
@@ -86,7 +85,6 @@ class BlogPostBuilder extends VersionBuilder
     {
         $mode = $this->addFieldAndReturn('post_filter_mode', [
             'title' => Locale::getMessage('BUILDER_BlogPostExport_filter'),
-            'width' => 250,
             'select' => [
                 [
                     'title' => Locale::getMessage('BUILDER_SelectAll'),
@@ -133,7 +131,7 @@ class BlogPostBuilder extends VersionBuilder
         return $filter;
     }
 
-    protected function getBlogsSelect(): array
+    protected function getBlogsStructure(): array
     {
         $items = array_map(function ($item) {
             $item['GROUP_TITLE'] = '[' . $item['GROUP_SITE_ID'] . '] ' . $item['GROUP_NAME'];
@@ -141,6 +139,6 @@ class BlogPostBuilder extends VersionBuilder
             return $item;
         }, $this->getHelperManager()->Blog()->getBlogs());
 
-        return $this->createSelectWithGroups($items, 'ID', 'TITLE', 'GROUP_TITLE');
+        return $this->createStructure($items, 'ID', 'TITLE', 'GROUP_TITLE');
     }
 }

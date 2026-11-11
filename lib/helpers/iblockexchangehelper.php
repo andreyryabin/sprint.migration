@@ -28,14 +28,9 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     public function getIblocksStructure(): array
     {
-        return $this->createIblocksStructure(
-            $this->getIblockTypes(),
-            $this->getIblocks()
-        );
-    }
+        $iblockTypes = $this->getIblockTypes();
+        $iblocks = $this->getIblocks();
 
-    public function createIblocksStructure(array $iblockTypes, array $iblocks): array
-    {
         $res = [];
         foreach ($iblockTypes as $iblockType) {
             $res[$iblockType['ID']] = [
@@ -59,7 +54,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws HelperException
      */
-    public function getIblockPropertiesStructure(int $iblockId): array
+    public function getIblockPropertiesSelect(int $iblockId): array
     {
         return array_map(fn($prop) => [
             'title' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
@@ -67,7 +62,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         ], $this->exportProperties($iblockId));
     }
 
-    public function getIblockElementFieldsStructure(int $iblockId, bool $withShowCounter = false): array
+    public function getIblockElementFieldsSelect(int $iblockId, bool $withShowCounter = false): array
     {
         $fields = $this->exportIblockElementFields($iblockId);
 

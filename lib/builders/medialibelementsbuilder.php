@@ -40,18 +40,11 @@ class MedialibElementsBuilder extends VersionBuilder
     {
         $exhelper = $this->getHelperManager()->MedialibExchange();
 
-        $collectionIds = $this->addFieldAndReturn(
-            'collection_id',
-            [
-                'title'       => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
-                'placeholder' => '',
-                'width'       => 250,
-                'select'      => $exhelper->getCollectionStructure(
-                    $exhelper::TYPE_IMAGE
-                ),
-                'multiple'    => true,
-            ]
-        );
+        $collectionIds = $this->addFieldAndReturn('collection_id', [
+            'title'    => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
+            'select'   => $exhelper->getCollectionSelect($exhelper::TYPE_IMAGE),
+            'multiple' => 1,
+        ]);
 
         $exportFields = [
             'NAME',

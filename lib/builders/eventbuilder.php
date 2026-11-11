@@ -35,7 +35,6 @@ class EventBuilder extends VersionBuilder
 
         $eventTypes = $this->addFieldAndReturn('event_types', [
             'title' => Locale::getMessage('BUILDER_EventExport_event_types'),
-            'width' => 350,
             'select' => $this->getEventTypesSelect(),
             'multiple' => 1,
         ]);
