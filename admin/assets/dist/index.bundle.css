@@ -61,6 +61,10 @@
 }
 
 .sp-builder_list,
+.sp-builder_form {
+    padding: 10px 0 10px 10px;
+}
+
 .sp-migration_list,
 .sp-migration_log {
     padding: 10px 0 10px 10px;
@@ -69,15 +73,17 @@
     max-height: 600px;
 }
 
-.sp-noblock_body {
-    display: block;
+.sp-relative {
+    position: relative;
 }
 
-.sp-noblock_title {
-    color: #000;
-    font-size: 20px;
-    position: relative;
-    min-height: 25px;
+.sp-sticky {
+    position: sticky;
+    top: 10px
+}
+
+.sp-noblock_body {
+    display: block;
 }
 
 .sp-builder_group {
@@ -281,6 +287,7 @@ a.sp-item-unknown:visited {
 .sp-selector_row {
     margin-bottom: 10px;
 }
+
 .sp-selector_row label {
     display: block;
 }
@@ -397,40 +404,4 @@ input.adm-btn.sp-play {
     background: #e3ecee;
     font-weight: bold;
     padding: 12px 10px;
-}
-
-.StringField input[type=text] {
-    width: 100%;
-    -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-
-    /* from admin-public.css */
-    background: #fff;
-    border: 1px solid;
-    border-color: #87919c #959ea9 #9ea7b1 #959ea9;
-    border-radius: 4px;
-    color: #000;
-    -webkit-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3), inset 0 2px 2px -1px rgba(180, 188, 191, 0.7);
-            box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3), inset 0 2px 2px -1px rgba(180, 188, 191, 0.7);
-    display: inline-block;
-    outline: none;
-    vertical-align: middle;
-    font-size: 13px;
-    height: 25px;
-    padding: 0 5px;
-    margin: 0;
-}
-
-.SelectField select {
-    margin: 0;
-    padding: 4px;
-    height: 27px;
-    border: 1px solid #a3a5a5;
-    border-radius: 4px;
-    background: #fff;
-    -webkit-box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3), inset 0 2px 2px -1px rgba(180, 188, 191, 0.7);
-            box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3), inset 0 2px 2px -1px rgba(180, 188, 191, 0.7);
-    color: #000;
-    vertical-align: middle;
-    font-size: 13px;
 }

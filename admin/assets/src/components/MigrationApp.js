@@ -33,12 +33,30 @@ export const MigrationApp = {
         },
     },
     methods: {
-        getMessage
+        getMessage,
+
+        selectTab(tabName) {
+            if (tabName === 'versions') {
+                this.$nextTick(() => {
+                    this.$refs.versions.refreshVersions();
+                });
+
+            }
+            if (tabName === 'builders') {
+                this.$nextTick(() => {
+                    this.$refs.builders.refreshBuilders();
+                });
+            }
+        }
     },
     template: `
-      <MigrationTabs :items="{versions:getMessage('VERSIONS'), builders:getMessage('BUILDERS')}">
+      <MigrationTabs
+          :items="{versions:getMessage('VERSIONS'), builders:getMessage('BUILDERS')}"
+          @select-tab="selectTab"
+      >
         <template v-slot:versions>
           <MigrationVersions
+              ref="versions"
               :config="config"
               :otherConfigs="otherConfigs"
               :webdir="webdir"
@@ -48,6 +66,7 @@ export const MigrationApp = {
         </template>
         <template v-slot:builders>
           <MigrationBuilders
+              ref="builders"
               :config="config"
           />
         </template>

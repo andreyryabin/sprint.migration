@@ -58,9 +58,12 @@ export const CheckboxListField = {
             this.$emit('update:value', ids);
         },
         selectAll() {
-            const ids = this.filtered.map(item => item.id);
-            this.selected = ids;
-            this.$emit('update:value', ids);
+            if (this.selected.length > 0) {
+                this.selected = [];
+            } else {
+                this.selected = this.filtered.map(item => item.id);
+            }
+            this.$emit('update:value', this.selected.slice());
         },
     },
     template: `
@@ -92,13 +95,14 @@ export const CheckboxListField = {
               @update:value="toggle(item.id, $event)"
           />
         </div>
-        <div 
+        <div
             v-if="filtered.length > 0"
             class="sp-selector_row"
         >
           <input
               class="adm-btn"
-              v-text="getMessage('SELECT_ALL')"
+              type="button"
+              :value="getMessage('SELECT_ALL')"
               @click="selectAll"
           />
         </div>

@@ -1,20 +1,30 @@
 import {ajax} from "main.core";
-import {markRaw} from "ui.vue3";
+
 import {
     colorclass,
     colorize,
     filterOptions,
     getMessage,
     groupOptions,
-    processResponse,
+    extractResponse,
     progressMessage
 } from "../helpers";
 
 import {StringField} from '../fields/StringField';
+import {TextareaField} from '../fields/TextareaField';
+import {SelectField} from '../fields/SelectField';
+import {CheckboxField} from '../fields/CheckboxField';
+import {CheckboxListField} from '../fields/CheckboxListField';
+import {RadioListField} from '../fields/RadioListField';
 
 export const MigrationBuilders = {
     components: {
-        StringField
+        StringField,
+        TextareaField,
+        SelectField,
+        CheckboxField,
+        CheckboxListField,
+        RadioListField,
     },
 
     props: {
@@ -32,24 +42,18 @@ export const MigrationBuilders = {
             messages: [],
             progress: [],
             builders: [],
-            selected: '',
-            filter: {
-                search: ''
-            },
+            selected: {},
+            filter: {search: ''},
 
         };
     },
     created() {
-        this.refreshBuilders();
+        this.createFilter();
 
-        this.filter = this.getFilter(this.filter);
+        //this.refreshBuilders();
     },
 
     computed: {
-        messagesCount() {
-            return this.messages.length;
-        },
-
         filtered() {
             return filterOptions(this.filter.search, this.builders, ['name', 'title', 'group']);
         },
@@ -66,52 +70,18 @@ export const MigrationBuilders = {
         }
     },
 
-    watch: {
-        messagesCount: {
-            handler() {
-                this.$nextTick(() => {
-                    const div = this.$refs.migration_log;
-                    if (div) div.scrollTop = div.scrollHeight;
-                });
-            }
-        },
-    },
     methods: {
         getMessage,
         progressMessage,
         colorize,
         colorclass,
 
-        getFilter(def) {
-            return {...def};
+        createFilter() {
+            this.filter.search = '';
         },
 
         saveFilter() {
             this.refreshBuilders();
-        },
-
-        processResponse(resp) {
-            if (resp.data && resp.data.messages) {
-                this.messages.push(...resp.data.messages.map(markRaw));
-            }
-
-            if (resp.data && resp.data.progress) {
-                this.progress = resp.data.progress.map(markRaw);
-            }
-
-            if (resp && resp.errors) {
-                resp.errors.forEach(item => this.messages.push(markRaw({
-                    type: 'error',
-                    message: item.message
-                })));
-            }
-
-            if (resp?.status === 'error' && resp.data?.ajaxRejectData?.xhr?.responseText) {
-                this.messages.push(markRaw({
-                    type: 'error',
-                    message: resp.data?.ajaxRejectData?.xhr?.responseText
-                }));
-            }
         },
 
         execAction(action, payload) {
@@ -120,11 +90,11 @@ export const MigrationBuilders = {
                 'sprint:migration.controller.BuilderController.' + action,
                 {data: payload, getParameters: {config: this.config}}
             ).then((response) => {
-                processResponse(response, this.messages, this.progress);
+                extractResponse(response, this.messages, this.progress);
                 this.loading = 0;
                 return response.data;
             }).catch((response) => {
-                processResponse(response, this.messages, this.progress);
+                extractResponse(response, this.messages, this.progress);
                 this.loading = 0;
             });
         },
@@ -136,25 +106,22 @@ export const MigrationBuilders = {
                 });
         },
 
-        async execBuilder(builder, params) {
+        async execBuilder(name, params) {
             this.running = true;
-            this.replay = false;
+            this.selected = {};
+            this.messages = [];
+            this.progress = [];
             try {
 
                 let restartParams = params;
                 while (true) {
                     if (!this.running) {
-                        this.replay = {
-                            builder,
-                            params: restartParams,
-                            button: 'CONTINUE'
-                        }
                         return false;
                     }
 
                     const data = await this.execAction('execBuilder', {
-                        builder,
-                        params: currentParams,
+                        name,
+                        params: restartParams,
                     });
 
                     if (data.restart) {
@@ -162,17 +129,13 @@ export const MigrationBuilders = {
                         continue;
                     }
 
-                    if (!data.success) {
-                        this.replay = {
-                            builder,
-                            params: data.params,
-                            button: 'RESTART'
-                        }
-                        return false;
-                    }
+                    this.selected = {
+                        name,
+                        params: data.params,
+                        form: data.form
+                    };
 
-                    this.pickBuilder(data.meta);
-                    return true;
+                    return data.success;
                 }
 
             } finally {
@@ -180,31 +143,10 @@ export const MigrationBuilders = {
             }
         },
 
-        replayBuilder() {
-            if (this.running) {
-                this.running = false;
-                return;
-            }
-
-            if (this.replay && this.replay.version) {
-                this.execBuilder(
-                    this.replay.builder,
-                    this.replay.params,
-                );
-            }
+        selectBuilder(name) {
+            this.execBuilder(name, {})
         },
 
-        selectBuilder(builder) {
-            if (this.selected !== builder) {
-                this.selected = builder;
-                this.execBuilder(builder, {})
-            }
-        },
-
-
-        pickBuilder(fields) {
-
-        }
     },
     template: `
       <div>
@@ -218,7 +160,12 @@ export const MigrationBuilders = {
                       :placeholder="getMessage('SEARCH')"
                       @press-enter="saveFilter"
                   />
-                  <input :value="getMessage('SEARCH')" type="button" @click="saveFilter"/>
+                  <input
+                      :value="getMessage('SEARCH')"
+                      class="adm-btn"
+                      type="button"
+                      @click="saveFilter"
+                  />
                 </div>
                 <div class="sp-search_summary">
                   {{ getMessage('BUILDERS_CNT') }}:
@@ -240,24 +187,74 @@ export const MigrationBuilders = {
                   />
                   <div
                       v-for="item in groupItems"
-                      :class="['sp-builder_title', (selected===item.name ? 'sp-active':'')]"
+                      :class="{'sp-builder_title': true, 'sp-active': selected && selected.name===item.name}"
                       @click="selectBuilder(item.name)"
                       v-html="colorize(item.title)"
                   />
                 </div>
               </div>
             </div>
-            <div class="sp-col sp-col-p0">
-              <div class="sp-migration_log" ref="migration_log">
+            <div class="sp-col sp-col-p0 sp-relative">
+              <div
+                  v-if="selected && selected.form"
+                  class="sp-builder_form sp-sticky"
+              >
                 <div
-                    v-for="(item, index) in messages"
-                    v-bind="colorclass(item.type)"
-                    :key="index"
-                    v-text="item.message"
+                    v-html="colorize(selected.form.title)"
+                    class="sp-field"
                 />
+                <div
+                    v-for="field in selected.form.fields"
+                    class="sp-field"
+                >
+                  <div
+                      class="sp-field-title"
+                      v-html="colorize(field.title)"
+                  />
+                  <div
+                      class="sp-field-note"
+                      v-html="colorize(field.note)"
+                  />
+                  <component
+                      :is="field.component"
+                      v-model:value="selected.params[field.code]"
+                      v-bind="field.props"
+                  />
+                </div>
+                <div class="sp-field">
+                  <input
+                      class="adm-btn"
+                      type="button"
+                      :value="getMessage('BUILDER_NEXT')"
+                  />
+                  <input
+                      class="adm-btn"
+                      type="button"
+                      :value="getMessage('BUILDER_RESET')"
+                  />
+                </div>
+                <div
+                    v-if="selected.form.note"
+                    class="sp-field sp-info-message"
+                    v-html="colorize(selected.form.note)"
+                />
+                <div class="sp-builder_log">
+                  <div
+                      v-for="(item, index) in messages"
+                      v-bind="colorclass(item.type)"
+                      :key="index"
+                      v-text="item.message"
+                  />
+                </div>
+                <div class="sp-builder_progress">
+                  <div
+                      v-for="(item, index) in progress"
+                      class="sp-progress"
+                      :key="index"
+                      v-text="progressMessage(item)"
+                  />
+                </div>
               </div>
-
-              <div v-if="selected" style="position: sticky;top: 10px"/>
             </div>
           </div>
         </div>

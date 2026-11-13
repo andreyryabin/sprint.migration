@@ -143,7 +143,7 @@ export function groupOptions(options, gKey='group') {
     return tree;
 }
 
-export function processResponse(resp, messages, progress) {
+export function extractResponse(resp, messages, progress) {
     if (resp.data && resp.data.progress) {
         const next = resp.data.progress.map(markRaw);
         progress.splice(0, progress.length, ...next);

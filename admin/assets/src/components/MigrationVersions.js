@@ -1,5 +1,5 @@
 import {ajax} from "main.core";
-import {colorclass, colorize, getMessage, processResponse, progressMessage, showContextMenu} from "../helpers";
+import {colorclass, colorize, getMessage, extractResponse, progressMessage, showContextMenu} from "../helpers";
 
 import {StringField} from '../fields/StringField';
 import {SelectField} from '../fields/SelectField';
@@ -48,10 +48,7 @@ export const MigrationVersions = {
             versions: [],
             messages: [],
             progress: [],
-            filter: {
-                search: '',
-                view: 'actual'
-            },
+            filter: {search: '', view: 'actual'},
             variants: {
                 actual: getMessage('TOGGLE_ACTUAL'),
                 all: getMessage('TOGGLE_LIST'),
@@ -66,9 +63,9 @@ export const MigrationVersions = {
     },
 
     created() {
-        this.filter = this.getFilter(this.filter);
+        this.createFilter();
 
-        this.refreshVersions();
+        // this.refreshVersions();
     },
 
     computed: {
@@ -111,14 +108,15 @@ export const MigrationVersions = {
         colorize,
         colorclass,
 
-        getFilter(def) {
+        createFilter() {
             try {
                 let obj = JSON.parse(
                     localStorage.getItem('sprint_migration_filter_' + this.config)
-                ) ?? {...def};
-                return {search: obj.search ?? '', view: obj.view ?? 'actual'}
+                ) ?? {};
+                this.filter.search = obj.search ?? '';
+                this.filter.view = obj.view ?? 'actual';
             } catch {
-                return {...def};
+
             }
         },
 
@@ -134,11 +132,11 @@ export const MigrationVersions = {
                 'sprint:migration.controller.versioncontroller.' + action,
                 {data: payload, getParameters: {config: this.config}}
             ).then((response) => {
-                processResponse(response, this.messages, this.progress);
+                extractResponse(response, this.messages, this.progress);
                 this.loading = 0;
                 return response.data;
             }).catch((response) => {
-                processResponse(response, this.messages, this.progress);
+                extractResponse(response, this.messages, this.progress);
                 this.loading = 0;
             });
         },
@@ -458,7 +456,12 @@ export const MigrationVersions = {
                       :options="variants"
                       @update:value="saveFilter"
                   />
-                  <input :value="getMessage('SEARCH')" type="button" @click="saveFilter"/>
+                  <input
+                      :value="getMessage('SEARCH')"
+                      class="adm-btn"
+                      type="button"
+                      @click="saveFilter"
+                  />
                 </div>
                 <div class="sp-search_summary">
                   {{ getMessage('VERSIONS_NEW') }}:

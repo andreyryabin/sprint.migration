@@ -53,7 +53,7 @@ class BuilderController extends Controller
     public function refreshBuildersAction(): array
     {
         $builders = array_map(fn(Builder $builder) => [
-            'name'  => $builder->getClassName(),
+            'name'  => $builder->getName(),
             'title' => $builder->getTitle(),
             'group' => $builder->getGroup(),
         ], $this->builderManager->getBuilders());
@@ -65,20 +65,20 @@ class BuilderController extends Controller
      * @noinspection PhpUnused
      * @throws BuilderException
      */
-    public function execBuilderAction(string $builderName, array $params = []): array
+    public function execBuilderAction(string $name, array $params = []): array
     {
-        $builder = $this->builderManager->createBuilder($builderName, $params);
+        $builder = $this->builderManager->createBuilder($name, $params);
 
         $result = $this->builderManager->startBuilder($builder);
 
-        $meta = [
+        $form = [
             'title'  => $builder->getTitle(),
             'note'   => $builder->getDescription(),
             'fields' => array_map(fn(AbstractField $field) => [
                 'code'        => $field->getCode(),
                 'title'       => $field->getTitle(),
                 'note'        => $field->getNote(),
-                'field'       => $field->getComponentName(),
+                'component'   => $field->getComponentName(),
                 'props'       => $field->getComponentProps(),
                 'defultValue' => $field->getDefaultValue(),
             ], $builder->getFields())
@@ -88,7 +88,7 @@ class BuilderController extends Controller
             'restart' => $result->needRestart(),
             'rebuild' => $result->needRebuild(),
             'params'  => $result->getRestartParams(),
-            'meta'    => $meta
+            'form'    => $form
         ], $this->output->getLog());
 
     }

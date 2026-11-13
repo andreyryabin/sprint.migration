@@ -3,7 +3,6 @@
 namespace Sprint\Migration;
 
 use Exception;
-use ReflectionClass;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Fields\AbstractField;
@@ -20,7 +19,6 @@ abstract class Builder implements RestartableInterface
     use VersionConfigTrait;
     use OutputTrait;
 
-    private string $name;
     private array $info = [
         'title'       => '',
         'description' => '',
@@ -42,7 +40,11 @@ abstract class Builder implements RestartableInterface
 
     abstract protected function isBuilderEnabled();
 
-    public function __construct(VersionConfig $versionConfig, array $params = [])
+    public function __construct(
+        VersionConfig           $versionConfig,
+        private readonly string $name,
+        array                   $params = []
+    )
     {
         $this->setVersionConfig($versionConfig);
         $this->setRestartParams($params);
@@ -50,17 +52,9 @@ abstract class Builder implements RestartableInterface
         $this->initialize();
     }
 
-    /**
-     * @deprecated
-     */
     public function getName(): string
     {
-        return $this->name ??= (new ReflectionClass($this))->getShortName();
-    }
-
-    public function getClassName(): string
-    {
-        return static::class;
+        return $this->name;
     }
 
     public function isEnabled(): bool

@@ -26,9 +26,9 @@ class BuilderManager
     public function getBuilders(): array
     {
         $collection = [];
-        foreach ($this->versionConfig->getBuilders() as $builderClass) {
+        foreach ($this->versionConfig->getBuilders() as $builderName => $builderClass) {
             try {
-                $collection[] = $this->createBuilder($builderClass);
+                $collection[] = $this->createBuilderByClass($builderClass, $builderName);
             } catch (BuilderException) {
             }
         }
@@ -38,17 +38,27 @@ class BuilderManager
     /**
      * @throws BuilderException
      */
-    public function createBuilder(string $class, array $params = []): Builder
+    public function createBuilder(string $builderName, array $params = []): Builder
     {
-        if ($class && class_exists($class) && is_subclass_of($class, Builder::class)) {
-            $builder = new $class($this->versionConfig, $params);
+        $builders = $this->versionConfig->getBuilders();
+        $builderClass = $builders[$builderName] ?? '';
+
+        return $this->createBuilderByClass($builderClass, $builderName, $params);
+    }
+
+    /**
+     * @throws BuilderException
+     */
+    private function createBuilderByClass(string $builderClass, string $builderName, array $params = []): Builder
+    {
+        if ($builderClass && class_exists($builderClass) && is_subclass_of($builderClass, Builder::class)) {
+            $builder = new $builderClass($this->versionConfig, $builderName, $params);
             if ($builder->isEnabled()) {
                 return $builder;
             }
         }
-        throw new BuilderException(Locale::getMessage('ERR_BUILDER_NOT_FOUND', ['#NAME#' => $class]));
+        throw new BuilderException(Locale::getMessage('ERR_BUILDER_NOT_FOUND', ['#NAME#' => $builderClass]));
     }
-
 
     /**
      */
@@ -68,7 +78,7 @@ class BuilderManager
             $this->output->outException($e);
         }
 
-
         return $builderResult;
     }
+
 }
