@@ -8,5 +8,4 @@ class CheckboxListField extends RadioListField
     {
         return [];
     }
-
 }

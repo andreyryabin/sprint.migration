@@ -1,9 +1,11 @@
 <?php
 
-namespace Sprint\Migration\Helpers;
+namespace Sprint\Migration\Exchange\Helpers;
 
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\WriterException;
 use Sprint\Migration\Exchange\WriterTag;
+use Sprint\Migration\Helpers\MedialibHelper;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\WriterHelperInterface;
 
@@ -75,6 +77,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     public function getWriterRecordsTag(int $offset, int $limit, ...$vars): WriterTag
     {
@@ -103,6 +106,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     private function createWriterRecordTag(array $element, array $exportFields): WriterTag
     {
@@ -122,6 +126,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     private function createWriterFieldTag(array $field): WriterTag
     {

@@ -1,11 +1,13 @@
 <?php
 
-namespace Sprint\Migration\Helpers;
+namespace Sprint\Migration\Exchange\Helpers;
 
 use CBlogPost;
 use CUserFieldEnum;
 use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\WriterException;
 use Sprint\Migration\Exchange\WriterTag;
+use Sprint\Migration\Helpers\BlogHelper;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\WriterHelperInterface;
 
@@ -33,6 +35,7 @@ class BlogExchangeHelper extends BlogHelper implements ReaderHelperInterface, Wr
 
     /**
      * @throws HelperException
+     * @throws WriterException
      */
     public function getWriterRecordsTag(int $offset, int $limit, ...$vars): WriterTag
     {
@@ -103,21 +106,15 @@ class BlogExchangeHelper extends BlogHelper implements ReaderHelperInterface, Wr
      */
     protected function exportPostForXml(int $postId): array
     {
-        $post = $this->getPostById($postId);
-        if (empty($post['CODE'])) {
-            throw new HelperException("Blog post \"$postId\" has empty CODE");
-        }
-
-        $post['AUTHOR_LOGIN'] = (new UserHelper)->getUserLoginById((int)$post['AUTHOR_ID']);
-        $post['CATEGORIES'] = $this->exportPostCategories((int)$post['BLOG_ID'], (int)$post['ID']);
-        $post['PERMS_POST'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_POST);
-        $post['PERMS_COMMENT'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_COMMENT);
         return array_merge(
-            $this->prepareExportPost($post),
-            $this->exportPostUserFieldsForXml((int)$post['ID'])
+            $this->exportPostById($postId),
+            $this->exportPostUserFieldsForXml($postId)
         );
     }
 
+    /**
+     * @throws WriterException
+     */
     protected function createWriterRecordTag(array $post): WriterTag
     {
         $item = new WriterTag('item');
@@ -165,6 +162,9 @@ class BlogExchangeHelper extends BlogHelper implements ReaderHelperInterface, Wr
         return $field['value'][0]['value'] ?? null;
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function exportPostUserFieldsForXml(int $postId): array
     {
         $result = [];
@@ -229,6 +229,9 @@ class BlogExchangeHelper extends BlogHelper implements ReaderHelperInterface, Wr
         return $result;
     }
 
+    /**
+     * @throws WriterException
+     */
     protected function createWriterUserFieldTag(string $fieldName, mixed $value): WriterTag
     {
         $tag = new WriterTag('field', ['name' => $fieldName]);

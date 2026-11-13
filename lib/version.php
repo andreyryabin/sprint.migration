@@ -91,13 +91,16 @@ class Version implements RestartableInterface
         return new StorageManager('sprint_storage_default', $versionName);
     }
 
+    /**
+     * @throws MigrationException
+     */
     protected function getExchangeManager(): ExchangeManager
     {
         $dir = $this->getVersionConfig()->getVersionExchangeDir(
             $this->getVersionName()
         );
 
-        return new ExchangeManager($this, $dir);
+        return new ExchangeManager($this, $dir, $this->output);
     }
 
     protected function getHelperManager(): HelperManager

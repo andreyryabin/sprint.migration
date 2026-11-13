@@ -20,4 +20,8 @@ class TextareaField extends AbstractField
         return $this->setProp('placeholder', "$placeholder");
     }
 
+    public function getDefaultValue(): string
+    {
+        return '';
+    }
 }

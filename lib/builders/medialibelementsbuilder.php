@@ -38,7 +38,7 @@ class MedialibElementsBuilder extends VersionBuilder
      */
     protected function execute()
     {
-        $exhelper = $this->getHelperManager()->MedialibExchange();
+        $exhelper = $this->getExchangeHelpers()->MedialibExchange();
 
         $collectionIds = $this->addFieldAndReturn('collection_id', [
             'title'    => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
@@ -66,9 +66,7 @@ class MedialibElementsBuilder extends VersionBuilder
                     $exportFields
                 ),
                 progressFn: fn($value, $totalCount) => $this->outProgress(
-                    'Progress: ',
-                    $value,
-                    $totalCount
+                    'Progress', $value, $totalCount
                 )
             );
 

@@ -4,6 +4,7 @@ namespace Sprint\Migration\Fields;
 
 class StringField extends AbstractField
 {
+    private string $defaultValue = '';
 
     public function setSize(int $size): static
     {
@@ -15,4 +16,14 @@ class StringField extends AbstractField
         return $this->setProp('placeholder', "$placeholder");
     }
 
+    public function getDefaultValue(): string
+    {
+        return $this->defaultValue;
+    }
+
+    public function setDefaultValue(string $value): static
+    {
+        $this->defaultValue = $value;
+        return $this;
+    }
 }

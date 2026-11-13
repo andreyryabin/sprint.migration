@@ -1,11 +1,14 @@
 <?php
 
-namespace Sprint\Migration\Helpers;
+namespace Sprint\Migration\Exchange\Helpers;
+
+
 
 use _CIBElement;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\WriterException;
 use Sprint\Migration\Exchange\WriterTag;
+use Sprint\Migration\Helpers\IblockHelper;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\WriterHelperInterface;
 

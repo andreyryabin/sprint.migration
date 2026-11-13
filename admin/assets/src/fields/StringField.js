@@ -18,7 +18,7 @@ export const StringField = {
     computed: {
         collected: {
             get() {
-                return makeString(this.value);
+                return this.value;
             },
             set(val) {
                 this.$emit('update:value', val);

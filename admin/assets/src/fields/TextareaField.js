@@ -25,7 +25,7 @@ export const TextareaField = {
     computed: {
         collected: {
             get() {
-                return makeString(this.value);
+                return this.value;
             },
             set(v) {
                 this.$emit('update:value', v);

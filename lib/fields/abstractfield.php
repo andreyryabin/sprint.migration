@@ -4,17 +4,18 @@ namespace Sprint\Migration\Fields;
 
 use ReflectionClass;
 
-class AbstractField
+abstract class AbstractField
 {
     private string $name;
     private array $props = [];
-
     private string $title = '';
     private string $note = '';
 
     public function __construct(private readonly string $code)
     {
     }
+
+    abstract public function getDefaultValue(): mixed;
 
     public function getCode(): string
     {
@@ -26,30 +27,26 @@ class AbstractField
         return $this->name ??= (new ReflectionClass($this))->getShortName();
     }
 
-    public function getComponentProps(): array
+    public function getProps(): array
     {
         return $this->props;
     }
 
-    public function getDefaultValue(): mixed
-    {
-        return '';
-    }
 
     public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function getNote(): string
-    {
-        return $this->note;
-    }
-
     public function setTitle(string $title): static
     {
         $this->title = $title;
         return $this;
+    }
+
+    public function getNote(): string
+    {
+        return $this->note;
     }
 
     public function setNote(string $note): static

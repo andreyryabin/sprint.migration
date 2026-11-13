@@ -23,6 +23,7 @@ class FieldFactory
             }
         } else {
             $obj = new StringField($code);
+            $obj->setDefaultValue($field['value'] ?? '');
             $obj->setPlaceholder($field['placeholder'] ?? '');
             if (isset($field['width'])) {
                 $obj->setSize(round($field['width'] / 10));

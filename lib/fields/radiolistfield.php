@@ -10,4 +10,9 @@ class RadioListField extends AbstractField
         return $this->addToProp('options', ['id' => $id, 'name' => $name, 'group' => $group]);
     }
 
+    public function getDefaultValue(): mixed
+    {
+        return '';
+    }
+
 }

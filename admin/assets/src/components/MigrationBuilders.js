@@ -3,10 +3,10 @@ import {ajax} from "main.core";
 import {
     colorclass,
     colorize,
+    extractResponse,
     filterOptions,
     getMessage,
     groupOptions,
-    extractResponse,
     progressMessage
 } from "../helpers";
 
@@ -106,34 +106,30 @@ export const MigrationBuilders = {
                 });
         },
 
-        async execBuilder(name, params) {
+        async execBuilder() {
+            if (!this.selected || !this.selected.name) {
+                return;
+            }
+
             this.running = true;
-            this.selected = {};
-            this.messages = [];
-            this.progress = [];
             try {
 
-                let restartParams = params;
                 while (true) {
                     if (!this.running) {
                         return false;
                     }
 
                     const data = await this.execAction('execBuilder', {
-                        name,
-                        params: restartParams,
+                        name: this.selected.name,
+                        params: this.selected.params,
                     });
 
+                    this.selected.params = data.params;
+                    this.selected.form = data.form;
+
                     if (data.restart) {
-                        restartParams = data.params;
                         continue;
                     }
-
-                    this.selected = {
-                        name,
-                        params: data.params,
-                        form: data.form
-                    };
 
                     return data.success;
                 }
@@ -144,7 +140,14 @@ export const MigrationBuilders = {
         },
 
         selectBuilder(name) {
-            this.execBuilder(name, {})
+            this.selected = {
+                name,
+                params: {}
+            };
+            this.messages = [];
+            this.progress = [];
+
+            this.execBuilder();
         },
 
     },
@@ -168,6 +171,11 @@ export const MigrationBuilders = {
                   />
                 </div>
                 <div class="sp-search_summary">
+                  <span 
+                      v-if="loading" 
+                      class="sp-loading" 
+                      v-text="getMessage('LOADING_TEXT')"
+                  />
                   {{ getMessage('BUILDERS_CNT') }}:
                   <span class="sp-label" v-text="summaryLabel"/>
                 </div>
@@ -204,6 +212,11 @@ export const MigrationBuilders = {
                     class="sp-field"
                 />
                 <div
+                    v-if="selected.form.note"
+                    class="sp-field sp-info-message"
+                    v-html="colorize(selected.form.note)"
+                />
+                <div
                     v-for="field in selected.form.fields"
                     class="sp-field"
                 >
@@ -226,18 +239,17 @@ export const MigrationBuilders = {
                       class="adm-btn"
                       type="button"
                       :value="getMessage('BUILDER_NEXT')"
+                      @click="execBuilder"
                   />
                   <input
                       class="adm-btn"
                       type="button"
                       :value="getMessage('BUILDER_RESET')"
+                      @click="selectBuilder(selected.name)"
                   />
+
+                  {{ selected.params }}
                 </div>
-                <div
-                    v-if="selected.form.note"
-                    class="sp-field sp-info-message"
-                    v-html="colorize(selected.form.note)"
-                />
                 <div class="sp-builder_log">
                   <div
                       v-for="(item, index) in messages"

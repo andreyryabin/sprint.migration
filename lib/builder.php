@@ -5,6 +5,7 @@ namespace Sprint\Migration;
 use Exception;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Exchange\ExchangeHelpers;
 use Sprint\Migration\Fields\AbstractField;
 use Sprint\Migration\Fields\FieldFactory;
 use Sprint\Migration\Interfaces\RestartableInterface;
@@ -29,6 +30,7 @@ abstract class Builder implements RestartableInterface
     private array $fields = [];
 
     private HelperManager $helperManager;
+    private ExchangeHelpers $exchangeHelpers;
 
     abstract protected function initialize();
 
@@ -77,6 +79,10 @@ abstract class Builder implements RestartableInterface
         return $this->helperManager ??= new HelperManager($this->output);
     }
 
+    protected function getExchangeHelpers(): ExchangeHelpers
+    {
+        return $this->exchangeHelpers ??= new ExchangeHelpers($this->output);
+    }
 
     protected function addField(string $code, array $field): void
     {
@@ -111,7 +117,22 @@ abstract class Builder implements RestartableInterface
      */
     public function start(): void
     {
+        $this->checkBindedFields();
+
         $this->execute();
+    }
+
+
+    /**
+     * @throws RebuildException
+     */
+    private function checkBindedFields(): void
+    {
+        foreach ($this->fields as $field) {
+            if (!isset($this->params[$field->getCode()])) {
+                throw new RebuildException();
+            }
+        }
     }
 
     /**

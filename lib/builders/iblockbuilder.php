@@ -33,10 +33,11 @@ class IblockBuilder extends VersionBuilder
     protected function execute()
     {
         $helper = $this->getHelperManager();
+        $exhelper = $this->getExchangeHelpers();
 
         $iblockId = $this->addFieldAndReturn('iblock_id', [
             'title' => Locale::getMessage('BUILDER_IblockExport_IblockId'),
-            'items' => $helper->IblockExchange()->getIblocksStructure(),
+            'items' => $exhelper->IblockExchange()->getIblocksStructure(),
         ]);
 
         $iblock = $helper->Iblock()->exportIblock($iblockId);
@@ -99,7 +100,7 @@ class IblockBuilder extends VersionBuilder
         }
 
         if (in_array('iblockProperties', $what)) {
-            $propertiesSelect = $helper->IblockExchange()->getIblockPropertiesSelect($iblockId);
+            $propertiesSelect = $exhelper->IblockExchange()->getIblockPropertiesSelect($iblockId);
             if (!empty($propertiesSelect)) {
                 $exportProps = $this->addFieldAndReturn('export_props', [
                     'title'    => Locale::getMessage('BUILDER_IblockExport_Properties'),

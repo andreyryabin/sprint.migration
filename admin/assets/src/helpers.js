@@ -45,20 +45,6 @@ export function getMessage(text) {
     return Loc.hasMessage('SPRINT_MIGRATION_RU_' + text) ? Loc.getMessage('SPRINT_MIGRATION_RU_' + text) : text;
 }
 
-export function colorize(text) {
-    let out = escapeHtml(String(text || ''));
-
-    out = makeLinksHtml(out);
-    for (const [key, val] of Object.entries(MessageLabels)) {
-        out = out.replaceAll(key, val)
-    }
-    return out
-}
-
-export function colorclass(type) {
-    return MessageTypes[type] ? {'class': MessageTypes[type]} : {};
-}
-
 export function cleanAttrs(attr) {
     //Убирает: null, undefined, '', NaN, 0, false
     return Object.fromEntries(
@@ -101,14 +87,30 @@ export function makeLinksHtml(msg) {
     );
 
 }
-
 export function escapeHtml(str) {
     return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+        // .replace(/&/g, '&amp;')
+        // .replace(/</g, '&lt;')
+        // .replace(/>/g, '&gt;')
+        // .replace(/"/g, '&quot;')
+        // .replace(/'/g, '&#39;');
+}
+
+export function colorize(text) {
+    let out = escapeHtml(String(text || ''));
+
+    out = out.replace(/\r\n|\r|\n/g, '<br>');
+
+    out = makeLinksHtml(out);
+
+    for (const [key, val] of Object.entries(MessageLabels)) {
+        out = out.replaceAll(key, val)
+    }
+    return out
+}
+
+export function colorclass(type) {
+    return MessageTypes[type] ? {'class': MessageTypes[type]} : {};
 }
 
 export function makeString(val) {
@@ -130,7 +132,7 @@ export function filterOptions(search, options, keys = ['id', 'name', 'group']) {
     return options;
 }
 
-export function groupOptions(options, gKey='group') {
+export function groupOptions(options, gKey = 'group') {
     let tree = {};
 
     options.forEach((item) => {

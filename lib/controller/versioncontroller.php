@@ -93,6 +93,20 @@ class VersionController extends Controller
         return $this->output->getLog();
     }
 
+
+    /**
+     * @noinspection PhpUnused
+     * @throws MigrationException
+     */
+    public function moveAllAction(array $versions, string $toConfig): array
+    {
+        foreach ($versions as $versionName) {
+            $this->versionManager->moveMigration($versionName, $toConfig);
+        }
+        return $this->output->getLog();
+    }
+
+
     /**
      * @noinspection PhpUnused
      * @throws MigrationException

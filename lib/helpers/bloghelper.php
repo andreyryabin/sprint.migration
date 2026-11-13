@@ -162,11 +162,20 @@ class BlogHelper extends Helper
         $post['PERMS_POST'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_POST);
         $post['PERMS_COMMENT'] = $this->exportPostPerms((int)$post['BLOG_ID'], (int)$post['ID'], BLOG_PERMS_COMMENT);
 
+        return $this->prepareExportPost($post);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function exportPostByIdWithUserFields(int $postId): array
+    {
         return array_merge(
-            $this->prepareExportPost($post),
-            $this->exportPostUserFields((int)$post['ID'])
+            $this->exportPostById($postId),
+            $this->exportPostUserFields($postId)
         );
     }
+
 
     /**
      * @throws HelperException
@@ -233,7 +242,7 @@ class BlogHelper extends Helper
         if (!$postId) {
             $postId = $this->addPost($fieldsForSave);
         } else {
-            $exists = $this->exportPostById($postId);
+            $exists = $this->exportPostByIdWithUserFields($postId);
             $export = $this->prepareExportPost(array_merge($fieldsForSave, [
                     'AUTHOR_LOGIN'  => $fields['AUTHOR_LOGIN'],
                     'CATEGORIES'    => $fields['CATEGORIES'] ?? [],
@@ -534,14 +543,9 @@ class BlogHelper extends Helper
 
     protected function extractPostUserFields(array $fields): array
     {
-        $result = [];
-        foreach ($fields as $name => $value) {
-            if (str_starts_with((string)$name, 'UF_')) {
-                $result[$name] = $value;
-            }
-        }
-
-        return $result;
+        return array_filter($fields, function ($name) {
+            return str_starts_with((string)$name, 'UF_');
+        }, ARRAY_FILTER_USE_KEY);
     }
 
     protected function prepareExportBlog(array $fields): array
@@ -700,6 +704,9 @@ class BlogHelper extends Helper
         ]);
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function exportPostUserFields(int $postId): array
     {
         $result = [];

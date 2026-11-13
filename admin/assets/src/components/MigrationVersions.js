@@ -81,15 +81,20 @@ export const MigrationVersions = {
         messagesCount() {
             return this.messages.length;
         },
+        versionsCount() {
+            return this.versions.length;
+        },
     },
 
     watch: {
-        summaryCount: {
-            handler() {
-                this.$nextTick(() => {
-                    const div = this.$refs.migration_list;
-                    if (div) div.scrollTop = div.scrollHeight;
-                });
+        versionsCount: {
+            handler(newValue, oldValue) {
+                if (newValue > oldValue) {
+                    this.$nextTick(() => {
+                        const div = this.$refs.migration_list;
+                        if (div) div.scrollTop = div.scrollHeight;
+                    });
+                }
             }
         },
         messagesCount: {
@@ -184,7 +189,7 @@ export const MigrationVersions = {
                             action,
                             params: data.params,
                             settag,
-                            button: 'RESTART'
+                            button: 'REPEAT'
                         }
                         return false;
                     }
@@ -223,6 +228,11 @@ export const MigrationVersions = {
         getVersionsByStatus(status) {
             return this.versions
                 .filter((item) => item.status === status)
+                .map((item) => item.version)
+        },
+
+        getVersionNames() {
+            return this.versions
                 .map((item) => item.version)
         },
 
@@ -340,6 +350,16 @@ export const MigrationVersions = {
             });
 
         },
+
+        moveAll(toConfig) {
+            this.execAction('moveAll', {
+                versions: this.getVersionNames(),
+                toConfig: toConfig
+            }).then(() => {
+                this.refreshVersions();
+            });
+        },
+
         deleteVersion(version) {
             if (confirm('Confirm delete migration file')) {
                 this.execAction('deleteVersion', {
@@ -350,7 +370,7 @@ export const MigrationVersions = {
             }
         },
 
-        makeContextMenu(e) {
+        makeCommonMenu(e) {
             let menu = [];
 
             menu.push({
@@ -366,6 +386,15 @@ export const MigrationVersions = {
                 menu.push({
                     TEXT: getMessage('SET_TAG_ALL'),
                     ONCLICK: () => this.setAllTag(),
+                });
+            }
+            if (this.otherConfigs.length > 0) {
+                menu.push({
+                    TEXT: getMessage('MOVE_TO'),
+                    MENU: this.otherConfigs.map((otherConfig) => ({
+                        TEXT: otherConfig.title,
+                        ONCLICK: () => this.moveAll(otherConfig.name)
+                    })),
                 });
             }
 
@@ -520,7 +549,7 @@ export const MigrationVersions = {
               <span
                   :class="{'adm-btn': true,'sp-disabled':running }"
                   v-text="'&equiv;'"
-                  @click="makeContextMenu($event)"
+                  @click="makeCommonMenu($event)"
               />
               <span
                   v-if="loading"

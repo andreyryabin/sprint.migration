@@ -1,10 +1,11 @@
 <?php
 
-namespace Sprint\Migration\Helpers;
+namespace Sprint\Migration\Exchange\Helpers;
 
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\WriterException;
 use Sprint\Migration\Exchange\WriterTag;
+use Sprint\Migration\Helpers\HlblockHelper;
 use Sprint\Migration\Interfaces\ReaderHelperInterface;
 use Sprint\Migration\Interfaces\WriterHelperInterface;
 use Sprint\Migration\Locale;

@@ -42,14 +42,14 @@ class HlblockElementsBuilder extends VersionBuilder
      */
     protected function execute(): void
     {
-        $exhelper = $this->getHelperManager()->HlblockExchange();
+        $exhelper = $this->getExchangeHelpers();
 
         $hlblockId = $this->addFieldAndReturn('hlblock_id', [
             'title'  => Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'),
-            'select' => $exhelper->getHlblocksSelect(),
+            'select' => $exhelper->HlblockExchange()->getHlblocksSelect(),
         ]);
 
-        $fieldsSelect = $exhelper->getHlblockFieldsSelect($hlblockId);
+        $fieldsSelect = $exhelper->HlblockExchange()->getHlblockFieldsSelect($hlblockId);
         $exportFields = array_column($fieldsSelect, 'value');
 
         $exportFilter = $this->getFieldValueExportFilter($exportFields);
@@ -60,12 +60,12 @@ class HlblockElementsBuilder extends VersionBuilder
         (new RestartableWriter($this, $this->getVersionExchangeDir()))
             ->setExchangeResource('hlblock_elements.xml')
             ->execute(
-                attributesFn: fn() => $exhelper->getWriterAttributes($hlblockId),
-                totalCountFn: fn() => $exhelper->getWriterRecordsCount(
+                attributesFn: fn() => $exhelper->HlblockExchange()->getWriterAttributes($hlblockId),
+                totalCountFn: fn() => $exhelper->HlblockExchange()->getWriterRecordsCount(
                     $hlblockId,
                     $exportFilter
                 ),
-                recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
+                recordsFn: fn($offset, $limit) => $exhelper->HlblockExchange()->getWriterRecordsTag(
                     $offset,
                     $limit,
                     $hlblockId,
@@ -73,9 +73,7 @@ class HlblockElementsBuilder extends VersionBuilder
                     $exportFields
                 ),
                 progressFn: fn($value, $totalCount) => $this->outProgress(
-                    'Progress: ',
-                    $value,
-                    $totalCount
+                    'Progress', $value, $totalCount
                 )
             );
 
@@ -117,6 +115,9 @@ class HlblockElementsBuilder extends VersionBuilder
         ]);
     }
 
+    /**
+     * @throws RebuildException
+     */
     protected function getFieldValueExportFilter(array $exportFields): array
     {
         $filterModeSelect = [
@@ -169,6 +170,9 @@ class HlblockElementsBuilder extends VersionBuilder
         return $exportFilter;
     }
 
+    /**
+     * @throws RebuildException
+     */
     private function getFieldValueEqualKeys($updateMethod, $fieldsSelect)
     {
         if ($updateMethod == self::UPDATE_METHOD_EQUAL_KEYS) {

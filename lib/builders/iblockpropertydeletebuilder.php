@@ -41,10 +41,11 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
     protected function execute(): void
     {
         $helper = $this->getHelperManager();
+        $exhelper = $this->getExchangeHelpers();
 
         $iblockId = (int)$this->addFieldAndReturn('iblock_id', [
             'title' => Locale::getMessage('BUILDER_IblockExport_IblockId'),
-            'items' => $helper->IblockExchange()->getIblocksStructure(),
+            'items' => $exhelper->IblockExchange()->getIblocksStructure(),
         ]);
 
         $properties = $this->prepareProperties($helper->Iblock()->getProperties($iblockId));

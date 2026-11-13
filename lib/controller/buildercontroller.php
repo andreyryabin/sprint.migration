@@ -71,6 +71,11 @@ class BuilderController extends Controller
 
         $result = $this->builderManager->startBuilder($builder);
 
+        $params = $result->getRestartParams();
+        foreach ($builder->getFields() as $field) {
+            $params[$field->getCode()] ??= $field->getDefaultValue();
+        }
+
         $form = [
             'title'  => $builder->getTitle(),
             'note'   => $builder->getDescription(),
@@ -79,7 +84,7 @@ class BuilderController extends Controller
                 'title'       => $field->getTitle(),
                 'note'        => $field->getNote(),
                 'component'   => $field->getComponentName(),
-                'props'       => $field->getComponentProps(),
+                'props'       => $field->getProps(),
                 'defultValue' => $field->getDefaultValue(),
             ], $builder->getFields())
         ];
@@ -87,7 +92,7 @@ class BuilderController extends Controller
         return array_merge([
             'restart' => $result->needRestart(),
             'rebuild' => $result->needRebuild(),
-            'params'  => $result->getRestartParams(),
+            'params'  => $params,
             'form'    => $form
         ], $this->output->getLog());
 

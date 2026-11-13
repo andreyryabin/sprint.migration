@@ -42,7 +42,7 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function execute()
     {
-        $exhelper = $this->getHelperManager()->IblockExchange();
+        $exhelper = $this->getExchangeHelpers()->IblockExchange();
 
         $iblockId = $this->getFieldValueIblockId();
 
@@ -71,9 +71,7 @@ class IblockElementsBuilder extends VersionBuilder
                     $exportProps
                 ),
                 progressFn: fn($value, $totalCount) => $this->outProgress(
-                    'Progress: ',
-                    $value,
-                    $totalCount
+                    'Progress', $value, $totalCount
                 )
             );
 
@@ -90,7 +88,7 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueExportProps($iblockId)
     {
-        $exhelper = $this->getHelperManager()->IblockExchange();
+        $exhelper = $this->getExchangeHelpers()->IblockExchange();
 
         $propsMode = $this->addFieldAndReturn('props_mode', [
             'title'  => Locale::getMessage('BUILDER_IblockElementsExport_Properties'),
@@ -194,7 +192,7 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueExportFields($iblockId, $updateMethod = false, $exportFilter = [])
     {
-        $exhelper = $this->getHelperManager()->IblockExchange();
+        $exhelper = $this->getExchangeHelpers()->IblockExchange();
 
         $fieldsMode = $this->addFieldAndReturn('fields_mode', [
             'title'  => Locale::getMessage('BUILDER_IblockElementsExport_Fields'),
@@ -253,7 +251,7 @@ class IblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueIblockId(): int
     {
-        $exhelper = $this->getHelperManager()->IblockExchange();
+        $exhelper = $this->getExchangeHelpers()->IblockExchange();
 
         $iblockId = $this->addFieldAndReturn('iblock_id', [
             'title' => Locale::getMessage('BUILDER_IblockElementsExport_IblockId'),

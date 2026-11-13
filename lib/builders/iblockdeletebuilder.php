@@ -2,6 +2,9 @@
 
 namespace Sprint\Migration\Builders;
 
+use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -21,13 +24,18 @@ class IblockDeleteBuilder extends VersionBuilder
         $this->addVersionFields();
     }
 
+    /**
+     * @throws RebuildException
+     * @throws HelperException
+     * @throws MigrationException
+     */
     protected function execute()
     {
-        $helper = $this->getHelperManager();
+        $exhelper = $this->getExchangeHelpers()->IblockExchange();
 
         $iblockIds = $this->addFieldAndReturn('iblock_ids', [
             'title'    => Locale::getMessage('BUILDER_IblockExport_IblockId'),
-            'items'    => $helper->IblockExchange()->getIblocksStructure(),
+            'items'    => $exhelper->getIblocksStructure(),
             'multiple' => 1,
         ]);
 
@@ -37,7 +45,7 @@ class IblockDeleteBuilder extends VersionBuilder
 
         $selectedIblocks = [];
         foreach ($iblockIds as $iblockId) {
-            $selectedIblocks[] = $helper->IblockExchange()->exportIblock($iblockId);
+            $selectedIblocks[] = $exhelper->exportIblock($iblockId);
         }
 
         $this->createVersionFile(

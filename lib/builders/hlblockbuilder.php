@@ -32,10 +32,11 @@ class HlblockBuilder extends VersionBuilder
     protected function execute()
     {
         $helper = $this->getHelperManager();
+        $exhelper = $this->getExchangeHelpers();
 
         $hlblockId = $this->addFieldAndReturn('hlblock_id', [
             'title'  => Locale::getMessage('BUILDER_HlblockExport_HlblockId'),
-            'select' => $helper->HlblockExchange()->getHlblocksSelect(),
+            'select' => $exhelper->HlblockExchange()->getHlblocksSelect(),
         ]);
 
         $hlblock = $helper->Hlblock()->exportHlblock($hlblockId);

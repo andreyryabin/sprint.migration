@@ -43,7 +43,7 @@ class BlogPostBuilder extends VersionBuilder
     protected function execute()
     {
         $helper = $this->getHelperManager();
-        $exhelper = $helper->BlogExchange();
+        $exhelper = $this->getExchangeHelpers();
 
         $blogId = (int)$this->addFieldAndReturn('blog_id', [
             'title' => Locale::getMessage('BUILDER_BlogPostExport_blog_id'),
@@ -53,25 +53,23 @@ class BlogPostBuilder extends VersionBuilder
         $helper->Blog()->exportBlogById($blogId);
 
         $filter = $this->getPostFilter();
-        if (!$exhelper->getWriterRecordsCount($blogId, $filter)) {
+        if (!$exhelper->BlogExchange()->getWriterRecordsCount($blogId, $filter)) {
             $this->rebuildField('post_filter_mode');
         }
 
         (new RestartableWriter($this, $this->getVersionExchangeDir()))
             ->setExchangeResource('blog_posts.xml')
             ->execute(
-                attributesFn: fn() => $exhelper->getWriterAttributes($blogId),
-                totalCountFn: fn() => $exhelper->getWriterRecordsCount($blogId, $filter),
-                recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
+                attributesFn: fn() => $exhelper->BlogExchange()->getWriterAttributes($blogId),
+                totalCountFn: fn() => $exhelper->BlogExchange()->getWriterRecordsCount($blogId, $filter),
+                recordsFn: fn($offset, $limit) => $exhelper->BlogExchange()->getWriterRecordsTag(
                     $offset,
                     $limit,
                     $blogId,
                     $filter
                 ),
                 progressFn: fn($value, $totalCount) => $this->outProgress(
-                    'Progress: ',
-                    $value,
-                    $totalCount
+                    'Progress', $value, $totalCount
                 )
             );
 
@@ -84,7 +82,7 @@ class BlogPostBuilder extends VersionBuilder
     protected function getPostFilter(): array
     {
         $mode = $this->addFieldAndReturn('post_filter_mode', [
-            'title' => Locale::getMessage('BUILDER_BlogPostExport_filter'),
+            'title'  => Locale::getMessage('BUILDER_BlogPostExport_filter'),
             'select' => [
                 [
                     'title' => Locale::getMessage('BUILDER_SelectAll'),
@@ -103,8 +101,8 @@ class BlogPostBuilder extends VersionBuilder
 
         if ($mode === 'list_id') {
             $ids = $this->addFieldAndReturn('post_filter_list_id', [
-                'title' => Locale::getMessage('BUILDER_BlogPostExport_FilterListId'),
-                'width' => 350,
+                'title'  => Locale::getMessage('BUILDER_BlogPostExport_FilterListId'),
+                'width'  => 350,
                 'height' => 40,
             ]);
 
@@ -115,8 +113,8 @@ class BlogPostBuilder extends VersionBuilder
         $filter = [];
         if ($mode === 'list_code') {
             $codes = $this->addFieldAndReturn('post_filter_list_code', [
-                'title' => Locale::getMessage('BUILDER_BlogPostExport_FilterListCode'),
-                'width' => 350,
+                'title'  => Locale::getMessage('BUILDER_BlogPostExport_FilterListCode'),
+                'width'  => 350,
                 'height' => 40,
             ]);
 

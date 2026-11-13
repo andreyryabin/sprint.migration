@@ -36,10 +36,11 @@ class IblockCategoryBuilder extends VersionBuilder
     protected function execute()
     {
         $helper = $this->getHelperManager();
+        $exhelper = $this->getExchangeHelpers();
 
         $iblockId = $this->addFieldAndReturn('iblock_id', [
             'title'       => Locale::getMessage('BUILDER_IblockCategoryExport_IblockId'),
-            'items'       => $helper->IblockExchange()->getIblocksStructure(),
+            'items'       => $exhelper->IblockExchange()->getIblocksStructure(),
         ]);
 
         $iblock = $helper->Iblock()->exportIblock($iblockId);
