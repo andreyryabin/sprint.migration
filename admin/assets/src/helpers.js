@@ -1,4 +1,5 @@
 import {Loc} from "main.core";
+import {markRaw} from "ui.vue3";
 
 const MessageLabels = {
     '[/]': '</span>',
@@ -54,8 +55,27 @@ export function colorize(text) {
     return out
 }
 
-export function colorbind(type) {
+export function colorclass(type) {
     return MessageTypes[type] ? {'class': MessageTypes[type]} : {};
+}
+
+export function cleanAttrs(attr) {
+    //Убирает: null, undefined, '', NaN, 0, false
+    return Object.fromEntries(
+        Object.entries(attr).filter(([_, v]) =>
+            !!v
+        )
+    );
+}
+
+export function cleanAttrs2(attr) {
+    //Убирает: null, undefined, '', NaN.
+    //Сохраняет: 0 и false
+    return Object.fromEntries(
+        Object.entries(attr).filter(([_, v]) =>
+            v !== null && v !== undefined && v !== '' && !Number.isNaN(v)
+        )
+    );
 }
 
 export function progressMessage(item) {
@@ -92,8 +112,58 @@ export function escapeHtml(str) {
 }
 
 export function makeString(val) {
-    if (val === null) {
-        return '';
+    return val == null ? '' : String(val);
+}
+
+
+export function filterOptions(search, options, keys = ['id', 'name', 'group']) {
+    if (search) {
+        const s1 = makeString(search).toLowerCase();
+        return options.filter((item) => {
+            const s2 = keys
+                .map((key) => makeString(item[key]))
+                .join(' ')
+                .toLowerCase();
+            return s2.includes(s1);
+        });
     }
-    return '' + val;
+    return options;
+}
+
+export function groupOptions(options, gKey='group') {
+    let tree = {};
+
+    options.forEach((item) => {
+        if (!tree[item[gKey]]) {
+            tree[item[gKey]] = [];
+        }
+        tree[item[gKey]].push(item);
+    });
+
+    return tree;
+}
+
+export function processResponse(resp, messages, progress) {
+    if (resp.data && resp.data.progress) {
+        const next = resp.data.progress.map(markRaw);
+        progress.splice(0, progress.length, ...next);
+    }
+
+    if (resp.data && resp.data.messages) {
+        messages.push(...resp.data.messages.map(markRaw));
+    }
+
+    if (resp && resp.errors) {
+        resp.errors.forEach(item => messages.push(markRaw({
+            type: 'error',
+            message: item.message
+        })));
+    }
+
+    if (resp?.status === 'error' && resp.data?.ajaxRejectData?.xhr?.responseText) {
+        messages.push(markRaw({
+            type: 'error',
+            message: resp.data?.ajaxRejectData?.xhr?.responseText
+        }));
+    }
 }

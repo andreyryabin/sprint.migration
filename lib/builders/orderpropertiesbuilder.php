@@ -41,8 +41,6 @@ class OrderPropertiesBuilder extends VersionBuilder
 
         $personTypeId = $this->addFieldAndReturn('person_type', [
             'title'  => Locale::getMessage('BUILDER_OrderProperties_PersonType'),
-            'width'  => 250,
-            'value'  => '',
             'select' => $this->createSelect($helper->OrderProperties()->getPersonTypes(), 'ID', 'NAME')
         ]);
 

@@ -6,6 +6,8 @@ use Exception;
 use ReflectionClass;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
+use Sprint\Migration\Fields\AbstractField;
+use Sprint\Migration\Fields\FieldFactory;
 use Sprint\Migration\Interfaces\RestartableInterface;
 use Sprint\Migration\Output\OutputTrait;
 use Sprint\Migration\Traits\RestartableTrait;
@@ -24,6 +26,8 @@ abstract class Builder implements RestartableInterface
         'description' => '',
         'group'       => '',
     ];
+
+    /** @var AbstractField[] */
     private array $fields = [];
 
     private HelperManager $helperManager;
@@ -68,6 +72,7 @@ abstract class Builder implements RestartableInterface
         }
     }
 
+    /** @return  AbstractField[] */
     public function getFields(): array
     {
         return $this->fields;
@@ -75,48 +80,21 @@ abstract class Builder implements RestartableInterface
 
     protected function getHelperManager(): HelperManager
     {
-        return $this->helperManager ??= new HelperManager($this->getOutput());
+        return $this->helperManager ??= new HelperManager($this->output);
     }
 
 
-    protected function addField(string $code, array $config = []): void
+    protected function addField(string $code, array $field): void
     {
-        $field = [];
-        $field['code'] = $code;
-        $field['title'] = $config['title'] ?: $code;
-        $field['note'] = $config['note'] ?: '';
-
-        if (!empty($config['height'])) {
-            $field['type'] = 'TextareaField';
-            $field['height'] = $config['height'];
-            $field['width'] = $config['width'] ?? '';
-        } elseif (isset($config['select']) && !$config['multiple']) {
-            $field['type'] = 'RadioListField';
-            $field['select'] = $config['select'];
-        } elseif (isset($config['select']) && $config['multiple']) {
-            $field['type'] = 'CheckboxListField';
-            $field['select'] = $config['select'];
-        } elseif (isset($config['items']) && !$config['multiple']) {
-            $field['type'] = 'RadioGroupField';
-            $field['items'] = $config['items'];
-        } elseif (isset($config['items']) && $config['multiple']) {
-            $field['type'] = 'CheckboxGroupField';
-            $field['items'] = $config['items'];
-        } else {
-            $field['type'] = 'StringField';
-            $field['placeholder'] = $config['placeholder'] ?? '';
-            $field['width'] = $config['width'] ?? '';
-        }
-
-        $this->fields[] = $field;
+        $this->fields[] = FieldFactory::createFromArray($code, $field);
     }
 
     /**
      * @throws RebuildException
      */
-    protected function addFieldAndReturn(string $code, array $config = [])
+    protected function addFieldAndReturn(string $code, array $field)
     {
-        $this->addField($code, $config);
+        $this->addField($code, $field);
 
         $value = $this->getFieldValue($code);
 

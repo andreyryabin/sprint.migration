@@ -1,6 +1,5 @@
 import {ajax} from "main.core";
-import {markRaw} from "ui.vue3";
-import {colorbind, colorize, getMessage, progressMessage, showContextMenu,} from "../helpers";
+import {colorclass, colorize, getMessage, processResponse, progressMessage, showContextMenu} from "../helpers";
 
 import {StringField} from '../fields/StringField';
 import {SelectField} from '../fields/SelectField';
@@ -82,34 +81,35 @@ export const MigrationVersions = {
             });
             return summary;
         },
-
-        versionsCount() {
-            return this.versions.length;
-        },
         messagesCount() {
             return this.messages.length;
         },
     },
 
     watch: {
-        versionsCount() {
-            this.$nextTick(() => {
-                const div = this.$refs.migration_list;
-                if (div) div.scrollTop = div.scrollHeight;
-            });
+        summaryCount: {
+            handler() {
+                this.$nextTick(() => {
+                    const div = this.$refs.migration_list;
+                    if (div) div.scrollTop = div.scrollHeight;
+                });
+            }
         },
-        messagesCount() {
-            this.$nextTick(() => {
-                const div = this.$refs.migration_log;
-                if (div) div.scrollTop = div.scrollHeight;
-            });
+        messagesCount: {
+            handler() {
+                this.$nextTick(() => {
+                    const div = this.$refs.migration_log;
+                    if (div) div.scrollTop = div.scrollHeight;
+                });
+            }
         },
+
     },
     methods: {
         getMessage,
         progressMessage,
         colorize,
-        colorbind,
+        colorclass,
 
         getFilter(def) {
             try {
@@ -128,41 +128,17 @@ export const MigrationVersions = {
             this.refreshVersions();
         },
 
-        processResponse(resp) {
-            if (resp.data && resp.data.messages) {
-                this.messages.push(...resp.data.messages.map(markRaw));
-            }
-
-            if (resp.data && resp.data.progress) {
-                this.progress = resp.data.progress.map(markRaw);
-            }
-
-            if (resp && resp.errors) {
-                resp.errors.forEach(item => this.messages.push(markRaw({
-                    type: 'error',
-                    message: item.message
-                })));
-            }
-
-            if (resp?.status === 'error' && resp.data?.ajaxRejectData?.xhr?.responseText) {
-                this.messages.push(markRaw({
-                    type: 'error',
-                    message: resp.data?.ajaxRejectData?.xhr?.responseText
-                }));
-            }
-        },
-
         execAction(action, payload) {
             this.loading = 1;
             return ajax.runAction(
                 'sprint:migration.controller.versioncontroller.' + action,
                 {data: payload, getParameters: {config: this.config}}
             ).then((response) => {
-                this.processResponse(response);
+                processResponse(response, this.messages, this.progress);
                 this.loading = 0;
                 return response.data;
             }).catch((response) => {
-                this.processResponse(response);
+                processResponse(response, this.messages, this.progress);
                 this.loading = 0;
             });
         },
@@ -179,13 +155,13 @@ export const MigrationVersions = {
             this.replay = false;
 
             try {
-                let currentParams = params;
+                let restartParams = params;
                 while (true) {
                     if (!this.running) {
                         this.replay = {
                             version,
                             action,
-                            params: currentParams,
+                            params: restartParams,
                             settag,
                             button: 'CONTINUE'
                         }
@@ -195,12 +171,12 @@ export const MigrationVersions = {
                     const data = await this.execAction('execVersion', {
                         version,
                         action,
-                        params: currentParams,
+                        params: restartParams,
                         settag
                     });
 
                     if (data.restart) {
-                        currentParams = data.params;
+                        restartParams = data.params;
                         continue;
                     }
 
@@ -208,7 +184,7 @@ export const MigrationVersions = {
                         this.replay = {
                             version,
                             action,
-                            params: currentParams,
+                            params: data.params,
                             settag,
                             button: 'RESTART'
                         }
@@ -231,8 +207,6 @@ export const MigrationVersions = {
                     return false;
                 }
             }
-
-            this.refreshVersions();
             return true;
         },
 
@@ -264,11 +238,15 @@ export const MigrationVersions = {
         },
 
         upVersion(version) {
-            this.execVersion(version, ACTION_UP, {}, '');
+            this.execVersion(version, ACTION_UP, {}, '')
+                .then(() => {
+                });
         },
 
-        downVersion(version, params) {
-            this.execVersion(version, ACTION_DOWN, {}, '');
+        downVersion(version) {
+            this.execVersion(version, ACTION_DOWN, {}, '')
+                .then(() => {
+                });
         },
 
         replayVersion() {
@@ -283,19 +261,26 @@ export const MigrationVersions = {
                     this.replay.action,
                     this.replay.params,
                     this.replay.settag
-                );
+                ).then(() => {
+                });
             }
         },
 
         upAll() {
             if (confirm('Confirm install migrations')) {
                 this.execAll(ACTION_UP, '')
+                    .then(() => {
+                        this.refreshVersions();
+                    });
             }
         },
 
         downAll() {
             if (confirm('Confirm rollback migrations')) {
                 this.execAll(ACTION_DOWN, '')
+                    .then(() => {
+                        this.refreshVersions();
+                    });
             }
         },
 
@@ -303,6 +288,9 @@ export const MigrationVersions = {
             let settag = prompt('Set migrations tag');
             if (settag) {
                 this.execAll(ACTION_UP, settag)
+                    .then(() => {
+                        this.refreshVersions();
+                    });
             }
         },
 
@@ -339,7 +327,7 @@ export const MigrationVersions = {
                 this.execAction('setAllTag', {
                     versions: installed,
                     settag: settag
-                }).then((data) => {
+                }).then(() => {
                     this.refreshVersions();
                 });
             }
@@ -494,7 +482,7 @@ export const MigrationVersions = {
                     />
                     </td>
                     <td class="sp-list_content">
-                      <div v-bind="colorbind(item.status)" v-text="item.version"/>
+                      <div v-bind="colorclass(item.status)" v-text="item.version"/>
                       <div v-if="item.file_status" v-text="item.file_status"/>
                       <div v-if="item.record_status" v-text="item.record_status"/>
                       <div v-if="item.tag_status" v-html="colorize(item.tag_status)"/>
@@ -509,7 +497,7 @@ export const MigrationVersions = {
               <div class="sp-migration_log" ref="migration_log">
                 <div
                     v-for="(item, index) in messages"
-                    v-bind="colorbind(item.type)"
+                    v-bind="colorclass(item.type)"
                     :key="index"
                     v-text="item.message"
                 />

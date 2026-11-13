@@ -50,26 +50,25 @@ class BuilderManager
     }
 
 
-    public function startBuilder(string $builder, array $params): BuilderResult
+    /**
+     */
+    public function startBuilder(Builder $builder): BuilderResult
     {
         $builderResult = new BuilderResult();
+        $builder->setOutput($this->output);
 
         try {
-            $builderOj = $this->createBuilder($builder, $params);
-            $builderOj->setOutput($this->output);
-
-            $builderOj->start();
-
+            $builder->start();
         } catch (RebuildException) {
-            $builderResult->setRebuild(isset($builderOj) ? $builderOj->getRestartParams() : []);
+            $builderResult->setRebuild($builder->getRestartParams());
         } catch (RestartException) {
-            $builderResult->setRestart(isset($builderOj) ? $builderOj->getRestartParams() : []);
+            $builderResult->setRestart($builder->getRestartParams());
         } catch (Throwable $e) {
             $builderResult->setException($e);
             $this->output->outException($e);
         }
 
-        $builderResult->setFields(isset($builderOj) ? $builderOj->getFields() : []);
+
         return $builderResult;
     }
 }

@@ -9,7 +9,6 @@ class BuilderResult
     private bool $isRestart = false;
     private bool $isRebuild = false;
     private array $restartParams = [];
-    private array $fields = [];
     private ?Throwable $lastException = null;
 
     public function setRestart(array $restartParams = []): static
@@ -34,12 +33,6 @@ class BuilderResult
     {
         $this->isRestart = false;
         $this->lastException = $e;
-        return $this;
-    }
-
-    public function setFields(array $fields): static
-    {
-        $this->fields = $fields;
         return $this;
     }
 
@@ -70,8 +63,4 @@ class BuilderResult
         return $this->lastException;
     }
 
-    public function getFields(): array
-    {
-        return $this->fields;
-    }
 }

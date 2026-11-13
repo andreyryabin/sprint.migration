@@ -9,6 +9,7 @@ use Sprint\Migration\BuilderManager;
 use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Fields\AbstractField;
 use Sprint\Migration\Output\BrowserOutput;
 
 /**
@@ -62,16 +63,32 @@ class BuilderController extends Controller
 
     /**
      * @noinspection PhpUnused
+     * @throws BuilderException
      */
-    public function execBuilderAction(string $builder, array $params = []): array
+    public function execBuilderAction(string $builderName, array $params = []): array
     {
-        $result = $this->builderManager->startBuilder($builder, $params);
+        $builder = $this->builderManager->createBuilder($builderName, $params);
+
+        $result = $this->builderManager->startBuilder($builder);
+
+        $meta = [
+            'title'  => $builder->getTitle(),
+            'note'   => $builder->getDescription(),
+            'fields' => array_map(fn(AbstractField $field) => [
+                'code'        => $field->getCode(),
+                'title'       => $field->getTitle(),
+                'note'        => $field->getNote(),
+                'field'       => $field->getComponentName(),
+                'props'       => $field->getComponentProps(),
+                'defultValue' => $field->getDefaultValue(),
+            ], $builder->getFields())
+        ];
 
         return array_merge([
             'restart' => $result->needRestart(),
             'rebuild' => $result->needRebuild(),
             'params'  => $result->getRestartParams(),
-            'fields'  => $result->getFields()
+            'meta'    => $meta
         ], $this->output->getLog());
 
     }

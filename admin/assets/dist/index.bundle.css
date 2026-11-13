@@ -102,11 +102,6 @@
     background: #ccc;
 }
 
-.sp-optgroup-item {
-    display: block;
-}
-
-
 .sp-separator {
     display: block;
     padding: 10px;
@@ -283,21 +278,11 @@ a.sp-item-unknown:visited {
     border-right: 1px solid #b00;
 }
 
-.sp-optgroup-group {
+.sp-selector_row {
     margin-bottom: 10px;
 }
-
-.sp-optgroup-head {
-    margin-bottom: 10px;
-}
-
-.sp-optgroup-scroll {
-    max-height: 300px;
-    overflow: auto;
-}
-
-.sp-optgroup-title {
-    /*font-weight: bold;*/
+.sp-selector_row label {
+    display: block;
 }
 
 .sp-field {

@@ -1,6 +1,14 @@
 import {ajax} from "main.core";
 import {markRaw} from "ui.vue3";
-import {colorbind, colorize, getMessage, makeString, progressMessage} from "../helpers";
+import {
+    colorclass,
+    colorize,
+    filterOptions,
+    getMessage,
+    groupOptions,
+    processResponse,
+    progressMessage
+} from "../helpers";
 
 import {StringField} from '../fields/StringField';
 
@@ -28,6 +36,7 @@ export const MigrationBuilders = {
             filter: {
                 search: ''
             },
+
         };
     },
     created() {
@@ -42,29 +51,11 @@ export const MigrationBuilders = {
         },
 
         filtered() {
-            if (this.filter.search) {
-                let s1 = makeString(this.filter.search).toLowerCase();
-                return this.builders.filter(item => {
-                    let s2 = [item.name, item.title, item.group].join(' ').toLowerCase();
-                    return s2.includes(s1);
-
-                })
-            }
-
-            return this.builders;
+            return filterOptions(this.filter.search, this.builders, ['name', 'title', 'group']);
         },
 
         grouped() {
-            let tree = {};
-
-            this.filtered.forEach((builder) => {
-                if (!tree[builder.group]) {
-                    tree[builder.group] = [];
-                }
-                tree[builder.group].push(builder);
-            });
-
-            return tree;
+            return groupOptions(this.filtered, 'group');
         },
 
         summaryLabel() {
@@ -76,18 +67,20 @@ export const MigrationBuilders = {
     },
 
     watch: {
-        messagesCount() {
-            this.$nextTick(() => {
-                const div = this.$refs.migration_log;
-                if (div) div.scrollTop = div.scrollHeight;
-            });
+        messagesCount: {
+            handler() {
+                this.$nextTick(() => {
+                    const div = this.$refs.migration_log;
+                    if (div) div.scrollTop = div.scrollHeight;
+                });
+            }
         },
     },
     methods: {
         getMessage,
         progressMessage,
         colorize,
-        colorbind,
+        colorclass,
 
         getFilter(def) {
             return {...def};
@@ -127,11 +120,11 @@ export const MigrationBuilders = {
                 'sprint:migration.controller.BuilderController.' + action,
                 {data: payload, getParameters: {config: this.config}}
             ).then((response) => {
-                this.processResponse(response);
+                processResponse(response, this.messages, this.progress);
                 this.loading = 0;
                 return response.data;
             }).catch((response) => {
-                this.processResponse(response);
+                processResponse(response, this.messages, this.progress);
                 this.loading = 0;
             });
         },
@@ -148,12 +141,12 @@ export const MigrationBuilders = {
             this.replay = false;
             try {
 
-                let currentParams = params;
+                let restartParams = params;
                 while (true) {
                     if (!this.running) {
                         this.replay = {
                             builder,
-                            params: currentParams,
+                            params: restartParams,
                             button: 'CONTINUE'
                         }
                         return false;
@@ -165,19 +158,20 @@ export const MigrationBuilders = {
                     });
 
                     if (data.restart) {
-                        currentParams = data.params;
+                        restartParams = data.params;
                         continue;
                     }
 
                     if (!data.success) {
                         this.replay = {
                             builder,
-                            params: currentParams,
+                            params: data.params,
                             button: 'RESTART'
                         }
                         return false;
                     }
 
+                    this.pickBuilder(data.meta);
                     return true;
                 }
 
@@ -206,6 +200,11 @@ export const MigrationBuilders = {
                 this.execBuilder(builder, {})
             }
         },
+
+
+        pickBuilder(fields) {
+
+        }
     },
     template: `
       <div>
@@ -252,7 +251,7 @@ export const MigrationBuilders = {
               <div class="sp-migration_log" ref="migration_log">
                 <div
                     v-for="(item, index) in messages"
-                    v-bind="colorbind(item.type)"
+                    v-bind="colorclass(item.type)"
                     :key="index"
                     v-text="item.message"
                 />

@@ -61,14 +61,6 @@ class Version implements RestartableInterface
         return $this->moduleVersion;
     }
 
-    /**
-     * @deprecated
-     */
-    public function getRequiredVersions(): array
-    {
-        return $this->requiredVersions;
-    }
-
     public function getVersionName(): string
     {
         return $this->versionName ??= (new ReflectionClass($this))->getShortName();
@@ -110,7 +102,7 @@ class Version implements RestartableInterface
 
     protected function getHelperManager(): HelperManager
     {
-        return $this->helperManager ??= new HelperManager($this->getOutput());
+        return $this->helperManager ??= new HelperManager($this->output);
     }
 }
 
