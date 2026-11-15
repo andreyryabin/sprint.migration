@@ -112,13 +112,11 @@ export const MigrationBuilders = {
                 return;
             }
 
-            this.selected.button = 'PAUSE';
             this.running = true;
             try {
 
                 while (true) {
                     if (!this.running) {
-                        this.selected.button = 'CONTINUE';
                         return false;
                     }
 
@@ -156,7 +154,9 @@ export const MigrationBuilders = {
             this.progress = [];
 
             const item = this.builders.find(item => item.name === name);
-            this.selected = item ? Object.assign({}, item) : {};
+
+            /*Object.assign нельзя item.params будут переданы по ссылке*/
+            this.selected = item ? JSON.parse(JSON.stringify(item)) : {};
         },
 
     },
@@ -180,11 +180,7 @@ export const MigrationBuilders = {
                   />
                 </div>
                 <div class="sp-search_summary">
-                  <span
-                      v-if="loading"
-                      class="sp-loading"
-                      v-text="getMessage('LOADING_TEXT')"
-                  />
+                  <span v-if="loading" class="sp-loading" v-text="getMessage('LOADING_TEXT')"/>
                   {{ getMessage('BUILDERS_CNT') }}:
                   <span class="sp-label" v-text="summaryLabel"/>
                 </div>
@@ -227,7 +223,7 @@ export const MigrationBuilders = {
                     class="sp-info-message"
                     v-html="colorize(selected.note)"
                 />
-                <div 
+                <div
                     v-for="field in selected.fields"
                     :key="field.code"
                 >
@@ -250,23 +246,16 @@ export const MigrationBuilders = {
                 </div>
                 <div class="sp-builder-buttons">
                   <input
-                      :class="{'adm-btn': true,'sp-disabled':running}"
+                      :class="['adm-btn','sp-play']"
                       type="button"
-                      :value="getMessage('BUILDER_NEXT')"
-                      @click="execBuilder"
+                      :value="getMessage(running ? 'PAUSE' : 'BUILDER_NEXT')"
+                      @click="replayBuilder"
                   />
                   <input
                       :class="{'adm-btn': true,'sp-disabled':running}"
                       type="button"
                       :value="getMessage('BUILDER_RESET')"
                       @click="selectBuilder(selected.name)"
-                  />
-                  <input
-                      v-if="selected.button"
-                      :value="getMessage(selected.button)"
-                      type="button"
-                      :class="['adm-btn', 'sp-play', (!running ? 'sp-disabled':'')]"
-                      @click="replayBuilder"
                   />
                 </div>
                 <div

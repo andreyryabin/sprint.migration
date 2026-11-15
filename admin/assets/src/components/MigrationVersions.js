@@ -494,6 +494,7 @@ export const MigrationVersions = {
                   />
                 </div>
                 <div class="sp-search_summary">
+                  <span v-if="loading" class="sp-loading" v-text="getMessage('LOADING_TEXT')"/>
                   {{ getMessage('VERSIONS_NEW') }}:
                   <span class="sp-label sp-label-red" v-text="summaryCount.new"/>
                   {{ getMessage('VERSIONS_INSTALLED') }}:
