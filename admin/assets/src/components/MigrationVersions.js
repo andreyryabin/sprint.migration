@@ -1,5 +1,5 @@
 import {ajax} from "main.core";
-import {colorclass, colorize, getMessage, extractResponse, progressMessage, showContextMenu} from "../helpers";
+import {colorclass, colorize, extractResponse, getMessage, progressMessage, showContextMenu} from "../helpers";
 
 import {StringField} from '../fields/StringField';
 import {SelectField} from '../fields/SelectField';
@@ -348,16 +348,17 @@ export const MigrationVersions = {
             }).then(() => {
                 this.refreshVersions();
             });
-
         },
 
         moveAll(toConfig) {
-            this.execAction('moveAll', {
-                versions: this.getVersionNames(),
-                toConfig: toConfig
-            }).then(() => {
-                this.refreshVersions();
-            });
+            if (confirm('Confirm move migrations')) {
+                this.execAction('moveAll', {
+                    versions: this.getVersionNames(),
+                    toConfig: toConfig
+                }).then(() => {
+                    this.refreshVersions();
+                });
+            }
         },
 
         deleteVersion(version) {
@@ -529,8 +530,8 @@ export const MigrationVersions = {
               <div class="sp-migration_log" ref="migration_log">
                 <div
                     v-for="(item, index) in messages"
-                    v-bind="colorclass(item.type)"
                     :key="index"
+                    v-bind="colorclass(item.type)"
                     v-text="item.message"
                 />
               </div>
@@ -567,8 +568,8 @@ export const MigrationVersions = {
 
               <div
                   v-for="(item, index) in progress"
-                  class="sp-progress"
                   :key="index"
+                  class="sp-progress"
                   v-text="progressMessage(item)"
               />
             </div>

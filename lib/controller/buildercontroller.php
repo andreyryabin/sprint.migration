@@ -52,11 +52,10 @@ class BuilderController extends Controller
      */
     public function refreshBuildersAction(): array
     {
-        $builders = array_map(fn(Builder $builder) => [
-            'name'  => $builder->getName(),
-            'title' => $builder->getTitle(),
-            'group' => $builder->getGroup(),
-        ], $this->builderManager->getBuilders());
+        $builders = array_map(
+            fn(Builder $builder) => $this->getBuilderForm($builder, true),
+            $this->builderManager->getBuilders()
+        );
 
         return ['builders' => $builders];
     }
@@ -71,30 +70,58 @@ class BuilderController extends Controller
 
         $result = $this->builderManager->startBuilder($builder);
 
-        $params = $result->getRestartParams();
+        return array_merge(
+            [
+                'restart' => $result->needRestart(),
+                'success' => $result->isSuccess(),
+            ],
+            $this->getBuilderForm($builder, $result->isSuccess()),
+            $this->output->getLog()
+        );
+
+    }
+
+    private function getBuilderForm(Builder $builder, bool $newform): array
+    {
+
+        if ($newform) {
+            $this->cleanParams($builder);
+        } else {
+            $this->mergeParams($builder);
+        }
+
+        return [
+            'name'   => $builder->getName(),
+            'title'  => $builder->getTitle(),
+            'group'  => $builder->getGroup(),
+            'note'   => $builder->getDescription(),
+            'params' => $builder->getRestartParams(),
+            'fields' => array_map(fn(AbstractField $field) => [
+                'code'      => $field->getCode(),
+                'title'     => $field->getTitle(),
+                'note'      => $field->getNote(),
+                'component' => $field->getComponentName(),
+                'props'     => $field->getProps(),
+            ], $builder->getFields())
+        ];
+    }
+
+    private function cleanParams(Builder $builder): void
+    {
+        $params = $builder->getRestartParams();
+        $cleaned = [];
+        foreach ($builder->getFields() as $field) {
+            $cleaned[$field->getCode()] = $params[$field->getCode()] ?? $field->getDefaultValue();
+        }
+        $builder->setRestartParams($cleaned);
+    }
+
+    private function mergeParams(Builder $builder): void
+    {
+        $params = $builder->getRestartParams();
         foreach ($builder->getFields() as $field) {
             $params[$field->getCode()] ??= $field->getDefaultValue();
         }
-
-        $form = [
-            'title'  => $builder->getTitle(),
-            'note'   => $builder->getDescription(),
-            'fields' => array_map(fn(AbstractField $field) => [
-                'code'        => $field->getCode(),
-                'title'       => $field->getTitle(),
-                'note'        => $field->getNote(),
-                'component'   => $field->getComponentName(),
-                'props'       => $field->getProps(),
-                'defultValue' => $field->getDefaultValue(),
-            ], $builder->getFields())
-        ];
-
-        return array_merge([
-            'restart' => $result->needRestart(),
-            'rebuild' => $result->needRebuild(),
-            'params'  => $params,
-            'form'    => $form
-        ], $this->output->getLog());
-
+        $builder->setRestartParams($params);
     }
 }

@@ -87,13 +87,14 @@ export function makeLinksHtml(msg) {
     );
 
 }
+
 export function escapeHtml(str) {
     return str
-        // .replace(/&/g, '&amp;')
-        // .replace(/</g, '&lt;')
-        // .replace(/>/g, '&gt;')
-        // .replace(/"/g, '&quot;')
-        // .replace(/'/g, '&#39;');
+    // .replace(/&/g, '&amp;')
+    // .replace(/</g, '&lt;')
+    // .replace(/>/g, '&gt;')
+    // .replace(/"/g, '&quot;')
+    // .replace(/'/g, '&#39;');
 }
 
 export function colorize(text) {
@@ -117,6 +118,10 @@ export function makeString(val) {
     return val == null ? '' : String(val);
 }
 
+export function dumpJson(obj) {
+    return JSON.stringify(obj, null, 2);
+
+}
 
 export function filterOptions(search, options, keys = ['id', 'name', 'group']) {
     if (search) {

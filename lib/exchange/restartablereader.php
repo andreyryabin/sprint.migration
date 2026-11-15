@@ -56,11 +56,11 @@ class RestartableReader
     {
         $this->reader = new Reader($this->file);
 
-        $this->attributes = $this->restartable->restartOnce('step1', fn() => $this->reader->getAttributes());
+        $this->attributes = $this->restartable->restartOnce('~step1', fn() => $this->reader->getAttributes());
 
-        $this->totalCount = $this->restartable->restartOnce('step2', fn() => $this->start());
+        $this->totalCount = $this->restartable->restartOnce('~step2', fn() => $this->start());
 
-        $this->restartable->restartWhile('step3', fn(int $offset) => $this->read($offset, $userFn));
+        $this->restartable->restartWhile('~step3', fn(int $offset) => $this->read($offset, $userFn));
     }
 
     private function start(): int
@@ -87,10 +87,13 @@ class RestartableReader
 
         $offset += $readCount;
 
-        if ($this->progressFn !== null) {
+        $next = ($readCount >= $this->limit) ? $offset : 0;
+
+        if ( $this->progressFn !== null) {
             ($this->progressFn)($offset, $this->totalCount);
         }
 
-        return ($readCount >= $this->limit) ? $offset : 0;
+        return $next;
     }
+
 }

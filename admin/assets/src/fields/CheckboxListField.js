@@ -81,6 +81,7 @@ export const CheckboxListField = {
         </div>
         <div
             v-for="(groupItems, groupName) in grouped"
+            :key="groupName"
             class="sp-selector_row"
         >
           <div

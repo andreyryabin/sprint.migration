@@ -8,23 +8,20 @@ class BuilderResult
 {
     private bool $isRestart = false;
     private bool $isRebuild = false;
-    private array $restartParams = [];
     private ?Throwable $lastException = null;
 
-    public function setRestart(array $restartParams = []): static
+    public function setRestart(): static
     {
         $this->isRestart = true;
         $this->isRebuild = false;
-        $this->restartParams = $restartParams;
 
         return $this;
     }
 
-    public function setRebuild(array $restartParams = []): static
+    public function setRebuild(): static
     {
         $this->isRebuild = true;
         $this->isRestart = false;
-        $this->restartParams = $restartParams;
 
         return $this;
     }
@@ -51,11 +48,6 @@ class BuilderResult
     public function needRebuild(): bool
     {
         return $this->isRebuild;
-    }
-
-    public function getRestartParams(): array
-    {
-        return $this->restartParams;
     }
 
     public function getLastException(): ?Throwable

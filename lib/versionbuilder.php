@@ -86,9 +86,8 @@ abstract class VersionBuilder extends Builder
         $templateVars['author'] = $this->addslashes(
             $this->getCurrentUserLogin()
         );
-        if (empty($templateVars['version'])) {
-            $templateVars['version'] = $this->getVersionName();
-        }
+
+        $templateVars['version'] ??= $this->getVersionName();
 
         [$extendUse, $extendClass] = explode(' as ', $this->getVersionConfig()->getVal('migration_extend_class'));
         $extendUse = trim($extendUse);

@@ -59,12 +59,12 @@ trait RestartableTrait
      */
     public function restartWhile(string $name, Closure $callback): void
     {
-        $index = $this->params[$name] ?? 0;
+        $offset = $this->params[$name] ?? 0;
 
-        if ($index !== 'finish') {
-            $index = (int)$callback((int)$index);
-            if ($index > 0) {
-                $this->params[$name] = $index;
+        if ($offset !== 'finish') {
+            $offset = (int)$callback((int)$offset);
+            if ($offset > 0) {
+                $this->params[$name] = $offset;
                 $this->restart();
             } else {
                 $this->params[$name] = 'finish';

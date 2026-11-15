@@ -3,11 +3,12 @@ import {ajax} from "main.core";
 import {
     colorclass,
     colorize,
+    dumpJson,
     extractResponse,
     filterOptions,
     getMessage,
     groupOptions,
-    progressMessage
+    progressMessage,
 } from "../helpers";
 
 import {StringField} from '../fields/StringField';
@@ -38,7 +39,6 @@ export const MigrationBuilders = {
         return {
             loading: 0,
             running: false,
-            replay: false,
             messages: [],
             progress: [],
             builders: [],
@@ -75,6 +75,7 @@ export const MigrationBuilders = {
         progressMessage,
         colorize,
         colorclass,
+        dumpJson,
 
         createFilter() {
             this.filter.search = '';
@@ -111,11 +112,13 @@ export const MigrationBuilders = {
                 return;
             }
 
+            this.selected.button = 'PAUSE';
             this.running = true;
             try {
 
                 while (true) {
                     if (!this.running) {
+                        this.selected.button = 'CONTINUE';
                         return false;
                     }
 
@@ -125,7 +128,7 @@ export const MigrationBuilders = {
                     });
 
                     this.selected.params = data.params;
-                    this.selected.form = data.form;
+                    this.selected.fields = data.fields;
 
                     if (data.restart) {
                         continue;
@@ -139,15 +142,21 @@ export const MigrationBuilders = {
             }
         },
 
+        replayBuilder() {
+            if (this.running) {
+                this.running = false;
+                return;
+            }
+
+            this.execBuilder();
+        },
+
         selectBuilder(name) {
-            this.selected = {
-                name,
-                params: {}
-            };
             this.messages = [];
             this.progress = [];
 
-            this.execBuilder();
+            const item = this.builders.find(item => item.name === name);
+            this.selected = item ? Object.assign({}, item) : {};
         },
 
     },
@@ -171,9 +180,9 @@ export const MigrationBuilders = {
                   />
                 </div>
                 <div class="sp-search_summary">
-                  <span 
-                      v-if="loading" 
-                      class="sp-loading" 
+                  <span
+                      v-if="loading"
+                      class="sp-loading"
                       v-text="getMessage('LOADING_TEXT')"
                   />
                   {{ getMessage('BUILDERS_CNT') }}:
@@ -187,6 +196,7 @@ export const MigrationBuilders = {
               <div class="sp-builder_list" ref="builder_list">
                 <div
                     v-for="(groupItems, groupName) in grouped"
+                    :key="groupName"
                     class="sp-builder_group"
                 >
                   <div
@@ -195,6 +205,7 @@ export const MigrationBuilders = {
                   />
                   <div
                       v-for="item in groupItems"
+                      :key="item.name"
                       :class="{'sp-builder_title': true, 'sp-active': selected && selected.name===item.name}"
                       @click="selectBuilder(item.name)"
                       v-html="colorize(item.title)"
@@ -204,65 +215,77 @@ export const MigrationBuilders = {
             </div>
             <div class="sp-col sp-col-p0 sp-relative">
               <div
-                  v-if="selected && selected.form"
+                  v-if="selected && selected.name"
                   class="sp-builder_form sp-sticky"
               >
                 <div
-                    v-html="colorize(selected.form.title)"
-                    class="sp-field"
+                    v-html="colorize(selected.title)"
+                    class="sp-builder-title"
                 />
                 <div
-                    v-if="selected.form.note"
-                    class="sp-field sp-info-message"
-                    v-html="colorize(selected.form.note)"
+                    v-if="selected.note"
+                    class="sp-info-message"
+                    v-html="colorize(selected.note)"
                 />
-                <div
-                    v-for="field in selected.form.fields"
-                    class="sp-field"
+                <div 
+                    v-for="field in selected.fields"
+                    :key="field.code"
                 >
                   <div
+                      v-if="field.title"
                       class="sp-field-title"
                       v-html="colorize(field.title)"
                   />
                   <div
+                      v-if="field.note"
                       class="sp-field-note"
                       v-html="colorize(field.note)"
                   />
                   <component
+                      v-if="field.component"
                       :is="field.component"
                       v-model:value="selected.params[field.code]"
                       v-bind="field.props"
                   />
                 </div>
-                <div class="sp-field">
+                <div class="sp-builder-buttons">
                   <input
-                      class="adm-btn"
+                      :class="{'adm-btn': true,'sp-disabled':running}"
                       type="button"
                       :value="getMessage('BUILDER_NEXT')"
                       @click="execBuilder"
                   />
                   <input
-                      class="adm-btn"
+                      :class="{'adm-btn': true,'sp-disabled':running}"
                       type="button"
                       :value="getMessage('BUILDER_RESET')"
                       @click="selectBuilder(selected.name)"
                   />
-
-                  {{ selected.params }}
+                  <input
+                      v-if="selected.button"
+                      :value="getMessage(selected.button)"
+                      type="button"
+                      :class="['adm-btn', 'sp-play', (!running ? 'sp-disabled':'')]"
+                      @click="replayBuilder"
+                  />
                 </div>
+                <div
+                    class="sp-builder_dump"
+                    v-text="dumpJson(selected.params)"
+                />
                 <div class="sp-builder_log">
                   <div
                       v-for="(item, index) in messages"
-                      v-bind="colorclass(item.type)"
                       :key="index"
+                      v-bind="colorclass(item.type)"
                       v-text="item.message"
                   />
                 </div>
                 <div class="sp-builder_progress">
                   <div
                       v-for="(item, index) in progress"
-                      class="sp-progress"
                       :key="index"
+                      class="sp-progress"
                       v-text="progressMessage(item)"
                   />
                 </div>

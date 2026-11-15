@@ -58,13 +58,13 @@ class RestartableWriter
 
         $this->writer->setCopyFiles($this->copyFiles);
 
-        $this->restartable->restartOnce('step1', fn() => $this->writer->createFile($attributesFn()));
+        $this->restartable->restartOnce('~step1', fn() => $this->writer->createFile($attributesFn()));
 
-        $this->totalCount = $this->restartable->restartOnce('step2', fn() => $this->start($totalCountFn, $progressFn));
+        $this->totalCount = $this->restartable->restartOnce('~step2', fn() => $this->start($totalCountFn, $progressFn));
 
-        $this->restartable->restartWhile('step3', fn(int $offset) => $this->write($offset, $recordsFn, $progressFn));
+        $this->restartable->restartWhile('~step3', fn(int $offset) => $this->write($offset, $recordsFn, $progressFn));
 
-        $this->restartable->restartOnce('step4', fn() => $this->writer->closeFile());
+        $this->restartable->restartOnce('~step4', fn() => $this->writer->closeFile());
     }
     private function start(Closure $totalCountFn, Closure $progressFn): int
     {

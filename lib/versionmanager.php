@@ -54,9 +54,9 @@ class VersionManager
     {
         $result = new VersionResult();
 
-        if (empty($params['__start__'])) {
+        if (empty($params['~start'])) {
             $this->output->outInfo('%s::%s() start', $versionName, $action);
-            $params['__start__'] = 'ok';
+            $params['~start'] = 'ok';
         }
 
         try {

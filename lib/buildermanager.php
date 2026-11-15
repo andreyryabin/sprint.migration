@@ -70,9 +70,9 @@ class BuilderManager
         try {
             $builder->start();
         } catch (RebuildException) {
-            $builderResult->setRebuild($builder->getRestartParams());
+            $builderResult->setRebuild();
         } catch (RestartException) {
-            $builderResult->setRestart($builder->getRestartParams());
+            $builderResult->setRestart();
         } catch (Throwable $e) {
             $builderResult->setException($e);
             $this->output->outException($e);
