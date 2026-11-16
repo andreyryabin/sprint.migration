@@ -256,6 +256,12 @@ class VersionManager
             $labels[] = '[label]' . Locale::getMessage('LABEL_UNKNOWN') . '[/]';
         }
 
+        $dir = $this->getVersionConfig()->getVersionExchangeDir($item['version']);
+        if (is_dir($dir)) {
+            $labels[] = '[label:pink]' . Locale::getMessage('LABEL_EXCHANGE') . '[/]';
+        }
+
+
         $item['labels'] = implode(' ', $labels);
     }
 

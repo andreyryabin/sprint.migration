@@ -23,8 +23,6 @@ $MESS["{$prefix}INSTALLED"] = "Установленные";
 $MESS["{$prefix}UNKNOWN"] = "Неизвестные";
 $MESS["{$prefix}VERSION_NEW"] = "Новая";
 
-$MESS["{$prefix}LABEL_UNKNOWN"] = "Файл миграции не найден";
-
 $MESS["{$prefix}META_CREATED"] = "Создана";
 $MESS["{$prefix}META_INSTALLED"] = "Установлена";
 $MESS["{$prefix}META_UNKNOWN"] = "Неизвестная";
@@ -86,13 +84,15 @@ $MESS["{$prefix}TRANSFER_OK_CNT"] = "Перенесено миграций: #CNT
 $MESS["{$prefix}TRANSFER_ERROR1"] = "Миграции #VERSION# не перемещена";
 $MESS["{$prefix}CREATE"] = "Создать миграцию";
 $MESS["{$prefix}VERSION_NOT_FOUND"] = "Миграция не найдена";
-$MESS["{$prefix}LABEL_MODIFIED"] = "Файл миграции был изменен после установки";
-$MESS["{$prefix}LABEL_OLDER"] = "Файл миграции создан в более поздней версии модуля #V1#";
 $MESS["{$prefix}RELEASE_TAG"] = "Тег релиза: [label:green]#TAG#[/]";
 $MESS["{$prefix}SETTAG"] = "Поставить тег";
 $MESS["{$prefix}SETTAG_OK"] = "Тег для миграции #VERSION# задан";
 $MESS["{$prefix}SETTAG_ERROR1"] = "Миграция #VERSION# не найдена";
 
+$MESS["{$prefix}LABEL_MODIFIED"] = "Файл миграции был изменен после установки";
+$MESS["{$prefix}LABEL_OLDER"] = "Файл миграции создан в более поздней версии модуля #V1#";
+$MESS["{$prefix}LABEL_UNKNOWN"] = "Файл миграции не найден";
+$MESS["{$prefix}LABEL_EXCHANGE"] = "Содержит выгрузку";
 //CONFIG
 $MESS["{$prefix}CONFIG_migration_dir"] = "Директория для миграций";
 $MESS["{$prefix}CONFIG_migration_dir_absolute"] = "Абсолютный путь до migration_dir";

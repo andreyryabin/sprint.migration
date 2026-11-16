@@ -23,8 +23,6 @@ $MESS["{$prefix}INSTALLED"] = "Installed";
 $MESS["{$prefix}UNKNOWN"] = "Unknown";
 $MESS["{$prefix}VERSION_NEW"] = "New";
 
-$MESS["{$prefix}LABEL_UNKNOWN"] = "Migration file not found";
-
 $MESS["{$prefix}META_CREATED"] = "Created";
 $MESS["{$prefix}META_INSTALLED"] = "Installed";
 $MESS["{$prefix}META_UNKNOWN"] = "Unknown";
@@ -86,13 +84,15 @@ $MESS["{$prefix}TRANSFER_OK_CNT"] = "Transfer migrations: #CNT#";
 $MESS["{$prefix}TRANSFER_ERROR1"] = "Migration #VERSION# not transfer";
 $MESS["{$prefix}CREATE"] = "Create migration";
 $MESS["{$prefix}VERSION_NOT_FOUND"] = "Migration not found";
-$MESS["{$prefix}LABEL_MODIFIED"] = "Migration file was modified after install";
-$MESS["{$prefix}LABEL_OLDER"] = "Migration file created in a later version of the module #V1#";
 $MESS["{$prefix}RELEASE_TAG"] = "Release tag: [label:green]#TAG#[/]";
 $MESS["{$prefix}SETTAG"] = "Set tag";
 $MESS["{$prefix}SETTAG_OK"] = "Tag for migration #VERSION# setting";
 $MESS["{$prefix}SETTAG_ERROR1"] = "Migration #VERSION# not found";
 
+$MESS["{$prefix}LABEL_MODIFIED"] = "Migration file was modified after install";
+$MESS["{$prefix}LABEL_OLDER"] = "Migration file created in a later version of the module #V1#";
+$MESS["{$prefix}LABEL_UNKNOWN"] = "Migration file not found";
+$MESS["{$prefix}LABEL_EXCHANGE"] = "Contains exhange data";
 //CONFIG
 $MESS["{$prefix}CONFIG_migration_dir"] = "Directory for migration";
 $MESS["{$prefix}CONFIG_migration_dir_absolute"] = "Is absolute path migration_dir";
