@@ -1,10 +1,10 @@
 <?php
 
+use Bitrix\Main\Localization\Loc;
 use Sprint\Migration\Enum\EventsEnum;
 use Sprint\Migration\Module;
 
-require_once __DIR__ . '/lib/locale.php';
-Sprint\Migration\Locale::loadDefault();
+Loc::loadMessages(__FILE__);
 
 class_alias('\Sprint\Migration\Builder', '\Sprint\Migration\AbstractBuilder');
 

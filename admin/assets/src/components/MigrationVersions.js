@@ -1,5 +1,5 @@
 import {ajax} from "main.core";
-import {colorclass, colorize, extractResponse, getMessage, progressMessage, showContextMenu} from "../helpers";
+import {colorclass, colorize, extractResponse, progressMessage, showContextMenu, getMessage} from "../helpers";
 
 import {StringField} from '../fields/StringField';
 import {SelectField} from '../fields/SelectField';
@@ -108,11 +108,10 @@ export const MigrationVersions = {
 
     },
     methods: {
-        getMessage,
         progressMessage,
         colorize,
         colorclass,
-
+        getMessage,
         createFilter() {
             try {
                 let obj = JSON.parse(

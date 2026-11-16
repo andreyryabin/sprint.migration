@@ -1,4 +1,5 @@
 import {Loc} from "main.core";
+
 import {markRaw} from "ui.vue3";
 
 const MessageLabels = {
@@ -42,7 +43,7 @@ const MessageTypes = {
 }
 
 export function getMessage(text) {
-    return Loc.hasMessage('SPRINT_MIGRATION_RU_' + text) ? Loc.getMessage('SPRINT_MIGRATION_RU_' + text) : text;
+    return Loc.getMessage('SPRINT_MIGRATION_' + text) || text;
 }
 
 export function cleanAttrs(attr) {
