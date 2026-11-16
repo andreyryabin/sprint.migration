@@ -17,15 +17,14 @@ $MESS["{$prefix}LINK_COMPOSER"] = "Composer";
 $MESS["{$prefix}LINK_TASKS"] = "Tasks";
 $MESS["{$prefix}LINK_TELEGRAM"] = "Telegram";
 $MESS["{$prefix}LINK_IMPROVE_TRANSLATION"] = "Improve translation to english, create pull request with this file";
+
 $MESS["{$prefix}NEW"] = "New migrations";
 $MESS["{$prefix}INSTALLED"] = "Installed";
 $MESS["{$prefix}UNKNOWN"] = "Unknown";
 $MESS["{$prefix}VERSION_NEW"] = "New";
-$MESS["{$prefix}VERSION_INSTALLED"] = "Installed";
-$MESS["{$prefix}VERSION_UNKNOWN"] = "Migration file not found";
-$MESS["{$prefix}DESC_NEW"] = "(file only)";
-$MESS["{$prefix}DESC_INSTALLED"] = "(file + database record)";
-$MESS["{$prefix}DESC_UNKNOWN"] = "(database record)";
+
+$MESS["{$prefix}LABEL_UNKNOWN"] = "Migration file not found";
+
 $MESS["{$prefix}META_CREATED"] = "Created";
 $MESS["{$prefix}META_INSTALLED"] = "Installed";
 $MESS["{$prefix}META_UNKNOWN"] = "Unknown";
@@ -42,12 +41,10 @@ $MESS["{$prefix}MODULE_VERSION"] = "Module version";
 $MESS["{$prefix}PHP_VERSION"] = "PHP version";
 $MESS["{$prefix}CFG_TITLE"] = "Migrations";
 $MESS["{$prefix}CONFIG"] = "Configuration";
-$MESS["{$prefix}BUILDER_ERROR"] = "Error";
-$MESS["{$prefix}BUILDER_NEXT"] = "Next";
-$MESS["{$prefix}BUILDER_RESET"] = "Reset";
+
 $MESS["{$prefix}BUILDER_CREATE"] = "Create";
 $MESS["{$prefix}BUILDER_RUN"] = "Run";
-$MESS["{$prefix}BUILDER_SAVE"] = "Save";
+
 $MESS["{$prefix}SELECT_ALL"] = "Select all";
 $MESS["{$prefix}SELECT_ONE"] = "Select one";
 $MESS["{$prefix}RESTART_AGAIN"] = "Restart again";
@@ -64,6 +61,39 @@ $MESS["{$prefix}SUBSCRIBE_RUBRIC_UPDATED"] = "Subscription rubric #NAME# saved";
 $MESS["{$prefix}FORUM_GROUP_UPDATED"] = "Forum group #NAME# saved";
 $MESS["{$prefix}FORUM_UPDATED"] = "Forum #NAME# saved";
 
+$MESS["{$prefix}GOTO_MIGRATION"] = "Admin interface";
+$MESS["{$prefix}GOTO_OPTIONS"] = "Settings";
+$MESS["{$prefix}OPTIONS_REMOVE"] = "Reset module options";
+$MESS["{$prefix}OPTIONS_REMOVE_success"] = "Options reset";
+$MESS["{$prefix}OPTIONS_SAVE_success"] = "Options saved";
+$MESS["{$prefix}MARK"] = "Mark migration";
+$MESS["{$prefix}MARK_FIELD1"] = "Select migration";
+$MESS["{$prefix}MARK_FIELD2"] = "Marks as";
+$MESS["{$prefix}MARK_VERSION"] = "Name|installed|new|unknown";
+$MESS["{$prefix}MARK_AS_NEW"] = "new";
+$MESS["{$prefix}MARK_AS_INSTALLED"] = "installed";
+$MESS["{$prefix}MARK_OK_installed"] = "Migration #VERSION# mark as installed";
+$MESS["{$prefix}MARK_OK_new"] = "Migration #VERSION# mark as new";
+$MESS["{$prefix}MARK_ERROR1"] = "Migration #VERSION# not changed";
+$MESS["{$prefix}MARK_NEW_AS_INSTALLED"] = "Mark as installed";
+$MESS["{$prefix}MARK_INSTALLED_AS_NEW"] = "Mark as new";
+$MESS["{$prefix}MARK_UNKNOWN_AS_NEW"] = "Delete";
+$MESS["{$prefix}DELETE"] = "Delete";
+$MESS["{$prefix}DELETE_OK"] = "Migration #VERSION# deleted";
+$MESS["{$prefix}DELETE_ERROR1"] = "Migration #VERSION# not found";
+$MESS["{$prefix}TRANSFER_OK"] = "Migration #VERSION# transfer";
+$MESS["{$prefix}TRANSFER_OK_CNT"] = "Transfer migrations: #CNT#";
+$MESS["{$prefix}TRANSFER_ERROR1"] = "Migration #VERSION# not transfer";
+$MESS["{$prefix}CREATE"] = "Create migration";
+$MESS["{$prefix}VERSION_NOT_FOUND"] = "Migration not found";
+$MESS["{$prefix}LABEL_MODIFIED"] = "Migration file was modified after install";
+$MESS["{$prefix}LABEL_OLDER"] = "Migration file created in a later version of the module #V1#";
+$MESS["{$prefix}RELEASE_TAG"] = "Release tag: [label:green]#TAG#[/]";
+$MESS["{$prefix}SETTAG"] = "Set tag";
+$MESS["{$prefix}SETTAG_OK"] = "Tag for migration #VERSION# setting";
+$MESS["{$prefix}SETTAG_ERROR1"] = "Migration #VERSION# not found";
+
+//CONFIG
 $MESS["{$prefix}CONFIG_migration_dir"] = "Directory for migration";
 $MESS["{$prefix}CONFIG_migration_dir_absolute"] = "Is absolute path migration_dir";
 $MESS["{$prefix}CONFIG_exchange_dir"] = "Directory for exchange files";
@@ -92,8 +122,10 @@ $MESS["{$prefix}BUILDER_TransferNew"] = "New";
 $MESS["{$prefix}BUILDER_TransferInstalled"] = "Installed";
 $MESS["{$prefix}BUILDER_TransferUnknown"] = "Unknown";
 $MESS["{$prefix}BUILDER_TransferSelect"] = "Select migrations";
+
 $MESS["{$prefix}BUILDER_EventExport1"] = "Create migration for event types";
 $MESS["{$prefix}BUILDER_EventExport_event_types"] = "Select event types";
+
 $MESS["{$prefix}BUILDER_ForumExport1"] = "Create migration for forums";
 $MESS["{$prefix}BUILDER_ForumExport_group_ids"] = "Select forum groups";
 $MESS["{$prefix}BUILDER_ForumExport_forum_ids"] = "Select forums";
@@ -101,15 +133,19 @@ $MESS["{$prefix}BUILDER_ForumExport_Info"] = "Forum group is exported with the f
 $MESS["{$prefix}BUILDER_ForumExport_RootGroups"] = "Root groups";
 $MESS["{$prefix}BUILDER_ForumExport_NestedGroups"] = "Nested groups";
 $MESS["{$prefix}BUILDER_ForumExport_WithoutGroup"] = "Without group";
+
 $MESS["{$prefix}BUILDER_SubscribeExport1"] = "Create migration for subscription rubrics";
 $MESS["{$prefix}BUILDER_SubscribeExport_rubric_ids"] = "Select subscription rubrics";
 $MESS["{$prefix}BUILDER_SubscribeExport_Info"] = "Subscription rubric must have a symbolic code filled in";
+
 $MESS["{$prefix}BUILDER_AgentExport1"] = "Create migration for agents";
 $MESS["{$prefix}BUILDER_AgentExport2"] = "Set agent module and name (MODULE_ID, NAME), to see it in the list";
 $MESS["{$prefix}BUILDER_AgentExport_agent_id"] = "Select agents";
 $MESS["{$prefix}BUILDER_AgentExport_module_id"] = "Select modules";
 $MESS["{$prefix}BUILDER_AgentExport_empty_module"] = "-Empty module-";
+
 $MESS["{$prefix}BUILDER_Version1"] = "Create empty migration";
+
 $MESS["{$prefix}BUILDER_UserGroupExport1"] = "Create migration for user groups";
 $MESS["{$prefix}BUILDER_UserGroupExport2"] = "Set group code (STRING_ID), to see it in the list";
 $MESS["{$prefix}BUILDER_UserGroupExport_user_group"] = "Select user groups";
@@ -131,6 +167,7 @@ $MESS["{$prefix}BUILDER_IblockExport_WhatIblockFields"] = "Information block fie
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockProperties"] = "Information block properties";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockUserOptions"] = "User options for form and list";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockPermissions"] = "Information block permissions";
+
 $MESS["{$prefix}BUILDER_IblockElementsExport1"] = "Export information block elements";
 $MESS["{$prefix}BUILDER_IblockElementsExport2"] = implode(PHP_EOL, [
     "Export elements with fields and properties",
@@ -151,6 +188,7 @@ $MESS["{$prefix}BUILDER_IblockElementsExport_UpdateMethod"] = "Export settings";
 $MESS["{$prefix}BUILDER_IblockElementsExport_NotUpdate"] = "Only add elements";
 $MESS["{$prefix}BUILDER_IblockElementsExport_SaveElementByCode"] = "Add or update existing elements by CODE";
 $MESS["{$prefix}BUILDER_IblockElementsExport_SaveElementByXmlId"] = "Add or update existing elements by XML_ID";
+
 $MESS["{$prefix}BUILDER_IblockCategoryExport1"] = "Export information block categories";
 $MESS["{$prefix}BUILDER_IblockCategoryExport2"] = implode(PHP_EOL, [
     "Export information block categories without images",
@@ -215,6 +253,7 @@ $MESS["{$prefix}BUILDER_OrderProperties_SavePropertyByXmlId"] = "Add or update e
 $MESS["{$prefix}BUILDER_OrderProperties_MigratePropertyVariants"] = "Transfer property values (for properties of type Enumeration [ENUM])";
 $MESS["{$prefix}BUILDER_OrderProperties_MigratePropertyVariants_No"] = "Do not transfer";
 $MESS["{$prefix}BUILDER_OrderProperties_MigratePropertyVariants_Yes"] = "Transfer";
+
 $MESS["{$prefix}BUILDER_SaleDiscount"] = "Create a migration for cart rules";
 $MESS["{$prefix}BUILDER_SaleDiscount_Discounts"] = "Select cart rules";
 
@@ -226,21 +265,24 @@ $MESS["{$prefix}BUILDER_FormExport_Fields"] = "Form fields";
 $MESS["{$prefix}BUILDER_FormExport_Statuses"] = "Form statuses";
 $MESS["{$prefix}BUILDER_FormExport_SelectFields"] = "Select form fields";
 
-
 $MESS["{$prefix}BUILDER_VoteExport1"] = "Create migration for poll";
 $MESS["{$prefix}BUILDER_VoteExport_VoteId"] = "Select poll";
 $MESS["{$prefix}BUILDER_VoteExport_Info"] = "Poll must have a symbolic identifier filled in and at least one poll list created";
 $MESS["{$prefix}BUILDER_VoteExport_UnknownChannel"] = "Unknown channel";
+
 $MESS["{$prefix}BUILDER_OptionExport1"] = "Create migration for module options";
 $MESS["{$prefix}BUILDER_OptionExport_Info"] = "Export module options, for each site";
 $MESS["{$prefix}BUILDER_OptionExport_module_id"] = "Select modules";
 $MESS["{$prefix}BUILDER_OptionExport_site_id"] = "Select sites";
+
 $MESS["{$prefix}BUILDER_CacheCleaner1"] = "Cache clean";
 $MESS["{$prefix}BUILDER_CacheCleaner2"] = "Execute BXClearCache(true)";
+
 $MESS["{$prefix}BUILDER_Configurator"] = "Create configuration";
 $MESS["{$prefix}BUILDER_Configurator_config_name"] = "Name";
 $MESS["{$prefix}BUILDER_Configurator_error"] = "Error creating configuration";
 $MESS["{$prefix}BUILDER_Configurator_success"] = "Configuration created";
+
 $MESS["{$prefix}BUILDER_Cleaner"] = "Delete configuration";
 $MESS["{$prefix}BUILDER_Cleaner_desc"] = "Delete configuration file, migration files and migration records";
 $MESS["{$prefix}BUILDER_Cleaner_config_name"] = "Name";
@@ -248,6 +290,11 @@ $MESS["{$prefix}BUILDER_Cleaner_error"] = "Error deleting configuration";
 $MESS["{$prefix}BUILDER_Cleaner_success"] = "Configuration deleted";
 
 $MESS["{$prefix}BUILDER_MedialibElements1"] = "Export media library images";
+$MESS["{$prefix}BUILDER_MedialibElements2"] = implode(PHP_EOL,[
+    "Moves images into a collection",
+    "Creates a collection if none existed",
+    "Updates images and collections with the same name"
+]);
 $MESS["{$prefix}BUILDER_MedialibElements_CollectionId"] = "Select collections";
 
 $MESS["{$prefix}BUILDER_LanguageExport"] = "Create migration for languages and cultures settings";
@@ -255,51 +302,16 @@ $MESS["{$prefix}BUILDER_LanguageExport_cult_codes"] = "Select cultures";
 $MESS["{$prefix}BUILDER_LanguageExport_lang_ids"] = "Select languages";
 $MESS["{$prefix}BUILDER_LanguageExport_Info"] = "Set culture codes to see them in the list";
 
-$MESS["{$prefix}GOTO_MIGRATION"] = "Admin interface";
-$MESS["{$prefix}GOTO_OPTIONS"] = "Settings";
-$MESS["{$prefix}OPTIONS_REMOVE"] = "Reset module options";
-$MESS["{$prefix}OPTIONS_REMOVE_success"] = "Options reset";
-$MESS["{$prefix}OPTIONS_SAVE_success"] = "Options saved";
-$MESS["{$prefix}MARK"] = "Mark migration";
-$MESS["{$prefix}MARK_FIELD1"] = "Select migration";
-$MESS["{$prefix}MARK_FIELD2"] = "Marks as";
-$MESS["{$prefix}MARK_VERSION"] = "Name|installed|new|unknown";
-$MESS["{$prefix}MARK_AS_NEW"] = "new";
-$MESS["{$prefix}MARK_AS_INSTALLED"] = "installed";
-$MESS["{$prefix}MARK_OK_installed"] = "Migration #VERSION# mark as installed";
-$MESS["{$prefix}MARK_OK_new"] = "Migration #VERSION# mark as new";
-$MESS["{$prefix}MARK_ERROR1"] = "Migration #VERSION# not changed";
-$MESS["{$prefix}MARK_NEW_AS_INSTALLED"] = "Mark as installed";
-$MESS["{$prefix}MARK_INSTALLED_AS_NEW"] = "Mark as new";
-$MESS["{$prefix}MARK_UNKNOWN_AS_NEW"] = "Delete";
-$MESS["{$prefix}DELETE"] = "Delete";
-$MESS["{$prefix}DELETE_OK"] = "Migration #VERSION# deleted";
-$MESS["{$prefix}DELETE_ERROR1"] = "Migration #VERSION# not found";
-$MESS["{$prefix}TRANSFER_OK"] = "Migration #VERSION# transfer";
-$MESS["{$prefix}TRANSFER_OK_CNT"] = "Transfer migrations: #CNT#";
-$MESS["{$prefix}TRANSFER_ERROR1"] = "Migration #VERSION# not transfer";
-$MESS["{$prefix}CREATE"] = "Create migration";
-$MESS["{$prefix}VERSION_NOT_FOUND"] = "Migration not found";
-$MESS["{$prefix}MODIFIED_VERSION"] = "Migration file was modified after install";
-$MESS["{$prefix}OLDER_VERSION"] = "Migration file created in a later version of the module #V1#";
-$MESS["{$prefix}RELEASE_TAG"] = "Release tag: [label:green]#TAG#[/]";
-$MESS["{$prefix}SETTAG"] = "Set tag";
-$MESS["{$prefix}SETTAG_OK"] = "Tag for migration #VERSION# setting";
-$MESS["{$prefix}SETTAG_ERROR1"] = "Migration #VERSION# not found";
-
+//ERRORS
 $MESS["{$prefix}ERR_BUILDER_NOT_FOUND"] = "Builder \"#NAME#\" not found";
 $MESS["{$prefix}ERR_CANT_CREATE_DIRECTORY"] = "Cant create directory #NAME#";
 $MESS["{$prefix}ERR_JSON_NOT_SUPPORTED"] = "Install php-ext json";
 $MESS["{$prefix}ERR_PHP_NOT_SUPPORTED"] = "PHP #NAME# not supported";
 $MESS["{$prefix}ERR_EXCHANGE_DISABLED"] = "Exchange disabled, install required bitrix modules";
 $MESS["{$prefix}ERR_EXCHANGE_DISABLED_XML"] = "Exchange disabled, install php-ext XMLReader and XMLWriter";
-$MESS["{$prefix}ERR_CLASS_NOT_FOUND"] = "Class \"#NAME#\" not found";
-$MESS["{$prefix}ERR_MIGRATION_FAIL"] = "Migration fail";
-$MESS["{$prefix}ERR_SOME_MIGRATIONS_FAILS"] = "Some migrations fails";
-$MESS["{$prefix}ERR_VERSION_NOT_FOUND"] = "Migration not found";
 $MESS["{$prefix}ERR_INVALID_ARGUMENTS"] = "Invalid arguments, see help";
 $MESS["{$prefix}ERR_COMMAND_NOT_FOUND"] = "Command \"#NAME#\" not found, see help";
-$MESS["{$prefix}ERR_METHOD_NOT_FOUND"] = "Method \"#NAME#\"  not found";
+
 $MESS["{$prefix}ERR_TEMPLATE_NOT_FOUND"] = "Migration template \"#NAME#\" not found";
 $MESS["{$prefix}ERR_CANT_CREATE_FILE"] = "Cant create file \"#NAME#\"";
 $MESS["{$prefix}ERR_FORM_NOT_FOUND"] = "Form \"#NAME#\" not found";
@@ -345,51 +357,49 @@ $MESS["{$prefix}ERR_EXCHANGE_VERSION"] = implode(PHP_EOL,[
     "Exchange file \"#NAME#\" not supported in this version of module.",
     "Please recreate it"
 ]);
-$MESS["{$prefix}ERR_IB_SECTION_ID_EMPTY"] = "Section in iblock \"#IBLOCK_ID#\" empty";
+
 $MESS["{$prefix}ERR_IB_SECTION_ID_NOT_FOUND"] = "Section \"#SECTION_ID#\" in iblock \"#IBLOCK_ID#\" not found";
-$MESS["{$prefix}ERR_IB_SECTION_BY_FILTER_NOT_FOUND"] = "Section \"#NAME#\" on level \"#DEPTH_LEVEL#\" in iblock \"#IBLOCK_ID#\" not found";
+
 $MESS["{$prefix}ERR_SAVE_COLLECTION_BY_PATH"] = "Collection by path \"#PATH#\" not created";
-$MESS["{$prefix}ERR_IB_ELEMENT_ID_EMPTY"] = "Element in iblock \"#IBLOCK_ID#\" empty";
+
 $MESS["{$prefix}ERR_IB_ELEMENT_ID_NOT_FOUND"] = "Element \"#ELEMENT_ID#\" in iblock \"#IBLOCK_ID#\" not found";
-$MESS["{$prefix}ERR_IB_ELEMENT_BY_FILTER_NOT_FOUND"] = "Element \"#NAME#\" in iblock \"#IBLOCK_ID#\" not found";
 
 
 $MESS["{$prefix}AGENT_CREATED"] = "Agent \"#NAME#\" created";
 $MESS["{$prefix}AGENT_UPDATED"] = "Agent \"#NAME#\" updated";
-$MESS["{$prefix}AGENT_EQUAL"] = "Agent \"#NAME#\" equivalent";
 $MESS["{$prefix}AGENT_DELETED"] = "Agent \"#NAME#\" deleted";
 $MESS["{$prefix}WEBFORM_CREATED"] = "Webform \"#NAME#\" created";
 $MESS["{$prefix}WEBFORM_UPDATED"] = "Webform \"#NAME#\" updated";
 $MESS["{$prefix}EVENT_MESSAGE_CREATED"] = "Event message \"#NAME#\" created";
 $MESS["{$prefix}EVENT_MESSAGE_UPDATED"] = "Event message \"#NAME#\" updated";
-$MESS["{$prefix}EVENT_MESSAGE_EQUAL"] = "Event message \"#NAME#\" equivalent";
+
 $MESS["{$prefix}EVENT_MESSAGE_DELETED"] = "Event message \"#NAME#\" deleted";
 $MESS["{$prefix}EVENT_SMS_TEMPLATE_CREATED"] = "Event sms template \"#NAME#\" created";
 $MESS["{$prefix}EVENT_SMS_TEMPLATE_UPDATED"] = "Event sms template \"#NAME#\" updated";
 $MESS["{$prefix}EVENT_TYPE_CREATED"] = "Event type \"#NAME#\" created";
 $MESS["{$prefix}EVENT_TYPE_UPDATED"] = "Event type \"#NAME#\" updated";
-$MESS["{$prefix}EVENT_TYPE_EQUAL"] = "Event type \"#NAME#\" equivalent";
+
 $MESS["{$prefix}EVENT_TYPE_DELETED"] = "Event type \"#NAME#\" deleted";
 $MESS["{$prefix}HLBLOCK_CREATED"] = "Highload block \"#NAME#\" created";
 $MESS["{$prefix}HLBLOCK_UPDATED"] = "Highload block \"#NAME#\" updated";
-$MESS["{$prefix}HLBLOCK_EQUAL"] = "Highload block \"#NAME#\" equivalent";
+
 $MESS["{$prefix}HLBLOCK_DELETED"] = "Highload block \"#NAME#\" deleted";
 $MESS["{$prefix}OPTION_CREATED"] = "Option \"#NAME#\" created";
 $MESS["{$prefix}OPTION_UPDATED"] = "Option \"#NAME#\" updated";
-$MESS["{$prefix}OPTION_EQUAL"] = "Option \"#NAME#\" equivalent";
+
 $MESS["{$prefix}USER_GROUP_CREATED"] = "User group \"#NAME#\" created";
 $MESS["{$prefix}USER_GROUP_UPDATED"] = "User group \"#NAME#\" updated";
-$MESS["{$prefix}USER_GROUP_EQUAL"] = "User group \"#NAME#\" equivalent";
+
 $MESS["{$prefix}USER_GROUP_DELETED"] = "User group \"#NAME#\" deleted";
 $MESS["{$prefix}USER_OPTION_LIST_CREATED"] = "User option list \"#NAME#\" saved";
-$MESS["{$prefix}USER_OPTION_LIST_EQUAL"] = "User option list \"#NAME#\" equivalent";
+
 $MESS["{$prefix}USER_OPTION_GRID_CREATED"] = "User option grid \"#NAME#\" saved";
-$MESS["{$prefix}USER_OPTION_GRID_EQUAL"] = "User option grid \"#NAME#\" equivalent";
+
 $MESS["{$prefix}USER_OPTION_FORM_CREATED"] = "User option form \"#NAME#\" saved";
-$MESS["{$prefix}USER_OPTION_FORM_EQUAL"] = "User option form \"#NAME#\" equivalent";
+
 $MESS["{$prefix}USER_TYPE_ENTITY_CREATED"] = "User type entity \"#NAME#\" created";
 $MESS["{$prefix}USER_TYPE_ENTITY_UPDATED"] = "User type entity \"#NAME#\" updated";
-$MESS["{$prefix}USER_TYPE_ENTITY_EQUAL"] = "User type entity \"#NAME#\" equivalent";
+
 $MESS["{$prefix}USER_TYPE_ENTITY_DELETED"] = "User type entity \"#NAME#\" deleted";
 $MESS["{$prefix}ORDER_PROPERTY_ADDED"] = "Order property \"#NAME#\" created";
 $MESS["{$prefix}ORDER_PROPERTY_UPDATED"] = "Order property \"#NAME#\" updated";
@@ -399,19 +409,13 @@ $MESS["{$prefix}ORDER_PROPERTY_VARIANT_UPDATED"] = "Enum option with name \"#NAM
 $MESS["{$prefix}ORDER_PROPERTY_VARIANT_DELETED"] = "Enum option with name \"#NAME#\" deleted";
 $MESS["{$prefix}IB_PROPERTY_CREATED"] = "Information block \"#IBLOCK_ID#\": property \"#NAME#\" created";
 $MESS["{$prefix}IB_PROPERTY_UPDATED"] = "Information block \"#IBLOCK_ID#\": property \"#NAME#\" updated";
-$MESS["{$prefix}IB_PROPERTY_EQUAL"] = "Information block \"#IBLOCK_ID#\": property \"#NAME#\" equivalent";
-$MESS["{$prefix}IB_PROPERTY_DELETED"] = "Information block \"#IBLOCK_ID#\": property \"#NAME#\" deleted";
-$MESS["{$prefix}IB_PROPERTY_LINK_SAVED"] = "Information block \"#IBLOCK_ID#\": property link saved";
 $MESS["{$prefix}IB_CREATED"] = "Information block \"#NAME#\" created";
 $MESS["{$prefix}IB_UPDATED"] = "Information block \"#NAME#\" updated";
-$MESS["{$prefix}IB_EQUAL"] = "Information block \"#NAME#\" equivalent";
-$MESS["{$prefix}IB_DELETED"] = "Information block \"#NAME#\" deleted";
-$MESS["{$prefix}IB_FIELDS_CREATED"] = "Information block \"#NAME#\": fields created";
+
 $MESS["{$prefix}IB_FIELDS_UPDATED"] = "Information block \"#NAME#\": fields updated";
-$MESS["{$prefix}IB_FIELDS_EQUAL"] = "Information block \"#NAME#\": fields equivalent";
 $MESS["{$prefix}IB_TYPE_CREATED"] = "Information block type \"#NAME#\" created";
 $MESS["{$prefix}IB_TYPE_UPDATED"] = "Information block type \"#NAME#\" updated";
-$MESS["{$prefix}IB_TYPE_EQUAL"] = "Information block type \"#NAME#\" equivalent";
+
 $MESS["{$prefix}IB_TYPE_DELETED"] = "Information block type \"#NAME#\" deleted";
 $MESS["{$prefix}LANG_CREATED"] = "Language created";
 $MESS["{$prefix}LANG_UPDATED"] = "Language updated";
@@ -459,10 +463,8 @@ $MESS["{$prefix}BUILDER_BlogPostExport_SelectSomeCode"] = "CODE list";
 $MESS["{$prefix}BUILDER_BlogPostExport_FilterListId"] = "Enter post IDs separated by spaces";
 $MESS["{$prefix}BUILDER_BlogPostExport_FilterListCode"] = "Enter post CODEs separated by spaces";
 
-$MESS["{$prefix}ENTITY_TITLE_HLBLOCK"] = "Highload block / NAME / TITLE";
-$MESS["{$prefix}ENTITY_TITLE_IBLOCK_SECTION"] = "Information block / IBLOCK_TYPE_ID / NAME";
-$MESS["{$prefix}ENTITY_TITLE_USER"] = "User entity";
+$MESS["{$prefix}ENTITY_TITLE_HLBLOCK"] = "Highload-block / NAME / TITLE";
+$MESS["{$prefix}ENTITY_TITLE_IBLOCK_SECTION"] = "Information-block / IBLOCK_TYPE_ID / NAME";
 
 $MESS["{$prefix}HLBLOCK_TITLE"] = "NAME / TITLE";
 $MESS["{$prefix}HLBLOCK_FIELD"] = "FIELD_NAME / TITLE";
-

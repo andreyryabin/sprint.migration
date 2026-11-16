@@ -9,4 +9,4 @@ $MESS["{$prefix}PARTNER_URI"] = "https://packagist.org/packages/andreyryabin/spr
 
 //access
 $MESS["{$prefix}RIGHT_D"] = "Доступ запрещен";
-$MESS["{$prefix}RIGHT_W"] = "Доступ разрешен";
+$MESS["{$prefix}RIGHT_W"] = "Полный доступ";

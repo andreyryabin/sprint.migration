@@ -247,13 +247,13 @@ class VersionManager
     {
         $labels = [];
         if ($item['older']) {
-            $labels[] = '[label:red]' . Locale::getMessage('OLDER_VERSION', ['#V1#' => $item['older']]) . '[/]';
+            $labels[] = '[label:red]' . Locale::getMessage('LABEL_OLDER', ['#V1#' => $item['older']]) . '[/]';
         }
         if ($item['modified']) {
-            $labels[] = '[label:yellow]' . Locale::getMessage('MODIFIED_VERSION') . '[/]';
+            $labels[] = '[label:yellow]' . Locale::getMessage('LABEL_MODIFIED') . '[/]';
         }
         if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
-            $labels[] = '[label]' . Locale::getMessage('VERSION_UNKNOWN') . '[/]';
+            $labels[] = '[label]' . Locale::getMessage('LABEL_UNKNOWN') . '[/]';
         }
 
         $item['labels'] = implode(' ', $labels);

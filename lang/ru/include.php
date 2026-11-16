@@ -1,5 +1,4 @@
 <?php
-
 $prefix = "SPRINT_MIGRATION_";
 
 $MESS["{$prefix}DEVELOPER_NAME"] = "Разработчик: [label:yellow]#VALUE#[/]";
@@ -18,15 +17,14 @@ $MESS["{$prefix}LINK_COMPOSER"] = "Composer";
 $MESS["{$prefix}LINK_TASKS"] = "Задачи";
 $MESS["{$prefix}LINK_TELEGRAM"] = "Группа в телеграме";
 $MESS["{$prefix}LINK_IMPROVE_TRANSLATION"] = "Улучшите перевод на английский, создайте пул-реквест с этим файлом";
+
 $MESS["{$prefix}NEW"] = "Новые миграции";
 $MESS["{$prefix}INSTALLED"] = "Установленные";
 $MESS["{$prefix}UNKNOWN"] = "Неизвестные";
 $MESS["{$prefix}VERSION_NEW"] = "Новая";
-$MESS["{$prefix}VERSION_INSTALLED"] = "Установлена";
-$MESS["{$prefix}VERSION_UNKNOWN"] = "Файл миграции не найден";
-$MESS["{$prefix}DESC_NEW"] = "(только файл)";
-$MESS["{$prefix}DESC_INSTALLED"] = "(файл + запись об установке)";
-$MESS["{$prefix}DESC_UNKNOWN"] = "(только запись об установке)";
+
+$MESS["{$prefix}LABEL_UNKNOWN"] = "Файл миграции не найден";
+
 $MESS["{$prefix}META_CREATED"] = "Создана";
 $MESS["{$prefix}META_INSTALLED"] = "Установлена";
 $MESS["{$prefix}META_UNKNOWN"] = "Неизвестная";
@@ -43,12 +41,10 @@ $MESS["{$prefix}MODULE_VERSION"] = "Версия модуля";
 $MESS["{$prefix}PHP_VERSION"] = "Версия php";
 $MESS["{$prefix}CFG_TITLE"] = "Миграции";
 $MESS["{$prefix}CONFIG"] = "Конфигурация";
-$MESS["{$prefix}BUILDER_ERROR"] = "Ошибка";
-$MESS["{$prefix}BUILDER_NEXT"] = "Далее";
-$MESS["{$prefix}BUILDER_RESET"] = "Сбросить";
+
 $MESS["{$prefix}BUILDER_CREATE"] = "Создать";
 $MESS["{$prefix}BUILDER_RUN"] = "Выполнить";
-$MESS["{$prefix}BUILDER_SAVE"] = "Сохранить";
+
 $MESS["{$prefix}SELECT_ALL"] = "Выбрать все";
 $MESS["{$prefix}SELECT_ONE"] = "Выбрать";
 $MESS["{$prefix}RESTART_AGAIN"] = "Запустить снова";
@@ -65,6 +61,39 @@ $MESS["{$prefix}SUBSCRIBE_RUBRIC_UPDATED"] = "Рубрика подписки #N
 $MESS["{$prefix}FORUM_GROUP_UPDATED"] = "Группа форумов #NAME# сохранена";
 $MESS["{$prefix}FORUM_UPDATED"] = "Форум #NAME# сохранен";
 
+$MESS["{$prefix}GOTO_MIGRATION"] = "Админка миграций";
+$MESS["{$prefix}GOTO_OPTIONS"] = "Настройки модуля";
+$MESS["{$prefix}OPTIONS_REMOVE"] = "Сбросить настройки модуля";
+$MESS["{$prefix}OPTIONS_REMOVE_success"] = "Настройки сброшены";
+$MESS["{$prefix}OPTIONS_SAVE_success"] = "Настройки сохранены";
+$MESS["{$prefix}MARK"] = "Отметить миграцию";
+$MESS["{$prefix}MARK_FIELD1"] = "Выбрать миграцию";
+$MESS["{$prefix}MARK_FIELD2"] = "Отметить как";
+$MESS["{$prefix}MARK_VERSION"] = "Название|installed|new|unknown";
+$MESS["{$prefix}MARK_AS_NEW"] = "новую";
+$MESS["{$prefix}MARK_AS_INSTALLED"] = "установленную";
+$MESS["{$prefix}MARK_OK_installed"] = "Миграция #VERSION# отмечена как установленная";
+$MESS["{$prefix}MARK_OK_new"] = "Миграция #VERSION# отмечена как новая";
+$MESS["{$prefix}MARK_ERROR1"] = "Миграция #VERSION# не изменена";
+$MESS["{$prefix}MARK_NEW_AS_INSTALLED"] = "Отметить как установленную";
+$MESS["{$prefix}MARK_INSTALLED_AS_NEW"] = "Отметить как новую";
+$MESS["{$prefix}MARK_UNKNOWN_AS_NEW"] = "Удалить";
+$MESS["{$prefix}DELETE"] = "Удалить";
+$MESS["{$prefix}DELETE_OK"] = "Миграция #VERSION# удалена";
+$MESS["{$prefix}DELETE_ERROR1"] = "Миграция #VERSION# не найдена";
+$MESS["{$prefix}TRANSFER_OK"] = "Миграция #VERSION# перенесена";
+$MESS["{$prefix}TRANSFER_OK_CNT"] = "Перенесено миграций: #CNT#";
+$MESS["{$prefix}TRANSFER_ERROR1"] = "Миграции #VERSION# не перемещена";
+$MESS["{$prefix}CREATE"] = "Создать миграцию";
+$MESS["{$prefix}VERSION_NOT_FOUND"] = "Миграция не найдена";
+$MESS["{$prefix}LABEL_MODIFIED"] = "Файл миграции был изменен после установки";
+$MESS["{$prefix}LABEL_OLDER"] = "Файл миграции создан в более поздней версии модуля #V1#";
+$MESS["{$prefix}RELEASE_TAG"] = "Тег релиза: [label:green]#TAG#[/]";
+$MESS["{$prefix}SETTAG"] = "Поставить тег";
+$MESS["{$prefix}SETTAG_OK"] = "Тег для миграции #VERSION# задан";
+$MESS["{$prefix}SETTAG_ERROR1"] = "Миграция #VERSION# не найдена";
+
+//CONFIG
 $MESS["{$prefix}CONFIG_migration_dir"] = "Директория для миграций";
 $MESS["{$prefix}CONFIG_migration_dir_absolute"] = "Абсолютный путь до migration_dir";
 $MESS["{$prefix}CONFIG_exchange_dir"] = "Директория для файлов данных";
@@ -93,8 +122,10 @@ $MESS["{$prefix}BUILDER_TransferNew"] = "Новые";
 $MESS["{$prefix}BUILDER_TransferInstalled"] = "Установленные";
 $MESS["{$prefix}BUILDER_TransferUnknown"] = "Неизвестные";
 $MESS["{$prefix}BUILDER_TransferSelect"] = "Выбрать миграции";
+
 $MESS["{$prefix}BUILDER_EventExport1"] = "Создать миграцию для почтовых событий";
 $MESS["{$prefix}BUILDER_EventExport_event_types"] = "Выберите типы почтовых событий";
+
 $MESS["{$prefix}BUILDER_ForumExport1"] = "Создать миграцию для форумов";
 $MESS["{$prefix}BUILDER_ForumExport_group_ids"] = "Выберите группы форумов";
 $MESS["{$prefix}BUILDER_ForumExport_forum_ids"] = "Выберите форумы";
@@ -102,15 +133,19 @@ $MESS["{$prefix}BUILDER_ForumExport_Info"] = "Группа форума пере
 $MESS["{$prefix}BUILDER_ForumExport_RootGroups"] = "Корневые группы";
 $MESS["{$prefix}BUILDER_ForumExport_NestedGroups"] = "Вложенные группы";
 $MESS["{$prefix}BUILDER_ForumExport_WithoutGroup"] = "Без группы";
+
 $MESS["{$prefix}BUILDER_SubscribeExport1"] = "Создать миграцию для рубрик подписок";
 $MESS["{$prefix}BUILDER_SubscribeExport_rubric_ids"] = "Выберите рубрики подписок";
 $MESS["{$prefix}BUILDER_SubscribeExport_Info"] = "У подписки должен быть заполнен Символьный код";
+
 $MESS["{$prefix}BUILDER_AgentExport1"] = "Создать миграцию для агентов";
 $MESS["{$prefix}BUILDER_AgentExport2"] = "Задайте модуль и функцию агента (MODULE_ID, NAME), чтобы увидеть его в списке";
 $MESS["{$prefix}BUILDER_AgentExport_agent_id"] = "Выберите агенты";
 $MESS["{$prefix}BUILDER_AgentExport_module_id"] = "Выберите модули";
 $MESS["{$prefix}BUILDER_AgentExport_empty_module"] = "Без модуля";
+
 $MESS["{$prefix}BUILDER_Version1"] = "Создать простую миграцию";
+
 $MESS["{$prefix}BUILDER_UserGroupExport1"] = "Создать миграцию для групп пользователей";
 $MESS["{$prefix}BUILDER_UserGroupExport2"] = "Задайте символьный идентификатор группы (STRING_ID), чтобы увидеть её в списке";
 $MESS["{$prefix}BUILDER_UserGroupExport_user_group"] = "Выберите группы";
@@ -132,6 +167,7 @@ $MESS["{$prefix}BUILDER_IblockExport_WhatIblockFields"] = "Поля инфобл
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockProperties"] = "Свойства инфоблока";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockUserOptions"] = "Настройки формы редактирования и списка";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockPermissions"] = "Доступ к инфоблоку";
+
 $MESS["{$prefix}BUILDER_IblockElementsExport1"] = "Перенести элементы инфоблоков";
 $MESS["{$prefix}BUILDER_IblockElementsExport2"] = implode(PHP_EOL, [
     "Переносит элементы с полями и свойствами",
@@ -152,6 +188,7 @@ $MESS["{$prefix}BUILDER_IblockElementsExport_UpdateMethod"] = "Настройк�
 $MESS["{$prefix}BUILDER_IblockElementsExport_NotUpdate"] = "Простое добавление элементов";
 $MESS["{$prefix}BUILDER_IblockElementsExport_SaveElementByCode"] = "Добавить или обновить элементы с совпадающими CODE";
 $MESS["{$prefix}BUILDER_IblockElementsExport_SaveElementByXmlId"] = "Добавить или обновить элементы с совпадающими XML_ID";
+
 $MESS["{$prefix}BUILDER_IblockCategoryExport1"] = "Перенести категории инфоблоков";
 $MESS["{$prefix}BUILDER_IblockCategoryExport2"] = implode(PHP_EOL, [
     "Переносит категории инфоблоков без изображений",
@@ -216,6 +253,7 @@ $MESS["{$prefix}BUILDER_OrderProperties_SavePropertyByXmlId"] = "Добавит�
 $MESS["{$prefix}BUILDER_OrderProperties_MigratePropertyVariants"] = "Перенести значения свойств (для свойств типа Перечисление [ENUM])";
 $MESS["{$prefix}BUILDER_OrderProperties_MigratePropertyVariants_No"] = "Не переносить";
 $MESS["{$prefix}BUILDER_OrderProperties_MigratePropertyVariants_Yes"] = "Переносить";
+
 $MESS["{$prefix}BUILDER_SaleDiscount"] = "Создать миграцию для правил корзины";
 $MESS["{$prefix}BUILDER_SaleDiscount_Discounts"] = "Выберите правила корзины";
 
@@ -226,20 +264,25 @@ $MESS["{$prefix}BUILDER_FormExport_Form"] = "Форму";
 $MESS["{$prefix}BUILDER_FormExport_Fields"] = "Поля формы";
 $MESS["{$prefix}BUILDER_FormExport_Statuses"] = "Статусы";
 $MESS["{$prefix}BUILDER_FormExport_SelectFields"] = "Выберите поля формы";
+
 $MESS["{$prefix}BUILDER_VoteExport1"] = "Создать миграцию для опроса";
 $MESS["{$prefix}BUILDER_VoteExport_VoteId"] = "Выберите опрос";
 $MESS["{$prefix}BUILDER_VoteExport_Info"] = "У опроса должен быть заполнен Символьный идентификатор и создан хотя бы один Список опросов";
 $MESS["{$prefix}BUILDER_VoteExport_UnknownChannel"] = "Неизвестный канал";
+
 $MESS["{$prefix}BUILDER_OptionExport1"] = "Создать миграцию для настроек модулей";
 $MESS["{$prefix}BUILDER_OptionExport_Info"] = "Переносит настройки модулей для выбранных сайтов или сайта по умолчанию (если не выбирать)";
 $MESS["{$prefix}BUILDER_OptionExport_module_id"] = "Выберите модули";
 $MESS["{$prefix}BUILDER_OptionExport_site_id"] = "Выберите сайты";
+
 $MESS["{$prefix}BUILDER_CacheCleaner1"] = "Очистка кеша";
 $MESS["{$prefix}BUILDER_CacheCleaner2"] = "Выполнить BXClearCache(true)";
+
 $MESS["{$prefix}BUILDER_Configurator"] = "Создать конфигурацию";
 $MESS["{$prefix}BUILDER_Configurator_config_name"] = "Название (лат буквы и цифры)";
 $MESS["{$prefix}BUILDER_Configurator_error"] = "Ошибка создания конфигурации";
 $MESS["{$prefix}BUILDER_Configurator_success"] = "Конфигурация создана";
+
 $MESS["{$prefix}BUILDER_Cleaner"] = "Удалить конфигурацию";
 $MESS["{$prefix}BUILDER_Cleaner_desc"] = "Удаление файла конфигурации, файлов миграций и записей в таблице миграций";
 $MESS["{$prefix}BUILDER_Cleaner_config_name"] = "Название (лат буквы и цифры)";
@@ -259,51 +302,16 @@ $MESS["{$prefix}BUILDER_LanguageExport_cult_codes"] = "Выберите реги
 $MESS["{$prefix}BUILDER_LanguageExport_lang_ids"] = "Выберите языки интерфейса";
 $MESS["{$prefix}BUILDER_LanguageExport_Info"] = "Задайте символьные коды региональным настройкам";
 
-$MESS["{$prefix}GOTO_MIGRATION"] = "Админка миграций";
-$MESS["{$prefix}GOTO_OPTIONS"] = "Настройки модуля";
-$MESS["{$prefix}OPTIONS_REMOVE"] = "Сбросить настройки модуля";
-$MESS["{$prefix}OPTIONS_REMOVE_success"] = "Настройки сброшены";
-$MESS["{$prefix}OPTIONS_SAVE_success"] = "Настройки сохранены";
-$MESS["{$prefix}MARK"] = "Отметить миграцию";
-$MESS["{$prefix}MARK_FIELD1"] = "Выбрать миграцию";
-$MESS["{$prefix}MARK_FIELD2"] = "Отметить как";
-$MESS["{$prefix}MARK_VERSION"] = "Название|installed|new|unknown";
-$MESS["{$prefix}MARK_AS_NEW"] = "новую";
-$MESS["{$prefix}MARK_AS_INSTALLED"] = "установленную";
-$MESS["{$prefix}MARK_OK_installed"] = "Миграция #VERSION# отмечена как установленная";
-$MESS["{$prefix}MARK_OK_new"] = "Миграция #VERSION# отмечена как новая";
-$MESS["{$prefix}MARK_ERROR1"] = "Миграция #VERSION# не изменена";
-$MESS["{$prefix}MARK_NEW_AS_INSTALLED"] = "Отметить как установленную";
-$MESS["{$prefix}MARK_INSTALLED_AS_NEW"] = "Отметить как новую";
-$MESS["{$prefix}MARK_UNKNOWN_AS_NEW"] = "Удалить";
-$MESS["{$prefix}DELETE"] = "Удалить";
-$MESS["{$prefix}DELETE_OK"] = "Миграция #VERSION# удалена";
-$MESS["{$prefix}DELETE_ERROR1"] = "Миграция #VERSION# не найдена";
-$MESS["{$prefix}TRANSFER_OK"] = "Миграция #VERSION# перенесена";
-$MESS["{$prefix}TRANSFER_OK_CNT"] = "Перенесено миграций: #CNT#";
-$MESS["{$prefix}TRANSFER_ERROR1"] = "Миграции #VERSION# не перемещена";
-$MESS["{$prefix}CREATE"] = "Создать миграцию";
-$MESS["{$prefix}VERSION_NOT_FOUND"] = "Миграция не найдена";
-$MESS["{$prefix}MODIFIED_VERSION"] = "Файл миграции был изменен после установки";
-$MESS["{$prefix}OLDER_VERSION"] = "Файл миграции создан в более поздней версии модуля #V1#";
-$MESS["{$prefix}RELEASE_TAG"] = "Тег релиза: [label:green]#TAG#[/]";
-$MESS["{$prefix}SETTAG"] = "Поставить тег";
-$MESS["{$prefix}SETTAG_OK"] = "Тег для миграции #VERSION# задан";
-$MESS["{$prefix}SETTAG_ERROR1"] = "Миграция #VERSION# не найдена";
-
+//ERRORS
 $MESS["{$prefix}ERR_BUILDER_NOT_FOUND"] = "Конструктор \"#NAME#\" не найден";
 $MESS["{$prefix}ERR_CANT_CREATE_DIRECTORY"] = "Ошибка создания директории #NAME#";
 $MESS["{$prefix}ERR_JSON_NOT_SUPPORTED"] = "Установите php-расширение json";
 $MESS["{$prefix}ERR_PHP_NOT_SUPPORTED"] = "PHP #NAME# не поддерживается";
 $MESS["{$prefix}ERR_EXCHANGE_DISABLED"] = "Обмен отключен, подключите недостающие модули";
 $MESS["{$prefix}ERR_EXCHANGE_DISABLED_XML"] = "Обмен отключен, установите php-расширение XMLReader и XMLWriter";
-$MESS["{$prefix}ERR_CLASS_NOT_FOUND"] = "Класс \"#NAME#\" не найден";
-$MESS["{$prefix}ERR_MIGRATION_FAIL"] = "Миграция не выполнилась";
-$MESS["{$prefix}ERR_SOME_MIGRATIONS_FAILS"] = "Некоторые миграции не выполнились";
-$MESS["{$prefix}ERR_VERSION_NOT_FOUND"] = "Миграция не найдена";
 $MESS["{$prefix}ERR_INVALID_ARGUMENTS"] = "Укажите корректные аргументы, смотрите помощь";
 $MESS["{$prefix}ERR_COMMAND_NOT_FOUND"] = "Команда \"#NAME#\" не найдена, смотрите помощь";
-$MESS["{$prefix}ERR_METHOD_NOT_FOUND"] = "Метод \"#NAME#\"  не найден";
+
 $MESS["{$prefix}ERR_TEMPLATE_NOT_FOUND"] = "Шаблон миграции \"#NAME#\" не найден";
 $MESS["{$prefix}ERR_CANT_CREATE_FILE"] = "Ошибка создания файла \"#NAME#\"";
 $MESS["{$prefix}ERR_FORM_NOT_FOUND"] = "Форма \"#NAME#\" не найдена";
@@ -349,50 +357,49 @@ $MESS["{$prefix}ERR_EXCHANGE_VERSION"] = implode(PHP_EOL,[
     "Файл для переноса данных \"#NAME#\" не поддерживается текущей версией модуля.",
     "Пожалуйста создайте его заново."
 ]);
-$MESS["{$prefix}ERR_IB_SECTION_ID_EMPTY"] = "Категория в инфоблоке \"#IBLOCK_ID#\" не указана";
+
 $MESS["{$prefix}ERR_IB_SECTION_ID_NOT_FOUND"] = "Категория \"#SECTION_ID#\" в инфоблоке \"#IBLOCK_ID#\" не найдена";
-$MESS["{$prefix}ERR_IB_SECTION_BY_FILTER_NOT_FOUND"] = "Категория \"#NAME#\" на уровне \"#DEPTH_LEVEL#\" в инфоблоке \"#IBLOCK_ID#\" не найдена";
+
 $MESS["{$prefix}ERR_SAVE_COLLECTION_BY_PATH"] = "Не удалось сохранить коллекцию по пути \"#PATH#\"";
-$MESS["{$prefix}ERR_IB_ELEMENT_ID_EMPTY"] = "Элемент в инфоблоке \"#IBLOCK_ID#\" не указан";
+
 $MESS["{$prefix}ERR_IB_ELEMENT_ID_NOT_FOUND"] = "Элемент \"#ELEMENT_ID#\" в инфоблоке \"#IBLOCK_ID#\" не найден";
-$MESS["{$prefix}ERR_IB_ELEMENT_BY_FILTER_NOT_FOUND"] = "Элемент \"#NAME#\" в инфоблоке \"#IBLOCK_ID#\" не найден";
+
 
 $MESS["{$prefix}AGENT_CREATED"] = "Агент \"#NAME#\" добавлен";
 $MESS["{$prefix}AGENT_UPDATED"] = "Агент \"#NAME#\" обновлен";
-$MESS["{$prefix}AGENT_EQUAL"] = "Агент \"#NAME#\" совпадает";
 $MESS["{$prefix}AGENT_DELETED"] = "Агент \"#NAME#\" удален";
 $MESS["{$prefix}WEBFORM_CREATED"] = "Форма \"#NAME#\" добавлена";
 $MESS["{$prefix}WEBFORM_UPDATED"] = "Форма \"#NAME#\" обновлена";
 $MESS["{$prefix}EVENT_MESSAGE_CREATED"] = "Почтовый шаблон \"#NAME#\" добавлен";
 $MESS["{$prefix}EVENT_MESSAGE_UPDATED"] = "Почтовый шаблон \"#NAME#\" обновлен";
-$MESS["{$prefix}EVENT_MESSAGE_EQUAL"] = "Почтовый шаблон \"#NAME#\" совпадает";
+
 $MESS["{$prefix}EVENT_MESSAGE_DELETED"] = "Почтовый шаблон \"#NAME#\" удален";
 $MESS["{$prefix}EVENT_SMS_TEMPLATE_CREATED"] = "Шаблон смс \"#NAME#\" добавлен";
 $MESS["{$prefix}EVENT_SMS_TEMPLATE_UPDATED"] = "Шаблон смс \"#NAME#\" обновлен";
 $MESS["{$prefix}EVENT_TYPE_CREATED"] = "Тип почтового события \"#NAME#\" добавлен";
 $MESS["{$prefix}EVENT_TYPE_UPDATED"] = "Тип почтового события \"#NAME#\" обновлен";
-$MESS["{$prefix}EVENT_TYPE_EQUAL"] = "Тип почтового события \"#NAME#\" совпадает";
+
 $MESS["{$prefix}EVENT_TYPE_DELETED"] = "Тип почтового события \"#NAME#\" удален";
 $MESS["{$prefix}HLBLOCK_CREATED"] = "Highload-блок \"#NAME#\" добавлен";
 $MESS["{$prefix}HLBLOCK_UPDATED"] = "Highload-блок \"#NAME#\" обновлен";
-$MESS["{$prefix}HLBLOCK_EQUAL"] = "Highload-блок \"#NAME#\" совпадает";
+
 $MESS["{$prefix}HLBLOCK_DELETED"] = "Highload-блок \"#NAME#\" удален";
 $MESS["{$prefix}OPTION_CREATED"] = "Настройка \"#NAME#\" добавлена";
 $MESS["{$prefix}OPTION_UPDATED"] = "Настройка \"#NAME#\" обновлена";
-$MESS["{$prefix}OPTION_EQUAL"] = "Настройка \"#NAME#\" совпадает";
+
 $MESS["{$prefix}USER_GROUP_CREATED"] = "Группа \"#NAME#\" добавлена";
 $MESS["{$prefix}USER_GROUP_UPDATED"] = "Группа \"#NAME#\" обновлена";
-$MESS["{$prefix}USER_GROUP_EQUAL"] = "Группа \"#NAME#\" совпадает";
+
 $MESS["{$prefix}USER_GROUP_DELETED"] = "Группа \"#NAME#\" удалена";
 $MESS["{$prefix}USER_OPTION_LIST_CREATED"] = "Список \"#NAME#\" сохранен";
-$MESS["{$prefix}USER_OPTION_LIST_EQUAL"] = "Список \"#NAME#\" совпадает";
+
 $MESS["{$prefix}USER_OPTION_GRID_CREATED"] = "Грид \"#NAME#\" сохранен";
-$MESS["{$prefix}USER_OPTION_GRID_EQUAL"] = "Грид \"#NAME#\" совпадает";
+
 $MESS["{$prefix}USER_OPTION_FORM_CREATED"] = "Форма редактирования \"#NAME#\" сохранена";
-$MESS["{$prefix}USER_OPTION_FORM_EQUAL"] = "Форма редактирования \"#NAME#\" совпадает";
+
 $MESS["{$prefix}USER_TYPE_ENTITY_CREATED"] = "Пользовательское поле \"#NAME#\" добавлено";
 $MESS["{$prefix}USER_TYPE_ENTITY_UPDATED"] = "Пользовательское поле \"#NAME#\" обновлено";
-$MESS["{$prefix}USER_TYPE_ENTITY_EQUAL"] = "Пользовательское поле \"#NAME#\" совпадает";
+
 $MESS["{$prefix}USER_TYPE_ENTITY_DELETED"] = "Пользовательское поле \"#NAME#\" удалено";
 $MESS["{$prefix}ORDER_PROPERTY_ADDED"] = "Свойство заказа \"#NAME#\" добавлено";
 $MESS["{$prefix}ORDER_PROPERTY_UPDATED"] = "Свойство заказа \"#NAME#\" обновлено";
@@ -402,19 +409,13 @@ $MESS["{$prefix}ORDER_PROPERTY_VARIANT_UPDATED"] = "Вариант перечи�
 $MESS["{$prefix}ORDER_PROPERTY_VARIANT_DELETED"] = "Вариант перечисления с названием \"#NAME#\" удален";
 $MESS["{$prefix}IB_PROPERTY_CREATED"] = "Инфоблок \"#IBLOCK_ID#\": свойство \"#NAME#\" добавлено";
 $MESS["{$prefix}IB_PROPERTY_UPDATED"] = "Инфоблок \"#IBLOCK_ID#\": свойство \"#NAME#\" обновлено";
-$MESS["{$prefix}IB_PROPERTY_EQUAL"] = "Инфоблок \"#IBLOCK_ID#\": свойство \"#NAME#\" совпадает";
-$MESS["{$prefix}IB_PROPERTY_DELETED"] = "Инфоблок \"#IBLOCK_ID#\": свойство \"#NAME#\" удалено";
-$MESS["{$prefix}IB_PROPERTY_LINK_SAVED"] = "Инфоблок \"#IBLOCK_ID#\": ссылка для свойства сохранена";
 $MESS["{$prefix}IB_CREATED"] = "Инфоблок \"#NAME#\" добавлен";
 $MESS["{$prefix}IB_UPDATED"] = "Инфоблок \"#NAME#\" обновлен";
-$MESS["{$prefix}IB_EQUAL"] = "Инфоблок \"#NAME#\" совпадает";
-$MESS["{$prefix}IB_DELETED"] = "Инфоблок \"#NAME#\" удален";
-$MESS["{$prefix}IB_FIELDS_CREATED"] = "Инфоблок \"#NAME#\": поля добавлены";
+
 $MESS["{$prefix}IB_FIELDS_UPDATED"] = "Инфоблок \"#NAME#\": поля обновлены";
-$MESS["{$prefix}IB_FIELDS_EQUAL"] = "Инфоблок \"#NAME#\": поля совпадают";
 $MESS["{$prefix}IB_TYPE_CREATED"] = "Тип инфоблока \"#NAME#\" добавлен";
 $MESS["{$prefix}IB_TYPE_UPDATED"] = "Тип инфоблока \"#NAME#\" обновлен";
-$MESS["{$prefix}IB_TYPE_EQUAL"] = "Тип инфоблока \"#NAME#\" совпадает";
+
 $MESS["{$prefix}IB_TYPE_DELETED"] = "Тип инфоблока \"#NAME#\" удален";
 $MESS["{$prefix}LANG_CREATED"] = "Язык добавлен";
 $MESS["{$prefix}LANG_UPDATED"] = "Язык обновлён";
@@ -441,8 +442,8 @@ $MESS["{$prefix}BUILDER_GROUP_Hlblock"] = "Highload-блоки";
 $MESS["{$prefix}BUILDER_GROUP_Sale"] = "Интернет-магазин";
 $MESS["{$prefix}BUILDER_GROUP_Form"] = "Веб-формы";
 $MESS["{$prefix}BUILDER_GROUP_Forum"] = "Форумы";
-$MESS["{$prefix}BUILDER_GROUP_Subscribe"] = "Подписки";
 $MESS["{$prefix}BUILDER_GROUP_Vote"] = "Опросы";
+$MESS["{$prefix}BUILDER_GROUP_Subscribe"] = "Подписки";
 $MESS["{$prefix}BUILDER_GROUP_Medialib"] = "Медиабиблиотека";
 $MESS["{$prefix}BUILDER_GROUP_Tools"] = "Инструменты";
 
@@ -464,9 +465,6 @@ $MESS["{$prefix}BUILDER_BlogPostExport_FilterListCode"] = "Укажите CODE �
 
 $MESS["{$prefix}ENTITY_TITLE_HLBLOCK"] = "Highload-блок / NAME / TITLE";
 $MESS["{$prefix}ENTITY_TITLE_IBLOCK_SECTION"] = "Инфоблок / IBLOCK_TYPE_ID / NAME";
-$MESS["{$prefix}ENTITY_TITLE_USER"] = "Пользователь";
 
 $MESS["{$prefix}HLBLOCK_TITLE"] = "NAME / TITLE";
 $MESS["{$prefix}HLBLOCK_FIELD"] = "FIELD_NAME / TITLE";
-
-

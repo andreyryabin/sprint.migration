@@ -215,20 +215,6 @@ class Console
         ];
 
         foreach ($versions as $item) {
-            $versionLabels = [];
-            if ($item['older']) {
-                $olderMsg = Locale::getMessage('OLDER_VERSION', [
-                    '#V1#' => $item['older'],
-                ]);
-                $versionLabels[] = '[label:red]' . $olderMsg . '[/]';
-            }
-            if ($item['modified']) {
-                $versionLabels[] = '[label:yellow]' . Locale::getMessage('MODIFIED_VERSION') . '[/]';
-            }
-            if ($item['status'] == VersionEnum::STATUS_UNKNOWN) {
-                $versionLabels[] = '[label]' . Locale::getMessage('VERSION_UNKNOWN') . '[/]';
-            }
-
             $this->output->print('┌─');
             $this->output->print('│ [%s]%s[/]', $item['status'], $item['version']);
 
@@ -244,8 +230,8 @@ class Console
                 $this->output->print('│ ' . $item['tag_status']);
             }
 
-            if (!empty($versionLabels)) {
-                $this->output->print('│ ' . implode(' ', $versionLabels));
+            if (!empty($item['labels'])) {
+                $this->output->print('│ ' . implode(' ', $item['labels']));
             }
 
             if (!empty($item['description'])) {

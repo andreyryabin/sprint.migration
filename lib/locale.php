@@ -4,11 +4,6 @@ namespace Sprint\Migration;
 
 class Locale
 {
-    public static function getMessageName(string $shortName): string
-    {
-        return 'SPRINT_MIGRATION_' . $shortName;
-    }
-
     public static function getDefaultLang(): string
     {
         $lang = defined('LANGUAGE_ID') ? LANGUAGE_ID : 'ru';
@@ -20,7 +15,7 @@ class Locale
     {
         $replaces = array_filter($replaces, fn($v) => is_scalar($v));
 
-       $msg = GetMessage(self::getMessageName($shortName), $replaces);
+       $msg = GetMessage("SPRINT_MIGRATION_$shortName", $replaces);
 
         return ($msg) ?: ($default ?: $shortName);
     }
