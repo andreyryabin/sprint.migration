@@ -3,7 +3,6 @@ import {ajax} from "main.core";
 import {
     colorclass,
     colorize,
-    dumpJson,
     extractResponse,
     filterOptions,
     getMessage,
@@ -75,7 +74,6 @@ export const MigrationBuilders = {
         progressMessage,
         colorize,
         colorclass,
-        dumpJson,
 
         createFilter() {
             this.filter.search = '';
@@ -258,10 +256,6 @@ export const MigrationBuilders = {
                       @click="selectBuilder(selected.name)"
                   />
                 </div>
-                <div
-                    class="sp-builder_dump"
-                    v-text="dumpJson(selected.params)"
-                />
                 <div class="sp-builder_log">
                   <div
                       v-for="(item, index) in messages"

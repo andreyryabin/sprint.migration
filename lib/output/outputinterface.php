@@ -20,7 +20,7 @@ interface OutputInterface
 
     public function outError(string $msg, ...$vars): void;
 
-    public function outDiff(array $arr1, array $arr2): void;
+    public function outDiff(array $exists, array $fields): void;
 
     public function outException(Throwable $exception): void;
 }

@@ -531,7 +531,7 @@ export const MigrationVersions = {
                     v-for="(item, index) in messages"
                     :key="index"
                     v-bind="colorclass(item.type)"
-                    v-text="item.message"
+                    v-html="colorize(item.message)"
                 />
               </div>
             </div>

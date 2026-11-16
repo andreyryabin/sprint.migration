@@ -309,7 +309,7 @@ class VersionManager
 
         if ($success) {
             $this->output->outInfo(
-                Locale::getMessage('MARK_OK', ['#VERSION#' => $versionName, '#STATUS#' => $status])
+                Locale::getMessage("MARK_OK_$status", ['#VERSION#' => $versionName])
             );
         } else {
             $this->output->outWarning(

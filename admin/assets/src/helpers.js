@@ -91,19 +91,23 @@ export function makeLinksHtml(msg) {
 export function escapeHtml(str) {
     return str
     // .replace(/&/g, '&amp;')
-    // .replace(/</g, '&lt;')
-    // .replace(/>/g, '&gt;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
     // .replace(/"/g, '&quot;')
-    // .replace(/'/g, '&#39;');
+    .replace(/'/g, '&#39;');
 }
 
 export function colorize(text) {
-    let out = escapeHtml(String(text || ''));
-
+    let out = String(text || '');
+    if (out.length <= 0) {
+        return out
+    }
+    out = escapeHtml(out);
     out = out.replace(/\r\n|\r|\n/g, '<br>');
-
     out = makeLinksHtml(out);
-
+    if (!out.includes('[/]')) {
+        return out;
+    }
     for (const [key, val] of Object.entries(MessageLabels)) {
         out = out.replaceAll(key, val)
     }
@@ -120,7 +124,6 @@ export function makeString(val) {
 
 export function dumpJson(obj) {
     return JSON.stringify(obj, null, 2);
-
 }
 
 export function filterOptions(search, options, keys = ['id', 'name', 'group']) {

@@ -75,23 +75,21 @@ abstract class AbstractOutput implements OutputInterface
         $this->logger?->warning($msg);
     }
 
-    public function outDiff(array $arr1, array $arr2): void
+    public function outDiff(array $exists, array $fields): void
     {
-        $diff1 = $this->getFlatArray($arr1);
+        $exists1 = $this->getFlatArray($exists);
 
-        $diff2 = $this->getFlatArray($arr2);
+        $fields1 = $this->getFlatArray($fields);
 
-        $diff = array_merge($diff1, $diff2);
-
-        foreach ($diff as $k => $v) {
-            if (isset($diff1[$k]) && isset($diff2[$k])) {
-                if ($diff1[$k] !== $diff2[$k]) {
-                    $this->writeDiff('%s: [red]%s[/] -> [green]%s[/]', $k, $diff2[$k], $diff1[$k]);
+        foreach (array_merge($exists1, $fields1) as $k => $v) {
+            if (isset($exists1[$k]) && isset($fields1[$k])) {
+                if ($exists1[$k] !== $fields1[$k]) {
+                    $this->writeDiff('%s: [red]"%s"[/] -> [green]"%s"[/]', $k, $exists1[$k], $fields1[$k]);
                 }
-            } elseif (isset($diff1[$k])) {
-                $this->writeDiff('%s: [green]%s[/]', $k, $diff1[$k]);
-            } elseif (isset($diff2[$k])) {
-                $this->writeDiff('%s: [red]%s[/]', $k, $diff2[$k]);
+            } elseif (isset($exists1[$k])) {
+                $this->writeDiff('%s: [red]"%s"[/]', $k, $exists1[$k]);
+            } elseif (isset($fields1[$k])) {
+                $this->writeDiff('%s: [green]"%s"[/]', $k, $fields1[$k]);
             }
         }
     }

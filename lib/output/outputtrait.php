@@ -49,9 +49,9 @@ trait OutputTrait
         $this->output?->outError($msg, ...$vars);
     }
 
-    protected function outDiff(array $arr1, array $arr2): void
+    protected function outDiff(array $exists, array $fields): void
     {
-        $this->output?->outDiff($arr1, $arr2);
+        $this->output?->outDiff($exists, $fields);
     }
 
     protected function outException(Throwable $exception): void
