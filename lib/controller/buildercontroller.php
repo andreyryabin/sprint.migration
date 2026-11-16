@@ -2,14 +2,18 @@
 
 namespace Sprint\Migration\Controller;
 
+
 use Bitrix\Main\Engine\Controller;
+use Bitrix\Main\Error;
 use Bitrix\Main\Request;
+use CMain;
 use Sprint\Migration\Builder;
 use Sprint\Migration\BuilderManager;
 use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Fields\AbstractField;
+use Sprint\Migration\Module;
 use Sprint\Migration\Output\RestOutput;
 
 /**
@@ -40,6 +44,16 @@ class BuilderController extends Controller
             $versionConfig,
             $this->output
         );
+    }
+
+    protected function processBeforeAction(\Bitrix\Main\Engine\Action $action): bool
+    {
+        if (CMain::GetUserRight(Module::ID) == 'D') {
+            $this->addError(new Error('ACCESS_DENIED'));
+            return false;
+        }
+
+        return parent::processBeforeAction($action);
     }
 
     public function configureActions(): array

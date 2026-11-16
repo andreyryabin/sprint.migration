@@ -32,6 +32,10 @@ export const MigrationBuilders = {
             type: String,
             default: ''
         },
+        lang: {
+            type: String,
+            default: ''
+        },
     },
 
     data() {
@@ -54,7 +58,7 @@ export const MigrationBuilders = {
 
     computed: {
         filtered() {
-            return filterOptions(this.filter.search, this.builders, ['name', 'title', 'group']);
+            return filterOptions(this.filter.search, this.builders, ['name', 'title', 'group', 'note']);
         },
 
         grouped() {
@@ -87,7 +91,7 @@ export const MigrationBuilders = {
             this.loading = 1;
             return ajax.runAction(
                 'sprint:migration.controller.BuilderController.' + action,
-                {data: payload, getParameters: {config: this.config}}
+                {data: payload, getParameters: {config: this.config, lang: this.lang}}
             ).then((response) => {
                 extractResponse(response, this.messages, this.progress);
                 this.loading = 0;
@@ -167,11 +171,11 @@ export const MigrationBuilders = {
                 <div class="sp-search_filter">
                   <StringField
                       v-model:value="filter.search"
-                      :placeholder="getMessage('SEARCH')"
+                      :placeholder="getMessage('SEARCH_BUILDER')"
                       @press-enter="saveFilter"
                   />
                   <input
-                      :value="getMessage('SEARCH')"
+                      :value="getMessage('SEARCH_BUTTON')"
                       class="adm-btn"
                       type="button"
                       @click="saveFilter"
@@ -179,7 +183,7 @@ export const MigrationBuilders = {
                 </div>
                 <div class="sp-search_summary">
                   <span v-if="loading" class="sp-loading" v-text="getMessage('LOADING_TEXT')"/>
-                  {{ getMessage('BUILDERS_CNT') }}:
+                  {{ getMessage('SUMMARY_BUILDERS') }}:
                   <span class="sp-label" v-text="summaryLabel"/>
                 </div>
               </div>

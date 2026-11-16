@@ -8,7 +8,6 @@ use Sprint\Migration\Builders\BlogBuilder;
 use Sprint\Migration\Builders\BlogPostBuilder;
 use Sprint\Migration\Builders\BlogUserTypeEntitiesBuilder;
 use Sprint\Migration\Builders\CacheCleanerBuilder;
-use Sprint\Migration\Builders\CultureBuilder;
 use Sprint\Migration\Builders\EventBuilder;
 use Sprint\Migration\Builders\FormBuilder;
 use Sprint\Migration\Builders\ForumBuilder;

@@ -51,7 +51,7 @@ export const MigrationApp = {
     },
     template: `
       <MigrationTabs
-          :items="{versions:getMessage('VERSIONS'), builders:getMessage('BUILDERS')}"
+          :items="{versions:getMessage('TAB_VERSIONS'), builders:getMessage('TAB_BUILDERS')}"
           @select-tab="selectTab"
       >
         <template v-slot:versions>
@@ -67,6 +67,7 @@ export const MigrationApp = {
         <template v-slot:builders>
           <MigrationBuilders
               ref="builders"
+              :lang="lang"
               :config="config"
           />
         </template>

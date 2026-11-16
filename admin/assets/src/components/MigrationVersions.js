@@ -1,5 +1,5 @@
 import {ajax} from "main.core";
-import {colorclass, colorize, extractResponse, progressMessage, showContextMenu, getMessage} from "../helpers";
+import {colorclass, colorize, extractResponse, getMessage, progressMessage, showContextMenu} from "../helpers";
 
 import {StringField} from '../fields/StringField';
 import {SelectField} from '../fields/SelectField';
@@ -134,7 +134,7 @@ export const MigrationVersions = {
             this.loading = 1;
             return ajax.runAction(
                 'sprint:migration.controller.versioncontroller.' + action,
-                {data: payload, getParameters: {config: this.config}}
+                {data: payload, getParameters: {config: this.config, lang: this.lang}}
             ).then((response) => {
                 extractResponse(response, this.messages, this.progress);
                 this.loading = 0;
@@ -407,6 +407,7 @@ export const MigrationVersions = {
                     TEXT: getMessage('VERSION_UP'),
                     ONCLICK: () => this.upVersion(item.version),
                 });
+                menu.push({SEPARATOR: 'Y'});
                 menu.push({
                     TEXT: getMessage('MARK_AS_INSTALLED'),
                     ONCLICK: () => this.markVersion(item.version, STATUS_INSTALLED),
@@ -418,6 +419,7 @@ export const MigrationVersions = {
                     TEXT: getMessage('VERSION_DOWN'),
                     ONCLICK: () => this.downVersion(item.version),
                 });
+                menu.push({SEPARATOR: 'Y'});
                 menu.push({
                     TEXT: getMessage('SET_TAG'),
                     ONCLICK: () => this.setVersionTag(item.version, item.tag),
@@ -475,7 +477,7 @@ export const MigrationVersions = {
                 <div :class="{'sp-search_filter':true,'sp-disabled':running }">
                   <StringField
                       v-model:value="filter.search"
-                      :placeholder="getMessage('SEARCH')"
+                      :placeholder="getMessage('SEARCH_VERSION')"
                       @press-enter="saveFilter"
                   />
                   <SelectField
@@ -484,7 +486,7 @@ export const MigrationVersions = {
                       @update:value="saveFilter"
                   />
                   <input
-                      :value="getMessage('SEARCH')"
+                      :value="getMessage('SEARCH_BUTTON')"
                       class="adm-btn"
                       type="button"
                       @click="saveFilter"
@@ -492,9 +494,9 @@ export const MigrationVersions = {
                 </div>
                 <div class="sp-search_summary">
                   <span v-if="loading" class="sp-loading" v-text="getMessage('LOADING_TEXT')"/>
-                  {{ getMessage('VERSIONS_NEW') }}:
+                  {{ getMessage('SUMMARY_NEW') }}:
                   <span class="sp-label sp-label-red" v-text="summaryCount.new"/>
-                  {{ getMessage('VERSIONS_INSTALLED') }}:
+                  {{ getMessage('SUMMARY_INSTALLED') }}:
                   <span class="sp-label sp-label-green" v-text="summaryCount.installed"/>
                 </div>
               </div>
@@ -542,7 +544,7 @@ export const MigrationVersions = {
               <input
                   :value="getMessage('UP_START')"
                   type="button"
-                  :class="{'adm-btn-green': true,'sp-disabled':running }"
+                  :class="{'adm-btn-green': true,'sp-disabled':(running || summaryCount.new === 0)}"
                   @click="upAll"
               />
               <span

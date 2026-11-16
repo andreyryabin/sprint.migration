@@ -644,7 +644,7 @@ class VersionManager
                 $ts
             );
             $meta['file_status'] = $this->humanStatus(
-                Locale::getMessage('META_NEW'),
+                Locale::getMessage('META_CREATED'),
                 $humanTs->format(VersionTable::DATE_FORMAT),
                 $this->stripslashes(
                     $versionObj->getAuthor()
