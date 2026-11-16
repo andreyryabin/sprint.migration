@@ -3,29 +3,28 @@
 namespace Sprint\Migration\Output;
 
 
+use CAdminMessage;
+
 class BrowserOutput extends AbstractOutput
 {
-
-    private array $messages = [];
-    private array $progress = [];
-
-    public function getLog(): array
-    {
-        return ['messages' => $this->messages, 'progress' => $this->progress];
-    }
-
     protected function writeMessage(string $msg, string $type): void
     {
-        $this->messages[] = ['type' => $type, 'message' => $msg];
-    }
 
+        CAdminMessage::ShowMessage([
+            'MESSAGE' => $msg,
+            'TYPE'    => (in_array($type, ['error', 'warning']) ? 'ERROR' : 'OK'),
+        ]);
+
+    }
 
     protected function writeProgress(string $msg, int $val, int $total): void
     {
-        if ($val !== $total) {
-            $this->progress[] = ['message' => $msg, 'value' => $val, 'total' => $total];
-        } else {
-            $this->messages[] = ['type' => 'info', 'message' => "$msg: $val/$total"];
-        }
+
+        CAdminMessage::ShowMessage([
+            'MESSAGE'        => $msg,
+            'TYPE'           => 'PROGRESS',
+            'PROGRESS_TOTAL' => $val,
+            'PROGRESS_VALUE' => $total,
+        ]);
     }
 }

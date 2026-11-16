@@ -387,20 +387,15 @@ class VersionManager
      */
     public function clean(): void
     {
-        $dir = $this->getVersionConfig()->getVal('migration_dir');
-
-        $files = $this->getFiles();
-        foreach ($files as $meta) {
-            unlink($meta['location']);
-        }
-
-        if (!empty($dir) && is_dir($dir)) {
-            if (count(scandir($dir)) == 2) {
-                rmdir($dir);
-            }
-        }
+        $mdir = $this->getVersionConfig()->getVal('migration_dir');
+        $exdir = $this->getVersionConfig()->getVal('exchange_dir');
+        $cfile = $this->getVersionConfig()->getPath();
 
         $this->getVersionTable()->dropTable();
+
+        Module::deletePath($mdir);
+        Module::deletePath($exdir);
+        Module::deletePath($cfile);
     }
 
     /**
@@ -473,7 +468,10 @@ class VersionManager
      */
     public function moveMigration(string $versionName, string $toConfig): bool
     {
-        $vmTo = new VersionManager(ConfigManager::getInstance()->get($toConfig));
+        $vmTo = new VersionManager(
+            ConfigManager::getInstance()->get($toConfig),
+            $this->output
+        );
 
         if ($this->getVersionConfig()->getName() == $vmTo->getVersionConfig()->getName()) {
             return false;
@@ -491,7 +489,7 @@ class VersionManager
 
             Module::movePath(
                 $this->getVersionConfig()->getVersionExchangeDir($meta['version']),
-                $this->getVersionConfig()->getVersionExchangeDir($meta['version'])
+                $vmTo->getVersionConfig()->getVersionExchangeDir($meta['version'])
             );
 
             $success++;

@@ -7,7 +7,7 @@ use Bitrix\Main\Request;
 use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\Output\BrowserOutput;
+use Sprint\Migration\Output\RestOutput;
 use Sprint\Migration\VersionManager;
 use Throwable;
 
@@ -18,7 +18,7 @@ use Throwable;
 class VersionController extends Controller
 {
     protected VersionManager $versionManager;
-    protected BrowserOutput $output;
+    protected RestOutput $output;
 
     /**
      * @throws MigrationException
@@ -33,7 +33,7 @@ class VersionController extends Controller
             $this->getRequest()->get('config')
         );
 
-        $this->output = new BrowserOutput($versionConfig->getLogger());
+        $this->output = new RestOutput($versionConfig->getLogger());
 
         $this->versionManager = new VersionManager(
             $versionConfig,

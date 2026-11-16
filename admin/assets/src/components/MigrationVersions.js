@@ -44,7 +44,7 @@ export const MigrationVersions = {
         return {
             loading: 0,
             running: false,
-            replay: false,
+            replay: {},
             versions: [],
             messages: [],
             progress: [],
@@ -155,7 +155,7 @@ export const MigrationVersions = {
 
         async execVersion(version, action, params, settag) {
             this.running = true;
-            this.replay = false;
+            this.replay = {};
 
             try {
                 let restartParams = params;
@@ -165,8 +165,7 @@ export const MigrationVersions = {
                             version,
                             action,
                             params: restartParams,
-                            settag,
-                            button: 'CONTINUE'
+                            settag
                         }
                         return false;
                     }
@@ -188,8 +187,7 @@ export const MigrationVersions = {
                             version,
                             action,
                             params: data.params,
-                            settag,
-                            button: 'REPEAT'
+                            settag
                         }
                         return false;
                     }
@@ -561,9 +559,10 @@ export const MigrationVersions = {
             </div>
             <div class="sp-col sp-migration_progress">
               <input
-                  :value="getMessage(replay ? replay.button: 'PAUSE')"
+                  v-if="replay && replay.version"
+                  :value="getMessage(running ? 'PAUSE' : 'CONTINUE')"
                   type="button"
-                  :class="['adm-btn', 'sp-play', (!replay && !running ? 'sp-disabled':'')]"
+                  :class="['adm-btn', 'sp-play']"
                   @click="replayVersion"
               />
 

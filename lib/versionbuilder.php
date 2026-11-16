@@ -139,10 +139,8 @@ abstract class VersionBuilder extends Builder
         );
 
         if ($markAsInstalled) {
-            $vm = new VersionManager(
-                $this->getVersionConfig(),
-            );
-            $vm->markMigration($templateVars['version'], VersionEnum::STATUS_INSTALLED);
+            $this->getVersionManager()
+                ->markMigration($templateVars['version'], VersionEnum::STATUS_INSTALLED);
         }
 
         return $templateVars['version'];

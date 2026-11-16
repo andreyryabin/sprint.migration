@@ -76,6 +76,7 @@ class Version implements RestartableInterface
     {
         (new VersionManager(
             $this->getVersionConfig(),
+            $this->output
         ))->checkRequiredVersions($versionNames);
     }
 

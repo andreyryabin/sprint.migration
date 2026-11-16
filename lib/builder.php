@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use Exception;
+use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\ExchangeHelpers;
@@ -82,6 +83,14 @@ abstract class Builder implements RestartableInterface
     protected function getExchangeHelpers(): ExchangeHelpers
     {
         return $this->exchangeHelpers ??= new ExchangeHelpers($this->output);
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    protected function getVersionManager(): VersionManager
+    {
+        return new VersionManager($this->getVersionConfig(), $this->output);
     }
 
     protected function addField(string $code, array $field): void

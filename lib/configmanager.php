@@ -9,8 +9,8 @@ use Sprint\Migration\Exceptions\MigrationException;
 
 class ConfigManager
 {
-    private array                 $collection = [];
-    private static ?ConfigManager $instance   = null;
+    private array $collection = [];
+    private static ?ConfigManager $instance = null;
 
     public static function getInstance(): static
     {
@@ -26,8 +26,8 @@ class ConfigManager
     public function __construct()
     {
         $this->addFromEventHandlers()
-             ->addDefault()
-             ->resort();
+            ->addDefault()
+            ->resort();
     }
 
     /**
@@ -168,9 +168,6 @@ class ConfigManager
         return false;
     }
 
-    /**
-     * @throws MigrationException
-     */
     public function deleteConfig(string $configName): bool
     {
         $fileName = 'migrations.' . $configName . '.php';
@@ -178,19 +175,21 @@ class ConfigManager
             return false;
         }
 
-        $config = $this->get($configName);
+        try {
+            $config = $this->get($configName);
 
-        $vmFrom = new VersionManager($config);
+            $vmFrom = new VersionManager($config);
 
-        $vmFrom->clean();
+            $vmFrom->clean();
 
-        if ($config->getPath() && is_file($config->getPath())) {
-            unlink($config->getPath());
+            unset($this->collection[$configName]);
+
+            return true;
+
+        } catch (MigrationException) {
+            return false;
         }
 
-        unset($this->collection[$configName]);
-
-        return true;
     }
 
     private function makeConfigName(string $fileName): string

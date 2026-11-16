@@ -1,0 +1,31 @@
+<?php
+
+namespace Sprint\Migration\Output;
+
+
+class RestOutput extends AbstractOutput
+{
+
+    private array $messages = [];
+    private array $progress = [];
+
+    public function getLog(): array
+    {
+        return ['messages' => $this->messages, 'progress' => $this->progress];
+    }
+
+    protected function writeMessage(string $msg, string $type): void
+    {
+        $this->messages[] = ['type' => $type, 'message' => $msg];
+    }
+
+
+    protected function writeProgress(string $msg, int $val, int $total): void
+    {
+        if ($val !== $total) {
+            $this->progress[] = ['message' => $msg, 'value' => $val, 'total' => $total];
+        } else {
+            $this->messages[] = ['type' => 'info', 'message' => "$msg: $val/$total"];
+        }
+    }
+}

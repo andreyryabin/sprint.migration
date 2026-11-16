@@ -3,44 +3,32 @@
 use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
-use Sprint\Migration\Out;
+use Sprint\Migration\Output\BrowserOutput;
 
 $request = Bitrix\Main\Context::getCurrent()->getRequest();
-$output = new \Sprint\Migration\Output\BrowserOutput();
+$output = new BrowserOutput();
 
 if ($request->isPost() && check_bitrix_sessid()) {
     if ($request->getPost("options_remove")) {
         Module::removeDbOptions();
-        $output->outSuccess(
-            Locale::getMessage('OPTIONS_REMOVE_success')
-        );
+        $output->outSuccess(Locale::getMessage('OPTIONS_REMOVE_success'));
     }
 
     if ($request->getPost("configuration_remove")) {
-        if (ConfigManager::getInstance()->deleteConfig(
-            $request->getPost('configuration_name')
-        )) {
-            $output->outSuccess(
-                Locale::getMessage('BUILDER_Cleaner_success')
-            );
+        if (ConfigManager::getInstance()->deleteConfig($request->getPost('configuration_name'))) {
+            $output->outSuccess(Locale::getMessage('BUILDER_Cleaner_success'));
         } else {
-            $output->outError(
-                Locale::getMessage('BUILDER_Cleaner_error')
-            );
+            $output->outError(Locale::getMessage('BUILDER_Cleaner_error'));
         }
     }
 
     if ($request->getPost("configuration_create")) {
         if (ConfigManager::getInstance()->createConfig(
-            $request->getPost('configuration_name')
+                $request->getPost('configuration_name')
         )) {
-            $output->outSuccess(
-                Locale::getMessage('BUILDER_Configurator_success')
-            );
+            $output->outSuccess(Locale::getMessage('BUILDER_Configurator_success'));
         } else {
-            $output->outError(
-                Locale::getMessage('BUILDER_Configurator_error')
-            );
+            $output->outError(Locale::getMessage('BUILDER_Configurator_error'));
         }
     }
 
@@ -48,9 +36,7 @@ if ($request->isPost() && check_bitrix_sessid()) {
         /** @var $tmpmodule sprint_migration */
         $tmpmodule = CModule::CreateModuleObject(Module::ID);
         $tmpmodule->installGadgets();
-        $output->outSuccess(
-            Locale::getMessage('GD_INSTALL_success')
-        );
+        $output->outSuccess(Locale::getMessage('GD_INSTALL_success'));
     }
 }
 ?>

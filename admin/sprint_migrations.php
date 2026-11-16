@@ -39,24 +39,7 @@ try {
     }
 
 } catch (Throwable $exception) {
-    $makeRelative = function (string $path, int $depth = 0) {
-        $chunks = explode(DIRECTORY_SEPARATOR, $path);
-        $chunks = array_slice($chunks, -($depth + 1));
-        return '.../' . implode('/', $chunks);
-    };
-
-    $sperrors[] = sprintf(
-        "[%s] %s (%s) in %s:%d",
-        get_class($exception),
-        $exception->getMessage(),
-        $exception->getCode(),
-        $makeRelative($exception->getFile()),
-        $exception->getLine()
-    );
-
-    foreach ($exception->getTrace() as $err) {
-        $sperrors[] = sprintf('%s:%d', $makeRelative($err['file'], 2), $err['line']);
-    }
+    $sperrors[] = $exception->getMessage();
 }
 
 

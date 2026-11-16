@@ -103,18 +103,18 @@ class Module
         return $dir;
     }
 
-    public static function deletePath($dir): void
+    public static function deletePath(string $dirOrFile): void
     {
-        if (is_dir($dir)) {
-            $files = scandir($dir);
+        if ($dirOrFile && is_dir($dirOrFile)) {
+            $files = scandir($dirOrFile);
             foreach ($files as $file) {
                 if ($file != "." && $file != "..") {
-                    self::deletePath("$dir/$file");
+                    self::deletePath("$dirOrFile/$file");
                 }
             }
-            rmdir($dir);
-        } elseif (file_exists($dir)) {
-            unlink($dir);
+            rmdir($dirOrFile);
+        } elseif ($dirOrFile && file_exists($dirOrFile)) {
+            unlink($dirOrFile);
         }
     }
 

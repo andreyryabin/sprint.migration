@@ -10,7 +10,7 @@ use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Fields\AbstractField;
-use Sprint\Migration\Output\BrowserOutput;
+use Sprint\Migration\Output\RestOutput;
 
 /**
  * @noinspection PhpUnused
@@ -19,7 +19,7 @@ use Sprint\Migration\Output\BrowserOutput;
 class BuilderController extends Controller
 {
     protected BuilderManager $builderManager;
-    protected BrowserOutput $output;
+    protected RestOutput $output;
 
     /**
      * @throws MigrationException
@@ -34,7 +34,7 @@ class BuilderController extends Controller
             $this->getRequest()->get('config')
         );
 
-        $this->output = new BrowserOutput();
+        $this->output = new RestOutput();
 
         $this->builderManager = new BuilderManager(
             $versionConfig,
