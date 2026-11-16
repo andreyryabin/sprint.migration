@@ -493,11 +493,21 @@ export const MigrationVersions = {
                   />
                 </div>
                 <div class="sp-search_summary">
-                  <span v-if="loading" class="sp-loading" v-text="getMessage('LOADING_TEXT')"/>
+                  <span 
+                      v-if="loading" 
+                      class="sp-loading" 
+                      v-text="getMessage('LOADING_TEXT')"
+                  />
                   {{ getMessage('SUMMARY_NEW') }}:
-                  <span class="sp-label sp-label-red" v-text="summaryCount.new"/>
+                  <span 
+                      class="sp-label sp-label-red" 
+                      v-text="summaryCount.new"
+                  />
                   {{ getMessage('SUMMARY_INSTALLED') }}:
-                  <span class="sp-label sp-label-green" v-text="summaryCount.installed"/>
+                  <span 
+                      class="sp-label sp-label-green" 
+                      v-text="summaryCount.installed"
+                  />
                 </div>
               </div>
             </div>
@@ -558,7 +568,7 @@ export const MigrationVersions = {
                   v-text="getMessage('LOADING_TEXT')"
               />
             </div>
-            <div class="sp-col sp-migration_progress">
+            <div class="sp-col sp-migration_buttons">
               <input
                   v-if="replay && replay.version"
                   :value="getMessage(running ? 'PAUSE' : 'CONTINUE')"
@@ -566,8 +576,7 @@ export const MigrationVersions = {
                   :class="['adm-btn', 'sp-play']"
                   @click="replayVersion"
               />
-
-              <div
+              <span
                   v-for="(item, index) in progress"
                   :key="index"
                   class="sp-progress"

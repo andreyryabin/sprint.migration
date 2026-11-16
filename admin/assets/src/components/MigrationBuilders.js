@@ -182,9 +182,16 @@ export const MigrationBuilders = {
                   />
                 </div>
                 <div class="sp-search_summary">
-                  <span v-if="loading" class="sp-loading" v-text="getMessage('LOADING_TEXT')"/>
+                    <span
+                        v-if="loading"
+                        class="sp-loading"
+                        v-text="getMessage('LOADING_TEXT')"
+                    />
                   {{ getMessage('SUMMARY_BUILDERS') }}:
-                  <span class="sp-label" v-text="summaryLabel"/>
+                  <span
+                      class="sp-label"
+                      v-text="summaryLabel"
+                  />
                 </div>
               </div>
             </div>
@@ -246,7 +253,15 @@ export const MigrationBuilders = {
                       v-bind="field.props"
                   />
                 </div>
-                <div class="sp-builder-buttons">
+                <div class="sp-builder_log">
+                  <div
+                      v-for="(item, index) in messages"
+                      :key="index"
+                      v-bind="colorclass(item.type)"
+                      v-text="item.message"
+                  />
+                </div>
+                <div class="sp-migration_buttons">
                   <input
                       :class="['adm-btn','sp-play']"
                       type="button"
@@ -259,23 +274,19 @@ export const MigrationBuilders = {
                       :value="getMessage('BUILDER_RESET')"
                       @click="selectBuilder(selected.name)"
                   />
-                </div>
-                <div class="sp-builder_log">
-                  <div
-                      v-for="(item, index) in messages"
-                      :key="index"
-                      v-bind="colorclass(item.type)"
-                      v-text="item.message"
+                  <span
+                      v-if="loading"
+                      class="sp-loading"
+                      v-text="getMessage('LOADING_TEXT')"
                   />
-                </div>
-                <div class="sp-builder_progress">
-                  <div
+                  <span
                       v-for="(item, index) in progress"
                       :key="index"
                       class="sp-progress"
                       v-text="progressMessage(item)"
                   />
                 </div>
+
               </div>
             </div>
           </div>
