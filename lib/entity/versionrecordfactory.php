@@ -7,24 +7,40 @@ use Sprint\Migration\VersionConfig;
 
 class VersionRecordFactory
 {
+    public function __construct(private readonly VersionConfig $versionConfig)
+    {
+    }
+
+    public function tryCreate(array $versionRecord): ?VersionRecord
+    {
+        try {
+            return $this->create($versionRecord);
+        } catch (MigrationException) {
+            return null;
+        }
+    }
+
     /**
      * @throws MigrationException
      */
-    public function create(VersionConfig $versionConfig, array $record): ?VersionRecord
+    public function create(array $versionRecord): ?VersionRecord
     {
-        if (empty($record)) {
+        if (empty($versionRecord['version'])) {
             //нормальная ситуация, новая миграция
             return null;
         }
 
-        $versionConfig->tryVersionName($record['version'] ?? '');
+        $this->versionConfig->tryVersionName($versionRecord['version']);
+
+        $versionTimestamp = $this->versionConfig->getVersionTimestamp($versionRecord['version']);
 
         return new VersionRecord(
-            versionName: (string)($record['version'] ?? ''),
-            releaseTag: (string)($record['tag'] ?? ''),
-            createdAt: (string)($record['meta']['created_at'] ?? ''),
-            createdBy: (string)($record['meta']['created_by'] ?? ''),
-            recordHash: (string)($record['hash'] ?? ''),
+            versionName: (string)($versionRecord['version']),
+            versionTimestamp: $versionTimestamp,
+            releaseTag: (string)($versionRecord['tag'] ?? ''),
+            createdAt: (string)($versionRecord['meta']['created_at'] ?? ''),
+            createdBy: (string)($versionRecord['meta']['created_by'] ?? ''),
+            recordHash: (string)($versionRecord['hash'] ?? ''),
         );
 
     }

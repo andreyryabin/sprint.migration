@@ -18,14 +18,13 @@ $MESS["{$prefix}LINK_TASKS"] = "Tasks";
 $MESS["{$prefix}LINK_TELEGRAM"] = "Telegram";
 $MESS["{$prefix}LINK_IMPROVE_TRANSLATION"] = "Improve translation to english, create pull request with this file";
 
-$MESS["{$prefix}NEW"] = "New migrations";
-$MESS["{$prefix}INSTALLED"] = "Installed";
-$MESS["{$prefix}UNKNOWN"] = "Unknown";
-$MESS["{$prefix}VERSION_NEW"] = "New";
+$MESS["{$prefix}FILE_STATUS"] = "Created";
+$MESS["{$prefix}RECORD_STATUS"] = "Installed";
 
-$MESS["{$prefix}META_CREATED"] = "Created";
-$MESS["{$prefix}META_INSTALLED"] = "Installed";
-$MESS["{$prefix}META_UNKNOWN"] = "Unknown";
+$MESS["{$prefix}SUMMARY_CREATED"] = "New migrations";
+$MESS["{$prefix}SUMMARY_INSTALLED"] = "Installed";
+$MESS["{$prefix}SUMMARY_UNKNOWN"] = "Unknown";
+
 $MESS["{$prefix}CREATED_SUCCESS"] = "Migration #VERSION# created";
 $MESS["{$prefix}SEARCH"] = "Search";
 $MESS["{$prefix}ADMIN_INTERFACE_HIDDEN"] = "Admin interface hidden";

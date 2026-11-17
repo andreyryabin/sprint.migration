@@ -14,11 +14,9 @@ class VersionEntity
      * @throws MigrationException
      */
     public function __construct(
-        private readonly ?VersionFile   $file = null,
-        private readonly ?VersionRecord $record = null,
-        private readonly string         $versionName = '',
-        private readonly string         $exchangeDir = '',
-        private readonly bool           $hasExchangeDir = false,
+        private readonly ?VersionFile     $file = null,
+        private readonly ?VersionRecord   $record = null,
+        private readonly ?VersionExchange $exchange = null,
     )
     {
         if ($file === null && $record === null) {
@@ -39,7 +37,10 @@ class VersionEntity
 
     public function getVersionName(): string
     {
-        return $this->versionName;
+        if ($this->file) {
+            return $this->file->getVersionName();
+        }
+        return $this->record->getVersionName();
     }
 
     public function getStatus(): string
@@ -82,7 +83,7 @@ class VersionEntity
     public function getRecordStatus(): string
     {
         return $this->humanStatus(
-            Locale::getMessage('META_INSTALLED'),
+            Locale::getMessage('RECORD_STATUS'),
             $this->getRecord()->getCreatedAt(),
             $this->getRecord()->getCreatedBy()
         );
@@ -94,7 +95,7 @@ class VersionEntity
     public function getFileStatus(): string
     {
         return $this->humanStatus(
-            Locale::getMessage('META_CREATED'),
+            Locale::getMessage('FILE_STATUS'),
             $this->getFile()->getCreatedAt(),
             $this->getFile()->getCreatedBy()
         );
@@ -103,7 +104,7 @@ class VersionEntity
     /**
      * @throws MigrationException
      */
-    public function getTagStatus(): string
+    public function getReleaseMessage(): string
     {
         $tag = $this->getReleaseTag();
         return $tag ? Locale::getMessage('RELEASE_TAG', ['#TAG#' => $tag]) : '';
@@ -185,19 +186,20 @@ class VersionEntity
     /**
      * @throws MigrationException
      */
-    public function getFileClass(): string
+    public function createClassObject(): Version
     {
-        return $this->getFile()->getVersionClass();
+        $class = $this->getFile()->getVersionClass();
+        return new $class;
     }
 
     public function getExchangeDir(): string
     {
-        return $this->exchangeDir;
+        return $this->exchange->getDir();
     }
 
     public function hasExchangeDir(): bool
     {
-        return $this->hasExchangeDir;
+        return $this->exchange->hasDir();
     }
 
 

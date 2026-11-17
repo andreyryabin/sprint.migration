@@ -6,7 +6,13 @@ use CMain;
 use DirectoryIterator;
 use SplFileInfo;
 use Sprint\Migration\Entity\VersionEntity;
+use Sprint\Migration\Entity\VersionExchange;
+use Sprint\Migration\Entity\VersionExchangeFactory;
 use Sprint\Migration\Entity\VersionFactory;
+use Sprint\Migration\Entity\VersionFile;
+use Sprint\Migration\Entity\VersionFileFactory;
+use Sprint\Migration\Entity\VersionRecord;
+use Sprint\Migration\Entity\VersionRecordFactory;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RestartException;
@@ -46,21 +52,18 @@ class VersionManager
     }
 
     public function startMigration(
-        string $versionName,
-        string $action,
-        array  $params,
-        string $tag
+        VersionEntity $entity,
+        string        $action,
+        array         $params,
+        string        $tag
     ): VersionResult
     {
         $result = new VersionResult();
-
-        if (empty($params['~start'])) {
-            $this->output->outInfo('%s::%s() start', $versionName, $action);
-            $params['~start'] = 'ok';
-        }
-
         try {
-            $entity = $this->getVersionByName($versionName);
+            if (empty($params['~start'])) {
+                $this->output->outInfo('%s::%s() start', $entity, $action);
+                $params['~start'] = 'ok';
+            }
 
             if (!$entity->hasFile()) {
                 throw new MigrationException('failed to initialize migration');
@@ -78,18 +81,17 @@ class VersionManager
                 throw new MigrationException('migration already down');
             }
 
-            /** @var $versionObj Version */
-            $versionObj = new ($entity->getFileClass());
+            $versionObj = $entity->createClassObject();
             $versionObj->setVersionConfig($this->versionConfig);
             $versionObj->setOutput($this->output);
             $versionObj->setRestartParams($params);
 
             if ($action == VersionEnum::ACTION_UP) {
                 $this->checkResultAfterStart($versionObj->up());
-                $this->getVersionTable()->addRecord($versionName, $tag);
+                $this->getVersionTable()->addRecord($entity->getVersionName(), $tag);
             } else {
                 $this->checkResultAfterStart($versionObj->down());
-                $this->getVersionTable()->removeRecord($versionName);
+                $this->getVersionTable()->removeRecord($entity->getVersionName());
             }
 
         } catch (RestartException) {
@@ -100,10 +102,60 @@ class VersionManager
         }
 
         if (!$result->needRestart()) {
-            $this->output->outInfo('%s::%s() finish', $versionName, $action);
+            $this->output->outInfo('%s::%s() finish', $entity, $action);
         }
 
         return $result;
+    }
+
+
+    /**
+     * @throws MigrationException
+     */
+    public function executeAll(array $filter, string $action, string $tag = ''): void
+    {
+        if ($action == VersionEnum::ACTION_UP) {
+            $filter['status'] = VersionEnum::STATUS_NEW;
+            $filter['sort'] = VersionEnum::SORT_ASC;
+        } elseif ($action == VersionEnum::ACTION_DOWN) {
+            $filter['status'] = VersionEnum::STATUS_INSTALLED;
+            $filter['sort'] = VersionEnum::SORT_DESC;
+        } else {
+            throw new MigrationException("Migrate action \"$action\" not implemented");
+        }
+
+        foreach ($this->getVersions($filter) as $entity) {
+            if (!$this->executeEntity($entity, $action, $tag)) {
+                return;
+            }
+        }
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function executeVersion(string $versionName, string $action, string $tag = ''): bool
+    {
+        $entity = $this->getVersionByName($versionName);
+        return $this->executeEntity($entity, $action, $tag);
+    }
+
+    private function executeEntity(VersionEntity $entity, string $action, string $tag = ''): bool
+    {
+        $params = [];
+
+        do {
+            $result = $this->startMigration(
+                $entity,
+                $action,
+                $params,
+                $tag,
+            );
+
+            $params = $result->getRestartParams();
+        } while ($result->needRestart());
+
+        return $result->isSuccess();
     }
 
     /**
@@ -113,14 +165,15 @@ class VersionManager
     {
         $this->versionConfig->tryVersionName($versionName);
 
-        return (new VersionFactory())->create(
-            $this->versionConfig,
-            $versionName,
-            $this->getVersionTable()->getRecord($versionName)
-        );
+        $versionRecord = $this->getVersionTable()->getRecord($versionName);
+
+        $factory = new VersionFactory($this->versionConfig);
+
+        return $factory->create($versionName, $versionRecord);
     }
 
     /**
+     * @return VersionEntity[]
      * @throws MigrationException
      */
     public function getVersions(array $filter = []): array
@@ -156,15 +209,15 @@ class VersionManager
 
         $merge = [];
 
-        $records = $this->getRecords();
-        $files = $this->getFiles();
+        $records = $this->getVersionRecords();
+        $files = $this->getVersionFiles();
 
-        foreach ($records as $item) {
-            $merge[$item['version']] = $item['ts'];
+        foreach ($records as $versionName => $item) {
+            $merge[$versionName] = $item->getVersionTimestamp();
         }
 
-        foreach ($files as $item) {
-            $merge[$item['version']] = $item['ts'];
+        foreach ($files as $versionName => $item) {
+            $merge[$versionName] = $item->getVersionTimestamp();
         }
 
         if ($filter['sort'] == VersionEnum::SORT_DESC) {
@@ -176,40 +229,44 @@ class VersionManager
         $result = [];
         $newFound = false;
 
-        $actTs = date(
-            $this->getVersionConfig()->getVal('version_timestamp_format'),
-            time() - 8 * 3600
-        );
+        $actTs = date($this->getVersionConfig()->getVal('version_timestamp_format'), time() - 8 * 3600);
 
-        foreach ($merge as $version => $ts) {
-            $record = $records[$version] ?? 0;
-            $file = $files[$version] ?? 0;
+
+        $exFactory = new VersionExchangeFactory($this->versionConfig);
+
+        foreach ($merge as $versionName => $versionTimestamp) {
+            $versionFile = $files[$versionName] ?? null;
+            $versionRecord = $records[$versionName] ?? null;
 
             if ($filter['actual'] == 1) {
-                if (!$newFound && $file && !$record) {
+                if (!$newFound && $versionFile && !$versionRecord) {
                     $newFound = true;
                 }
-                if (!$newFound && $ts < $actTs) {
+                if (!$newFound && $versionTimestamp < $actTs) {
                     continue;
                 }
             }
 
-            $meta = $this->makeVersion($version, $file, $record, $ts);
-
-
-            $check = (
-                $this->containsFilterStatus($meta, $filter)
-                && $this->containsFilterSearch($meta, $filter)
-                && $this->containsFilterTag($meta, $filter)
-                && $this->containsFilterModified($meta, $filter)
-                && $this->containsFilterOlder($meta, $filter)
+            $versionEntity = new VersionEntity(
+                $versionFile,
+                $versionRecord,
+                $exFactory->create($versionName)
             );
 
-            if (!$check) {
-                continue;
-            }
 
-            $result[] = $meta;
+//            $check = (
+//                $this->containsFilterStatus($meta, $filter)
+//                && $this->containsFilterSearch($meta, $filter)
+//                && $this->containsFilterTag($meta, $filter)
+//                && $this->containsFilterModified($meta, $filter)
+//                && $this->containsFilterOlder($meta, $filter)
+//            );
+//
+//            if (!$check) {
+//                continue;
+//            }
+
+            $result[] = $versionEntity;
 
             if ($filter['limit'] && count($result) == $filter['limit']) {
                 break;
@@ -221,96 +278,46 @@ class VersionManager
 
 
     /**
+     * @return VersionRecord[]
      * @throws MigrationException
      */
-    public function getListForExecute(array $filter, string $action): array
+    private function getVersionRecords(): array
     {
-        if ($action == VersionEnum::ACTION_UP) {
-            $filter['status'] = VersionEnum::STATUS_NEW;
-            $filter['sort'] = VersionEnum::SORT_ASC;
-        } elseif ($action == VersionEnum::ACTION_DOWN) {
-            $filter['status'] = VersionEnum::STATUS_INSTALLED;
-            $filter['sort'] = VersionEnum::SORT_DESC;
-        } else {
-            throw new MigrationException("Migrate action \"$action\" not implemented");
-        }
+        $factory = new VersionRecordFactory($this->versionConfig);
 
-        return array_column($this->getVersions($filter), 'version');
-    }
-
-    /**
-     * @throws MigrationException
-     */
-    public function getOnceForExecute(array $filter, string $action)
-    {
-        $filter['limit'] = 1;
-
-        $names = $this->getListForExecute($filter, $action);
-
-        return $names[0] ?? '';
-    }
-
-
-    /**
-     * @throws MigrationException
-     */
-    public function getRecords(): array
-    {
         $result = [];
 
-        $records = $this->getVersionTable()->getRecords();
-        foreach ($records as $item) {
-            if (!$this->versionConfig->checkVersionName($item['version'])) {
-                continue;
+        foreach ($this->getVersionTable()->getRecords() as $item) {
+            if ($versionRecord = $factory->tryCreate($item)) {
+                $result[$versionRecord->getVersionName()] = $versionRecord;
             }
-
-            $timestamp = $this->versionConfig->getVersionTimestamp($item['version']);
-            if (!$timestamp) {
-                continue;
-            }
-
-            $item['ts'] = $timestamp;
-
-            $result[$item['version']] = $item;
         }
 
         return $result;
     }
 
-    public function getFiles(): array
+    /**
+     * @return VersionFile[]
+     */
+    private function getVersionFiles(): array
     {
-        $dir = $this->getVersionConfig()->getVal('migration_dir');
-        $files = [];
+        $dir = $this->versionConfig->getVal('migration_dir');
+
+        $factory = new VersionFileFactory($this->versionConfig);
 
         /* @var $item SplFileInfo */
-        $items = new DirectoryIterator($dir);
-        foreach ($items as $item) {
-            if (!$item->isFile()) {
-                continue;
-            }
+        $iterator = new DirectoryIterator($dir);
 
-            if ($item->getExtension() != 'php') {
-                continue;
-            }
+        $result = [];
 
-            $versionName = pathinfo($item->getPathname(), PATHINFO_FILENAME);
-            if (!$this->versionConfig->checkVersionName($versionName)) {
-                continue;
+        foreach ($iterator as $item) {
+            if ($item->isFile() && $item->getExtension() == 'php') {
+                if ($versionFile = $factory->tryCreate($item->getBasename('.php'))) {
+                    $result[$versionFile->getVersionName()] = $versionFile;
+                }
             }
-
-            $timestamp = $this->versionConfig->getVersionTimestamp($versionName);
-            if (!$timestamp) {
-                continue;
-            }
-
-            $files[$versionName] = [
-                'version'  => $versionName,
-                'location' => $item->getPathname(),
-                'ts'       => $timestamp,
-            ];
         }
-
-        return $files;
+        return $result;
     }
 
     /**
@@ -318,9 +325,9 @@ class VersionManager
      */
     public function clean(): void
     {
-        $mdir = $this->getVersionConfig()->getVal('migration_dir');
-        $exdir = $this->getVersionConfig()->getVal('exchange_dir');
-        $cfile = $this->getVersionConfig()->getPath();
+        $mdir = $this->versionConfig->getVal('migration_dir');
+        $exdir = $this->versionConfig->getVal('exchange_dir');
+        $cfile = $this->versionConfig->getPath();
 
         $this->getVersionTable()->dropTable();
 

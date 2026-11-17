@@ -191,7 +191,10 @@ export const MigrationVersions = {
                         return false;
                     }
 
-                    this.pickVersion(data.meta);
+                    if (data.meta){
+                        this.pickVersion(data.meta);
+                    }
+
                     return true;
                 }
 

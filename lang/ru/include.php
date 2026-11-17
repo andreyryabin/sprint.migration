@@ -18,14 +18,13 @@ $MESS["{$prefix}LINK_TASKS"] = "Задачи";
 $MESS["{$prefix}LINK_TELEGRAM"] = "Группа в телеграме";
 $MESS["{$prefix}LINK_IMPROVE_TRANSLATION"] = "Улучшите перевод на английский, создайте пул-реквест с этим файлом";
 
-$MESS["{$prefix}NEW"] = "Новые миграции";
-$MESS["{$prefix}INSTALLED"] = "Установленные";
-$MESS["{$prefix}UNKNOWN"] = "Неизвестные";
-$MESS["{$prefix}VERSION_NEW"] = "Новая";
+$MESS["{$prefix}FILE_STATUS"] = "Создана";
+$MESS["{$prefix}RECORD_STATUS"] = "Установленна";
 
-$MESS["{$prefix}META_CREATED"] = "Создана";
-$MESS["{$prefix}META_INSTALLED"] = "Установлена";
-$MESS["{$prefix}META_UNKNOWN"] = "Неизвестная";
+$MESS["{$prefix}SUMMARY_CREATED"] = "Новые миграции";
+$MESS["{$prefix}SUMMARY_INSTALLED"] = "Установленные";
+$MESS["{$prefix}SUMMARY_UNKNOWN"] = "Неизвестные";
+
 $MESS["{$prefix}CREATED_SUCCESS"] = "Миграция #VERSION# создана";
 $MESS["{$prefix}SEARCH"] = "Поиск";
 $MESS["{$prefix}ADMIN_INTERFACE_HIDDEN"] = "Управление миграциями через админку отключено";

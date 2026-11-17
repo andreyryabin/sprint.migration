@@ -166,21 +166,28 @@ class VersionController extends Controller
     {
         $action = ($action === VersionEnum::ACTION_DOWN) ? VersionEnum::ACTION_DOWN : VersionEnum::ACTION_UP;
 
+        $entity = $this->versionManager->getVersionByName($version);
+
         $result = $this->versionManager->startMigration(
-            $version,
+            $entity,
             $action,
             $params,
             $settag
         );
 
-        $entity = $this->versionManager->getVersionByName($version);
-
-        return array_merge([
+        $dto = array_merge([
             'success' => $result->isSuccess(),
             'restart' => $result->needRestart(),
             'params'  => $result->getRestartParams(),
-            'meta'    => $this->versionToArray($entity)
-        ], $this->output->getLog());
+        ]);
+
+        if ($result->isSuccess()) {
+            //перезапрашиваем информацию о миграции так как она выполнилась
+            $entity = $this->versionManager->getVersionByName($version);
+            $dto['meta'] = $this->versionToArray($entity);
+        }
+
+        return array_merge($dto, $this->output->getLog());
     }
 
 
@@ -197,7 +204,7 @@ class VersionController extends Controller
 
         if ($entity->hasRecord()) {
             $meta['tag'] = $entity->getReleaseTag();
-            $meta['tag_status'] = $entity->getTagStatus();
+            $meta['tag_status'] = $entity->getReleaseMessage();
             $meta['record_status'] = $entity->getRecordStatus();
         }
 

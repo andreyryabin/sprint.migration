@@ -2,21 +2,26 @@
 
 namespace Sprint\Migration;
 
-use Exception;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Output\OutputInterface;
 
 class Installer
 {
     private VersionManager $versionManager;
 
+
     /**
-     * @throws Exception
+     * @throws MigrationException
      */
-    public function __construct(array $configValues = [])
+    public function __construct(
+        array            $configValues = [],
+        ?OutputInterface $output = null,
+    )
     {
         $this->versionManager = new VersionManager(
-            new VersionConfig(VersionEnum::CONFIG_INSTALLER, $configValues)
+            new VersionConfig(VersionEnum::CONFIG_INSTALLER, $configValues),
+            $output
         );
     }
 
@@ -25,7 +30,7 @@ class Installer
      */
     public function up(): void
     {
-        $this->executeAll([], VersionEnum::ACTION_UP);
+        $this->versionManager->executeAll([], VersionEnum::ACTION_UP);
     }
 
     /**
@@ -33,7 +38,7 @@ class Installer
      */
     public function down(): void
     {
-        $this->executeAll([], VersionEnum::ACTION_DOWN);
+        $this->versionManager->executeAll([], VersionEnum::ACTION_DOWN);
     }
 
     /**
@@ -41,29 +46,15 @@ class Installer
      */
     public function executeAll(array $filter, string $action, string $tag = ''): void
     {
-        foreach ($this->versionManager->getListForExecute($filter, $action) as $version) {
-            if (!$this->executeVersion($version, $action, $tag)) {
-                return;
-            }
-        }
+        $this->versionManager->executeAll($filter, $action, $tag);
     }
 
 
+    /**
+     * @throws MigrationException
+     */
     public function executeVersion(string $version, string $action, string $tag = ''): bool
     {
-        $params = [];
-
-        do {
-            $result = $this->versionManager->startMigration(
-                $version,
-                $action,
-                $params,
-                $tag,
-            );
-
-            $params = $result->getRestartParams();
-        } while ($result->needRestart());
-
-        return $result->isSuccess();
+        return $this->versionManager->executeVersion($version, $action, $tag);
     }
 }

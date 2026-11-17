@@ -6,6 +6,7 @@ final class VersionRecord
 {
     public function __construct(
         private readonly string $versionName,
+        private readonly string $versionTimestamp,
         private readonly string $releaseTag,
         private readonly string $createdAt,
         private readonly string $createdBy,
@@ -37,5 +38,10 @@ final class VersionRecord
     public function getVersionName(): string
     {
         return $this->versionName;
+    }
+
+    public function getVersionTimestamp(): string
+    {
+        return $this->versionTimestamp;
     }
 }

@@ -141,11 +141,13 @@ class VersionConfig
             return;
         }
 
-        if (!$this->checkVersionName($versionName) || !$this->getVersionTimestamp($versionName)) {
+        $ts = $this->getVersionTimestamp($versionName);
+
+        if (!$this->checkVersionName($versionName) || !$ts) {
             throw new MigrationException('Invalid version name');
         }
 
-        $this->triedVersionNames[$versionName] = true;
+        $this->triedVersionNames[$versionName] = $ts;
     }
 
     public function getVersionTimestamp(string $versionName): string

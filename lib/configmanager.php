@@ -3,6 +3,7 @@
 namespace Sprint\Migration;
 
 use DirectoryIterator;
+use SplFileInfo;
 use Sprint\Migration\Enum\EventsEnum;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
@@ -121,8 +122,10 @@ class ConfigManager
      */
     private function addFromDirectory(string $directory): void
     {
-        $directory = new DirectoryIterator($directory);
-        foreach ($directory as $item) {
+        $iterator = new DirectoryIterator($directory);
+
+        /* @var $item SplFileInfo */
+        foreach ($iterator as $item) {
             if (!$item->isFile()) {
                 continue;
             }
@@ -141,6 +144,9 @@ class ConfigManager
         }
     }
 
+    /**
+     * @throws MigrationException
+     */
     public function createConfig(string $configName): bool
     {
         $fileName = 'migrations.' . $configName . '.php';

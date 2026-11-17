@@ -13,13 +13,29 @@ use Throwable;
 
 class VersionFileFactory
 {
+    public function __construct(private readonly VersionConfig $versionConfig)
+    {
+    }
+
+    public function tryCreate(string $versionName): ?VersionFile
+    {
+        try {
+            return $this->create($versionName);
+        } catch (MigrationException) {
+            return null;
+        }
+    }
+
     /**
      * @throws MigrationException
      */
-    public function create(VersionConfig $versionConfig, string $versionName): ?VersionFile
+    public function create(string $versionName): ?VersionFile
     {
+        $location = $this->versionConfig->getVersionFile($versionName);
 
-        $location = $versionConfig->getVersionFile($versionName);
+        $versionTimestamp = $this->versionConfig->getVersionTimestamp($versionName);
+        $timestampFormat = $this->versionConfig->getVal('version_timestamp_format');
+        $algo = $this->versionConfig->getVal('migration_hash_algo');
 
         $location = realpath($location);
 
@@ -29,7 +45,6 @@ class VersionFileFactory
         }
 
         try {
-
             require_once($location);
 
             $versionClass = "\Sprint\Migration\\$versionName";
@@ -49,25 +64,22 @@ class VersionFileFactory
                 $versionObj->getDescription()
             );
 
-            $humanTs = DateTime::createFromFormat(
-                $versionConfig->getVal('version_timestamp_format'),
-                $versionConfig->getVersionTimestamp($versionName)
-            );
+            $createdAt = DateTime::createFromFormat(
+                $timestampFormat,
+                $versionTimestamp
+            )->format(VersionTable::DATE_FORMAT);
 
-            $createdAt = $humanTs->format(VersionTable::DATE_FORMAT);
             $createdBy = $this->stripslashes($versionObj->getAuthor());
 
             $v1 = $versionObj->getModuleVersion();
             $v2 = Module::getVersion();
 
             $olderVersion = ($v1 && version_compare($v1, $v2, '>')) ? $v1 : '';
-
-            $algo = $versionConfig->getVal('migration_hash_algo');
-
             $contentHash = hash($algo, file_get_contents($location));
 
             return new VersionFile(
                 versionName: $versionName,
+                versionTimestamp: $versionTimestamp,
                 location: $location,
                 versionClass: $versionClass,
                 description: $description,
@@ -76,8 +88,6 @@ class VersionFileFactory
                 createdAt: $createdAt,
                 createdBy: $createdBy,
             );
-
-
         } catch (Throwable $e) {
             throw new MigrationException($e->getMessage(), $e->getCode(), $e);
         }

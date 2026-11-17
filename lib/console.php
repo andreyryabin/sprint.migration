@@ -214,43 +214,41 @@ class Console
             VersionEnum::STATUS_UNKNOWN   => 0,
         ];
 
-        foreach ($versions as $item) {
+        foreach ($versions as $entity) {
             $this->output->print('┌─');
-            $this->output->print('│ [%s]%s[/]', $item['status'], $item['version']);
+            $this->output->print('│ [%s]%s[/]', $entity->getStatus(), $entity->getVersionName());
 
-            if ($item['file_status']) {
-                $this->output->print('│ ' . $item['file_status']);
+            if ($entity->hasFile()) {
+                $this->output->print('│ ' . $entity->getFileStatus());
+            }
+            if ($entity->hasRecord()) {
+                $this->output->print('│ ' . $entity->getRecordStatus());
             }
 
-            if ($item['record_status']) {
-                $this->output->print('│ ' . $item['record_status']);
+            if ($entity->hasRecord() && $entity->getReleaseTag()) {
+                $this->output->print('│ ' . $entity->getReleaseMessage());
             }
 
-            if ($item['tag_status']) {
-                $this->output->print('│ ' . $item['tag_status']);
+            if ($entity->getLabels()) {
+                $this->output->print('│ ' . implode(' ', $entity->getLabels()));
             }
 
-            if (!empty($item['labels'])) {
-                $this->output->print('│ ' . implode(' ', $item['labels']));
-            }
 
-            if (!empty($item['description'])) {
+            if ($entity->hasFile() && $entity->getFileDescription()) {
                 $this->output->print('├─');
-                foreach (explode(PHP_EOL, $item['description']) as $descStr) {
+                foreach (explode(PHP_EOL, $entity->getFileDescription()) as $descStr) {
                     $this->output->print('│ ' . $descStr);
                 }
             }
 
             $this->output->print('└─');
 
-            $stval = $item['status'];
+            $stval = $entity->getStatus();
             $summary[$stval]++;
         }
 
-        foreach ($summary as $k => $v) {
-            if ($v > 0) {
-                $this->output->print(Locale::getMessage('META_' . $k) . ':' . $v);
-            }
+        foreach (array_filter($summary) as $k => $v) {
+            $this->output->print(Locale::getMessage('SUMMARY_' . $k) . ':' . $v);
         }
     }
 
@@ -309,14 +307,14 @@ class Console
 
         if ($this->hasArguments()) {
             foreach ($this->getArguments() as $versionName) {
-                if (!$this->executeVersion($versionName, $action, $tag)) {
+                if (!$this->versionManager->executeVersion($versionName, $action, $tag)) {
                     return;
                 }
             }
             return;
         }
 
-        $this->executeAll([
+        $this->versionManager->executeAll([
             'search'   => $this->getArg('--search='),
             'tag'      => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
@@ -333,8 +331,8 @@ class Console
         $tag = $this->getArg('--add-tag=');
 
         foreach ($this->getArguments() as $versionName) {
-            if (!$this->executeVersion($versionName, VersionEnum::ACTION_DOWN, $tag)
-                || !$this->executeVersion($versionName, VersionEnum::ACTION_UP, $tag)) {
+            if (!$this->versionManager->executeVersion($versionName, VersionEnum::ACTION_DOWN, $tag)
+                || !$this->versionManager->executeVersion($versionName, VersionEnum::ACTION_UP, $tag)) {
                 return;
             }
         }
@@ -427,7 +425,7 @@ class Console
         $tag = $this->getArg('--add-tag=');
         $action = $this->getArg('--down') ? VersionEnum::ACTION_DOWN : VersionEnum::ACTION_UP;
 
-        $this->executeAll([
+        $this->versionManager->executeAll([
             'search'   => $this->getArg('--search='),
             'tag'      => $this->getArg('--tag='),
             'modified' => $this->getArg('--modified'),
@@ -444,38 +442,6 @@ class Console
     {
         /** @compability */
         $this->commandMigrate();
-    }
-
-    /**
-     * @throws MigrationException
-     */
-    protected function executeAll($filter, $action, $tag): void
-    {
-        $versionNames = $this->versionManager->getListForExecute($filter, $action);
-        foreach ($versionNames as $versionName) {
-            if (!$this->executeVersion($versionName, $action, $tag)) {
-                return;
-            }
-        }
-    }
-
-    protected function executeVersion(string $version, string $action, string $tag): bool
-    {
-        $params = [];
-
-        do {
-            $result = $this->versionManager->startMigration(
-                $version,
-                $action,
-                $params,
-                $tag
-            );
-
-            $params = $result->getRestartParams();
-
-        } while ($result->needRestart());
-
-        return $result->isSuccess();
     }
 
     /**
