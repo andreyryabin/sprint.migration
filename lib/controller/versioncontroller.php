@@ -2,12 +2,14 @@
 
 namespace Sprint\Migration\Controller;
 
+use Bitrix\Main\Engine\Action;
 use Bitrix\Main\Engine\Controller;
 use Bitrix\Main\Error;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Request;
 use CMain;
 use Sprint\Migration\ConfigManager;
+use Sprint\Migration\Entity\VersionEntity;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Locale;
@@ -50,7 +52,7 @@ class VersionController extends Controller
         );
     }
 
-    protected function processBeforeAction(\Bitrix\Main\Engine\Action $action): bool
+    protected function processBeforeAction(Action $action): bool
     {
         if (CMain::GetUserRight(Module::ID) == 'D') {
             $this->addError(new Error('ACCESS_DENIED'));
@@ -71,7 +73,10 @@ class VersionController extends Controller
      */
     public function refreshVersionsAction(array $filter = []): array
     {
-        $versions = $this->versionManager->getVersions($filter);
+        $versions = array_map(
+            fn(VersionEntity $entity) => $this->versionToArray($entity),
+            $this->versionManager->getVersions($filter)
+        );
 
         return ['versions' => $versions];
     }
@@ -80,13 +85,13 @@ class VersionController extends Controller
      * @noinspection PhpUnused
      * @throws MigrationException
      */
-
     public function markVersionAction(string $version, string $status): array
     {
         $this->versionManager->markMigration($version, $status);
+        $entity = $this->versionManager->getVersionByName($version);
 
         return array_merge([
-            'meta' => $this->versionManager->getVersionByName($version)
+            'meta' => $this->versionToArray($entity)
         ], $this->output->getLog());
     }
 
@@ -133,9 +138,10 @@ class VersionController extends Controller
     public function setVersionTagAction(string $version, string $settag): array
     {
         $this->versionManager->setMigrationTag($version, $settag);
+        $entity = $this->versionManager->getVersionByName($version);
 
         return array_merge([
-            'meta' => $this->versionManager->getVersionByName($version)
+            'meta' => $this->versionToArray($entity)
         ], $this->output->getLog());
     }
 
@@ -167,11 +173,39 @@ class VersionController extends Controller
             $settag
         );
 
+        $entity = $this->versionManager->getVersionByName($version);
+
         return array_merge([
             'success' => $result->isSuccess(),
             'restart' => $result->needRestart(),
             'params'  => $result->getRestartParams(),
-            'meta'    => $this->versionManager->getVersionByName($version)
+            'meta'    => $this->versionToArray($entity)
         ], $this->output->getLog());
+    }
+
+
+    /**
+     * @throws MigrationException
+     */
+    private function versionToArray(VersionEntity $entity): array
+    {
+        $meta = [
+            'version' => $entity->getVersionName(),
+            'status'  => $entity->getStatus(),
+            'labels'  => $entity->getLabels(),
+        ];
+
+        if ($entity->hasRecord()) {
+            $meta['tag'] = $entity->getReleaseTag();
+            $meta['tag_status'] = $entity->getTagStatus();
+            $meta['record_status'] = $entity->getRecordStatus();
+        }
+
+        if ($entity->hasFile()) {
+            $meta['file_status'] = $entity->getFileStatus();
+            $meta['description'] = $entity->getFileDescription();
+        }
+
+        return $meta;
     }
 }

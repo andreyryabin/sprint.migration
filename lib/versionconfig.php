@@ -37,6 +37,7 @@ class VersionConfig
     private string $name;
     private array $values;
     private string $path;
+    private array $triedVersionNames = [];
 
     /**
      * @throws MigrationException
@@ -136,12 +137,15 @@ class VersionConfig
      */
     public function tryVersionName(string $versionName): void
     {
-        if (
-            !$this->checkVersionName($versionName) ||
-            !$this->getVersionTimestamp($versionName)
-        ) {
+        if (isset($this->triedVersionNames[$versionName])) {
+            return;
+        }
+
+        if (!$this->checkVersionName($versionName) || !$this->getVersionTimestamp($versionName)) {
             throw new MigrationException('Invalid version name');
         }
+
+        $this->triedVersionNames[$versionName] = true;
     }
 
     public function getVersionTimestamp(string $versionName): string

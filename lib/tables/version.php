@@ -34,11 +34,15 @@ class VersionTable extends AbstractTable
     /**
      * @throws MigrationException
      */
-    public function addRecord(array $record): bool
+    public function addRecord(string $versionName, string $tag = ''): bool
     {
-        $record['meta'] = [
-            'created_by' => $this->getCurrentUserLogin(),
-            'created_at' => date(VersionTable::DATE_FORMAT),
+        $record = [
+            'version' => $versionName,
+            'tag'     => $tag,
+            'meta'    => [
+                'created_by' => $this->getCurrentUserLogin(),
+                'created_at' => date(VersionTable::DATE_FORMAT),
+            ]
         ];
 
         return $this->add($record)->isSuccess();
@@ -47,9 +51,9 @@ class VersionTable extends AbstractTable
     /**
      * @throws MigrationException
      */
-    public function removeRecord(array $record): bool
+    public function removeRecord(string $versionName): bool
     {
-        $row = $this->getOnce(['version' => $record['version']]);
+        $row = $this->getOnce(['version' => $versionName]);
 
         return isset($row['id']) && $this->delete($row['id'])->isSuccess();
     }

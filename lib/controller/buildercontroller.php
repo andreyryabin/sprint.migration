@@ -103,13 +103,18 @@ class BuilderController extends Controller
 
     private function getBuilderForm(Builder $builder, bool $newform): array
     {
-
         if ($newform) {
             $this->cleanParams($builder);
         } else {
             $this->mergeParams($builder);
         }
 
+        return $this->builderToArray($builder);
+
+    }
+
+    private function builderToArray(Builder $builder): array
+    {
         return [
             'name'   => $builder->getName(),
             'title'  => $builder->getTitle(),
