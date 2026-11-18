@@ -29,7 +29,7 @@ class VersionManager
      * @throws MigrationException
      */
     public function __construct(
-        private VersionConfig $versionConfig,
+        private readonly VersionConfig $versionConfig,
         private ?OutputInterface $output = null,
     ) {
         $this->versionTable = new VersionTable(
@@ -178,6 +178,8 @@ class VersionManager
         string $tag,
     ): VersionResult {
         $result = new VersionResult();
+
+        ob_start();
         try {
             if (empty($params['~start'])) {
                 $this->output->outInfo('%s::%s() start', $entity->getVersionName(), $action);
@@ -201,8 +203,8 @@ class VersionManager
             }
 
             $versionObj = $entity->createClassObject();
-            $versionObj->setVersionConfig($this->versionConfig);
             $versionObj->setOutput($this->output);
+            $versionObj->setVersionConfig($this->versionConfig);
             $versionObj->setRestartParams($params);
 
             if ($action == VersionEnum::ACTION_UP) {
@@ -226,7 +228,14 @@ class VersionManager
             $result->setRestart(isset($versionObj) ? $versionObj->getRestartParams() : []);
         } catch (Throwable $e) {
             $result->setException($e);
-            $this->output->outException($e);
+        }
+
+        if ($buffer = ob_get_clean()) {
+            $this->output->out($buffer);
+        }
+
+        if ($result->getException()) {
+            $this->output->outException($result->getException());
         }
 
         if (!$result->needRestart()) {

@@ -6,7 +6,7 @@ use Sprint\Migration\VersionConfig;
 
 trait VersionConfigTrait
 {
-    private ?VersionConfig $versionConfig;
+    private readonly ?VersionConfig $versionConfig;
 
     public function getVersionConfig(): VersionConfig
     {

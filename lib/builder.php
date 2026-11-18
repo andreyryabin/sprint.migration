@@ -17,9 +17,9 @@ use Sprint\Migration\Traits\VersionConfigTrait;
 
 abstract class Builder implements RestartableInterface
 {
+    use OutputTrait;
     use RestartableTrait;
     use VersionConfigTrait;
-    use OutputTrait;
 
     private array $info = [
         'title'       => '',

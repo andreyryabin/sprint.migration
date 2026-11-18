@@ -41,7 +41,7 @@ class VersionResult
         return $this->restartParams;
     }
 
-    public function getLastException(): ?Throwable
+    public function getException(): ?Throwable
     {
         return $this->lastException;
     }
