@@ -34,8 +34,8 @@ class IblockDeleteBuilder extends VersionBuilder
         $exhelper = $this->getExchangeHelpers()->IblockExchange();
 
         $iblockIds = $this->addFieldAndReturn('iblock_ids', [
-            'title'    => Locale::getMessage('BUILDER_IblockExport_IblockId'),
-            'items'    => $exhelper->getIblocksStructure(),
+            'title' => Locale::getMessage('BUILDER_IblockExport_IblockId'),
+            'items' => $exhelper->getIblocksStructure(),
             'multiple' => 1,
         ]);
 
@@ -53,7 +53,7 @@ class IblockDeleteBuilder extends VersionBuilder
             [
                 'iblocks' => $selectedIblocks,
             ],
-            false
+            false,
         );
     }
 }

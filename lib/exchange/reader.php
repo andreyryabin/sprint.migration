@@ -21,13 +21,13 @@ class Reader
         if (!class_exists('XMLReader')) {
             throw new MigrationException(
                 Locale::getMessage(
-                    'ERR_EXCHANGE_DISABLED_XML'
-                )
+                    'ERR_EXCHANGE_DISABLED_XML',
+                ),
             );
         }
         if (!is_file($file)) {
             throw new MigrationException(
-                Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $file])
+                Locale::getMessage('ERR_EXCHANGE_FILE_NOT_FOUND', ['#FILE#' => $file]),
             );
         }
 
@@ -49,6 +49,15 @@ class Reader
 
         $reader->close();
         return $total;
+    }
+
+    private function isOpenTag(XMLReader $reader, string $tagName): bool
+    {
+        return (
+            $reader->nodeType == XMLReader::ELEMENT
+            && $reader->name == $tagName
+            && !$reader->isEmptyElement
+        );
     }
 
     public function readRecords(int $offset, int $limit): array
@@ -73,22 +82,6 @@ class Reader
         return $records;
     }
 
-    /**
-     * @throws HelperException
-     */
-    public function getAttributes(): array
-    {
-        $attrs = $this->readAttributes();
-
-        if (!$attrs['exchangeVersion'] || $attrs['exchangeVersion'] < Module::EXCHANGE_VERSION) {
-            throw new HelperException(
-                Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->file])
-            );
-        }
-
-        return $attrs;
-    }
-
     private function readRecord(XMLReader $reader): array
     {
         $record = $this->getTagAttributes($reader);
@@ -106,6 +99,17 @@ class Reader
         } while (!$this->isCloseTag($reader, 'item'));
 
         return $record;
+    }
+
+    private function getTagAttributes(XMLReader $reader): array
+    {
+        $attrs = [];
+        if ($reader->hasAttributes) {
+            while ($reader->moveToNextAttribute()) {
+                $attrs[$reader->name] = htmlspecialchars_decode($reader->value);
+            }
+        }
+        return $attrs;
     }
 
     private function readRecordField(XMLReader $reader, string $tagName): array
@@ -147,19 +151,25 @@ class Reader
         return json_decode(trim($json), true);
     }
 
+    private function makeFileValue(string $value, array $attrs): false|array
+    {
+        $value = trim($value);
+        if (empty($value)) {
+            return false;
+        }
+
+        $file = (new FileExchange())->makeFileArray($this->path . '/' . $value, $attrs);
+        if (empty($file)) {
+            return false;
+        }
+
+        return $file;
+    }
+
     private function isFile(string $value): bool
     {
         $value = trim($value);
         return $value && is_file($this->path . '/' . $value);
-    }
-
-    private function isOpenTag(XMLReader $reader, string $tagName): bool
-    {
-        return (
-            $reader->nodeType == XMLReader::ELEMENT
-            && $reader->name == $tagName
-            && !$reader->isEmptyElement
-        );
     }
 
     private function isCloseTag(XMLReader $reader, string $tagName): bool
@@ -170,14 +180,19 @@ class Reader
         );
     }
 
-    private function getTagAttributes(XMLReader $reader): array
+    /**
+     * @throws HelperException
+     */
+    public function getAttributes(): array
     {
-        $attrs = [];
-        if ($reader->hasAttributes) {
-            while ($reader->moveToNextAttribute()) {
-                $attrs[$reader->name] = htmlspecialchars_decode($reader->value);
-            }
+        $attrs = $this->readAttributes();
+
+        if (!$attrs['exchangeVersion'] || $attrs['exchangeVersion'] < Module::EXCHANGE_VERSION) {
+            throw new HelperException(
+                Locale::getMessage('ERR_EXCHANGE_VERSION', ['#NAME#' => $this->file]),
+            );
         }
+
         return $attrs;
     }
 
@@ -196,20 +211,5 @@ class Reader
 
         $reader->close();
         return $attributes;
-    }
-
-    private function makeFileValue(string $value, array $attrs): false|array
-    {
-        $value = trim($value);
-        if (empty($value)) {
-            return false;
-        }
-
-        $file = (new FileExchange())->makeFileArray($this->path . '/' . $value, $attrs);
-        if (empty($file)) {
-            return false;
-        }
-
-        return $file;
     }
 }

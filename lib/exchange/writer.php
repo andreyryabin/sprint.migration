@@ -22,8 +22,8 @@ class Writer
         if (!class_exists('XMLWriter')) {
             throw new MigrationException(
                 Locale::getMessage(
-                    'ERR_EXCHANGE_DISABLED_XML'
-                )
+                    'ERR_EXCHANGE_DISABLED_XML',
+                ),
             );
         }
     }
@@ -37,6 +37,27 @@ class Writer
 
         $this->appendToFile('<?xml version="1.0" encoding="UTF-8"?>');
         $this->appendToFile('<items ' . $this->makeAttributes($attributes) . '>');
+    }
+
+    private function getFileDir(): string
+    {
+        return dirname($this->file);
+    }
+
+    private function appendToFile($content): void
+    {
+        file_put_contents($this->file, $content . PHP_EOL, FILE_APPEND);
+    }
+
+    private function makeAttributes(array $attrs): string
+    {
+        $attrs['exchangeVersion'] = Module::EXCHANGE_VERSION;
+
+        $str = '';
+        foreach ($attrs as $k => $v) {
+            $str .= $k . '="' . $v . '" ';
+        }
+        return $str;
     }
 
     public function closeFile(): void
@@ -66,18 +87,6 @@ class Writer
         return $tag->countChilds();
     }
 
-    /**
-     * @throws MigrationException
-     */
-    private function copyTagsFiles(WriterTag $tag): void
-    {
-        $fileExchange = new FileExchange();
-        foreach ($tag->getFiles() as $file) {
-            $fileExchange->copyFileToExchange($file, $this->getFileDir());
-        }
-
-    }
-
     private function appendTagsToXml(XMLWriter $writer, WriterTag $tag): void
     {
         $writer->startElement($tag->getName());
@@ -101,25 +110,15 @@ class Writer
         $writer->endElement();
     }
 
-    private function appendToFile($content): void
+    /**
+     * @throws MigrationException
+     */
+    private function copyTagsFiles(WriterTag $tag): void
     {
-        file_put_contents($this->file, $content . PHP_EOL, FILE_APPEND);
-    }
-
-    private function getFileDir(): string
-    {
-        return dirname($this->file);
-    }
-
-    private function makeAttributes(array $attrs): string
-    {
-        $attrs['exchangeVersion'] = Module::EXCHANGE_VERSION;
-
-        $str = '';
-        foreach ($attrs as $k => $v) {
-            $str .= $k . '="' . $v . '" ';
+        $fileExchange = new FileExchange();
+        foreach ($tag->getFiles() as $file) {
+            $fileExchange->copyFileToExchange($file, $this->getFileDir());
         }
-        return $str;
     }
 
     public function setCopyFiles(bool $copyFiles): Writer

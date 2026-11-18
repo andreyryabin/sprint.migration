@@ -11,9 +11,7 @@ abstract class AbstractField
     private string $title = '';
     private string $note = '';
 
-    public function __construct(private readonly string $code)
-    {
-    }
+    public function __construct(private readonly string $code) {}
 
     abstract public function getDefaultValue(): mixed;
 

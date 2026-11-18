@@ -34,15 +34,16 @@ class VersionTable extends AbstractTable
     /**
      * @throws MigrationException
      */
-    public function addRecord(string $versionName, string $tag = ''): bool
+    public function addRecord(string $versionName, string $hash, string $tag): bool
     {
         $record = [
             'version' => $versionName,
-            'tag'     => $tag,
-            'meta'    => [
+            'hash' => $hash,
+            'tag' => $tag,
+            'meta' => [
                 'created_by' => $this->getCurrentUserLogin(),
                 'created_at' => date(VersionTable::DATE_FORMAT),
-            ]
+            ],
         ];
 
         return $this->add($record)->isSuccess();
@@ -75,11 +76,11 @@ class VersionTable extends AbstractTable
     {
         return [
             new IntegerField('id', [
-                'primary'      => true,
+                'primary' => true,
                 'autocomplete' => true,
             ]),
             new StringField('version', [
-                'size'   => 255,
+                'size' => 255,
                 'unique' => true,
             ]),
             new StringField('hash', [
@@ -89,7 +90,7 @@ class VersionTable extends AbstractTable
                 'size' => 50,
             ]),
             new TextField('meta', [
-                'long'       => true,
+                'long' => true,
                 'serialized' => true,
             ]),
         ];

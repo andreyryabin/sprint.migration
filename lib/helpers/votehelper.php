@@ -26,53 +26,16 @@ class VoteHelper extends Helper
         return $this->fetchAll(CVoteChannel::GetList($by, $order, $filter, $isFiltered));
     }
 
-    public function getVotesList(array $filter = []): array
-    {
-        $by = 's_c_sort';
-        $order = 'asc';
-        $isFiltered = null;
-
-        return $this->fetchAll(CVote::GetList($by, $order, $filter, $isFiltered));
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function exportChannelById(int $channelId): array
-    {
-        $channel = $this->getChannelById($channelId);
-        $channel['SITE'] = $this->exportChannelSites($channelId);
-        $channel['GROUP_ID'] = $this->exportChannelPermissions($channelId);
-
-        return $this->export(
-            $channel,
-            $this->getDefaultChannel(),
-            []
-        );
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function exportVoteById(int $voteId): array
-    {
-        return $this->export(
-            $this->getVoteById($voteId),
-            $this->getDefaultVote(),
-            []
-        );
-    }
-
     public function exportQuestions(int $voteId): array
     {
         return array_map(function ($question) {
             $question['ANSWERS'] = $this->exportCollection(
-                $this->getAnswers((int)$question['ID']),
+                $this->getAnswers((int) $question['ID']),
                 $this->getDefaultAnswer(),
                 [
                     'ID',
                     'QUESTION_ID',
-                ]
+                ],
             );
 
             return $this->export(
@@ -81,9 +44,97 @@ class VoteHelper extends Helper
                 [
                     'ID',
                     'VOTE_ID',
-                ]
+                ],
             );
         }, $this->getQuestions($voteId));
+    }
+
+    public function getAnswers(int $questionId): array
+    {
+        return array_map(
+            fn($answer) => $this->filterKeys($answer, $this->getAnswerKeys()),
+            $this->fetchAll(CVoteAnswer::GetList($questionId)),
+        );
+    }
+
+    private function filterKeys(array $item, array $keys): array
+    {
+        return array_intersect_key($item, array_flip($keys));
+    }
+
+    private function getAnswerKeys(): array
+    {
+        return [
+            'ID',
+            'ACTIVE',
+            'QUESTION_ID',
+            'C_SORT',
+            'MESSAGE',
+            'MESSAGE_TYPE',
+            'FIELD_TYPE',
+            'FIELD_WIDTH',
+            'FIELD_HEIGHT',
+            'FIELD_PARAM',
+            'COLOR',
+        ];
+    }
+
+    private function getDefaultAnswer(): array
+    {
+        return [
+            'ACTIVE' => 'Y',
+            'C_SORT' => '100',
+            'MESSAGE' => ' ',
+            'MESSAGE_TYPE' => 'html',
+            'FIELD_TYPE' => '0',
+            'FIELD_WIDTH' => '0',
+            'FIELD_HEIGHT' => '0',
+            'FIELD_PARAM' => '',
+            'COLOR' => '',
+        ];
+    }
+
+    private function getDefaultQuestion(): array
+    {
+        return [
+            'ACTIVE' => 'Y',
+            'C_SORT' => '100',
+            'QUESTION_TYPE' => 'html',
+            'DIAGRAM' => 'Y',
+            'REQUIRED' => 'N',
+            'DIAGRAM_TYPE' => 'histogram',
+            'TEMPLATE' => '',
+            'TEMPLATE_NEW' => '',
+        ];
+    }
+
+    public function getQuestions(int $voteId): array
+    {
+        $by = 's_c_sort';
+        $order = 'asc';
+        $isFiltered = null;
+
+        return array_map(
+            fn($question) => $this->filterKeys($question, $this->getQuestionKeys()),
+            $this->fetchAll(CVoteQuestion::GetList($voteId, $by, $order, [], $isFiltered)),
+        );
+    }
+
+    private function getQuestionKeys(): array
+    {
+        return [
+            'ID',
+            'ACTIVE',
+            'VOTE_ID',
+            'C_SORT',
+            'QUESTION',
+            'QUESTION_TYPE',
+            'DIAGRAM',
+            'REQUIRED',
+            'DIAGRAM_TYPE',
+            'TEMPLATE',
+            'TEMPLATE_NEW',
+        ];
     }
 
     /**
@@ -109,6 +160,34 @@ class VoteHelper extends Helper
         return $this->addChannel($channelForSave);
     }
 
+    private function getDefaultChannel(): array
+    {
+        return [
+            'C_SORT' => '100',
+            'FIRST_SITE_ID' => null,
+            'ACTIVE' => 'Y',
+            'HIDDEN' => 'N',
+            'VOTE_SINGLE' => 'Y',
+            'USE_CAPTCHA' => 'N',
+            'GROUP_ID' => [],
+        ];
+    }
+
+    private function revertChannelPermissions(array $permissions): array
+    {
+        $groupHelper = new UserGroupHelper();
+        $result = [];
+
+        foreach ($permissions as $groupCode => $permission) {
+            $groupId = $groupHelper->getGroupId($groupCode);
+            if ($groupId) {
+                $result[$groupId] = (int) $permission;
+            }
+        }
+
+        return $result;
+    }
+
     public function getChannelId(string $symbolicName, array $sites = []): int
     {
         $filter = [
@@ -120,133 +199,13 @@ class VoteHelper extends Helper
         }
 
         $channel = ChannelTable::getList([
-            'select' => ['ID'],
-            'filter' => $filter,
-            'order' => ['ID' => 'ASC'],
-            'limit' => 1,
-        ])->fetch();
+                                             'select' => ['ID'],
+                                             'filter' => $filter,
+                                             'order' => ['ID' => 'ASC'],
+                                             'limit' => 1,
+                                         ])->fetch();
 
-        return (int)($channel['ID'] ?? 0);
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function saveVote(int $channelId, array $vote): int
-    {
-        $this->checkRequiredKeys($vote, ['DATE_START', 'DATE_END']);
-
-        $vote = $this->merge($vote, $this->getDefaultVote());
-        $vote['CHANNEL_ID'] = $channelId;
-
-        $voteId = $this->getVoteId($channelId, (string)($vote['TITLE'] ?? ''), (string)$vote['DATE_START']);
-        if ($voteId) {
-            return $this->updateVote($voteId, $vote);
-        }
-
-        return $this->addVote($vote);
-    }
-
-    public function getVoteId(int $channelId, string $title = '', string $dateStart = ''): int
-    {
-        foreach ($this->getVotesList(['CHANNEL_ID' => $channelId]) as $vote) {
-            if ($title !== '' && $vote['TITLE'] == $title) {
-                return (int)$vote['ID'];
-            }
-
-            if ($title === '' && $dateStart !== '' && $vote['DATE_START'] == $dateStart) {
-                return (int)$vote['ID'];
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function saveQuestions(int $voteId, array $questions, bool $deleteOldQuestions = true): array
-    {
-        $currentQuestions = $this->getQuestions($voteId);
-        $updatedIds = [];
-
-        foreach ($questions as $question) {
-            $this->checkRequiredKeys($question, ['QUESTION']);
-
-            $questionId = $this->findByValue($currentQuestions, $updatedIds, 'QUESTION', $question['QUESTION']);
-            $updatedIds[] = $this->replaceQuestion($voteId, $questionId, $question);
-        }
-
-        if ($deleteOldQuestions) {
-            foreach ($currentQuestions as $currentQuestion) {
-                if (!in_array((int)$currentQuestion['ID'], $updatedIds)) {
-                    CVoteQuestion::Delete((int)$currentQuestion['ID'], $voteId);
-                }
-            }
-        }
-
-        return $updatedIds;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getChannelById(int $channelId): array
-    {
-        $channel = (new CVoteChannel())->GetByID($channelId)->Fetch();
-        if (empty($channel)) {
-            throw new HelperException("Vote channel \"$channelId\" not found");
-        }
-
-        return $this->filterKeys($channel, $this->getChannelKeys());
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getVoteById(int $voteId): array
-    {
-        $vote = CVote::GetByID($voteId)->Fetch();
-        if (empty($vote)) {
-            throw new HelperException("Vote \"$voteId\" not found");
-        }
-
-        return $this->filterKeys($vote, $this->getVoteKeys());
-    }
-
-    public function getQuestions(int $voteId): array
-    {
-        $by = 's_c_sort';
-        $order = 'asc';
-        $isFiltered = null;
-
-        return array_map(
-            fn($question) => $this->filterKeys($question, $this->getQuestionKeys()),
-            $this->fetchAll(CVoteQuestion::GetList($voteId, $by, $order, [], $isFiltered))
-        );
-    }
-
-    public function getAnswers(int $questionId): array
-    {
-        return array_map(
-            fn($answer) => $this->filterKeys($answer, $this->getAnswerKeys()),
-            $this->fetchAll(CVoteAnswer::GetList($questionId))
-        );
-    }
-
-    /**
-     * @throws HelperException
-     */
-    protected function addChannel(array $channel): int
-    {
-        $channelId = CVoteChannel::Add($channel);
-        if (empty($channelId)) {
-            $this->throwApplicationExceptionIfExists();
-            throw new HelperException($GLOBALS['strError'] ?? 'Vote channel not added');
-        }
-
-        $this->outNotice("Vote channel $channelId created");
-        return (int)$channelId;
+        return (int) ($channel['ID'] ?? 0);
     }
 
     /**
@@ -273,16 +232,142 @@ class VoteHelper extends Helper
     /**
      * @throws HelperException
      */
-    protected function addVote(array $vote): int
+    public function exportChannelById(int $channelId): array
     {
-        $voteId = CVote::Add($vote);
-        if (empty($voteId)) {
-            $this->throwApplicationExceptionIfExists();
-            throw new HelperException($GLOBALS['strError'] ?? 'Vote not added');
+        $channel = $this->getChannelById($channelId);
+        $channel['SITE'] = $this->exportChannelSites($channelId);
+        $channel['GROUP_ID'] = $this->exportChannelPermissions($channelId);
+
+        return $this->export(
+            $channel,
+            $this->getDefaultChannel(),
+            [],
+        );
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getChannelById(int $channelId): array
+    {
+        $channel = (new CVoteChannel())->GetByID($channelId)->Fetch();
+        if (empty($channel)) {
+            throw new HelperException("Vote channel \"$channelId\" not found");
         }
 
-        $this->outNotice("Vote $voteId created");
-        return (int)$voteId;
+        return $this->filterKeys($channel, $this->getChannelKeys());
+    }
+
+    private function getChannelKeys(): array
+    {
+        return [
+            'SYMBOLIC_NAME',
+            'C_SORT',
+            'FIRST_SITE_ID',
+            'ACTIVE',
+            'HIDDEN',
+            'TITLE',
+            'VOTE_SINGLE',
+            'USE_CAPTCHA',
+        ];
+    }
+
+    private function exportChannelSites(int $channelId): array
+    {
+        $sites = (new CVoteChannel())->GetSiteArray($channelId);
+        return is_array($sites) ? $sites : [];
+    }
+
+    private function exportChannelPermissions(int $channelId): array
+    {
+        $groupHelper = new UserGroupHelper();
+        $permissions = [];
+        $groupPermissions = (new CVoteChannel())->GetArrayGroupPermission($channelId);
+
+        foreach ($groupPermissions as $groupId => $permission) {
+            $groupCode = $groupHelper->getGroupCode($groupId);
+            if ($groupCode) {
+                $permissions[$groupCode] = (int) $permission;
+            }
+        }
+
+        return $permissions;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function addChannel(array $channel): int
+    {
+        $channelId = CVoteChannel::Add($channel);
+        if (empty($channelId)) {
+            $this->throwApplicationExceptionIfExists();
+            throw new HelperException($GLOBALS['strError'] ?? 'Vote channel not added');
+        }
+
+        $this->outNotice("Vote channel $channelId created");
+        return (int) $channelId;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function saveVote(int $channelId, array $vote): int
+    {
+        $this->checkRequiredKeys($vote, ['DATE_START', 'DATE_END']);
+
+        $vote = $this->merge($vote, $this->getDefaultVote());
+        $vote['CHANNEL_ID'] = $channelId;
+
+        $voteId = $this->getVoteId($channelId, (string) ($vote['TITLE'] ?? ''), (string) $vote['DATE_START']);
+        if ($voteId) {
+            return $this->updateVote($voteId, $vote);
+        }
+
+        return $this->addVote($vote);
+    }
+
+    private function getDefaultVote(): array
+    {
+        return [
+            'C_SORT' => '100',
+            'ACTIVE' => 'Y',
+            'NOTIFY' => 'N',
+            'URL' => null,
+            'DESCRIPTION' => '',
+            'DESCRIPTION_TYPE' => 'html',
+            'EVENT1' => '',
+            'EVENT2' => '',
+            'EVENT3' => '',
+            'UNIQUE_TYPE' => '2',
+            'KEEP_IP_SEC' => null,
+            'TEMPLATE' => '',
+            'RESULT_TEMPLATE' => '',
+        ];
+    }
+
+    public function getVoteId(int $channelId, string $title = '', string $dateStart = ''): int
+    {
+        foreach ($this->getVotesList(['CHANNEL_ID' => $channelId]) as $vote) {
+            if ($title !== '' && $vote['TITLE'] == $title) {
+                return (int) $vote['ID'];
+            }
+
+            if ($title === '' && $dateStart !== '' && $vote['DATE_START'] == $dateStart) {
+                return (int) $vote['ID'];
+            }
+        }
+
+        return 0;
+    }
+
+    public function getVotesList(array $filter = []): array
+    {
+        $by = 's_c_sort';
+        $order = 'asc';
+        $isFiltered = null;
+
+        return $this->fetchAll(CVote::GetList($by, $order, $filter, $isFiltered));
     }
 
     /**
@@ -304,6 +389,106 @@ class VoteHelper extends Helper
         }
 
         return $voteId;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function exportVoteById(int $voteId): array
+    {
+        return $this->export(
+            $this->getVoteById($voteId),
+            $this->getDefaultVote(),
+            [],
+        );
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getVoteById(int $voteId): array
+    {
+        $vote = CVote::GetByID($voteId)->Fetch();
+        if (empty($vote)) {
+            throw new HelperException("Vote \"$voteId\" not found");
+        }
+
+        return $this->filterKeys($vote, $this->getVoteKeys());
+    }
+
+    private function getVoteKeys(): array
+    {
+        return [
+            'CHANNEL_ID',
+            'C_SORT',
+            'ACTIVE',
+            'NOTIFY',
+            'DATE_START',
+            'DATE_END',
+            'URL',
+            'TITLE',
+            'DESCRIPTION',
+            'DESCRIPTION_TYPE',
+            'EVENT1',
+            'EVENT2',
+            'EVENT3',
+            'UNIQUE_TYPE',
+            'KEEP_IP_SEC',
+            'TEMPLATE',
+            'RESULT_TEMPLATE',
+        ];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function addVote(array $vote): int
+    {
+        $voteId = CVote::Add($vote);
+        if (empty($voteId)) {
+            $this->throwApplicationExceptionIfExists();
+            throw new HelperException($GLOBALS['strError'] ?? 'Vote not added');
+        }
+
+        $this->outNotice("Vote $voteId created");
+        return (int) $voteId;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function saveQuestions(int $voteId, array $questions, bool $deleteOldQuestions = true): array
+    {
+        $currentQuestions = $this->getQuestions($voteId);
+        $updatedIds = [];
+
+        foreach ($questions as $question) {
+            $this->checkRequiredKeys($question, ['QUESTION']);
+
+            $questionId = $this->findByValue($currentQuestions, $updatedIds, 'QUESTION', $question['QUESTION']);
+            $updatedIds[] = $this->replaceQuestion($voteId, $questionId, $question);
+        }
+
+        if ($deleteOldQuestions) {
+            foreach ($currentQuestions as $currentQuestion) {
+                if (!in_array((int) $currentQuestion['ID'], $updatedIds)) {
+                    CVoteQuestion::Delete((int) $currentQuestion['ID'], $voteId);
+                }
+            }
+        }
+
+        return $updatedIds;
+    }
+
+    private function findByValue(array $items, array $usedIds, string $key, mixed $value): int
+    {
+        foreach ($items as $item) {
+            if (!in_array((int) $item['ID'], $usedIds) && $item[$key] == $value) {
+                return (int) $item['ID'];
+            }
+        }
+
+        return 0;
     }
 
     /**
@@ -331,10 +516,10 @@ class VoteHelper extends Helper
             throw new HelperException($GLOBALS['strError'] ?? 'Vote question not saved');
         }
 
-        $this->saveAnswers((int)$newId, $answers);
+        $this->saveAnswers((int) $newId, $answers);
         $this->outNotice($questionId ? "Vote question $newId updated" : "Vote question $newId created");
 
-        return (int)$newId;
+        return (int) $newId;
     }
 
     /**
@@ -363,215 +548,30 @@ class VoteHelper extends Helper
                 throw new HelperException($GLOBALS['strError'] ?? 'Vote answer not saved');
             }
 
-            $updatedIds[] = (int)$newId;
+            $updatedIds[] = (int) $newId;
         }
 
         foreach ($currentAnswers as $currentAnswer) {
-            if (!in_array((int)$currentAnswer['ID'], $updatedIds)) {
-                CVoteAnswer::Delete((int)$currentAnswer['ID'], $questionId);
+            if (!in_array((int) $currentAnswer['ID'], $updatedIds)) {
+                CVoteAnswer::Delete((int) $currentAnswer['ID'], $questionId);
             }
         }
 
         return $updatedIds;
     }
 
-    private function exportChannelSites(int $channelId): array
-    {
-        $sites = (new CVoteChannel())->GetSiteArray($channelId);
-        return is_array($sites) ? $sites : [];
-    }
-
-    private function exportChannelPermissions(int $channelId): array
-    {
-        $groupHelper = new UserGroupHelper();
-        $permissions = [];
-        $groupPermissions = (new CVoteChannel())->GetArrayGroupPermission($channelId);
-
-        foreach ($groupPermissions as $groupId => $permission) {
-            $groupCode = $groupHelper->getGroupCode($groupId);
-            if ($groupCode) {
-                $permissions[$groupCode] = (int)$permission;
-            }
-        }
-
-        return $permissions;
-    }
-
-    private function revertChannelPermissions(array $permissions): array
-    {
-        $groupHelper = new UserGroupHelper();
-        $result = [];
-
-        foreach ($permissions as $groupCode => $permission) {
-            $groupId = $groupHelper->getGroupId($groupCode);
-            if ($groupId) {
-                $result[$groupId] = (int)$permission;
-            }
-        }
-
-        return $result;
-    }
-
-    private function findByValue(array $items, array $usedIds, string $key, mixed $value): int
-    {
-        foreach ($items as $item) {
-            if (!in_array((int)$item['ID'], $usedIds) && $item[$key] == $value) {
-                return (int)$item['ID'];
-            }
-        }
-
-        return 0;
-    }
-
     private function findAnswer(array $items, array $usedIds, array $answer): int
     {
         foreach ($items as $item) {
             if (
-                !in_array((int)$item['ID'], $usedIds)
+                !in_array((int) $item['ID'], $usedIds)
                 && $item['MESSAGE'] == $answer['MESSAGE']
-                && (int)$item['FIELD_TYPE'] == (int)($answer['FIELD_TYPE'] ?? 0)
+                && (int) $item['FIELD_TYPE'] == (int) ($answer['FIELD_TYPE'] ?? 0)
             ) {
-                return (int)$item['ID'];
+                return (int) $item['ID'];
             }
         }
 
         return 0;
-    }
-
-    private function filterKeys(array $item, array $keys): array
-    {
-        return array_intersect_key($item, array_flip($keys));
-    }
-
-    private function getChannelKeys(): array
-    {
-        return [
-            'SYMBOLIC_NAME',
-            'C_SORT',
-            'FIRST_SITE_ID',
-            'ACTIVE',
-            'HIDDEN',
-            'TITLE',
-            'VOTE_SINGLE',
-            'USE_CAPTCHA',
-        ];
-    }
-
-    private function getVoteKeys(): array
-    {
-        return [
-            'CHANNEL_ID',
-            'C_SORT',
-            'ACTIVE',
-            'NOTIFY',
-            'DATE_START',
-            'DATE_END',
-            'URL',
-            'TITLE',
-            'DESCRIPTION',
-            'DESCRIPTION_TYPE',
-            'EVENT1',
-            'EVENT2',
-            'EVENT3',
-            'UNIQUE_TYPE',
-            'KEEP_IP_SEC',
-            'TEMPLATE',
-            'RESULT_TEMPLATE',
-        ];
-    }
-
-    private function getQuestionKeys(): array
-    {
-        return [
-            'ID',
-            'ACTIVE',
-            'VOTE_ID',
-            'C_SORT',
-            'QUESTION',
-            'QUESTION_TYPE',
-            'DIAGRAM',
-            'REQUIRED',
-            'DIAGRAM_TYPE',
-            'TEMPLATE',
-            'TEMPLATE_NEW',
-        ];
-    }
-
-    private function getAnswerKeys(): array
-    {
-        return [
-            'ID',
-            'ACTIVE',
-            'QUESTION_ID',
-            'C_SORT',
-            'MESSAGE',
-            'MESSAGE_TYPE',
-            'FIELD_TYPE',
-            'FIELD_WIDTH',
-            'FIELD_HEIGHT',
-            'FIELD_PARAM',
-            'COLOR',
-        ];
-    }
-
-    private function getDefaultChannel(): array
-    {
-        return [
-            'C_SORT' => '100',
-            'FIRST_SITE_ID' => null,
-            'ACTIVE' => 'Y',
-            'HIDDEN' => 'N',
-            'VOTE_SINGLE' => 'Y',
-            'USE_CAPTCHA' => 'N',
-            'GROUP_ID' => [],
-        ];
-    }
-
-    private function getDefaultVote(): array
-    {
-        return [
-            'C_SORT' => '100',
-            'ACTIVE' => 'Y',
-            'NOTIFY' => 'N',
-            'URL' => null,
-            'DESCRIPTION' => '',
-            'DESCRIPTION_TYPE' => 'html',
-            'EVENT1' => '',
-            'EVENT2' => '',
-            'EVENT3' => '',
-            'UNIQUE_TYPE' => '2',
-            'KEEP_IP_SEC' => null,
-            'TEMPLATE' => '',
-            'RESULT_TEMPLATE' => '',
-        ];
-    }
-
-    private function getDefaultQuestion(): array
-    {
-        return [
-            'ACTIVE' => 'Y',
-            'C_SORT' => '100',
-            'QUESTION_TYPE' => 'html',
-            'DIAGRAM' => 'Y',
-            'REQUIRED' => 'N',
-            'DIAGRAM_TYPE' => 'histogram',
-            'TEMPLATE' => '',
-            'TEMPLATE_NEW' => '',
-        ];
-    }
-
-    private function getDefaultAnswer(): array
-    {
-        return [
-            'ACTIVE' => 'Y',
-            'C_SORT' => '100',
-            'MESSAGE' => ' ',
-            'MESSAGE_TYPE' => 'html',
-            'FIELD_TYPE' => '0',
-            'FIELD_WIDTH' => '0',
-            'FIELD_HEIGHT' => '0',
-            'FIELD_PARAM' => '',
-            'COLOR' => '',
-        ];
     }
 }

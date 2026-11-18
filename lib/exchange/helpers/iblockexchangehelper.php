@@ -3,7 +3,6 @@
 namespace Sprint\Migration\Exchange\Helpers;
 
 
-
 use _CIBElement;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\WriterException;
@@ -59,7 +58,8 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     public function getIblockPropertiesSelect(int $iblockId): array
     {
-        return array_map(fn($prop) => [
+        return array_map(fn($prop)
+            => [
             'title' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
             'value' => $prop['CODE'],
         ], $this->exportProperties($iblockId));
@@ -86,18 +86,6 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $res;
     }
 
-    public function getElementFields(_CIBElement $element): array
-    {
-        return $this->prepareElement($element->GetFields());
-    }
-
-    public function getElementProps(_CIBElement $element): array
-    {
-        return $element->GetProperties();
-    }
-
-    //writer
-
     /**
      * @throws HelperException
      */
@@ -117,6 +105,8 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $this->getElementsCount($iblockId, $filter);
     }
 
+    //writer
+
     /**
      * @throws HelperException
      */
@@ -127,11 +117,11 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         $dbres = $this->getElementsList(
             $iblockId,
             [
-                'order'  => ['ID' => 'ASC'],
+                'order' => ['ID' => 'ASC'],
                 'offset' => $offset,
-                'limit'  => $limit,
+                'limit' => $limit,
                 'filter' => $filter,
-            ]
+            ],
         );
 
         $tag = new WriterTag('tmp');
@@ -142,49 +132,11 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                     $this->getElementFields($element),
                     $this->getElementProps($element),
                     $exportFields,
-                    $exportProps
-                )
+                    $exportProps,
+                ),
             );
         }
         return $tag;
-    }
-
-    /**
-     * @throws HelperException
-     * @throws WriterException
-     */
-    public function writeValueIblockSection(WriterTag $tag, int $iblockId, int $sectionId): void
-    {
-        if (!empty($iblockId) && !empty($sectionId)) {
-            $item = $this->getSectionIfExists($iblockId, ['ID' => $sectionId]);
-
-            $tag->addValueTag(
-                $item['NAME'],
-                [
-                    'section_depth_level' => $item['DEPTH_LEVEL'],
-                    'section_code'        => $item['CODE'],
-                ]
-            );
-        }
-    }
-
-    /**
-     * @throws HelperException
-     * @throws WriterException
-     */
-    public function writeValueIblockElement(WriterTag $tag, int $iblockId, int $elementId): void
-    {
-        if (!empty($iblockId) && !empty($elementId)) {
-            $item = $this->getElementIfExists($iblockId, ['ID' => $elementId]);
-
-            $tag->addValueTag(
-                $item['NAME'],
-                [
-                    'element_xml_id' => $item['XML_ID'],
-                    'element_code'   => $item['CODE'],
-                ]
-            );
-        }
     }
 
     /**
@@ -195,9 +147,8 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         array $fields,
         array $props,
         array $exportFields,
-        array $exportProperties
-    ): WriterTag
-    {
+        array $exportProperties,
+    ): WriterTag {
         $item = new WriterTag('item');
 
         foreach ($fields as $code => $val) {
@@ -205,17 +156,19 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                 try {
                     $item->addChild(
                         $this->createWriterFieldTag([
-                            'NAME'      => $code,
-                            'VALUE'     => $val,
-                            'IBLOCK_ID' => $iblockId,
-                        ])
+                                                        'NAME' => $code,
+                                                        'VALUE' => $val,
+                                                        'IBLOCK_ID' => $iblockId,
+                                                    ]),
                     );
                 } catch (WriterException $e) {
-                    throw new HelperException($e->getMessage() . " in " . print_r([
-                            'IBLOCK_ID' => $iblockId,
-                            'ID'        => $fields['ID'],
-                            'FIELD'     => $code,
-                        ], true));
+                    throw new HelperException(
+                        $e->getMessage() . " in " . print_r([
+                                                                'IBLOCK_ID' => $iblockId,
+                                                                'ID' => $fields['ID'],
+                                                                'FIELD' => $code,
+                                                            ], true),
+                    );
                 }
             }
         }
@@ -224,14 +177,16 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
             if (in_array($prop['CODE'], $exportProperties)) {
                 try {
                     $item->addChild(
-                        $this->createWriterPropertyTag($prop)
+                        $this->createWriterPropertyTag($prop),
                     );
                 } catch (WriterException $e) {
-                    throw new HelperException($e->getMessage() . " in " . print_r([
-                            'IBLOCK_ID' => $iblockId,
-                            'ID'        => $fields['ID'],
-                            'PROPERTY'  => $prop['CODE'],
-                        ], true));
+                    throw new HelperException(
+                        $e->getMessage() . " in " . print_r([
+                                                                'IBLOCK_ID' => $iblockId,
+                                                                'ID' => $fields['ID'],
+                                                                'PROPERTY' => $prop['CODE'],
+                                                            ], true),
+                    );
                 }
             }
         }
@@ -280,6 +235,25 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      * @throws HelperException
      * @throws WriterException
      */
+    public function writeValueIblockSection(WriterTag $tag, int $iblockId, int $sectionId): void
+    {
+        if (!empty($iblockId) && !empty($sectionId)) {
+            $item = $this->getSectionIfExists($iblockId, ['ID' => $sectionId]);
+
+            $tag->addValueTag(
+                $item['NAME'],
+                [
+                    'section_depth_level' => $item['DEPTH_LEVEL'],
+                    'section_code' => $item['CODE'],
+                ],
+            );
+        }
+    }
+
+    /**
+     * @throws HelperException
+     * @throws WriterException
+     */
     protected function createWriterPropertyTag(array $prop): WriterTag
     {
         $tag = new WriterTag('property', ['name' => $prop['CODE']]);
@@ -306,41 +280,17 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     /**
      * @throws WriterException
      */
-    protected function writePropertyString(WriterTag $tag, $prop): void
+    protected function writePropertyFile(WriterTag $tag, $prop): void
     {
-        if ($prop['MULTIPLE'] == 'Y') {
-            foreach ($prop['VALUE'] as $index => $val1) {
-                $tag->addValueTag($val1, ['description' => $prop['DESCRIPTION'][$index] ?? '']);
-            }
-        } else {
-            $tag->addValueTag($prop['VALUE'], ['description' => $prop['DESCRIPTION']]);
-        }
+        $tag->addFile($prop['VALUE'], $prop['MULTIPLE'] == 'Y');
     }
 
     /**
      * @throws WriterException
      */
-    protected function writePropertyHtml(WriterTag $tag, $prop): void
+    protected function writePropertyList(WriterTag $tag, $prop): void
     {
-        if ($prop['MULTIPLE'] == 'Y') {
-            foreach ($prop['VALUE'] as $index => $val1) {
-                $tag->addValueTag(
-                    $val1['TEXT'],
-                    [
-                        'text-type'   => $val1['TYPE'],
-                        'description' => $prop['DESCRIPTION'][$index] ?? '',
-                    ]
-                );
-            }
-        } else {
-            $tag->addValueTag(
-                $prop['VALUE']['TEXT'] ?? '',
-                [
-                    'text-type'   => $prop['VALUE']['TYPE'] ?? '',
-                    'description' => $prop['DESCRIPTION'],
-                ]
-            );
-        }
+        $tag->addValue($prop['VALUE_XML_ID'], $prop['MULTIPLE'] == 'Y');
     }
 
     /**
@@ -370,19 +320,72 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     }
 
     /**
+     * @throws HelperException
      * @throws WriterException
      */
-    protected function writePropertyList(WriterTag $tag, $prop): void
+    public function writeValueIblockElement(WriterTag $tag, int $iblockId, int $elementId): void
     {
-        $tag->addValue($prop['VALUE_XML_ID'], $prop['MULTIPLE'] == 'Y');
+        if (!empty($iblockId) && !empty($elementId)) {
+            $item = $this->getElementIfExists($iblockId, ['ID' => $elementId]);
+
+            $tag->addValueTag(
+                $item['NAME'],
+                [
+                    'element_xml_id' => $item['XML_ID'],
+                    'element_code' => $item['CODE'],
+                ],
+            );
+        }
     }
 
     /**
      * @throws WriterException
      */
-    protected function writePropertyFile(WriterTag $tag, $prop): void
+    protected function writePropertyHtml(WriterTag $tag, $prop): void
     {
-        $tag->addFile($prop['VALUE'], $prop['MULTIPLE'] == 'Y');
+        if ($prop['MULTIPLE'] == 'Y') {
+            foreach ($prop['VALUE'] as $index => $val1) {
+                $tag->addValueTag(
+                    $val1['TEXT'],
+                    [
+                        'text-type' => $val1['TYPE'],
+                        'description' => $prop['DESCRIPTION'][$index] ?? '',
+                    ],
+                );
+            }
+        } else {
+            $tag->addValueTag(
+                $prop['VALUE']['TEXT'] ?? '',
+                [
+                    'text-type' => $prop['VALUE']['TYPE'] ?? '',
+                    'description' => $prop['DESCRIPTION'],
+                ],
+            );
+        }
+    }
+
+    /**
+     * @throws WriterException
+     */
+    protected function writePropertyString(WriterTag $tag, $prop): void
+    {
+        if ($prop['MULTIPLE'] == 'Y') {
+            foreach ($prop['VALUE'] as $index => $val1) {
+                $tag->addValueTag($val1, ['description' => $prop['DESCRIPTION'][$index] ?? '']);
+            }
+        } else {
+            $tag->addValueTag($prop['VALUE'], ['description' => $prop['DESCRIPTION']]);
+        }
+    }
+
+    public function getElementFields(_CIBElement $element): array
+    {
+        return $this->prepareElement($element->GetFields());
+    }
+
+    public function getElementProps(_CIBElement $element): array
+    {
+        return $element->GetProperties();
     }
 
 
@@ -396,34 +399,6 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         $iblockId = $this->getIblockIdByUid($attributes['iblockUid']);
 
         return array_map(fn($record) => $this->convertReaderRecord($iblockId, $record), $records);
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function readValueIblockElement(int $iblockId, array $val): int
-    {
-        $this->checkRequiredKeys($val, ['element_xml_id', 'value']);
-
-        return $this->getElementIdIfExists($iblockId, array_filter([
-            'NAME'   => $val['value'],
-            'CODE'   => $val['element_code'] ?? '',
-            'XML_ID' => $val['element_xml_id'],
-        ]));
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function readValueIblockSection(int $iblockId, array $val): int
-    {
-        $this->checkRequiredKeys($val, ['section_depth_level', 'value']);
-
-        return $this->getSectionIdIfExists($iblockId, array_filter([
-            'NAME'        => $val['value'],
-            'CODE'        => $val['section_code'] ?? '',
-            'DEPTH_LEVEL' => $val['section_depth_level'],
-        ]));
     }
 
     /**
@@ -463,15 +438,10 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         }
 
         return [
-            'iblock_id'  => $iblockId,
-            'fields'     => $convertedFields,
+            'iblock_id' => $iblockId,
+            'fields' => $convertedFields,
             'properties' => $convertedProperties,
         ];
-    }
-
-    protected function readFieldValue(array $field)
-    {
-        return $field['value'][0]['value'];
     }
 
     /**
@@ -481,8 +451,22 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     {
         return array_map(
             fn($val) => $this->readValueIblockSection($iblockId, $val),
-            $field['value']
+            $field['value'],
         );
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function readValueIblockSection(int $iblockId, array $val): int
+    {
+        $this->checkRequiredKeys($val, ['section_depth_level', 'value']);
+
+        return $this->getSectionIdIfExists($iblockId, array_filter([
+                                                                       'NAME' => $val['value'],
+                                                                       'CODE' => $val['section_code'] ?? '',
+                                                                       'DEPTH_LEVEL' => $val['section_depth_level'],
+                                                                   ]));
     }
 
     protected function readFieldIpropertyTemplates(array $field): array
@@ -494,6 +478,104 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $iproperty;
     }
 
+    protected function readFieldValue(array $field)
+    {
+        return $field['value'][0]['value'];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function readPropertyList(int $iblockId, array $prop)
+    {
+        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
+        $res = [];
+        foreach ($prop['value'] as $val) {
+            $val['value'] = $this->getPropertyEnumIdByXmlId(
+                $iblockId,
+                $prop['name'],
+                $val['value'],
+            );
+
+            $res[] = $this->readPropertyValue($val);
+        }
+        return ($isMultiple) ? $res : $res[0];
+    }
+
+    protected function readPropertyValue(array $val): array
+    {
+        $result = ['VALUE' => $val['value']];
+
+        if (!empty($val['description'])) {
+            $result['DESCRIPTION'] = $val['description'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function readPropertyFile(int $iblockId, array $prop)
+    {
+        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
+
+        $res = array_map(fn($val) => $val['value'], $prop['value']);
+
+        return ($isMultiple) ? $res : $res[0];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function readPropertySection(int $iblockId, array $prop)
+    {
+        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
+        $linkIblockId = $this->getPropertyLinkIblockId($iblockId, $prop['name']);
+
+        if ($linkIblockId) {
+            $res = array_map(
+                fn($val) => ['VALUE' => $this->readValueIblockSection($linkIblockId, $val)],
+                $prop['value'],
+            );
+            return ($isMultiple) ? $res : ($res[0] ?? false);
+        }
+
+        return ($isMultiple) ? [] : false;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function readPropertyElement(int $iblockId, array $prop)
+    {
+        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
+        $linkIblockId = $this->getPropertyLinkIblockId($iblockId, $prop['name']);
+
+        if ($linkIblockId) {
+            $res = array_map(
+                fn($val) => ['VALUE' => $this->readValueIblockElement($linkIblockId, $val)],
+                $prop['value'],
+            );
+            return ($isMultiple) ? $res : ($res[0] ?? false);
+        }
+        return ($isMultiple) ? [] : false;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function readValueIblockElement(int $iblockId, array $val): int
+    {
+        $this->checkRequiredKeys($val, ['element_xml_id', 'value']);
+
+        return $this->getElementIdIfExists($iblockId, array_filter([
+                                                                       'NAME' => $val['value'],
+                                                                       'CODE' => $val['element_code'] ?? '',
+                                                                       'XML_ID' => $val['element_xml_id'],
+                                                                   ]));
+    }
+
     /**
      * @throws HelperException
      */
@@ -503,7 +585,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         $res = [];
         foreach ($prop['value'] as $val) {
             $res[] = [
-                'VALUE'       => [
+                'VALUE' => [
                     'TEXT' => $val['value'],
                     'TYPE' => $val['text-type'] ?? 'html',
                 ],
@@ -523,85 +605,6 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
         $res = array_map(fn($val) => $this->readPropertyValue($val), $prop['value']);
 
-        return ($isMultiple) ? $res : $res[0];
-    }
-
-    protected function readPropertyValue(array $val): array
-    {
-        $result = ['VALUE' => $val['value']];
-
-        if (!empty($val['description'])) {
-            $result['DESCRIPTION'] = $val['description'];
-        }
-
-        return $result;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    protected function readPropertySection(int $iblockId, array $prop)
-    {
-        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
-        $linkIblockId = $this->getPropertyLinkIblockId($iblockId, $prop['name']);
-
-        if ($linkIblockId) {
-            $res = array_map(
-                fn($val) => ['VALUE' => $this->readValueIblockSection($linkIblockId, $val)],
-                $prop['value']
-            );
-            return ($isMultiple) ? $res : ($res[0] ?? false);
-        }
-
-        return ($isMultiple) ? [] : false;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    protected function readPropertyElement(int $iblockId, array $prop)
-    {
-        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
-        $linkIblockId = $this->getPropertyLinkIblockId($iblockId, $prop['name']);
-
-        if ($linkIblockId) {
-            $res = array_map(
-                fn($val) => ['VALUE' => $this->readValueIblockElement($linkIblockId, $val)],
-                $prop['value']
-            );
-            return ($isMultiple) ? $res : ($res[0] ?? false);
-        }
-        return ($isMultiple) ? [] : false;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    protected function readPropertyFile(int $iblockId, array $prop)
-    {
-        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
-
-        $res = array_map(fn($val) => $val['value'], $prop['value']);
-
-        return ($isMultiple) ? $res : $res[0];
-    }
-
-    /**
-     * @throws HelperException
-     */
-    protected function readPropertyList(int $iblockId, array $prop)
-    {
-        $isMultiple = $this->isPropertyMultiple($iblockId, $prop['name']);
-        $res = [];
-        foreach ($prop['value'] as $val) {
-            $val['value'] = $this->getPropertyEnumIdByXmlId(
-                $iblockId,
-                $prop['name'],
-                $val['value']
-            );
-
-            $res[] = $this->readPropertyValue($val);
-        }
         return ($isMultiple) ? $res : $res[0];
     }
 }

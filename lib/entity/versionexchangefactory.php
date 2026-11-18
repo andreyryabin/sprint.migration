@@ -7,9 +7,7 @@ use Sprint\Migration\VersionConfig;
 
 class VersionExchangeFactory
 {
-    public function __construct(private readonly VersionConfig $versionConfig)
-    {
-    }
+    public function __construct(private readonly VersionConfig $versionConfig) {}
 
     public function tryCreate(string $versionName): ?VersionExchange
     {
@@ -28,7 +26,7 @@ class VersionExchangeFactory
         $dir = $this->versionConfig->getVersionExchangeDir($versionName);
 
         return new VersionExchange(
-            directoryPath: $dir,
+            directoryPath:   $dir,
             directoryExists: $dir && is_dir($dir),
         );
     }

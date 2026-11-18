@@ -27,7 +27,10 @@ class BlogPostBuilder extends VersionBuilder
 
         $this->setDescription(implode(PHP_EOL, [
             Locale::getMessage('DEVELOPER_NAME', ['#VALUE#' => '@temi4']),
-            Locale::getMessage('DEVELOPER_URI', ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/187']),
+            Locale::getMessage(
+                'DEVELOPER_URI',
+                ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/187'],
+            ),
             Locale::getMessage('BUILDER_BlogPostExport_Info'),
         ]));
 
@@ -45,7 +48,7 @@ class BlogPostBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
         $exhelper = $this->getExchangeHelpers();
 
-        $blogId = (int)$this->addFieldAndReturn('blog_id', [
+        $blogId = (int) $this->addFieldAndReturn('blog_id', [
             'title' => Locale::getMessage('BUILDER_BlogPostExport_blog_id'),
             'items' => $this->getBlogsStructure(),
         ]);
@@ -62,18 +65,33 @@ class BlogPostBuilder extends VersionBuilder
             ->execute(
                 attributesFn: fn() => $exhelper->BlogExchange()->getWriterAttributes($blogId),
                 totalCountFn: fn() => $exhelper->BlogExchange()->getWriterRecordsCount($blogId, $filter),
-                recordsFn: fn($offset, $limit) => $exhelper->BlogExchange()->getWriterRecordsTag(
+                recordsFn: fn($offset, $limit)
+                    => $exhelper->BlogExchange()->getWriterRecordsTag(
                     $offset,
                     $limit,
                     $blogId,
-                    $filter
+                    $filter,
                 ),
-                progressFn: fn($value, $totalCount) => $this->outProgress(
-                    'Progress', $value, $totalCount
-                )
+                progressFn: fn($value, $totalCount)
+                    => $this->outProgress(
+                    'Progress',
+                    $value,
+                    $totalCount,
+                ),
             );
 
         $this->createVersionFile(Module::getModuleTemplateFile('BlogPostExport'));
+    }
+
+    protected function getBlogsStructure(): array
+    {
+        $items = array_map(function ($item) {
+            $item['GROUP_TITLE'] = '[' . $item['GROUP_SITE_ID'] . '] ' . $item['GROUP_NAME'];
+            $item['TITLE'] = '[' . $item['URL'] . '] ' . $item['NAME'];
+            return $item;
+        }, $this->getHelperManager()->Blog()->getBlogs());
+
+        return $this->createStructure($items, 'ID', 'TITLE', 'GROUP_TITLE');
     }
 
     /**
@@ -82,7 +100,7 @@ class BlogPostBuilder extends VersionBuilder
     protected function getPostFilter(): array
     {
         $mode = $this->addFieldAndReturn('post_filter_mode', [
-            'title'  => Locale::getMessage('BUILDER_BlogPostExport_filter'),
+            'title' => Locale::getMessage('BUILDER_BlogPostExport_filter'),
             'select' => [
                 [
                     'title' => Locale::getMessage('BUILDER_SelectAll'),
@@ -101,8 +119,8 @@ class BlogPostBuilder extends VersionBuilder
 
         if ($mode === 'list_id') {
             $ids = $this->addFieldAndReturn('post_filter_list_id', [
-                'title'  => Locale::getMessage('BUILDER_BlogPostExport_FilterListId'),
-                'width'  => 350,
+                'title' => Locale::getMessage('BUILDER_BlogPostExport_FilterListId'),
+                'width' => 350,
                 'height' => 40,
             ]);
 
@@ -113,8 +131,8 @@ class BlogPostBuilder extends VersionBuilder
         $filter = [];
         if ($mode === 'list_code') {
             $codes = $this->addFieldAndReturn('post_filter_list_code', [
-                'title'  => Locale::getMessage('BUILDER_BlogPostExport_FilterListCode'),
-                'width'  => 350,
+                'title' => Locale::getMessage('BUILDER_BlogPostExport_FilterListCode'),
+                'width' => 350,
                 'height' => 40,
             ]);
 
@@ -127,16 +145,5 @@ class BlogPostBuilder extends VersionBuilder
         }
 
         return $filter;
-    }
-
-    protected function getBlogsStructure(): array
-    {
-        $items = array_map(function ($item) {
-            $item['GROUP_TITLE'] = '[' . $item['GROUP_SITE_ID'] . '] ' . $item['GROUP_NAME'];
-            $item['TITLE'] = '[' . $item['URL'] . '] ' . $item['NAME'];
-            return $item;
-        }, $this->getHelperManager()->Blog()->getBlogs());
-
-        return $this->createStructure($items, 'ID', 'TITLE', 'GROUP_TITLE');
     }
 }

@@ -18,7 +18,7 @@ class UserTypeEntityHelper extends Helper
     {
         return array_map(
             fn($userType) => $this->prepareUserType($userType),
-            $this->getUserFieldManager()->GetUserType()
+            $this->getUserFieldManager()->GetUserType(),
         );
     }
 
@@ -52,18 +52,6 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
-     * Удаляет пользовательские поля у объекта
-     *
-     * @throws HelperException
-     */
-    public function deleteUserTypeEntitiesIfExists(string $entityId, array $fieldNames): void
-    {
-        foreach ($fieldNames as $fieldName) {
-            $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
-        }
-    }
-
-    /**
      * Добавляет пользовательское поле к объекту если его не существует
      *
      * @throws HelperException
@@ -72,192 +60,13 @@ class UserTypeEntityHelper extends Helper
     {
         $item = $this->getUserTypeEntity(
             $this->revertEntityId($entityId),
-            $fieldName
+            $fieldName,
         );
         if ($item) {
-            return (int)$item['ID'];
+            return (int) $item['ID'];
         }
 
         return $this->addUserTypeEntity($entityId, $fieldName, $fields);
-    }
-
-    /**
-     * Добавляет пользовательское поле к объекту
-     *
-     * @throws HelperException
-     */
-    public function addUserTypeEntity($entityId, $fieldName, $fields): int
-    {
-        $default = [
-            "ENTITY_ID"         => '',
-            "FIELD_NAME"        => '',
-            "USER_TYPE_ID"      => '',
-            "XML_ID"            => '',
-            "SORT"              => 500,
-            "MULTIPLE"          => 'N',
-            "MANDATORY"         => 'N',
-            "SHOW_FILTER"       => 'I',
-            "SHOW_IN_LIST"      => '',
-            "EDIT_IN_LIST"      => '',
-            "IS_SEARCHABLE"     => '',
-            "SETTINGS"          => [],
-            "EDIT_FORM_LABEL"   => ['ru' => '', 'en' => ''],
-            "LIST_COLUMN_LABEL" => ['ru' => '', 'en' => ''],
-            "LIST_FILTER_LABEL" => ['ru' => '', 'en' => ''],
-            "ERROR_MESSAGE"     => '',
-            "HELP_MESSAGE"      => '',
-        ];
-
-        $fields = array_replace_recursive($default, $fields);
-        $fields['FIELD_NAME'] = $fieldName;
-        $fields['ENTITY_ID'] = $this->revertEntityId($entityId);
-
-        $this->revertSettings($fields);
-        $enums = $this->revertEnums($fields);
-
-        $obUserField = new CUserTypeEntity;
-        $userFieldId = $obUserField->Add($fields);
-
-        $enumsCreated = true;
-        if ($userFieldId && $fields['USER_TYPE_ID'] == 'enumeration') {
-            $enumsCreated = $this->setUserTypeEntityEnumValues($userFieldId, $enums);
-        }
-
-        if ($userFieldId && $enumsCreated) {
-            $this->outNotice(Locale::getMessage('USER_TYPE_ENTITY_CREATED', ['#NAME#' => $fields['FIELD_NAME']]));
-            return $userFieldId;
-        }
-
-        $this->throwApplicationExceptionIfExists();
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_USERTYPE_NOT_ADDED',
-                [
-                    '#NAME#' => $fieldName,
-                ]
-            )
-        );
-    }
-
-    /**
-     * Обновление пользовательского поля у объекта
-     *
-     * @throws HelperException
-     */
-    public function updateUserTypeEntity(int $fieldId, array $fields): int
-    {
-        $this->unsetKeys($fields, [
-            'ENTITY_ID',
-            'FIELD_NAME',
-            'MULTIPLE',
-        ]);
-
-        $this->revertSettings($fields);
-        $enums = $this->revertEnums($fields);
-
-        $entity = new CUserTypeEntity;
-        $userFieldUpdated = $entity->Update($fieldId, $fields);
-
-        $enumsCreated = true;
-        if ($userFieldUpdated && $fields['USER_TYPE_ID'] == 'enumeration') {
-            $enumsCreated = $this->setUserTypeEntityEnumValues($fieldId, $enums);
-        }
-
-        if ($userFieldUpdated && $enumsCreated) {
-            $this->outNotice(Locale::getMessage('USER_TYPE_ENTITY_UPDATED', ['#NAME#' => $fieldId]));
-            return $fieldId;
-        }
-
-        $this->throwApplicationExceptionIfExists();
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_USERTYPE_NOT_UPDATED', ['#NAME#' => $fieldId]
-            )
-        );
-    }
-
-    /**
-     * Обновление пользовательского поля у объекта если оно существует
-     *
-     * @throws HelperException
-     */
-    public function updateUserTypeEntityIfExists(string $entityId, string $fieldName, array $fields): false|int
-    {
-        $item = $this->getUserTypeEntity(
-            $this->revertEntityId($entityId),
-            $fieldName
-        );
-        if (!empty($item['ID'])) {
-            return $this->updateUserTypeEntity($item['ID'], $fields);
-        }
-        return false;
-    }
-
-    /**
-     * Получает пользовательские поля у объекта
-     */
-    public function getUserTypeEntities(string $entityId, array $filter = []): array
-    {
-        $filter['ENTITY_ID'] = $entityId;
-
-        return $this->getUserTypeEntitiesByFilter($filter);
-    }
-
-    public function getUserTypeEntitiesByFilter(array $filter = []): array
-    {
-        $dbres = CUserTypeEntity::GetList([], $filter);
-        return array_map(
-            fn($item) => $this->getUserTypeEntityById($item['ID']),
-            $this->fetchAll($dbres)
-        );
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getList(array $filter = []): array
-    {
-        return $this->getUserTypeEntitiesByFilter($filter);
-    }
-
-    /**
-     * Получает пользовательское поле у объекта
-     * Данные подготовлены для экспорта в миграцию или схему
-     *
-     * @throws HelperException
-     */
-    public function exportUserTypeEntity(int $fieldId): bool|array
-    {
-        $item = $this->getUserTypeEntityById($fieldId);
-
-        return $item ? $this->prepareExportUserTypeEntity($item) : false;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function exportUserTypeEntitiesByIds(array $fieldIds): array
-    {
-        $result = array_map(
-            fn($fieldId) => $this->exportUserTypeEntity($fieldId),
-            $fieldIds
-        );
-
-        return array_filter($result);
-    }
-
-    /**
-     * Получает пользовательские поля у объекта
-     * Данные подготовлены для экспорта в миграцию или схему
-     *
-     * @throws HelperException
-     */
-    public function exportUserTypeEntities(string $entityId): array
-    {
-        return array_map(
-            fn($item) => $this->prepareExportUserTypeEntity($item),
-            $this->getUserTypeEntities($entityId)
-        );
     }
 
     /**
@@ -268,12 +77,29 @@ class UserTypeEntityHelper extends Helper
         $item = CUserTypeEntity::GetList(
             [],
             [
-                'ENTITY_ID'  => $entityId,
+                'ENTITY_ID' => $entityId,
                 'FIELD_NAME' => $fieldName,
-            ]
+            ],
         )->Fetch();
 
         return (!empty($item)) ? $this->getUserTypeEntityById($item['ID']) : false;
+    }
+
+    /**
+     * @deprecated
+     */
+    public function getList(array $filter = []): array
+    {
+        return $this->getUserTypeEntitiesByFilter($filter);
+    }
+
+    public function getUserTypeEntitiesByFilter(array $filter = []): array
+    {
+        $dbres = CUserTypeEntity::GetList([], $filter);
+        return array_map(
+            fn($item) => $this->getUserTypeEntityById($item['ID']),
+            $this->fetchAll($dbres),
+        );
     }
 
     /**
@@ -300,6 +126,132 @@ class UserTypeEntityHelper extends Helper
         }
 
         return $item;
+    }
+
+    protected function getEnumValues(int $fieldId): array
+    {
+        $obEnum = new CUserFieldEnum();
+        $dbres = $obEnum->GetList([], ["USER_FIELD_ID" => $fieldId]);
+        return $this->fetchAll($dbres);
+    }
+
+    /**
+     * Декодирует название объекта в оригинальный вид
+     *
+     * @throws HelperException
+     */
+    public function revertEntityId(string $entityId): string
+    {
+        if (str_starts_with($entityId, 'HLBLOCK_')) {
+            $hlblockId = substr($entityId, 8);
+            if (!is_numeric($hlblockId)) {
+                $hlblockId = (new HlblockHelper())->getHlblockIdByName($hlblockId);
+            }
+            return 'HLBLOCK_' . $hlblockId;
+        }
+
+        $matches = [];
+        if (preg_match('/^IBLOCK_(.+)_SECTION$/', $entityId, $matches)) {
+            $iblockId = $matches[1];
+            if (!is_numeric($iblockId)) {
+                $iblockId = (new IblockHelper())->getIblockIdByUid($iblockId);
+            }
+            return 'IBLOCK_' . $iblockId . '_SECTION';
+        }
+
+        return $entityId;
+    }
+
+    /**
+     * Добавляет пользовательское поле к объекту
+     *
+     * @throws HelperException
+     */
+    public function addUserTypeEntity($entityId, $fieldName, $fields): int
+    {
+        $default = [
+            "ENTITY_ID" => '',
+            "FIELD_NAME" => '',
+            "USER_TYPE_ID" => '',
+            "XML_ID" => '',
+            "SORT" => 500,
+            "MULTIPLE" => 'N',
+            "MANDATORY" => 'N',
+            "SHOW_FILTER" => 'I',
+            "SHOW_IN_LIST" => '',
+            "EDIT_IN_LIST" => '',
+            "IS_SEARCHABLE" => '',
+            "SETTINGS" => [],
+            "EDIT_FORM_LABEL" => ['ru' => '', 'en' => ''],
+            "LIST_COLUMN_LABEL" => ['ru' => '', 'en' => ''],
+            "LIST_FILTER_LABEL" => ['ru' => '', 'en' => ''],
+            "ERROR_MESSAGE" => '',
+            "HELP_MESSAGE" => '',
+        ];
+
+        $fields = array_replace_recursive($default, $fields);
+        $fields['FIELD_NAME'] = $fieldName;
+        $fields['ENTITY_ID'] = $this->revertEntityId($entityId);
+
+        $this->revertSettings($fields);
+        $enums = $this->revertEnums($fields);
+
+        $obUserField = new CUserTypeEntity();
+        $userFieldId = $obUserField->Add($fields);
+
+        $enumsCreated = true;
+        if ($userFieldId && $fields['USER_TYPE_ID'] == 'enumeration') {
+            $enumsCreated = $this->setUserTypeEntityEnumValues($userFieldId, $enums);
+        }
+
+        if ($userFieldId && $enumsCreated) {
+            $this->outNotice(Locale::getMessage('USER_TYPE_ENTITY_CREATED', ['#NAME#' => $fields['FIELD_NAME']]));
+            return $userFieldId;
+        }
+
+        $this->throwApplicationExceptionIfExists();
+        throw new HelperException(
+            Locale::getMessage(
+                'ERR_USERTYPE_NOT_ADDED',
+                [
+                    '#NAME#' => $fieldName,
+                ],
+            ),
+        );
+    }
+
+    /**
+     * @throws HelperException
+     */
+    private function revertSettings(&$fields): void
+    {
+        //USER_TYPE_ID = iblock_element|iblock_section|hlblock|...
+
+        if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
+            $iblockUid = $fields['SETTINGS']['IBLOCK_ID'];
+            $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockIdByUid($iblockUid);
+        }
+
+        if (!empty($fields['SETTINGS']['HLBLOCK_ID'])) {
+            $hlblockName = $fields['SETTINGS']['HLBLOCK_ID'];
+            $fields['SETTINGS']['HLBLOCK_ID'] = (new HlblockHelper())->getHlblockIdByName($hlblockName);
+
+            if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
+                $fieldName = $fields['SETTINGS']['HLFIELD_ID'];
+                $fields['SETTINGS']['HLFIELD_ID'] = (new HlblockHelper())->getFieldIdByName($hlblockName, $fieldName);
+            }
+        }
+    }
+
+    private function revertEnums(&$fields)
+    {
+        $enums = [];
+        if (isset($fields['ENUM_VALUES'])) {
+            $enums = $fields['ENUM_VALUES'];
+            unset($fields['ENUM_VALUES']);
+        }
+
+        return $enums;
     }
 
     /**
@@ -335,6 +287,28 @@ class UserTypeEntityHelper extends Helper
         return $obEnum->SetEnumValues($fieldId, $updates);
     }
 
+    protected function searchEnum(array $enum, array $haystack = []): array|false
+    {
+        foreach ($haystack as $item) {
+            if (isset($item['XML_ID']) && strlen($item['XML_ID']) > 0 && $item['XML_ID'] == $enum['XML_ID']) {
+                return $item;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Удаляет пользовательские поля у объекта
+     *
+     * @throws HelperException
+     */
+    public function deleteUserTypeEntitiesIfExists(string $entityId, array $fieldNames): void
+    {
+        foreach ($fieldNames as $fieldName) {
+            $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
+        }
+    }
+
     /**
      * Удаляет пользовательское поле у объекта если оно существует
      *
@@ -344,7 +318,7 @@ class UserTypeEntityHelper extends Helper
     {
         $item = $this->getUserTypeEntity(
             $this->revertEntityId($entityId),
-            $fieldName
+            $fieldName,
         );
 
         if (empty($item)) {
@@ -360,46 +334,155 @@ class UserTypeEntityHelper extends Helper
                 'ERR_USERTYPE_NOT_DELETED',
                 [
                     '#NAME#' => $fieldName,
-                ]
-            )
+                ],
+            ),
         );
     }
 
     /**
-     * Удаляет пользовательское поле у объекта
+     * Обновление пользовательского поля у объекта если оно существует
      *
      * @throws HelperException
      */
-    public function deleteUserTypeEntity(string $entityId, string $fieldName): bool
+    public function updateUserTypeEntityIfExists(string $entityId, string $fieldName, array $fields): false|int
     {
-        return $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
+        $item = $this->getUserTypeEntity(
+            $this->revertEntityId($entityId),
+            $fieldName,
+        );
+        if (!empty($item['ID'])) {
+            return $this->updateUserTypeEntity($item['ID'], $fields);
+        }
+        return false;
     }
 
     /**
-     * Декодирует название объекта в оригинальный вид
+     * Обновление пользовательского поля у объекта
      *
      * @throws HelperException
      */
-    public function revertEntityId(string $entityId): string
+    public function updateUserTypeEntity(int $fieldId, array $fields): int
     {
-        if (str_starts_with($entityId, 'HLBLOCK_')) {
-            $hlblockId = substr($entityId, 8);
-            if (!is_numeric($hlblockId)) {
-                $hlblockId = (new HlblockHelper())->getHlblockIdByName($hlblockId);
-            }
-            return 'HLBLOCK_' . $hlblockId;
+        $this->unsetKeys($fields, [
+            'ENTITY_ID',
+            'FIELD_NAME',
+            'MULTIPLE',
+        ]);
+
+        $this->revertSettings($fields);
+        $enums = $this->revertEnums($fields);
+
+        $entity = new CUserTypeEntity();
+        $userFieldUpdated = $entity->Update($fieldId, $fields);
+
+        $enumsCreated = true;
+        if ($userFieldUpdated && $fields['USER_TYPE_ID'] == 'enumeration') {
+            $enumsCreated = $this->setUserTypeEntityEnumValues($fieldId, $enums);
         }
 
-        $matches = [];
-        if (preg_match('/^IBLOCK_(.+)_SECTION$/', $entityId, $matches)) {
-            $iblockId = $matches[1];
-            if (!is_numeric($iblockId)) {
-                $iblockId = (new IblockHelper())->getIblockIdByUid($iblockId);
-            }
-            return 'IBLOCK_' . $iblockId . '_SECTION';
+        if ($userFieldUpdated && $enumsCreated) {
+            $this->outNotice(Locale::getMessage('USER_TYPE_ENTITY_UPDATED', ['#NAME#' => $fieldId]));
+            return $fieldId;
         }
 
-        return $entityId;
+        $this->throwApplicationExceptionIfExists();
+        throw new HelperException(
+            Locale::getMessage(
+                'ERR_USERTYPE_NOT_UPDATED',
+                ['#NAME#' => $fieldId],
+            ),
+        );
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function exportUserTypeEntitiesByIds(array $fieldIds): array
+    {
+        $result = array_map(
+            fn($fieldId) => $this->exportUserTypeEntity($fieldId),
+            $fieldIds,
+        );
+
+        return array_filter($result);
+    }
+
+    /**
+     * Получает пользовательское поле у объекта
+     * Данные подготовлены для экспорта в миграцию или схему
+     *
+     * @throws HelperException
+     */
+    public function exportUserTypeEntity(int $fieldId): bool|array
+    {
+        $item = $this->getUserTypeEntityById($fieldId);
+
+        return $item ? $this->prepareExportUserTypeEntity($item) : false;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function prepareExportUserTypeEntity(array $fields): array
+    {
+        // Расширенные ошибки экспорта пользовательских полей
+        try {
+            $this->transformSettings($fields);
+            $this->transformEnums($fields);
+            $fields['ENTITY_ID'] = $this->transformEntityId($fields['ENTITY_ID']);
+        } catch (HelperException $e) {
+            $userTypeMessage = Locale::getMessage(
+                'ERR_USERTYPE_EXPORT',
+                ['#USER_TYPE_ID#' => $fields['ID']],
+            );
+
+            $extendedMessage = $userTypeMessage . PHP_EOL . $e->getMessage();
+
+            throw new HelperException($extendedMessage);
+        }
+
+        $this->unsetKeys($fields, ['ID', 'TITLE']);
+
+        return $fields;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    private function transformSettings(&$fields): void
+    {
+        //USER_TYPE_ID = iblock_element|iblock_section|hlblock|...
+
+        if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
+            $iblockId = $fields['SETTINGS']['IBLOCK_ID'];
+            $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockUid($iblockId);
+        }
+
+        if (!empty($fields['SETTINGS']['HLBLOCK_ID'])) {
+            $hlblockId = $fields['SETTINGS']['HLBLOCK_ID'];
+            $fields['SETTINGS']['HLBLOCK_ID'] = (new HlblockHelper())->getHlblockNameById($hlblockId);
+
+            if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
+                $fieldId = $fields['SETTINGS']['HLFIELD_ID'];
+                $fields['SETTINGS']['HLFIELD_ID'] = (new HlblockHelper())->getFieldNameById($hlblockId, $fieldId);
+            }
+        }
+    }
+
+    private function transformEnums(&$fields): void
+    {
+        if (!empty($fields['ENUM_VALUES']) && is_array($fields['ENUM_VALUES'])) {
+            $exportValues = [];
+            foreach ($fields['ENUM_VALUES'] as $item) {
+                $exportValues[] = [
+                    'VALUE' => $item['VALUE'],
+                    'DEF' => $item['DEF'],
+                    'SORT' => $item['SORT'],
+                    'XML_ID' => $item['XML_ID'],
+                ];
+            }
+            $fields['ENUM_VALUES'] = $exportValues;
+        }
     }
 
     /**
@@ -427,6 +510,40 @@ class UserTypeEntityHelper extends Helper
         }
 
         return $entityId;
+    }
+
+    /**
+     * Получает пользовательские поля у объекта
+     * Данные подготовлены для экспорта в миграцию или схему
+     *
+     * @throws HelperException
+     */
+    public function exportUserTypeEntities(string $entityId): array
+    {
+        return array_map(
+            fn($item) => $this->prepareExportUserTypeEntity($item),
+            $this->getUserTypeEntities($entityId),
+        );
+    }
+
+    /**
+     * Получает пользовательские поля у объекта
+     */
+    public function getUserTypeEntities(string $entityId, array $filter = []): array
+    {
+        $filter['ENTITY_ID'] = $entityId;
+
+        return $this->getUserTypeEntitiesByFilter($filter);
+    }
+
+    /**
+     * Удаляет пользовательское поле у объекта
+     *
+     * @throws HelperException
+     */
+    public function deleteUserTypeEntity(string $entityId, string $fieldName): bool
+    {
+        return $this->deleteUserTypeEntityIfExists($entityId, $fieldName);
     }
 
     /**
@@ -487,14 +604,14 @@ class UserTypeEntityHelper extends Helper
 
         $exists = $this->getUserTypeEntity(
             $this->revertEntityId($fields['ENTITY_ID']),
-            $fields['FIELD_NAME']
+            $fields['FIELD_NAME'],
         );
 
         if (empty($exists)) {
             return $this->addUserTypeEntity(
                 $fields['ENTITY_ID'],
                 $fields['FIELD_NAME'],
-                $fields
+                $fields,
             );
         }
 
@@ -511,122 +628,6 @@ class UserTypeEntityHelper extends Helper
             return $this->updateUserTypeEntity($exists['ID'], $fields);
         }
 
-        return (int)$exists['ID'];
-    }
-
-    /**
-     * @throws HelperException
-     */
-    protected function prepareExportUserTypeEntity(array $fields): array
-    {
-        // Расширенные ошибки экспорта пользовательских полей
-        try {
-            $this->transformSettings($fields);
-            $this->transformEnums($fields);
-            $fields['ENTITY_ID'] = $this->transformEntityId($fields['ENTITY_ID']);
-        } catch (HelperException $e) {
-            $userTypeMessage = Locale::getMessage(
-                'ERR_USERTYPE_EXPORT',
-                ['#USER_TYPE_ID#' => $fields['ID']]
-            );
-
-            $extendedMessage = $userTypeMessage . PHP_EOL . $e->getMessage();
-
-            throw new HelperException($extendedMessage);
-        }
-
-        $this->unsetKeys($fields, ['ID', 'TITLE']);
-
-        return $fields;
-    }
-
-    protected function getEnumValues(int $fieldId): array
-    {
-        $obEnum = new CUserFieldEnum;
-        $dbres = $obEnum->GetList([], ["USER_FIELD_ID" => $fieldId]);
-        return $this->fetchAll($dbres);
-    }
-
-    protected function searchEnum(array $enum, array $haystack = []): array|false
-    {
-        foreach ($haystack as $item) {
-            if (isset($item['XML_ID']) && strlen($item['XML_ID']) > 0 && $item['XML_ID'] == $enum['XML_ID']) {
-                return $item;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    private function transformSettings(&$fields): void
-    {
-        //USER_TYPE_ID = iblock_element|iblock_section|hlblock|...
-
-        if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
-            $iblockId = $fields['SETTINGS']['IBLOCK_ID'];
-            $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockUid($iblockId);
-        }
-
-        if (!empty($fields['SETTINGS']['HLBLOCK_ID'])) {
-            $hlblockId = $fields['SETTINGS']['HLBLOCK_ID'];
-            $fields['SETTINGS']['HLBLOCK_ID'] = (new HlblockHelper())->getHlblockNameById($hlblockId);
-
-            if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
-                $fieldId = $fields['SETTINGS']['HLFIELD_ID'];
-                $fields['SETTINGS']['HLFIELD_ID'] = (new HlblockHelper())->getFieldNameById($hlblockId, $fieldId);
-            }
-        }
-    }
-
-    /**
-     * @throws HelperException
-     */
-    private function revertSettings(&$fields): void
-    {
-        //USER_TYPE_ID = iblock_element|iblock_section|hlblock|...
-
-        if (!empty($fields['SETTINGS']['IBLOCK_ID'])) {
-            $iblockUid = $fields['SETTINGS']['IBLOCK_ID'];
-            $fields['SETTINGS']['IBLOCK_ID'] = (new IblockHelper())->getIblockIdByUid($iblockUid);
-        }
-
-        if (!empty($fields['SETTINGS']['HLBLOCK_ID'])) {
-            $hlblockName = $fields['SETTINGS']['HLBLOCK_ID'];
-            $fields['SETTINGS']['HLBLOCK_ID'] = (new HlblockHelper())->getHlblockIdByName($hlblockName);
-
-            if (!empty($fields['SETTINGS']['HLFIELD_ID'])) {
-                $fieldName = $fields['SETTINGS']['HLFIELD_ID'];
-                $fields['SETTINGS']['HLFIELD_ID'] = (new HlblockHelper())->getFieldIdByName($hlblockName, $fieldName);
-            }
-        }
-    }
-
-    private function transformEnums(&$fields): void
-    {
-        if (!empty($fields['ENUM_VALUES']) && is_array($fields['ENUM_VALUES'])) {
-            $exportValues = [];
-            foreach ($fields['ENUM_VALUES'] as $item) {
-                $exportValues[] = [
-                    'VALUE'  => $item['VALUE'],
-                    'DEF'    => $item['DEF'],
-                    'SORT'   => $item['SORT'],
-                    'XML_ID' => $item['XML_ID'],
-                ];
-            }
-            $fields['ENUM_VALUES'] = $exportValues;
-        }
-    }
-
-    private function revertEnums(&$fields)
-    {
-        $enums = [];
-        if (isset($fields['ENUM_VALUES'])) {
-            $enums = $fields['ENUM_VALUES'];
-            unset($fields['ENUM_VALUES']);
-        }
-
-        return $enums;
+        return (int) $exists['ID'];
     }
 }

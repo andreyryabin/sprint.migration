@@ -19,7 +19,7 @@ class CultureHelper extends Helper
     {
         return array_map(
             fn($item) => $this->exportItem($item),
-            $this->getCultures($filter)
+            $this->getCultures($filter),
         );
     }
 
@@ -35,9 +35,8 @@ class CultureHelper extends Helper
     public function getCultures(array $filter = []): array
     {
         return CultureTable::getList([
-            'filter' => $filter,
-        ])->fetchAll();
-
+                                         'filter' => $filter,
+                                     ])->fetchAll();
     }
 
     /**
@@ -58,7 +57,14 @@ class CultureHelper extends Helper
         }
 
         return $exists['ID'];
+    }
 
+    public function getCultureByCode(string $code): array|false
+    {
+        return CultureTable::getList([
+                                         'filter' => ['=CODE' => $code],
+                                         'limit' => 1,
+                                     ])->fetch();
     }
 
     /**
@@ -81,14 +87,25 @@ class CultureHelper extends Helper
         }
     }
 
-    public function getCultureByCode(string $code): array|false
+    /**
+     * @throws HelperException
+     */
+    public function updateCulture(int $cultureId, array $fields): int
     {
-        return CultureTable::getList([
-            'filter' => ['=CODE' => $code],
-            'limit'  => 1,
-        ])->fetch();
-    }
+        try {
+            $result = CultureTable::update($cultureId, $fields);
 
+            if ($result->isSuccess()) {
+                $this->outNotice(Locale::getMessage('CULTURE_UPDATED', ['#CODE#' => $fields['CODE']]));
+
+                return $result->getId();
+            }
+
+            throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
+        } catch (Exception $e) {
+            throw new HelperException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
 
     /**
      * @throws HelperException
@@ -116,26 +133,6 @@ class CultureHelper extends Helper
         }
 
         throw new HelperException("Culture id with code=\"$code\" not found");
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function updateCulture(int $cultureId, array $fields): int
-    {
-        try {
-            $result = CultureTable::update($cultureId, $fields);
-
-            if ($result->isSuccess()) {
-                $this->outNotice(Locale::getMessage('CULTURE_UPDATED', ['#CODE#' => $fields['CODE']]));
-
-                return $result->getId();
-            }
-
-            throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
-        } catch (Exception $e) {
-            throw new HelperException($e->getMessage(), $e->getCode(), $e);
-        }
     }
 
 

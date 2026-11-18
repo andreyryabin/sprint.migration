@@ -15,9 +15,7 @@ final class VersionFile
         private readonly string $contentHash,
         private readonly string $createdAt,
         private readonly string $createdBy,
-    )
-    {
-    }
+    ) {}
 
     public function getCreatedAt(): string
     {

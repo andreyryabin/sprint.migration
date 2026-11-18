@@ -41,8 +41,8 @@ class MedialibElementsBuilder extends VersionBuilder
         $exhelper = $this->getExchangeHelpers()->MedialibExchange();
 
         $collectionIds = $this->addFieldAndReturn('collection_id', [
-            'title'    => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
-            'select'   => $exhelper->getCollectionSelect($exhelper::TYPE_IMAGE),
+            'title' => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
+            'select' => $exhelper->getCollectionSelect($exhelper::TYPE_IMAGE),
             'multiple' => 1,
         ]);
 
@@ -59,19 +59,23 @@ class MedialibElementsBuilder extends VersionBuilder
             ->execute(
                 attributesFn: fn() => $exhelper->getWriterAttributes(),
                 totalCountFn: fn() => $exhelper->getWriterRecordsCount($collectionIds),
-                recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
+                recordsFn: fn($offset, $limit)
+                    => $exhelper->getWriterRecordsTag(
                     $offset,
                     $limit,
                     $collectionIds,
-                    $exportFields
+                    $exportFields,
                 ),
-                progressFn: fn($value, $totalCount) => $this->outProgress(
-                    'Progress', $value, $totalCount
-                )
+                progressFn: fn($value, $totalCount)
+                    => $this->outProgress(
+                    'Progress',
+                    $value,
+                    $totalCount,
+                ),
             );
 
         $this->createVersionFile(
-            Module::getModuleTemplateFile('MedialibElementsExport')
+            Module::getModuleTemplateFile('MedialibElementsExport'),
         );
     }
 }

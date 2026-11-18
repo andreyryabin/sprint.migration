@@ -23,6 +23,13 @@ class WriterTag
         }
     }
 
+    public function setAttribute(string $name, $value): void
+    {
+        if ($name && $value) {
+            $this->attributes[$name] = $value;
+        }
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -36,32 +43,6 @@ class WriterTag
     public function getText(): string
     {
         return $this->text;
-    }
-
-    public function addChild(WriterTag $child): void
-    {
-        $this->childs[] = $child;
-
-        foreach ($child->forgetFiles() as $file) {
-            $this->files[] = $file;
-        }
-    }
-
-    public function getChilds(): array
-    {
-        return $this->childs;
-    }
-
-    public function setAttribute(string $name, $value): void
-    {
-        if ($name && $value) {
-            $this->attributes[$name] = $value;
-        }
-    }
-
-    public function countChilds(): int
-    {
-        return count($this->childs);
     }
 
     /**
@@ -83,11 +64,14 @@ class WriterTag
         }
     }
 
-    public function setJson(array $text): void
+    public function getChilds(): array
     {
-        $this->text = json_encode($text, JSON_UNESCAPED_UNICODE);
-        $this->cdata = true;
-        $this->setAttribute('type', 'json');
+        return $this->childs;
+    }
+
+    public function countChilds(): int
+    {
+        return count($this->childs);
     }
 
     public function isCdata(): bool
@@ -112,15 +96,24 @@ class WriterTag
     /**
      * @throws WriterException
      */
-    public function addValue(mixed $val, bool $multiple): void
+    public function addFileTag(int $fileId): void
     {
-        if ($multiple) {
-            foreach ($val as $val1) {
-                $this->addValueTag($val1);
-            }
-        } else {
-            $this->addValueTag($val);
+        $file = CFile::GetFileArray($fileId);
+        if (empty($file)) {
+            return;
         }
+
+        $this->addValueTag(
+            $file['SUBDIR'] . '/' . $file['FILE_NAME'],
+            [
+                'name' => $file['ORIGINAL_NAME'],
+                'description' => $file['DESCRIPTION'],
+                'content_type' => $file['CONTENT_TYPE'] ?? '',
+                'type' => 'file',
+            ],
+        );
+
+        $this->files[] = $file;
     }
 
     /**
@@ -142,32 +135,20 @@ class WriterTag
         $this->addChild($tag);
     }
 
-    /**
-     * @throws WriterException
-     */
-    public function addFileTag(int $fileId): void
+    public function setJson(array $text): void
     {
-        $file = CFile::GetFileArray($fileId);
-        if (empty($file)) {
-            return;
-        }
-
-        $this->addValueTag(
-            $file['SUBDIR'] . '/' . $file['FILE_NAME'],
-            [
-                'name'         => $file['ORIGINAL_NAME'],
-                'description'  => $file['DESCRIPTION'],
-                'content_type' => $file['CONTENT_TYPE'] ?? '',
-                'type'         => 'file',
-            ]
-        );
-
-        $this->files[] = $file;
+        $this->text = json_encode($text, JSON_UNESCAPED_UNICODE);
+        $this->cdata = true;
+        $this->setAttribute('type', 'json');
     }
 
-    public function getFiles(): array
+    public function addChild(WriterTag $child): void
     {
-        return $this->files;
+        $this->childs[] = $child;
+
+        foreach ($child->forgetFiles() as $file) {
+            $this->files[] = $file;
+        }
     }
 
     public function forgetFiles(): array
@@ -177,5 +158,24 @@ class WriterTag
         $this->files = [];
 
         return $tmp;
+    }
+
+    /**
+     * @throws WriterException
+     */
+    public function addValue(mixed $val, bool $multiple): void
+    {
+        if ($multiple) {
+            foreach ($val as $val1) {
+                $this->addValueTag($val1);
+            }
+        } else {
+            $this->addValueTag($val);
+        }
+    }
+
+    public function getFiles(): array
+    {
+        return $this->files;
     }
 }

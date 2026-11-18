@@ -15,7 +15,7 @@ class Locale
     {
         $replaces = array_filter($replaces, fn($v) => is_scalar($v));
 
-       $msg = GetMessage("SPRINT_MIGRATION_$shortName", $replaces);
+        $msg = GetMessage("SPRINT_MIGRATION_$shortName", $replaces);
 
         return ($msg) ?: ($default ?: $shortName);
     }

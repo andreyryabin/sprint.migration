@@ -26,7 +26,10 @@ class SaleDiscountBuilder extends VersionBuilder
 
         $this->setDescription(implode(PHP_EOL, [
             Locale::getMessage('DEVELOPER_NAME', ['#VALUE#' => '@temi4']),
-            Locale::getMessage('DEVELOPER_URI', ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/181']),
+            Locale::getMessage(
+                'DEVELOPER_URI',
+                ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/181'],
+            ),
         ]));
 
         $this->addVersionFields();
@@ -42,8 +45,8 @@ class SaleDiscountBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $discountIds = $this->addFieldAndReturn('discounts', [
-            'title'    => Locale::getMessage('BUILDER_SaleDiscount_Discounts'),
-            'items'    => $this->getDiscountsStructure(),
+            'title' => Locale::getMessage('BUILDER_SaleDiscount_Discounts'),
+            'items' => $this->getDiscountsStructure(),
             'multiple' => 1,
         ]);
 
@@ -57,7 +60,7 @@ class SaleDiscountBuilder extends VersionBuilder
             Module::getModuleTemplateFile('SaleDiscountExport'),
             [
                 'items' => $items,
-            ]
+            ],
         );
     }
 

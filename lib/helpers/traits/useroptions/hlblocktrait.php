@@ -10,41 +10,27 @@ trait HlblockTrait
     /**
      * @throws HelperException
      */
+    public function exportHlblockList($hlblockId)
+    {
+        return $this->exportList([
+                                     'name' => $this->getHlblockGridId($hlblockId),
+                                 ]);
+    }
+
+    /**
+     * @throws HelperException
+     */
     public function getHlblockGridId($hlblockId): string
     {
         $tableName = (new HlblockHelper())->getHlblockTableName($hlblockId);
 
         if (empty($tableName)) {
             throw new HelperException(
-                sprintf('Highload-block "%s" not found', $hlblockId)
+                sprintf('Highload-block "%s" not found', $hlblockId),
             );
         }
 
         return 'tbl_' . $tableName;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getHlblockFormId($hlblockId): string
-    {
-        if (empty($hlblockId)) {
-            throw new HelperException(
-                sprintf('Highload-block "%s" not found', $hlblockId)
-            );
-        }
-
-        return 'hlrow_edit_' . $hlblockId;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function exportHlblockList($hlblockId)
-    {
-        return $this->exportList([
-            'name' => $this->getHlblockGridId($hlblockId),
-        ]);
     }
 
     /**
@@ -70,8 +56,22 @@ trait HlblockTrait
     public function exportHlblockForm($hlblockId)
     {
         return $this->exportForm([
-            'name' => $this->getHlblockFormId($hlblockId),
-        ]);
+                                     'name' => $this->getHlblockFormId($hlblockId),
+                                 ]);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getHlblockFormId($hlblockId): string
+    {
+        if (empty($hlblockId)) {
+            throw new HelperException(
+                sprintf('Highload-block "%s" not found', $hlblockId),
+            );
+        }
+
+        return 'hlrow_edit_' . $hlblockId;
     }
 
     /**

@@ -22,10 +22,27 @@ class SiteHelper extends Helper
         $item = CSite::GetList($by, $order, ['ACTIVE' => 'Y'])->Fetch();
 
         if ($item) {
-            return (string)$item['LID'];
+            return (string) $item['LID'];
         }
         throw new HelperException(
-            Locale::getMessage('ERR_DEFAULT_SITE_NOT_FOUND'));
+            Locale::getMessage('ERR_DEFAULT_SITE_NOT_FOUND'),
+        );
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getSitesIfExists(): array
+    {
+        $items = $this->getSites(['ACTIVE' => 'Y']);
+        if (!empty($items)) {
+            return $items;
+        }
+        throw new HelperException(
+            Locale::getMessage(
+                'ERR_ACTIVE_SITES_NOT_FOUND',
+            ),
+        );
     }
 
     public function getSites(array $filter = []): array
@@ -42,22 +59,6 @@ class SiteHelper extends Helper
         return $sids;
     }
 
-    /**
-     * @throws HelperException
-     */
-    public function getSitesIfExists(): array
-    {
-        $items = $this->getSites(['ACTIVE' => 'Y']);
-        if (!empty($items)) {
-            return $items;
-        }
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_ACTIVE_SITES_NOT_FOUND'
-            )
-        );
-    }
-
     public function getSiteTemplates(string $siteId): array
     {
         $templates = [];
@@ -65,8 +66,8 @@ class SiteHelper extends Helper
         $dbres = CSite::GetTemplateList($siteId);
         while ($item = $dbres->Fetch()) {
             $templates[] = [
-                "TEMPLATE"  => $item['TEMPLATE'],
-                "SORT"      => $item['SORT'],
+                "TEMPLATE" => $item['TEMPLATE'],
+                "SORT" => $item['SORT'],
                 "CONDITION" => $item['CONDITION'],
             ];
         }
@@ -84,27 +85,31 @@ class SiteHelper extends Helper
         $validTemplates = [];
         foreach ($templates as $template) {
             if (!empty($template['IN_DIR'])) {
-                $template['CONDITION'] = sprintf('CSite::InDir(\'%s\')',
-                    $template['IN_DIR']
+                $template['CONDITION'] = sprintf(
+                    'CSite::InDir(\'%s\')',
+                    $template['IN_DIR'],
                 );
             } elseif (!empty($template['IN_PERIOD']) && is_array($template['IN_PERIOD'])) {
-                list($t1, $t2) = $template['IN_PERIOD'];
+                [$t1, $t2] = $template['IN_PERIOD'];
                 $t1 = is_numeric($t1) ? $t1 : strtotime($t1);
                 $t2 = is_numeric($t2) ? $t2 : strtotime($t2);
-                $template['CONDITION'] = sprintf('CSite::InPeriod(%s,%s)',
+                $template['CONDITION'] = sprintf(
+                    'CSite::InPeriod(%s,%s)',
                     $t1,
-                    $t2
+                    $t2,
                 );
             } elseif (!empty($template['IN_GROUP']) && is_array($template['IN_GROUP'])) {
-                $template['CONDITION'] = sprintf('CSite::InGroup(array(%s))',
-                    implode(',', $template['IN_GROUP'])
+                $template['CONDITION'] = sprintf(
+                    'CSite::InGroup(array(%s))',
+                    implode(',', $template['IN_GROUP']),
                 );
             } elseif (!empty($template['GET_PARAM']) && is_array($template['GET_PARAM'])) {
                 $val = reset($template['GET_PARAM']);
                 $key = key($template['GET_PARAM']);
-                $template['CONDITION'] = sprintf('$_GET[\'%s\']==\'%s\'',
+                $template['CONDITION'] = sprintf(
+                    '$_GET[\'%s\']==\'%s\'',
                     $key,
-                    $val
+                    $val,
                 );
             }
 
@@ -117,20 +122,20 @@ class SiteHelper extends Helper
             }
 
             $validTemplates[] = [
-                'TEMPLATE'  => $template['TEMPLATE'],
+                'TEMPLATE' => $template['TEMPLATE'],
                 'CONDITION' => $template['CONDITION'],
-                'SORT'      => $sort,
+                'SORT' => $sort,
             ];
 
             $sort++;
         }
 
-        $langs = new CLang;
+        $langs = new CLang();
         return $langs->Update(
             $siteId,
             [
                 'TEMPLATE' => $validTemplates,
-            ]
+            ],
         );
     }
 

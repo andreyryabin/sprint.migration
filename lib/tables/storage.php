@@ -7,7 +7,6 @@ use Bitrix\Main\ORM\Fields\StringField;
 use Bitrix\Main\ORM\Fields\TextField;
 use Bitrix\Main\SystemException;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\HelperManager;
 use Sprint\Migration\Helpers\SqlHelper;
 
 class StorageTable extends AbstractTable
@@ -41,9 +40,9 @@ class StorageTable extends AbstractTable
         }
 
         $row = $this->getOnce([
-            'category' => $this->category,
-            'name'     => $name,
-        ]);
+                                  'category' => $this->category,
+                                  'name' => $name,
+                              ]);
 
         if ($row) {
             $this->update($row['id'], [
@@ -51,10 +50,10 @@ class StorageTable extends AbstractTable
             ]);
         } else {
             $this->add([
-                'category' => $this->category,
-                'name'     => $name,
-                'data'     => $value,
-            ]);
+                           'category' => $this->category,
+                           'name' => $name,
+                           'data' => $value,
+                       ]);
         }
     }
 
@@ -68,9 +67,9 @@ class StorageTable extends AbstractTable
         }
 
         $row = $this->getOnce([
-            'category' => $this->category,
-            'name'     => $name,
-        ]);
+                                  'category' => $this->category,
+                                  'name' => $name,
+                              ]);
 
         return ($row) ? $row['data'] : $default;
     }
@@ -82,13 +81,13 @@ class StorageTable extends AbstractTable
     {
         if ($name) {
             $rows = $this->getAll([
-                'category' => $this->category,
-                'name'     => $name,
-            ]);
+                                      'category' => $this->category,
+                                      'name' => $name,
+                                  ]);
         } else {
             $rows = $this->getAll([
-                'category' => $this->category,
-            ]);
+                                      'category' => $this->category,
+                                  ]);
         }
 
         foreach ($rows as $row) {
@@ -103,7 +102,7 @@ class StorageTable extends AbstractTable
     {
         return [
             new IntegerField('id', [
-                'primary'      => true,
+                'primary' => true,
                 'autocomplete' => true,
             ]),
             new StringField('category', [
@@ -113,7 +112,7 @@ class StorageTable extends AbstractTable
                 'size' => 255,
             ]),
             new TextField('data', [
-                'long'       => true,
+                'long' => true,
                 'serialized' => true,
             ]),
         ];
@@ -129,13 +128,13 @@ class StorageTable extends AbstractTable
         $sqlHelper->addIndexIfNotExists(
             $this->getTableName(),
             'category',
-            ['category']
+            ['category'],
         );
 
         $sqlHelper->addIndexIfNotExists(
             $this->getTableName(),
             'fullname',
-            ['category', 'name']
+            ['category', 'name'],
         );
     }
 }

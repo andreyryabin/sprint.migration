@@ -154,49 +154,29 @@ export const MigrationVersions = {
 
         async execVersion(version, action, params, settag) {
             this.running = true;
-            this.replay = {};
+            this.replay = {version, action, params, settag};
 
+            let data;
             try {
-                let restartParams = params;
-                while (true) {
+                do {
                     if (!this.running) {
-                        this.replay = {
-                            version,
-                            action,
-                            params: restartParams,
-                            settag
-                        }
                         return false;
                     }
-
-                    const data = await this.execAction('execVersion', {
+                    data = await this.execAction('execVersion', {
                         version,
                         action,
-                        params: restartParams,
-                        settag
+                        params: this.replay.params,
+                        settag: this.replay.settag
                     });
 
-                    if (data.restart) {
-                        restartParams = data.params;
-                        continue;
-                    }
+                    this.replay.params = data.params;
+                } while (data.restart);
 
-                    if (!data.success) {
-                        this.replay = {
-                            version,
-                            action,
-                            params: data.params,
-                            settag
-                        }
-                        return false;
-                    }
-
-                    if (data.meta){
-                        this.pickVersion(data.meta);
-                    }
-
-                    return true;
+                if (data.success) {
+                    this.replay = {};
+                    this.pickVersion(data.meta);
                 }
+                return data.success;
 
             } finally {
                 this.running = false;
@@ -488,27 +468,24 @@ export const MigrationVersions = {
                       :options="variants"
                       @update:value="saveFilter"
                   />
-                  <input
-                      :value="getMessage('SEARCH_BUTTON')"
-                      class="adm-btn"
-                      type="button"
-                      @click="saveFilter"
-                  />
+                  <div>
+                    <input
+                        :value="getMessage('SEARCH_BUTTON')"
+                        class="adm-btn"
+                        type="button"
+                        @click="saveFilter"
+                    />
+                  </div>
                 </div>
                 <div class="sp-search_summary">
-                  <span 
-                      v-if="loading" 
-                      class="sp-loading" 
-                      v-text="getMessage('LOADING_TEXT')"
-                  />
                   {{ getMessage('SUMMARY_NEW') }}:
-                  <span 
-                      class="sp-label sp-label-red" 
+                  <span
+                      class="sp-label sp-label-red"
                       v-text="summaryCount.new"
                   />
                   {{ getMessage('SUMMARY_INSTALLED') }}:
-                  <span 
-                      class="sp-label sp-label-green" 
+                  <span
+                      class="sp-label sp-label-green"
                       v-text="summaryCount.installed"
                   />
                 </div>

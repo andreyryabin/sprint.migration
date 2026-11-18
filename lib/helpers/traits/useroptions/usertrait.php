@@ -6,19 +6,19 @@ use Sprint\Migration\Exceptions\HelperException;
 
 trait UserTrait
 {
-    public function getUserGridId()
-    {
-        return 'tbl_user';
-    }
-
     /**
      * @throws HelperException
      */
     public function exportUserList()
     {
         return $this->exportList([
-            'name' => $this->getUserGridId(),
-        ]);
+                                     'name' => $this->getUserGridId(),
+                                 ]);
+    }
+
+    public function getUserGridId()
+    {
+        return 'tbl_user';
     }
 
     /**
@@ -52,8 +52,8 @@ trait UserTrait
     public function exportUserForm()
     {
         return $this->exportForm([
-            'name' => 'user_edit',
-        ]);
+                                     'name' => 'user_edit',
+                                 ]);
     }
 
     /**

@@ -13,9 +13,7 @@ use Throwable;
 
 class VersionFileFactory
 {
-    public function __construct(private readonly VersionConfig $versionConfig)
-    {
-    }
+    public function __construct(private readonly VersionConfig $versionConfig) {}
 
     public function tryCreate(string $versionName): ?VersionFile
     {
@@ -61,12 +59,12 @@ class VersionFileFactory
             }
 
             $description = $this->stripslashes(
-                $versionObj->getDescription()
+                $versionObj->getDescription(),
             );
 
             $createdAt = DateTime::createFromFormat(
                 $timestampFormat,
-                $versionTimestamp
+                $versionTimestamp,
             )->format(VersionTable::DATE_FORMAT);
 
             $createdBy = $this->stripslashes($versionObj->getAuthor());
@@ -78,15 +76,15 @@ class VersionFileFactory
             $contentHash = hash($algo, file_get_contents($location));
 
             return new VersionFile(
-                versionName: $versionName,
+                versionName:      $versionName,
                 versionTimestamp: $versionTimestamp,
-                location: $location,
-                versionClass: $versionClass,
-                description: $description,
-                olderVersion: $olderVersion,
-                contentHash: $contentHash,
-                createdAt: $createdAt,
-                createdBy: $createdBy,
+                location:         $location,
+                versionClass:     $versionClass,
+                description:      $description,
+                olderVersion:     $olderVersion,
+                contentHash:      $contentHash,
+                createdAt:        $createdAt,
+                createdBy:        $createdBy,
             );
         } catch (Throwable $e) {
             throw new MigrationException($e->getMessage(), $e->getCode(), $e);

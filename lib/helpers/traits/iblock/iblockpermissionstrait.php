@@ -10,15 +10,6 @@ use Sprint\Migration\Helpers\UserGroupHelper;
 
 trait IblockPermissionsTrait
 {
-    /**
-     * Получает права доступа к инфоблоку для групп
-     * возвращает массив вида [$groupCode => $letter]
-     */
-    public function getGroupPermissions(int $iblockId): array
-    {
-        return CIBlock::GetGroupPermissions($iblockId);
-    }
-
     public function exportGroupPermissions(int $iblockId): array
     {
         $groupHelper = new UserGroupHelper();
@@ -33,6 +24,15 @@ trait IblockPermissionsTrait
         }
 
         return $result;
+    }
+
+    /**
+     * Получает права доступа к инфоблоку для групп
+     * возвращает массив вида [$groupCode => $letter]
+     */
+    public function getGroupPermissions(int $iblockId): array
+    {
+        return CIBlock::GetGroupPermissions($iblockId);
     }
 
     /**
@@ -56,6 +56,16 @@ trait IblockPermissionsTrait
         }
 
         return $result;
+    }
+
+    protected function getDefaultExtendedPermission(): array
+    {
+        return [
+            'DO_INHERIT' => 'Y',
+            'IS_INHERITED' => 'N',
+            'OVERWRITED' => 0,
+            'XML_ID' => null,
+        ];
     }
 
     /**
@@ -99,15 +109,5 @@ trait IblockPermissionsTrait
     public function setGroupPermissions(int $iblockId, array $permissions = []): void
     {
         CIBlock::SetPermission($iblockId, $permissions);
-    }
-
-    protected function getDefaultExtendedPermission(): array
-    {
-        return [
-            'DO_INHERIT'   => 'Y',
-            'IS_INHERITED' => 'N',
-            'OVERWRITED'   => 0,
-            'XML_ID'       => null,
-        ];
     }
 }

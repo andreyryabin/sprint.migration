@@ -1,6 +1,7 @@
 <?php
 
 namespace Sprint\Migration\Fields;
+
 class FieldFactory
 {
 

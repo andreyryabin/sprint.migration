@@ -16,7 +16,7 @@ class UserHelper extends Helper
         $item = CUser::GetByLogin($userLogin)->Fetch();
 
         if (!empty($item['ID'])) {
-            return (int)$item['ID'];
+            return (int) $item['ID'];
         }
 
         throw new HelperException("User with login=\"$userLogin\" not found");
@@ -30,7 +30,7 @@ class UserHelper extends Helper
         $item = CUser::GetByID($userId)->Fetch();
 
         if (!empty($item['LOGIN'])) {
-            return (string)$item['LOGIN'];
+            return (string) $item['LOGIN'];
         }
 
         throw new HelperException("User with id=\"$userId\" not found");

@@ -49,138 +49,6 @@ class VersionConfig
         $this->values = $this->makeValues($values);
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function getTitle(): string
-    {
-        return sprintf('%s (%s)', $this->getVal('title'), $this->name);
-    }
-
-    public function getValues(): array
-    {
-        return $this->values;
-    }
-
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-    public function getSort(): int
-    {
-        $sort = (int)$this->getVal('sort', 200);
-
-        return ($this->getName() == VersionEnum::CONFIG_DEFAULT) ? 100 : $sort;
-    }
-
-    public function getVal(string $name, mixed $default = ''): mixed
-    {
-        return $this->values[$name] ?? $default;
-    }
-
-    public function humanValues(): array
-    {
-        $human = [];
-
-        foreach ($this->getValues() as $key => $val) {
-            if ($val === true || $val === false) {
-                $val = ($val) ? 'yes' : 'no';
-                $val = Locale::getMessage('CONFIG_' . $val);
-            } elseif (is_array($val)) {
-                $fres = [];
-                foreach ($val as $fkey => $fval) {
-                    $fres[] = '[' . $fkey . '] => ' . $fval;
-                }
-                $val = implode(PHP_EOL, $fres);
-            } elseif (is_object($val)) {
-                $val = get_class($val);
-            }
-            $human[$key] = (string)$val;
-        }
-        return $human;
-    }
-
-    /**
-     * @throws MigrationException
-     */
-    public function getVersionExchangeDir(string $versionName): string
-    {
-        $this->tryVersionName($versionName);
-
-        return $this->getVal('exchange_dir') . '/' . $versionName . '_files/';
-    }
-
-    /**
-     * @throws MigrationException
-     */
-    public function getVersionFile(string $versionName): string
-    {
-        $this->tryVersionName($versionName);
-
-        return $this->getVal('migration_dir') . '/' . $versionName . '.php';
-    }
-
-    public function checkVersionName(string $versionName): bool
-    {
-        //имя версии долджно быть валидным названием php-класса
-        //первый символ: буква или подчёркивание
-        //далее любые буквы, цифры, подчёркивания
-        //не должно содержать разделителей пути
-        return ($versionName && preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $versionName));
-    }
-
-    /**
-     * @throws MigrationException
-     */
-    public function tryVersionName(string $versionName): void
-    {
-        if (isset($this->triedVersionNames[$versionName])) {
-            return;
-        }
-
-        $ts = $this->getVersionTimestamp($versionName);
-
-        if (!$this->checkVersionName($versionName) || !$ts) {
-            throw new MigrationException('Invalid version name');
-        }
-
-        $this->triedVersionNames[$versionName] = $ts;
-    }
-
-    public function getVersionTimestamp(string $versionName): string
-    {
-        $pattern = $this->getVal('version_timestamp_pattern');
-
-        $matches = [];
-        if (preg_match($pattern, $versionName, $matches)) {
-            return end($matches);
-        }
-
-        return '';
-    }
-
-    public function getWebDir(): string
-    {
-        $dir = $this->getVal('migration_dir');
-        if (str_starts_with($dir, Module::getDocRoot())) {
-            return substr($dir, strlen(Module::getDocRoot()));
-        }
-        return '';
-    }
-
-    public function getLogger()
-    {
-        return $this->getVal('logger', null);
-    }
-
-    public function getBuilders(): array
-    {
-        return $this->getVal('version_builders', []);
-    }
-
     /**
      * @throws MigrationException
      */
@@ -223,13 +91,13 @@ class VersionConfig
         }
 
         if (isset($values['show_admin_interface'])) {
-            $values['show_admin_interface'] = (bool)$values['show_admin_interface'];
+            $values['show_admin_interface'] = (bool) $values['show_admin_interface'];
         } else {
             $values['show_admin_interface'] = true;
         }
 
         if (isset($values['console_auth_events_disable'])) {
-            $values['console_auth_events_disable'] = (bool)$values['console_auth_events_disable'];
+            $values['console_auth_events_disable'] = (bool) $values['console_auth_events_disable'];
         } else {
             $values['console_auth_events_disable'] = true;
         }
@@ -260,7 +128,7 @@ class VersionConfig
         }
 
         $values['version_timestamp_pattern'] = $this->maskToRegex(
-            $values['version_timestamp_format']
+            $values['version_timestamp_format'],
         );
 
         if (empty($values['migration_hash_algo'])) {
@@ -279,33 +147,33 @@ class VersionConfig
     public static function getDefaultBuilders(): array
     {
         return [
-            'UserGroupBuilder'            => UserGroupBuilder::class,
-            'LanguageBuilder'             => LanguageBuilder::class,
-            'IblockBuilder'               => IblockBuilder::class,
-            'IblockPropertyBuilder'       => IblockPropertyBuilder::class,
+            'UserGroupBuilder' => UserGroupBuilder::class,
+            'LanguageBuilder' => LanguageBuilder::class,
+            'IblockBuilder' => IblockBuilder::class,
+            'IblockPropertyBuilder' => IblockPropertyBuilder::class,
             'IblockPropertyDeleteBuilder' => IblockPropertyDeleteBuilder::class,
-            'IblockCategoryBuilder'       => IblockCategoryBuilder::class,
-            'IblockElementsBuilder'       => IblockElementsBuilder::class,
-            'IblockDeleteBuilder'         => IblockDeleteBuilder::class,
-            'HlblockBuilder'              => HlblockBuilder::class,
-            'HlblockElementsBuilder'      => HlblockElementsBuilder::class,
-            'UserTypeEntitiesBuilder'     => UserTypeEntitiesBuilder::class,
-            'AgentBuilder'                => AgentBuilder::class,
-            'BlogBuilder'                 => BlogBuilder::class,
-            'BlogPostBuilder'             => BlogPostBuilder::class,
+            'IblockCategoryBuilder' => IblockCategoryBuilder::class,
+            'IblockElementsBuilder' => IblockElementsBuilder::class,
+            'IblockDeleteBuilder' => IblockDeleteBuilder::class,
+            'HlblockBuilder' => HlblockBuilder::class,
+            'HlblockElementsBuilder' => HlblockElementsBuilder::class,
+            'UserTypeEntitiesBuilder' => UserTypeEntitiesBuilder::class,
+            'AgentBuilder' => AgentBuilder::class,
+            'BlogBuilder' => BlogBuilder::class,
+            'BlogPostBuilder' => BlogPostBuilder::class,
             'BlogUserTypeEntitiesBuilder' => BlogUserTypeEntitiesBuilder::class,
-            'OptionBuilder'               => OptionBuilder::class,
-            'FormBuilder'                 => FormBuilder::class,
-            'ForumBuilder'                => ForumBuilder::class,
-            'VoteBuilder'                 => VoteBuilder::class,
-            'EventBuilder'                => EventBuilder::class,
-            'SubscribeBuilder'            => SubscribeBuilder::class,
-            'UserOptionsBuilder'          => UserOptionsBuilder::class,
-            'OrderPropertiesBuilder'      => OrderPropertiesBuilder::class,
-            'SaleDiscountBuilder'         => SaleDiscountBuilder::class,
-            'MedialibElementsBuilder'     => MedialibElementsBuilder::class,
-            'BlankBuilder'                => BlankBuilder::class,
-            'CacheCleanerBuilder'         => CacheCleanerBuilder::class,
+            'OptionBuilder' => OptionBuilder::class,
+            'FormBuilder' => FormBuilder::class,
+            'ForumBuilder' => ForumBuilder::class,
+            'VoteBuilder' => VoteBuilder::class,
+            'EventBuilder' => EventBuilder::class,
+            'SubscribeBuilder' => SubscribeBuilder::class,
+            'UserOptionsBuilder' => UserOptionsBuilder::class,
+            'OrderPropertiesBuilder' => OrderPropertiesBuilder::class,
+            'SaleDiscountBuilder' => SaleDiscountBuilder::class,
+            'MedialibElementsBuilder' => MedialibElementsBuilder::class,
+            'BlankBuilder' => BlankBuilder::class,
+            'CacheCleanerBuilder' => CacheCleanerBuilder::class,
         ];
     }
 
@@ -315,11 +183,11 @@ class VersionConfig
     private function maskToRegex(string $mask): string
     {
         $supportedFormats = [
-            'YmdHis'    => '/20\d{12}/',
-            'Ymd_His'   => '/20\d{6}_\d{6}/',
+            'YmdHis' => '/20\d{12}/',
+            'Ymd_His' => '/20\d{6}_\d{6}/',
             'Y_m_d_His' => '/20\d{2}_\d{2}_\d{2}_\d{6}/',
-            'dmYHis'    => '/\d{2}\d{2}20\d{2}\d{6}/',
-            'dmY_His'   => '/\d{2}\d{2}20\d{2}_\d{6}/',
+            'dmYHis' => '/\d{2}\d{2}20\d{2}\d{6}/',
+            'dmY_His' => '/\d{2}\d{2}20\d{2}_\d{6}/',
             'd_m_Y_His' => '/\d{2}_\d{2}_20\d{2}_\d{6}/',
         ];
 
@@ -328,6 +196,143 @@ class VersionConfig
         }
 
         throw new MigrationException("Config version_timestamp_format has unsupported format");
+    }
+
+    public function getTitle(): string
+    {
+        return sprintf('%s (%s)', $this->getVal('title'), $this->name);
+    }
+
+    public function getVal(string $name, mixed $default = ''): mixed
+    {
+        return $this->values[$name] ?? $default;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    public function getSort(): int
+    {
+        $sort = (int) $this->getVal('sort', 200);
+
+        return ($this->getName() == VersionEnum::CONFIG_DEFAULT) ? 100 : $sort;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function humanValues(): array
+    {
+        $human = [];
+
+        foreach ($this->getValues() as $key => $val) {
+            if ($val === true || $val === false) {
+                $val = ($val) ? 'yes' : 'no';
+                $val = Locale::getMessage('CONFIG_' . $val);
+            } elseif (is_array($val)) {
+                $fres = [];
+                foreach ($val as $fkey => $fval) {
+                    $fres[] = '[' . $fkey . '] => ' . $fval;
+                }
+                $val = implode(PHP_EOL, $fres);
+            } elseif (is_object($val)) {
+                $val = get_class($val);
+            }
+            $human[$key] = (string) $val;
+        }
+        return $human;
+    }
+
+    public function getValues(): array
+    {
+        return $this->values;
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function getVersionExchangeDir(string $versionName): string
+    {
+        $this->tryVersionName($versionName);
+
+        return $this->getVal('exchange_dir') . '/' . $versionName . '_files/';
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function tryVersionName(string $versionName): void
+    {
+        if (isset($this->triedVersionNames[$versionName])) {
+            return;
+        }
+
+        $ts = $this->getVersionTimestamp($versionName);
+
+        if (!$this->checkVersionName($versionName) || !$ts) {
+            throw new MigrationException('Invalid version name');
+        }
+
+        $this->triedVersionNames[$versionName] = $ts;
+    }
+
+    public function getVersionTimestamp(string $versionName): string
+    {
+        $pattern = $this->getVal('version_timestamp_pattern');
+
+        $matches = [];
+        if (preg_match($pattern, $versionName, $matches)) {
+            return end($matches);
+        }
+
+        return '';
+    }
+
+    public function checkVersionName(string $versionName): bool
+    {
+        //имя версии долджно быть валидным названием php-класса
+        //первый символ: буква или подчёркивание
+        //далее любые буквы, цифры, подчёркивания
+        //не должно содержать разделителей пути
+        return ($versionName && preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $versionName));
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function getVersionFile(string $versionName): string
+    {
+        $this->tryVersionName($versionName);
+
+        return $this->getVal('migration_dir') . '/' . $versionName . '.php';
+    }
+
+    public function getWebDir(): string
+    {
+        $dir = $this->getVal('migration_dir');
+        if (str_starts_with($dir, Module::getDocRoot())) {
+            return substr($dir, strlen(Module::getDocRoot()));
+        }
+        return '';
+    }
+
+    public function getLogger()
+    {
+        return $this->getVal('logger', null);
+    }
+
+    public function getBuilders(): array
+    {
+        return $this->getVal('version_builders', []);
+    }
+
+    public function getActualTimestamp(): string
+    {
+        return date($this->getVal('version_timestamp_format'), time() - 8 * 3600);
     }
 
 

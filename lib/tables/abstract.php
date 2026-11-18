@@ -10,13 +10,12 @@ use Bitrix\Main\ORM\Entity;
 use Exception;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\HelperManager;
 use Sprint\Migration\Helpers\SqlHelper;
 use Sprint\Migration\Module;
 
 abstract class AbstractTable
 {
-    protected int  $tableVersion = 1;
+    protected int $tableVersion = 1;
     private string $tableName;
     private string $entityName;
     private Entity $entity;
@@ -40,8 +39,8 @@ abstract class AbstractTable
                     $this->getMap(),
                     [
                         'table_name' => $tableName,
-                        'namespace'  => __NAMESPACE__,
-                    ]
+                        'namespace' => __NAMESPACE__,
+                    ],
                 );
             }
         } catch (Exception $e) {
@@ -51,6 +50,15 @@ abstract class AbstractTable
         $this->createTable();
     }
 
+    private function makeEntityName(string $tableName): string
+    {
+        $arr = explode('_', $tableName);
+
+        $arr = array_map('ucfirst', $arr);
+
+        return implode('', $arr);
+    }
+
     abstract public function getMap(): array;
 
     /**
@@ -58,7 +66,7 @@ abstract class AbstractTable
      */
     public function createTable(): void
     {
-        $version = (int)Module::getDbOption($this->entityName);
+        $version = (int) Module::getDbOption($this->entityName);
         if ($version !== $this->tableVersion) {
             try {
                 $this->createDbTable();
@@ -138,6 +146,23 @@ abstract class AbstractTable
     }
 
     /**
+     * @return DataManager|string
+     */
+    private function getDataManager(): DataManager|string
+    {
+        return $this->entity->getDataClass();
+    }
+
+    private function fetchDataModifier(array $item): array
+    {
+        $result = [];
+        foreach ($item as $key => $val) {
+            $result[strtolower($key)] = $val;
+        }
+        return $result;
+    }
+
+    /**
      * @throws MigrationException
      */
     protected function getAll(array $filter = []): array
@@ -151,15 +176,6 @@ abstract class AbstractTable
         } catch (Exception $e) {
             throw new MigrationException($e->getMessage(), $e->getCode(), $e);
         }
-    }
-
-    private function fetchDataModifier(array $item): array
-    {
-        $result = [];
-        foreach ($item as $key => $val) {
-            $result[strtolower($key)] = $val;
-        }
-        return $result;
     }
 
     /**
@@ -196,23 +212,6 @@ abstract class AbstractTable
         } catch (Exception $e) {
             throw new MigrationException($e->getMessage(), $e->getCode(), $e);
         }
-    }
-
-    /**
-     * @return DataManager|string
-     */
-    private function getDataManager(): DataManager|string
-    {
-        return $this->entity->getDataClass();
-    }
-
-    private function makeEntityName(string $tableName): string
-    {
-        $arr = explode('_', $tableName);
-
-        $arr = array_map('ucfirst', $arr);
-
-        return implode('', $arr);
     }
 }
 

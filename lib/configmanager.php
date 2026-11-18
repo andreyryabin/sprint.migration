@@ -10,39 +10,26 @@ use Sprint\Migration\Exceptions\MigrationException;
 
 class ConfigManager
 {
-    private array $collection = [];
     private static ?ConfigManager $instance = null;
-
-    public static function getInstance(): static
-    {
-        if (is_null(static::$instance)) {
-            static::$instance = new static();
-        }
-        return static::$instance;
-    }
+    private array $collection = [];
 
     /**
      * @throws MigrationException
      */
     public function __construct()
     {
-        $this->addFromEventHandlers()
+        $this
+            ->addFromEventHandlers()
             ->addDefault()
             ->resort();
     }
 
-    /**
-     * @throws MigrationException
-     */
-    private function add(string $name, array $values, string $path): void
+    private function resort(): void
     {
-        $config = new VersionConfig($name, $values, $path);
-
-        if (isset($this->collection[$name])) {
-            throw new MigrationException('Config already exists: ' . $name);
-        }
-
-        $this->collection[$name] = $config;
+        uasort(
+            $this->collection,
+            fn(VersionConfig $a, VersionConfig $b) => ($a->getSort() <=> $b->getSort()),
+        );
     }
 
     /**
@@ -62,38 +49,15 @@ class ConfigManager
     /**
      * @throws MigrationException
      */
-    public function get(string $name): VersionConfig
+    private function add(string $name, array $values, string $path): void
     {
+        $config = new VersionConfig($name, $values, $path);
+
         if (isset($this->collection[$name])) {
-            return $this->collection[$name];
+            throw new MigrationException('Config already exists: ' . $name);
         }
 
-        throw new MigrationException('Config not found: ' . $name);
-    }
-
-    /**
-     * @return array|VersionConfig[]
-     */
-    public function getList(): array
-    {
-        return $this->collection;
-    }
-
-    public function getListAssoc(): array
-    {
-        $map = [];
-        foreach ($this->getList() as $config) {
-            $map[$config->getName()] = $config->getTitle();
-        }
-        return $map;
-    }
-
-    private function resort(): void
-    {
-        uasort(
-            $this->collection,
-            fn(VersionConfig $a, VersionConfig $b) => ($a->getSort() <=> $b->getSort())
-        );
+        $this->collection[$name] = $config;
     }
 
     /**
@@ -104,13 +68,13 @@ class ConfigManager
         $events = GetModuleEvents(
             Module::ID,
             EventsEnum::ON_SEARCH_CONFIG_FILES,
-            true
+            true,
         );
 
         foreach ($events as $aEvent) {
             $customPath = ExecuteModuleEventEx($aEvent);
             if ($customPath !== null) {
-                $this->addFromDirectory((string)$customPath);
+                $this->addFromDirectory((string) $customPath);
             }
         }
 
@@ -144,6 +108,39 @@ class ConfigManager
         }
     }
 
+    private function makeConfigName(string $fileName): string
+    {
+        if (preg_match('/^migrations\.([a-z0-9_-]*)\.php$/i', $fileName, $matches)) {
+            return $matches[1];
+        }
+        return '';
+    }
+
+    public static function getInstance(): static
+    {
+        if (is_null(static::$instance)) {
+            static::$instance = new static();
+        }
+        return static::$instance;
+    }
+
+    public function getListAssoc(): array
+    {
+        $map = [];
+        foreach ($this->getList() as $config) {
+            $map[$config->getName()] = $config->getTitle();
+        }
+        return $map;
+    }
+
+    /**
+     * @return array|VersionConfig[]
+     */
+    public function getList(): array
+    {
+        return $this->collection;
+    }
+
     /**
      * @throws MigrationException
      */
@@ -160,7 +157,7 @@ class ConfigManager
         }
 
         $configValues = [
-            'migration_dir'   => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
+            'migration_dir' => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
             'migration_table' => 'sprint_migration_' . $configName,
         ];
 
@@ -191,18 +188,20 @@ class ConfigManager
             unset($this->collection[$configName]);
 
             return true;
-
         } catch (MigrationException) {
             return false;
         }
-
     }
 
-    private function makeConfigName(string $fileName): string
+    /**
+     * @throws MigrationException
+     */
+    public function get(string $name): VersionConfig
     {
-        if (preg_match('/^migrations\.([a-z0-9_-]*)\.php$/i', $fileName, $matches)) {
-            return $matches[1];
+        if (isset($this->collection[$name])) {
+            return $this->collection[$name];
         }
-        return '';
+
+        throw new MigrationException('Config not found: ' . $name);
     }
 }

@@ -53,7 +53,7 @@ trait HlblockGroupTrait
                 continue;
             }
 
-            $groupId = (int)substr($item['ACCESS_CODE'], 1);
+            $groupId = (int) substr($item['ACCESS_CODE'], 1);
             if (empty($groupId)) {
                 continue;
             }
@@ -109,10 +109,10 @@ trait HlblockGroupTrait
                 if (!empty($taskId)) {
                     HighloadBlockRightsTable::add(
                         [
-                            'HL_ID'       => $hlblockId,
-                            'TASK_ID'     => $taskId,
+                            'HL_ID' => $hlblockId,
+                            'TASK_ID' => $taskId,
                             'ACCESS_CODE' => 'G' . $groupId,
-                        ]
+                        ],
                     );
                 }
             }

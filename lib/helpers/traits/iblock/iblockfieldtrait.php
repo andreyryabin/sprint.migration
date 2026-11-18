@@ -8,16 +8,6 @@ use Sprint\Migration\Locale;
 trait IblockFieldTrait
 {
     /**
-     * Получает список полей инфоблока
-     */
-    public function getIblockFields(int $iblockId): array
-    {
-        $fields = CIBlock::GetFields($iblockId);
-
-        return is_array($fields) ? $fields : [];
-    }
-
-    /**
      * Сохраняет поля инфоблока
      */
     public function saveIblockFields(int $iblockId, array $fields = []): bool
@@ -40,15 +30,11 @@ trait IblockFieldTrait
         return true;
     }
 
-    /**
-     * Получает список полей инфоблока
-     * Данные подготовлены для экспорта в миграцию или схему
-     */
-    public function exportIblockFields(int $iblockId): array
+    protected function prepareExportIblockFields(array $fields): array
     {
-        return $this->prepareExportIblockFields(
-            $this->getIblockFields($iblockId)
-        );
+        return array_filter($fields, function ($field) {
+            return ($field['VISIBLE'] != 'N');
+        });
     }
 
     /**
@@ -64,24 +50,38 @@ trait IblockFieldTrait
         return false;
     }
 
-    public function exportIblockElementFields(int $iblockId): array
+    /**
+     * Получает список полей инфоблока
+     * Данные подготовлены для экспорта в миграцию или схему
+     */
+    public function exportIblockFields(int $iblockId): array
     {
-        return $this->prepareExportIblockElementFields(
-            $this->getIblockFields($iblockId)
+        return $this->prepareExportIblockFields(
+            $this->getIblockFields($iblockId),
         );
     }
 
-    protected function prepareExportIblockFields(array $fields): array
+    /**
+     * Получает список полей инфоблока
+     */
+    public function getIblockFields(int $iblockId): array
     {
-        return array_filter($fields, function ($field) {
-            return ($field['VISIBLE'] != 'N');
-        });
+        $fields = CIBlock::GetFields($iblockId);
+
+        return is_array($fields) ? $fields : [];
+    }
+
+    public function exportIblockElementFields(int $iblockId): array
+    {
+        return $this->prepareExportIblockElementFields(
+            $this->getIblockFields($iblockId),
+        );
     }
 
     protected function prepareExportIblockElementFields(array $fields): array
     {
         return array_filter($fields, function ($field, $code) {
             return !($field['VISIBLE'] == 'N' || preg_match('/^(SECTION_|LOG_)/', $code));
-        }, ARRAY_FILTER_USE_BOTH);
+        },                  ARRAY_FILTER_USE_BOTH);
     }
 }

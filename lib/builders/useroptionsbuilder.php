@@ -34,9 +34,9 @@ class UserOptionsBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $what = $this->addFieldAndReturn('what', [
-            'title'    => Locale::getMessage('BUILDER_UserOptionsExport_What'),
+            'title' => Locale::getMessage('BUILDER_UserOptionsExport_What'),
             'multiple' => 1,
-            'select'   => [
+            'select' => [
                 [
                     'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserForm'),
                     'value' => 'userForm',
@@ -64,25 +64,25 @@ class UserOptionsBuilder extends VersionBuilder
         if (in_array('userList', $what)) {
             $exportUserList = $helper->UserOptions()->exportUserList();
             $exportUserGrid = $helper->UserOptions()->exportGrid(
-                $helper->UserOptions()->getUserGridId()
+                $helper->UserOptions()->getUserGridId(),
             );
         }
         if (in_array('groupList', $what)) {
             $exportUserGroupList = $helper->UserOptions()->exportUserGroupList();
             $exportUserGroupGrid = $helper->UserOptions()->exportGrid(
-                $helper->UserOptions()->getUserGroupGridId()
+                $helper->UserOptions()->getUserGroupGridId(),
             );
         }
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('UserOptionsExport'),
             [
-                'exportUserForm'      => $exportUserForm,
-                'exportUserList'      => $exportUserList,
+                'exportUserForm' => $exportUserForm,
+                'exportUserList' => $exportUserList,
                 'exportUserGroupList' => $exportUserGroupList,
-                'exportUserGrid'      => $exportUserGrid,
+                'exportUserGrid' => $exportUserGrid,
                 'exportUserGroupGrid' => $exportUserGroupGrid,
-            ]
+            ],
         );
     }
 }

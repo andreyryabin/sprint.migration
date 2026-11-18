@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Controller;
 
 
+use Bitrix\Main\Engine\Action;
 use Bitrix\Main\Engine\Controller;
 use Bitrix\Main\Error;
 use Bitrix\Main\Localization\Loc;
@@ -35,31 +36,21 @@ class BuilderController extends Controller
         parent::__construct($request);
 
         Loc::setCurrentLang(
-            $this->getRequest()->get('lang') ?? Locale::getDefaultLang()
+            $this->getRequest()->get('lang') ?? Locale::getDefaultLang(),
         );
 
         $versionConfig = ConfigManager::getInstance()->get(
-            $this->getRequest()->get('config')
+            $this->getRequest()->get('config'),
         );
 
         $this->output = new RestOutput(
-            $versionConfig->getLogger()
+            $versionConfig->getLogger(),
         );
 
         $this->builderManager = new BuilderManager(
             $versionConfig,
-            $this->output
+            $this->output,
         );
-    }
-
-    protected function processBeforeAction(\Bitrix\Main\Engine\Action $action): bool
-    {
-        if (CMain::GetUserRight(Module::ID) == 'D') {
-            $this->addError(new Error('ACCESS_DENIED'));
-            return false;
-        }
-
-        return parent::processBeforeAction($action);
     }
 
     public function configureActions(): array
@@ -67,14 +58,11 @@ class BuilderController extends Controller
         return [];
     }
 
-    /**
-     * @noinspection PhpUnused
-     */
     public function refreshBuildersAction(): array
     {
         $builders = array_map(
             fn(Builder $builder) => $this->getBuilderForm($builder, true),
-            $this->builderManager->getBuilders()
+            $this->builderManager->getBuilders(),
         );
 
         return ['builders' => $builders];
@@ -82,24 +70,7 @@ class BuilderController extends Controller
 
     /**
      * @noinspection PhpUnused
-     * @throws BuilderException
      */
-    public function execBuilderAction(string $name, array $params = []): array
-    {
-        $builder = $this->builderManager->createBuilder($name, $params);
-
-        $result = $this->builderManager->startBuilder($builder);
-
-        return array_merge(
-            [
-                'restart' => $result->needRestart(),
-                'success' => $result->isSuccess(),
-            ],
-            $this->getBuilderForm($builder, $result->isSuccess()),
-            $this->output->getLog()
-        );
-
-    }
 
     private function getBuilderForm(Builder $builder, bool $newform): array
     {
@@ -110,25 +81,6 @@ class BuilderController extends Controller
         }
 
         return $this->builderToArray($builder);
-
-    }
-
-    private function builderToArray(Builder $builder): array
-    {
-        return [
-            'name'   => $builder->getName(),
-            'title'  => $builder->getTitle(),
-            'group'  => $builder->getGroup(),
-            'note'   => $builder->getDescription(),
-            'params' => $builder->getRestartParams(),
-            'fields' => array_map(fn(AbstractField $field) => [
-                'code'      => $field->getCode(),
-                'title'     => $field->getTitle(),
-                'note'      => $field->getNote(),
-                'component' => $field->getComponentName(),
-                'props'     => $field->getProps(),
-            ], $builder->getFields())
-        ];
     }
 
     private function cleanParams(Builder $builder): void
@@ -148,5 +100,54 @@ class BuilderController extends Controller
             $params[$field->getCode()] ??= $field->getDefaultValue();
         }
         $builder->setRestartParams($params);
+    }
+
+    private function builderToArray(Builder $builder): array
+    {
+        return [
+            'name' => $builder->getName(),
+            'title' => $builder->getTitle(),
+            'group' => $builder->getGroup(),
+            'note' => $builder->getDescription(),
+            'params' => $builder->getRestartParams(),
+            'fields' => array_map(fn(AbstractField $field)
+                => [
+                'code' => $field->getCode(),
+                'title' => $field->getTitle(),
+                'note' => $field->getNote(),
+                'component' => $field->getComponentName(),
+                'props' => $field->getProps(),
+            ], $builder->getFields()),
+        ];
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @throws BuilderException
+     */
+    public function execBuilderAction(string $name, array $params = []): array
+    {
+        $builder = $this->builderManager->createBuilder($name, $params);
+
+        $result = $this->builderManager->startBuilder($builder);
+
+        return array_merge(
+            [
+                'restart' => $result->needRestart(),
+                'success' => $result->isSuccess(),
+            ],
+            $this->getBuilderForm($builder, $result->isSuccess()),
+            $this->output->getLog(),
+        );
+    }
+
+    protected function processBeforeAction(Action $action): bool
+    {
+        if (CMain::GetUserRight(Module::ID) == 'D') {
+            $this->addError(new Error('ACCESS_DENIED'));
+            return false;
+        }
+
+        return parent::processBeforeAction($action);
     }
 }

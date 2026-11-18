@@ -26,7 +26,7 @@ class OptionBuilder extends VersionBuilder
 
         $this->setDescription(implode(PHP_EOL, [
             Locale::getMessage('DEVELOPER_NAME', ['#VALUE#' => '@KotkinRoman']),
-            Locale::getMessage('BUILDER_OptionExport_Info')
+            Locale::getMessage('BUILDER_OptionExport_Info'),
         ]));
 
         $this->addVersionFields();
@@ -44,15 +44,15 @@ class OptionBuilder extends VersionBuilder
         $this->addField(
             'site_id',
             [
-                'title'    => Locale::getMessage('BUILDER_OptionExport_site_id'),
-                'select'   => $this->createSelect($helper->Site()->getSites(), 'ID', 'NAME', true),
+                'title' => Locale::getMessage('BUILDER_OptionExport_site_id'),
+                'select' => $this->createSelect($helper->Site()->getSites(), 'ID', 'NAME', true),
                 'multiple' => 1,
-            ]
+            ],
         );
 
         $moduleIds = $this->addFieldAndReturn('module_id', [
-            'title'    => Locale::getMessage('BUILDER_OptionExport_module_id'),
-            'select'   => $this->createSelect($helper->Option()->getModules(), 'ID', 'ID'),
+            'title' => Locale::getMessage('BUILDER_OptionExport_module_id'),
+            'select' => $this->createSelect($helper->Option()->getModules(), 'ID', 'ID'),
             'multiple' => 1,
         ]);
 
@@ -62,8 +62,8 @@ class OptionBuilder extends VersionBuilder
             $options = $helper->Option()->getOptions(
                 [
                     'MODULE_ID' => $moduleId,
-                    'SITE_ID'   => $this->getFieldValue('site_id', [false])
-                ]
+                    'SITE_ID' => $this->getFieldValue('site_id', [false]),
+                ],
             );
 
             foreach ($options as $option) {
@@ -79,7 +79,7 @@ class OptionBuilder extends VersionBuilder
             Module::getModuleTemplateFile('OptionExport'),
             [
                 'items' => $items,
-            ]
+            ],
         );
     }
 }

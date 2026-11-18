@@ -9,17 +9,16 @@ use Sprint\Migration\Interfaces\RestartableInterface;
 
 class RestartableWriter
 {
-    private int     $limit      = 20;
-    private string  $file       = '';
-    private bool    $copyFiles  = true;
-    private int     $totalCount = 0;
+    private int $limit = 20;
+    private string $file = '';
+    private bool $copyFiles = true;
+    private int $totalCount = 0;
     private ?Writer $writer;
 
     public function __construct(
         private readonly RestartableInterface $restartable,
-        private readonly string $directory,
-    ) {
-    }
+        private readonly string               $directory,
+    ) {}
 
     public function setExchangeResource(string $exchangeResource): RestartableWriter
     {
@@ -35,12 +34,6 @@ class RestartableWriter
     public function setLimit(int $limit): RestartableWriter
     {
         $this->limit = $limit;
-        return $this;
-    }
-
-    public function setCopyFiles(bool $copyFiles): RestartableWriter
-    {
-        $this->copyFiles = $copyFiles;
         return $this;
     }
 
@@ -66,6 +59,13 @@ class RestartableWriter
 
         $this->restartable->restartOnce('~step4', fn() => $this->writer->closeFile());
     }
+
+    public function setCopyFiles(bool $copyFiles): RestartableWriter
+    {
+        $this->copyFiles = $copyFiles;
+        return $this;
+    }
+
     private function start(Closure $totalCountFn, Closure $progressFn): int
     {
         $totalCount = $totalCountFn();
@@ -74,6 +74,7 @@ class RestartableWriter
 
         return $totalCount;
     }
+
     /**
      * @throws MigrationException
      */

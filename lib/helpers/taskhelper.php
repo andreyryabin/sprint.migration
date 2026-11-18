@@ -16,7 +16,7 @@ class TaskHelper extends Helper
         $task = CTask::GetList([], ['ID' => $taskId, 'MODULE_ID' => $moduleId])->Fetch();
 
         if (!empty($task['NAME'])) {
-            return (string)$task['NAME'];
+            return (string) $task['NAME'];
         }
 
         throw new HelperException("Task with id=\"$taskId\" in module=\"$moduleId\ not found");
@@ -30,7 +30,7 @@ class TaskHelper extends Helper
         $task = CTask::GetList([], ['NAME' => $taskName, 'MODULE_ID' => $moduleId])->Fetch();
 
         if (!empty($task['ID'])) {
-            return (int)$task['ID'];
+            return (int) $task['ID'];
         }
 
         throw new HelperException("Task with name=\"$taskName\" in module=\"$moduleId\ not found");

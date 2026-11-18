@@ -36,38 +36,51 @@ class IblockPropertyBuilder extends VersionBuilder
         $userTypes = $this->getPropertyUserTypes();
 
         $userType = $this->addFieldAndReturn('user_type', [
-            'title'  => Locale::getMessage('BUILDER_IblockPropertyExport_UserType'),
+            'title' => Locale::getMessage('BUILDER_IblockPropertyExport_UserType'),
             'select' => $this->createSelect($userTypes, 'USER_TYPE', 'TITLE'),
         ]);
 
         $properties = $this->getPropertiesByFilter([
-            'USER_TYPE' => $userType,
-        ]);
+                                                       'USER_TYPE' => $userType,
+                                                   ]);
 
         $propertyIds = $this->addFieldAndReturn('export_props', [
-            'title'    => Locale::getMessage('BUILDER_IblockPropertyExport_Properties'),
-            'items'    => $this->createStructure($properties, 'ID', 'PROPERTY_TITLE', 'IBLOCK_TITLE'),
+            'title' => Locale::getMessage('BUILDER_IblockPropertyExport_Properties'),
+            'items' => $this->createStructure($properties, 'ID', 'PROPERTY_TITLE', 'IBLOCK_TITLE'),
             'multiple' => 1,
         ]);
 
         $properties = array_filter(
             $properties,
-            fn($property) => in_array($property['ID'], $propertyIds)
+            fn($property) => in_array($property['ID'], $propertyIds),
         );
 
         $exports = array_map(
-            fn($property) => [
+            fn($property)
+                => [
                 'iblock' => $helper->Iblock()->exportIblock($property['IBLOCK_ID']),
-                'prop'   => $helper->Iblock()->exportProperty($property['IBLOCK_ID'], ['ID' => $property['ID']]),
+                'prop' => $helper->Iblock()->exportProperty($property['IBLOCK_ID'], ['ID' => $property['ID']]),
             ],
-            $properties
+            $properties,
         );
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockPropertyExport'),
             [
                 'exports' => $exports,
-            ]
+            ],
+        );
+    }
+
+    private function getPropertyUserTypes(): array
+    {
+        $iblockHelper = $this->getHelperManager()->Iblock();
+
+        return array_map(
+            fn($field) => array_merge($field, [
+                'TITLE' => sprintf('[%s] %s', $field['USER_TYPE'], $field['DESCRIPTION']),
+            ]),
+            $iblockHelper->getPropertyUserTypes(),
         );
     }
 
@@ -80,22 +93,10 @@ class IblockPropertyBuilder extends VersionBuilder
 
         return array_map(
             fn($field) => array_merge($field, [
-                'IBLOCK_TITLE'   => $iblockHelper->getIblockTitle($field['IBLOCK_ID']),
+                'IBLOCK_TITLE' => $iblockHelper->getIblockTitle($field['IBLOCK_ID']),
                 'PROPERTY_TITLE' => sprintf('[%s] %s', $field['CODE'], $field['NAME']),
             ]),
-            $iblockHelper->getPropertiesByFilter($filter)
-        );
-    }
-
-    private function getPropertyUserTypes(): array
-    {
-        $iblockHelper = $this->getHelperManager()->Iblock();
-
-        return array_map(
-            fn($field) => array_merge($field, [
-                'TITLE' => sprintf('[%s] %s', $field['USER_TYPE'], $field['DESCRIPTION']),
-            ]),
-            $iblockHelper->getPropertyUserTypes()
+            $iblockHelper->getPropertiesByFilter($filter),
         );
     }
 }

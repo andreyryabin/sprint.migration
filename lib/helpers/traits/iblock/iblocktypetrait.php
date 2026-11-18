@@ -23,27 +23,8 @@ trait IblockTypeTrait
 
         throw new HelperException(
             Locale::getMessage(
-                'ERR_IB_TYPE_NOT_FOUND'
-            )
-        );
-    }
-
-    /**
-     * Получает id типа инфоблока, бросает исключение если его не существует
-     *
-     * @throws HelperException
-     */
-    public function getIblockTypeIdIfExists(array|string $typeId): string
-    {
-        $item = $this->getIblockType($typeId);
-        if (!empty($item['ID'])) {
-            return (string)$item['ID'];
-        }
-
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_IB_TYPE_NOT_FOUND'
-            )
+                'ERR_IB_TYPE_NOT_FOUND',
+            ),
         );
     }
 
@@ -66,12 +47,54 @@ trait IblockTypeTrait
     }
 
     /**
+     * Получает языковые названия для типа инфоблока
+     */
+    public function getIblockTypeLangs(string $typeId): array
+    {
+        $lby = 'sort';
+        $lorder = 'asc';
+
+        $result = [];
+        $dbres = CLanguage::GetList($lby, $lorder);
+        while ($item = $dbres->GetNext()) {
+            $values = CIBlockType::GetByIDLang($typeId, $item['LID'], false);
+            if (!empty($values)) {
+                $result[$item['LID']] = [
+                    'NAME' => $values['NAME'],
+                    'SECTION_NAME' => $values['SECTION_NAME'],
+                    'ELEMENT_NAME' => $values['ELEMENT_NAME'],
+                ];
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Получает id типа инфоблока, бросает исключение если его не существует
+     *
+     * @throws HelperException
+     */
+    public function getIblockTypeIdIfExists(array|string $typeId): string
+    {
+        $item = $this->getIblockType($typeId);
+        if (!empty($item['ID'])) {
+            return (string) $item['ID'];
+        }
+
+        throw new HelperException(
+            Locale::getMessage(
+                'ERR_IB_TYPE_NOT_FOUND',
+            ),
+        );
+    }
+
+    /**
      * Получает id типа инфоблока
      */
     public function getIblockTypeId($typeId): string
     {
         $item = $this->getIblockType($typeId);
-        return !empty($item['ID']) ? (string)$item['ID'] : '';
+        return !empty($item['ID']) ? (string) $item['ID'] : '';
     }
 
     /**
@@ -101,7 +124,7 @@ trait IblockTypeTrait
 
         $item = $this->getIblockType($fields['ID']);
         if (!empty($item['ID'])) {
-            return (string)$item['ID'];
+            return (string) $item['ID'];
         }
 
         return $this->addIblockType($fields);
@@ -115,18 +138,18 @@ trait IblockTypeTrait
     public function addIblockType(array $fields = []): string
     {
         $default = [
-            'ID'       => '',
+            'ID' => '',
             'SECTIONS' => 'Y',
-            'IN_RSS'   => 'N',
-            'SORT'     => 100,
-            'LANG'     => [
+            'IN_RSS' => 'N',
+            'SORT' => 100,
+            'LANG' => [
                 'ru' => [
-                    'NAME'         => 'Catalog',
+                    'NAME' => 'Catalog',
                     'SECTION_NAME' => 'Sections',
                     'ELEMENT_NAME' => 'Elements',
                 ],
                 'en' => [
-                    'NAME'         => 'Catalog',
+                    'NAME' => 'Catalog',
                     'SECTION_NAME' => 'Sections',
                     'ELEMENT_NAME' => 'Elements',
                 ],
@@ -135,26 +158,10 @@ trait IblockTypeTrait
 
         $fields = array_replace_recursive($default, $fields);
 
-        $ib = new CIBlockType;
+        $ib = new CIBlockType();
         if ($ib->Add($fields)) {
             $this->outNotice(Locale::getMessage('IB_TYPE_CREATED', ['#NAME#' => $fields['ID']]));
-            return (string)$fields['ID'];
-        }
-
-        throw new HelperException($ib->LAST_ERROR);
-    }
-
-    /**
-     * Обновляет тип инфоблока
-     *
-     * @throws HelperException
-     */
-    public function updateIblockType(string $typeId, array $fields): string
-    {
-        $ib = new CIBlockType;
-        if ($ib->Update($typeId, $fields)) {
-            $this->outNotice(Locale::getMessage('IB_TYPE_UPDATED', ['#NAME#' => $fields['ID']]));
-            return $typeId;
+            return (string) $fields['ID'];
         }
 
         throw new HelperException($ib->LAST_ERROR);
@@ -187,34 +194,12 @@ trait IblockTypeTrait
 
         throw new HelperException(
             Locale::getMessage(
-                'ERR_CANT_DELETE_IBLOCK_TYPE', [
+                'ERR_CANT_DELETE_IBLOCK_TYPE',
+                [
                     '#NAME#' => $typeId,
-                ]
-            )
+                ],
+            ),
         );
-    }
-
-    /**
-     * Получает языковые названия для типа инфоблока
-     */
-    public function getIblockTypeLangs(string $typeId): array
-    {
-        $lby = 'sort';
-        $lorder = 'asc';
-
-        $result = [];
-        $dbres = CLanguage::GetList($lby, $lorder);
-        while ($item = $dbres->GetNext()) {
-            $values = CIBlockType::GetByIDLang($typeId, $item['LID'], false);
-            if (!empty($values)) {
-                $result[$item['LID']] = [
-                    'NAME'         => $values['NAME'],
-                    'SECTION_NAME' => $values['SECTION_NAME'],
-                    'ELEMENT_NAME' => $values['ELEMENT_NAME'],
-                ];
-            }
-        }
-        return $result;
     }
 
     /**
@@ -236,7 +221,23 @@ trait IblockTypeTrait
             return $this->updateIblockType($exists['ID'], $fields);
         }
 
-        return (string)$fields['ID'];
+        return (string) $fields['ID'];
+    }
+
+    /**
+     * Обновляет тип инфоблока
+     *
+     * @throws HelperException
+     */
+    public function updateIblockType(string $typeId, array $fields): string
+    {
+        $ib = new CIBlockType();
+        if ($ib->Update($typeId, $fields)) {
+            $this->outNotice(Locale::getMessage('IB_TYPE_UPDATED', ['#NAME#' => $fields['ID']]));
+            return $typeId;
+        }
+
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**

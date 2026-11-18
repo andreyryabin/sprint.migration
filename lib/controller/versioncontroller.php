@@ -35,31 +35,21 @@ class VersionController extends Controller
         parent::__construct($request);
 
         Loc::setCurrentLang(
-            $this->getRequest()->get('lang') ?? Locale::getDefaultLang()
+            $this->getRequest()->get('lang') ?? Locale::getDefaultLang(),
         );
 
         $versionConfig = ConfigManager::getInstance()->get(
-            $this->getRequest()->get('config')
+            $this->getRequest()->get('config'),
         );
 
         $this->output = new RestOutput(
-            $versionConfig->getLogger()
+            $versionConfig->getLogger(),
         );
 
         $this->versionManager = new VersionManager(
             $versionConfig,
-            $this->output
+            $this->output,
         );
-    }
-
-    protected function processBeforeAction(Action $action): bool
-    {
-        if (CMain::GetUserRight(Module::ID) == 'D') {
-            $this->addError(new Error('ACCESS_DENIED'));
-            return false;
-        }
-
-        return parent::processBeforeAction($action);
     }
 
     public function configureActions(): array
@@ -75,10 +65,35 @@ class VersionController extends Controller
     {
         $versions = array_map(
             fn(VersionEntity $entity) => $this->versionToArray($entity),
-            $this->versionManager->getVersions($filter)
+            $this->versionManager->getVersions($filter),
         );
 
         return ['versions' => $versions];
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    private function versionToArray(VersionEntity $entity): array
+    {
+        $meta = [
+            'version' => $entity->getVersionName(),
+            'status' => $entity->getStatus(),
+            'labels' => $entity->getLabels(),
+        ];
+
+        if ($entity->hasRecord()) {
+            $meta['tag'] = $entity->getReleaseTag();
+            $meta['tag_status'] = $entity->getReleaseMessage();
+            $meta['record_status'] = $entity->getRecordStatus();
+        }
+
+        if ($entity->hasFile()) {
+            $meta['file_status'] = $entity->getFileStatus();
+            $meta['description'] = $entity->getFileDescription();
+        }
+
+        return $meta;
     }
 
     /**
@@ -91,8 +106,8 @@ class VersionController extends Controller
         $entity = $this->versionManager->getVersionByName($version);
 
         return array_merge([
-            'meta' => $this->versionToArray($entity)
-        ], $this->output->getLog());
+                               'meta' => $this->versionToArray($entity),
+                           ], $this->output->getLog());
     }
 
     /**
@@ -141,8 +156,8 @@ class VersionController extends Controller
         $entity = $this->versionManager->getVersionByName($version);
 
         return array_merge([
-            'meta' => $this->versionToArray($entity)
-        ], $this->output->getLog());
+                               'meta' => $this->versionToArray($entity),
+                           ], $this->output->getLog());
     }
 
     /**
@@ -172,14 +187,14 @@ class VersionController extends Controller
             $entity,
             $action,
             $params,
-            $settag
+            $settag,
         );
 
-        $dto = array_merge([
+        $dto = [
             'success' => $result->isSuccess(),
             'restart' => $result->needRestart(),
-            'params'  => $result->getRestartParams(),
-        ]);
+            'params' => $result->getRestartParams(),
+        ];
 
         if ($result->isSuccess()) {
             //перезапрашиваем информацию о миграции так как она выполнилась
@@ -190,29 +205,13 @@ class VersionController extends Controller
         return array_merge($dto, $this->output->getLog());
     }
 
-
-    /**
-     * @throws MigrationException
-     */
-    private function versionToArray(VersionEntity $entity): array
+    protected function processBeforeAction(Action $action): bool
     {
-        $meta = [
-            'version' => $entity->getVersionName(),
-            'status'  => $entity->getStatus(),
-            'labels'  => $entity->getLabels(),
-        ];
-
-        if ($entity->hasRecord()) {
-            $meta['tag'] = $entity->getReleaseTag();
-            $meta['tag_status'] = $entity->getReleaseMessage();
-            $meta['record_status'] = $entity->getRecordStatus();
+        if (CMain::GetUserRight(Module::ID) == 'D') {
+            $this->addError(new Error('ACCESS_DENIED'));
+            return false;
         }
 
-        if ($entity->hasFile()) {
-            $meta['file_status'] = $entity->getFileStatus();
-            $meta['description'] = $entity->getFileDescription();
-        }
-
-        return $meta;
+        return parent::processBeforeAction($action);
     }
 }

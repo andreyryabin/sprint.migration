@@ -2,11 +2,13 @@
 
 namespace Sprint\Migration\Traits;
 
+use CUser;
+
 trait CurrentUserTrait
 {
     public function getCurrentUserLogin(): string
     {
-        if (isset($GLOBALS['USER']) && $GLOBALS['USER'] instanceof \CUser) {
+        if (isset($GLOBALS['USER']) && $GLOBALS['USER'] instanceof CUser) {
             return $GLOBALS['USER']->GetLogin() ?? '';
         }
         return '';
@@ -14,7 +16,7 @@ trait CurrentUserTrait
 
     public function getCurrentUserId(): string
     {
-        if (isset($GLOBALS['USER']) && $GLOBALS['USER'] instanceof \CUser) {
+        if (isset($GLOBALS['USER']) && $GLOBALS['USER'] instanceof CUser) {
             return $GLOBALS['USER']->GetId() ?? '';
         }
         return '';

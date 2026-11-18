@@ -4,6 +4,7 @@ namespace Sprint\Migration\Builders;
 
 use Sprint\Migration\Builder;
 use Sprint\Migration\Locale;
+
 use function BXClearCache;
 
 class CacheCleanerBuilder extends Builder

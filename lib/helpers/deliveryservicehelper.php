@@ -25,25 +25,6 @@ class DeliveryServiceHelper extends Helper
     }
 
     /**
-     * @param array $fields
-     *
-     * @return Base|null
-     */
-    public static function createObject(array $fields)
-    {
-        $service = Manager::createObject($fields);
-        if (!($service instanceof Base)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Error creating delivery service object.'
-                )
-            );
-        }
-
-        return $service;
-    }
-
-    /**
      * Добавляет службу доставки. Позвоялет указывать символьный код в 'CODE' и он будет сохранён дополнительным
      * запросом, чего Битрикс делать не умеет.
      *
@@ -76,10 +57,10 @@ class DeliveryServiceHelper extends Helper
      *        'ALLOW_EDIT_SHIPMENT' => 'Y',
      *    ]
      *
-     * @throws Exception
+     * @return int
      * @throws HelperException
      * @throws SystemException
-     * @return int
+     * @throws Exception
      */
     public function add(array $fields)
     {
@@ -90,8 +71,8 @@ class DeliveryServiceHelper extends Helper
             throw new HelperException(
                 sprintf(
                     'Error adding delivery service: %s',
-                    implode('; ', $addResult->getErrorMessages())
-                )
+                    implode('; ', $addResult->getErrorMessages()),
+                ),
             );
         }
 
@@ -111,14 +92,14 @@ class DeliveryServiceHelper extends Helper
         if (array_key_exists('CODE', $fields)) {
             $updateResult = Table::update(
                 $addResult->getId(),
-                ['CODE' => trim($fields['CODE'])]
+                ['CODE' => trim($fields['CODE'])],
             );
             if (!$updateResult->isSuccess()) {
                 throw new HelperException(
                     sprintf(
                         'Error setting CODE while adding delivery service: %s',
-                        implode('; ', $updateResult->getErrorMessages())
-                    )
+                        implode('; ', $updateResult->getErrorMessages()),
+                    ),
                 );
             }
         }
@@ -129,38 +110,32 @@ class DeliveryServiceHelper extends Helper
     }
 
     /**
-     * @param string $code
+     * @param array $fields
      *
-     * @throws HelperException
-     * @return Base
+     * @return Base|null
      */
-    public function get($code)
+    public static function createObject(array $fields)
     {
-        $fields = Table::query()->setSelect(['*'])
-                       ->setFilter(['CODE' => trim($code)])
-                       ->exec()
-                       ->fetch();
-
-        if (false === $fields) {
-            throw new HelperException(
+        $service = Manager::createObject($fields);
+        if (!($service instanceof Base)) {
+            throw new InvalidArgumentException(
                 sprintf(
-                    'Delivery service [%s] not found.',
-                    $code
-                )
+                    'Error creating delivery service object.',
+                ),
             );
         }
 
-        return self::createObject($fields);
+        return $service;
     }
 
     /**
      * @param       $code
      * @param array $fields
      *
-     * @throws Exception
+     * @return int
      * @throws HelperException
      * @throws SystemException
-     * @return int
+     * @throws Exception
      */
     public function update($code, array $fields)
     {
@@ -173,14 +148,64 @@ class DeliveryServiceHelper extends Helper
                 sprintf(
                     'Error updating delivery service [%s]: %s',
                     $code,
-                    implode('; ', $updateResult->getErrorMessages())
-                )
+                    implode('; ', $updateResult->getErrorMessages()),
+                ),
             );
         }
 
         $this->initEmptyExtraServices($service->getId());
 
         return $updateResult->getId();
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return Base
+     * @throws HelperException
+     */
+    public function get($code)
+    {
+        $fields = Table::query()->setSelect(['*'])
+            ->setFilter(['CODE' => trim($code)])
+            ->exec()
+            ->fetch();
+
+        if (false === $fields) {
+            throw new HelperException(
+                sprintf(
+                    'Delivery service [%s] not found.',
+                    $code,
+                ),
+            );
+        }
+
+        return self::createObject($fields);
+    }
+
+    /**
+     * @param $deliveryId
+     *
+     * @return void
+     * @throws Exception
+     * @throws HelperException
+     */
+    private function initEmptyExtraServices($deliveryId)
+    {
+        /**
+         * Вероятно, инициализация пустой записи в таблице 'b_sale_delivery_es'
+         * для дополнительных услуг службы доставки.
+         * (взято из исходника ~/bitrix/modules/sale/admin/delivery_service_edit.php )
+         */
+        $unActiveResult = ExtraServicesManager::setStoresUnActive($deliveryId);
+        if (!$unActiveResult->isSuccess()) {
+            throw new HelperException(
+                sprintf(
+                    'Error initializing empty extra services: %s',
+                    implode('; ', $unActiveResult->getErrorMessages()),
+                ),
+            );
+        }
     }
 
     /**
@@ -202,33 +227,8 @@ class DeliveryServiceHelper extends Helper
                 sprintf(
                     'Error deleting delivery service [%s]: %s',
                     $code,
-                    implode('; ', $deleteResult->getErrorMessages())
-                )
-            );
-        }
-    }
-
-    /**
-     * @param $deliveryId
-     *
-     * @throws HelperException
-     * @throws Exception
-     * @return void
-     */
-    private function initEmptyExtraServices($deliveryId)
-    {
-        /**
-         * Вероятно, инициализация пустой записи в таблице 'b_sale_delivery_es'
-         * для дополнительных услуг службы доставки.
-         * (взято из исходника ~/bitrix/modules/sale/admin/delivery_service_edit.php )
-         */
-        $unActiveResult = ExtraServicesManager::setStoresUnActive($deliveryId);
-        if (!$unActiveResult->isSuccess()) {
-            throw new HelperException(
-                sprintf(
-                    'Error initializing empty extra services: %s',
-                    implode('; ', $unActiveResult->getErrorMessages())
-                )
+                    implode('; ', $deleteResult->getErrorMessages()),
+                ),
             );
         }
     }

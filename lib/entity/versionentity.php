@@ -17,8 +17,7 @@ class VersionEntity
         private readonly ?VersionFile     $file = null,
         private readonly ?VersionRecord   $record = null,
         private readonly ?VersionExchange $exchange = null,
-    )
-    {
+    ) {
         if ($file === null && $record === null) {
             throw new MigrationException('Version not exists');
         }
@@ -37,44 +36,12 @@ class VersionEntity
 
     public function getVersionName(): string
     {
-        if ($this->file) {
-            return $this->file->getVersionName();
-        }
-        return $this->record->getVersionName();
+        return ($this->file) ? $this->file->getVersionName() : $this->record->getVersionName();
     }
 
-    public function getStatus(): string
+    public function getVersionTimestamp(): string
     {
-        return match (true) {
-            $this->record && $this->file => VersionEnum::STATUS_INSTALLED,
-            !$this->record && $this->file => VersionEnum::STATUS_NEW,
-            $this->record && !$this->file => VersionEnum::STATUS_UNKNOWN,
-        };
-    }
-
-    public function isModified(): bool
-    {
-        return (
-            $this->record &&
-            $this->file &&
-            $this->record->getRecordHash() !== $this->file->getContentHash()
-        );
-    }
-
-    public function getOlderVersion(): string
-    {
-        if ($this->file && $this->file->getOlderVersion()) {
-            return $this->file->getOlderVersion();
-        }
-        return '';
-    }
-
-    /**
-     * @throws MigrationException
-     */
-    public function getReleaseTag(): string
-    {
-        return $this->getRecord()->getReleaseTag();
+        return ($this->file) ? $this->file->getVersionTimestamp() : $this->record->getVersionTimestamp();
     }
 
     /**
@@ -85,52 +52,8 @@ class VersionEntity
         return $this->humanStatus(
             Locale::getMessage('RECORD_STATUS'),
             $this->getRecord()->getCreatedAt(),
-            $this->getRecord()->getCreatedBy()
+            $this->getRecord()->getCreatedBy(),
         );
-    }
-
-    /**
-     * @throws MigrationException
-     */
-    public function getFileStatus(): string
-    {
-        return $this->humanStatus(
-            Locale::getMessage('FILE_STATUS'),
-            $this->getFile()->getCreatedAt(),
-            $this->getFile()->getCreatedBy()
-        );
-    }
-
-    /**
-     * @throws MigrationException
-     */
-    public function getReleaseMessage(): string
-    {
-        $tag = $this->getReleaseTag();
-        return $tag ? Locale::getMessage('RELEASE_TAG', ['#TAG#' => $tag]) : '';
-    }
-
-    public function getLabels(): string
-    {
-        $labels = [];
-
-        if ($older = $this->getOlderVersion()) {
-            $labels[] = Locale::getMessage('LABEL_OLDER', ['#V1#' => $older]);
-        }
-
-        if ($this->isModified()) {
-            $labels[] = Locale::getMessage('LABEL_MODIFIED');
-        }
-
-        if ($this->getStatus() === VersionEnum::STATUS_UNKNOWN) {
-            $labels[] = Locale::getMessage('LABEL_UNKNOWN');
-        }
-
-        if ($this->hasExchangeDir()) {
-            $labels[] = Locale::getMessage('LABEL_EXCHANGE');
-        }
-
-        return implode(' ', $labels);
     }
 
     private function humanStatus(string $prefix, string $at, string $by): string
@@ -156,6 +79,101 @@ class VersionEntity
         throw new MigrationException('Version record not exists');
     }
 
+    public function getFileStatus(): string
+    {
+        return $this->humanStatus(
+            Locale::getMessage('FILE_STATUS'),
+            $this->file?->getCreatedAt() ?? '',
+            $this->file?->getCreatedBy() ?? '',
+        );
+    }
+
+    public function getReleaseMessage(): string
+    {
+        $tag = $this->getReleaseTag();
+        return $tag ? Locale::getMessage('RELEASE_TAG', ['#TAG#' => $tag]) : '';
+    }
+
+    public function getReleaseTag(): string
+    {
+        return $this->record?->getReleaseTag() ?? '';
+    }
+
+    public function getLabels(): string
+    {
+        $labels = [];
+
+        if ($older = $this->getOlderVersion()) {
+            $labels[] = Locale::getMessage('LABEL_OLDER', ['#V1#' => $older]);
+        }
+
+        if ($this->isModified()) {
+            $labels[] = Locale::getMessage('LABEL_MODIFIED');
+        }
+
+        if ($this->getStatus() === VersionEnum::STATUS_UNKNOWN) {
+            $labels[] = Locale::getMessage('LABEL_UNKNOWN');
+        }
+
+        if ($this->hasExchangeDir()) {
+            $labels[] = Locale::getMessage('LABEL_EXCHANGE');
+        }
+
+        return implode(' ', $labels);
+    }
+
+    public function getOlderVersion(): string
+    {
+        if ($this->file && $this->file->getOlderVersion()) {
+            return $this->file->getOlderVersion();
+        }
+        return '';
+    }
+
+    public function isModified(): bool
+    {
+        return (
+            $this->record
+            && $this->file
+            && $this->record->getRecordHash() !== $this->file->getContentHash()
+        );
+    }
+
+    public function getStatus(): string
+    {
+        return match (true) {
+            $this->record && $this->file  => VersionEnum::STATUS_INSTALLED,
+            !$this->record && $this->file => VersionEnum::STATUS_NEW,
+            $this->record && !$this->file => VersionEnum::STATUS_UNKNOWN,
+        };
+    }
+
+    public function hasExchangeDir(): bool
+    {
+        return $this->exchange->hasDir();
+    }
+
+    public function hasStatus(string $status): bool
+    {
+        return $this->getStatus() === $status;
+    }
+
+    public function isOlder(): bool
+    {
+        $v = $this->getOlderVersion();
+
+        return (bool) $v;
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function createClassObject(): Version
+    {
+        $class = $this->getFile()->getVersionClass();
+        return new $class();
+    }
+
     /**
      * @throws MigrationException
      */
@@ -175,31 +193,19 @@ class VersionEntity
         return $this->getFile()->getLocation();
     }
 
-    /**
-     * @throws MigrationException
-     */
     public function getFileDescription(): string
     {
-        return $this->getFile()->getDescription();
+        return $this->file?->getDescription() ?? '';
     }
 
-    /**
-     * @throws MigrationException
-     */
-    public function createClassObject(): Version
+    public function getFileContentHash(): string
     {
-        $class = $this->getFile()->getVersionClass();
-        return new $class;
+        return $this->file?->getContentHash() ?? '';
     }
 
     public function getExchangeDir(): string
     {
         return $this->exchange->getDir();
-    }
-
-    public function hasExchangeDir(): bool
-    {
-        return $this->exchange->hasDir();
     }
 
 

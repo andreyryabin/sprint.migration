@@ -17,11 +17,10 @@ class Installer
     public function __construct(
         array            $configValues = [],
         ?OutputInterface $output = null,
-    )
-    {
+    ) {
         $this->versionManager = new VersionManager(
             new VersionConfig(VersionEnum::CONFIG_INSTALLER, $configValues),
-            $output
+            $output,
         );
     }
 
@@ -36,19 +35,18 @@ class Installer
     /**
      * @throws MigrationException
      */
-    public function down(): void
-    {
-        $this->versionManager->executeAll([], VersionEnum::ACTION_DOWN);
-    }
-
-    /**
-     * @throws MigrationException
-     */
     public function executeAll(array $filter, string $action, string $tag = ''): void
     {
         $this->versionManager->executeAll($filter, $action, $tag);
     }
 
+    /**
+     * @throws MigrationException
+     */
+    public function down(): void
+    {
+        $this->versionManager->executeAll([], VersionEnum::ACTION_DOWN);
+    }
 
     /**
      * @throws MigrationException

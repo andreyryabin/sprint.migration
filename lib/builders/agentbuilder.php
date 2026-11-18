@@ -26,21 +26,22 @@ class AgentBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $agents = array_map(fn($item) => [
+        $agents = array_map(fn($item)
+            => [
             'MODULE_ID' => $item['MODULE_ID'] ?: Locale::getMessage('BUILDER_AgentExport_empty_module'),
-            'ID'        => $item['ID'],
-            'NAME'      => $item['NAME'],
+            'ID' => $item['ID'],
+            'NAME' => $item['NAME'],
         ], $helper->Agent()->getList());
 
         $agentIds = $this->addFieldAndReturn('agent_id', [
-            'title'       => Locale::getMessage('BUILDER_AgentExport_agent_id'),
-            'items'       => $this->createStructure($agents, 'ID', 'NAME', 'MODULE_ID'),
-            'multiple'    => 1,
+            'title' => Locale::getMessage('BUILDER_AgentExport_agent_id'),
+            'items' => $this->createStructure($agents, 'ID', 'NAME', 'MODULE_ID'),
+            'multiple' => 1,
         ]);
 
         $items = array_map(
             fn($agentId) => $helper->Agent()->exportAgentById($agentId),
-            $agentIds
+            $agentIds,
         );
 
         if (empty($items)) {
@@ -51,7 +52,7 @@ class AgentBuilder extends VersionBuilder
             Module::getModuleTemplateFile('AgentExport'),
             [
                 'items' => $items,
-            ]
+            ],
         );
     }
 }

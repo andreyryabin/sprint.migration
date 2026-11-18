@@ -11,48 +11,12 @@ use Sprint\Migration\Locale;
 trait IblockElementTrait
 {
     /**
-     * Получает id элемента инфоблока
-     */
-    public function getElementId(int $iblockId, array|string $code): int
-    {
-        $item = $this->getElement($iblockId, $code);
-        return (int)($item['ID'] ?? 0);
-    }
-
-    /**
      * @throws HelperException
      */
     public function getElementIdIfExists(int $iblockId, array|string $code): int
     {
         $item = $this->getElementIfExists($iblockId, $code);
-        return (int)($item['ID'] ?? 0);
-    }
-
-    /**
-     * Получает элемент инфоблока
-     */
-    public function getElement(int $iblockId, array|string $code, array $select = []): bool|array
-    {
-        $filter = is_array($code) ? $code : ['=CODE' => $code];
-
-        $select = array_merge(
-            [
-                'ID',
-                'XML_ID',
-                'IBLOCK_ID',
-                'NAME',
-                'CODE',
-                'ACTIVE',
-            ], $select
-        );
-
-        $item = $this->getElementsList($iblockId, [
-            'filter' => $filter,
-            'select' => $select,
-            'limit'  => 1,
-        ])->Fetch();
-
-        return $item ? $this->prepareElement($item) : false;
+        return (int) ($item['ID'] ?? 0);
     }
 
     /**
@@ -70,11 +34,94 @@ trait IblockElementTrait
             Locale::getMessage(
                 'ERR_IB_ELEMENT_ID_NOT_FOUND',
                 [
-                    '#IBLOCK_ID#'  => $iblockId,
+                    '#IBLOCK_ID#' => $iblockId,
                     '#ELEMENT_ID#' => print_r($code, true),
-                ]
-            )
+                ],
+            ),
         );
+    }
+
+    /**
+     * Получает элемент инфоблока
+     */
+    public function getElement(int $iblockId, array|string $code, array $select = []): bool|array
+    {
+        $filter = is_array($code) ? $code : ['=CODE' => $code];
+
+        $select = array_merge(
+            [
+                'ID',
+                'XML_ID',
+                'IBLOCK_ID',
+                'NAME',
+                'CODE',
+                'ACTIVE',
+            ],
+            $select,
+        );
+
+        $item = $this->getElementsList($iblockId, [
+            'filter' => $filter,
+            'select' => $select,
+            'limit' => 1,
+        ])->Fetch();
+
+        return $item ? $this->prepareElement($item) : false;
+    }
+
+    public function getElementsList(int $iblockId, array $params = []): CIBlockResult
+    {
+        $params = array_merge(
+            [
+                'offset' => 0,
+                'limit' => 0,
+                'filter' => [],
+                'select' => [],
+                'order' => ['ID' => 'ASC'],
+            ],
+            $params,
+        );
+
+        $params['filter'] = array_merge(
+            $params['filter'],
+            [
+                'IBLOCK_ID' => $iblockId,
+                'CHECK_PERMISSIONS' => 'N',
+            ],
+        );
+
+        $navParams = false;
+        if ($params['limit'] > 0) {
+            if ($params['offset'] > 0) {
+                $pageNum = (int) floor($params['offset'] / $params['limit']) + 1;
+                $navParams = [
+                    'nPageSize' => $params['limit'],
+                    'iNumPage' => $pageNum,
+                    'checkOutOfRange' => true,
+                ];
+            } else {
+                $navParams = [
+                    'nTopCount' => $params['limit'],
+                ];
+            }
+        }
+
+        return CIBlockElement::GetList(
+            $params['order'],
+            $params['filter'],
+            false,
+            $navParams,
+            $params['select'],
+        );
+    }
+
+    protected function prepareElement(array $item): array
+    {
+        $item['IBLOCK_SECTION'] = $this->getElementSectionIds($item['ID']);
+
+        $item['IPROPERTY_TEMPLATES'] = $this->getElementIpropertyTemplates($item['IBLOCK_ID'], $item['ID']);
+
+        return $item;
     }
 
     public function getElementSectionIds(int $elementId): array
@@ -83,16 +130,16 @@ trait IblockElementTrait
         return array_column($sections, 'ID');
     }
 
-    public function getElementIpropertyTemplates(int $iblockId, int $elementId): array
-    {
-        $templates = (new IpropertyTemplates($iblockId, $elementId))->findTemplates();
-        return array_column($templates, 'TEMPLATE', 'CODE');
-    }
-
     public function getElementSections(int $elementId, array $sectionSelect = []): array
     {
         $dbres = CIBlockElement::GetElementGroups($elementId, true, $sectionSelect);
         return $this->fetchAll($dbres);
+    }
+
+    public function getElementIpropertyTemplates(int $iblockId, int $elementId): array
+    {
+        $templates = (new IpropertyTemplates($iblockId, $elementId))->findTemplates();
+        return array_column($templates, 'TEMPLATE', 'CODE');
     }
 
     /**
@@ -108,7 +155,8 @@ trait IblockElementTrait
                 'NAME',
                 'CODE',
                 'ACTIVE',
-            ], $select
+            ],
+            $select,
         );
 
         $dbres = $this->getElementsList(
@@ -116,57 +164,12 @@ trait IblockElementTrait
             [
                 'filter' => $filter,
                 'select' => $select,
-            ]
+            ],
         );
 
         return array_map(
             fn($item) => $this->prepareElement($item),
-            $this->fetchAll($dbres)
-        );
-    }
-
-    public function getElementsList(int $iblockId, array $params = []): CIBlockResult
-    {
-        $params = array_merge(
-            [
-                'offset' => 0,
-                'limit'  => 0,
-                'filter' => [],
-                'select' => [],
-                'order'  => ['ID' => 'ASC'],
-            ], $params
-        );
-
-        $params['filter'] = array_merge(
-            $params['filter'],
-            [
-                'IBLOCK_ID'         => $iblockId,
-                'CHECK_PERMISSIONS' => 'N',
-            ]
-        );
-
-        $navParams = false;
-        if ($params['limit'] > 0) {
-            if ($params['offset'] > 0) {
-                $pageNum = (int)floor($params['offset'] / $params['limit']) + 1;
-                $navParams = [
-                    'nPageSize'       => $params['limit'],
-                    'iNumPage'        => $pageNum,
-                    'checkOutOfRange' => true,
-                ];
-            } else {
-                $navParams = [
-                    'nTopCount' => $params['limit'],
-                ];
-            }
-        }
-
-        return CIBlockElement::GetList(
-            $params['order'],
-            $params['filter'],
-            false,
-            $navParams,
-            $params['select']
+            $this->fetchAll($dbres),
         );
     }
 
@@ -184,18 +187,18 @@ trait IblockElementTrait
             'ACTIVE',
         ];
 
-        return (int)CIBlockElement::GetList(
+        return (int) CIBlockElement::GetList(
             [],
             $filter,
             [],
             false,
-            $select
+            $select,
         );
     }
 
     /**
-     * @deprecated use saveElementByCode
      * @throws HelperException
+     * @deprecated use saveElementByCode
      */
     public function saveElement(int $iblockId, array $fields = [], array $props = []): int
     {
@@ -221,18 +224,12 @@ trait IblockElementTrait
     }
 
     /**
-     * @throws HelperException
+     * Получает id элемента инфоблока
      */
-    public function saveElementByXmlId(int $iblockId, array $fields = [], array $props = []): int
+    public function getElementId(int $iblockId, array|string $code): int
     {
-        $this->checkRequiredKeys($fields, ['XML_ID']);
-
-        $elementId = $this->getElementId($iblockId, ['=XML_ID' => $fields['XML_ID']]);
-        if ($elementId) {
-            return $this->updateElement($elementId, $fields, $props);
-        }
-
-        return $this->addElement($iblockId, $fields, $props);
+        $item = $this->getElement($iblockId, $code);
+        return (int) ($item['ID'] ?? 0);
     }
 
     /**
@@ -246,7 +243,7 @@ trait IblockElementTrait
         unset($fields['IBLOCK_ID']);
 
         if (!empty($fields)) {
-            $ib = new CIBlockElement;
+            $ib = new CIBlockElement();
             if (!$ib->Update($elementId, $fields)) {
                 throw new HelperException($ib->LAST_ERROR);
             }
@@ -267,11 +264,11 @@ trait IblockElementTrait
     public function addElement(int $iblockId, array $fields = [], array $props = []): int
     {
         $default = [
-            'NAME'              => 'element',
+            'NAME' => 'element',
             'IBLOCK_SECTION_ID' => false,
-            'ACTIVE'            => 'Y',
-            'PREVIEW_TEXT'      => '',
-            'DETAIL_TEXT'       => '',
+            'ACTIVE' => 'Y',
+            'PREVIEW_TEXT' => '',
+            'DETAIL_TEXT' => '',
         ];
 
         $fields = array_replace_recursive($default, $fields);
@@ -281,14 +278,29 @@ trait IblockElementTrait
             $fields['PROPERTY_VALUES'] = $props;
         }
 
-        $ib = new CIBlockElement;
+        $ib = new CIBlockElement();
         $elementId = $ib->Add($fields);
 
         if ($elementId) {
-            return (int)$elementId;
+            return (int) $elementId;
         }
 
         throw new HelperException($ib->LAST_ERROR);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function saveElementByXmlId(int $iblockId, array $fields = [], array $props = []): int
+    {
+        $this->checkRequiredKeys($fields, ['XML_ID']);
+
+        $elementId = $this->getElementId($iblockId, ['=XML_ID' => $fields['XML_ID']]);
+        if ($elementId) {
+            return $this->updateElement($elementId, $fields, $props);
+        }
+
+        return $this->addElement($iblockId, $fields, $props);
     }
 
     /**
@@ -346,7 +358,7 @@ trait IblockElementTrait
      */
     public function deleteElement(int $elementId): bool
     {
-        $ib = new CIBlockElement;
+        $ib = new CIBlockElement();
         if ($ib->Delete($elementId)) {
             return true;
         }
@@ -376,14 +388,5 @@ trait IblockElementTrait
             }
         }
         return false;
-    }
-
-    protected function prepareElement(array $item): array
-    {
-        $item['IBLOCK_SECTION'] = $this->getElementSectionIds($item['ID']);
-
-        $item['IPROPERTY_TEMPLATES'] = $this->getElementIpropertyTemplates($item['IBLOCK_ID'], $item['ID']);
-
-        return $item;
     }
 }

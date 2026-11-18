@@ -53,6 +53,4 @@ use Sprint\Migration\Helpers\VoteHelper;
  * @method OrderPropertiesHelper    OrderProperties()
  * @method CultureHelper            Culture()
  */
-class HelperManager extends HelperRegistry
-{
-}
+class HelperManager extends HelperRegistry {}

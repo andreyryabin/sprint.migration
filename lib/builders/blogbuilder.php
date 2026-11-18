@@ -47,8 +47,8 @@ class BlogBuilder extends VersionBuilder
         ]);
 
         $blogIds = $this->addFieldAndReturn('blog_ids', [
-            'title'    => Locale::getMessage('BUILDER_BlogExport_blog_ids'),
-            'items'    => $this->getBlogsStructure($groupId),
+            'title' => Locale::getMessage('BUILDER_BlogExport_blog_ids'),
+            'items' => $this->getBlogsStructure($groupId),
             'multiple' => 1,
         ]);
 
@@ -61,7 +61,7 @@ class BlogBuilder extends VersionBuilder
             [
                 'group' => $group,
                 'blogs' => $blogs,
-            ]
+            ],
         );
     }
 

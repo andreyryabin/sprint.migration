@@ -6,11 +6,8 @@ final class VersionExchange
 {
     public function __construct(
         private readonly string $directoryPath,
-        private readonly bool   $directoryExists
-    )
-    {
-
-    }
+        private readonly bool   $directoryExists,
+    ) {}
 
     public function getDir(): string
     {

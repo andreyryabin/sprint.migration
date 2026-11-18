@@ -11,9 +11,7 @@ final class VersionRecord
         private readonly string $createdAt,
         private readonly string $createdBy,
         private readonly string $recordHash,
-    )
-    {
-    }
+    ) {}
 
     public function getReleaseTag(): string
     {

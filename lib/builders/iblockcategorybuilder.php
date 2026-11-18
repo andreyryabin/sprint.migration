@@ -39,8 +39,8 @@ class IblockCategoryBuilder extends VersionBuilder
         $exhelper = $this->getExchangeHelpers();
 
         $iblockId = $this->addFieldAndReturn('iblock_id', [
-            'title'       => Locale::getMessage('BUILDER_IblockCategoryExport_IblockId'),
-            'items'       => $exhelper->IblockExchange()->getIblocksStructure(),
+            'title' => Locale::getMessage('BUILDER_IblockCategoryExport_IblockId'),
+            'items' => $exhelper->IblockExchange()->getIblocksStructure(),
         ]);
 
         $iblock = $helper->Iblock()->exportIblock($iblockId);
@@ -53,9 +53,9 @@ class IblockCategoryBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockCategoryExport'),
             [
-                'iblock'      => $iblock,
+                'iblock' => $iblock,
                 'sectionTree' => $sectionTree,
-            ]
+            ],
         );
     }
 }

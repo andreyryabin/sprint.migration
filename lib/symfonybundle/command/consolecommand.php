@@ -14,8 +14,9 @@ class ConsoleCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('sprint:migration')
-             ->setDescription('Migration console');
+        $this
+            ->setName('sprint:migration')
+            ->setDescription('Migration console');
 
         foreach ($this->getArguments() as $name) {
             $this->addArgument($name);
@@ -27,6 +28,44 @@ class ConsoleCommand extends Command
         foreach ($this->getOptionsWithValues() as $name) {
             $this->addOption($name, null, InputOption::VALUE_REQUIRED);
         }
+    }
+
+    protected function getArguments(): array
+    {
+        return [
+            'arg1',
+            'arg2',
+            'arg3',
+            'arg4',
+            'arg5',
+        ];
+    }
+
+    protected function getOptionsWithoutValues(): array
+    {
+        return [
+            'new',
+            'installed',
+            'modified',
+            'older',
+            'down',
+            'force',
+        ];
+    }
+
+    protected function getOptionsWithValues(): array
+    {
+        return [
+            'desc',
+            'config',
+            'prefix',
+            'name',
+            'from',
+            'as',
+            'search',
+            'tag',
+            'add-tag',
+        ];
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -55,43 +94,5 @@ class ConsoleCommand extends Command
         } catch (Throwable $e) {
             return self::FAILURE;
         }
-    }
-
-    protected function getOptionsWithValues(): array
-    {
-        return [
-            'desc',
-            'config',
-            'prefix',
-            'name',
-            'from',
-            'as',
-            'search',
-            'tag',
-            'add-tag',
-        ];
-    }
-
-    protected function getOptionsWithoutValues(): array
-    {
-        return [
-            'new',
-            'installed',
-            'modified',
-            'older',
-            'down',
-            'force',
-        ];
-    }
-
-    protected function getArguments(): array
-    {
-        return [
-            'arg1',
-            'arg2',
-            'arg3',
-            'arg4',
-            'arg5',
-        ];
     }
 }

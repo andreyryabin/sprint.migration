@@ -2,96 +2,20 @@
 
 namespace Sprint\Migration\Helpers\Traits\Iblock;
 
+use Bitrix\Iblock\SectionPropertyTable;
 use CIBlockSection;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Locale;
-use Bitrix\Iblock\SectionPropertyTable;
 
 trait IblockSectionTrait
 {
     /**
-     * Получает id секции инфоблока
-     */
-    public function getSectionId(int $iblockId, array|string $code): int
-    {
-        $item = $this->getSection($iblockId, $code);
-        return (int)($item['ID'] ?? 0);
-    }
-
-    /**
      * @throws HelperException
+     * @deprecated use saveSectionByCode
      */
-    public function getSectionIdIfExists(int $iblockId, array|string $code): int
+    public function saveSection(int $iblockId, array $fields): int
     {
-        $item = $this->getSectionIfExists($iblockId, $code);
-        return (int)($item['ID'] ?? 0);
-    }
-
-    /**
-     * Получает секцию инфоблока
-     */
-    public function getSection(int $iblockId, string|array $code): array|false
-    {
-        $filter = is_array($code) ? $code : ['=CODE' => $code];
-
-        $sections = $this->getSections($iblockId, $filter);
-
-        return (isset($sections[0])) ? $sections[0] : false;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getSectionIfExists(int $iblockId, string|array $code): array
-    {
-        $section = $this->getSection($iblockId, $code);
-
-        if (!empty($section['ID'])) {
-            return $section;
-        }
-
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_IB_SECTION_ID_NOT_FOUND',
-                [
-                    '#IBLOCK_ID#'  => $iblockId,
-                    '#SECTION_ID#' => print_r($code, true),
-                ]
-            )
-        );
-    }
-
-    /**
-     * Получает секции инфоблока
-     */
-    public function getSections(int $iblockId, array $filter = []): array
-    {
-        $filter['IBLOCK_ID'] = $iblockId;
-        $filter['CHECK_PERMISSIONS'] = 'N';
-
-        $dbres = CIBlockSection::GetList(
-            [
-                'SORT' => 'ASC',
-            ], $filter, false, [
-                'ID',
-                'NAME',
-                'CODE',
-                'IBLOCK_SECTION_ID',
-                'SORT',
-                'ACTIVE',
-                'XML_ID',
-                'PICTURE',
-                'DESCRIPTION',
-                'DESCRIPTION_TYPE',
-                'LEFT_MARGIN',
-                'RIGHT_MARGIN',
-                'DEPTH_LEVEL',
-                'DETAIL_PICTURE',
-                'UF_*',
-            ]
-        );
-
-        return $this->fetchAll($dbres);
+        return $this->saveSectionByCode($iblockId, $fields);
     }
 
     /**
@@ -113,12 +37,97 @@ trait IblockSectionTrait
     }
 
     /**
-     * @throws HelperException
-     * @deprecated use saveSectionByCode
+     * Получает секцию инфоблока
      */
-    public function saveSection(int $iblockId, array $fields): int
+    public function getSection(int $iblockId, string|array $code): array|false
     {
-        return $this->saveSectionByCode($iblockId, $fields);
+        $filter = is_array($code) ? $code : ['=CODE' => $code];
+
+        $sections = $this->getSections($iblockId, $filter);
+
+        return (isset($sections[0])) ? $sections[0] : false;
+    }
+
+    /**
+     * Получает секции инфоблока
+     */
+    public function getSections(int $iblockId, array $filter = []): array
+    {
+        $filter['IBLOCK_ID'] = $iblockId;
+        $filter['CHECK_PERMISSIONS'] = 'N';
+
+        $dbres = CIBlockSection::GetList(
+            [
+                'SORT' => 'ASC',
+            ],
+            $filter,
+            false,
+            [
+                'ID',
+                'NAME',
+                'CODE',
+                'IBLOCK_SECTION_ID',
+                'SORT',
+                'ACTIVE',
+                'XML_ID',
+                'PICTURE',
+                'DESCRIPTION',
+                'DESCRIPTION_TYPE',
+                'LEFT_MARGIN',
+                'RIGHT_MARGIN',
+                'DEPTH_LEVEL',
+                'DETAIL_PICTURE',
+                'UF_*',
+            ],
+        );
+
+        return $this->fetchAll($dbres);
+    }
+
+    /**
+     * Обновляет секцию инфоблока
+     *
+     * @throws HelperException
+     */
+    public function updateSection(int $sectionId, array $fields): int
+    {
+        $ib = new CIBlockSection();
+        if ($ib->Update($sectionId, $fields)) {
+            return $sectionId;
+        }
+
+        throw new HelperException($ib->LAST_ERROR);
+    }
+
+    /**
+     * Добавляет секцию инфоблока
+     *
+     * @throws HelperException
+     */
+    public function addSection(int $iblockId, array $fields = []): int
+    {
+        $default = [
+            'ACTIVE' => 'Y',
+            'IBLOCK_SECTION_ID' => false,
+            'NAME' => 'section',
+            'CODE' => '',
+            'SORT' => 100,
+            'PICTURE' => false,
+            'DESCRIPTION' => '',
+            'DESCRIPTION_TYPE' => 'text',
+        ];
+
+        $fields = array_replace_recursive($default, $fields);
+        $fields['IBLOCK_ID'] = $iblockId;
+
+        $ib = new CIBlockSection();
+        $id = $ib->Add($fields);
+
+        if ($id) {
+            return $id;
+        }
+
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
@@ -139,37 +148,6 @@ trait IblockSectionTrait
     }
 
     /**
-     * Добавляет секцию инфоблока
-     *
-     * @throws HelperException
-     */
-    public function addSection(int $iblockId, array $fields = []): int
-    {
-        $default = [
-            'ACTIVE'            => 'Y',
-            'IBLOCK_SECTION_ID' => false,
-            'NAME'              => 'section',
-            'CODE'              => '',
-            'SORT'              => 100,
-            'PICTURE'           => false,
-            'DESCRIPTION'       => '',
-            'DESCRIPTION_TYPE'  => 'text',
-        ];
-
-        $fields = array_replace_recursive($default, $fields);
-        $fields['IBLOCK_ID'] = $iblockId;
-
-        $ib = new CIBlockSection;
-        $id = $ib->Add($fields);
-
-        if ($id) {
-            return $id;
-        }
-
-        throw new HelperException($ib->LAST_ERROR);
-    }
-
-    /**
      * Обновляет секцию инфоблока если она существует
      *
      * @throws HelperException
@@ -186,21 +164,6 @@ trait IblockSectionTrait
         }
 
         return false;
-    }
-
-    /**
-     * Обновляет секцию инфоблока
-     *
-     * @throws HelperException
-     */
-    public function updateSection(int $sectionId, array $fields): int
-    {
-        $ib = new CIBlockSection;
-        if ($ib->Update($sectionId, $fields)) {
-            return $sectionId;
-        }
-
-        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
@@ -226,7 +189,7 @@ trait IblockSectionTrait
      */
     public function deleteSection(int $sectionId): bool
     {
-        $ib = new CIBlockSection;
+        $ib = new CIBlockSection();
         if ($ib->Delete($sectionId)) {
             return true;
         }
@@ -247,11 +210,42 @@ trait IblockSectionTrait
         $sectionId = 0;
         foreach ($path as $name) {
             $sectionId = $this->getSectionIdIfExists($iblockId, [
-                '=NAME'      => $name,
+                '=NAME' => $name,
                 'SECTION_ID' => $sectionId,
             ]);
         }
         return $sectionId;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getSectionIdIfExists(int $iblockId, array|string $code): int
+    {
+        $item = $this->getSectionIfExists($iblockId, $code);
+        return (int) ($item['ID'] ?? 0);
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getSectionIfExists(int $iblockId, string|array $code): array
+    {
+        $section = $this->getSection($iblockId, $code);
+
+        if (!empty($section['ID'])) {
+            return $section;
+        }
+
+        throw new HelperException(
+            Locale::getMessage(
+                'ERR_IB_SECTION_ID_NOT_FOUND',
+                [
+                    '#IBLOCK_ID#' => $iblockId,
+                    '#SECTION_ID#' => print_r($code, true),
+                ],
+            ),
+        );
     }
 
     /**
@@ -298,8 +292,8 @@ trait IblockSectionTrait
             if (empty($item['NAME'])) {
                 throw new HelperException(
                     Locale::getMessage(
-                        'ERR_IB_SECTION_NAME_NOT_FOUND'
-                    )
+                        'ERR_IB_SECTION_NAME_NOT_FOUND',
+                    ),
                 );
             }
 
@@ -314,15 +308,16 @@ trait IblockSectionTrait
             if (!empty($item['SECTION_PROPERTY']) && is_array($item['SECTION_PROPERTY'])) {
                 $item['SECTION_PROPERTY'] = $this->importSectionPropertyLinks(
                     $iblockId,
-                    $item['SECTION_PROPERTY']
+                    $item['SECTION_PROPERTY'],
                 );
             }
 
             $sectionId = $this->getSectionId(
-                $iblockId, [
-                    '=NAME'      => $item['NAME'],
+                $iblockId,
+                [
+                    '=NAME' => $item['NAME'],
                     'SECTION_ID' => $parentId,
-                ]
+                ],
             );
 
             if ($sectionId) {
@@ -337,27 +332,55 @@ trait IblockSectionTrait
         }
     }
 
+    protected function importSectionPropertyLinks(int $iblockId, array $links): array
+    {
+        $result = [];
+
+        foreach ($links as $code => $link) {
+            $propertyId = $this->getPropertyId($iblockId, $code);
+            if ($propertyId <= 0) {
+                continue;
+            }
+
+            $result[$propertyId] = [
+                'SMART_FILTER' => $link['SMART_FILTER'] ?? null,
+                'DISPLAY_TYPE' => $link['DISPLAY_TYPE'] ?? null,
+                'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'] ?? null,
+                'FILTER_HINT' => $link['FILTER_HINT'] ?? null,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Получает id секции инфоблока
+     */
+    public function getSectionId(int $iblockId, array|string $code): int
+    {
+        $item = $this->getSection($iblockId, $code);
+        return (int) ($item['ID'] ?? 0);
+    }
+
     public function getSectionsTree(int $iblockId): array
     {
         $sections = $this->getSections($iblockId);
         return $this->buildSectionsTree($iblockId, $sections);
     }
 
-    public function exportSectionsTree(int $iblockId): array
-    {
-        $sections = $this->getSections($iblockId);
-        return $this->buildSectionsTree($iblockId, $sections, 0, true);
-    }
-
-    protected function buildSectionsTree(int $iblockId, array &$sections, int $parentId = 0, bool $export = false): array
-    {
+    protected function buildSectionsTree(
+        int   $iblockId,
+        array &$sections,
+        int   $parentId = 0,
+        bool  $export = false,
+    ): array {
         $branch = [];
         foreach ($sections as $section) {
-            if ((int)$section['IBLOCK_SECTION_ID'] == $parentId) {
+            if ((int) $section['IBLOCK_SECTION_ID'] == $parentId) {
                 $childs = $this->buildSectionsTree($iblockId, $sections, $section['ID'], $export);
 
                 if ($export) {
-                    $sectionProperty = $this->exportSectionPropertyLinks($iblockId, (int)$section['ID']);
+                    $sectionProperty = $this->exportSectionPropertyLinks($iblockId, (int) $section['ID']);
                     if (!empty($sectionProperty)) {
                         $section['SECTION_PROPERTY'] = $sectionProperty;
                     }
@@ -388,48 +411,34 @@ trait IblockSectionTrait
 
         $result = [];
         $links = SectionPropertyTable::getList([
-            'filter' => [
-                'IBLOCK_ID'   => $iblockId,
-                'SECTION_ID'  => $sectionId,
-            ],
-        ])->fetchAll();
+                                                   'filter' => [
+                                                       'IBLOCK_ID' => $iblockId,
+                                                       'SECTION_ID' => $sectionId,
+                                                   ],
+                                               ])->fetchAll();
 
         foreach ($links as $link) {
-            $property = $this->getProperty($iblockId, ['ID' => (int)$link['PROPERTY_ID']]);
+            $property = $this->getProperty($iblockId, ['ID' => (int) $link['PROPERTY_ID']]);
             if (empty($property['CODE'])) {
                 continue;
             }
 
             $result[$property['CODE']] = [
-                'SMART_FILTER'     => $link['SMART_FILTER'] === true || $link['SMART_FILTER'] === 'Y' ? 'Y' : 'N',
-                'DISPLAY_TYPE'     => (string)$link['DISPLAY_TYPE'],
-                'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'] === true || $link['DISPLAY_EXPANDED'] === 'Y' ? 'Y' : 'N',
-                'FILTER_HINT'      => (string)$link['FILTER_HINT'],
+                'SMART_FILTER' => $link['SMART_FILTER'] === true || $link['SMART_FILTER'] === 'Y' ? 'Y' : 'N',
+                'DISPLAY_TYPE' => (string) $link['DISPLAY_TYPE'],
+                'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'] === true || $link['DISPLAY_EXPANDED'] === 'Y' ? 'Y'
+                    : 'N',
+                'FILTER_HINT' => (string) $link['FILTER_HINT'],
             ];
         }
 
         return $result;
     }
 
-    protected function importSectionPropertyLinks(int $iblockId, array $links): array
+    public function exportSectionsTree(int $iblockId): array
     {
-        $result = [];
-
-        foreach ($links as $code => $link) {
-            $propertyId = $this->getPropertyId($iblockId, $code);
-            if ($propertyId <= 0) {
-                continue;
-            }
-
-            $result[$propertyId] = [
-                'SMART_FILTER'     => $link['SMART_FILTER'] ?? null,
-                'DISPLAY_TYPE'     => $link['DISPLAY_TYPE'] ?? null,
-                'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'] ?? null,
-                'FILTER_HINT'      => $link['FILTER_HINT'] ?? null,
-            ];
-        }
-
-        return $result;
+        $sections = $this->getSections($iblockId);
+        return $this->buildSectionsTree($iblockId, $sections, 0, true);
     }
 
 }

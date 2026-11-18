@@ -2,17 +2,17 @@
 
 namespace Sprint\Migration\Helpers;
 
-use Exception;
-use Sprint\Migration\Helper;
-use Sprint\Migration\Locale;
-use Bitrix\Sale\PersonTypeTable;
-use Bitrix\Main\SystemException;
 use Bitrix\Main\ArgumentException;
 use Bitrix\Main\ObjectPropertyException;
-use Bitrix\Sale\Internals\OrderPropsTable;
 use Bitrix\Main\ORM\Query\Filter\ConditionTree;
-use Sprint\Migration\Exceptions\HelperException;
+use Bitrix\Main\SystemException;
+use Bitrix\Sale\Internals\OrderPropsTable;
 use Bitrix\Sale\Internals\OrderPropsVariantTable;
+use Bitrix\Sale\PersonTypeTable;
+use Exception;
+use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Helper;
+use Sprint\Migration\Locale;
 
 class OrderPropertiesHelper extends Helper
 {
@@ -32,28 +32,6 @@ class OrderPropertiesHelper extends Helper
             ->setSelect(['ID', 'NAME'])
             ->exec()
             ->fetchAll();
-    }
-
-    /**
-     * @throws ObjectPropertyException
-     * @throws SystemException
-     * @throws ArgumentException
-     */
-    public function getOrderPropertyById(int $id): array
-    {
-        return OrderPropsTable::getById($id)->fetch();
-    }
-
-    /**
-     * @throws SystemException
-     * @throws ArgumentException
-     */
-    public function getOrderPropertyByIdentifierField(string $personTypeId, string $identifierField, string $value): array
-    {
-        return current($this->getOrderPropertiesByFilter([
-            ['PERSON_TYPE_ID', '=', $personTypeId],
-            [$identifierField, '=', $value],
-        ])) ?: [];
     }
 
     /**
@@ -78,6 +56,164 @@ class OrderPropertiesHelper extends Helper
     }
 
     /**
+     * @throws HelperException
+     * @throws SystemException
+     * @throws ArgumentException
+     */
+    public function saveOrderProperty(array $property, ?string $identifierField = null): int
+    {
+        $this->checkRequiredKeys($property, [
+            'PERSON_TYPE_ID',
+            'NAME',
+            'TYPE',
+            'PROPS_GROUP_ID',
+            'ENTITY_TYPE',
+        ]);
+
+        $property = $this->prepareProperty($property);
+
+        if ($identifierField) {
+            $identifierField = strtoupper($identifierField);
+
+            $exists = $this->getOrderPropertyByIdentifierField(
+                (string) $property['PERSON_TYPE_ID'],
+                $identifierField,
+                (string) $property[$identifierField],
+            );
+
+            if (empty($exists)) {
+                $result = $this->addOrderProperty($property);
+            } else {
+                $result = $this->updateOrderProperty((int) $exists['ID'], $property);
+                $this->checkDiff($this->prepareProperty($exists), $property);
+            }
+        } else {
+            $result = $this->addOrderProperty($property);
+        }
+
+        return $result;
+    }
+
+    protected function prepareProperty(array $item): array
+    {
+        $this->unsetKeys($item, ['ID']);
+
+        return $item;
+    }
+
+    /**
+     * @throws SystemException
+     * @throws ArgumentException
+     */
+    public function getOrderPropertyByIdentifierField(
+        string $personTypeId,
+        string $identifierField,
+        string $value,
+    ): array {
+        return current($this->getOrderPropertiesByFilter([
+                                                             ['PERSON_TYPE_ID', '=', $personTypeId],
+                                                             [$identifierField, '=', $value],
+                                                         ])) ?: [];
+    }
+
+    /**
+     * @throws HelperException
+     * @throws Exception
+     */
+    private function addOrderProperty(array $fields): int
+    {
+        $result = OrderPropsTable::add($fields);
+        if (!$result->isSuccess()) {
+            throw new HelperException(
+                Locale::getMessage(
+                    'ERR_ORDER_PROPERTY_NOT_ADDED',
+                    [
+                        '#NAME#' => $fields['NAME'],
+                        '#MESSAGE#' => implode(', ', $result->getErrorMessages()),
+                    ],
+                ),
+            );
+        }
+
+        $this->outNotice(Locale::getMessage('ORDER_PROPERTY_ADDED', ['#NAME#' => $fields['NAME']]));
+
+        return (int) $result->getId();
+    }
+
+    /**
+     * @throws HelperException
+     * @throws Exception
+     */
+    private function updateOrderProperty(int $id, array $fields): int
+    {
+        $result = OrderPropsTable::update($id, $fields);
+        if (!$result->isSuccess()) {
+            throw new HelperException(
+                Locale::getMessage(
+                    'ERR_ORDER_PROPERTY_NOT_UPDATED',
+                    [
+                        '#NAME#' => $fields['NAME'] ?: $id,
+                        '#MESSAGE#' => implode(', ', $result->getErrorMessages()),
+                    ],
+                ),
+            );
+        }
+
+        $this->outNotice(Locale::getMessage('ORDER_PROPERTY_UPDATED', ['#NAME#' => $fields['NAME']]));
+
+        return (int) $result->getId();
+    }
+
+    /**
+     * @throws ArgumentException
+     * @throws ObjectPropertyException
+     * @throws SystemException
+     * @throws HelperException
+     * @throws Exception
+     */
+    public function saveOrderPropertyVariants(int $propertyId, array $variants): void
+    {
+        $property = $this->getOrderPropertyById($propertyId);
+        if (!$property) {
+            return;
+        }
+
+        $existsVariants = array_reduce(
+            current($this->getOrderPropertyVariants([$propertyId])) ?: [],
+            function ($carry, $item) {
+                $carry[$item['VALUE']] = $item;
+                return $carry;
+            },
+            [],
+        );
+
+        foreach ($variants as $variant) {
+            $variant = array_merge(
+                $this->preparePropertyVariant($variant),
+                ['ORDER_PROPS_ID' => $propertyId],
+            );
+
+            $this->checkRequiredKeys($variant, ['ORDER_PROPS_ID', 'NAME']);
+
+            if ($existsVariant = $existsVariants[$variant['VALUE']]) {
+                $this->updatePropertyVariant((int) $existsVariant['ID'], $variant);
+            } else {
+                $this->addPropertyVariant($variant);
+            }
+        }
+    }
+
+    /**
+     * @throws ObjectPropertyException
+     * @throws SystemException
+     * @throws ArgumentException
+     */
+    public function getOrderPropertyById(int $id): array
+    {
+        return OrderPropsTable::getById($id)->fetch();
+    }
+
+    /**
      * @throws ObjectPropertyException
      * @throws SystemException
      * @throws ArgumentException
@@ -97,110 +233,11 @@ class OrderPropertiesHelper extends Helper
         return $result;
     }
 
-    /**
-     * @throws HelperException
-     * @throws Exception
-     */
-    private function addOrderProperty(array $fields): int
+    protected function preparePropertyVariant(array $item): array
     {
-        $result = OrderPropsTable::add($fields);
-        if(!$result->isSuccess()) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_ORDER_PROPERTY_NOT_ADDED',
-                    [
-                        '#NAME#' => $fields['NAME'],
-                        '#MESSAGE#' => implode(', ', $result->getErrorMessages())
-                    ]
-                )
-            );
-        }
+        $this->unsetKeys($item, ['ID', 'ORDER_PROPS_ID']);
 
-        $this->outNotice(Locale::getMessage('ORDER_PROPERTY_ADDED', ['#NAME#' => $fields['NAME']]));
-
-        return (int) $result->getId();
-    }
-
-    /**
-     * @throws HelperException
-     * @throws Exception
-     */
-    private function updateOrderProperty(int $id, array $fields): int
-    {
-        $result = OrderPropsTable::update($id, $fields);
-        if(!$result->isSuccess()) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_ORDER_PROPERTY_NOT_UPDATED',
-                    [
-                        '#NAME#' => $fields['NAME'] ? : $id,
-                        '#MESSAGE#' => implode(', ', $result->getErrorMessages())
-                    ]
-                )
-            );
-        }
-
-        $this->outNotice(Locale::getMessage('ORDER_PROPERTY_UPDATED', ['#NAME#' => $fields['NAME']]));
-
-        return (int) $result->getId();
-    }
-
-    /**
-     * @throws HelperException
-     * @throws SystemException
-     * @throws ArgumentException
-     */
-    public function saveOrderProperty(array $property, ?string $identifierField = null): int
-    {
-        $this->checkRequiredKeys($property, [
-            'PERSON_TYPE_ID', 'NAME', 'TYPE' , 'PROPS_GROUP_ID', 'ENTITY_TYPE'
-        ]);
-
-        $property = $this->prepareProperty($property);
-
-        if($identifierField) {
-
-            $identifierField = strtoupper($identifierField);
-
-            $exists = $this->getOrderPropertyByIdentifierField(
-                (string) $property['PERSON_TYPE_ID'],
-                $identifierField,
-                (string) $property[$identifierField]
-            );
-
-            if (empty($exists)) {
-                $result = $this->addOrderProperty($property);
-            } else {
-                $result = $this->updateOrderProperty((int) $exists['ID'], $property);
-                $this->checkDiff($this->prepareProperty($exists), $property);
-            }
-
-        } else {
-            $result = $this->addOrderProperty($property);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function addPropertyVariant(array $fields): void
-    {
-        $result = OrderPropsVariantTable::add($fields);
-        if(!$result->isSuccess()) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_ORDER_PROPERTY_VARIANT_NOT_ADDED',
-                    [
-                        '#NAME#' => $fields['NAME'],
-                        '#MESSAGE#' => implode(', ', $result->getErrorMessages())
-                    ]
-                )
-            );
-        }
-
-        $this->outNotice(Locale::getMessage('ORDER_PROPERTY_VARIANT_ADDED', ['#NAME#' => $fields['NAME']]));
+        return $item;
     }
 
     /**
@@ -210,15 +247,15 @@ class OrderPropertiesHelper extends Helper
     private function updatePropertyVariant(int $id, array $fields): void
     {
         $result = OrderPropsVariantTable::update($id, $fields);
-        if(!$result->isSuccess()) {
+        if (!$result->isSuccess()) {
             throw new HelperException(
                 Locale::getMessage(
                     'ERR_ORDER_PROPERTY_VARIANT_NOT_UPDATED',
                     [
                         '#NAME#' => $fields['NAME'],
-                        '#MESSAGE#' => implode(', ', $result->getErrorMessages())
-                    ]
-                )
+                        '#MESSAGE#' => implode(', ', $result->getErrorMessages()),
+                    ],
+                ),
             );
         }
 
@@ -226,55 +263,23 @@ class OrderPropertiesHelper extends Helper
     }
 
     /**
-     * @throws ArgumentException
-     * @throws ObjectPropertyException
-     * @throws SystemException
-     * @throws HelperException
      * @throws Exception
      */
-    public function saveOrderPropertyVariants(int $propertyId, array $variants): void
+    private function addPropertyVariant(array $fields): void
     {
-        $property = $this->getOrderPropertyById($propertyId);
-        if(!$property) {
-            return;
-        }
-
-        $existsVariants = array_reduce(
-            current($this->getOrderPropertyVariants([$propertyId])) ?: [],
-            function($carry, $item) {
-                $carry[$item['VALUE']] = $item;
-                return $carry;
-            },
-            []
-        );
-
-        foreach ($variants as $variant) {
-            $variant = array_merge(
-                $this->preparePropertyVariant($variant),
-                ['ORDER_PROPS_ID' => $propertyId]
+        $result = OrderPropsVariantTable::add($fields);
+        if (!$result->isSuccess()) {
+            throw new HelperException(
+                Locale::getMessage(
+                    'ERR_ORDER_PROPERTY_VARIANT_NOT_ADDED',
+                    [
+                        '#NAME#' => $fields['NAME'],
+                        '#MESSAGE#' => implode(', ', $result->getErrorMessages()),
+                    ],
+                ),
             );
-
-            $this->checkRequiredKeys($variant, ['ORDER_PROPS_ID', 'NAME']);
-
-            if($existsVariant = $existsVariants[$variant['VALUE']]) {
-                $this->updatePropertyVariant((int) $existsVariant['ID'], $variant);
-            } else {
-                $this->addPropertyVariant($variant);
-            }
         }
-    }
 
-    protected function prepareProperty(array $item): array
-    {
-        $this->unsetKeys($item, ['ID']);
-
-        return $item;
-    }
-
-    protected function preparePropertyVariant(array $item): array
-    {
-        $this->unsetKeys($item, ['ID', 'ORDER_PROPS_ID']);
-
-        return $item;
+        $this->outNotice(Locale::getMessage('ORDER_PROPERTY_VARIANT_ADDED', ['#NAME#' => $fields['NAME']]));
     }
 }

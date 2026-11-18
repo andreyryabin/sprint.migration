@@ -57,15 +57,15 @@ class EventBuilder extends VersionBuilder
             Module::getModuleTemplateFile('EventExport'),
             [
                 'result' => $result,
-            ]
+            ],
         );
     }
 
     protected function getEventTypesSelect(): array
     {
         $items = $this->getHelperManager()->Event()->getEventTypes([
-            'LID' => LANGUAGE_ID,
-        ]);
+                                                                       'LID' => LANGUAGE_ID,
+                                                                   ]);
 
         $items = array_map(function ($item) {
             $item['NAME'] = '[' . $item['EVENT_NAME'] . '] ' . $item['NAME'];

@@ -20,10 +20,8 @@ class RestartableReader
     public function __construct(
         private readonly RestartableInterface  $restartable,
         private readonly ReaderHelperInterface $helper,
-        private readonly string                $directory
-    )
-    {
-    }
+        private readonly string                $directory,
+    ) {}
 
     public function setExchangeResource(string $exchangeResource): RestartableReader
     {
@@ -78,7 +76,7 @@ class RestartableReader
     {
         $records = $this->helper->convertReaderRecords(
             $this->attributes,
-            $this->reader->readRecords($offset, $this->limit)
+            $this->reader->readRecords($offset, $this->limit),
         );
 
         array_map($userfunc, $records);
@@ -89,7 +87,7 @@ class RestartableReader
 
         $next = ($readCount >= $this->limit) ? $offset : 0;
 
-        if ( $this->progressFn !== null) {
+        if ($this->progressFn !== null) {
             ($this->progressFn)($offset, $this->totalCount);
         }
 

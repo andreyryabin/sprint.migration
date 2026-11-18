@@ -21,8 +21,18 @@ trait HlblockTrait
     {
         return array_map(
             fn($item) => $this->prepareExportHlblock($item),
-            $this->getHlblocks($filter)
+            $this->getHlblocks($filter),
         );
+    }
+
+    protected function prepareExportHlblock(array $item): array
+    {
+        $this->unsetKeys($item, [
+            'ID',
+            'TITLE',
+        ]);
+
+        return $item;
     }
 
     /**
@@ -38,7 +48,7 @@ trait HlblockTrait
                 [
                     'select' => ['*'],
                     'filter' => $filter,
-                ]
+                ],
             );
             while ($hlblock = $dbres->fetch()) {
                 $result[] = $this->prepareHlblock($hlblock);
@@ -86,7 +96,7 @@ trait HlblockTrait
             $dbres = HighloadBlockLangTable::getList(
                 [
                     'filter' => ['ID' => $hlblockId],
-                ]
+                ],
             );
 
             while ($item = $dbres->fetch()) {
@@ -101,24 +111,22 @@ trait HlblockTrait
         return $result;
     }
 
-    protected function prepareExportHlblock(array $item): array
+    /**
+     * @throws HelperException
+     */
+    public function getFieldNameById(int $hlblockId, int $fieldId): string
     {
-        $this->unsetKeys($item, [
-            'ID',
-            'TITLE',
-        ]);
+        $entityHelper = new UserTypeEntityHelper();
 
-        return $item;
-    }
+        $field = $entityHelper->getUserTypeEntityById($fieldId);
 
-    protected function prepareExportField(array $item): array
-    {
-        $this->unsetKeys($item, [
-            'ID',
-            'TITLE',
-        ]);
+        $entityId = $this->getEntityId($hlblockId);
 
-        return $item;
+        if (!empty($field['FIELD_NAME']) && $entityId == $field['ENTITY_ID']) {
+            return $field['FIELD_NAME'];
+        }
+
+        throw new HelperException(Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND'));
     }
 
     /**
@@ -160,32 +168,14 @@ trait HlblockTrait
 
         try {
             $hlblock = HighloadBlockTable::getRow([
-                'select' => ['*'],
-                'filter' => $filter,
-            ]);
+                                                      'select' => ['*'],
+                                                      'filter' => $filter,
+                                                  ]);
 
             return $hlblock ? $this->prepareHlblock($hlblock) : false;
         } catch (Exception $e) {
             throw new HelperException($e->getMessage());
         }
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function getFieldNameById(int $hlblockId, int $fieldId): string
-    {
-        $entityHelper = new UserTypeEntityHelper();
-
-        $field = $entityHelper->getUserTypeEntityById($fieldId);
-
-        $entityId = $this->getEntityId($hlblockId);
-
-        if (!empty($field['FIELD_NAME']) && $entityId == $field['ENTITY_ID']) {
-            return $field['FIELD_NAME'];
-        }
-
-        throw new HelperException(Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND'));
     }
 
     /**
@@ -200,21 +190,12 @@ trait HlblockTrait
     /**
      * @throws HelperException
      */
-    public function getFieldSettings(int $hlblockName, string $fieldName)
-    {
-        $field = $this->getField($hlblockName, $fieldName);
-        return $field['SETTINGS'];
-    }
-
-    /**
-     * @throws HelperException
-     */
     public function getField(array|int|string $hlblockName, string $fieldName): array
     {
         $entityHelper = new UserTypeEntityHelper();
         $field = $entityHelper->getUserTypeEntity(
             $this->getEntityId($hlblockName),
-            $fieldName
+            $fieldName,
         );
 
         if (!empty($field)) {
@@ -222,6 +203,15 @@ trait HlblockTrait
         }
 
         throw new HelperException(Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND'));
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getFieldSettings(int $hlblockName, string $fieldName)
+    {
+        $field = $this->getField($hlblockName, $fieldName);
+        return $field['SETTINGS'];
     }
 
     /**
@@ -311,7 +301,7 @@ trait HlblockTrait
     {
         $field = $this->getField($hlblockName, $fieldName);
 
-        return !empty($field['ID']) ? (int)$field['ID'] : 0;
+        return !empty($field['ID']) ? (int) $field['ID'] : 0;
     }
 
     /**
@@ -326,10 +316,20 @@ trait HlblockTrait
         $entityHelper = new UserTypeEntityHelper();
 
         $field['ENTITY_ID'] = $entityHelper->transformEntityId(
-            $this->getEntityId($hlblockName)
+            $this->getEntityId($hlblockName),
         );
 
         return $entityHelper->saveUserTypeEntity($field);
+    }
+
+    protected function prepareExportField(array $item): array
+    {
+        $this->unsetKeys($item, [
+            'ID',
+            'TITLE',
+        ]);
+
+        return $item;
     }
 
     /**
@@ -377,7 +377,7 @@ trait HlblockTrait
             if ($result->isSuccess()) {
                 $this->replaceHblockLangs($result->getId(), $lang);
                 $this->outNotice(Locale::getMessage('HLBLOCK_CREATED', ['#NAME#' => $fields['NAME']]));
-                return (int)$result->getId();
+                return (int) $result->getId();
             }
 
             throw new HelperException(implode(PHP_EOL, $result->getErrorMessages()));
@@ -412,7 +412,7 @@ trait HlblockTrait
             $items = HighloadBlockLangTable::getList(
                 [
                     'filter' => ['ID' => $hlblockId],
-                ]
+                ],
             )->fetchAll();
 
             foreach ($items as $item) {
@@ -441,10 +441,10 @@ trait HlblockTrait
             if (!empty($item['NAME'])) {
                 HighloadBlockLangTable::add(
                     [
-                        'ID'   => $hlblockId,
-                        'LID'  => $lid,
+                        'ID' => $hlblockId,
+                        'LID' => $lid,
                         'NAME' => $item['NAME'],
-                    ]
+                    ],
                 );
 
                 $add++;
@@ -493,7 +493,7 @@ trait HlblockTrait
 
         return $entityHelper->deleteUserTypeEntity(
             $this->getEntityId($hlblockName),
-            $fieldName
+            $fieldName,
         );
     }
 
@@ -507,7 +507,7 @@ trait HlblockTrait
     {
         $entityHelper = new UserTypeEntityHelper();
         $fields = $entityHelper->exportUserTypeEntities(
-            $this->getEntityId($hlblockName)
+            $this->getEntityId($hlblockName),
         );
 
         foreach ($fields as $index => $field) {
@@ -534,24 +534,6 @@ trait HlblockTrait
     /**
      * @throws HelperException
      */
-    public function getHlblockIfExists($hlblockName): array
-    {
-        $item = $this->getHlblock($hlblockName);
-        if (!empty($item['ID'])) {
-            return $item;
-        }
-
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_HLBLOCK_NOT_FOUND',
-                ['#HLBLOCK#' => is_array($hlblockName) ? print_r($hlblockName, true) : $hlblockName]
-            )
-        );
-    }
-
-    /**
-     * @throws HelperException
-     */
     public function getHlblockTableName($hlblockName)
     {
         $item = $this->getHlblock($hlblockName);
@@ -569,7 +551,7 @@ trait HlblockTrait
 
         $item = $this->getHlblock($fields['NAME']);
         if ($item) {
-            return (int)$item['ID'];
+            return (int) $item['ID'];
         }
 
         return $this->addHlblock($fields);
@@ -629,6 +611,24 @@ trait HlblockTrait
     {
         $hlblock = $this->getHlblockIfExists($hlblockId);
         return $hlblock['NAME'];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getHlblockIfExists($hlblockName): array
+    {
+        $item = $this->getHlblock($hlblockName);
+        if (!empty($item['ID'])) {
+            return $item;
+        }
+
+        throw new HelperException(
+            Locale::getMessage(
+                'ERR_HLBLOCK_NOT_FOUND',
+                ['#HLBLOCK#' => is_array($hlblockName) ? print_r($hlblockName, true) : $hlblockName],
+            ),
+        );
     }
 
     /**

@@ -25,8 +25,8 @@ class Helper
                     'ERR_HELPER_DISABLED',
                     [
                         '#NAME#' => $this->getHelperName(),
-                    ]
-                )
+                    ],
+                ),
             );
         }
     }
@@ -37,6 +37,11 @@ class Helper
     public function isEnabled()
     {
         return true;
+    }
+
+    protected function getHelperName(): string
+    {
+        return (new ReflectionClass($this))->getShortName();
     }
 
     protected function checkModules(array $names = []): bool
@@ -63,14 +68,9 @@ class Helper
         global $APPLICATION;
         if ($APPLICATION->GetException()) {
             throw new HelperException(
-                $APPLICATION->GetException()->GetString()
+                $APPLICATION->GetException()->GetString(),
             );
         }
-    }
-
-    protected function getHelperName(): string
-    {
-        return (new ReflectionClass($this))->getShortName();
     }
 
     protected function checkDiff(array $exists, array $fields, bool $strict = false): bool
@@ -80,31 +80,6 @@ class Helper
             $this->outDiff($exists, $fields);
         }
         return $hasDiff;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    protected function checkRequiredKeys(array $fields, array $reqKeys = []): void
-    {
-        if (empty($reqKeys)) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_EMPTY_REQ_FIELDS'
-                )
-            );
-        }
-
-        foreach ($reqKeys as $name) {
-            if (empty($fields[$name])) {
-                throw new HelperException(
-                    Locale::getMessage(
-                        'ERR_EMPTY_REQ_FIELD',
-                        ['#NAME#' => $name]
-                    )
-                );
-            }
-        }
     }
 
     /**
@@ -120,6 +95,31 @@ class Helper
         }
 
         return $filter;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function checkRequiredKeys(array $fields, array $reqKeys = []): void
+    {
+        if (empty($reqKeys)) {
+            throw new HelperException(
+                Locale::getMessage(
+                    'ERR_EMPTY_REQ_FIELDS',
+                ),
+            );
+        }
+
+        foreach ($reqKeys as $name) {
+            if (empty($fields[$name])) {
+                throw new HelperException(
+                    Locale::getMessage(
+                        'ERR_EMPTY_REQ_FIELD',
+                        ['#NAME#' => $name],
+                    ),
+                );
+            }
+        }
     }
 
     protected function makeNonEmptyArray(string|int|array $ids): array
@@ -158,14 +158,9 @@ class Helper
                 $items,
                 function ($item) use ($key, $value) {
                     return ($item[$key] == $value);
-                }
-            )
+                },
+            ),
         );
-    }
-
-    protected function merge(array $item, array $defaultItem): array
-    {
-        return array_merge($defaultItem, $item);
     }
 
     protected function mergeCollection(array $collection, array $defaultItem): array
@@ -173,6 +168,44 @@ class Helper
         return array_map(function ($item) use ($defaultItem) {
             return $this->merge($item, $defaultItem);
         }, $collection);
+    }
+
+    protected function merge(array $item, array $defaultItem): array
+    {
+        return array_merge($defaultItem, $item);
+    }
+
+    /** Оставляет разрешенные ключи */
+    protected function keepKeys(array &$item, array $keepKeys): void
+    {
+        $keepKeys = array_flip($keepKeys);
+        foreach ($item as $key => $value) {
+            if (!array_key_exists($key, $keepKeys)) {
+                unset($item[$key]);
+            }
+        }
+    }
+
+    /** Оставляет разрешенные ключи и заполняет недостающие дефолтами */
+    protected function keepItem(array &$item, array $defaultItem): void
+    {
+        $item = array_merge($defaultItem, array_intersect_key($item, $defaultItem));
+    }
+
+    protected function exportCollection(array $collection, array $defaultItem, array $unsetKeys): array
+    {
+        return array_map(function ($item) use ($defaultItem, $unsetKeys) {
+            return $this->export($item, $defaultItem, $unsetKeys);
+        }, $collection);
+    }
+
+    protected function export(array $item, array $defaultItem, array $unsetKeys): array
+    {
+        $this->unsetKeys($item, $unsetKeys);
+
+        $this->unsetItem($item, $defaultItem);
+
+        return $item;
     }
 
     /** Удаляет выбранные ключи */
@@ -194,38 +227,5 @@ class Helper
                 unset($item[$key]);
             }
         }
-    }
-
-    /** Оставляет разрешенные ключи */
-    protected function keepKeys(array &$item, array $keepKeys): void
-    {
-        $keepKeys = array_flip($keepKeys);
-        foreach ($item as $key => $value) {
-            if (!array_key_exists($key, $keepKeys)) {
-                unset($item[$key]);
-            }
-        }
-    }
-
-    /** Оставляет разрешенные ключи и заполняет недостающие дефолтами */
-    protected function keepItem(array &$item, array $defaultItem): void
-    {
-        $item = array_merge($defaultItem, array_intersect_key($item, $defaultItem));
-    }
-
-    protected function export(array $item, array $defaultItem, array $unsetKeys): array
-    {
-        $this->unsetKeys($item, $unsetKeys);
-
-        $this->unsetItem($item, $defaultItem);
-
-        return $item;
-    }
-
-    protected function exportCollection(array $collection, array $defaultItem, array $unsetKeys): array
-    {
-        return array_map(function ($item) use ($defaultItem, $unsetKeys) {
-            return $this->export($item, $defaultItem, $unsetKeys);
-        }, $collection);
     }
 }

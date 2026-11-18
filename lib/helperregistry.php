@@ -10,37 +10,14 @@ class HelperRegistry
     private array $registered = [];
 
     public function __construct(
-        private readonly ?OutputInterface $output = null
-    )
-    {
+        private readonly ?OutputInterface $output = null,
+    ) {
         $this->registration();
-    }
-
-    /**
-     * @template T of Helper
-     * @param class-string<T> $class
-     * @return T
-     * @throws HelperException
-     */
-    protected function create(string $class): Helper
-    {
-        if (is_subclass_of($class, Helper::class)) {
-            $ob = new $class;
-            $ob->setOutput($this->output);
-            return $ob;
-        }
-
-        throw new HelperException("Class \"$class\" is not helper");
     }
 
     protected function registration()
     {
         //register classes
-    }
-
-    public function registerHelper($name, $class): void
-    {
-        $this->registered[$name] = $class;
     }
 
     /**
@@ -61,9 +38,31 @@ class HelperRegistry
         throw new HelperException("Helper \"$name\" not found");
     }
 
+    /**
+     * @template T of Helper
+     * @param class-string<T> $class
+     * @return T
+     * @throws HelperException
+     */
+    protected function create(string $class): Helper
+    {
+        if (is_subclass_of($class, Helper::class)) {
+            $ob = new $class();
+            $ob->setOutput($this->output);
+            return $ob;
+        }
+
+        throw new HelperException("Class \"$class\" is not helper");
+    }
+
     protected function getClassByCalledName(string $name): string
     {
         return '\\Sprint\\Migration\\Helpers\\' . $name . 'Helper';
+    }
+
+    public function registerHelper($name, $class): void
+    {
+        $this->registered[$name] = $class;
     }
 
 

@@ -17,27 +17,15 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     /**
      * @throws HelperException
      */
-    public function getField($hlblockName, $fieldName): array
-    {
-        $key = $hlblockName . $fieldName;
-
-        if (!isset($this->cachedFields[$key])) {
-            $this->cachedFields[$key] = parent::getField($hlblockName, $fieldName);
-        }
-        return $this->cachedFields[$key];
-    }
-
-    /**
-     * @throws HelperException
-     */
     public function getHlblocksSelect(): array
     {
         return array_map(
-            fn($hlblock) => [
+            fn($hlblock)
+                => [
                 'title' => Locale::getMessage('HLBLOCK_TITLE', $hlblock),
-                'value' => (int)$hlblock['ID'],
+                'value' => (int) $hlblock['ID'],
             ],
-            $this->getHlblocks()
+            $this->getHlblocks(),
         );
     }
 
@@ -47,16 +35,14 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     public function getHlblockFieldsSelect(int $hlblockId): array
     {
         return array_map(
-            fn($field) => [
+            fn($field)
+                => [
                 'title' => Locale::getMessage('HLBLOCK_FIELD', $field),
                 'value' => $field['FIELD_NAME'],
             ],
-            $this->getFields($hlblockId)
+            $this->getFields($hlblockId),
         );
     }
-
-
-    //reader
 
     /**
      * @throws HelperException
@@ -67,6 +53,9 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
 
         return array_map(fn($record) => $this->convertReaderRecord($hlblockId, $record), $records);
     }
+
+
+    //reader
 
     /**
      * @throws HelperException
@@ -91,8 +80,114 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         }
         return [
             'hlblock_id' => $hlblockId,
-            'fields'     => $convertedFields,
+            'fields' => $convertedFields,
         ];
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function readFieldEnumeration(int $hlblockId, array $field)
+    {
+        if ($this->isFieldMultiple($hlblockId, $field['name'])) {
+            return array_map(fn($val)
+                => $this->getFieldEnumIdByXmlId(
+                $hlblockId,
+                $field['name'],
+                $val['value'],
+            ), $field['value']);
+        } else {
+            return $this->getFieldEnumIdByXmlId(
+                $hlblockId,
+                $field['name'],
+                $field['value'][0]['value'],
+            );
+        }
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function readFieldIblockElement(int $hlblockId, array $field)
+    {
+        $isMultiple = $this->isFieldMultiple($hlblockId, $field['name']);
+        $settings = $this->getFieldSettings($hlblockId, $field['name']);
+
+        $linkIblockId = $settings['IBLOCK_ID'] ?? '';
+
+        if ($linkIblockId) {
+            $res = array_map(
+                fn($val) => (new IblockExchangeHelper())->readValueIblockElement($linkIblockId, $val),
+                $field['value'],
+            );
+            return ($isMultiple) ? $res : ($res[0] ?? false);
+        }
+        return ($isMultiple) ? [] : false;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function readFieldIblockSection(int $hlblockId, array $field)
+    {
+        $isMultiple = $this->isFieldMultiple($hlblockId, $field['name']);
+        $settings = $this->getFieldSettings($hlblockId, $field['name']);
+
+        $linkIblockId = $settings['IBLOCK_ID'] ?? '';
+
+        if ($linkIblockId) {
+            $res = array_map(
+                fn($val) => (new IblockExchangeHelper())->readValueIblockSection($linkIblockId, $val),
+                $field['value'],
+            );
+            return ($isMultiple) ? $res : ($res[0] ?? false);
+        }
+
+        return ($isMultiple) ? [] : false;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    protected function readFieldHlblockElement(int $hlblockId, array $field)
+    {
+        $isMultiple = $this->isFieldMultiple($hlblockId, $field['name']);
+        $settings = $this->getFieldSettings($hlblockId, $field['name']);
+
+        $linkHlblockId = $settings['HLBLOCK_ID'] ?? '';
+
+        if ($linkHlblockId) {
+            $res = array_map(
+                fn($val) => $this->readValueHlblockElement($linkHlblockId, $val),
+                $field['value'],
+            );
+            return ($isMultiple) ? $res : ($res[0] ?? false);
+        }
+
+        return ($isMultiple) ? [] : false;
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function readValueHlblockElement(int $hlblockId, array $val): int
+    {
+        $this->checkRequiredKeys($val, ['value']);
+
+        //если есть xml_id ищем элемент по нему
+
+        $filter = array_filter([
+                                   'UF_XML_ID' => $val['uf_xml_id'] ?? '',
+                               ]);
+
+        if (!empty($filter)) {
+            return $this->getElementIdIfExists($hlblockId, $filter);
+        }
+
+        //иначе сохраняем значение как есть
+        // да, тут может быть несуществующий или некорректный id связанного элемента
+
+        return (int) $val['value'];
     }
 
     /**
@@ -114,112 +209,6 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     /**
      * @throws HelperException
      */
-    protected function readFieldEnumeration(int $hlblockId, array $field)
-    {
-        if ($this->isFieldMultiple($hlblockId, $field['name'])) {
-            return array_map(fn($val) => $this->getFieldEnumIdByXmlId(
-                $hlblockId,
-                $field['name'],
-                $val['value']
-            ), $field['value']);
-        } else {
-            return $this->getFieldEnumIdByXmlId(
-                $hlblockId,
-                $field['name'],
-                $field['value'][0]['value']
-            );
-        }
-    }
-
-    /**
-     * @throws HelperException
-     */
-    protected function readFieldIblockElement(int $hlblockId, array $field)
-    {
-        $isMultiple = $this->isFieldMultiple($hlblockId, $field['name']);
-        $settings = $this->getFieldSettings($hlblockId, $field['name']);
-
-        $linkIblockId = $settings['IBLOCK_ID'] ?? '';
-
-        if ($linkIblockId) {
-            $res = array_map(
-                fn($val) => (new IblockExchangeHelper())->readValueIblockElement($linkIblockId, $val),
-                $field['value']
-            );
-            return ($isMultiple) ? $res : ($res[0] ?? false);
-        }
-        return ($isMultiple) ? [] : false;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    protected function readFieldIblockSection(int $hlblockId, array $field)
-    {
-        $isMultiple = $this->isFieldMultiple($hlblockId, $field['name']);
-        $settings = $this->getFieldSettings($hlblockId, $field['name']);
-
-        $linkIblockId = $settings['IBLOCK_ID'] ?? '';
-
-        if ($linkIblockId) {
-            $res = array_map(
-                fn($val) => (new IblockExchangeHelper())->readValueIblockSection($linkIblockId, $val),
-                $field['value']
-            );
-            return ($isMultiple) ? $res : ($res[0] ?? false);
-        }
-
-        return ($isMultiple) ? [] : false;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    protected function readFieldHlblockElement(int $hlblockId, array $field)
-    {
-        $isMultiple = $this->isFieldMultiple($hlblockId, $field['name']);
-        $settings = $this->getFieldSettings($hlblockId, $field['name']);
-
-        $linkHlblockId = $settings['HLBLOCK_ID'] ?? '';
-
-        if ($linkHlblockId) {
-            $res = array_map(
-                fn($val) => $this->readValueHlblockElement($linkHlblockId, $val),
-                $field['value']
-            );
-            return ($isMultiple) ? $res : ($res[0] ?? false);
-        }
-
-        return ($isMultiple) ? [] : false;
-    }
-
-    /**
-     * @throws HelperException
-     */
-    public function readValueHlblockElement(int $hlblockId, array $val): int
-    {
-        $this->checkRequiredKeys($val, ['value']);
-
-        //если есть xml_id ищем элемент по нему
-
-        $filter = array_filter([
-            'UF_XML_ID' => $val['uf_xml_id'] ?? '',
-        ]);
-
-        if (!empty($filter)) {
-            return $this->getElementIdIfExists($hlblockId, $filter);
-        }
-
-        //иначе сохраняем значение как есть
-        // да, тут может быть несуществующий или некорректный id связанного элемента
-
-        return (int)$val['value'];
-    }
-    //writer
-
-    /**
-     * @throws HelperException
-     */
     public function getWriterAttributes(...$vars): array
     {
         [$hlblockId] = $vars;
@@ -228,6 +217,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
             'hlblockUid' => $this->getHlblockNameById($hlblockId),
         ];
     }
+    //writer
 
     /**
      * @throws HelperException
@@ -249,11 +239,11 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         $elements = $this->getElements(
             $hlblockId,
             [
-                'order'  => ['ID' => 'ASC'],
+                'order' => ['ID' => 'ASC'],
                 'offset' => $offset,
-                'limit'  => $limit,
+                'limit' => $limit,
                 'filter' => $filter,
-            ]
+            ],
         );
 
         $tag = new WriterTag('tmp');
@@ -262,8 +252,8 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                 $this->createWriterRecordTag(
                     $hlblockId,
                     $element,
-                    $exportFields
-                )
+                    $exportFields,
+                ),
             );
         }
 
@@ -286,17 +276,19 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                                 $this->getField($hlblockId, $code),
                                 [
                                     'HLBLOCK_ID' => $hlblockId,
-                                    'VALUE'      => $val,
-                                ]
-                            )
-                        )
+                                    'VALUE' => $val,
+                                ],
+                            ),
+                        ),
                     );
                 } catch (WriterException $e) {
-                    throw new HelperException($e->getMessage() . " in " . print_r([
-                            'HLBLOCK_ID' => $hlblockId,
-                            'ID'         => $element['ID'],
-                            'FIELD'      => $code,
-                        ], true));
+                    throw new HelperException(
+                        $e->getMessage() . " in " . print_r([
+                                                                'HLBLOCK_ID' => $hlblockId,
+                                                                'ID' => $element['ID'],
+                                                                'FIELD' => $code,
+                                                            ], true),
+                    );
                 }
             }
         }
@@ -337,7 +329,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         $xmlIds = $this->getFieldEnumXmlIdsByIds(
             $field['HLBLOCK_ID'],
             $field['FIELD_NAME'],
-            $field['VALUE']
+            $field['VALUE'],
         );
         $tag->addValue($xmlIds, true);
     }
@@ -354,7 +346,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                 (new IblockExchangeHelper())->writeValueIblockElement(
                     $tag,
                     $linkedIblockId,
-                    $elementId
+                    $elementId,
                 );
             }
         }
@@ -372,7 +364,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                 (new IblockExchangeHelper())->writeValueIblockSection(
                     $tag,
                     $linkedIblockId,
-                    $elementId
+                    $elementId,
                 );
             }
         }
@@ -403,7 +395,20 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         // непонятно какие уникальные поля записывать в атриубты, мб обязательные (MANDATORY) ?
 
         $tag->addValueTag($item['ID'], array_filter([
-            'uf_xml_id' => $item['UF_XML_ID'] ?? '',
-        ]));
+                                                        'uf_xml_id' => $item['UF_XML_ID'] ?? '',
+                                                    ]));
+    }
+
+    /**
+     * @throws HelperException
+     */
+    public function getField($hlblockName, $fieldName): array
+    {
+        $key = $hlblockName . $fieldName;
+
+        if (!isset($this->cachedFields[$key])) {
+            $this->cachedFields[$key] = parent::getField($hlblockName, $fieldName);
+        }
+        return $this->cachedFields[$key];
     }
 }

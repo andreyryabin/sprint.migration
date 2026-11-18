@@ -55,73 +55,59 @@ class IblockElementsBuilder extends VersionBuilder
         (new RestartableWriter($this, $this->getVersionExchangeDir()))
             ->setExchangeResource('iblock_elements.xml')
             ->execute(
-                attributesFn: fn() => $exhelper->getWriterAttributes(
-                    $iblockId
-                ),
-                totalCountFn: fn() => $exhelper->getWriterRecordsCount(
+                attributesFn: fn()
+                    => $exhelper->getWriterAttributes(
                     $iblockId,
-                    $exportFilter
                 ),
-                recordsFn: fn($offset, $limit) => $exhelper->getWriterRecordsTag(
+                totalCountFn: fn()
+                    => $exhelper->getWriterRecordsCount(
+                    $iblockId,
+                    $exportFilter,
+                ),
+                recordsFn: fn($offset, $limit)
+                    => $exhelper->getWriterRecordsTag(
                     $offset,
                     $limit,
                     $iblockId,
                     $exportFilter,
                     $exportFields,
-                    $exportProps
+                    $exportProps,
                 ),
-                progressFn: fn($value, $totalCount) => $this->outProgress(
-                    'Progress', $value, $totalCount
-                )
+                progressFn: fn($value, $totalCount)
+                    => $this->outProgress(
+                    'Progress',
+                    $value,
+                    $totalCount,
+                ),
             );
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockElementsExport'),
             [
                 'updateMethod' => $updateMethod,
-            ]
+            ],
         );
     }
 
     /**
+     * @throws HelperException
      * @throws RebuildException
      */
-    protected function getFieldValueExportProps($iblockId)
+    protected function getFieldValueIblockId(): int
     {
         $exhelper = $this->getExchangeHelpers()->IblockExchange();
 
-        $propsMode = $this->addFieldAndReturn('props_mode', [
-            'title'  => Locale::getMessage('BUILDER_IblockElementsExport_Properties'),
-            'select' => [
-                [
-                    'title' => Locale::getMessage('BUILDER_SelectAll'),
-                    'value' => 'all',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_SelectNone'),
-                    'value' => 'none',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_SelectSome'),
-                    'value' => 'some',
-                ],
-            ],
+        $iblockId = $this->addFieldAndReturn('iblock_id', [
+            'title' => Locale::getMessage('BUILDER_IblockElementsExport_IblockId'),
+            'items' => $exhelper->getIblocksStructure(),
         ]);
 
-        if ($propsMode == 'some') {
-            $exportProps = $this->addFieldAndReturn('export_props', [
-                'title'    => Locale::getMessage('BUILDER_IblockElementsExport_Properties'),
-                'multiple' => 1,
-                'select'   => $exhelper->getIblockPropertiesSelect($iblockId),
-            ]);
-        } elseif ($propsMode == 'all') {
-            $exportProps = $exhelper->getIblockPropertiesSelect($iblockId);
-            $exportProps = array_column($exportProps, 'value');
-        } else {
-            $exportProps = [];
+        $iblock = $exhelper->exportIblock($iblockId);
+        if (empty($iblock)) {
+            $this->rebuildField('iblock_id');
         }
 
-        return $exportProps;
+        return (int) $iblockId;
     }
 
     /**
@@ -130,7 +116,7 @@ class IblockElementsBuilder extends VersionBuilder
     protected function getFieldValueExportFilter(): array
     {
         $filterMode = $this->addFieldAndReturn('filter_mode', [
-            'title'  => Locale::getMessage('BUILDER_IblockElementsExport_Filter'),
+            'title' => Locale::getMessage('BUILDER_IblockElementsExport_Filter'),
             'select' => [
                 [
                     'title' => Locale::getMessage('BUILDER_SelectAll'),
@@ -153,8 +139,8 @@ class IblockElementsBuilder extends VersionBuilder
 
         if ($filterMode == 'list_id') {
             $filterIds = $this->addFieldAndReturn('export_filter_list_id', [
-                'title'  => Locale::getMessage('BUILDER_IblockElementsExport_FilterListId'),
-                'width'  => 350,
+                'title' => Locale::getMessage('BUILDER_IblockElementsExport_FilterListId'),
+                'width' => 350,
                 'height' => 40,
             ]);
 
@@ -168,12 +154,12 @@ class IblockElementsBuilder extends VersionBuilder
             ]);
 
             $exportFilter = [
-                'IBLOCK_SECTION_ID' => (int)$filterSectionId,
+                'IBLOCK_SECTION_ID' => (int) $filterSectionId,
             ];
         } elseif ($filterMode == 'list_xml_id') {
             $filterXmlIds = $this->addFieldAndReturn('export_filter_list_xml_id', [
-                'title'  => Locale::getMessage('BUILDER_IblockElementsExport_FilterListXmlId'),
-                'width'  => 350,
+                'title' => Locale::getMessage('BUILDER_IblockElementsExport_FilterListXmlId'),
+                'width' => 350,
                 'height' => 40,
             ]);
 
@@ -190,12 +176,36 @@ class IblockElementsBuilder extends VersionBuilder
     /**
      * @throws RebuildException
      */
+    protected function getFieldValueUpdateMethod()
+    {
+        return $this->addFieldAndReturn('update_method', [
+            'title' => Locale::getMessage('BUILDER_IblockElementsExport_UpdateMethod'),
+            'select' => [
+                [
+                    'title' => Locale::getMessage('BUILDER_IblockElementsExport_NotUpdate'),
+                    'value' => self::UPDATE_METHOD_NOT,
+                ],
+                [
+                    'title' => Locale::getMessage('BUILDER_IblockElementsExport_SaveElementByCode'),
+                    'value' => self::UPDATE_METHOD_CODE,
+                ],
+                [
+                    'title' => Locale::getMessage('BUILDER_IblockElementsExport_SaveElementByXmlId'),
+                    'value' => self::UPDATE_METHOD_XML_ID,
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * @throws RebuildException
+     */
     protected function getFieldValueExportFields($iblockId, $updateMethod = false, $exportFilter = [])
     {
         $exhelper = $this->getExchangeHelpers()->IblockExchange();
 
         $fieldsMode = $this->addFieldAndReturn('fields_mode', [
-            'title'  => Locale::getMessage('BUILDER_IblockElementsExport_Fields'),
+            'title' => Locale::getMessage('BUILDER_IblockElementsExport_Fields'),
             'select' => [
                 [
                     'title' => Locale::getMessage('BUILDER_SelectAll'),
@@ -214,9 +224,9 @@ class IblockElementsBuilder extends VersionBuilder
 
         if ($fieldsMode == 'some') {
             $exportFields = $this->addFieldAndReturn('export_filter', [
-                'title'    => Locale::getMessage('BUILDER_IblockElementsExport_Fields'),
+                'title' => Locale::getMessage('BUILDER_IblockElementsExport_Fields'),
                 'multiple' => 1,
-                'select'   => $exhelper->getIblockElementFieldsSelect($iblockId, true)
+                'select' => $exhelper->getIblockElementFieldsSelect($iblockId, true),
             ]);
         } elseif ($fieldsMode == 'all') {
             $exportFields = $exhelper->getIblockElementFieldsSelect($iblockId);
@@ -246,48 +256,44 @@ class IblockElementsBuilder extends VersionBuilder
     }
 
     /**
-     * @throws HelperException
      * @throws RebuildException
      */
-    protected function getFieldValueIblockId(): int
+    protected function getFieldValueExportProps($iblockId)
     {
         $exhelper = $this->getExchangeHelpers()->IblockExchange();
 
-        $iblockId = $this->addFieldAndReturn('iblock_id', [
-            'title' => Locale::getMessage('BUILDER_IblockElementsExport_IblockId'),
-            'items' => $exhelper->getIblocksStructure(),
-        ]);
-
-        $iblock = $exhelper->exportIblock($iblockId);
-        if (empty($iblock)) {
-            $this->rebuildField('iblock_id');
-        }
-
-        return (int)$iblockId;
-    }
-
-    /**
-     * @throws RebuildException
-     */
-    protected function getFieldValueUpdateMethod()
-    {
-        return $this->addFieldAndReturn('update_method', [
-            'title'  => Locale::getMessage('BUILDER_IblockElementsExport_UpdateMethod'),
+        $propsMode = $this->addFieldAndReturn('props_mode', [
+            'title' => Locale::getMessage('BUILDER_IblockElementsExport_Properties'),
             'select' => [
                 [
-                    'title' => Locale::getMessage('BUILDER_IblockElementsExport_NotUpdate'),
-                    'value' => self::UPDATE_METHOD_NOT,
+                    'title' => Locale::getMessage('BUILDER_SelectAll'),
+                    'value' => 'all',
                 ],
                 [
-                    'title' => Locale::getMessage('BUILDER_IblockElementsExport_SaveElementByCode'),
-                    'value' => self::UPDATE_METHOD_CODE,
+                    'title' => Locale::getMessage('BUILDER_SelectNone'),
+                    'value' => 'none',
                 ],
                 [
-                    'title' => Locale::getMessage('BUILDER_IblockElementsExport_SaveElementByXmlId'),
-                    'value' => self::UPDATE_METHOD_XML_ID,
+                    'title' => Locale::getMessage('BUILDER_SelectSome'),
+                    'value' => 'some',
                 ],
             ],
         ]);
+
+        if ($propsMode == 'some') {
+            $exportProps = $this->addFieldAndReturn('export_props', [
+                'title' => Locale::getMessage('BUILDER_IblockElementsExport_Properties'),
+                'multiple' => 1,
+                'select' => $exhelper->getIblockPropertiesSelect($iblockId),
+            ]);
+        } elseif ($propsMode == 'all') {
+            $exportProps = $exhelper->getIblockPropertiesSelect($iblockId);
+            $exportProps = array_column($exportProps, 'value');
+        } else {
+            $exportProps = [];
+        }
+
+        return $exportProps;
     }
 
 

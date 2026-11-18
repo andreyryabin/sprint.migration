@@ -18,12 +18,10 @@ class Version implements RestartableInterface
     use RestartableTrait;
     use VersionConfigTrait;
 
-    private string $versionName;
-
     protected $author = "";
     protected $description = "";
     protected $moduleVersion = "";
-
+    private string $versionName;
     private HelperManager $helperManager;
 
     /**
@@ -61,11 +59,6 @@ class Version implements RestartableInterface
         return $this->moduleVersion;
     }
 
-    public function getVersionName(): string
-    {
-        return $this->versionName ??= (new ReflectionClass($this))->getShortName();
-    }
-
     /**
      * Метод проверяет установлены ли обязательные миграции и бросает исключение если нет
      * $versionNames = ['Version1','Version1'] или [Version1::class,Version2::class]
@@ -76,7 +69,7 @@ class Version implements RestartableInterface
     {
         (new VersionManager(
             $this->getVersionConfig(),
-            $this->output
+            $this->output,
         ))->checkRequiredVersions($versionNames);
     }
 
@@ -92,13 +85,18 @@ class Version implements RestartableInterface
         return new StorageManager('sprint_storage_default', $versionName);
     }
 
+    public function getVersionName(): string
+    {
+        return $this->versionName ??= (new ReflectionClass($this))->getShortName();
+    }
+
     /**
      * @throws MigrationException
      */
     protected function getExchangeManager(): ExchangeManager
     {
         $dir = $this->getVersionConfig()->getVersionExchangeDir(
-            $this->getVersionName()
+            $this->getVersionName(),
         );
 
         return new ExchangeManager($this, $dir, $this->output);

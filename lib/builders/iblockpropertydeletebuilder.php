@@ -26,7 +26,10 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
 
         $this->setDescription(implode(PHP_EOL, [
             Locale::getMessage('DEVELOPER_NAME', ['#VALUE#' => '@temi4']),
-            Locale::getMessage('DEVELOPER_URI', ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/184']),
+            Locale::getMessage(
+                'DEVELOPER_URI',
+                ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/184'],
+            ),
             Locale::getMessage('BUILDER_IblockPropertyDelete_Info'),
         ]));
 
@@ -43,7 +46,7 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
         $exhelper = $this->getExchangeHelpers();
 
-        $iblockId = (int)$this->addFieldAndReturn('iblock_id', [
+        $iblockId = (int) $this->addFieldAndReturn('iblock_id', [
             'title' => Locale::getMessage('BUILDER_IblockExport_IblockId'),
             'items' => $exhelper->IblockExchange()->getIblocksStructure(),
         ]);
@@ -53,19 +56,19 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
         $this->addField(
             'property_ids',
             [
-                'title'    => Locale::getMessage('BUILDER_IblockPropertyDelete_Properties'),
-                'select'   => $this->createSelect($properties, 'ID', 'PROPERTY_TITLE'),
+                'title' => Locale::getMessage('BUILDER_IblockPropertyDelete_Properties'),
+                'select' => $this->createSelect($properties, 'ID', 'PROPERTY_TITLE'),
                 'multiple' => 1,
-            ]
+            ],
         );
 
         $this->addField(
             'property_codes',
             [
-                'title'  => Locale::getMessage('BUILDER_IblockPropertyDelete_Codes'),
-                'width'  => 350,
+                'title' => Locale::getMessage('BUILDER_IblockPropertyDelete_Codes'),
+                'width' => 350,
                 'height' => 80,
-            ]
+            ],
         );
 
         $propertyIds = $this->getFieldValue('property_ids', []);
@@ -74,7 +77,7 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
         $propertyCodes = $this->getPropertyCodesByIds($properties, $propertyIds);
         $propertyCodes = array_merge(
             $propertyCodes,
-            $this->explodePropertyCodes((string)$this->getFieldValue('property_codes'))
+            $this->explodePropertyCodes((string) $this->getFieldValue('property_codes')),
         );
         $propertyCodes = array_values(array_unique(array_filter($propertyCodes)));
 
@@ -85,10 +88,10 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockPropertyDelete'),
             [
-                'iblock'        => $helper->Iblock()->exportIblock($iblockId),
+                'iblock' => $helper->Iblock()->exportIblock($iblockId),
                 'propertyCodes' => $propertyCodes,
             ],
-            false
+            false,
         );
     }
 
@@ -96,17 +99,18 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
     {
         $properties = array_filter(
             $properties,
-            fn($property) => !empty($property['CODE'])
+            fn($property) => !empty($property['CODE']),
         );
 
         return array_map(
-            fn($property) => array_merge(
+            fn($property)
+                => array_merge(
                 $property,
                 [
                     'PROPERTY_TITLE' => sprintf('[%s] %s', $property['CODE'], $property['NAME']),
-                ]
+                ],
             ),
-            $properties
+            $properties,
         );
     }
 
@@ -119,9 +123,9 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
                 fn($property) => $property['CODE'],
                 array_filter(
                     $properties,
-                    fn($property) => in_array((string)$property['ID'], $propertyIds, true)
-                )
-            )
+                    fn($property) => in_array((string) $property['ID'], $propertyIds, true),
+                ),
+            ),
         );
     }
 
@@ -130,8 +134,8 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
         return array_filter(
             array_map(
                 'trim',
-                preg_split('/[\s,;]+/', $codes) ?: []
-            )
+                preg_split('/[\s,;]+/', $codes) ?: [],
+            ),
         );
     }
 }

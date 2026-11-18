@@ -24,8 +24,57 @@ trait IblockTrait
         $this->initializeIblockVars($iblockId);
 
         return $this->exportForm([
-            'name' => 'form_element_' . $iblockId,
-        ]);
+                                     'name' => 'form_element_' . $iblockId,
+                                 ]);
+    }
+
+    /**
+     * @param $iblockId
+     *
+     * @return bool
+     * @throws HelperException
+     */
+    protected function initializeIblockVars($iblockId)
+    {
+        $iblockHelper = new IblockHelper();
+
+        /** @compability */
+        if (empty($iblockId)) {
+            throw new HelperException('empty param $iblockId is no longer supported, see examples');
+        }
+
+        if ($this->lastIblockId == $iblockId) {
+            return true;
+        }
+
+        $iblock = $iblockHelper->getIblockIfExists($iblockId);
+
+        $this->lastIblockId = $iblockId;
+        $this->iblock = $iblock;
+        $this->props = [];
+        $this->titles = [];
+
+        $props = $iblockHelper->getProperties($iblockId);
+        foreach ($props as $prop) {
+            if (!empty($prop['CODE'])) {
+                $this->titles['PROPERTY_' . $prop['ID']] = $prop['NAME'];
+                $this->props[] = $prop;
+            }
+        }
+
+        $iblockMess = IncludeModuleLangFile('/bitrix/modules/iblock/iblock.php', 'ru', true);
+
+        $this->titles['ACTIVE_FROM'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_FROM'];
+        $this->titles['ACTIVE_TO'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_TO'];
+
+        foreach ($iblockMess as $code => $value) {
+            if (str_contains($code, 'IBLOCK_FIELD_')) {
+                $fcode = str_replace('IBLOCK_FIELD_', '', $code);
+                $this->titles[$fcode] = $value;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -73,18 +122,6 @@ trait IblockTrait
     }
 
     /**
-     * @param       $iblockId
-     * @param array $params
-     *
-     * @return mixed
-     * @throws HelperException
-     */
-    public function saveSectionGrid($iblockId, $params = [])
-    {
-        return $this->saveGrid($this->getSectionGridId($iblockId), $params);
-    }
-
-    /**
      * @param $iblockId
      *
      * @return string
@@ -102,6 +139,18 @@ trait IblockTrait
 
         //md5 тут выбран сознательно, так сохраняется настройка в битриксе
         return $prefix . md5($this->iblock['IBLOCK_TYPE_ID'] . '.' . $iblockId);
+    }
+
+    /**
+     * @param       $iblockId
+     * @param array $params
+     *
+     * @return mixed
+     * @throws HelperException
+     */
+    public function saveSectionGrid($iblockId, $params = [])
+    {
+        return $this->saveGrid($this->getSectionGridId($iblockId), $params);
     }
 
     /**
@@ -127,8 +176,8 @@ trait IblockTrait
     public function exportElementList($iblockId)
     {
         return $this->exportList([
-            'name' => $this->getElementGridId($iblockId),
-        ]);
+                                     'name' => $this->getElementGridId($iblockId),
+                                 ]);
     }
 
     /**
@@ -190,8 +239,8 @@ trait IblockTrait
         $this->initializeIblockVars($iblockId);
 
         return $this->exportForm([
-            'name' => 'form_section_' . $iblockId,
-        ]);
+                                     'name' => 'form_section_' . $iblockId,
+                                 ]);
     }
 
     /**
@@ -237,8 +286,8 @@ trait IblockTrait
         $this->initializeIblockVars($iblockId);
 
         return $this->exportList([
-            'name' => $this->getSectionGridId($iblockId),
-        ]);
+                                     'name' => $this->getSectionGridId($iblockId),
+                                 ]);
     }
 
     /**
@@ -273,55 +322,6 @@ trait IblockTrait
         ]);
     }
 
-    /**
-     * @param $iblockId
-     *
-     * @return bool
-     * @throws HelperException
-     */
-    protected function initializeIblockVars($iblockId)
-    {
-        $iblockHelper = new IblockHelper();
-
-        /** @compability */
-        if (empty($iblockId)) {
-            throw new HelperException('empty param $iblockId is no longer supported, see examples');
-        }
-
-        if ($this->lastIblockId == $iblockId) {
-            return true;
-        }
-
-        $iblock = $iblockHelper->getIblockIfExists($iblockId);
-
-        $this->lastIblockId = $iblockId;
-        $this->iblock = $iblock;
-        $this->props = [];
-        $this->titles = [];
-
-        $props = $iblockHelper->getProperties($iblockId);
-        foreach ($props as $prop) {
-            if (!empty($prop['CODE'])) {
-                $this->titles['PROPERTY_' . $prop['ID']] = $prop['NAME'];
-                $this->props[] = $prop;
-            }
-        }
-
-        $iblockMess = IncludeModuleLangFile('/bitrix/modules/iblock/iblock.php', 'ru', true);
-
-        $this->titles['ACTIVE_FROM'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_FROM'];
-        $this->titles['ACTIVE_TO'] = $iblockMess['IBLOCK_FIELD_ACTIVE_PERIOD_TO'];
-
-        foreach ($iblockMess as $code => $value) {
-            if (str_contains($code, 'IBLOCK_FIELD_')) {
-                $fcode = str_replace('IBLOCK_FIELD_', '', $code);
-                $this->titles[$fcode] = $value;
-            }
-        }
-
-        return true;
-    }
-
     protected function prepareTitle($fieldCode, $fieldTitle = '')
     {
         if (!empty($fieldTitle)) {
@@ -335,19 +335,16 @@ trait IblockTrait
         return $fieldCode;
     }
 
-    protected function transformCode($fieldCode)
+    protected function revertCodesFromColumns($columns)
     {
-        if (str_starts_with($fieldCode, 'PROPERTY_')) {
-            $fieldCode = substr($fieldCode, 9);
-            foreach ($this->props as $prop) {
-                if ($prop['CODE'] == $fieldCode) {
-                    $fieldCode = $prop['ID'];
-                    break;
-                }
+        if (!is_array($columns)) {
+            $columns = explode(',', $columns);
+            foreach ($columns as $index => $columnCode) {
+                $columns[$index] = $this->revertCode($columnCode);
             }
-            $fieldCode = 'PROPERTY_' . $fieldCode;
+            return array_values($columns);
         }
-        return $fieldCode;
+        return $columns;
     }
 
     protected function revertCode($fieldCode)
@@ -365,18 +362,6 @@ trait IblockTrait
         return $fieldCode;
     }
 
-    protected function revertCodesFromColumns($columns)
-    {
-        if (!is_array($columns)) {
-            $columns = explode(',', $columns);
-            foreach ($columns as $index => $columnCode) {
-                $columns[$index] = $this->revertCode($columnCode);
-            }
-            return array_values($columns);
-        }
-        return $columns;
-    }
-
     protected function transformCodesToColumns($columns)
     {
         if (is_array($columns)) {
@@ -386,6 +371,21 @@ trait IblockTrait
             return implode(',', $columns);
         }
         return $columns;
+    }
+
+    protected function transformCode($fieldCode)
+    {
+        if (str_starts_with($fieldCode, 'PROPERTY_')) {
+            $fieldCode = substr($fieldCode, 9);
+            foreach ($this->props as $prop) {
+                if ($prop['CODE'] == $fieldCode) {
+                    $fieldCode = $prop['ID'];
+                    break;
+                }
+            }
+            $fieldCode = 'PROPERTY_' . $fieldCode;
+        }
+        return $fieldCode;
     }
 
     protected function transformCustomNames($customNames)

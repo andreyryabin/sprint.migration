@@ -26,8 +26,11 @@ class SubscribeBuilder extends VersionBuilder
 
         $this->setDescription(implode(PHP_EOL, [
             Locale::getMessage('DEVELOPER_NAME', ['#VALUE#' => '@temi4']),
-            Locale::getMessage('DEVELOPER_URI', ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/180']),
-            Locale::getMessage('BUILDER_SubscribeExport_Info')
+            Locale::getMessage(
+                'DEVELOPER_URI',
+                ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/180'],
+            ),
+            Locale::getMessage('BUILDER_SubscribeExport_Info'),
         ]));
 
         $this->addVersionFields();
@@ -43,8 +46,8 @@ class SubscribeBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $rubricIds = $this->addFieldAndReturn('rubric_ids', [
-            'title'    => Locale::getMessage('BUILDER_SubscribeExport_rubric_ids'),
-            'items'    => $this->getRubricsStructure(),
+            'title' => Locale::getMessage('BUILDER_SubscribeExport_rubric_ids'),
+            'items' => $this->getRubricsStructure(),
             'multiple' => 1,
         ]);
 
@@ -58,7 +61,7 @@ class SubscribeBuilder extends VersionBuilder
             Module::getModuleTemplateFile('SubscribeExport'),
             [
                 'items' => $items,
-            ]
+            ],
         );
     }
 

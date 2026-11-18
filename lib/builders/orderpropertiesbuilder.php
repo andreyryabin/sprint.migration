@@ -29,7 +29,10 @@ class OrderPropertiesBuilder extends VersionBuilder
 
         $this->setDescription(implode(PHP_EOL, [
             Locale::getMessage('DEVELOPER_NAME', ['#VALUE#' => '@ashirchkov']),
-            Locale::getMessage('DEVELOPER_URI', ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/170']),
+            Locale::getMessage(
+                'DEVELOPER_URI',
+                ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/170'],
+            ),
         ]));
 
         $this->addVersionFields();
@@ -40,8 +43,8 @@ class OrderPropertiesBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $personTypeId = $this->addFieldAndReturn('person_type', [
-            'title'  => Locale::getMessage('BUILDER_OrderProperties_PersonType'),
-            'select' => $this->createSelect($helper->OrderProperties()->getPersonTypes(), 'ID', 'NAME')
+            'title' => Locale::getMessage('BUILDER_OrderProperties_PersonType'),
+            'select' => $this->createSelect($helper->OrderProperties()->getPersonTypes(), 'ID', 'NAME'),
         ]);
 
         if (empty($personTypeId)) {
@@ -51,13 +54,13 @@ class OrderPropertiesBuilder extends VersionBuilder
         $properties = $helper->OrderProperties()->getOrderPropertiesByPersonType($personTypeId);
 
         $propertyIds = $this->addFieldAndReturn('properties', [
-            'title'    => Locale::getMessage('BUILDER_OrderProperties_Properties'),
-            'select'   => $this->getPropertiesSelect($personTypeId),
+            'title' => Locale::getMessage('BUILDER_OrderProperties_Properties'),
+            'select' => $this->getPropertiesSelect($personTypeId),
             'multiple' => 1,
         ]);
 
         $updateMethod = $this->addFieldAndReturn('update_method', [
-            'title'  => Locale::getMessage('BUILDER_OrderProperties_UpdateMethod'),
+            'title' => Locale::getMessage('BUILDER_OrderProperties_UpdateMethod'),
             'select' => [
                 [
                     'title' => Locale::getMessage('BUILDER_OrderProperties_NotUpdate'),
@@ -76,7 +79,7 @@ class OrderPropertiesBuilder extends VersionBuilder
 
         $propertyVariants = [];
         $migratePropertyVariants = $this->addFieldAndReturn('migrate_property_variants', [
-            'title'  => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants'),
+            'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants'),
             'select' => [
                 [
                     'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_No'),
@@ -95,13 +98,13 @@ class OrderPropertiesBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleTemplateFile('OrderPropertiesExport'),
             [
-                'updateMethod'     => $updateMethod,
-                'properties'       => array_filter(
+                'updateMethod' => $updateMethod,
+                'properties' => array_filter(
                     $properties,
-                    fn($property) => in_array($property['ID'], $propertyIds)
+                    fn($property) => in_array($property['ID'], $propertyIds),
                 ),
                 'propertyVariants' => $propertyVariants,
-            ]
+            ],
         );
     }
 
@@ -114,11 +117,12 @@ class OrderPropertiesBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $properties = array_map(
-            fn($property) => array_merge(
+            fn($property)
+                => array_merge(
                 $property,
-                ['NAME' => sprintf('[%s] %s', $property['CODE'] ?: $property['ID'], $property['NAME'])]
+                ['NAME' => sprintf('[%s] %s', $property['CODE'] ?: $property['ID'], $property['NAME'])],
             ),
-            $helper->OrderProperties()->getOrderPropertiesByPersonType($personTypeId)
+            $helper->OrderProperties()->getOrderPropertiesByPersonType($personTypeId),
         );
 
         return $this->createSelect($properties, 'ID', 'NAME');

@@ -7,24 +7,43 @@ use Sprint\Migration\VersionConfig;
 
 class VersionFactory
 {
+    private readonly VersionFileFactory $fileFactory;
+    private readonly VersionRecordFactory $recordFactory;
+    private readonly VersionExchangeFactory $exchangeFactory;
 
     public function __construct(
-        private readonly VersionConfig $versionConfig
-    )
-    {
+        private readonly VersionConfig $versionConfig,
+    ) {
+        $this->fileFactory = new VersionFileFactory($this->versionConfig);
+        $this->recordFactory = new VersionRecordFactory($this->versionConfig);
+        $this->exchangeFactory = new VersionExchangeFactory($this->versionConfig);
     }
 
     /**
      * @throws MigrationException
      */
-    public function create(string $versionName, array $versionRecord = []): VersionEntity
+    public function createFromName(string $versionName, array $versionRecord = []): VersionEntity
     {
         $this->versionConfig->tryVersionName($versionName);
 
         return new VersionEntity(
-            (new VersionFileFactory($this->versionConfig))->create($versionName),
-            (new VersionRecordFactory($this->versionConfig))->create($versionRecord),
-            (new VersionExchangeFactory($this->versionConfig))->create($versionName),
+            $this->fileFactory->create($versionName),
+            $this->recordFactory->create($versionRecord),
+            $this->exchangeFactory->create($versionName),
+        );
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function createFromObjects(?VersionFile $versionFile, ?VersionRecord $versionRecord): VersionEntity
+    {
+        $versionName = $versionFile?->getVersionName() ?? $versionRecord?->getVersionName();
+
+        return new VersionEntity(
+            $versionFile,
+            $versionRecord,
+            $this->exchangeFactory->create($versionName),
         );
     }
 }

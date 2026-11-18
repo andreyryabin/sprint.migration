@@ -7,57 +7,33 @@ use Sprint\Migration\Exceptions\ConsoleException;
 class ConsoleOutput extends AbstractOutput
 {
     private array $colors = [
-        '[/]'         => "\x1b[0m",
-        '[new]'       => "\x1b[0;31m",
-        '[unknown]'   => "\x1b[0;34m",
+        '[/]' => "\x1b[0m",
+        '[new]' => "\x1b[0;31m",
+        '[unknown]' => "\x1b[0;34m",
         '[installed]' => "\x1b[0;32m",
 
-        '[info]'    => "\x1b[0;34m",
+        '[info]' => "\x1b[0;34m",
         '[warning]' => "\x1b[0;31m",
-        '[notice]'  => "\x1b[0;32m",
-        '[error]'   => "\x1b[41;37m",
+        '[notice]' => "\x1b[0;32m",
+        '[error]' => "\x1b[41;37m",
         '[success]' => "\x1b[102;30m",
 
-        '[blue]'   => "\x1b[0;34m",
-        '[pink]'   => "\x1b[0;35m",
-        '[green]'  => "\x1b[0;32m",
-        '[red]'    => "\x1b[0;31m",
+        '[blue]' => "\x1b[0;34m",
+        '[pink]' => "\x1b[0;35m",
+        '[green]' => "\x1b[0;32m",
+        '[red]' => "\x1b[0;31m",
         '[yellow]' => "\x1b[0;93m",
 
-        '[label]'        => "\x1b[47;30m",
-        '[label:blue]'   => "\x1b[104;30m",
-        '[label:pink]'   => "\x1b[105;30m",
-        '[label:red]'    => "\x1b[41;37m",
-        '[label:green]'  => "\x1b[102;30m",
+        '[label]' => "\x1b[47;30m",
+        '[label:blue]' => "\x1b[104;30m",
+        '[label:pink]' => "\x1b[105;30m",
+        '[label:red]' => "\x1b[41;37m",
+        '[label:green]' => "\x1b[102;30m",
         '[label:yellow]' => "\x1b[103;30m",
 
-        '[b]'   => "\x1b[1m",
+        '[b]' => "\x1b[1m",
         '[tab]' => "\x1b[0m",
     ];
-
-    protected function writeProgress(string $msg, int $val, int $total): void
-    {
-        fwrite(STDOUT, "\r" . $this->colorize("$msg $val / $total", 'label'));
-        if ($val >= $total) {
-            fwrite(STDOUT, PHP_EOL);
-        }
-    }
-
-
-    protected function writeMessage(string $msg, string $type): void
-    {
-        $msg = $this->colorize($msg, $type);
-
-        fwrite(STDOUT, $msg . PHP_EOL);
-
-    }
-
-    public function print(string $msg, ...$vars): void
-    {
-        $msg = $this->resolve($msg, $vars);
-
-        $this->writeMessage($msg, '');
-    }
 
     /**
      * @throws ConsoleException
@@ -76,7 +52,9 @@ class ConsoleOutput extends AbstractOutput
         if ($val === false) {
             // stdin закрыт (запуск без терминала, перенаправление из /dev/null или конец ввода):
             // новых ответов не будет, иначе конструктор бесконечно повторял бы вопрос
-            throw new ConsoleException('Input stream is closed, run the command in a terminal or pass the answers via stdin');
+            throw new ConsoleException(
+                'Input stream is closed, run the command in a terminal or pass the answers via stdin',
+            );
         }
         $val = trim($val);
 
@@ -98,11 +76,18 @@ class ConsoleOutput extends AbstractOutput
         }
     }
 
-    private function printSelect($field): void
+    public function print(string $msg, ...$vars): void
     {
-        foreach ($field['select'] as $item) {
-            $this->print(' > ' . $item['value'] . ' (' . $item['title'] . ')');
-        }
+        $msg = $this->resolve($msg, $vars);
+
+        $this->writeMessage($msg, '');
+    }
+
+    protected function writeMessage(string $msg, string $type): void
+    {
+        $msg = $this->colorize($msg, $type);
+
+        fwrite(STDOUT, $msg . PHP_EOL);
     }
 
     private function colorize(string $msg, string $type): string
@@ -116,5 +101,20 @@ class ConsoleOutput extends AbstractOutput
         }
 
         return $msg;
+    }
+
+    private function printSelect($field): void
+    {
+        foreach ($field['select'] as $item) {
+            $this->print(' > ' . $item['value'] . ' (' . $item['title'] . ')');
+        }
+    }
+
+    protected function writeProgress(string $msg, int $val, int $total): void
+    {
+        fwrite(STDOUT, "\r" . $this->colorize("$msg $val / $total", 'label'));
+        if ($val >= $total) {
+            fwrite(STDOUT, PHP_EOL);
+        }
     }
 }

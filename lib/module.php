@@ -33,11 +33,6 @@ class Module
         COption::RemoveOption(Module::ID);
     }
 
-    public static function getDocRoot(): string
-    {
-        return rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
-    }
-
     public static function getPhpInterfaceDir($absolute = true): string
     {
         $root = $absolute ? self::getDocRoot() : '';
@@ -49,6 +44,16 @@ class Module
         }
     }
 
+    public static function getDocRoot(): string
+    {
+        return rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
+    }
+
+    public static function getModuleTemplateFile(string $name): string
+    {
+        return Module::getModuleDir() . '/templates/' . $name . '.php';
+    }
+
     public static function getModuleDir($absolute = true): string
     {
         $root = $absolute ? self::getDocRoot() : '';
@@ -58,11 +63,6 @@ class Module
         } else {
             return $root . '/bitrix/modules/' . Module::ID;
         }
-    }
-
-    public static function getModuleTemplateFile(string $name): string
-    {
-        return Module::getModuleDir() . '/templates/' . $name . '.php';
     }
 
     public static function templater($file, $vars = []): string
@@ -95,8 +95,8 @@ class Module
                     'ERR_CANT_CREATE_DIRECTORY',
                     [
                         '#NAME#' => $dir,
-                    ]
-                )
+                    ],
+                ),
             );
         }
 
@@ -128,7 +128,7 @@ class Module
         if (!self::$version) {
             $arModuleVersion = [];
             include self::getModuleDir() . '/install/version.php';
-            self::$version = (string)($arModuleVersion['VERSION'] ?? '');
+            self::$version = (string) ($arModuleVersion['VERSION'] ?? '');
         }
         return self::$version;
     }
@@ -141,8 +141,8 @@ class Module
         if (!function_exists('json_encode')) {
             throw new MigrationException(
                 Locale::getMessage(
-                    'ERR_JSON_NOT_SUPPORTED'
-                )
+                    'ERR_JSON_NOT_SUPPORTED',
+                ),
             );
         }
 
@@ -152,8 +152,8 @@ class Module
                     'ERR_PHP_NOT_SUPPORTED',
                     [
                         '#NAME#' => PHP_VERSION,
-                    ]
-                )
+                    ],
+                ),
             );
         }
 

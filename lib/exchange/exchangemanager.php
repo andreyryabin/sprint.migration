@@ -14,8 +14,7 @@ class ExchangeManager
         private readonly RestartableInterface $restartable,
         private readonly string               $directory,
         private readonly ?OutputInterface     $output = null,
-    )
-    {
+    ) {
         $this->exhelpers = new ExchangeHelpers($this->output);
     }
 
@@ -24,10 +23,17 @@ class ExchangeManager
         return (new RestartableReader(
             $this->restartable,
             $this->exhelpers->IblockExchange(),
-            $this->directory
+            $this->directory,
         ))
             ->setExchangeResource('iblock_elements.xml')
             ->setProgressFn($this->getProgressFn());
+    }
+
+    private function getProgressFn(): Closure
+    {
+        return function ($value, $totalCount) {
+            $this->output?->outProgress('Progress', $value, $totalCount);
+        };
     }
 
     public function HlblockElementsImport(): RestartableReader
@@ -35,7 +41,7 @@ class ExchangeManager
         return (new RestartableReader(
             $this->restartable,
             $this->exhelpers->HlblockExchange(),
-            $this->directory
+            $this->directory,
         ))
             ->setExchangeResource('hlblock_elements.xml')
             ->setProgressFn($this->getProgressFn());
@@ -46,7 +52,7 @@ class ExchangeManager
         return (new RestartableReader(
             $this->restartable,
             $this->exhelpers->MedialibExchange(),
-            $this->directory
+            $this->directory,
         ))
             ->setExchangeResource('medialib_elements.xml')
             ->setProgressFn($this->getProgressFn());
@@ -57,16 +63,9 @@ class ExchangeManager
         return (new RestartableReader(
             $this->restartable,
             $this->exhelpers->BlogExchange(),
-            $this->directory
+            $this->directory,
         ))
             ->setExchangeResource('blog_posts.xml')
             ->setProgressFn($this->getProgressFn());
-    }
-
-    private function getProgressFn(): Closure
-    {
-        return fn($value, $totalCount) => $this->output?->outProgress(
-            'Progress', $value, $totalCount
-        );
     }
 }

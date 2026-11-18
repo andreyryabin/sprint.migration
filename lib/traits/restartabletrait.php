@@ -9,14 +9,6 @@ trait RestartableTrait
 {
     protected array $params = [];
 
-    /**
-     * @throws RestartException
-     */
-    public function restart()
-    {
-        throw new RestartException();
-    }
-
     public function getRestartParams(): array
     {
         return $this->params;
@@ -32,13 +24,21 @@ trait RestartableTrait
      */
     public function restartIterator(string $name, array $array, Closure $callback): void
     {
-        $index = (int)($this->params[$name] ?? 0);
+        $index = (int) ($this->params[$name] ?? 0);
 
         if (isset($array[$index])) {
             $callback($array[$index], $index);
             $this->params[$name] = $index + 1;
             $this->restart();
         }
+    }
+
+    /**
+     * @throws RestartException
+     */
+    public function restart()
+    {
+        throw new RestartException();
     }
 
     /**
@@ -62,7 +62,7 @@ trait RestartableTrait
         $offset = $this->params[$name] ?? 0;
 
         if ($offset !== 'finish') {
-            $offset = (int)$callback((int)$offset);
+            $offset = (int) $callback((int) $offset);
             if ($offset > 0) {
                 $this->params[$name] = $offset;
                 $this->restart();

@@ -35,8 +35,8 @@ class UserGroupBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $userGroups = $this->addFieldAndReturn('user_group', [
-            'title'    => Locale::getMessage('BUILDER_UserGroupExport_user_group'),
-            'select'   => $this->getUserGroupsSelect(),
+            'title' => Locale::getMessage('BUILDER_UserGroupExport_user_group'),
+            'select' => $this->getUserGroupsSelect(),
             'multiple' => 1,
         ]);
 
@@ -47,7 +47,7 @@ class UserGroupBuilder extends VersionBuilder
                 unset($fields['STRING_ID']);
                 $items[] = [
                     'STRING_ID' => $item['STRING_ID'],
-                    'FIELDS'    => $fields,
+                    'FIELDS' => $fields,
                 ];
             }
         }
@@ -60,7 +60,7 @@ class UserGroupBuilder extends VersionBuilder
             Module::getModuleTemplateFile('UserGroupExport'),
             [
                 'items' => $items,
-            ]
+            ],
         );
     }
 

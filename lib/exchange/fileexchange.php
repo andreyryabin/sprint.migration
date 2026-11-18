@@ -32,6 +32,18 @@ class FileExchange
         copy($source, $target);
     }
 
+    private function getSourcePath(array $file): string
+    {
+        if (empty($file['ID'])) {
+            return '';
+        }
+
+        $fileArray = CFile::MakeFileArray((int) $file['ID']);
+        $tmpName = (string) ($fileArray['tmp_name'] ?? '');
+
+        return ($tmpName !== '' && is_file($tmpName)) ? $tmpName : '';
+    }
+
     public function makeFileArray(string $path, array $attributes = []): false|array
     {
         $file = CFile::MakeFileArray($path);
@@ -50,17 +62,5 @@ class FileExchange
         }
 
         return $file;
-    }
-
-    private function getSourcePath(array $file): string
-    {
-        if (empty($file['ID'])) {
-            return '';
-        }
-
-        $fileArray = CFile::MakeFileArray((int)$file['ID']);
-        $tmpName = (string)($fileArray['tmp_name'] ?? '');
-
-        return ($tmpName !== '' && is_file($tmpName)) ? $tmpName : '';
     }
 }

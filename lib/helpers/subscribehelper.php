@@ -2,9 +2,9 @@
 
 namespace Sprint\Migration\Helpers;
 
-use CRubric;
 use CAgent;
 use COption;
+use CRubric;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
 use Sprint\Migration\Locale;
@@ -20,37 +20,26 @@ class SubscribeHelper extends Helper
     {
         $dbres = CRubric::GetList(
             [
-                'LID'  => 'ASC',
+                'LID' => 'ASC',
                 'SORT' => 'ASC',
                 'NAME' => 'ASC',
-                'ID'   => 'ASC',
+                'ID' => 'ASC',
             ],
-            $filter
+            $filter,
         );
 
         return $this->fetchAll($dbres);
     }
 
-    public function getRubricById(int $rubricId): bool|array
+    /**
+     * @throws HelperException
+     */
+    public function exportRubrics(array $rubricIds): array
     {
-        return CRubric::GetByID($rubricId)->Fetch();
-    }
-
-    public function getRubricId(string $lid, string $code): int
-    {
-        if (empty($lid) || empty($code)) {
-            return 0;
-        }
-
-        $item = CRubric::GetList(
-            ['ID' => 'ASC'],
-            [
-                'LID'  => $lid,
-                'CODE' => $code,
-            ]
-        )->Fetch();
-
-        return (int)($item['ID'] ?? 0);
+        return array_map(
+            fn($rubricId) => $this->exportRubricById($rubricId),
+            $this->makeNonEmptyArray($rubricIds),
+        );
     }
 
     /**
@@ -67,14 +56,60 @@ class SubscribeHelper extends Helper
         throw new HelperException("Subscribe rubric with ID=$rubricId not found");
     }
 
-    /**
-     * @throws HelperException
-     */
-    public function exportRubrics(array $rubricIds): array
+    public function getRubricById(int $rubricId): bool|array
     {
-        return array_map(
-            fn($rubricId) => $this->exportRubricById($rubricId),
-            $this->makeNonEmptyArray($rubricIds)
+        return CRubric::GetByID($rubricId)->Fetch();
+    }
+
+    protected function prepareExportRubric(array $item): array
+    {
+        $this->checkRequiredKeys($item, ['LID', 'CODE', 'NAME']);
+
+        $item = $this->prepareRubricFields($item);
+
+        $this->unsetKeys($item, [
+            'ID',
+            'LAST_EXECUTED',
+        ]);
+
+        return $item;
+    }
+
+    protected function prepareRubricFields(array $item): array
+    {
+        $default = [
+            'DESCRIPTION' => '',
+            'SORT' => 100,
+            'ACTIVE' => 'Y',
+            'AUTO' => 'N',
+            'DAYS_OF_MONTH' => '',
+            'DAYS_OF_WEEK' => '',
+            'TIMES_OF_DAY' => '',
+            'TEMPLATE' => '',
+            'VISIBLE' => 'Y',
+            'FROM_FIELD' => '',
+        ];
+
+        $item = array_merge($default, $item);
+
+        return array_intersect_key(
+            $item,
+            array_flip([
+                           'LID',
+                           'CODE',
+                           'NAME',
+                           'DESCRIPTION',
+                           'SORT',
+                           'ACTIVE',
+                           'AUTO',
+                           'DAYS_OF_MONTH',
+                           'DAYS_OF_WEEK',
+                           'TIMES_OF_DAY',
+                           'TEMPLATE',
+                           'VISIBLE',
+                           'FROM_FIELD',
+                           'LAST_EXECUTED',
+                       ]),
         );
     }
 
@@ -100,6 +135,23 @@ class SubscribeHelper extends Helper
         return $rubricId;
     }
 
+    public function getRubricId(string $lid, string $code): int
+    {
+        if (empty($lid) || empty($code)) {
+            return 0;
+        }
+
+        $item = CRubric::GetList(
+            ['ID' => 'ASC'],
+            [
+                'LID' => $lid,
+                'CODE' => $code,
+            ],
+        )->Fetch();
+
+        return (int) ($item['ID'] ?? 0);
+    }
+
     /**
      * @throws HelperException
      */
@@ -114,11 +166,33 @@ class SubscribeHelper extends Helper
 
         if ($rubricId) {
             $this->outNotice(Locale::getMessage('SUBSCRIBE_RUBRIC_UPDATED', ['#NAME#' => $fields['NAME']]));
-            return (int)$rubricId;
+            return (int) $rubricId;
         }
 
         $this->throwApplicationExceptionIfExists();
         throw new HelperException($rubric->LAST_ERROR ?: "Subscribe rubric \"{$fields['NAME']}\" not added");
+    }
+
+    protected function prepareRubricFieldsForSave(array $item): array
+    {
+        $item = $this->prepareRubricFields($item);
+
+        if (($item['AUTO'] ?? '') === 'Y' && empty($item['LAST_EXECUTED'])) {
+            $item['LAST_EXECUTED'] = ConvertTimeStamp(time(), 'FULL');
+        }
+
+        return $item;
+    }
+
+    protected function preparePostingTemplateAgent(array $item): void
+    {
+        if (
+            ($item['ACTIVE'] ?? '') === 'Y'
+            && ($item['AUTO'] ?? '') === 'Y'
+            && COption::GetOptionString('subscribe', 'subscribe_template_method') !== 'cron'
+        ) {
+            CAgent::RemoveAgent('CPostingTemplate::Execute();', 'subscribe');
+        }
     }
 
     /**
@@ -142,11 +216,6 @@ class SubscribeHelper extends Helper
         throw new HelperException($rubric->LAST_ERROR ?: "Subscribe rubric \"{$fields['NAME']}\" not updated");
     }
 
-    public function deleteRubric(int $rubricId): bool
-    {
-        return (bool)CRubric::Delete($rubricId);
-    }
-
     public function deleteRubricIfExists(string $lid, string $code): bool
     {
         $rubricId = $this->getRubricId($lid, $code);
@@ -157,77 +226,8 @@ class SubscribeHelper extends Helper
         return $this->deleteRubric($rubricId);
     }
 
-    protected function prepareExportRubric(array $item): array
+    public function deleteRubric(int $rubricId): bool
     {
-        $this->checkRequiredKeys($item, ['LID', 'CODE', 'NAME']);
-
-        $item = $this->prepareRubricFields($item);
-
-        $this->unsetKeys($item, [
-            'ID',
-            'LAST_EXECUTED',
-        ]);
-
-        return $item;
-    }
-
-    protected function preparePostingTemplateAgent(array $item): void
-    {
-        if (
-            ($item['ACTIVE'] ?? '') === 'Y'
-            && ($item['AUTO'] ?? '') === 'Y'
-            && COption::GetOptionString('subscribe', 'subscribe_template_method') !== 'cron'
-        ) {
-            CAgent::RemoveAgent('CPostingTemplate::Execute();', 'subscribe');
-        }
-    }
-
-    protected function prepareRubricFieldsForSave(array $item): array
-    {
-        $item = $this->prepareRubricFields($item);
-
-        if (($item['AUTO'] ?? '') === 'Y' && empty($item['LAST_EXECUTED'])) {
-            $item['LAST_EXECUTED'] = ConvertTimeStamp(time(), 'FULL');
-        }
-
-        return $item;
-    }
-
-    protected function prepareRubricFields(array $item): array
-    {
-        $default = [
-            'DESCRIPTION'   => '',
-            'SORT'          => 100,
-            'ACTIVE'        => 'Y',
-            'AUTO'          => 'N',
-            'DAYS_OF_MONTH' => '',
-            'DAYS_OF_WEEK'  => '',
-            'TIMES_OF_DAY'  => '',
-            'TEMPLATE'      => '',
-            'VISIBLE'       => 'Y',
-            'FROM_FIELD'    => '',
-        ];
-
-        $item = array_merge($default, $item);
-
-        return array_intersect_key(
-            $item,
-            array_flip([
-                'LID',
-                'CODE',
-                'NAME',
-                'DESCRIPTION',
-                'SORT',
-                'ACTIVE',
-                'AUTO',
-                'DAYS_OF_MONTH',
-                'DAYS_OF_WEEK',
-                'TIMES_OF_DAY',
-                'TEMPLATE',
-                'VISIBLE',
-                'FROM_FIELD',
-                'LAST_EXECUTED',
-            ])
-        );
+        return (bool) CRubric::Delete($rubricId);
     }
 }

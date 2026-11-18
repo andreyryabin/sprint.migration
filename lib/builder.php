@@ -22,9 +22,9 @@ abstract class Builder implements RestartableInterface
     use OutputTrait;
 
     private array $info = [
-        'title'       => '',
+        'title' => '',
         'description' => '',
-        'group'       => '',
+        'group' => '',
     ];
 
     /** @var AbstractField[] */
@@ -33,27 +33,18 @@ abstract class Builder implements RestartableInterface
     private HelperManager $helperManager;
     private ExchangeHelpers $exchangeHelpers;
 
-    abstract protected function initialize();
-
-    /**
-     * @throws RebuildException
-     * @throws RestartException
-     */
-    abstract protected function execute();
-
-    abstract protected function isBuilderEnabled();
-
     public function __construct(
         VersionConfig           $versionConfig,
         private readonly string $name,
-        array                   $params = []
-    )
-    {
+        array                   $params = [],
+    ) {
         $this->setVersionConfig($versionConfig);
         $this->setRestartParams($params);
 
         $this->initialize();
     }
+
+    abstract protected function initialize();
 
     public function getName(): string
     {
@@ -63,16 +54,62 @@ abstract class Builder implements RestartableInterface
     public function isEnabled(): bool
     {
         try {
-            return (bool)$this->isBuilderEnabled();
+            return (bool) $this->isBuilderEnabled();
         } catch (Exception) {
             return false;
         }
     }
 
+    abstract protected function isBuilderEnabled();
+
     /** @return  AbstractField[] */
     public function getFields(): array
     {
         return $this->fields;
+    }
+
+    /**
+     * @throws RebuildException
+     * @throws RestartException
+     */
+    public function start(): void
+    {
+        $this->checkBindedFields();
+
+        $this->execute();
+    }
+
+    /**
+     * @throws RebuildException
+     */
+    private function checkBindedFields(): void
+    {
+        foreach ($this->fields as $field) {
+            if (!isset($this->params[$field->getCode()])) {
+                throw new RebuildException();
+            }
+        }
+    }
+
+    /**
+     * @throws RebuildException
+     * @throws RestartException
+     */
+    abstract protected function execute();
+
+    public function getTitle(): string
+    {
+        return $this->info['title'];
+    }
+
+    public function getDescription(): string
+    {
+        return $this->info['description'];
+    }
+
+    public function getGroup(): string
+    {
+        return $this->info['group'] ?? Locale::getMessage('BUILDER_GROUP_Tools');
     }
 
     protected function getHelperManager(): HelperManager
@@ -93,11 +130,6 @@ abstract class Builder implements RestartableInterface
         return new VersionManager($this->getVersionConfig(), $this->output);
     }
 
-    protected function addField(string $code, array $field): void
-    {
-        $this->fields[] = FieldFactory::createFromArray($code, $field);
-    }
-
     /**
      * @throws RebuildException
      */
@@ -114,34 +146,14 @@ abstract class Builder implements RestartableInterface
         return $value;
     }
 
+    protected function addField(string $code, array $field): void
+    {
+        $this->fields[] = FieldFactory::createFromArray($code, $field);
+    }
+
     protected function getFieldValue(string $code, $default = '')
     {
         return $this->params[$code] ?? $default;
-    }
-
-
-    /**
-     * @throws RebuildException
-     * @throws RestartException
-     */
-    public function start(): void
-    {
-        $this->checkBindedFields();
-
-        $this->execute();
-    }
-
-
-    /**
-     * @throws RebuildException
-     */
-    private function checkBindedFields(): void
-    {
-        foreach ($this->fields as $field) {
-            if (!isset($this->params[$field->getCode()])) {
-                throw new RebuildException();
-            }
-        }
     }
 
     /**
@@ -170,28 +182,12 @@ abstract class Builder implements RestartableInterface
         $this->info['group'] = $group;
     }
 
-    public function getTitle(): string
-    {
-        return $this->info['title'];
-    }
-
-    public function getDescription(): string
-    {
-        return $this->info['description'];
-    }
-
-    public function getGroup(): string
-    {
-        return $this->info['group'] ?? Locale::getMessage('BUILDER_GROUP_Tools');
-    }
-
     protected function createSelect(
         array  $items,
         string $idKey,
         string $titleKey,
         bool   $withIdInTitle = false,
-    ): array
-    {
+    ): array {
         $select = [];
         foreach ($items as $item) {
             $value = $item[$idKey];
@@ -209,9 +205,8 @@ abstract class Builder implements RestartableInterface
         array  $items,
         string $idKey,
         string $titleKey,
-        string $groupKey = '-'
-    ): array
-    {
+        string $groupKey = '-',
+    ): array {
         $select = [];
         foreach ($items as $item) {
             $groupId = $item[$groupKey] ?? 'Group';
@@ -238,7 +233,7 @@ abstract class Builder implements RestartableInterface
     protected function explodeString(string $string, string $delimiter = ' '): array
     {
         return array_filter(
-            explode($delimiter, trim($string))
+            explode($delimiter, trim($string)),
         );
     }
 }

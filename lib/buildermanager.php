@@ -15,9 +15,19 @@ class BuilderManager
     public function __construct(
         private VersionConfig    $versionConfig,
         private ?OutputInterface $output = null,
-    )
-    {
+    ) {
         $this->output ??= OutputFactory::create($this->versionConfig);
+    }
+
+    /**
+     * @throws BuilderException
+     */
+    public function createBuilder(string $builderName, array $params = []): Builder
+    {
+        $builders = $this->versionConfig->getBuilders();
+        $builderClass = $builders[$builderName] ?? '';
+
+        return $this->createBuilderByClass($builderClass, $builderName, $params);
     }
 
     /**
@@ -33,17 +43,6 @@ class BuilderManager
             }
         }
         return $collection;
-    }
-
-    /**
-     * @throws BuilderException
-     */
-    public function createBuilder(string $builderName, array $params = []): Builder
-    {
-        $builders = $this->versionConfig->getBuilders();
-        $builderClass = $builders[$builderName] ?? '';
-
-        return $this->createBuilderByClass($builderClass, $builderName, $params);
     }
 
     /**

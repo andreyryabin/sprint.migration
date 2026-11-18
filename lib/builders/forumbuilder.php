@@ -26,7 +26,10 @@ class ForumBuilder extends VersionBuilder
 
         $this->setDescription(implode(PHP_EOL, [
             Locale::getMessage('DEVELOPER_NAME', ['#VALUE#' => '@temi4']),
-            Locale::getMessage('DEVELOPER_URI', ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/183']),
+            Locale::getMessage(
+                'DEVELOPER_URI',
+                ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/183'],
+            ),
             Locale::getMessage('BUILDER_ForumExport_Info'),
         ]));
 
@@ -43,8 +46,8 @@ class ForumBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $forumIds = $this->addFieldAndReturn('forum_ids', [
-            'title'    => Locale::getMessage('BUILDER_ForumExport_forum_ids'),
-            'items'    => $this->getForumsStructure(),
+            'title' => Locale::getMessage('BUILDER_ForumExport_forum_ids'),
+            'items' => $this->getForumsStructure(),
             'multiple' => 1,
         ]);
 
@@ -59,7 +62,7 @@ class ForumBuilder extends VersionBuilder
             [
                 'groups' => [],
                 'forums' => $forums,
-            ]
+            ],
         );
     }
 
@@ -78,7 +81,9 @@ class ForumBuilder extends VersionBuilder
         $items = $helper->ensureForumXmlIds($helper->getForums());
 
         $items = array_map(function ($item) use ($groups) {
-            $item['GROUP_TITLE'] = $groups[$item['FORUM_GROUP_ID']] ?? Locale::getMessage('BUILDER_ForumExport_WithoutGroup');
+            $item['GROUP_TITLE'] = $groups[$item['FORUM_GROUP_ID']] ?? Locale::getMessage(
+                'BUILDER_ForumExport_WithoutGroup',
+            );
             $item['TITLE'] = '[' . $item['XML_ID'] . '] ' . $item['NAME'];
             return $item;
         }, $items);

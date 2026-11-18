@@ -10,33 +10,12 @@ use Sprint\Migration\Locale;
 trait IblockTrait
 {
     /**
-     * Получает инфоблок, бросает исключение если его не существует
-     *
-     * @throws HelperException
+     * Получает id инфоблока
      */
-    public function getIblockIfExists(array|int|string $code, string $typeId = ''): array
+    public function getIblockId(array|int|string $code, string $typeId = ''): int
     {
-        $item = $this->getIblock($code, $typeId);
-        if (!empty($item['ID'])) {
-            return $item;
-        }
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_IB_NOT_FOUND',
-                ['#IBLOCK#' => print_r($code, true)]
-            )
-        );
-    }
-
-    /**
-     * Получает id инфоблока, бросает исключение если его не существует
-     *
-     * @throws HelperException
-     */
-    public function getIblockIdIfExists(array|int|string $code, string $typeId = ''): int
-    {
-        $item = $this->getIblockIfExists($code, $typeId);
-        return (int)$item['ID'];
+        $iblock = $this->getIblock($code, $typeId);
+        return !empty($iblock['ID']) ? (int) $iblock['ID'] : 0;
     }
 
     /**
@@ -63,6 +42,23 @@ trait IblockTrait
         return $item ? $this->prepareIblock($item) : false;
     }
 
+    protected function prepareIblock(array $item): array
+    {
+        $item['LID'] = $this->getIblockSites($item['ID']);
+
+        $messages = CIBlock::GetMessages($item['ID']);
+
+        $iblockTemlates = new IblockTemplates($item['ID']);
+
+        $item['IPROPERTY_TEMPLATES'] = array_column(
+            $iblockTemlates->findTemplates(),
+            'TEMPLATE',
+            'CODE',
+        );
+
+        return array_merge($item, $messages);
+    }
+
     /**
      * Получает список сайтов для инфоблока
      */
@@ -70,15 +66,6 @@ trait IblockTrait
     {
         $dbres = CIBlock::GetSite($iblockId);
         return $this->fetchAll($dbres, false, 'LID');
-    }
-
-    /**
-     * Получает id инфоблока
-     */
-    public function getIblockId(array|int|string $code, string $typeId = ''): int
-    {
-        $iblock = $this->getIblock($code, $typeId);
-        return !empty($iblock['ID']) ? (int)$iblock['ID'] : 0;
     }
 
     public function getIblockTitle(int $iblockId): string
@@ -97,21 +84,6 @@ trait IblockTrait
     }
 
     /**
-     * Получает список инфоблоков
-     */
-    public function getIblocks(array $filter = []): array
-    {
-        $filter['CHECK_PERMISSIONS'] = 'N';
-
-        $dbres = CIBlock::GetList(['SORT' => 'ASC'], $filter);
-
-        return array_map(
-            fn($item) => $this->prepareIblock($item),
-            $this->fetchAll($dbres)
-        );
-    }
-
-    /**
      * Добавляет инфоблок если его не существует
      *
      * @throws HelperException
@@ -127,7 +99,7 @@ trait IblockTrait
 
         $iblock = $this->getIblock($fields['CODE'], $typeId);
         if ($iblock) {
-            return (int)$iblock['ID'];
+            return (int) $iblock['ID'];
         }
 
         return $this->addIblock($fields);
@@ -143,47 +115,31 @@ trait IblockTrait
         $this->checkRequiredKeys($fields, ['CODE', 'IBLOCK_TYPE_ID', 'LID']);
 
         $default = [
-            'ACTIVE'           => 'Y',
-            'NAME'             => '',
-            'CODE'             => '',
-            'LIST_PAGE_URL'    => '',
-            'DETAIL_PAGE_URL'  => '',
+            'ACTIVE' => 'Y',
+            'NAME' => '',
+            'CODE' => '',
+            'LIST_PAGE_URL' => '',
+            'DETAIL_PAGE_URL' => '',
             'SECTION_PAGE_URL' => '',
-            'IBLOCK_TYPE_ID'   => 'main',
-            'LID'              => ['s1'],
-            'SORT'             => 500,
-            'GROUP_ID'         => ['2' => 'R'],
-            'VERSION'          => 2,
-            'BIZPROC'          => 'N',
-            'WORKFLOW'         => 'N',
-            'INDEX_ELEMENT'    => 'N',
-            'INDEX_SECTION'    => 'N',
+            'IBLOCK_TYPE_ID' => 'main',
+            'LID' => ['s1'],
+            'SORT' => 500,
+            'GROUP_ID' => ['2' => 'R'],
+            'VERSION' => 2,
+            'BIZPROC' => 'N',
+            'WORKFLOW' => 'N',
+            'INDEX_ELEMENT' => 'N',
+            'INDEX_SECTION' => 'N',
         ];
 
         $fields = array_replace_recursive($default, $fields);
 
-        $ib = new CIBlock;
+        $ib = new CIBlock();
         $iblockId = $ib->Add($fields);
 
         if ($iblockId) {
             $this->outNotice(Locale::getMessage('IB_CREATED', ['#NAME#' => $fields['CODE']]));
-            return (int)$iblockId;
-        }
-
-        throw new HelperException($ib->LAST_ERROR);
-    }
-
-    /**
-     * Обновляет инфоблок
-     *
-     * @throws HelperException
-     */
-    public function updateIblock(int $iblockId, array $fields = []): int
-    {
-        $ib = new CIBlock;
-        if ($ib->Update($iblockId, $fields)) {
-            $this->outNotice(Locale::getMessage('IB_UPDATED', ['#NAME#' => $fields['CODE']]));
-            return $iblockId;
+            return (int) $iblockId;
         }
 
         throw new HelperException($ib->LAST_ERROR);
@@ -201,6 +157,22 @@ trait IblockTrait
             return false;
         }
         return $this->updateIblock($iblock['ID'], $fields);
+    }
+
+    /**
+     * Обновляет инфоблок
+     *
+     * @throws HelperException
+     */
+    public function updateIblock(int $iblockId, array $fields = []): int
+    {
+        $ib = new CIBlock();
+        if ($ib->Update($iblockId, $fields)) {
+            $this->outNotice(Locale::getMessage('IB_UPDATED', ['#NAME#' => $fields['CODE']]));
+            return $iblockId;
+        }
+
+        throw new HelperException($ib->LAST_ERROR);
     }
 
     /**
@@ -230,10 +202,11 @@ trait IblockTrait
 
         throw new HelperException(
             Locale::getMessage(
-                'ERR_CANT_DELETE_IBLOCK', [
+                'ERR_CANT_DELETE_IBLOCK',
+                [
                     '#NAME#' => $iblockId,
-                ]
-            )
+                ],
+            ),
         );
     }
 
@@ -262,6 +235,18 @@ trait IblockTrait
         return $item['ID'];
     }
 
+    protected function prepareExportIblock(array $iblock): array
+    {
+        $this->unsetKeys($iblock, [
+            'ID',
+            'TIMESTAMP_X',
+            'TMP_ID',
+            'SERVER_NAME',
+        ]);
+
+        return $iblock;
+    }
+
     /**
      * Получает инфоблок
      * Данные подготовлены для экспорта в миграцию или схему
@@ -279,8 +264,8 @@ trait IblockTrait
         throw new HelperException(
             Locale::getMessage(
                 'ERR_IB_CODE_NOT_FOUND',
-                ['#IBLOCK_ID#' => $iblockId]
-            )
+                ['#IBLOCK_ID#' => $iblockId],
+            ),
         );
     }
 
@@ -294,7 +279,22 @@ trait IblockTrait
 
         return array_map(
             fn($item) => $this->prepareExportIblock($item),
-            $this->getIblocks($filter)
+            $this->getIblocks($filter),
+        );
+    }
+
+    /**
+     * Получает список инфоблоков
+     */
+    public function getIblocks(array $filter = []): array
+    {
+        $filter['CHECK_PERMISSIONS'] = 'N';
+
+        $dbres = CIBlock::GetList(['SORT' => 'ASC'], $filter);
+
+        return array_map(
+            fn($item) => $this->prepareIblock($item),
+            $this->fetchAll($dbres),
         );
     }
 
@@ -309,12 +309,31 @@ trait IblockTrait
             throw new HelperException(
                 Locale::getMessage(
                     'ERR_IB_CODE_NOT_FOUND',
-                    ['#IBLOCK_ID#' => $iblock['ID']]
-                )
+                    ['#IBLOCK_ID#' => $iblock['ID']],
+                ),
             );
         }
 
         return $iblock['IBLOCK_TYPE_ID'] . ':' . $iblock['CODE'];
+    }
+
+    /**
+     * Получает инфоблок, бросает исключение если его не существует
+     *
+     * @throws HelperException
+     */
+    public function getIblockIfExists(array|int|string $code, string $typeId = ''): array
+    {
+        $item = $this->getIblock($code, $typeId);
+        if (!empty($item['ID'])) {
+            return $item;
+        }
+        throw new HelperException(
+            Locale::getMessage(
+                'ERR_IB_NOT_FOUND',
+                ['#IBLOCK#' => print_r($code, true)],
+            ),
+        );
     }
 
     /**
@@ -336,32 +355,14 @@ trait IblockTrait
         return $iblockId;
     }
 
-    protected function prepareIblock(array $item): array
+    /**
+     * Получает id инфоблока, бросает исключение если его не существует
+     *
+     * @throws HelperException
+     */
+    public function getIblockIdIfExists(array|int|string $code, string $typeId = ''): int
     {
-        $item['LID'] = $this->getIblockSites($item['ID']);
-
-        $messages = CIBlock::GetMessages($item['ID']);
-
-        $iblockTemlates = new IblockTemplates($item['ID']);
-
-        $item['IPROPERTY_TEMPLATES'] = array_column(
-            $iblockTemlates->findTemplates(),
-            'TEMPLATE',
-            'CODE'
-        );
-
-        return array_merge($item, $messages);
-    }
-
-    protected function prepareExportIblock(array $iblock): array
-    {
-        $this->unsetKeys($iblock, [
-            'ID',
-            'TIMESTAMP_X',
-            'TMP_ID',
-            'SERVER_NAME',
-        ]);
-
-        return $iblock;
+        $item = $this->getIblockIfExists($code, $typeId);
+        return (int) $item['ID'];
     }
 }

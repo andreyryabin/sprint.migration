@@ -4,6 +4,4 @@ namespace Sprint\Migration\Exceptions;
 
 use Exception;
 
-class WriterException extends Exception
-{
-}
+class WriterException extends Exception {}

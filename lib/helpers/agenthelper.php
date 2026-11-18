@@ -11,15 +11,6 @@ class AgentHelper extends Helper
 {
     /**
      * Получает список агентов по фильтру
-     */
-    public function getList(array $filter = []): array
-    {
-        $dbres = CAgent::GetList(["MODULE_ID" => "ASC"], $filter);
-        return $this->fetchAll($dbres);
-    }
-
-    /**
-     * Получает список агентов по фильтру
      * Данные подготовлены для экспорта в миграцию или схему
      */
     public function exportAgents(array $filter = []): array
@@ -27,6 +18,30 @@ class AgentHelper extends Helper
         return array_map(function ($item) {
             return $this->prepareExportAgent($item);
         }, $this->getList($filter));
+    }
+
+    protected function prepareExportAgent(array $item): array
+    {
+        $this->unsetKeys($item, [
+            'ID',
+            'LOGIN',
+            'USER_NAME',
+            'LAST_NAME',
+            'RUNNING',
+            'DATE_CHECK',
+            'LAST_EXEC',
+        ]);
+
+        return $item;
+    }
+
+    /**
+     * Получает список агентов по фильтру
+     */
+    public function getList(array $filter = []): array
+    {
+        $dbres = CAgent::GetList(["MODULE_ID" => "ASC"], $filter);
+        return $this->fetchAll($dbres);
     }
 
     /**
@@ -47,6 +62,17 @@ class AgentHelper extends Helper
     }
 
     /**
+     * Получает агента
+     */
+    public function getAgent(string $moduleId, string $name): bool|array
+    {
+        return CAgent::GetList(
+            ['MODULE_ID' => 'ASC'],
+            ['MODULE_ID' => $moduleId, 'NAME' => $name],
+        )->Fetch();
+    }
+
+    /**
      * @throws HelperException
      */
     public function exportAgentById(int $agentId): array
@@ -60,29 +86,9 @@ class AgentHelper extends Helper
         throw new HelperException("Agent with ID=$agentId not found");
     }
 
-    /**
-     * Получает агента
-     */
-    public function getAgent(string $moduleId, string $name): bool|array
-    {
-        return CAgent::GetList(
-            ['MODULE_ID' => 'ASC'],
-            ['MODULE_ID' => $moduleId, 'NAME' => $name],
-        )->Fetch();
-    }
-
     public function getAgentById(int $agentId): bool|array
     {
         return CAgent::GetById($agentId)->Fetch();
-    }
-
-    /**
-     * Удаляет агента
-     */
-    public function deleteAgent(string $moduleId, string $name): bool
-    {
-        CAgent::RemoveAgent($name, $moduleId);
-        return true;
     }
 
     /**
@@ -96,6 +102,15 @@ class AgentHelper extends Helper
         }
 
         return $this->deleteAgent($moduleId, $name);
+    }
+
+    /**
+     * Удаляет агента
+     */
+    public function deleteAgent(string $moduleId, string $name): bool
+    {
+        CAgent::RemoveAgent($name, $moduleId);
+        return true;
     }
 
     /**
@@ -125,7 +140,50 @@ class AgentHelper extends Helper
             return $this->updateAgent($fields);
         }
 
-        return (int)$exists['ID'];
+        return (int) $exists['ID'];
+    }
+
+    /**
+     * Создание агента, бросает исключение в случае неудачи
+     *
+     * @throws HelperException
+     */
+    public function addAgent(array $fields): int
+    {
+        $this->checkRequiredKeys($fields, ['NAME']);
+
+        $fields = array_merge([
+                                  'AGENT_INTERVAL' => 86400,
+                                  'ACTIVE' => 'Y',
+                                  'IS_PERIOD' => 'N',
+                                  'SORT' => 100,
+                              ], $fields);
+
+        $agentId = CAgent::AddAgent(
+            $fields['NAME'],
+            $fields['MODULE_ID'] ?? '',
+            $fields['IS_PERIOD'],
+            $fields['AGENT_INTERVAL'],
+            '',
+            $fields['ACTIVE'],
+            $fields['NEXT_EXEC'],
+            $fields['SORT'],
+        );
+
+        if ($agentId) {
+            $this->outNotice(Locale::getMessage('AGENT_UPDATED', ['#NAME#' => $fields['NAME']]));
+            return (int) $agentId;
+        }
+
+        $this->throwApplicationExceptionIfExists();
+        throw new HelperException(
+            Locale::getMessage(
+                'ERR_AGENT_NOT_ADDED',
+                [
+                    '#NAME#' => $fields['NAME'],
+                ],
+            ),
+        );
     }
 
     /**
@@ -140,63 +198,5 @@ class AgentHelper extends Helper
         $this->deleteAgent($fields['MODULE_ID'] ?? '', $fields['NAME']);
 
         return $this->addAgent($fields);
-    }
-
-    /**
-     * Создание агента, бросает исключение в случае неудачи
-     *
-     * @throws HelperException
-     */
-    public function addAgent(array $fields): int
-    {
-        $this->checkRequiredKeys($fields, ['NAME']);
-
-        $fields = array_merge([
-            'AGENT_INTERVAL' => 86400,
-            'ACTIVE'         => 'Y',
-            'IS_PERIOD'      => 'N',
-            'SORT'           => 100,
-        ], $fields);
-
-        $agentId = CAgent::AddAgent(
-            $fields['NAME'],
-            $fields['MODULE_ID'] ?? '',
-            $fields['IS_PERIOD'],
-            $fields['AGENT_INTERVAL'],
-            '',
-            $fields['ACTIVE'],
-            $fields['NEXT_EXEC'],
-            $fields['SORT']
-        );
-
-        if ($agentId) {
-            $this->outNotice(Locale::getMessage('AGENT_UPDATED', ['#NAME#' => $fields['NAME']]));
-            return (int)$agentId;
-        }
-
-        $this->throwApplicationExceptionIfExists();
-        throw new HelperException(
-            Locale::getMessage(
-                'ERR_AGENT_NOT_ADDED',
-                [
-                    '#NAME#' => $fields['NAME'],
-                ]
-            )
-        );
-    }
-
-    protected function prepareExportAgent(array $item): array
-    {
-        $this->unsetKeys($item, [
-            'ID',
-            'LOGIN',
-            'USER_NAME',
-            'LAST_NAME',
-            'RUNNING',
-            'DATE_CHECK',
-            'LAST_EXEC',
-        ]);
-
-        return $item;
     }
 }

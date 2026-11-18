@@ -174,19 +174,16 @@ export const MigrationBuilders = {
                       :placeholder="getMessage('SEARCH_BUILDER')"
                       @press-enter="saveFilter"
                   />
-                  <input
-                      :value="getMessage('SEARCH_BUTTON')"
-                      class="adm-btn"
-                      type="button"
-                      @click="saveFilter"
-                  />
+                  <div>
+                    <input
+                        :value="getMessage('SEARCH_BUTTON')"
+                        class="adm-btn"
+                        type="button"
+                        @click="saveFilter"
+                    />
+                  </div>
                 </div>
                 <div class="sp-search_summary">
-                    <span
-                        v-if="loading"
-                        class="sp-loading"
-                        v-text="getMessage('LOADING_TEXT')"
-                    />
                   {{ getMessage('SUMMARY_BUILDERS') }}:
                   <span
                       class="sp-label"

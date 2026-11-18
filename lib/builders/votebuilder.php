@@ -26,8 +26,11 @@ class VoteBuilder extends VersionBuilder
 
         $this->setDescription(implode(PHP_EOL, [
             Locale::getMessage('DEVELOPER_NAME', ['#VALUE#' => '@temi4']),
-            Locale::getMessage('DEVELOPER_URI', ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/179']),
-            Locale::getMessage('BUILDER_VoteExport_Info')
+            Locale::getMessage(
+                'DEVELOPER_URI',
+                ['#VALUE#' => 'https://github.com/andreyryabin/sprint.migration/pull/179'],
+            ),
+            Locale::getMessage('BUILDER_VoteExport_Info'),
         ]));
 
         $this->addVersionFields();
@@ -48,7 +51,7 @@ class VoteBuilder extends VersionBuilder
         ]);
 
         $vote = $helper->Vote()->exportVoteById($voteId);
-        $channel = $helper->Vote()->exportChannelById((int)$vote['CHANNEL_ID']);
+        $channel = $helper->Vote()->exportChannelById((int) $vote['CHANNEL_ID']);
         $questions = $helper->Vote()->exportQuestions($voteId);
 
         unset($vote['CHANNEL_ID']);
@@ -56,10 +59,10 @@ class VoteBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleTemplateFile('VoteExport'),
             [
-                'channel'   => $channel,
-                'vote'      => $vote,
+                'channel' => $channel,
+                'vote' => $vote,
                 'questions' => $questions,
-            ]
+            ],
         );
     }
 
@@ -73,7 +76,9 @@ class VoteBuilder extends VersionBuilder
         }
 
         $votes = array_map(function ($vote) use ($channels) {
-            $vote['CHANNEL_TITLE'] = $channels[$vote['CHANNEL_ID']] ?? Locale::getMessage('BUILDER_VoteExport_UnknownChannel');
+            $vote['CHANNEL_TITLE'] = $channels[$vote['CHANNEL_ID']] ?? Locale::getMessage(
+                'BUILDER_VoteExport_UnknownChannel',
+            );
             $vote['TITLE'] = '[' . $vote['ID'] . '] ' . $vote['TITLE'];
             return $vote;
         }, $helper->Vote()->getVotesList());
