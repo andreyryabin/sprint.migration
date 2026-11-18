@@ -478,6 +478,11 @@ export const MigrationVersions = {
                   </div>
                 </div>
                 <div class="sp-search_summary">
+                  <span
+                      v-if="loading"
+                      class="sp-loading"
+                      v-text="getMessage('LOADING_TEXT')"
+                  />
                   {{ getMessage('SUMMARY_NEW') }}:
                   <span
                       class="sp-label sp-label-red"

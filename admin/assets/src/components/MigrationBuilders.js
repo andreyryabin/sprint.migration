@@ -183,6 +183,11 @@ export const MigrationBuilders = {
                   </div>
                 </div>
                 <div class="sp-search_summary">
+                  <span
+                      v-if="loading"
+                      class="sp-loading"
+                      v-text="getMessage('LOADING_TEXT')"
+                  />
                   {{ getMessage('SUMMARY_BUILDERS') }}:
                   <span
                       class="sp-label"

@@ -112,7 +112,7 @@ class ConsoleOutput extends AbstractOutput
 
     protected function writeProgress(string $msg, int $val, int $total): void
     {
-        fwrite(STDOUT, "\r" . $this->colorize("$msg $val / $total", 'label'));
+        fwrite(STDOUT, "\r" . $this->colorize("$msg: $val / $total", 'label'));
         if ($val >= $total) {
             fwrite(STDOUT, PHP_EOL);
         }

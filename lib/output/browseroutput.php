@@ -4,26 +4,18 @@ namespace Sprint\Migration\Output;
 
 
 use CAdminMessage;
-use Psr\Log\LoggerInterface;
 
 class BrowserOutput extends AbstractOutput
 {
-    private bool $isAdminMessage;
-
-    public function __construct(?LoggerInterface $logger = null)
+    private function hasAdmin(): bool
     {
-        parent::__construct(
-            $logger,
-        );
-
-        $this->isAdminMessage = class_exists(
-            CAdminMessage::class,
-        );
+        static $hasAdmin = null;
+        return $hasAdmin ??= class_exists(CAdminMessage::class, false);
     }
 
     protected function writeMessage(string $msg, string $type): void
     {
-        if ($this->isAdminMessage) {
+        if ($this->hasAdmin()) {
             CAdminMessage::ShowMessage([
                 'MESSAGE' => $msg,
                 'TYPE'    => (in_array($type, ['error', 'warning']) ? 'ERROR' : 'OK'),
@@ -35,17 +27,15 @@ class BrowserOutput extends AbstractOutput
 
     protected function writeProgress(string $msg, int $val, int $total): void
     {
-        if ($this->isAdminMessage) {
-            CAdminMessage::ShowMessage(
-                [
-                    'MESSAGE'        => $msg,
-                    'TYPE'           => 'PROGRESS',
-                    'PROGRESS_TOTAL' => $val,
-                    'PROGRESS_VALUE' => $total,
-                ],
-            );
+        if ($this->hasAdmin()) {
+            CAdminMessage::ShowMessage([
+                'MESSAGE'        => $msg,
+                'TYPE'           => 'PROGRESS',
+                'PROGRESS_TOTAL' => $val,
+                'PROGRESS_VALUE' => $total,
+            ]);
         } else {
-            echo "$msg: $val/$total";
+            echo "$msg: $val / $total";
         }
     }
 }

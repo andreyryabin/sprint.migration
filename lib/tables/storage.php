@@ -33,7 +33,7 @@ class StorageTable extends AbstractTable
     /**
      * @throws MigrationException
      */
-    public function saveData(string $name, $value = '')
+    public function saveData(string $name, $value = ''): void
     {
         if (empty($name)) {
             throw new MigrationException('Need name for saved data');

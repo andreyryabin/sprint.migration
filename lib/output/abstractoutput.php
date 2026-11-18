@@ -29,7 +29,7 @@ abstract class AbstractOutput implements OutputInterface
     {
         $this->writeProgress($msg, $val, $total);
 
-        $this->logger?->debug($msg . ' ' . $val . ' / ' . $total);
+        $this->logger?->debug("$msg: $val / $total");
     }
 
     abstract protected function writeProgress(string $msg, int $val, int $total): void;

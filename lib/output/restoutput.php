@@ -25,7 +25,7 @@ class RestOutput extends AbstractOutput
         if ($val !== $total) {
             $this->progress[] = ['message' => $msg, 'value' => $val, 'total' => $total];
         } else {
-            $this->messages[] = ['type' => 'info', 'message' => "$msg: $val/$total"];
+            $this->messages[] = ['type' => 'info', 'message' => "$msg: $val / $total"];
         }
     }
 }
