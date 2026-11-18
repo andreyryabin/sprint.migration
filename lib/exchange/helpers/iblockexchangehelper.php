@@ -58,8 +58,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     public function getIblockPropertiesSelect(int $iblockId): array
     {
-        return array_map(fn($prop)
-            => [
+        return array_map(fn($prop)            => [
             'title' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
             'value' => $prop['CODE'],
         ], $this->exportProperties($iblockId));

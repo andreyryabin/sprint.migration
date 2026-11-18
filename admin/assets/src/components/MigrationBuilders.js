@@ -115,14 +115,15 @@ export const MigrationBuilders = {
             }
 
             this.running = true;
-            try {
 
-                while (true) {
+            let data;
+            try {
+                do {
                     if (!this.running) {
                         return false;
                     }
 
-                    const data = await this.execAction('execBuilder', {
+                    data = await this.execAction('execBuilder', {
                         name: this.selected.name,
                         params: this.selected.params,
                     });
@@ -130,13 +131,9 @@ export const MigrationBuilders = {
                     this.selected.params = data.params;
                     this.selected.fields = data.fields;
 
-                    if (data.restart) {
-                        continue;
-                    }
+                } while (data.restart)
 
-                    return data.success;
-                }
-
+                return data.success;
             } finally {
                 this.running = false;
             }
@@ -148,7 +145,9 @@ export const MigrationBuilders = {
                 return;
             }
 
-            this.execBuilder();
+            this.execBuilder()
+                .then(() => {
+                });
         },
 
         selectBuilder(name) {

@@ -19,7 +19,7 @@ $MESS["{$prefix}LINK_TELEGRAM"] = "Группа в телеграме";
 $MESS["{$prefix}LINK_IMPROVE_TRANSLATION"] = "Улучшите перевод на английский, создайте пул-реквест с этим файлом";
 
 $MESS["{$prefix}FILE_STATUS"] = "Создана";
-$MESS["{$prefix}RECORD_STATUS"] = "Установленна";
+$MESS["{$prefix}RECORD_STATUS"] = "Установлена";
 
 $MESS["{$prefix}SUMMARY_CREATED"] = "Новые миграции";
 $MESS["{$prefix}SUMMARY_INSTALLED"] = "Установленные";
