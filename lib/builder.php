@@ -22,9 +22,9 @@ abstract class Builder implements RestartableInterface
     use OutputTrait;
 
     private array $info = [
-        'title' => '',
+        'title'       => '',
         'description' => '',
-        'group' => '',
+        'group'       => '',
     ];
 
     /** @var AbstractField[] */
@@ -34,9 +34,9 @@ abstract class Builder implements RestartableInterface
     private ExchangeHelpers $exchangeHelpers;
 
     public function __construct(
-        VersionConfig           $versionConfig,
+        VersionConfig $versionConfig,
         private readonly string $name,
-        array                   $params = [],
+        array $params = [],
     ) {
         $this->setVersionConfig($versionConfig);
         $this->setRestartParams($params);
@@ -183,10 +183,10 @@ abstract class Builder implements RestartableInterface
     }
 
     protected function createSelect(
-        array  $items,
+        array $items,
         string $idKey,
         string $titleKey,
-        bool   $withIdInTitle = false,
+        bool $withIdInTitle = false,
     ): array {
         $select = [];
         foreach ($items as $item) {
@@ -202,7 +202,7 @@ abstract class Builder implements RestartableInterface
     }
 
     protected function createStructure(
-        array  $items,
+        array $items,
         string $idKey,
         string $titleKey,
         string $groupKey = '-',

@@ -34,7 +34,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $what = $this->addFieldAndReturn('what', [
-            'title' => Locale::getMessage('BUILDER_UserTypeEntities_What'),
+            'title'  => Locale::getMessage('BUILDER_UserTypeEntities_What'),
             'select' => [
                 [
                     'title' => Locale::getMessage('BUILDER_UserTypeEntities_WhatEntityId'),
@@ -55,8 +55,8 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         }
 
         $fieldsIds = $this->addFieldAndReturn('entity_fields', [
-            'title' => Locale::getMessage('BUILDER_UserTypeEntities_EntityFields'),
-            'items' => $this->createStructure($fields, 'ID', 'FIELD_TITLE', 'ENTITY_TITLE'),
+            'title'    => Locale::getMessage('BUILDER_UserTypeEntities_EntityFields'),
+            'items'    => $this->createStructure($fields, 'ID', 'FIELD_TITLE', 'ENTITY_TITLE'),
             'multiple' => 1,
         ]);
 
@@ -77,7 +77,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $userTypes = $this->getUserTypes();
 
         $userTypeId = $this->addFieldAndReturn('user_type_id', [
-            'title' => Locale::getMessage('BUILDER_UserTypeEntities_UserTypeId'),
+            'title'  => Locale::getMessage('BUILDER_UserTypeEntities_UserTypeId'),
             'select' => $this->createSelect($userTypes, 'USER_TYPE_ID', 'TITLE'),
         ]);
 
@@ -109,7 +109,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         return array_map(
             fn($field) => array_merge($field, [
                 'ENTITY_TITLE' => $entityHelper->getEntityTitle($field['ENTITY_ID']),
-                'FIELD_TITLE' => sprintf('[%s] %s', $field['FIELD_NAME'], $field['TITLE']),
+                'FIELD_TITLE'  => sprintf('[%s] %s', $field['FIELD_NAME'], $field['TITLE']),
             ]),
             $entityHelper->getUserTypeEntitiesByFilter($filter),
         );
@@ -124,8 +124,8 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $fields = $this->getUserTypeEntitiesByFilter();
 
         $entityIds = $this->addFieldAndReturn('entity_id', [
-            'title' => Locale::getMessage('BUILDER_UserTypeEntities_EntityId'),
-            'select' => $this->createSelect($fields, 'ENTITY_ID', 'ENTITY_TITLE'),
+            'title'    => Locale::getMessage('BUILDER_UserTypeEntities_EntityId'),
+            'select'   => $this->createSelect($fields, 'ENTITY_ID', 'ENTITY_TITLE'),
             'multiple' => 1,
         ]);
 

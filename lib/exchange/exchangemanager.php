@@ -12,8 +12,8 @@ class ExchangeManager
 
     public function __construct(
         private readonly RestartableInterface $restartable,
-        private readonly string               $directory,
-        private readonly ?OutputInterface     $output = null,
+        private readonly string $directory,
+        private readonly ?OutputInterface $output = null,
     ) {
         $this->exhelpers = new ExchangeHelpers($this->output);
     }
@@ -24,9 +24,8 @@ class ExchangeManager
             $this->restartable,
             $this->exhelpers->IblockExchange(),
             $this->directory,
-        ))
-            ->setExchangeResource('iblock_elements.xml')
-            ->setProgressFn($this->getProgressFn());
+        ))->setExchangeResource('iblock_elements.xml')
+          ->setProgressFn($this->getProgressFn());
     }
 
     private function getProgressFn(): Closure
@@ -42,9 +41,8 @@ class ExchangeManager
             $this->restartable,
             $this->exhelpers->HlblockExchange(),
             $this->directory,
-        ))
-            ->setExchangeResource('hlblock_elements.xml')
-            ->setProgressFn($this->getProgressFn());
+        ))->setExchangeResource('hlblock_elements.xml')
+          ->setProgressFn($this->getProgressFn());
     }
 
     public function MedialibElementsImport(): RestartableReader
@@ -53,9 +51,8 @@ class ExchangeManager
             $this->restartable,
             $this->exhelpers->MedialibExchange(),
             $this->directory,
-        ))
-            ->setExchangeResource('medialib_elements.xml')
-            ->setProgressFn($this->getProgressFn());
+        ))->setExchangeResource('medialib_elements.xml')
+          ->setProgressFn($this->getProgressFn());
     }
 
     public function BlogPostsImport(): RestartableReader
@@ -64,8 +61,7 @@ class ExchangeManager
             $this->restartable,
             $this->exhelpers->BlogExchange(),
             $this->directory,
-        ))
-            ->setExchangeResource('blog_posts.xml')
-            ->setProgressFn($this->getProgressFn());
+        ))->setExchangeResource('blog_posts.xml')
+          ->setProgressFn($this->getProgressFn());
     }
 }

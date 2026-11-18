@@ -13,7 +13,7 @@ use Throwable;
 class BuilderManager
 {
     public function __construct(
-        private VersionConfig    $versionConfig,
+        private VersionConfig $versionConfig,
         private ?OutputInterface $output = null,
     ) {
         $this->output ??= OutputFactory::create($this->versionConfig);

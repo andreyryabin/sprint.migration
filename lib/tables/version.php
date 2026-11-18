@@ -38,9 +38,9 @@ class VersionTable extends AbstractTable
     {
         $record = [
             'version' => $versionName,
-            'hash' => $hash,
-            'tag' => $tag,
-            'meta' => [
+            'hash'    => $hash,
+            'tag'     => $tag,
+            'meta'    => [
                 'created_by' => $this->getCurrentUserLogin(),
                 'created_at' => date(VersionTable::DATE_FORMAT),
             ],
@@ -76,11 +76,11 @@ class VersionTable extends AbstractTable
     {
         return [
             new IntegerField('id', [
-                'primary' => true,
+                'primary'      => true,
                 'autocomplete' => true,
             ]),
             new StringField('version', [
-                'size' => 255,
+                'size'   => 255,
                 'unique' => true,
             ]),
             new StringField('hash', [
@@ -90,7 +90,7 @@ class VersionTable extends AbstractTable
                 'size' => 50,
             ]),
             new TextField('meta', [
-                'long' => true,
+                'long'       => true,
                 'serialized' => true,
             ]),
         ];

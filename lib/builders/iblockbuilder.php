@@ -46,9 +46,9 @@ class IblockBuilder extends VersionBuilder
         }
 
         $what = $this->addFieldAndReturn('what', [
-            'title' => Locale::getMessage('BUILDER_IblockExport_What'),
+            'title'    => Locale::getMessage('BUILDER_IblockExport_What'),
             'multiple' => 1,
-            'select' => [
+            'select'   => [
                 [
                     'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockType'),
                     'value' => 'iblockType',
@@ -103,9 +103,9 @@ class IblockBuilder extends VersionBuilder
             $propertiesSelect = $exhelper->IblockExchange()->getIblockPropertiesSelect($iblockId);
             if (!empty($propertiesSelect)) {
                 $exportProps = $this->addFieldAndReturn('export_props', [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_Properties'),
+                    'title'    => Locale::getMessage('BUILDER_IblockExport_Properties'),
                     'multiple' => 1,
-                    'select' => $propertiesSelect,
+                    'select'   => $propertiesSelect,
                 ]);
 
                 $iblockProperties = $helper->Iblock()->exportProperties($iblockId);
@@ -143,19 +143,19 @@ class IblockBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockExport'),
             [
-                'iblockExport' => $iblockExport,
-                'iblock' => $iblock,
-                'iblockType' => $iblockType,
-                'iblockFields' => $iblockFields,
-                'iblockPermissions' => $iblockPermissions,
+                'iblockExport'        => $iblockExport,
+                'iblock'              => $iblock,
+                'iblockType'          => $iblockType,
+                'iblockFields'        => $iblockFields,
+                'iblockPermissions'   => $iblockPermissions,
                 'extendedPermissions' => $extendedPermissions,
-                'iblockProperties' => $iblockProperties,
-                'exportElementForm' => $exportElementForm,
-                'exportSectionForm' => $exportSectionForm,
-                'exportElementList' => $exportElementList,
-                'exportSectionList' => $exportSectionList,
-                'exportElementGrid' => $exportElementGrid,
-                'exportSectionGrid' => $exportSectionGrid,
+                'iblockProperties'    => $iblockProperties,
+                'exportElementForm'   => $exportElementForm,
+                'exportSectionForm'   => $exportSectionForm,
+                'exportElementList'   => $exportElementList,
+                'exportSectionList'   => $exportSectionList,
+                'exportElementGrid'   => $exportElementGrid,
+                'exportSectionGrid'   => $exportSectionGrid,
             ],
         );
     }

@@ -7,31 +7,31 @@ use Sprint\Migration\Exceptions\ConsoleException;
 class ConsoleOutput extends AbstractOutput
 {
     private array $colors = [
-        '[/]' => "\x1b[0m",
-        '[new]' => "\x1b[0;31m",
-        '[unknown]' => "\x1b[0;34m",
+        '[/]'         => "\x1b[0m",
+        '[new]'       => "\x1b[0;31m",
+        '[unknown]'   => "\x1b[0;34m",
         '[installed]' => "\x1b[0;32m",
 
-        '[info]' => "\x1b[0;34m",
+        '[info]'    => "\x1b[0;34m",
         '[warning]' => "\x1b[0;31m",
-        '[notice]' => "\x1b[0;32m",
-        '[error]' => "\x1b[41;37m",
+        '[notice]'  => "\x1b[0;32m",
+        '[error]'   => "\x1b[41;37m",
         '[success]' => "\x1b[102;30m",
 
-        '[blue]' => "\x1b[0;34m",
-        '[pink]' => "\x1b[0;35m",
-        '[green]' => "\x1b[0;32m",
-        '[red]' => "\x1b[0;31m",
+        '[blue]'   => "\x1b[0;34m",
+        '[pink]'   => "\x1b[0;35m",
+        '[green]'  => "\x1b[0;32m",
+        '[red]'    => "\x1b[0;31m",
         '[yellow]' => "\x1b[0;93m",
 
-        '[label]' => "\x1b[47;30m",
-        '[label:blue]' => "\x1b[104;30m",
-        '[label:pink]' => "\x1b[105;30m",
-        '[label:red]' => "\x1b[41;37m",
-        '[label:green]' => "\x1b[102;30m",
+        '[label]'        => "\x1b[47;30m",
+        '[label:blue]'   => "\x1b[104;30m",
+        '[label:pink]'   => "\x1b[105;30m",
+        '[label:red]'    => "\x1b[41;37m",
+        '[label:green]'  => "\x1b[102;30m",
         '[label:yellow]' => "\x1b[103;30m",
 
-        '[b]' => "\x1b[1m",
+        '[b]'   => "\x1b[1m",
         '[tab]' => "\x1b[0m",
     ];
 

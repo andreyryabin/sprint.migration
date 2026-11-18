@@ -11,11 +11,11 @@ class VersionFilter
         private readonly string $status = '',
         private readonly string $tag = '',
         private readonly string $search = '',
-        private readonly bool   $modified = false,
-        private readonly bool   $older = false,
-        private readonly bool   $actual = false,
+        private readonly bool $modified = false,
+        private readonly bool $older = false,
+        private readonly bool $actual = false,
         private readonly string $actualTs = '',
-        private readonly bool   $sortDesc = false,
+        private readonly bool $sortDesc = false,
     ) {}
 
     public static function fromArray(array $filter, string $actualTs): self
@@ -37,12 +37,12 @@ class VersionFilter
         $filter = array_merge($filter, $changes);
 
         return new self(
-            status:   (string) ($filter['status'] ?? ''),
-            tag:      (string) ($filter['tag'] ?? ''),
-            search:   (string) ($filter['search'] ?? ''),
+            status: (string) ($filter['status'] ?? ''),
+            tag: (string) ($filter['tag'] ?? ''),
+            search: (string) ($filter['search'] ?? ''),
             modified: (bool) ($filter['modified'] ?? false),
-            older:    (bool) ($filter['older'] ?? false),
-            actual:   (string) ($filter['actual'] ?? ''),
+            older: (bool) ($filter['older'] ?? false),
+            actual: (string) ($filter['actual'] ?? ''),
             actualTs: $actualTs,
             sortDesc: ($sort === VersionEnum::SORT_DESC),
         );

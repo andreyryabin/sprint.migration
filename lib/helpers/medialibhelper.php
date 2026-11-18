@@ -71,7 +71,7 @@ class MedialibHelper extends Helper
         $result = CMedialibCollection::GetList(
             [
                 'arFilter' => $params['filter'],
-                'arOrder' => ['ID' => 'asc'],
+                'arOrder'  => ['ID' => 'asc'],
             ],
         );
 
@@ -169,7 +169,7 @@ class MedialibHelper extends Helper
             $parentId = $this->saveCollection(
                 $typeId,
                 [
-                    'NAME' => $name,
+                    'NAME'      => $name,
                     'PARENT_ID' => $parentId,
                 ],
             );
@@ -202,7 +202,7 @@ class MedialibHelper extends Helper
             $typeId,
             [
                 'filter' => [
-                    'NAME' => $name,
+                    'NAME'      => $name,
                     'PARENT_ID' => $parentId,
                 ],
             ],
@@ -214,7 +214,7 @@ class MedialibHelper extends Helper
             return $this->addCollection(
                 $typeId,
                 [
-                    'NAME' => $name,
+                    'NAME'      => $name,
                     'PARENT_ID' => $parentId,
                 ],
             );
@@ -235,13 +235,13 @@ class MedialibHelper extends Helper
         $fields = array_merge(
             [
                 //'ID' => 0, // ID элемента для обновления, 0 для добавления
-                'NAME' => '',
+                'NAME'        => '',
                 'DESCRIPTION' => '',
-                'OWNER_ID' => $GLOBALS['USER']->GetId(),
-                'PARENT_ID' => 0,
-                'KEYWORDS' => '',
-                'ACTIVE' => 'Y',
-                'ML_TYPE' => '',
+                'OWNER_ID'    => $GLOBALS['USER']->GetId(),
+                'PARENT_ID'   => 0,
+                'KEYWORDS'    => '',
+                'ACTIVE'      => 'Y',
+                'ML_TYPE'     => '',
             ],
             $fields,
         );
@@ -262,7 +262,7 @@ class MedialibHelper extends Helper
             $fields['COLLECTION_ID'],
             [
                 'filter' => ['NAME' => $fields['NAME']],
-                'limit' => 1,
+                'limit'  => 1,
                 'offset' => 0,
             ],
         );
@@ -284,7 +284,7 @@ class MedialibHelper extends Helper
         $params = array_merge(
             [
                 'offset' => 0,
-                'limit' => 0,
+                'limit'  => 0,
                 'filter' => [],
             ],
             $params,
@@ -341,13 +341,13 @@ class MedialibHelper extends Helper
 
         $result = CMedialibItem::Edit(
             [
-                'file' => $fields['FILE'],
-                'path' => false,
-                'arFields' => [
-                    'ID' => !empty($fields['ID']) ? (int) $fields['ID'] : 0,
-                    'NAME' => !empty($fields['NAME']) ? $fields['NAME'] : '',
+                'file'          => $fields['FILE'],
+                'path'          => false,
+                'arFields'      => [
+                    'ID'          => !empty($fields['ID']) ? (int) $fields['ID'] : 0,
+                    'NAME'        => !empty($fields['NAME']) ? $fields['NAME'] : '',
                     'DESCRIPTION' => !empty($fields['DESCRIPTION']) ? $fields['DESCRIPTION'] : '',
-                    'KEYWORDS' => !empty($fields['KEYWORDS']) ? $fields['KEYWORDS'] : '',
+                    'KEYWORDS'    => !empty($fields['KEYWORDS']) ? $fields['KEYWORDS'] : '',
                 ],
                 'arCollections' => [(int) $fields['COLLECTION_ID']],
             ],

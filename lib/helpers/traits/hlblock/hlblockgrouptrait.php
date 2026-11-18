@@ -109,8 +109,8 @@ trait HlblockGroupTrait
                 if (!empty($taskId)) {
                     HighloadBlockRightsTable::add(
                         [
-                            'HL_ID' => $hlblockId,
-                            'TASK_ID' => $taskId,
+                            'HL_ID'       => $hlblockId,
+                            'TASK_ID'     => $taskId,
                             'ACCESS_CODE' => 'G' . $groupId,
                         ],
                     );

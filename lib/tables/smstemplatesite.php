@@ -23,12 +23,12 @@ class SmsTemplateSiteTable extends Data\DataManager
         return [
             'TEMPLATE_ID' => [
                 'data_type' => 'integer',
-                'primary' => true,
+                'primary'   => true,
             ],
 
             'SITE_ID' => [
                 'data_type' => 'string',
-                'primary' => true,
+                'primary'   => true,
             ],
         ];
     }
@@ -44,15 +44,15 @@ class SmsTemplateSiteTable extends Data\DataManager
         self::deleteByFilter(['=TEMPLATE_ID' => $templateId]);
 
         $dbres = SiteTable::getList([
-                                        'select' => ['LID'],
-                                        'filter' => ['=LID' => $siteIds],
-                                    ]);
+            'select' => ['LID'],
+            'filter' => ['=LID' => $siteIds],
+        ]);
 
         while ($arResultSite = $dbres->fetch()) {
             self::add([
-                          'TEMPLATE_ID' => $templateId,
-                          'SITE_ID' => $arResultSite['LID'],
-                      ]);
+                'TEMPLATE_ID' => $templateId,
+                'SITE_ID'     => $arResultSite['LID'],
+            ]);
         }
     }
 
@@ -64,15 +64,15 @@ class SmsTemplateSiteTable extends Data\DataManager
     public static function getSites(int $templateId): array
     {
         $sites = self::getList([
-                                   'select' => ['*', '' => 'SITE.*'],
-                                   'filter' => ['=TEMPLATE_ID' => $templateId],
-                                   'runtime' => [
-                                       'SITE' => [
-                                           'data_type' => 'Bitrix\Main\Site',
-                                           'reference' => ['=this.SITE_ID' => 'ref.LID'],
-                                       ],
-                                   ],
-                               ])->fetchAll();
+            'select'  => ['*', '' => 'SITE.*'],
+            'filter'  => ['=TEMPLATE_ID' => $templateId],
+            'runtime' => [
+                'SITE' => [
+                    'data_type' => 'Bitrix\Main\Site',
+                    'reference' => ['=this.SITE_ID' => 'ref.LID'],
+                ],
+            ],
+        ])->fetchAll();
 
         return array_filter(array_column($sites, 'LID'));
     }

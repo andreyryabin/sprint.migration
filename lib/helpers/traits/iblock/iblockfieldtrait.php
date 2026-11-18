@@ -82,6 +82,6 @@ trait IblockFieldTrait
     {
         return array_filter($fields, function ($field, $code) {
             return !($field['VISIBLE'] == 'N' || preg_match('/^(SECTION_|LOG_)/', $code));
-        },                  ARRAY_FILTER_USE_BOTH);
+        }, ARRAY_FILTER_USE_BOTH);
     }
 }

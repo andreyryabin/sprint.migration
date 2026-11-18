@@ -168,9 +168,9 @@ trait HlblockTrait
 
         try {
             $hlblock = HighloadBlockTable::getRow([
-                                                      'select' => ['*'],
-                                                      'filter' => $filter,
-                                                  ]);
+                'select' => ['*'],
+                'filter' => $filter,
+            ]);
 
             return $hlblock ? $this->prepareHlblock($hlblock) : false;
         } catch (Exception $e) {
@@ -441,8 +441,8 @@ trait HlblockTrait
             if (!empty($item['NAME'])) {
                 HighloadBlockLangTable::add(
                     [
-                        'ID' => $hlblockId,
-                        'LID' => $lid,
+                        'ID'   => $hlblockId,
+                        'LID'  => $lid,
                         'NAME' => $item['NAME'],
                     ],
                 );

@@ -20,8 +20,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     public function getHlblocksSelect(): array
     {
         return array_map(
-            fn($hlblock)
-                => [
+            fn($hlblock) => [
                 'title' => Locale::getMessage('HLBLOCK_TITLE', $hlblock),
                 'value' => (int) $hlblock['ID'],
             ],
@@ -35,8 +34,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     public function getHlblockFieldsSelect(int $hlblockId): array
     {
         return array_map(
-            fn($field)
-                => [
+            fn($field) => [
                 'title' => Locale::getMessage('HLBLOCK_FIELD', $field),
                 'value' => $field['FIELD_NAME'],
             ],
@@ -80,7 +78,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         }
         return [
             'hlblock_id' => $hlblockId,
-            'fields' => $convertedFields,
+            'fields'     => $convertedFields,
         ];
     }
 
@@ -90,8 +88,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
     protected function readFieldEnumeration(int $hlblockId, array $field)
     {
         if ($this->isFieldMultiple($hlblockId, $field['name'])) {
-            return array_map(fn($val)
-                => $this->getFieldEnumIdByXmlId(
+            return array_map(fn($val) => $this->getFieldEnumIdByXmlId(
                 $hlblockId,
                 $field['name'],
                 $val['value'],
@@ -177,8 +174,8 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         //если есть xml_id ищем элемент по нему
 
         $filter = array_filter([
-                                   'UF_XML_ID' => $val['uf_xml_id'] ?? '',
-                               ]);
+            'UF_XML_ID' => $val['uf_xml_id'] ?? '',
+        ]);
 
         if (!empty($filter)) {
             return $this->getElementIdIfExists($hlblockId, $filter);
@@ -239,9 +236,9 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         $elements = $this->getElements(
             $hlblockId,
             [
-                'order' => ['ID' => 'ASC'],
+                'order'  => ['ID' => 'ASC'],
                 'offset' => $offset,
-                'limit' => $limit,
+                'limit'  => $limit,
                 'filter' => $filter,
             ],
         );
@@ -276,7 +273,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                                 $this->getField($hlblockId, $code),
                                 [
                                     'HLBLOCK_ID' => $hlblockId,
-                                    'VALUE' => $val,
+                                    'VALUE'      => $val,
                                 ],
                             ),
                         ),
@@ -284,10 +281,10 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                 } catch (WriterException $e) {
                     throw new HelperException(
                         $e->getMessage() . " in " . print_r([
-                                                                'HLBLOCK_ID' => $hlblockId,
-                                                                'ID' => $element['ID'],
-                                                                'FIELD' => $code,
-                                                            ], true),
+                            'HLBLOCK_ID' => $hlblockId,
+                            'ID'         => $element['ID'],
+                            'FIELD'      => $code,
+                        ], true),
                     );
                 }
             }
@@ -395,8 +392,8 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
         // непонятно какие уникальные поля записывать в атриубты, мб обязательные (MANDATORY) ?
 
         $tag->addValueTag($item['ID'], array_filter([
-                                                        'uf_xml_id' => $item['UF_XML_ID'] ?? '',
-                                                    ]));
+            'uf_xml_id' => $item['UF_XML_ID'] ?? '',
+        ]));
     }
 
     /**

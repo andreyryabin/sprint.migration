@@ -35,7 +35,7 @@ class HlblockBuilder extends VersionBuilder
         $exhelper = $this->getExchangeHelpers();
 
         $hlblockId = $this->addFieldAndReturn('hlblock_id', [
-            'title' => Locale::getMessage('BUILDER_HlblockExport_HlblockId'),
+            'title'  => Locale::getMessage('BUILDER_HlblockExport_HlblockId'),
             'select' => $exhelper->HlblockExchange()->getHlblocksSelect(),
         ]);
 
@@ -45,9 +45,9 @@ class HlblockBuilder extends VersionBuilder
         }
 
         $what = $this->addFieldAndReturn('what', [
-            'title' => Locale::getMessage('BUILDER_HlblockExport_What'),
+            'title'    => Locale::getMessage('BUILDER_HlblockExport_What'),
             'multiple' => 1,
-            'select' => [
+            'select'   => [
                 [
                     'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblock'),
                     'value' => 'hlblock',
@@ -92,12 +92,12 @@ class HlblockBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleTemplateFile('HlblockExport'),
             [
-                'hlblockExport' => $hlblockExport,
-                'hlblock' => $hlblock,
-                'hlblockFields' => $hlblockFields,
+                'hlblockExport'      => $hlblockExport,
+                'hlblock'            => $hlblock,
+                'hlblockFields'      => $hlblockFields,
                 'hlblockPermissions' => $hlblockPermissions,
-                'exportElementForm' => $exportElementForm,
-                'exportElementList' => $exportElementList,
+                'exportElementForm'  => $exportElementForm,
+                'exportElementList'  => $exportElementList,
             ],
         );
     }

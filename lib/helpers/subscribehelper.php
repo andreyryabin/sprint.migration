@@ -20,10 +20,10 @@ class SubscribeHelper extends Helper
     {
         $dbres = CRubric::GetList(
             [
-                'LID' => 'ASC',
+                'LID'  => 'ASC',
                 'SORT' => 'ASC',
                 'NAME' => 'ASC',
-                'ID' => 'ASC',
+                'ID'   => 'ASC',
             ],
             $filter,
         );
@@ -78,16 +78,16 @@ class SubscribeHelper extends Helper
     protected function prepareRubricFields(array $item): array
     {
         $default = [
-            'DESCRIPTION' => '',
-            'SORT' => 100,
-            'ACTIVE' => 'Y',
-            'AUTO' => 'N',
+            'DESCRIPTION'   => '',
+            'SORT'          => 100,
+            'ACTIVE'        => 'Y',
+            'AUTO'          => 'N',
             'DAYS_OF_MONTH' => '',
-            'DAYS_OF_WEEK' => '',
-            'TIMES_OF_DAY' => '',
-            'TEMPLATE' => '',
-            'VISIBLE' => 'Y',
-            'FROM_FIELD' => '',
+            'DAYS_OF_WEEK'  => '',
+            'TIMES_OF_DAY'  => '',
+            'TEMPLATE'      => '',
+            'VISIBLE'       => 'Y',
+            'FROM_FIELD'    => '',
         ];
 
         $item = array_merge($default, $item);
@@ -95,21 +95,21 @@ class SubscribeHelper extends Helper
         return array_intersect_key(
             $item,
             array_flip([
-                           'LID',
-                           'CODE',
-                           'NAME',
-                           'DESCRIPTION',
-                           'SORT',
-                           'ACTIVE',
-                           'AUTO',
-                           'DAYS_OF_MONTH',
-                           'DAYS_OF_WEEK',
-                           'TIMES_OF_DAY',
-                           'TEMPLATE',
-                           'VISIBLE',
-                           'FROM_FIELD',
-                           'LAST_EXECUTED',
-                       ]),
+                'LID',
+                'CODE',
+                'NAME',
+                'DESCRIPTION',
+                'SORT',
+                'ACTIVE',
+                'AUTO',
+                'DAYS_OF_MONTH',
+                'DAYS_OF_WEEK',
+                'TIMES_OF_DAY',
+                'TEMPLATE',
+                'VISIBLE',
+                'FROM_FIELD',
+                'LAST_EXECUTED',
+            ]),
         );
     }
 
@@ -144,7 +144,7 @@ class SubscribeHelper extends Helper
         $item = CRubric::GetList(
             ['ID' => 'ASC'],
             [
-                'LID' => $lid,
+                'LID'  => $lid,
                 'CODE' => $code,
             ],
         )->Fetch();

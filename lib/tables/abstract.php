@@ -39,7 +39,7 @@ abstract class AbstractTable
                     $this->getMap(),
                     [
                         'table_name' => $tableName,
-                        'namespace' => __NAMESPACE__,
+                        'namespace'  => __NAMESPACE__,
                     ],
                 );
             }

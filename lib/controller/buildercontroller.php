@@ -105,18 +105,17 @@ class BuilderController extends Controller
     private function builderToArray(Builder $builder): array
     {
         return [
-            'name' => $builder->getName(),
-            'title' => $builder->getTitle(),
-            'group' => $builder->getGroup(),
-            'note' => $builder->getDescription(),
+            'name'   => $builder->getName(),
+            'title'  => $builder->getTitle(),
+            'group'  => $builder->getGroup(),
+            'note'   => $builder->getDescription(),
             'params' => $builder->getRestartParams(),
-            'fields' => array_map(fn(AbstractField $field)
-                => [
-                'code' => $field->getCode(),
-                'title' => $field->getTitle(),
-                'note' => $field->getNote(),
+            'fields' => array_map(fn(AbstractField $field) => [
+                'code'      => $field->getCode(),
+                'title'     => $field->getTitle(),
+                'note'      => $field->getNote(),
                 'component' => $field->getComponentName(),
-                'props' => $field->getProps(),
+                'props'     => $field->getProps(),
             ], $builder->getFields()),
         ];
     }

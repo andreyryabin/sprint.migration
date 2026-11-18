@@ -82,29 +82,29 @@ class VoteHelper extends Helper
     private function getDefaultAnswer(): array
     {
         return [
-            'ACTIVE' => 'Y',
-            'C_SORT' => '100',
-            'MESSAGE' => ' ',
+            'ACTIVE'       => 'Y',
+            'C_SORT'       => '100',
+            'MESSAGE'      => ' ',
             'MESSAGE_TYPE' => 'html',
-            'FIELD_TYPE' => '0',
-            'FIELD_WIDTH' => '0',
+            'FIELD_TYPE'   => '0',
+            'FIELD_WIDTH'  => '0',
             'FIELD_HEIGHT' => '0',
-            'FIELD_PARAM' => '',
-            'COLOR' => '',
+            'FIELD_PARAM'  => '',
+            'COLOR'        => '',
         ];
     }
 
     private function getDefaultQuestion(): array
     {
         return [
-            'ACTIVE' => 'Y',
-            'C_SORT' => '100',
+            'ACTIVE'        => 'Y',
+            'C_SORT'        => '100',
             'QUESTION_TYPE' => 'html',
-            'DIAGRAM' => 'Y',
-            'REQUIRED' => 'N',
-            'DIAGRAM_TYPE' => 'histogram',
-            'TEMPLATE' => '',
-            'TEMPLATE_NEW' => '',
+            'DIAGRAM'       => 'Y',
+            'REQUIRED'      => 'N',
+            'DIAGRAM_TYPE'  => 'histogram',
+            'TEMPLATE'      => '',
+            'TEMPLATE_NEW'  => '',
         ];
     }
 
@@ -163,13 +163,13 @@ class VoteHelper extends Helper
     private function getDefaultChannel(): array
     {
         return [
-            'C_SORT' => '100',
+            'C_SORT'        => '100',
             'FIRST_SITE_ID' => null,
-            'ACTIVE' => 'Y',
-            'HIDDEN' => 'N',
-            'VOTE_SINGLE' => 'Y',
-            'USE_CAPTCHA' => 'N',
-            'GROUP_ID' => [],
+            'ACTIVE'        => 'Y',
+            'HIDDEN'        => 'N',
+            'VOTE_SINGLE'   => 'Y',
+            'USE_CAPTCHA'   => 'N',
+            'GROUP_ID'      => [],
         ];
     }
 
@@ -199,11 +199,11 @@ class VoteHelper extends Helper
         }
 
         $channel = ChannelTable::getList([
-                                             'select' => ['ID'],
-                                             'filter' => $filter,
-                                             'order' => ['ID' => 'ASC'],
-                                             'limit' => 1,
-                                         ])->fetch();
+            'select' => ['ID'],
+            'filter' => $filter,
+            'order'  => ['ID' => 'ASC'],
+            'limit'  => 1,
+        ])->fetch();
 
         return (int) ($channel['ID'] ?? 0);
     }
@@ -330,19 +330,19 @@ class VoteHelper extends Helper
     private function getDefaultVote(): array
     {
         return [
-            'C_SORT' => '100',
-            'ACTIVE' => 'Y',
-            'NOTIFY' => 'N',
-            'URL' => null,
-            'DESCRIPTION' => '',
+            'C_SORT'           => '100',
+            'ACTIVE'           => 'Y',
+            'NOTIFY'           => 'N',
+            'URL'              => null,
+            'DESCRIPTION'      => '',
             'DESCRIPTION_TYPE' => 'html',
-            'EVENT1' => '',
-            'EVENT2' => '',
-            'EVENT3' => '',
-            'UNIQUE_TYPE' => '2',
-            'KEEP_IP_SEC' => null,
-            'TEMPLATE' => '',
-            'RESULT_TEMPLATE' => '',
+            'EVENT1'           => '',
+            'EVENT2'           => '',
+            'EVENT3'           => '',
+            'UNIQUE_TYPE'      => '2',
+            'KEEP_IP_SEC'      => null,
+            'TEMPLATE'         => '',
+            'RESULT_TEMPLATE'  => '',
         ];
     }
 

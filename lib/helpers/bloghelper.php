@@ -27,8 +27,8 @@ class BlogHelper extends Helper
             CBlogGroup::GetList(
                 [
                     'SITE_ID' => 'ASC',
-                    'NAME' => 'ASC',
-                    'ID' => 'ASC',
+                    'NAME'    => 'ASC',
+                    'ID'      => 'ASC',
                 ],
                 $filter,
                 false,
@@ -48,9 +48,9 @@ class BlogHelper extends Helper
             CBlog::GetList(
                 [
                     'GROUP_SITE_ID' => 'ASC',
-                    'GROUP_NAME' => 'ASC',
-                    'NAME' => 'ASC',
-                    'ID' => 'ASC',
+                    'GROUP_NAME'    => 'ASC',
+                    'NAME'          => 'ASC',
+                    'ID'            => 'ASC',
                 ],
                 $filter,
                 false,
@@ -78,7 +78,7 @@ class BlogHelper extends Helper
             CBlogPost::GetList(
                 [
                     'DATE_PUBLISH' => 'DESC',
-                    'ID' => 'DESC',
+                    'ID'           => 'DESC',
                 ],
                 $filter,
                 false,
@@ -150,7 +150,7 @@ class BlogHelper extends Helper
     {
         return [
             'SITE_ID' => '',
-            'NAME' => '',
+            'NAME'    => '',
         ];
     }
 
@@ -260,9 +260,9 @@ class BlogHelper extends Helper
             }
 
             $item = [
-                'NAME' => $group['NAME'],
-                'AUTO' => in_array((int) $groupId, $autoGroupIds, true) ? 'Y' : 'N',
-                'PERMS_POST' => CBlogUserGroup::GetGroupPerms((int) $groupId, (int) $blog['ID'], 0, BLOG_PERMS_POST),
+                'NAME'          => $group['NAME'],
+                'AUTO'          => in_array((int) $groupId, $autoGroupIds, true) ? 'Y' : 'N',
+                'PERMS_POST'    => CBlogUserGroup::GetGroupPerms((int) $groupId, (int) $blog['ID'], 0, BLOG_PERMS_POST),
                 'PERMS_COMMENT' => CBlogUserGroup::GetGroupPerms(
                     (int) $groupId,
                     (int) $blog['ID'],
@@ -318,25 +318,25 @@ class BlogHelper extends Helper
     protected function getDefaultBlog(): array
     {
         return [
-            'OWNER_LOGIN' => '',
-            'NAME' => '',
-            'DESCRIPTION' => '',
-            'ACTIVE' => 'Y',
-            'URL' => '',
-            'REAL_URL' => '',
-            'ENABLE_COMMENTS' => 'Y',
-            'ENABLE_IMG_VERIF' => 'N',
-            'EMAIL_NOTIFY' => 'Y',
-            'ENABLE_RSS' => 'Y',
-            'ALLOW_HTML' => 'N',
-            'SEARCH_INDEX' => 'Y',
-            'USE_SOCNET' => 'N',
-            'EDITOR_USE_FONT' => 'N',
-            'EDITOR_USE_LINK' => 'N',
-            'EDITOR_USE_IMAGE' => 'N',
+            'OWNER_LOGIN'       => '',
+            'NAME'              => '',
+            'DESCRIPTION'       => '',
+            'ACTIVE'            => 'Y',
+            'URL'               => '',
+            'REAL_URL'          => '',
+            'ENABLE_COMMENTS'   => 'Y',
+            'ENABLE_IMG_VERIF'  => 'N',
+            'EMAIL_NOTIFY'      => 'Y',
+            'ENABLE_RSS'        => 'Y',
+            'ALLOW_HTML'        => 'N',
+            'SEARCH_INDEX'      => 'Y',
+            'USE_SOCNET'        => 'N',
+            'EDITOR_USE_FONT'   => 'N',
+            'EDITOR_USE_LINK'   => 'N',
+            'EDITOR_USE_IMAGE'  => 'N',
             'EDITOR_USE_FORMAT' => 'N',
-            'EDITOR_USE_VIDEO' => 'N',
-            'USER_GROUPS' => [],
+            'EDITOR_USE_VIDEO'  => 'N',
+            'USER_GROUPS'       => [],
         ];
     }
 
@@ -368,7 +368,7 @@ class BlogHelper extends Helper
             ['ID' => 'ASC'],
             [
                 'SITE_ID' => $siteId,
-                'NAME' => $name,
+                'NAME'    => $name,
             ],
             false,
             false,
@@ -503,9 +503,9 @@ class BlogHelper extends Helper
 
             if (!$groupId) {
                 $groupId = (int) CBlogUserGroup::Add([
-                                                         'BLOG_ID' => $blogId,
-                                                         'NAME' => $userGroup['NAME'],
-                                                     ]);
+                    'BLOG_ID' => $blogId,
+                    'NAME'    => $userGroup['NAME'],
+                ]);
             }
 
             if (!$groupId) {
@@ -544,9 +544,9 @@ class BlogHelper extends Helper
     protected function normalizeUserGroups(array $userGroups): array
     {
         $defaults = [
-            'NAME' => '',
-            'AUTO' => 'N',
-            'PERMS_POST' => false,
+            'NAME'          => '',
+            'AUTO'          => 'N',
+            'PERMS_POST'    => false,
             'PERMS_COMMENT' => false,
         ];
 
@@ -647,11 +647,11 @@ class BlogHelper extends Helper
         } else {
             $exists = $this->exportPostByIdWithUserFields($postId);
             $export = $this->prepareExportPost(array_merge($fieldsForSave, [
-                    'AUTHOR_LOGIN' => $fields['AUTHOR_LOGIN'],
-                    'CATEGORIES' => $fields['CATEGORIES'] ?? [],
-                    'PERMS_POST' => $fields['PERMS_POST'] ?? [],
+                    'AUTHOR_LOGIN'  => $fields['AUTHOR_LOGIN'],
+                    'CATEGORIES'    => $fields['CATEGORIES'] ?? [],
+                    'PERMS_POST'    => $fields['PERMS_POST'] ?? [],
                     'PERMS_COMMENT' => $fields['PERMS_COMMENT'] ?? [],
-                    'ATTACH_IMG' => $fields['ATTACH_IMG'] ?? false,
+                    'ATTACH_IMG'    => $fields['ATTACH_IMG'] ?? false,
                 ])) + $this->extractPostUserFields($fields);
 
             if ($this->checkDiff($exists, $export)) {
@@ -702,30 +702,30 @@ class BlogHelper extends Helper
     protected function getDefaultPost(): array
     {
         return [
-            'AUTHOR_LOGIN' => '',
-            'TITLE' => '',
-            'PREVIEW_TEXT' => '',
+            'AUTHOR_LOGIN'      => '',
+            'TITLE'             => '',
+            'PREVIEW_TEXT'      => '',
             'PREVIEW_TEXT_TYPE' => 'text',
-            'DETAIL_TEXT' => '',
-            'DETAIL_TEXT_TYPE' => 'text',
-            'DATE_CREATE' => '',
-            'DATE_PUBLISH' => '',
-            'KEYWORDS' => '',
-            'PUBLISH_STATUS' => BLOG_PUBLISH_STATUS_PUBLISH,
-            'ATRIBUTE' => '',
-            'ENABLE_TRACKBACK' => 'Y',
-            'ENABLE_COMMENTS' => 'Y',
-            'ATTACH_IMG' => false,
-            'FAVORITE_SORT' => false,
-            'PATH' => '',
-            'CODE' => '',
-            'MICRO' => 'N',
-            'SEO_TITLE' => '',
-            'SEO_TAGS' => '',
-            'SEO_DESCRIPTION' => '',
-            'CATEGORIES' => [],
-            'PERMS_POST' => [],
-            'PERMS_COMMENT' => [],
+            'DETAIL_TEXT'       => '',
+            'DETAIL_TEXT_TYPE'  => 'text',
+            'DATE_CREATE'       => '',
+            'DATE_PUBLISH'      => '',
+            'KEYWORDS'          => '',
+            'PUBLISH_STATUS'    => BLOG_PUBLISH_STATUS_PUBLISH,
+            'ATRIBUTE'          => '',
+            'ENABLE_TRACKBACK'  => 'Y',
+            'ENABLE_COMMENTS'   => 'Y',
+            'ATTACH_IMG'        => false,
+            'FAVORITE_SORT'     => false,
+            'PATH'              => '',
+            'CODE'              => '',
+            'MICRO'             => 'N',
+            'SEO_TITLE'         => '',
+            'SEO_TAGS'          => '',
+            'SEO_DESCRIPTION'   => '',
+            'CATEGORIES'        => [],
+            'PERMS_POST'        => [],
+            'PERMS_COMMENT'     => [],
         ];
     }
 
@@ -740,9 +740,9 @@ class BlogHelper extends Helper
 
             $result[] = $this->getCategoryIdByName($blogId, $name)
                 ?: (int) CBlogCategory::Add([
-                                                'BLOG_ID' => $blogId,
-                                                'NAME' => $name,
-                                            ]);
+                    'BLOG_ID' => $blogId,
+                    'NAME'    => $name,
+                ]);
         }
 
         return array_values(array_filter($result));
@@ -754,7 +754,7 @@ class BlogHelper extends Helper
             ['ID' => 'ASC'],
             [
                 'BLOG_ID' => $blogId,
-                'NAME' => $name,
+                'NAME'    => $name,
             ],
             false,
             false,
@@ -803,7 +803,7 @@ class BlogHelper extends Helper
         $field = CUserTypeEntity::GetList(
             [],
             [
-                'ENTITY_ID' => 'BLOG_POST',
+                'ENTITY_ID'  => 'BLOG_POST',
                 'FIELD_NAME' => $fieldName,
             ],
         )->Fetch();
@@ -859,7 +859,7 @@ class BlogHelper extends Helper
     {
         return array_filter($fields, function ($name) {
             return str_starts_with((string) $name, 'UF_');
-        },                  ARRAY_FILTER_USE_KEY);
+        }, ARRAY_FILTER_USE_KEY);
     }
 
     protected function getPostSaveKeys(): array
@@ -899,7 +899,7 @@ class BlogHelper extends Helper
             ['ID' => 'ASC'],
             [
                 'BLOG_ID' => $blogId,
-                'CODE' => $code,
+                'CODE'    => $code,
             ],
             false,
             false,
@@ -1199,10 +1199,10 @@ class BlogHelper extends Helper
         CBlogPostCategory::DeleteByPostID($postId);
         foreach ($categoryIds as $categoryId) {
             CBlogPostCategory::Add([
-                                       'BLOG_ID' => $blogId,
-                                       'POST_ID' => $postId,
-                                       'CATEGORY_ID' => $categoryId,
-                                   ]);
+                'BLOG_ID'     => $blogId,
+                'POST_ID'     => $postId,
+                'CATEGORY_ID' => $categoryId,
+            ]);
         }
     }
 

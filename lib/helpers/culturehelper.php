@@ -35,8 +35,8 @@ class CultureHelper extends Helper
     public function getCultures(array $filter = []): array
     {
         return CultureTable::getList([
-                                         'filter' => $filter,
-                                     ])->fetchAll();
+            'filter' => $filter,
+        ])->fetchAll();
     }
 
     /**
@@ -62,9 +62,9 @@ class CultureHelper extends Helper
     public function getCultureByCode(string $code): array|false
     {
         return CultureTable::getList([
-                                         'filter' => ['=CODE' => $code],
-                                         'limit' => 1,
-                                     ])->fetch();
+            'filter' => ['=CODE' => $code],
+            'limit'  => 1,
+        ])->fetch();
     }
 
     /**

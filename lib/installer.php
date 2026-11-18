@@ -15,7 +15,7 @@ class Installer
      * @throws MigrationException
      */
     public function __construct(
-        array            $configValues = [],
+        array $configValues = [],
         ?OutputInterface $output = null,
     ) {
         $this->versionManager = new VersionManager(

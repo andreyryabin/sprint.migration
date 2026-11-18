@@ -59,8 +59,8 @@ class VoteBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleTemplateFile('VoteExport'),
             [
-                'channel' => $channel,
-                'vote' => $vote,
+                'channel'   => $channel,
+                'vote'      => $vote,
                 'questions' => $questions,
             ],
         );

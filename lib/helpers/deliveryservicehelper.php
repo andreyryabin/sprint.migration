@@ -167,9 +167,9 @@ class DeliveryServiceHelper extends Helper
     public function get($code)
     {
         $fields = Table::query()->setSelect(['*'])
-            ->setFilter(['CODE' => trim($code)])
-            ->exec()
-            ->fetch();
+                       ->setFilter(['CODE' => trim($code)])
+                       ->exec()
+                       ->fetch();
 
         if (false === $fields) {
             throw new HelperException(

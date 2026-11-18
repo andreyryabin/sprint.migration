@@ -66,8 +66,8 @@ class SiteHelper extends Helper
         $dbres = CSite::GetTemplateList($siteId);
         while ($item = $dbres->Fetch()) {
             $templates[] = [
-                "TEMPLATE" => $item['TEMPLATE'],
-                "SORT" => $item['SORT'],
+                "TEMPLATE"  => $item['TEMPLATE'],
+                "SORT"      => $item['SORT'],
                 "CONDITION" => $item['CONDITION'],
             ];
         }
@@ -122,9 +122,9 @@ class SiteHelper extends Helper
             }
 
             $validTemplates[] = [
-                'TEMPLATE' => $template['TEMPLATE'],
+                'TEMPLATE'  => $template['TEMPLATE'],
                 'CONDITION' => $template['CONDITION'],
-                'SORT' => $sort,
+                'SORT'      => $sort,
             ];
 
             $sort++;

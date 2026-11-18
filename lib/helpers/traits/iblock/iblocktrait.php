@@ -115,21 +115,21 @@ trait IblockTrait
         $this->checkRequiredKeys($fields, ['CODE', 'IBLOCK_TYPE_ID', 'LID']);
 
         $default = [
-            'ACTIVE' => 'Y',
-            'NAME' => '',
-            'CODE' => '',
-            'LIST_PAGE_URL' => '',
-            'DETAIL_PAGE_URL' => '',
+            'ACTIVE'           => 'Y',
+            'NAME'             => '',
+            'CODE'             => '',
+            'LIST_PAGE_URL'    => '',
+            'DETAIL_PAGE_URL'  => '',
             'SECTION_PAGE_URL' => '',
-            'IBLOCK_TYPE_ID' => 'main',
-            'LID' => ['s1'],
-            'SORT' => 500,
-            'GROUP_ID' => ['2' => 'R'],
-            'VERSION' => 2,
-            'BIZPROC' => 'N',
-            'WORKFLOW' => 'N',
-            'INDEX_ELEMENT' => 'N',
-            'INDEX_SECTION' => 'N',
+            'IBLOCK_TYPE_ID'   => 'main',
+            'LID'              => ['s1'],
+            'SORT'             => 500,
+            'GROUP_ID'         => ['2' => 'R'],
+            'VERSION'          => 2,
+            'BIZPROC'          => 'N',
+            'WORKFLOW'         => 'N',
+            'INDEX_ELEMENT'    => 'N',
+            'INDEX_SECTION'    => 'N',
         ];
 
         $fields = array_replace_recursive($default, $fields);

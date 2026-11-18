@@ -34,16 +34,16 @@ class FormBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $formId = $this->addFieldAndReturn('form_id', [
-            'title' => Locale::getMessage('BUILDER_FormExport_FormId'),
+            'title'  => Locale::getMessage('BUILDER_FormExport_FormId'),
             'select' => $this->getFormsSelect(),
         ]);
 
         $form = $helper->Form()->exportFormById($formId);
 
         $what = $this->addFieldAndReturn('what', [
-            'title' => Locale::getMessage('BUILDER_FormExport_What'),
+            'title'    => Locale::getMessage('BUILDER_FormExport_What'),
             'multiple' => 1,
-            'select' => [
+            'select'   => [
                 [
                     'title' => Locale::getMessage('BUILDER_FormExport_Form'),
                     'value' => 'form',
@@ -64,7 +64,7 @@ class FormBuilder extends VersionBuilder
 
         if (in_array('fields', $what)) {
             $fieldsMode = $this->addFieldAndReturn('fields_mode', [
-                'title' => Locale::getMessage('BUILDER_FormExport_Fields'),
+                'title'  => Locale::getMessage('BUILDER_FormExport_Fields'),
                 'select' => [
                     [
                         'title' => Locale::getMessage('BUILDER_SelectAll'),
@@ -79,8 +79,8 @@ class FormBuilder extends VersionBuilder
 
             if ($fieldsMode == 'some') {
                 $fieldsSomeSids = $this->addFieldAndReturn('fields_some', [
-                    'title' => Locale::getMessage('BUILDER_FormExport_Fields'),
-                    'select' => $this->getFieldsSelect($formId),
+                    'title'    => Locale::getMessage('BUILDER_FormExport_Fields'),
+                    'select'   => $this->getFieldsSelect($formId),
                     'multiple' => 1,
                 ]);
                 $fields = $helper->Form()->exportFormFields($formId, $fieldsSomeSids);
@@ -105,9 +105,9 @@ class FormBuilder extends VersionBuilder
             [
                 'formExport' => $formExport,
                 'fieldsMode' => $fieldsMode,
-                'form' => $form,
-                'statuses' => $statuses,
-                'fields' => $fields,
+                'form'       => $form,
+                'statuses'   => $statuses,
+                'fields'     => $fields,
             ],
         );
     }

@@ -44,8 +44,8 @@ class EventHelper extends Helper
         if ($item) {
             return [
                 'EVENT_NAME' => $item['EVENT_NAME'],
-                'SUBJECT' => $item['SUBJECT'],
-                'LID' => $this->getEventMessageSites($messageId),
+                'SUBJECT'    => $item['SUBJECT'],
+                'LID'        => $this->getEventMessageSites($messageId),
             ];
         }
         throw new HelperException("Event message with ID=\"$messageId\" not found");
@@ -171,8 +171,8 @@ class EventHelper extends Helper
 
         try {
             $result = SmsTemplateTable::getList([
-                                                    'filter' => $filter,
-                                                ])->fetchAll();
+                'filter' => $filter,
+            ])->fetchAll();
 
             return array_map(
                 fn($item) => $this->prepareEventSmsTemplate($item),
@@ -253,9 +253,9 @@ class EventHelper extends Helper
         $this->checkRequiredKeys($fields, ['LID']);
 
         $item = $this->getEventType([
-                                        'EVENT_NAME' => $eventName,
-                                        'LID' => $fields['LID'],
-                                    ]);
+            'EVENT_NAME' => $eventName,
+            'LID'        => $fields['LID'],
+        ]);
 
         if ($item) {
             return $item['ID'];
@@ -307,8 +307,8 @@ class EventHelper extends Helper
         $item = $this->getEventMessage(
             [
                 'EVENT_NAME' => $eventName,
-                'SUBJECT' => $fields['SUBJECT'],
-                'LID' => $fields['LID'],
+                'SUBJECT'    => $fields['SUBJECT'],
+                'LID'        => $fields['LID'],
             ],
         );
 
@@ -329,12 +329,12 @@ class EventHelper extends Helper
         $this->checkRequiredKeys($fields, ['LID', 'SUBJECT']);
 
         $default = [
-            'ACTIVE' => 'Y',
+            'ACTIVE'     => 'Y',
             'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
-            'EMAIL_TO' => '#EMAIL_TO#',
-            'BCC' => '',
-            'BODY_TYPE' => 'text',
-            'MESSAGE' => '',
+            'EMAIL_TO'   => '#EMAIL_TO#',
+            'BCC'        => '',
+            'BODY_TYPE'  => 'text',
+            'MESSAGE'    => '',
         ];
 
         $fields = array_merge($default, $fields);
@@ -407,11 +407,11 @@ class EventHelper extends Helper
         $this->checkRequiredKeys($fields, ['SENDER', 'RECEIVER', 'MESSAGE', 'LID']);
 
         $exists = $this->getEventSmsTemplate([
-                                                 'EVENT_NAME' => $eventName,
-                                                 'SENDER' => $fields['SENDER'],
-                                                 'RECEIVER' => $fields['RECEIVER'],
-                                                 'MESSAGE' => $fields['MESSAGE'],
-                                             ]);
+            'EVENT_NAME' => $eventName,
+            'SENDER'     => $fields['SENDER'],
+            'RECEIVER'   => $fields['RECEIVER'],
+            'MESSAGE'    => $fields['MESSAGE'],
+        ]);
 
         if (empty($exists)) {
             return $this->addEventSmsTemplate($eventName, $fields);
@@ -501,8 +501,8 @@ class EventHelper extends Helper
         $exists = $this->getEventMessage(
             [
                 'EVENT_NAME' => $eventName,
-                'SUBJECT' => $fields['SUBJECT'],
-                'LID' => $fields['LID'],
+                'SUBJECT'    => $fields['SUBJECT'],
+                'LID'        => $fields['LID'],
             ],
         );
 
@@ -531,9 +531,9 @@ class EventHelper extends Helper
         $this->checkRequiredKeys($fields, ['LID']);
 
         $exists = $this->getEventType([
-                                          'EVENT_NAME' => $eventName,
-                                          'LID' => $fields['LID'],
-                                      ]);
+            'EVENT_NAME' => $eventName,
+            'LID'        => $fields['LID'],
+        ]);
 
         $fields = $this->prepareExportEventType($fields);
 
@@ -575,9 +575,9 @@ class EventHelper extends Helper
         $this->checkRequiredKeys($fields, ['LID', 'EVENT_NAME']);
 
         $exists = $this->getEventType([
-                                          'EVENT_NAME' => $fields['EVENT_NAME'],
-                                          'LID' => $fields['LID'],
-                                      ]);
+            'EVENT_NAME' => $fields['EVENT_NAME'],
+            'LID'        => $fields['LID'],
+        ]);
 
         if (empty($exists)) {
             return false;
@@ -611,7 +611,7 @@ class EventHelper extends Helper
 
         $filter = [
             'EVENT_NAME' => $fields['EVENT_NAME'],
-            'SUBJECT' => $fields['SUBJECT'],
+            'SUBJECT'    => $fields['SUBJECT'],
         ];
 
         if (isset($fields['LID'])) {

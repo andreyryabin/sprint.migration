@@ -17,7 +17,7 @@ class RestartableWriter
 
     public function __construct(
         private readonly RestartableInterface $restartable,
-        private readonly string               $directory,
+        private readonly string $directory,
     ) {}
 
     public function setExchangeResource(string $exchangeResource): RestartableWriter

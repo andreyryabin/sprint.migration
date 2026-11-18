@@ -26,7 +26,7 @@ class VersionExchangeFactory
         $dir = $this->versionConfig->getVersionExchangeDir($versionName);
 
         return new VersionExchange(
-            directoryPath:   $dir,
+            directoryPath: $dir,
             directoryExists: $dir && is_dir($dir),
         );
     }

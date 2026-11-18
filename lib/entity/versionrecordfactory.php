@@ -33,12 +33,12 @@ class VersionRecordFactory
         $versionTimestamp = $this->versionConfig->getVersionTimestamp($versionRecord['version']);
 
         return new VersionRecord(
-            versionName:      (string) ($versionRecord['version']),
+            versionName: (string) ($versionRecord['version']),
             versionTimestamp: $versionTimestamp,
-            releaseTag:       (string) ($versionRecord['tag'] ?? ''),
-            createdAt:        (string) ($versionRecord['meta']['created_at'] ?? ''),
-            createdBy:        (string) ($versionRecord['meta']['created_by'] ?? ''),
-            recordHash:       (string) ($versionRecord['hash'] ?? ''),
+            releaseTag: (string) ($versionRecord['tag'] ?? ''),
+            createdAt: (string) ($versionRecord['meta']['created_at'] ?? ''),
+            createdBy: (string) ($versionRecord['meta']['created_by'] ?? ''),
+            recordHash: (string) ($versionRecord['hash'] ?? ''),
         );
     }
 

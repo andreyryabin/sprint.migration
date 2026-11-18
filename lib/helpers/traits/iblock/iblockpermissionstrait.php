@@ -61,10 +61,10 @@ trait IblockPermissionsTrait
     protected function getDefaultExtendedPermission(): array
     {
         return [
-            'DO_INHERIT' => 'Y',
+            'DO_INHERIT'   => 'Y',
             'IS_INHERITED' => 'N',
-            'OVERWRITED' => 0,
-            'XML_ID' => null,
+            'OVERWRITED'   => 0,
+            'XML_ID'       => null,
         ];
     }
 

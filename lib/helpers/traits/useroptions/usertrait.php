@@ -12,8 +12,8 @@ trait UserTrait
     public function exportUserList()
     {
         return $this->exportList([
-                                     'name' => $this->getUserGridId(),
-                                 ]);
+            'name' => $this->getUserGridId(),
+        ]);
     }
 
     public function getUserGridId()
@@ -52,8 +52,8 @@ trait UserTrait
     public function exportUserForm()
     {
         return $this->exportForm([
-                                     'name' => 'user_edit',
-                                 ]);
+            'name' => 'user_edit',
+        ]);
     }
 
     /**

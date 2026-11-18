@@ -76,15 +76,15 @@ class VersionFileFactory
             $contentHash = hash($algo, file_get_contents($location));
 
             return new VersionFile(
-                versionName:      $versionName,
+                versionName: $versionName,
                 versionTimestamp: $versionTimestamp,
-                location:         $location,
-                versionClass:     $versionClass,
-                description:      $description,
-                olderVersion:     $olderVersion,
-                contentHash:      $contentHash,
-                createdAt:        $createdAt,
-                createdBy:        $createdBy,
+                location: $location,
+                versionClass: $versionClass,
+                description: $description,
+                olderVersion: $olderVersion,
+                contentHash: $contentHash,
+                createdAt: $createdAt,
+                createdBy: $createdBy,
             );
         } catch (Throwable $e) {
             throw new MigrationException($e->getMessage(), $e->getCode(), $e);

@@ -13,8 +13,8 @@ trait HlblockTrait
     public function exportHlblockList($hlblockId)
     {
         return $this->exportList([
-                                     'name' => $this->getHlblockGridId($hlblockId),
-                                 ]);
+            'name' => $this->getHlblockGridId($hlblockId),
+        ]);
     }
 
     /**
@@ -56,8 +56,8 @@ trait HlblockTrait
     public function exportHlblockForm($hlblockId)
     {
         return $this->exportForm([
-                                     'name' => $this->getHlblockFormId($hlblockId),
-                                 ]);
+            'name' => $this->getHlblockFormId($hlblockId),
+        ]);
     }
 
     /**

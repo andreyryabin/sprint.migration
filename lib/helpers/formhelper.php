@@ -57,29 +57,29 @@ class FormHelper extends Helper
     private function getDefaultForm(): array
     {
         return [
-            'BUTTON' => 'Сохранить',
-            'C_SORT' => '100',
-            'FIRST_SITE_ID' => null,
-            'IMAGE_ID' => null,
-            'USE_CAPTCHA' => 'N',
-            'DESCRIPTION' => '',
-            'DESCRIPTION_TYPE' => 'text',
-            'FORM_TEMPLATE' => '',
-            'USE_DEFAULT_TEMPLATE' => 'Y',
-            'SHOW_TEMPLATE' => null,
-            'SHOW_RESULT_TEMPLATE' => null,
-            'PRINT_RESULT_TEMPLATE' => null,
-            'EDIT_RESULT_TEMPLATE' => null,
+            'BUTTON'                 => 'Сохранить',
+            'C_SORT'                 => '100',
+            'FIRST_SITE_ID'          => null,
+            'IMAGE_ID'               => null,
+            'USE_CAPTCHA'            => 'N',
+            'DESCRIPTION'            => '',
+            'DESCRIPTION_TYPE'       => 'text',
+            'FORM_TEMPLATE'          => '',
+            'USE_DEFAULT_TEMPLATE'   => 'Y',
+            'SHOW_TEMPLATE'          => null,
+            'SHOW_RESULT_TEMPLATE'   => null,
+            'PRINT_RESULT_TEMPLATE'  => null,
+            'EDIT_RESULT_TEMPLATE'   => null,
             'FILTER_RESULT_TEMPLATE' => null,
-            'TABLE_RESULT_TEMPLATE' => null,
-            'USE_RESTRICTIONS' => 'N',
-            'RESTRICT_USER' => '0',
-            'RESTRICT_TIME' => '0',
-            'RESTRICT_STATUS' => '',
-            'STAT_EVENT1' => 'form',
-            'STAT_EVENT2' => '',
-            'STAT_EVENT3' => '',
-            'LID' => null,
+            'TABLE_RESULT_TEMPLATE'  => null,
+            'USE_RESTRICTIONS'       => 'N',
+            'RESTRICT_USER'          => '0',
+            'RESTRICT_TIME'          => '0',
+            'RESTRICT_STATUS'        => '',
+            'STAT_EVENT1'            => 'form',
+            'STAT_EVENT2'            => '',
+            'STAT_EVENT3'            => '',
+            'LID'                    => null,
         ];
     }
 
@@ -290,29 +290,29 @@ class FormHelper extends Helper
     private function getDefaultField(): array
     {
         return [
-            'ACTIVE' => 'Y',
-            'C_SORT' => '100',
-            'ADDITIONAL' => 'N',
-            'REQUIRED' => 'N',
-            'IN_FILTER' => 'Y',
+            'ACTIVE'           => 'Y',
+            'C_SORT'           => '100',
+            'ADDITIONAL'       => 'N',
+            'REQUIRED'         => 'N',
+            'IN_FILTER'        => 'Y',
             'IN_RESULTS_TABLE' => 'Y',
-            'IN_EXCEL_TABLE' => 'Y',
-            'FIELD_TYPE' => 'text',
-            'IMAGE_ID' => null,
-            'COMMENTS' => '',
+            'IN_EXCEL_TABLE'   => 'Y',
+            'FIELD_TYPE'       => 'text',
+            'IMAGE_ID'         => null,
+            'COMMENTS'         => '',
         ];
     }
 
     private function getDefaultAnswer(): array
     {
         return [
-            'MESSAGE' => ' ',
-            'VALUE' => '',
-            'FIELD_WIDTH' => '0',
+            'MESSAGE'      => ' ',
+            'VALUE'        => '',
+            'FIELD_WIDTH'  => '0',
             'FIELD_HEIGHT' => '0',
-            'FIELD_PARAM' => '',
-            'C_SORT' => '0',
-            'ACTIVE' => 'Y',
+            'FIELD_PARAM'  => '',
+            'C_SORT'       => '0',
+            'ACTIVE'       => 'Y',
         ];
     }
 
@@ -629,15 +629,15 @@ class FormHelper extends Helper
     private function getDefaultStatus(): array
     {
         return [
-            'C_SORT' => '100',
-            'ACTIVE' => 'Y',
-            'DESCRIPTION' => 'DEFAULT',
-            'DEFAULT_VALUE' => 'Y',
-            'HANDLER_OUT' => null,
-            'HANDLER_IN' => null,
-            'arPERMISSION_VIEW' => [0],
-            'arPERMISSION_MOVE' => [0],
-            'arPERMISSION_EDIT' => [0],
+            'C_SORT'              => '100',
+            'ACTIVE'              => 'Y',
+            'DESCRIPTION'         => 'DEFAULT',
+            'DEFAULT_VALUE'       => 'Y',
+            'HANDLER_OUT'         => null,
+            'HANDLER_IN'          => null,
+            'arPERMISSION_VIEW'   => [0],
+            'arPERMISSION_MOVE'   => [0],
+            'arPERMISSION_EDIT'   => [0],
             'arPERMISSION_DELETE' => [0],
         ];
     }

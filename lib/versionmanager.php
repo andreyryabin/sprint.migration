@@ -29,7 +29,7 @@ class VersionManager
      * @throws MigrationException
      */
     public function __construct(
-        private VersionConfig    $versionConfig,
+        private VersionConfig $versionConfig,
         private ?OutputInterface $output = null,
     ) {
         $this->versionTable = new VersionTable(
@@ -173,9 +173,9 @@ class VersionManager
 
     public function startMigration(
         VersionEntity $entity,
-        string        $action,
-        array         $params,
-        string        $tag,
+        string $action,
+        array $params,
+        string $tag,
     ): VersionResult {
         $result = new VersionResult();
         try {
@@ -207,19 +207,19 @@ class VersionManager
 
             if ($action == VersionEnum::ACTION_UP) {
                 $this->checkResultAfterStart(
-                    $versionObj->up()
+                    $versionObj->up(),
                 );
                 $this->getVersionTable()->addRecord(
                     $entity->getVersionName(),
                     $entity->getFileContentHash(),
-                    $tag
+                    $tag,
                 );
             } else {
                 $this->checkResultAfterStart(
-                    $versionObj->down()
+                    $versionObj->down(),
                 );
                 $this->getVersionTable()->removeRecord(
-                    $entity->getVersionName()
+                    $entity->getVersionName(),
                 );
             }
         } catch (RestartException) {
@@ -363,12 +363,12 @@ class VersionManager
 
         if ($entity->hasRecord()) {
             $this->getVersionTable()->removeRecord(
-                $versionName
+                $versionName,
             );
             $vmTo->getVersionTable()->addRecord(
                 $entity->getVersionName(),
                 $entity->getFileContentHash(),
-                $entity->getReleaseTag()
+                $entity->getReleaseTag(),
             );
             $this->output->outInfo(Locale::getMessage('MOVE_RECORD', ['#VERSION#' => $versionName]));
             $success++;
@@ -396,7 +396,7 @@ class VersionManager
         $success = false;
         if ($status == VersionEnum::STATUS_NEW && $entity->hasRecord()) {
             $success = $this->getVersionTable()->removeRecord(
-                $entity->getVersionName()
+                $entity->getVersionName(),
             );
         }
 
@@ -404,7 +404,7 @@ class VersionManager
             $success = $this->getVersionTable()->addRecord(
                 $entity->getVersionName(),
                 $entity->getFileContentHash(),
-                $entity->getReleaseTag()
+                $entity->getReleaseTag(),
             );
         }
 

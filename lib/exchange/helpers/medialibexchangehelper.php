@@ -19,8 +19,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
      */
     public function getCollectionSelect(int|string $typeId): array
     {
-        return array_map(fn($item)
-            => [
+        return array_map(fn($item) => [
             'title' => $item['DEPTH_NAME'],
             'value' => $item['ID'],
         ], $this->getCollectionsFlatTree($typeId));
@@ -64,7 +63,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
             $collectionId,
             [
                 'offset' => $offset,
-                'limit' => $limit,
+                'limit'  => $limit,
             ],
         );
 
@@ -91,9 +90,9 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
             if (in_array($code, $exportFields)) {
                 $item->addChild(
                     $this->createWriterFieldTag([
-                                                    'NAME' => $code,
-                                                    'VALUE' => $val,
-                                                ]),
+                        'NAME'  => $code,
+                        'VALUE' => $val,
+                    ]),
                 );
             }
         }

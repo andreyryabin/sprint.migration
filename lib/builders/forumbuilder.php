@@ -46,8 +46,8 @@ class ForumBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $forumIds = $this->addFieldAndReturn('forum_ids', [
-            'title' => Locale::getMessage('BUILDER_ForumExport_forum_ids'),
-            'items' => $this->getForumsStructure(),
+            'title'    => Locale::getMessage('BUILDER_ForumExport_forum_ids'),
+            'items'    => $this->getForumsStructure(),
             'multiple' => 1,
         ]);
 

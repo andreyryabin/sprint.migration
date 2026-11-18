@@ -53,7 +53,7 @@ class IblockCategoryBuilder extends VersionBuilder
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockCategoryExport'),
             [
-                'iblock' => $iblock,
+                'iblock'      => $iblock,
                 'sectionTree' => $sectionTree,
             ],
         );

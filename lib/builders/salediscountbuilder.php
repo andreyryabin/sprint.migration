@@ -45,8 +45,8 @@ class SaleDiscountBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $discountIds = $this->addFieldAndReturn('discounts', [
-            'title' => Locale::getMessage('BUILDER_SaleDiscount_Discounts'),
-            'items' => $this->getDiscountsStructure(),
+            'title'    => Locale::getMessage('BUILDER_SaleDiscount_Discounts'),
+            'items'    => $this->getDiscountsStructure(),
             'multiple' => 1,
         ]);
 

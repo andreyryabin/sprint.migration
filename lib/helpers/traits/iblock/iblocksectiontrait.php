@@ -107,14 +107,14 @@ trait IblockSectionTrait
     public function addSection(int $iblockId, array $fields = []): int
     {
         $default = [
-            'ACTIVE' => 'Y',
+            'ACTIVE'            => 'Y',
             'IBLOCK_SECTION_ID' => false,
-            'NAME' => 'section',
-            'CODE' => '',
-            'SORT' => 100,
-            'PICTURE' => false,
-            'DESCRIPTION' => '',
-            'DESCRIPTION_TYPE' => 'text',
+            'NAME'              => 'section',
+            'CODE'              => '',
+            'SORT'              => 100,
+            'PICTURE'           => false,
+            'DESCRIPTION'       => '',
+            'DESCRIPTION_TYPE'  => 'text',
         ];
 
         $fields = array_replace_recursive($default, $fields);
@@ -210,7 +210,7 @@ trait IblockSectionTrait
         $sectionId = 0;
         foreach ($path as $name) {
             $sectionId = $this->getSectionIdIfExists($iblockId, [
-                '=NAME' => $name,
+                '=NAME'      => $name,
                 'SECTION_ID' => $sectionId,
             ]);
         }
@@ -241,7 +241,7 @@ trait IblockSectionTrait
             Locale::getMessage(
                 'ERR_IB_SECTION_ID_NOT_FOUND',
                 [
-                    '#IBLOCK_ID#' => $iblockId,
+                    '#IBLOCK_ID#'  => $iblockId,
                     '#SECTION_ID#' => print_r($code, true),
                 ],
             ),
@@ -315,7 +315,7 @@ trait IblockSectionTrait
             $sectionId = $this->getSectionId(
                 $iblockId,
                 [
-                    '=NAME' => $item['NAME'],
+                    '=NAME'      => $item['NAME'],
                     'SECTION_ID' => $parentId,
                 ],
             );
@@ -343,10 +343,10 @@ trait IblockSectionTrait
             }
 
             $result[$propertyId] = [
-                'SMART_FILTER' => $link['SMART_FILTER'] ?? null,
-                'DISPLAY_TYPE' => $link['DISPLAY_TYPE'] ?? null,
+                'SMART_FILTER'     => $link['SMART_FILTER'] ?? null,
+                'DISPLAY_TYPE'     => $link['DISPLAY_TYPE'] ?? null,
                 'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'] ?? null,
-                'FILTER_HINT' => $link['FILTER_HINT'] ?? null,
+                'FILTER_HINT'      => $link['FILTER_HINT'] ?? null,
             ];
         }
 
@@ -369,10 +369,10 @@ trait IblockSectionTrait
     }
 
     protected function buildSectionsTree(
-        int   $iblockId,
+        int $iblockId,
         array &$sections,
-        int   $parentId = 0,
-        bool  $export = false,
+        int $parentId = 0,
+        bool $export = false,
     ): array {
         $branch = [];
         foreach ($sections as $section) {
@@ -411,11 +411,11 @@ trait IblockSectionTrait
 
         $result = [];
         $links = SectionPropertyTable::getList([
-                                                   'filter' => [
-                                                       'IBLOCK_ID' => $iblockId,
-                                                       'SECTION_ID' => $sectionId,
-                                                   ],
-                                               ])->fetchAll();
+            'filter' => [
+                'IBLOCK_ID'  => $iblockId,
+                'SECTION_ID' => $sectionId,
+            ],
+        ])->fetchAll();
 
         foreach ($links as $link) {
             $property = $this->getProperty($iblockId, ['ID' => (int) $link['PROPERTY_ID']]);
@@ -424,11 +424,11 @@ trait IblockSectionTrait
             }
 
             $result[$property['CODE']] = [
-                'SMART_FILTER' => $link['SMART_FILTER'] === true || $link['SMART_FILTER'] === 'Y' ? 'Y' : 'N',
-                'DISPLAY_TYPE' => (string) $link['DISPLAY_TYPE'],
+                'SMART_FILTER'     => $link['SMART_FILTER'] === true || $link['SMART_FILTER'] === 'Y' ? 'Y' : 'N',
+                'DISPLAY_TYPE'     => (string) $link['DISPLAY_TYPE'],
                 'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'] === true || $link['DISPLAY_EXPANDED'] === 'Y' ? 'Y'
                     : 'N',
-                'FILTER_HINT' => (string) $link['FILTER_HINT'],
+                'FILTER_HINT'      => (string) $link['FILTER_HINT'],
             ];
         }
 

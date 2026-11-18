@@ -78,8 +78,8 @@ class VersionController extends Controller
     {
         $meta = [
             'version' => $entity->getVersionName(),
-            'status' => $entity->getStatus(),
-            'labels' => $entity->getLabels(),
+            'status'  => $entity->getStatus(),
+            'labels'  => $entity->getLabels(),
         ];
 
         if ($entity->hasRecord()) {
@@ -106,8 +106,8 @@ class VersionController extends Controller
         $entity = $this->versionManager->getVersionByName($version);
 
         return array_merge([
-                               'meta' => $this->versionToArray($entity),
-                           ], $this->output->getLog());
+            'meta' => $this->versionToArray($entity),
+        ], $this->output->getLog());
     }
 
     /**
@@ -156,8 +156,8 @@ class VersionController extends Controller
         $entity = $this->versionManager->getVersionByName($version);
 
         return array_merge([
-                               'meta' => $this->versionToArray($entity),
-                           ], $this->output->getLog());
+            'meta' => $this->versionToArray($entity),
+        ], $this->output->getLog());
     }
 
     /**
@@ -193,7 +193,7 @@ class VersionController extends Controller
         $dto = [
             'success' => $result->isSuccess(),
             'restart' => $result->needRestart(),
-            'params' => $result->getRestartParams(),
+            'params'  => $result->getRestartParams(),
         ];
 
         if ($result->isSuccess()) {

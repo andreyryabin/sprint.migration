@@ -55,11 +55,11 @@ class OptionHelper extends Helper
 
             foreach ($options as $optionName => $optionValue) {
                 $result[] = $this->transformOption([
-                                                       'MODULE_ID' => $filter['MODULE_ID'],
-                                                       'NAME' => $optionName,
-                                                       'VALUE' => $optionValue,
-                                                       'SITE_ID' => $siteId,
-                                                   ]);
+                    'MODULE_ID' => $filter['MODULE_ID'],
+                    'NAME'      => $optionName,
+                    'VALUE'     => $optionValue,
+                    'SITE_ID'   => $siteId,
+                ]);
             }
         }
 
@@ -98,12 +98,12 @@ class OptionHelper extends Helper
         $this->checkRequiredKeys($fields, ['MODULE_ID', 'NAME']);
 
         $exists = $this->getOption([
-                                       'MODULE_ID' => $fields['MODULE_ID'],
-                                       'NAME' => $fields['NAME'],
-                                       'VALUE' => $fields['VALUE'] ?? '',
-                                       'DEFAULT_VALUE' => $fields['DEFAULT_VALUE'] ?? '',
-                                       'SITE_ID' => $fields['SITE_ID'] ?? false,
-                                   ]);
+            'MODULE_ID'     => $fields['MODULE_ID'],
+            'NAME'          => $fields['NAME'],
+            'VALUE'         => $fields['VALUE'] ?? '',
+            'DEFAULT_VALUE' => $fields['DEFAULT_VALUE'] ?? '',
+            'SITE_ID'       => $fields['SITE_ID'] ?? false,
+        ]);
 
         if (empty($exists)) {
             return $this->setOption($fields);
@@ -132,11 +132,11 @@ class OptionHelper extends Helper
             );
 
             return $this->transformOption([
-                                              'MODULE_ID' => $filter['MODULE_ID'],
-                                              'NAME' => $filter['NAME'],
-                                              'VALUE' => $value,
-                                              'SITE_ID' => $filter['SITE_ID'],
-                                          ]);
+                'MODULE_ID' => $filter['MODULE_ID'],
+                'NAME'      => $filter['NAME'],
+                'VALUE'     => $value,
+                'SITE_ID'   => $filter['SITE_ID'],
+            ]);
         } catch (Exception $e) {
             throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
@@ -157,10 +157,10 @@ class OptionHelper extends Helper
             );
 
             $optionName = implode(':', array_filter([
-                                                        $fields['MODULE_ID'],
-                                                        $fields['SITE_ID'],
-                                                        $fields['NAME'],
-                                                    ]));
+                $fields['MODULE_ID'],
+                $fields['SITE_ID'],
+                $fields['NAME'],
+            ]));
 
 
             $this->outNotice(Locale::getMessage('OPTION_UPDATED', ['#NAME#' => $optionName]));

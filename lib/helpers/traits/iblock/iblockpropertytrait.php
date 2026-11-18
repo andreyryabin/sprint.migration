@@ -88,7 +88,7 @@ trait IblockPropertyTrait
             if ($property['PROPERTY_TYPE'] == 'L') {
                 $property['VALUES'] = $this->getPropertyEnums(
                     [
-                        'IBLOCK_ID' => $property['IBLOCK_ID'],
+                        'IBLOCK_ID'   => $property['IBLOCK_ID'],
                         'PROPERTY_ID' => $property['ID'],
                     ],
                 );
@@ -115,7 +115,7 @@ trait IblockPropertyTrait
     {
         $dbres = CIBlockPropertyEnum::GetList(
             [
-                'SORT' => 'ASC',
+                'SORT'  => 'ASC',
                 'VALUE' => 'ASC',
             ],
             $filter,
@@ -137,14 +137,14 @@ trait IblockPropertyTrait
         try {
             if (PropertyFeature::isEnabledFeatures()) {
                 $features = PropertyFeatureTable::getList([
-                                                              'select' => [
-                                                                  'ID',
-                                                                  'MODULE_ID',
-                                                                  'FEATURE_ID',
-                                                                  'IS_ENABLED',
-                                                              ],
-                                                              'filter' => ['=PROPERTY_ID' => (int) $propertyId],
-                                                          ])->fetchAll();
+                    'select' => [
+                        'ID',
+                        'MODULE_ID',
+                        'FEATURE_ID',
+                        'IS_ENABLED',
+                    ],
+                    'filter' => ['=PROPERTY_ID' => (int) $propertyId],
+                ])->fetchAll();
             }
         } catch (Exception $e) {
             throw new HelperException($e->getMessage(), $e->getCode(), $e);
@@ -160,19 +160,19 @@ trait IblockPropertyTrait
     {
         try {
             $link = SectionPropertyTable::getList([
-                                                      'filter' => [
-                                                          'PROPERTY_ID' => $propertyId,
-                                                          'SECTION_ID' => 0,
-                                                      ],
-                                                  ])->fetch();
+                'filter' => [
+                    'PROPERTY_ID' => $propertyId,
+                    'SECTION_ID'  => 0,
+                ],
+            ])->fetch();
 
             return $link
                 ? [
                     'SECTION_PROPERTY' => 'Y',
-                    'SMART_FILTER' => $link['SMART_FILTER'],
-                    'DISPLAY_TYPE' => $link['DISPLAY_TYPE'],
+                    'SMART_FILTER'     => $link['SMART_FILTER'],
+                    'DISPLAY_TYPE'     => $link['DISPLAY_TYPE'],
                     'DISPLAY_EXPANDED' => $link['DISPLAY_EXPANDED'],
-                    'FILTER_HINT' => $link['FILTER_HINT'],
+                    'FILTER_HINT'      => $link['FILTER_HINT'],
                 ]
                 : [
                     'SECTION_PROPERTY' => 'N',
@@ -192,9 +192,9 @@ trait IblockPropertyTrait
 
             foreach ($prop['VALUES'] as $item) {
                 $exportValues[] = [
-                    'VALUE' => $item['VALUE'],
-                    'DEF' => $item['DEF'],
-                    'SORT' => $item['SORT'],
+                    'VALUE'  => $item['VALUE'],
+                    'DEF'    => $item['DEF'],
+                    'SORT'   => $item['SORT'],
                     'XML_ID' => $item['XML_ID'],
                 ];
             }
@@ -206,7 +206,7 @@ trait IblockPropertyTrait
             $exportFeatures = [];
             foreach ($prop['FEATURES'] as $item) {
                 $exportFeatures[] = [
-                    'MODULE_ID' => $item['MODULE_ID'],
+                    'MODULE_ID'  => $item['MODULE_ID'],
                     'FEATURE_ID' => $item['FEATURE_ID'],
                     'IS_ENABLED' => $item['IS_ENABLED'],
                 ];
@@ -237,18 +237,18 @@ trait IblockPropertyTrait
     public function addProperty(int $iblockId, array $fields): int
     {
         $default = [
-            'NAME' => '',
-            'ACTIVE' => 'Y',
-            'SORT' => '500',
-            'CODE' => '',
-            'PROPERTY_TYPE' => 'S',
-            'USER_TYPE' => '',
-            'ROW_COUNT' => '1',
-            'COL_COUNT' => '30',
-            'LIST_TYPE' => 'L',
-            'MULTIPLE' => 'N',
-            'IS_REQUIRED' => 'N',
-            'FILTRABLE' => 'Y',
+            'NAME'           => '',
+            'ACTIVE'         => 'Y',
+            'SORT'           => '500',
+            'CODE'           => '',
+            'PROPERTY_TYPE'  => 'S',
+            'USER_TYPE'      => '',
+            'ROW_COUNT'      => '1',
+            'COL_COUNT'      => '30',
+            'LIST_TYPE'      => 'L',
+            'MULTIPLE'       => 'N',
+            'IS_REQUIRED'    => 'N',
+            'FILTRABLE'      => 'Y',
             'LINK_IBLOCK_ID' => 0,
         ];
 
@@ -280,7 +280,7 @@ trait IblockPropertyTrait
         if ($propertyId) {
             $this->outNotice(Locale::getMessage('IB_PROPERTY_CREATED', [
                 '#IBLOCK_ID#' => $iblockId,
-                '#NAME#' => $fields['CODE'],
+                '#NAME#'      => $fields['CODE'],
             ]));
             return (int) $propertyId;
         }
@@ -343,7 +343,7 @@ trait IblockPropertyTrait
         if ($ib->Update($propertyId, $fields)) {
             $this->outNotice(Locale::getMessage('IB_PROPERTY_UPDATED', [
                 '#IBLOCK_ID#' => $fields['IBLOCK_ID'],
-                '#NAME#' => $fields['CODE'],
+                '#NAME#'      => $fields['CODE'],
             ]));
 
             return $propertyId;
@@ -359,7 +359,7 @@ trait IblockPropertyTrait
     {
         return $this->getPropertyEnums(
             [
-                'IBLOCK_ID' => $iblockId,
+                'IBLOCK_ID'   => $iblockId,
                 'PROPERTY_ID' => $propertyId,
             ],
         );

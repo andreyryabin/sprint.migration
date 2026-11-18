@@ -56,7 +56,7 @@ class BlogExchangeHelper extends BlogHelper implements ReaderHelperInterface, Wr
         $dbres = CBlogPost::GetList(
             [
                 'DATE_PUBLISH' => 'DESC',
-                'ID' => 'DESC',
+                'ID'           => 'DESC',
             ],
             $filter,
             false,
@@ -215,10 +215,9 @@ class BlogExchangeHelper extends BlogHelper implements ReaderHelperInterface, Wr
         }
 
         return array_map(
-            fn($record)
-                => [
+            fn($record) => [
                 'blog_id' => $blogId,
-                'fields' => $this->convertReaderRecord($record),
+                'fields'  => $this->convertReaderRecord($record),
             ],
             $records,
         );

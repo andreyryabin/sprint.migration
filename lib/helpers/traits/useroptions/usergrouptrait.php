@@ -8,8 +8,8 @@ trait UserGroupTrait
     public function exportUserGroupList()
     {
         return $this->exportList([
-                                     'name' => $this->getUserGroupGridId(),
-                                 ]);
+            'name' => $this->getUserGroupGridId(),
+        ]);
     }
 
     public function getUserGroupGridId()

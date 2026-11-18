@@ -133,7 +133,7 @@ class Console
         $order = 'asc';
 
         $groupitem = CGroup::GetList($by, $order, [
-            'ADMIN' => 'Y',
+            'ADMIN'  => 'Y',
             'ACTIVE' => 'Y',
         ])->Fetch();
 
@@ -142,10 +142,10 @@ class Console
 
             $useritem = CUser::GetList($by, $order, [
                 'GROUPS_ID' => [$groupitem['ID']],
-                'ACTIVE' => 'Y',
-            ],                         [
-                                           'NAV_PARAMS' => ['nTopCount' => 1],
-                                       ])->Fetch();
+                'ACTIVE'    => 'Y',
+            ], [
+                'NAV_PARAMS' => ['nTopCount' => 1],
+            ])->Fetch();
 
             if (!empty($useritem)) {
                 $USER->Authorize($useritem['ID']);
@@ -358,12 +358,12 @@ class Console
         }
 
         $this->versionManager->executeAll([
-                                              'search' => $this->getArg('--search='),
-                                              'tag' => $this->getArg('--tag='),
-                                              'modified' => $this->getArg('--modified'),
-                                              'older' => $this->getArg('--older'),
-                                              'actual' => $this->getArg('--actual'),
-                                          ], $action, $tag);
+            'search'   => $this->getArg('--search='),
+            'tag'      => $this->getArg('--tag='),
+            'modified' => $this->getArg('--modified'),
+            'older'    => $this->getArg('--older'),
+            'actual'   => $this->getArg('--actual'),
+        ], $action, $tag);
     }
 
     protected function hasArguments(): bool
@@ -429,18 +429,18 @@ class Console
         }
 
         $versions = $this->versionManager->getVersions([
-                                                           'status' => $status,
-                                                           'search' => $this->getArg('--search='),
-                                                           'tag' => $this->getArg('--tag='),
-                                                           'modified' => $this->getArg('--modified'),
-                                                           'older' => $this->getArg('--older'),
-                                                           'actual' => $this->getArg('--actual'),
-                                                       ]);
+            'status'   => $status,
+            'search'   => $this->getArg('--search='),
+            'tag'      => $this->getArg('--tag='),
+            'modified' => $this->getArg('--modified'),
+            'older'    => $this->getArg('--older'),
+            'actual'   => $this->getArg('--actual'),
+        ]);
 
         $summary = [
-            VersionEnum::STATUS_NEW => 0,
+            VersionEnum::STATUS_NEW       => 0,
             VersionEnum::STATUS_INSTALLED => 0,
-            VersionEnum::STATUS_UNKNOWN => 0,
+            VersionEnum::STATUS_UNKNOWN   => 0,
         ];
 
         foreach ($versions as $entity) {
@@ -509,7 +509,7 @@ class Console
 
         $this->executeBuilder($from, [
             'description' => $descr,
-            'prefix' => $prefix,
+            'prefix'      => $prefix,
         ]);
     }
 
@@ -533,11 +533,11 @@ class Console
         $action = $this->getArg('--down') ? VersionEnum::ACTION_DOWN : VersionEnum::ACTION_UP;
 
         $this->versionManager->executeAll([
-                                              'search' => $this->getArg('--search='),
-                                              'tag' => $this->getArg('--tag='),
-                                              'modified' => $this->getArg('--modified'),
-                                              'older' => $this->getArg('--older'),
-                                              'actual' => $this->getArg('--actual'),
-                                          ], $action, $tag);
+            'search'   => $this->getArg('--search='),
+            'tag'      => $this->getArg('--tag='),
+            'modified' => $this->getArg('--modified'),
+            'older'    => $this->getArg('--older'),
+            'actual'   => $this->getArg('--actual'),
+        ], $action, $tag);
     }
 }

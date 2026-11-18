@@ -45,8 +45,8 @@ class LanguageBuilder extends VersionBuilder
         $allCults = $helper->Culture()->exportCultures();
 
         $cultCodes = $this->addFieldAndReturn('cult_codes', [
-            'title' => Locale::getMessage('BUILDER_LanguageExport_cult_codes'),
-            'select' => $this->createSelect($allCults, 'CODE', 'NAME', true),
+            'title'    => Locale::getMessage('BUILDER_LanguageExport_cult_codes'),
+            'select'   => $this->createSelect($allCults, 'CODE', 'NAME', true),
             'multiple' => 1,
         ]);
 
@@ -54,15 +54,15 @@ class LanguageBuilder extends VersionBuilder
         $allLangs = $helper->Lang()->exportLangs();
 
         $langIds = $this->addFieldAndReturn('lang_ids', [
-            'title' => Locale::getMessage('BUILDER_LanguageExport_lang_ids'),
-            'select' => $this->createSelect($allLangs, 'LID', 'NAME', true),
+            'title'    => Locale::getMessage('BUILDER_LanguageExport_lang_ids'),
+            'select'   => $this->createSelect($allLangs, 'LID', 'NAME', true),
             'multiple' => 1,
         ]);
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('LanguageExport'),
             [
-                'cultures' => array_filter($allCults, fn($item) => in_array($item['CODE'], $cultCodes)),
+                'cultures'  => array_filter($allCults, fn($item) => in_array($item['CODE'], $cultCodes)),
                 'languages' => array_filter($allLangs, fn($item) => in_array($item['LID'], $langIds)),
             ],
         );

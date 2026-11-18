@@ -29,9 +29,9 @@ class OrderPropertiesHelper extends Helper
     public function getPersonTypes(): array
     {
         return PersonTypeTable::query()
-            ->setSelect(['ID', 'NAME'])
-            ->exec()
-            ->fetchAll();
+                              ->setSelect(['ID', 'NAME'])
+                              ->exec()
+                              ->fetchAll();
     }
 
     /**
@@ -50,9 +50,9 @@ class OrderPropertiesHelper extends Helper
     private function getOrderPropertiesByFilter(array $filter = []): array
     {
         return OrderPropsTable::query()
-            ->setSelect(['*'])
-            ->where(ConditionTree::createFromArray($filter))
-            ->fetchAll();
+                              ->setSelect(['*'])
+                              ->where(ConditionTree::createFromArray($filter))
+                              ->fetchAll();
     }
 
     /**
@@ -111,9 +111,9 @@ class OrderPropertiesHelper extends Helper
         string $value,
     ): array {
         return current($this->getOrderPropertiesByFilter([
-                                                             ['PERSON_TYPE_ID', '=', $personTypeId],
-                                                             [$identifierField, '=', $value],
-                                                         ])) ?: [];
+            ['PERSON_TYPE_ID', '=', $personTypeId],
+            [$identifierField, '=', $value],
+        ])) ?: [];
     }
 
     /**
@@ -128,7 +128,7 @@ class OrderPropertiesHelper extends Helper
                 Locale::getMessage(
                     'ERR_ORDER_PROPERTY_NOT_ADDED',
                     [
-                        '#NAME#' => $fields['NAME'],
+                        '#NAME#'    => $fields['NAME'],
                         '#MESSAGE#' => implode(', ', $result->getErrorMessages()),
                     ],
                 ),
@@ -152,7 +152,7 @@ class OrderPropertiesHelper extends Helper
                 Locale::getMessage(
                     'ERR_ORDER_PROPERTY_NOT_UPDATED',
                     [
-                        '#NAME#' => $fields['NAME'] ?: $id,
+                        '#NAME#'    => $fields['NAME'] ?: $id,
                         '#MESSAGE#' => implode(', ', $result->getErrorMessages()),
                     ],
                 ),
@@ -223,9 +223,9 @@ class OrderPropertiesHelper extends Helper
         $result = [];
 
         $dbPropertyVariants = OrderPropsVariantTable::query()
-            ->setSelect(['*'])
-            ->whereIn('ORDER_PROPS_ID', $propertyIds)
-            ->exec();
+                                                    ->setSelect(['*'])
+                                                    ->whereIn('ORDER_PROPS_ID', $propertyIds)
+                                                    ->exec();
         while ($propertyVariant = $dbPropertyVariants->fetch()) {
             $result[$propertyVariant['ORDER_PROPS_ID']][] = $propertyVariant;
         }
@@ -252,7 +252,7 @@ class OrderPropertiesHelper extends Helper
                 Locale::getMessage(
                     'ERR_ORDER_PROPERTY_VARIANT_NOT_UPDATED',
                     [
-                        '#NAME#' => $fields['NAME'],
+                        '#NAME#'    => $fields['NAME'],
                         '#MESSAGE#' => implode(', ', $result->getErrorMessages()),
                     ],
                 ),
@@ -273,7 +273,7 @@ class OrderPropertiesHelper extends Helper
                 Locale::getMessage(
                     'ERR_ORDER_PROPERTY_VARIANT_NOT_ADDED',
                     [
-                        '#NAME#' => $fields['NAME'],
+                        '#NAME#'    => $fields['NAME'],
                         '#MESSAGE#' => implode(', ', $result->getErrorMessages()),
                     ],
                 ),

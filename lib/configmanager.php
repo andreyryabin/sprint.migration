@@ -157,7 +157,7 @@ class ConfigManager
         }
 
         $configValues = [
-            'migration_dir' => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
+            'migration_dir'   => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
             'migration_table' => 'sprint_migration_' . $configName,
         ];
 

@@ -34,7 +34,7 @@ trait IblockElementTrait
             Locale::getMessage(
                 'ERR_IB_ELEMENT_ID_NOT_FOUND',
                 [
-                    '#IBLOCK_ID#' => $iblockId,
+                    '#IBLOCK_ID#'  => $iblockId,
                     '#ELEMENT_ID#' => print_r($code, true),
                 ],
             ),
@@ -63,7 +63,7 @@ trait IblockElementTrait
         $item = $this->getElementsList($iblockId, [
             'filter' => $filter,
             'select' => $select,
-            'limit' => 1,
+            'limit'  => 1,
         ])->Fetch();
 
         return $item ? $this->prepareElement($item) : false;
@@ -74,10 +74,10 @@ trait IblockElementTrait
         $params = array_merge(
             [
                 'offset' => 0,
-                'limit' => 0,
+                'limit'  => 0,
                 'filter' => [],
                 'select' => [],
-                'order' => ['ID' => 'ASC'],
+                'order'  => ['ID' => 'ASC'],
             ],
             $params,
         );
@@ -85,7 +85,7 @@ trait IblockElementTrait
         $params['filter'] = array_merge(
             $params['filter'],
             [
-                'IBLOCK_ID' => $iblockId,
+                'IBLOCK_ID'         => $iblockId,
                 'CHECK_PERMISSIONS' => 'N',
             ],
         );
@@ -95,8 +95,8 @@ trait IblockElementTrait
             if ($params['offset'] > 0) {
                 $pageNum = (int) floor($params['offset'] / $params['limit']) + 1;
                 $navParams = [
-                    'nPageSize' => $params['limit'],
-                    'iNumPage' => $pageNum,
+                    'nPageSize'       => $params['limit'],
+                    'iNumPage'        => $pageNum,
                     'checkOutOfRange' => true,
                 ];
             } else {
@@ -264,11 +264,11 @@ trait IblockElementTrait
     public function addElement(int $iblockId, array $fields = [], array $props = []): int
     {
         $default = [
-            'NAME' => 'element',
+            'NAME'              => 'element',
             'IBLOCK_SECTION_ID' => false,
-            'ACTIVE' => 'Y',
-            'PREVIEW_TEXT' => '',
-            'DETAIL_TEXT' => '',
+            'ACTIVE'            => 'Y',
+            'PREVIEW_TEXT'      => '',
+            'DETAIL_TEXT'       => '',
         ];
 
         $fields = array_replace_recursive($default, $fields);

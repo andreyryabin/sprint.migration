@@ -46,8 +46,8 @@ trait HlblockPermissionsTrait
             foreach ($permissions as $permission) {
                 HighloadBlockRightsTable::add(
                     [
-                        'HL_ID' => $hlblockId,
-                        'TASK_ID' => $taskHelper->getTaskIdByName('highloadblock', $permission['TASK_ID']),
+                        'HL_ID'       => $hlblockId,
+                        'TASK_ID'     => $taskHelper->getTaskIdByName('highloadblock', $permission['TASK_ID']),
                         'ACCESS_CODE' => $taskHelper->revertExtendedGroupCode($permission['ACCESS_CODE']),
                     ],
                 );

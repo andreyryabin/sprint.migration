@@ -18,9 +18,9 @@ class RestartableReader
     private ?Closure $progressFn = null;
 
     public function __construct(
-        private readonly RestartableInterface  $restartable,
+        private readonly RestartableInterface $restartable,
         private readonly ReaderHelperInterface $helper,
-        private readonly string                $directory,
+        private readonly string $directory,
     ) {}
 
     public function setExchangeResource(string $exchangeResource): RestartableReader

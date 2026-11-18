@@ -34,8 +34,8 @@ class EventBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $eventTypes = $this->addFieldAndReturn('event_types', [
-            'title' => Locale::getMessage('BUILDER_EventExport_event_types'),
-            'select' => $this->getEventTypesSelect(),
+            'title'    => Locale::getMessage('BUILDER_EventExport_event_types'),
+            'select'   => $this->getEventTypesSelect(),
             'multiple' => 1,
         ]);
 
@@ -49,7 +49,7 @@ class EventBuilder extends VersionBuilder
             $result[$eventName] = [
                 'types' => $types,
                 'email' => $messages,
-                'sms' => $smstemplates,
+                'sms'   => $smstemplates,
             ];
         }
 
@@ -64,8 +64,8 @@ class EventBuilder extends VersionBuilder
     protected function getEventTypesSelect(): array
     {
         $items = $this->getHelperManager()->Event()->getEventTypes([
-                                                                       'LID' => LANGUAGE_ID,
-                                                                   ]);
+            'LID' => LANGUAGE_ID,
+        ]);
 
         $items = array_map(function ($item) {
             $item['NAME'] = '[' . $item['EVENT_NAME'] . '] ' . $item['NAME'];

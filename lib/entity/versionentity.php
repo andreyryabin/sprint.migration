@@ -14,8 +14,8 @@ class VersionEntity
      * @throws MigrationException
      */
     public function __construct(
-        private readonly ?VersionFile     $file = null,
-        private readonly ?VersionRecord   $record = null,
+        private readonly ?VersionFile $file = null,
+        private readonly ?VersionRecord $record = null,
         private readonly ?VersionExchange $exchange = null,
     ) {
         if ($file === null && $record === null) {

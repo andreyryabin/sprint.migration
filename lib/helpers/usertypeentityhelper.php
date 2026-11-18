@@ -77,7 +77,7 @@ class UserTypeEntityHelper extends Helper
         $item = CUserTypeEntity::GetList(
             [],
             [
-                'ENTITY_ID' => $entityId,
+                'ENTITY_ID'  => $entityId,
                 'FIELD_NAME' => $fieldName,
             ],
         )->Fetch();
@@ -170,23 +170,23 @@ class UserTypeEntityHelper extends Helper
     public function addUserTypeEntity($entityId, $fieldName, $fields): int
     {
         $default = [
-            "ENTITY_ID" => '',
-            "FIELD_NAME" => '',
-            "USER_TYPE_ID" => '',
-            "XML_ID" => '',
-            "SORT" => 500,
-            "MULTIPLE" => 'N',
-            "MANDATORY" => 'N',
-            "SHOW_FILTER" => 'I',
-            "SHOW_IN_LIST" => '',
-            "EDIT_IN_LIST" => '',
-            "IS_SEARCHABLE" => '',
-            "SETTINGS" => [],
-            "EDIT_FORM_LABEL" => ['ru' => '', 'en' => ''],
+            "ENTITY_ID"         => '',
+            "FIELD_NAME"        => '',
+            "USER_TYPE_ID"      => '',
+            "XML_ID"            => '',
+            "SORT"              => 500,
+            "MULTIPLE"          => 'N',
+            "MANDATORY"         => 'N',
+            "SHOW_FILTER"       => 'I',
+            "SHOW_IN_LIST"      => '',
+            "EDIT_IN_LIST"      => '',
+            "IS_SEARCHABLE"     => '',
+            "SETTINGS"          => [],
+            "EDIT_FORM_LABEL"   => ['ru' => '', 'en' => ''],
             "LIST_COLUMN_LABEL" => ['ru' => '', 'en' => ''],
             "LIST_FILTER_LABEL" => ['ru' => '', 'en' => ''],
-            "ERROR_MESSAGE" => '',
-            "HELP_MESSAGE" => '',
+            "ERROR_MESSAGE"     => '',
+            "HELP_MESSAGE"      => '',
         ];
 
         $fields = array_replace_recursive($default, $fields);
@@ -475,9 +475,9 @@ class UserTypeEntityHelper extends Helper
             $exportValues = [];
             foreach ($fields['ENUM_VALUES'] as $item) {
                 $exportValues[] = [
-                    'VALUE' => $item['VALUE'],
-                    'DEF' => $item['DEF'],
-                    'SORT' => $item['SORT'],
+                    'VALUE'  => $item['VALUE'],
+                    'DEF'    => $item['DEF'],
+                    'SORT'   => $item['SORT'],
                     'XML_ID' => $item['XML_ID'],
                 ];
             }

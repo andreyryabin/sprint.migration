@@ -106,10 +106,10 @@ class WriterTag
         $this->addValueTag(
             $file['SUBDIR'] . '/' . $file['FILE_NAME'],
             [
-                'name' => $file['ORIGINAL_NAME'],
-                'description' => $file['DESCRIPTION'],
+                'name'         => $file['ORIGINAL_NAME'],
+                'description'  => $file['DESCRIPTION'],
                 'content_type' => $file['CONTENT_TYPE'] ?? '',
-                'type' => 'file',
+                'type'         => 'file',
             ],
         );
 

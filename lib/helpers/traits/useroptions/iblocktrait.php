@@ -24,8 +24,8 @@ trait IblockTrait
         $this->initializeIblockVars($iblockId);
 
         return $this->exportForm([
-                                     'name' => 'form_element_' . $iblockId,
-                                 ]);
+            'name' => 'form_element_' . $iblockId,
+        ]);
     }
 
     /**
@@ -176,8 +176,8 @@ trait IblockTrait
     public function exportElementList($iblockId)
     {
         return $this->exportList([
-                                     'name' => $this->getElementGridId($iblockId),
-                                 ]);
+            'name' => $this->getElementGridId($iblockId),
+        ]);
     }
 
     /**
@@ -239,8 +239,8 @@ trait IblockTrait
         $this->initializeIblockVars($iblockId);
 
         return $this->exportForm([
-                                     'name' => 'form_section_' . $iblockId,
-                                 ]);
+            'name' => 'form_section_' . $iblockId,
+        ]);
     }
 
     /**
@@ -286,8 +286,8 @@ trait IblockTrait
         $this->initializeIblockVars($iblockId);
 
         return $this->exportList([
-                                     'name' => $this->getSectionGridId($iblockId),
-                                 ]);
+            'name' => $this->getSectionGridId($iblockId),
+        ]);
     }
 
     /**

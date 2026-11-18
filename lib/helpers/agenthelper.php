@@ -153,11 +153,11 @@ class AgentHelper extends Helper
         $this->checkRequiredKeys($fields, ['NAME']);
 
         $fields = array_merge([
-                                  'AGENT_INTERVAL' => 86400,
-                                  'ACTIVE' => 'Y',
-                                  'IS_PERIOD' => 'N',
-                                  'SORT' => 100,
-                              ], $fields);
+            'AGENT_INTERVAL' => 86400,
+            'ACTIVE'         => 'Y',
+            'IS_PERIOD'      => 'N',
+            'SORT'           => 100,
+        ], $fields);
 
         $agentId = CAgent::AddAgent(
             $fields['NAME'],

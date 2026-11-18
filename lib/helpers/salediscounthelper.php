@@ -29,15 +29,15 @@ class SaleDiscountHelper extends Helper
     {
         try {
             return DiscountTable::getList([
-                                              'select' => $this->getDiscountSelect(),
-                                              'filter' => $filter,
-                                              'order' => [
-                                                  'LID' => 'ASC',
-                                                  'SORT' => 'ASC',
-                                                  'NAME' => 'ASC',
-                                                  'ID' => 'ASC',
-                                              ],
-                                          ])->fetchAll();
+                'select' => $this->getDiscountSelect(),
+                'filter' => $filter,
+                'order'  => [
+                    'LID'  => 'ASC',
+                    'SORT' => 'ASC',
+                    'NAME' => 'ASC',
+                    'ID'   => 'ASC',
+                ],
+            ])->fetchAll();
         } catch (Exception $e) {
             throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
@@ -131,7 +131,7 @@ class SaleDiscountHelper extends Helper
             $value = CUtil::translit($value, 'ru', [
                 'replace_space' => '_',
                 'replace_other' => '_',
-                'change_case' => 'U',
+                'change_case'   => 'U',
             ]);
         }
 
@@ -174,10 +174,10 @@ class SaleDiscountHelper extends Helper
     {
         try {
             $item = DiscountTable::getList([
-                                               'select' => $this->getDiscountSelect(),
-                                               'filter' => ['=ID' => $discountId],
-                                               'limit' => 1,
-                                           ])->fetch();
+                'select' => $this->getDiscountSelect(),
+                'filter' => ['=ID' => $discountId],
+                'limit'  => 1,
+            ])->fetch();
 
             return $item ?: false;
         } catch (Exception $e) {
@@ -231,10 +231,10 @@ class SaleDiscountHelper extends Helper
     {
         try {
             $groupIterator = DiscountGroupTable::getList([
-                                                             'select' => ['GROUP_ID'],
-                                                             'filter' => ['=DISCOUNT_ID' => $discountId],
-                                                             'order' => ['GROUP_ID' => 'ASC'],
-                                                         ]);
+                'select' => ['GROUP_ID'],
+                'filter' => ['=DISCOUNT_ID' => $discountId],
+                'order'  => ['GROUP_ID' => 'ASC'],
+            ]);
 
             $groups = [];
             $groupHelper = new UserGroupHelper();
@@ -347,8 +347,7 @@ class SaleDiscountHelper extends Helper
         if (($property['PROPERTY_TYPE'] ?? '') === 'L') {
             return $this->mapConditionValue(
                 $value,
-                fn($enumValue)
-                    => $export
+                fn($enumValue) => $export
                     ? $this->exportPropertyEnumRef($enumValue)
                     : $this->revertPropertyEnumRef($property, $enumValue),
             );
@@ -357,8 +356,7 @@ class SaleDiscountHelper extends Helper
         if (($property['PROPERTY_TYPE'] ?? '') === 'E') {
             return $this->mapConditionValue(
                 $value,
-                fn($elementId)
-                    => $export
+                fn($elementId) => $export
                     ? $this->exportElementRef($elementId)
                     : $this->revertElementRef($elementId),
             );
@@ -367,8 +365,7 @@ class SaleDiscountHelper extends Helper
         if (($property['PROPERTY_TYPE'] ?? '') === 'G') {
             return $this->mapConditionValue(
                 $value,
-                fn($sectionId)
-                    => $export
+                fn($sectionId) => $export
                     ? $this->exportSectionRef($sectionId)
                     : $this->revertSectionRef($sectionId),
             );
@@ -604,8 +601,7 @@ class SaleDiscountHelper extends Helper
         if ($classId === 'CondIBIBlock') {
             return $this->mapConditionValue(
                 $value,
-                fn($id)
-                    => $export
+                fn($id) => $export
                     ? $this->exportIblockRef($id)
                     : $this->revertIblockRef($id),
             );
@@ -614,8 +610,7 @@ class SaleDiscountHelper extends Helper
         if ($classId === 'CondIBSection' || $classId === 'GifterCondIBSection') {
             return $this->mapConditionValue(
                 $value,
-                fn($id)
-                    => $export
+                fn($id) => $export
                     ? $this->exportSectionRef($id)
                     : $this->revertSectionRef($id),
             );
@@ -628,8 +623,7 @@ class SaleDiscountHelper extends Helper
         ) {
             return $this->mapConditionValue(
                 $value,
-                fn($id)
-                    => $export
+                fn($id) => $export
                     ? $this->exportElementRef($id)
                     : $this->revertElementRef($id),
             );
@@ -672,25 +666,25 @@ class SaleDiscountHelper extends Helper
     protected function prepareDiscountFields(array $item): array
     {
         $default = [
-            'PRICE_FROM' => null,
-            'PRICE_TO' => null,
-            'CURRENCY' => '',
-            'DISCOUNT_VALUE' => 0,
-            'DISCOUNT_TYPE' => 'P',
-            'ACTIVE' => 'Y',
-            'SORT' => 100,
-            'ACTIVE_FROM' => null,
-            'ACTIVE_TO' => null,
-            'PRIORITY' => 1,
-            'LAST_DISCOUNT' => 'Y',
+            'PRICE_FROM'          => null,
+            'PRICE_TO'            => null,
+            'CURRENCY'            => '',
+            'DISCOUNT_VALUE'      => 0,
+            'DISCOUNT_TYPE'       => 'P',
+            'ACTIVE'              => 'Y',
+            'SORT'                => 100,
+            'ACTIVE_FROM'         => null,
+            'ACTIVE_TO'           => null,
+            'PRIORITY'            => 1,
+            'LAST_DISCOUNT'       => 'Y',
             'LAST_LEVEL_DISCOUNT' => 'N',
-            'VERSION' => CSaleDiscount::VERSION_15,
-            'CONDITIONS' => [],
-            'ACTIONS' => [],
-            'PREDICTIONS' => [],
-            'USE_COUPONS' => 'N',
-            'PRESET_ID' => '',
-            'USER_GROUPS' => [],
+            'VERSION'             => CSaleDiscount::VERSION_15,
+            'CONDITIONS'          => [],
+            'ACTIONS'             => [],
+            'PREDICTIONS'         => [],
+            'USE_COUPONS'         => 'N',
+            'PRESET_ID'           => '',
+            'USER_GROUPS'         => [],
         ];
 
         $item = array_merge($default, $item);
@@ -701,29 +695,29 @@ class SaleDiscountHelper extends Helper
         return array_intersect_key(
             $item,
             array_flip([
-                           'XML_ID',
-                           'LID',
-                           'NAME',
-                           'PRICE_FROM',
-                           'PRICE_TO',
-                           'CURRENCY',
-                           'DISCOUNT_VALUE',
-                           'DISCOUNT_TYPE',
-                           'ACTIVE',
-                           'SORT',
-                           'ACTIVE_FROM',
-                           'ACTIVE_TO',
-                           'PRIORITY',
-                           'LAST_DISCOUNT',
-                           'LAST_LEVEL_DISCOUNT',
-                           'VERSION',
-                           'CONDITIONS',
-                           'ACTIONS',
-                           'PREDICTIONS',
-                           'USE_COUPONS',
-                           'PRESET_ID',
-                           'USER_GROUPS',
-                       ]),
+                'XML_ID',
+                'LID',
+                'NAME',
+                'PRICE_FROM',
+                'PRICE_TO',
+                'CURRENCY',
+                'DISCOUNT_VALUE',
+                'DISCOUNT_TYPE',
+                'ACTIVE',
+                'SORT',
+                'ACTIVE_FROM',
+                'ACTIVE_TO',
+                'PRIORITY',
+                'LAST_DISCOUNT',
+                'LAST_LEVEL_DISCOUNT',
+                'VERSION',
+                'CONDITIONS',
+                'ACTIONS',
+                'PREDICTIONS',
+                'USE_COUPONS',
+                'PRESET_ID',
+                'USER_GROUPS',
+            ]),
         );
     }
 
@@ -773,14 +767,14 @@ class SaleDiscountHelper extends Helper
 
         try {
             $item = DiscountTable::getList([
-                                               'select' => ['ID'],
-                                               'filter' => [
-                                                   '=LID' => $lid,
-                                                   '=XML_ID' => $xmlId,
-                                               ],
-                                               'order' => ['ID' => 'ASC'],
-                                               'limit' => 1,
-                                           ])->fetch();
+                'select' => ['ID'],
+                'filter' => [
+                    '=LID'    => $lid,
+                    '=XML_ID' => $xmlId,
+                ],
+                'order'  => ['ID' => 'ASC'],
+                'limit'  => 1,
+            ])->fetch();
 
             return (int) ($item['ID'] ?? 0);
         } catch (Exception $e) {

@@ -24,8 +24,8 @@ abstract class VersionBuilder extends Builder
         $this->addField(
             'description',
             [
-                'title' => Locale::getMessage('FORM_DESCR'),
-                'width' => 350,
+                'title'  => Locale::getMessage('FORM_DESCR'),
+                'width'  => 350,
                 'height' => 40,
             ],
         );
@@ -36,8 +36,8 @@ abstract class VersionBuilder extends Builder
      */
     protected function createVersionFile(
         string $templateFile,
-        array  $templateVars = [],
-        bool   $markAsInstalled = true,
+        array $templateVars = [],
+        bool $markAsInstalled = true,
     ): string {
         $templateVars['description'] = $this->addslashes(
             $this->getFieldValue('description'),
@@ -126,7 +126,7 @@ abstract class VersionBuilder extends Builder
         return strtr(
             $this->getVersionConfig()->getVal('version_name_template'),
             [
-                '#NAME#' => $this->purifyPrefix($this->getFieldValue('prefix')),
+                '#NAME#'      => $this->purifyPrefix($this->getFieldValue('prefix')),
                 '#TIMESTAMP#' => $this->getTimestamp(
                     $this->getVersionConfig()->getVal('version_timestamp_format'),
                 ),

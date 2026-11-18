@@ -58,7 +58,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
      */
     public function getIblockPropertiesSelect(int $iblockId): array
     {
-        return array_map(fn($prop)            => [
+        return array_map(fn($prop) => [
             'title' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
             'value' => $prop['CODE'],
         ], $this->exportProperties($iblockId));
@@ -116,9 +116,9 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         $dbres = $this->getElementsList(
             $iblockId,
             [
-                'order' => ['ID' => 'ASC'],
+                'order'  => ['ID' => 'ASC'],
                 'offset' => $offset,
-                'limit' => $limit,
+                'limit'  => $limit,
                 'filter' => $filter,
             ],
         );
@@ -155,18 +155,18 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                 try {
                     $item->addChild(
                         $this->createWriterFieldTag([
-                                                        'NAME' => $code,
-                                                        'VALUE' => $val,
-                                                        'IBLOCK_ID' => $iblockId,
-                                                    ]),
+                            'NAME'      => $code,
+                            'VALUE'     => $val,
+                            'IBLOCK_ID' => $iblockId,
+                        ]),
                     );
                 } catch (WriterException $e) {
                     throw new HelperException(
                         $e->getMessage() . " in " . print_r([
-                                                                'IBLOCK_ID' => $iblockId,
-                                                                'ID' => $fields['ID'],
-                                                                'FIELD' => $code,
-                                                            ], true),
+                            'IBLOCK_ID' => $iblockId,
+                            'ID'        => $fields['ID'],
+                            'FIELD'     => $code,
+                        ], true),
                     );
                 }
             }
@@ -181,10 +181,10 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                 } catch (WriterException $e) {
                     throw new HelperException(
                         $e->getMessage() . " in " . print_r([
-                                                                'IBLOCK_ID' => $iblockId,
-                                                                'ID' => $fields['ID'],
-                                                                'PROPERTY' => $prop['CODE'],
-                                                            ], true),
+                            'IBLOCK_ID' => $iblockId,
+                            'ID'        => $fields['ID'],
+                            'PROPERTY'  => $prop['CODE'],
+                        ], true),
                     );
                 }
             }
@@ -243,7 +243,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                 $item['NAME'],
                 [
                     'section_depth_level' => $item['DEPTH_LEVEL'],
-                    'section_code' => $item['CODE'],
+                    'section_code'        => $item['CODE'],
                 ],
             );
         }
@@ -331,7 +331,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                 $item['NAME'],
                 [
                     'element_xml_id' => $item['XML_ID'],
-                    'element_code' => $item['CODE'],
+                    'element_code'   => $item['CODE'],
                 ],
             );
         }
@@ -347,7 +347,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                 $tag->addValueTag(
                     $val1['TEXT'],
                     [
-                        'text-type' => $val1['TYPE'],
+                        'text-type'   => $val1['TYPE'],
                         'description' => $prop['DESCRIPTION'][$index] ?? '',
                     ],
                 );
@@ -356,7 +356,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
             $tag->addValueTag(
                 $prop['VALUE']['TEXT'] ?? '',
                 [
-                    'text-type' => $prop['VALUE']['TYPE'] ?? '',
+                    'text-type'   => $prop['VALUE']['TYPE'] ?? '',
                     'description' => $prop['DESCRIPTION'],
                 ],
             );
@@ -437,8 +437,8 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         }
 
         return [
-            'iblock_id' => $iblockId,
-            'fields' => $convertedFields,
+            'iblock_id'  => $iblockId,
+            'fields'     => $convertedFields,
             'properties' => $convertedProperties,
         ];
     }
@@ -462,10 +462,10 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         $this->checkRequiredKeys($val, ['section_depth_level', 'value']);
 
         return $this->getSectionIdIfExists($iblockId, array_filter([
-                                                                       'NAME' => $val['value'],
-                                                                       'CODE' => $val['section_code'] ?? '',
-                                                                       'DEPTH_LEVEL' => $val['section_depth_level'],
-                                                                   ]));
+            'NAME'        => $val['value'],
+            'CODE'        => $val['section_code'] ?? '',
+            'DEPTH_LEVEL' => $val['section_depth_level'],
+        ]));
     }
 
     protected function readFieldIpropertyTemplates(array $field): array
@@ -569,10 +569,10 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         $this->checkRequiredKeys($val, ['element_xml_id', 'value']);
 
         return $this->getElementIdIfExists($iblockId, array_filter([
-                                                                       'NAME' => $val['value'],
-                                                                       'CODE' => $val['element_code'] ?? '',
-                                                                       'XML_ID' => $val['element_xml_id'],
-                                                                   ]));
+            'NAME'   => $val['value'],
+            'CODE'   => $val['element_code'] ?? '',
+            'XML_ID' => $val['element_xml_id'],
+        ]));
     }
 
     /**
@@ -584,7 +584,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         $res = [];
         foreach ($prop['value'] as $val) {
             $res[] = [
-                'VALUE' => [
+                'VALUE'       => [
                     'TEXT' => $val['value'],
                     'TYPE' => $val['text-type'] ?? 'html',
                 ],

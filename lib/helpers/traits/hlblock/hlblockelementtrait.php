@@ -60,10 +60,10 @@ trait HlblockElementTrait
         $dataManager = $this->getDataManager($hlblockName);
         try {
             return $dataManager::getList([
-                                             'filter' => $filter,
-                                             'offset' => 0,
-                                             'limit' => 1,
-                                         ])->fetch();
+                'filter' => $filter,
+                'offset' => 0,
+                'limit'  => 1,
+            ])->fetch();
         } catch (Exception $e) {
             throw new HelperException($e->getMessage(), $e->getCode(), $e);
         }
@@ -78,8 +78,8 @@ trait HlblockElementTrait
         try {
             $item = $dataManager::getList(
                 [
-                    'select' => ['CNT'],
-                    'filter' => $filter,
+                    'select'  => ['CNT'],
+                    'filter'  => $filter,
                     'runtime' => [
                         new ExpressionField('CNT', 'COUNT(*)'),
                     ],

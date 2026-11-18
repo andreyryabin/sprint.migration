@@ -14,25 +14,25 @@ class OptionTable extends Data\DataManager
     public static function getMap(): array
     {
         return [
-            'MODULE_ID' => [
+            'MODULE_ID'   => [
                 'data_type' => 'string',
-                'primary' => true,
+                'primary'   => true,
             ],
-            'NAME' => [
+            'NAME'        => [
                 'data_type' => 'string',
-                'primary' => true,
+                'primary'   => true,
             ],
-            'VALUE' => [
+            'VALUE'       => [
                 'data_type' => 'string',
-                'required' => false,
+                'required'  => false,
             ],
             'DESCRIPTION' => [
                 'data_type' => 'string',
-                'required' => false,
+                'required'  => false,
             ],
-            'SITE_ID' => [
+            'SITE_ID'     => [
                 'data_type' => 'string',
-                'required' => false,
+                'required'  => false,
             ],
         ];
     }

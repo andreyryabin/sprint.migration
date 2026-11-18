@@ -14,14 +14,14 @@ class FormGroupTable extends Data\DataManager
     public static function getMap(): array
     {
         return [
-            'ID' => [
+            'ID'         => [
                 'data_type' => 'string',
-                'primary' => true,
+                'primary'   => true,
             ],
-            'FORM_ID' => [
+            'FORM_ID'    => [
                 'data_type' => 'string',
             ],
-            'GROUP_ID' => [
+            'GROUP_ID'   => [
                 'data_type' => 'string',
             ],
             'PERMISSION' => [
