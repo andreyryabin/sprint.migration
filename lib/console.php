@@ -141,6 +141,7 @@ class Console
     }
 
     /**
+     * @publicApi
      * @throws BuilderException
      */
     public function commandRun(): void
@@ -149,12 +150,14 @@ class Console
     }
 
     /**
+     * @publicApi
      * @throws MigrationException
      * @throws ConsoleException
      */
     public function commandMark(): void
     {
         $status = $this->getArg('--as=');
+        $tag = $this->getArg('--add-tag=');
 
         if (empty($status) || empty($this->getArguments())) {
             throw new ConsoleException("Invalid arguments, see help");
@@ -163,10 +166,10 @@ class Console
         foreach ($this->getArguments() as $argument) {
             if ($this->versionConfig->isVersionName($argument)) {
                 $entity = $this->versionManager->getVersionByName($argument);
-                $this->versionManager->markMigration($entity, $status);
+                $this->versionManager->markMigration($entity, $status, $tag);
             } elseif ($this->versionConfig->isVersionStatus($argument)) {
                 foreach ($this->getVersionsByArgs(['status' => $argument]) as $entity) {
-                    $this->versionManager->markMigration($entity, $status);
+                    $this->versionManager->markMigration($entity, $status, $tag);
                 }
             }
         }

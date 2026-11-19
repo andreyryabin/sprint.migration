@@ -34,11 +34,12 @@ All console commands:
   mark unknown                  Mark all unknown migrations
     --as=installed              As installed (skip install)
     --as=new                    As new (skip uninstall)
+    --add-tag=[text]            Set tag (if installed)
 
   settag [version1, ...]        Set migration tag
   settag installed              Set tag all installed migrations
   settag unknown                Set tag all unknown migrations
-      --add-tag=tagName         Tag name
+      --add-tag=[text]          Tag name
 
   delete [version, ...]         Delete migration
   delete new                    Delete all new migrations

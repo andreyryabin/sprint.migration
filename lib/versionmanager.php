@@ -397,7 +397,7 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function markMigration(VersionEntity $entity, string $status): bool
+    public function markMigration(VersionEntity $entity, string $status, string $tag = ''): bool
     {
         $versionName = $entity->getVersionName();
 
@@ -412,7 +412,7 @@ class VersionManager
             $success = $this->getVersionTable()->addRecord(
                 $entity->getVersionName(),
                 $entity->getFileContentHash(),
-                $entity->getReleaseTag(),
+                $tag,
             );
         }
 
