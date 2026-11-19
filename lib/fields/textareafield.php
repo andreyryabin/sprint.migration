@@ -2,6 +2,9 @@
 
 namespace Sprint\Migration\Fields;
 
+use Sprint\Migration\Exceptions\ConsoleException;
+use Sprint\Migration\Output\ConsoleOutput;
+
 class TextareaField extends AbstractField
 {
 
@@ -23,5 +26,12 @@ class TextareaField extends AbstractField
     public function getDefaultValue(): string
     {
         return '';
+    }
+    /**
+     * @throws ConsoleException
+     */
+    public function getValueFromConsole(ConsoleOutput $output): string
+    {
+        return $output->read($this->getTitle());
     }
 }

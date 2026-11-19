@@ -72,31 +72,6 @@ class VersionController extends Controller
     }
 
     /**
-     * @throws MigrationException
-     */
-    private function versionToArray(VersionEntity $entity): array
-    {
-        $meta = [
-            'version' => $entity->getVersionName(),
-            'status'  => $entity->getStatus(),
-            'labels'  => $entity->getLabels(),
-        ];
-
-        if ($entity->hasRecord()) {
-            $meta['tag'] = $entity->getReleaseTag();
-            $meta['tag_status'] = $entity->getReleaseMessage();
-            $meta['record_status'] = $entity->getRecordStatus();
-        }
-
-        if ($entity->hasFile()) {
-            $meta['file_status'] = $entity->getFileStatus();
-            $meta['description'] = $entity->getFileDescription();
-        }
-
-        return $meta;
-    }
-
-    /**
      * @publicApi
      * @throws MigrationException
      */
@@ -135,7 +110,6 @@ class VersionController extends Controller
         return $this->output->getLog();
     }
 
-
     /**
      * @publicApi
      * @throws MigrationException
@@ -147,7 +121,6 @@ class VersionController extends Controller
         }
         return $this->output->getLog();
     }
-
 
     /**
      * @publicApi
@@ -219,4 +192,31 @@ class VersionController extends Controller
 
         return parent::processBeforeAction($action);
     }
+
+    /**
+     * @throws MigrationException
+     */
+    private function versionToArray(VersionEntity $entity): array
+    {
+        $meta = [
+            'version' => $entity->getVersionName(),
+            'status'  => $entity->getStatus(),
+            'labels'  => $entity->getLabels(),
+        ];
+
+        if ($entity->hasRecord()) {
+            $meta['tag'] = $entity->getReleaseTag();
+            $meta['tag_status'] = $entity->getReleaseMessage();
+            $meta['record_status'] = $entity->getRecordStatus();
+        }
+
+        if ($entity->hasFile()) {
+            $meta['file_status'] = $entity->getFileStatus();
+            $meta['description'] = $entity->getFileDescription();
+        }
+
+        return $meta;
+    }
+
+
 }

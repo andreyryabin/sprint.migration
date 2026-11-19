@@ -22,12 +22,12 @@ class BuilderManager
     /**
      * @throws BuilderException
      */
-    public function createBuilder(string $builderName, array $params = []): Builder
+    public function createBuilder(string $builderName, array $defaultValues = []): Builder
     {
         $builders = $this->versionConfig->getBuilders();
         $builderClass = $builders[$builderName] ?? '';
 
-        return $this->createBuilderByClass($builderClass, $builderName, $params);
+        return $this->createBuilderByClass($builderClass, $builderName, $defaultValues);
     }
 
     /**
@@ -48,10 +48,10 @@ class BuilderManager
     /**
      * @throws BuilderException
      */
-    private function createBuilderByClass(string $builderClass, string $builderName, array $params = []): Builder
+    private function createBuilderByClass(string $builderClass, string $builderName, array $defaultValues = []): Builder
     {
         if ($builderClass && class_exists($builderClass) && is_subclass_of($builderClass, Builder::class)) {
-            $builder = new $builderClass($this->versionConfig, $builderName, $params);
+            $builder = new $builderClass($this->versionConfig, $builderName, $defaultValues);
             if ($builder->isEnabled()) {
                 return $builder;
             }

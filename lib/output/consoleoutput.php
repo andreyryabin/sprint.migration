@@ -7,7 +7,8 @@ use Sprint\Migration\Exceptions\ConsoleException;
 class ConsoleOutput extends AbstractOutput
 {
     private array $colors = [
-        '[/]'         => "\x1b[0m",
+        '[/]' => "\x1b[0m",
+
         '[new]'       => "\x1b[0;31m",
         '[unknown]'   => "\x1b[0;34m",
         '[installed]' => "\x1b[0;32m",
@@ -15,8 +16,8 @@ class ConsoleOutput extends AbstractOutput
         '[info]'    => "\x1b[0;34m",
         '[warning]' => "\x1b[0;31m",
         '[notice]'  => "\x1b[0;32m",
-        '[error]'   => "\x1b[41;37m",
-        '[success]' => "\x1b[102;30m",
+        '[error]'   => "\x1b[0;31m",
+        '[success]' => "\x1b[0;32m",
 
         '[blue]'   => "\x1b[0;34m",
         '[pink]'   => "\x1b[0;35m",
@@ -35,18 +36,13 @@ class ConsoleOutput extends AbstractOutput
         '[tab]' => "\x1b[0m",
     ];
 
+
     /**
      * @throws ConsoleException
      */
-    public function input($field): string|array
+    public function read(string $text): string
     {
-        if (!empty($field['items'])) {
-            $this->printStructure($field);
-        } elseif (!empty($field['select'])) {
-            $this->printSelect($field);
-        }
-
-        fwrite(STDOUT, PHP_EOL . $field['title'] . ':');
+        fwrite(STDOUT, "$text:");
 
         $val = fgets(STDIN);
         if ($val === false) {
@@ -56,16 +52,8 @@ class ConsoleOutput extends AbstractOutput
                 'Input stream is closed, run the command in a terminal or pass the answers via stdin',
             );
         }
-        $val = trim($val);
-
-        if ($field['multiple']) {
-            $val = explode(' ', $val);
-            $val = array_filter($val);
-        }
-
         return $val;
     }
-
 
     public function print(string $msg, ...$vars): void
     {
@@ -91,9 +79,7 @@ class ConsoleOutput extends AbstractOutput
 
     private function colorize(string $msg, string $type): string
     {
-        if ($type) {
-            $msg = "[$type]" . $msg . "[/]";
-        }
+        $msg = $type ? "[$type]" . $msg . "[/]" : $msg;
 
         if (str_contains($msg, '[/]')) {
             foreach ($this->colors as $key => $val) {
@@ -102,23 +88,6 @@ class ConsoleOutput extends AbstractOutput
         }
 
         return $msg;
-    }
-
-    private function printSelect($field): void
-    {
-        foreach ($field['select'] as $item) {
-            $this->print(' > ' . $item['value'] . ' (' . $item['title'] . ')');
-        }
-    }
-
-    private function printStructure($field): void
-    {
-        foreach ($field['items'] as $group) {
-            $this->print('---' . $group['title']);
-            foreach ($group['items'] as $item) {
-                $this->print(' > ' . $item['value'] . ' (' . $item['title'] . ')');
-            }
-        }
     }
 
 }

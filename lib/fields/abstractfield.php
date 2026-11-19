@@ -3,6 +3,7 @@
 namespace Sprint\Migration\Fields;
 
 use ReflectionClass;
+use Sprint\Migration\Output\ConsoleOutput;
 
 abstract class AbstractField
 {
@@ -14,6 +15,8 @@ abstract class AbstractField
     public function __construct(private readonly string $code) {}
 
     abstract public function getDefaultValue(): mixed;
+
+    abstract public function getValueFromConsole(ConsoleOutput $output): mixed;
 
     public function getCode(): string
     {
@@ -53,6 +56,10 @@ abstract class AbstractField
         return $this;
     }
 
+    protected function getProp(string $name, mixed $defaultValue): mixed
+    {
+        return $this->props[$name] ?? $defaultValue;
+    }
 
     protected function setProp(string $name, mixed $value): static
     {

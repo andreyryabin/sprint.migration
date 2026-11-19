@@ -81,22 +81,12 @@ abstract class VersionBuilder extends Builder
 
         if (!is_file($fileName)) {
             throw new MigrationException(
-                Locale::getMessage(
-                    'ERR_CANT_CREATE_FILE',
-                    [
-                        '#NAME#' => $fileName,
-                    ],
-                ),
+                Locale::getMessage('ERR_CANT_CREATE_FILE', ['#NAME#' => $fileName,]),
             );
         }
 
         $this->outSuccess(
-            Locale::getMessage(
-                'CREATED_SUCCESS',
-                [
-                    '#VERSION#' => $templateVars['version'],
-                ],
-            ),
+            Locale::getMessage('CREATED_SUCCESS', ['#VERSION#' => $templateVars['version'],]),
         );
 
         if ($markAsInstalled) {

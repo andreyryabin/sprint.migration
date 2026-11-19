@@ -1,7 +1,7 @@
 import {ajax} from "main.core";
 
 import {
-    colorclass,
+    colorbind,
     colorize,
     extractResponse,
     filterOptions,
@@ -40,13 +40,15 @@ export const MigrationBuilders = {
 
     data() {
         return {
-            loading: 0,
+            loading1: 0,
+            loading2: 0,
             running: false,
             messages: [],
             progress: [],
             builders: [],
             selected: {},
             filter: {search: ''},
+            success: false
 
         };
     },
@@ -77,7 +79,7 @@ export const MigrationBuilders = {
         getMessage,
         progressMessage,
         colorize,
-        colorclass,
+        colorbind,
 
         createFilter() {
             this.filter.search = '';
@@ -88,24 +90,23 @@ export const MigrationBuilders = {
         },
 
         execAction(action, payload) {
-            this.loading = 1;
             return ajax.runAction(
                 'sprint:migration.controller.BuilderController.' + action,
                 {data: payload, getParameters: {config: this.config, lang: this.lang}}
             ).then((response) => {
                 extractResponse(response, this.messages, this.progress);
-                this.loading = 0;
                 return response.data;
             }).catch((response) => {
                 extractResponse(response, this.messages, this.progress);
-                this.loading = 0;
             });
         },
 
         refreshBuilders() {
+            this.loading1 = 1;
             this.execAction('refreshBuilders', {})
                 .then((data) => {
                     this.builders = data.builders || [];
+                    this.loading1 = 0;
                 });
         },
 
@@ -142,17 +143,22 @@ export const MigrationBuilders = {
         replayBuilder() {
             if (this.running) {
                 this.running = false;
+                this.loading2 = 0;
                 return;
             }
 
+            this.loading2 = 1;
             this.execBuilder()
-                .then(() => {
+                .then((success) => {
+                    this.success = success;
+                    this.loading2 = 0;
                 });
         },
 
         selectBuilder(name) {
             this.messages = [];
             this.progress = [];
+            this.success = false;
 
             const item = this.builders.find(item => item.name === name);
 
@@ -184,7 +190,7 @@ export const MigrationBuilders = {
                 </div>
                 <div class="sp-search_summary">
                   <span
-                      v-if="loading"
+                      v-if="loading1"
                       class="sp-loading"
                       v-text="getMessage('LOADING_TEXT')"
                   />
@@ -258,7 +264,7 @@ export const MigrationBuilders = {
                   <div
                       v-for="(item, index) in messages"
                       :key="index"
-                      v-bind="colorclass(item.type)"
+                      v-bind="colorbind(item.type)"
                       v-text="item.message"
                   />
                 </div>
@@ -276,7 +282,7 @@ export const MigrationBuilders = {
                       @click="selectBuilder(selected.name)"
                   />
                   <span
-                      v-if="loading"
+                      v-if="loading2"
                       class="sp-loading"
                       v-text="getMessage('LOADING_TEXT')"
                   />

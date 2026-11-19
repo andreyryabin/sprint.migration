@@ -20,7 +20,6 @@ use Sprint\Migration\Module;
 use Sprint\Migration\Output\RestOutput;
 
 /**
- * @publicApi
  * controller: sprint:migration.controller.buildercontroller
  */
 class BuilderController extends Controller
@@ -58,6 +57,9 @@ class BuilderController extends Controller
         return [];
     }
 
+    /**
+     * @publicApi
+     */
     public function refreshBuildersAction(): array
     {
         $builders = array_map(
@@ -66,6 +68,36 @@ class BuilderController extends Controller
         );
 
         return ['builders' => $builders];
+    }
+
+    /**
+     * @publicApi
+     * @throws BuilderException
+     */
+    public function execBuilderAction(string $name, array $params = []): array
+    {
+        $builder = $this->builderManager->createBuilder($name, $params);
+
+        $result = $this->builderManager->startBuilder($builder);
+
+        return array_merge(
+            [
+                'restart' => $result->needRestart(),
+                'success' => $result->isSuccess(),
+            ],
+            $this->getBuilderForm($builder, $result->isSuccess()),
+            $this->output->getLog(),
+        );
+    }
+
+    protected function processBeforeAction(Action $action): bool
+    {
+        if (CMain::GetUserRight(Module::ID) == 'D') {
+            $this->addError(new Error('ACCESS_DENIED'));
+            return false;
+        }
+
+        return parent::processBeforeAction($action);
     }
 
     private function getBuilderForm(Builder $builder, bool $newform): array
@@ -116,33 +148,5 @@ class BuilderController extends Controller
         ];
     }
 
-    /**
-     * @publicApi
-     * @throws BuilderException
-     */
-    public function execBuilderAction(string $name, array $params = []): array
-    {
-        $builder = $this->builderManager->createBuilder($name, $params);
 
-        $result = $this->builderManager->startBuilder($builder);
-
-        return array_merge(
-            [
-                'restart' => $result->needRestart(),
-                'success' => $result->isSuccess(),
-            ],
-            $this->getBuilderForm($builder, $result->isSuccess()),
-            $this->output->getLog(),
-        );
-    }
-
-    protected function processBeforeAction(Action $action): bool
-    {
-        if (CMain::GetUserRight(Module::ID) == 'D') {
-            $this->addError(new Error('ACCESS_DENIED'));
-            return false;
-        }
-
-        return parent::processBeforeAction($action);
-    }
 }

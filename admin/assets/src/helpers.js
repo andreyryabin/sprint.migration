@@ -2,8 +2,9 @@ import {Loc} from "main.core";
 
 import {markRaw} from "ui.vue3";
 
-const MessageLabels = {
+const MessageColors = {
     '[/]': '</span>',
+
     '[new]': '<span class="sp-red">',
     '[unknown]': '<span class="sp-blue">',
     '[installed]': '<span class="sp-green">',
@@ -11,8 +12,8 @@ const MessageLabels = {
     '[info]': '<span class="sp-blue">',
     '[warning]': '<span class="sp-red">',
     '[notice]': '<span class="sp-green">',
-    '[error]': '<span class="sp-label sp-label-red">',
-    '[success]': '<span class="sp-label sp-label-green">',
+    '[error]': '<span class="sp-red">',
+    '[success]': '<span class="sp-green">',
 
     '[blue]': '<span class="sp-blue">',
     '[pink]': '<span class="sp-pink">',
@@ -35,6 +36,7 @@ const MessageTypes = {
     'new': 'sp-red',
     'installed': 'sp-green',
     'unknown': 'sp-blue',
+
     'info': 'sp-blue',
     'error': 'sp-red',
     'warning': 'sp-red',
@@ -91,11 +93,11 @@ export function makeLinksHtml(msg) {
 
 export function escapeHtml(str) {
     return str
-    // .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    // .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+        // .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        // .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
 export function colorize(text) {
@@ -109,13 +111,13 @@ export function colorize(text) {
     if (!out.includes('[/]')) {
         return out;
     }
-    for (const [key, val] of Object.entries(MessageLabels)) {
+    for (const [key, val] of Object.entries(MessageColors)) {
         out = out.replaceAll(key, val)
     }
     return out
 }
 
-export function colorclass(type) {
+export function colorbind(type) {
     return MessageTypes[type] ? {'class': MessageTypes[type]} : {};
 }
 
@@ -145,10 +147,11 @@ export function groupOptions(options, gKey = 'group') {
     let tree = {};
 
     options.forEach((item) => {
-        if (!tree[item[gKey]]) {
-            tree[item[gKey]] = [];
+        let gName = item[gKey] ?? '-';
+        if (!tree[gName]) {
+            tree[gName] = [];
         }
-        tree[item[gKey]].push(item);
+        tree[gName].push(item);
     });
 
     return tree;

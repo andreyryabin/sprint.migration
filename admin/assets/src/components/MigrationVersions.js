@@ -1,5 +1,5 @@
 import {ajax} from "main.core";
-import {colorclass, colorize, extractResponse, getMessage, progressMessage, showContextMenu} from "../helpers";
+import {colorbind, colorize, extractResponse, getMessage, progressMessage, showContextMenu} from "../helpers";
 
 import {StringField} from '../fields/StringField';
 import {SelectField} from '../fields/SelectField';
@@ -42,7 +42,8 @@ export const MigrationVersions = {
 
     data() {
         return {
-            loading: 0,
+            loading1: 0,
+            loading2: 0,
             running: false,
             replay: {},
             versions: [],
@@ -110,7 +111,7 @@ export const MigrationVersions = {
     methods: {
         progressMessage,
         colorize,
-        colorclass,
+        colorbind,
         getMessage,
         createFilter() {
             try {
@@ -131,28 +132,28 @@ export const MigrationVersions = {
         },
 
         execAction(action, payload) {
-            this.loading = 1;
             return ajax.runAction(
                 'sprint:migration.controller.versioncontroller.' + action,
                 {data: payload, getParameters: {config: this.config, lang: this.lang}}
             ).then((response) => {
                 extractResponse(response, this.messages, this.progress);
-                this.loading = 0;
                 return response.data;
             }).catch((response) => {
                 extractResponse(response, this.messages, this.progress);
-                this.loading = 0;
             });
         },
 
         refreshVersions() {
+            this.loading1 = 1;
             this.execAction('refreshVersions', {filter: this.filter})
                 .then((data) => {
                     this.versions = data.versions || [];
+                    this.loading1 = 0;
                 });
         },
 
         async execVersion(version, action, params, settag) {
+            this.loading2 = 1;
             this.running = true;
             this.replay = {version, action, params, settag};
 
@@ -180,6 +181,7 @@ export const MigrationVersions = {
 
             } finally {
                 this.running = false;
+                this.loading2 = 0;
             }
         },
 
@@ -284,22 +286,26 @@ export const MigrationVersions = {
 
 
         markVersion(version, status) {
+            this.loading2 = 1;
             this.execAction('markVersion', {
                 version: version,
                 status: status,
             }).then((data) => {
                 this.pickVersion(data.meta);
+                this.loading2 = 0;
             });
         },
 
         setVersionTag(version, defaultTag) {
             let settag = prompt('Set migration tag', defaultTag);
             if (settag) {
+                this.loading2 = 1;
                 this.execAction('setVersionTag', {
                     version: version,
                     settag: settag
                 }).then((data) => {
                     this.pickVersion(data.meta);
+                    this.loading2 = 0;
                 });
             }
         },
@@ -312,41 +318,49 @@ export const MigrationVersions = {
 
             let settag = prompt('Set migrations tag', '');
             if (settag) {
+                this.loading2 = 1;
                 this.execAction('setAllTag', {
                     versions: installed,
                     settag: settag
                 }).then(() => {
                     this.refreshVersions();
+                    this.loading2 = 0;
                 });
             }
         },
 
         moveVersion(version, toConfig) {
+            this.loading2 = 1;
             this.execAction('moveVersion', {
                 version: version,
                 toConfig: toConfig,
             }).then(() => {
                 this.refreshVersions();
+                this.loading2 = 0;
             });
         },
 
         moveAll(toConfig) {
             if (confirm('Confirm move migrations')) {
+                this.loading2 = 1;
                 this.execAction('moveAll', {
                     versions: this.getVersionNames(),
                     toConfig: toConfig
                 }).then(() => {
                     this.refreshVersions();
+                    this.loading2 = 0;
                 });
             }
         },
 
         deleteVersion(version) {
             if (confirm('Confirm delete migration file')) {
+                this.loading2 = 1;
                 this.execAction('deleteVersion', {
                     version: version,
                 }).then(() => {
                     this.refreshVersions();
+                    this.loading2 = 0;
                 });
             }
         },
@@ -479,7 +493,7 @@ export const MigrationVersions = {
                 </div>
                 <div class="sp-search_summary">
                   <span
-                      v-if="loading"
+                      v-if="loading1"
                       class="sp-loading"
                       v-text="getMessage('LOADING_TEXT')"
                   />
@@ -510,7 +524,7 @@ export const MigrationVersions = {
                     />
                     </td>
                     <td class="sp-list_content">
-                      <div v-bind="colorclass(item.status)" v-text="item.version"/>
+                      <div v-bind="colorbind(item.status)" v-text="item.version"/>
                       <div v-if="item.file_status" v-text="item.file_status"/>
                       <div v-if="item.record_status" v-text="item.record_status"/>
                       <div v-if="item.tag_status" v-html="colorize(item.tag_status)"/>
@@ -526,7 +540,7 @@ export const MigrationVersions = {
                 <div
                     v-for="(item, index) in messages"
                     :key="index"
-                    v-bind="colorclass(item.type)"
+                    v-bind="colorbind(item.type)"
                     v-html="colorize(item.message)"
                 />
               </div>
@@ -548,7 +562,7 @@ export const MigrationVersions = {
                   @click="makeCommonMenu($event)"
               />
               <span
-                  v-if="loading"
+                  v-if="loading2"
                   class="sp-loading"
                   v-text="getMessage('LOADING_TEXT')"
               />

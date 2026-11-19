@@ -74,10 +74,13 @@ class Console
         } elseif (method_exists($this, $this->command)) {
             call_user_func([$this, $this->command]);
         } else {
-            throw new ConsoleException("Command {$this->command} not found, see help");
+            throw new ConsoleException("Command $this->command not found, see help");
         }
     }
 
+    /**
+     * @publicApi
+     */
     public function commandInfo(): void
     {
         $this->output->print(Locale::getModuleIdentyMessage());
@@ -95,26 +98,26 @@ class Console
 
         foreach (ConfigManager::getInstance()->getList() as $configItem) {
             if ($configItem->getName() == $this->versionConfig->getName()) {
-                $this->output->print('  ' . $configItem->getTitle() . ' *');
+                $this->output->print('  [green]%s[/] *',$configItem->getTitle());
             } else {
-                $this->output->print('  ' . $configItem->getTitle());
+                $this->output->print('  %s', $configItem->getTitle());
             }
         }
         $this->output->print('');
-        $this->output->print(
-            Locale::getMessage('COMMAND_CONFIG') . ':' . PHP_EOL . '  php %s config' . PHP_EOL,
-            $this->script,
-        );
-        $this->output->print(
-            Locale::getMessage('COMMAND_RUN') . ':' . PHP_EOL . '  php %s <command> [<args>]' . PHP_EOL,
-            $this->script,
-        );
-        $this->output->print(
-            Locale::getMessage('COMMAND_HELP') . ':' . PHP_EOL . '  php %s help' . PHP_EOL,
-            $this->script,
-        );
+        $this->output->print(Locale::getMessage('COMMAND_CONFIG'));
+        $this->output->print('  php %s config',$this->script);
+        $this->output->print('');
+        $this->output->print(Locale::getMessage('COMMAND_RUN'));
+        $this->output->print('  php %s <command> [<args>]',$this->script);
+        $this->output->print('');
+        $this->output->print(Locale::getMessage('COMMAND_HELP') . ':');
+        $this->output->print('  php %s help',$this->script);
+        $this->output->print('');
     }
 
+    /**
+     * @publicApi
+     */
     public function commandConfig(): void
     {
         $this->output->print(
@@ -177,9 +180,14 @@ class Console
 
     /**
      * @throws MigrationException
+     * @throws ConsoleException
      */
     public function commandDelete(): void
     {
+        if (empty($this->getArguments())) {
+            throw new ConsoleException("Invalid arguments, see help");
+        }
+
         foreach ($this->getArguments() as $argument) {
             if ($this->versionConfig->isVersionName($argument)) {
                 $entity = $this->versionManager->getVersionByName($argument);
@@ -323,9 +331,10 @@ class Console
     }
 
     /**
+     * @publicApi
      * @throws BuilderException
      */
-    public function commandCreate(): void
+    public function commandAdd(): void
     {
         /** @compability */
         $descr = $this->getArg(0);
@@ -340,20 +349,22 @@ class Console
 
         $from = $this->getArg('--from=', 'BlankBuilder');
 
-        $this->executeBuilder($from, [
+        $this->executeBuilder($from, array_filter([
             'description' => $descr,
             'prefix'      => $prefix,
-        ]);
+        ]));
     }
 
     /**
      * @publicApi
      * @throws BuilderException
      */
-    public function commandAdd(): void
+    public function commandCreate(): void
     {
-        $this->commandCreate();
+        $this->commandAdd();
     }
+
+
     /**
      * @publicApi
      * @throws MigrationException
@@ -362,14 +373,17 @@ class Console
     {
         $this->commandList();
     }
+
     /**
      * @throws MigrationException
+     * @throws ConsoleException
      * @publicApi
      */
     public function commandDel(): void
     {
         $this->commandDelete();
     }
+
     /**
      * @publicApi
      * @throws MigrationException
@@ -431,20 +445,17 @@ class Console
     /**
      * @throws BuilderException
      */
-    private function executeBuilder(string $from, array $postvars = []): void
+    private function executeBuilder(string $from, array $defaultValues = []): void
     {
+        $builder = $this->builderManager->createBuilder($from, $defaultValues);
         do {
-            $builder = $this->builderManager->createBuilder($from, $postvars);
+            $this->output->print(print_r($builder->getRestartParams(), 1));
 
-            $builder->renderConsole();
-
-            $builder->buildExecute();
-            $builder->buildAfter();
-
-            $builder->renderConsole();
-
-            $postvars = $builder->getRestartParams();
-        } while ($builder->isRestart() || $builder->isRebuild());
+            foreach ($builder->getUnbindFields() as $field) {
+                $builder->setFieldValue($field->getCode(), $field->getValueFromConsole($this->output));
+            }
+            $result = $this->builderManager->startBuilder($builder);
+        } while ($result->needRestart() || $result->needRebuild());
     }
 
     /**
@@ -463,11 +474,7 @@ class Console
             return;
         }
 
-        $this->versionManager->executeAll(
-            $this->getVersionsFilterByArgs(),
-            $action,
-            $tag,
-        );
+        $this->versionManager->executeAll($this->getVersionsFilterByArgs(), $action, $tag);
     }
 
     /**

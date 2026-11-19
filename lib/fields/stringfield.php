@@ -2,6 +2,9 @@
 
 namespace Sprint\Migration\Fields;
 
+use Sprint\Migration\Exceptions\ConsoleException;
+use Sprint\Migration\Output\ConsoleOutput;
+
 class StringField extends AbstractField
 {
     private string $defaultValue = '';
@@ -25,5 +28,13 @@ class StringField extends AbstractField
     {
         $this->defaultValue = $value;
         return $this;
+    }
+
+    /**
+     * @throws ConsoleException
+     */
+    public function getValueFromConsole(ConsoleOutput $output): string
+    {
+        return $output->read($this->getTitle());
     }
 }

@@ -50,7 +50,7 @@ class BuilderResult
         return $this->isRebuild;
     }
 
-    public function getLastException(): ?Throwable
+    public function getException(): ?Throwable
     {
         return $this->lastException;
     }
