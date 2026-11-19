@@ -28,7 +28,7 @@ class VersionRecordFactory
             return null;
         }
 
-        $this->versionConfig->tryVersionName($versionRecord['version']);
+        $this->versionConfig->checkVersionName($versionRecord['version']);
 
         $versionTimestamp = $this->versionConfig->getVersionTimestamp($versionRecord['version']);
 

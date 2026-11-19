@@ -65,10 +65,10 @@ class VersionManager
      * @return VersionEntity[]
      * @throws MigrationException
      */
-    public function getVersions(array $params = []): array
+    public function getVersions(array $filter = []): array
     {
         $actualTs = $this->versionConfig->getActualTimestamp();
-        $filter = VersionFilter::fromArray($params, $actualTs);
+        $filterObj = VersionFilter::fromArray($filter, $actualTs);
 
         $merge = [];
 
@@ -83,7 +83,7 @@ class VersionManager
             $merge[$versionName] = $item->getVersionTimestamp();
         }
 
-        if ($filter->isSortDesc()) {
+        if ($filterObj->isSortDesc()) {
             arsort($merge);
         } else {
             asort($merge);
@@ -97,7 +97,7 @@ class VersionManager
                 $files[$versionName] ?? null,
                 $records[$versionName] ?? null,
             );
-            if ($filter->matches($versionEntity)) {
+            if ($filterObj->matches($versionEntity)) {
                 $result[] = $versionEntity;
             }
         }
@@ -182,7 +182,7 @@ class VersionManager
         ob_start();
         try {
             if (empty($params['~start'])) {
-                $this->output->outInfo('%s::%s() start', $entity->getVersionName(), $action);
+                $this->output->outInfo('%s (%s) start', $entity->getVersionName(), $action);
                 $params['~start'] = 'ok';
             }
 
@@ -239,7 +239,7 @@ class VersionManager
         }
 
         if (!$result->needRestart()) {
-            $this->output->outInfo('%s::%s() finish', $entity->getVersionName(), $action);
+            $this->output->outInfo('%s (%s) finish', $entity->getVersionName(), $action);
         }
 
         return $result;
@@ -276,7 +276,7 @@ class VersionManager
      */
     public function getVersionByName(string $versionName): VersionEntity
     {
-        $this->versionConfig->tryVersionName($versionName);
+        $this->versionConfig->checkVersionName($versionName);
 
         $versionRecord = $this->getVersionTable()->getRecord($versionName);
 
@@ -304,10 +304,9 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function deleteMigration(string $versionName): bool
+    public function deleteMigration(VersionEntity $entity): bool
     {
-        $entity = $this->getVersionByName($versionName);
-
+        $versionName = $entity->getVersionName();
         $success = 0;
         if ($entity->hasRecord() && $this->getVersionTable()->removeRecord($versionName)) {
             $this->output->outInfo(Locale::getMessage('DELETE_RECORD', ['#VERSION#' => $versionName]));
@@ -398,9 +397,9 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function markMigration(string $versionName, string $status): bool
+    public function markMigration(VersionEntity $entity, string $status): bool
     {
-        $entity = $this->getVersionByName($versionName);
+        $versionName = $entity->getVersionName();
 
         $success = false;
         if ($status == VersionEnum::STATUS_NEW && $entity->hasRecord()) {
@@ -429,16 +428,15 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function setMigrationTag(string $versionName, string $tag): bool
+    public function setMigrationTag(VersionEntity $entity, string $tag): bool
     {
-        $entity = $this->getVersionByName($versionName);
-
+        $versionName = $entity->getVersionName();
         $success = ($entity->hasRecord() && $this->getVersionTable()->updateTag($versionName, $tag));
 
         if ($success) {
             $this->output->outInfo(Locale::getMessage('SETTAG_OK', ['#VERSION#' => $versionName]));
         } else {
-            $this->output->outWarning(Locale::getMessage('SETTAG_ERROR1', ['#VERSION#' => $versionName]));
+            $this->output->outWarning(Locale::getMessage('SETTAG_ERROR', ['#VERSION#' => $versionName]));
         }
         return $success;
     }
@@ -452,7 +450,7 @@ class VersionManager
             if (str_contains($versionName, '\\')) {
                 $versionName = substr(strrchr($versionName, '\\'), 1);
             }
-            if (!$this->getVersionConfig()->checkVersionName($versionName)) {
+            if (!$this->getVersionConfig()->isVersionName($versionName)) {
                 throw new MigrationException(sprintf('Required "%s" not found', $versionName));
             }
 

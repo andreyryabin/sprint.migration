@@ -1,5 +1,6 @@
 <?php
 
+use Bitrix\Main\Application;
 use Bitrix\Main\Loader;
 
 if (php_sapi_name() != 'cli') {
@@ -20,10 +21,9 @@ if (empty($_SERVER["DOCUMENT_ROOT"])) {
 
 $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
 
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
+
 try {
-
-    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
-
     if (!Loader::includeModule('sprint.migration')) {
         /** @var sprint_migration $ob */
         if ($ob = CModule::CreateModuleObject('sprint.migration')) {
@@ -40,33 +40,20 @@ try {
     $console = new Sprint\Migration\Console($argv);
     $console->executeConsoleCommand();
 
-    require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php");
 
 } catch (Throwable $exception) {
+    fwrite(STDOUT,
+        sprintf(
+            "[%s] %s (%s)\n",
+            get_class($exception),
+            $exception->getMessage(),
+            $exception->getCode(),
+        ),
+    );
 
-    $makeRelative = function (string $path, int $depth = 0) {
-        $chunks = explode(DIRECTORY_SEPARATOR, $path);
-        $chunks = array_slice($chunks, -($depth + 1));
-
-        return '.../' . implode('/', $chunks);
-    };
-
-    fwrite(STDOUT, sprintf(
-        "[%s] %s (%s) in %s:%d\n",
-        get_class($exception),
-        $exception->getMessage(),
-        $exception->getCode(),
-        $exception->getFile(),
-        $exception->getLine()
-    ));
-
-    foreach ($exception->getTrace() as $err) {
-        fwrite(STDOUT, sprintf("%s:%d\n", $makeRelative($err['file'], 2), $err['line']));
-    }
-
-    die(1);
+    Application::getInstance()->end(1);
 }
 
-
+require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php");
 
 

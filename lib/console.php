@@ -5,8 +5,10 @@ namespace Sprint\Migration;
 use Bitrix\Main\EventManager;
 use CGroup;
 use CUser;
+use Sprint\Migration\Entity\VersionEntity;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\BuilderException;
+use Sprint\Migration\Exceptions\ConsoleException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Output\ConsoleOutput;
 use Sprint\Migration\Traits\CurrentUserTrait;
@@ -26,6 +28,7 @@ class Console
 
     /**
      * @throws MigrationException
+     * @throws ConsoleException
      */
     public function __construct($args)
     {
@@ -60,111 +63,9 @@ class Console
         }
     }
 
-    protected function initializeArgs(array $args): string
-    {
-        foreach ($args as $val) {
-            $this->addArg($val);
-        }
-
-        $command = '';
-
-        if (isset($this->arguments[0])) {
-            $command = array_shift($this->arguments);
-
-            $command = str_replace(['_', '-', ' '], '*', $command);
-            $command = explode('*', $command);
-            $tmp = [];
-            foreach ($command as $val) {
-                $tmp[] = ucfirst(strtolower($val));
-            }
-
-            $command = 'command' . implode('', $tmp);
-        }
-
-        return $command;
-    }
-
-    protected function addArg($arg): void
-    {
-        [$name, $val] = explode('=', $arg);
-
-        if (str_starts_with($name, '--')) {
-            if (!is_null($val)) {
-                $this->argoptions[$name . '='] = $val;
-            } else {
-                $this->argoptions[$name] = 1;
-            }
-        } else {
-            $this->arguments[] = $name;
-        }
-    }
-
-    protected function getArg($name, $default = '')
-    {
-        if (is_numeric($name)) {
-            return $this->arguments[$name] ?? $default;
-        } else {
-            return $this->argoptions[$name] ?? $default;
-        }
-    }
-
-    private function disableAuthHandlersIfNeed(): void
-    {
-        if ($this->versionConfig->getVal('console_auth_events_disable')) {
-            $this->disableHandler('main', 'OnAfterUserAuthorize');
-            $this->disableHandler('main', 'OnUserLogin');
-        }
-    }
-
-    private function disableHandler(string $moduleId, string $eventType): void
-    {
-        $eventManager = EventManager::getInstance();
-        $handlers = $eventManager->findEventHandlers($moduleId, $eventType);
-        foreach ($handlers as $iEventHandlerKey => $handler) {
-            $eventManager->removeEventHandler($moduleId, $eventType, $iEventHandlerKey);
-        }
-    }
-
-    public function authorizeAsAdmin(): void
-    {
-        global $USER;
-
-        $by = 'c_sort';
-        $order = 'asc';
-
-        $groupitem = CGroup::GetList($by, $order, [
-            'ADMIN'  => 'Y',
-            'ACTIVE' => 'Y',
-        ])->Fetch();
-
-        if (!empty($groupitem)) {
-            $by = 'id';
-
-            $useritem = CUser::GetList($by, $order, [
-                'GROUPS_ID' => [$groupitem['ID']],
-                'ACTIVE'    => 'Y',
-            ], [
-                'NAV_PARAMS' => ['nTopCount' => 1],
-            ])->Fetch();
-
-            if (!empty($useritem)) {
-                $USER->Authorize($useritem['ID']);
-            }
-        }
-    }
-
-    public function authorizeAsLogin($login): void
-    {
-        global $USER;
-        $dbres = CUser::GetByLogin($login);
-        $useritem = $dbres->Fetch();
-        if ($useritem) {
-            $USER->Authorize($useritem['ID']);
-        }
-    }
 
     /**
-     * @throws MigrationException
+     * @throws ConsoleException
      */
     public function executeConsoleCommand(): void
     {
@@ -173,42 +74,24 @@ class Console
         } elseif (method_exists($this, $this->command)) {
             call_user_func([$this, $this->command]);
         } else {
-            throw new MigrationException(
-                Locale::getMessage(
-                    'ERR_COMMAND_NOT_FOUND',
-                    [
-                        '#NAME#' => $this->command,
-                    ],
-                ),
-            );
+            throw new ConsoleException("Command {$this->command} not found, see help");
         }
     }
 
     public function commandInfo(): void
     {
-        $this->output->print(
-            Locale::getMessage('MODULE_NAME'),
-        );
-        $this->output->print(
-            Locale::getMessage('MODULE_VERSION') . ': %s',
-            Module::getVersion(),
-        );
-        $this->output->print(
-            Locale::getMessage('PHP_VERSION') . ': %s',
-            defined('PHP_VERSION') ? PHP_VERSION : '',
-        );
-        $this->output->print(
-            Locale::getMessage('BITRIX_VERSION') . ': %s',
-            defined('SM_VERSION') ? SM_VERSION : '',
-        );
-        $this->output->print(
-            Locale::getMessage('CURRENT_USER') . ': [%d] %s',
+        $this->output->print(Locale::getModuleIdentyMessage());
+        $this->output->print(Locale::getModuleVersionMessage());
+        $this->output->print(Locale::getPhpVersionMessage());
+        $this->output->print(Locale::getBitrixVersionMessage());
+
+        $this->output->print(Locale::getCurrentUserMessage(
             $this->getCurrentUserId(),
             $this->getCurrentUserLogin(),
-        );
+        ));
 
         $this->output->print('');
-        $this->output->print(Locale::getMessage('CONFIG_LIST') . ':');
+        $this->output->print(Locale::getMessage('CONFIG_LIST'));
 
         foreach (ConfigManager::getInstance()->getList() as $configItem) {
             if ($configItem->getName() == $this->versionConfig->getName()) {
@@ -230,77 +113,6 @@ class Console
             Locale::getMessage('COMMAND_HELP') . ':' . PHP_EOL . '  php %s help' . PHP_EOL,
             $this->script,
         );
-    }
-
-    /**
-     * @noinspection PhpUnused
-     */
-
-    /**
-     * @noinspection PhpUnused
-     * @throws BuilderException
-     */
-    public function commandRun(): void
-    {
-        $this->executeBuilder($this->getArg(0));
-    }
-
-    /**
-     * @throws BuilderException
-     */
-    protected function executeBuilder(string $from, array $postvars = []): void
-    {
-        do {
-            $builder = $this->builderManager->createBuilder($from, $postvars);
-
-            $builder->renderConsole();
-
-            $builder->buildExecute();
-            $builder->buildAfter();
-
-            $builder->renderConsole();
-
-            $postvars = $builder->getRestartParams();
-        } while ($builder->isRestart() || $builder->isRebuild());
-    }
-
-    /**
-     * @noinspection PhpUnused
-     * @throws MigrationException
-     */
-    public function commandMark(): void
-    {
-        $version = $this->getArg(0);
-        $status = $this->getArg('--as=');
-
-        if ($version && $status) {
-            $this->versionManager->markMigration($version, $status);
-        } else {
-            throw new MigrationException(
-                Locale::getMessage('ERR_INVALID_ARGUMENTS'),
-            );
-        }
-    }
-
-    /**
-     * @noinspection PhpUnused
-     * @throws MigrationException
-     */
-    public function commandDel(): void
-    {
-        $this->commandDelete();
-    }
-
-    /**
-     * @noinspection PhpUnused
-     */
-
-    /**
-     * @throws MigrationException
-     */
-    public function commandDelete(): void
-    {
-        $this->versionManager->deleteMigration($this->getArg(0));
     }
 
     public function commandConfig(): void
@@ -329,11 +141,81 @@ class Console
     }
 
     /**
-     * @noinspection PhpUnused
+     * @throws BuilderException
      */
+    public function commandRun(): void
+    {
+        $this->executeBuilder($this->getArg(0));
+    }
 
     /**
-     * @noinspection PhpUnused
+     * @throws MigrationException
+     * @throws ConsoleException
+     */
+    public function commandMark(): void
+    {
+        $status = $this->getArg('--as=');
+
+        if (empty($status) || empty($this->getArguments())) {
+            throw new ConsoleException("Invalid arguments, see help");
+        }
+
+        foreach ($this->getArguments() as $argument) {
+            if ($this->versionConfig->isVersionName($argument)) {
+                $entity = $this->versionManager->getVersionByName($argument);
+                $this->versionManager->markMigration($entity, $status);
+            } elseif ($this->versionConfig->isVersionStatus($argument)) {
+                foreach ($this->getVersionsByArgs(['status' => $argument]) as $entity) {
+                    $this->versionManager->markMigration($entity, $status);
+                }
+            }
+        }
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function commandDelete(): void
+    {
+        foreach ($this->getArguments() as $argument) {
+            if ($this->versionConfig->isVersionName($argument)) {
+                $entity = $this->versionManager->getVersionByName($argument);
+                $this->versionManager->deleteMigration($entity);
+            } elseif ($this->versionConfig->isVersionStatus($argument)) {
+                foreach ($this->getVersionsByArgs(['status' => $argument]) as $entity) {
+                    $this->versionManager->deleteMigration($entity);
+                }
+            }
+        }
+    }
+
+    /**
+     * @publicApi
+     * @throws MigrationException
+     * @throws ConsoleException
+     */
+    public function commandSettag(): void
+    {
+        $tag = $this->getArg('--add-tag=');
+
+        if (empty($tag) || empty($this->getArguments())) {
+            throw new ConsoleException("Invalid arguments, see help");
+        }
+
+        foreach ($this->getArguments() as $argument) {
+            if ($this->versionConfig->isVersionName($argument)) {
+                $entity = $this->versionManager->getVersionByName($argument);
+                $this->versionManager->setMigrationTag($entity, $tag);
+            } elseif ($this->versionConfig->isVersionStatus($argument)) {
+                foreach ($this->getVersionsByArgs(['status' => $argument]) as $entity) {
+                    $this->versionManager->setMigrationTag($entity, $tag);
+                }
+            }
+        }
+    }
+
+    /**
+     * @publicApi
      * @throws MigrationException
      */
     public function commandUp(): void
@@ -342,42 +224,7 @@ class Console
     }
 
     /**
-     * @throws MigrationException
-     */
-    protected function executeByArgs($action): void
-    {
-        $tag = $this->getArg('--add-tag=');
-
-        if ($this->hasArguments()) {
-            foreach ($this->getArguments() as $versionName) {
-                if (!$this->versionManager->executeVersion($versionName, $action, $tag)) {
-                    return;
-                }
-            }
-            return;
-        }
-
-        $this->versionManager->executeAll([
-            'search'   => $this->getArg('--search='),
-            'tag'      => $this->getArg('--tag='),
-            'modified' => $this->getArg('--modified'),
-            'older'    => $this->getArg('--older'),
-            'actual'   => $this->getArg('--actual'),
-        ], $action, $tag);
-    }
-
-    protected function hasArguments(): bool
-    {
-        return !empty($this->arguments);
-    }
-
-    protected function getArguments(): array
-    {
-        return $this->arguments;
-    }
-
-    /**
-     * @noinspection PhpUnused
+     * @publicApi
      * @throws MigrationException
      */
     public function commandDown(): void
@@ -385,6 +232,21 @@ class Console
         $this->executeByArgs(VersionEnum::ACTION_DOWN);
     }
 
+    /**
+     * @publicApi
+     * @throws MigrationException
+     */
+    public function commandMigrate(): void
+    {
+        $action = $this->getArg('--down') ? VersionEnum::ACTION_DOWN : VersionEnum::ACTION_UP;
+
+        $this->executeByArgs($action);
+    }
+
+    /**
+     * @publicApi
+     * @throws MigrationException
+     */
     public function commandRedo(): void
     {
         $tag = $this->getArg('--add-tag=');
@@ -397,6 +259,9 @@ class Console
         }
     }
 
+    /**
+     * @publicApi
+     */
     public function commandHelp(): void
     {
         if (Locale::getDefaultLang() == 'en') {
@@ -407,35 +272,11 @@ class Console
     }
 
     /**
-     * @noinspection PhpUnused
-     * @throws MigrationException
-     */
-    public function commandLs(): void
-    {
-        $this->commandList();
-    }
-
-    /**
      * @throws MigrationException
      */
     public function commandList(): void
     {
-        if ($this->getArg('--new')) {
-            $status = VersionEnum::STATUS_NEW;
-        } elseif ($this->getArg('--installed')) {
-            $status = VersionEnum::STATUS_INSTALLED;
-        } else {
-            $status = '';
-        }
-
-        $versions = $this->versionManager->getVersions([
-            'status'   => $status,
-            'search'   => $this->getArg('--search='),
-            'tag'      => $this->getArg('--tag='),
-            'modified' => $this->getArg('--modified'),
-            'older'    => $this->getArg('--older'),
-            'actual'   => $this->getArg('--actual'),
-        ]);
+        $versions = $this->getVersionsByArgs();
 
         $summary = [
             VersionEnum::STATUS_NEW       => 0,
@@ -459,7 +300,7 @@ class Console
             }
 
             if ($entity->getLabels()) {
-                $this->output->print('│ ' . implode(' ', $entity->getLabels()));
+                $this->output->print('│ ' . $entity->getLabels());
             }
 
             if ($entity->hasFile() && $entity->getFileDescription()) {
@@ -470,23 +311,12 @@ class Console
             }
 
             $this->output->print('└─');
-
-            $stval = $entity->getStatus();
-            $summary[$stval]++;
+            $summary[$entity->getStatus()]++;
         }
 
         foreach (array_filter($summary) as $k => $v) {
-            $this->output->print(Locale::getMessage('SUMMARY_' . $k) . ':' . $v);
+            $this->output->print(Locale::getMessage(strtoupper('SUMMARY_' . $k)) . ':' . $v);
         }
-    }
-
-    /**
-     * @noinspection PhpUnused
-     * @throws BuilderException
-     */
-    public function commandAdd(): void
-    {
-        $this->commandCreate();
     }
 
     /**
@@ -514,7 +344,31 @@ class Console
     }
 
     /**
-     * @noinspection PhpUnused
+     * @publicApi
+     * @throws BuilderException
+     */
+    public function commandAdd(): void
+    {
+        $this->commandCreate();
+    }
+    /**
+     * @publicApi
+     * @throws MigrationException
+     */
+    public function commandLs(): void
+    {
+        $this->commandList();
+    }
+    /**
+     * @throws MigrationException
+     * @publicApi
+     */
+    public function commandDel(): void
+    {
+        $this->commandDelete();
+    }
+    /**
+     * @publicApi
      * @throws MigrationException
      */
     public function commandMi(): void
@@ -523,21 +377,198 @@ class Console
         $this->commandMigrate();
     }
 
+    private function initializeArgs(array $args): string
+    {
+        foreach ($args as $val) {
+            $this->addArg($val);
+        }
+
+        $command = '';
+
+        if (isset($this->arguments[0])) {
+            $command = array_shift($this->arguments);
+
+            $command = str_replace(['_', '-', ' '], '*', $command);
+            $command = explode('*', $command);
+            $tmp = [];
+            foreach ($command as $val) {
+                $tmp[] = ucfirst(strtolower($val));
+            }
+
+            $command = 'command' . implode('', $tmp);
+        }
+
+        return $command;
+    }
+
+    private function addArg($arg): void
+    {
+        [$name, $val] = explode('=', $arg);
+
+        if (str_starts_with($name, '--')) {
+            if (!is_null($val)) {
+                $this->argoptions[$name . '='] = $val;
+            } else {
+                $this->argoptions[$name] = 1;
+            }
+        } else {
+            $this->arguments[] = $name;
+        }
+    }
+
+    private function getArg($name, $default = '')
+    {
+        if (is_numeric($name)) {
+            return $this->arguments[$name] ?? $default;
+        } else {
+            return $this->argoptions[$name] ?? $default;
+        }
+    }
+
     /**
-     * @noinspection PhpUnused
+     * @throws BuilderException
+     */
+    private function executeBuilder(string $from, array $postvars = []): void
+    {
+        do {
+            $builder = $this->builderManager->createBuilder($from, $postvars);
+
+            $builder->renderConsole();
+
+            $builder->buildExecute();
+            $builder->buildAfter();
+
+            $builder->renderConsole();
+
+            $postvars = $builder->getRestartParams();
+        } while ($builder->isRestart() || $builder->isRebuild());
+    }
+
+    /**
      * @throws MigrationException
      */
-    public function commandMigrate(): void
+    private function executeByArgs($action): void
     {
         $tag = $this->getArg('--add-tag=');
-        $action = $this->getArg('--down') ? VersionEnum::ACTION_DOWN : VersionEnum::ACTION_UP;
 
-        $this->versionManager->executeAll([
-            'search'   => $this->getArg('--search='),
+        if ($this->hasArguments()) {
+            foreach ($this->getArguments() as $versionName) {
+                if (!$this->versionManager->executeVersion($versionName, $action, $tag)) {
+                    return;
+                }
+            }
+            return;
+        }
+
+        $this->versionManager->executeAll(
+            $this->getVersionsFilterByArgs(),
+            $action,
+            $tag,
+        );
+    }
+
+    /**
+     * @return VersionEntity[]
+     * @throws MigrationException
+     */
+    private function getVersionsByArgs(array $filter = []): array
+    {
+        return $this->versionManager->getVersions(
+            array_merge($this->getVersionsFilterByArgs(), $filter),
+        );
+    }
+
+    private function getVersionsFilterByArgs(): array
+    {
+        if ($this->getArg('--new')) {
+            $status = VersionEnum::STATUS_NEW;
+        } elseif ($this->getArg('--installed')) {
+            $status = VersionEnum::STATUS_UNKNOWN;
+        } elseif ($this->getArg('--unknown')) {
+            $status = VersionEnum::STATUS_INSTALLED;
+        } else {
+            $status = '';
+        }
+
+        return [
+            'status'   => $status,
             'tag'      => $this->getArg('--tag='),
+            'search'   => $this->getArg('--search='),
             'modified' => $this->getArg('--modified'),
             'older'    => $this->getArg('--older'),
             'actual'   => $this->getArg('--actual'),
-        ], $action, $tag);
+        ];
     }
+
+    private function hasArguments(): bool
+    {
+        return !empty($this->arguments);
+    }
+
+    private function getArguments(): array
+    {
+        return $this->arguments;
+    }
+
+    private function disableAuthHandlersIfNeed(): void
+    {
+        if ($this->versionConfig->getVal('console_auth_events_disable')) {
+            $this->disableHandler('main', 'OnAfterUserAuthorize');
+            $this->disableHandler('main', 'OnUserLogin');
+        }
+    }
+
+    private function disableHandler(string $moduleId, string $eventType): void
+    {
+        $eventManager = EventManager::getInstance();
+        $handlers = $eventManager->findEventHandlers($moduleId, $eventType);
+        foreach ($handlers as $iEventHandlerKey => $handler) {
+            $eventManager->removeEventHandler($moduleId, $eventType, $iEventHandlerKey);
+        }
+    }
+
+    /**
+     * @throws ConsoleException
+     */
+    private function authorizeAsAdmin(): void
+    {
+        $groupitem = CGroup::GetList('c_sort', 'asc', [
+            'ADMIN'  => 'Y',
+            'ACTIVE' => 'Y',
+        ])->Fetch();
+
+        if (empty($groupitem['ID'])) {
+            throw new ConsoleException("Console authorize error: admin group not found");
+        }
+
+        $useritem = CUser::GetList('id', '', [
+            'GROUPS_ID' => [$groupitem['ID']],
+            'ACTIVE'    => 'Y',
+        ], [
+            'NAV_PARAMS' => ['nTopCount' => 1],
+        ])->Fetch();
+
+        if (empty($useritem)) {
+            throw new ConsoleException("Console authorize error: admin user not found");
+        }
+
+        global $USER;
+        $USER->Authorize($useritem['ID']);
+    }
+
+    /**
+     * @throws ConsoleException
+     */
+    private function authorizeAsLogin($login): void
+    {
+        $dbres = CUser::GetByLogin($login);
+        $useritem = $dbres->Fetch();
+        if (empty($useritem['ID'])) {
+            throw new ConsoleException("Console authorize error: user login not found");
+        }
+
+        global $USER;
+        $USER->Authorize($useritem['ID']);
+    }
+
 }

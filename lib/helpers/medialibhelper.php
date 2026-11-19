@@ -252,6 +252,7 @@ class MedialibHelper extends Helper
     }
 
     /**
+     * @publicApi
      * @throws HelperException
      */
     public function saveElement(array $fields = []): int
@@ -370,14 +371,16 @@ class MedialibHelper extends Helper
         CMedialibItem::Delete($id, false, false);
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
-
+    /**
+     * @publicApi
+     */
     public function deleteCollection(int $id): void
     {
         CMedialibCollection::Delete($id);
     }
 
     /**
+     * @publicApi
      * Получает права доступа к медиабиблиотеке для групп
      * возвращает массив вида [$groupId => $letter]
      * при $collectionId = 0 права запрашиваются для всех коллекций
@@ -407,6 +410,7 @@ class MedialibHelper extends Helper
     }
 
     /**
+     * @publicApi
      * Устанавливает права доступа к медиабиблиотеке для групп
      * предыдущие права сбрасываются,
      * принимает массив вида [$groupId => $letter]

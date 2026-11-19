@@ -21,6 +21,12 @@ class VersionEntity
         if ($file === null && $record === null) {
             throw new MigrationException('Version not exists');
         }
+
+        if ($file && $record ) {
+            if ($file->getVersionName() !== $record->getVersionName()) {
+                throw new MigrationException('Versions do not match');
+            }
+        }
     }
 
 

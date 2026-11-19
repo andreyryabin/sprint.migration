@@ -20,7 +20,7 @@ use Sprint\Migration\Module;
 use Sprint\Migration\Output\RestOutput;
 
 /**
- * @noinspection PhpUnused
+ * @publicApi
  * controller: sprint:migration.controller.buildercontroller
  */
 class BuilderController extends Controller
@@ -67,10 +67,6 @@ class BuilderController extends Controller
 
         return ['builders' => $builders];
     }
-
-    /**
-     * @noinspection PhpUnused
-     */
 
     private function getBuilderForm(Builder $builder, bool $newform): array
     {
@@ -121,7 +117,7 @@ class BuilderController extends Controller
     }
 
     /**
-     * @noinspection PhpUnused
+     * @publicApi
      * @throws BuilderException
      */
     public function execBuilderAction(string $name, array $params = []): array

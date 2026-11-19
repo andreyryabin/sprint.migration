@@ -19,7 +19,7 @@ use Sprint\Migration\VersionManager;
 use Throwable;
 
 /**
- * @noinspection PhpUnused
+ * @publicApi
  * controller: sprint:migration.controller.versioncontroller
  */
 class VersionController extends Controller
@@ -58,7 +58,7 @@ class VersionController extends Controller
     }
 
     /**
-     * @noinspection PhpUnused
+     * @publicApi
      * @throws MigrationException
      */
     public function refreshVersionsAction(array $filter = []): array
@@ -97,12 +97,13 @@ class VersionController extends Controller
     }
 
     /**
-     * @noinspection PhpUnused
+     * @publicApi
      * @throws MigrationException
      */
     public function markVersionAction(string $version, string $status): array
     {
-        $this->versionManager->markMigration($version, $status);
+        $entity = $this->versionManager->getVersionByName($version);
+        $this->versionManager->markMigration($entity, $status);
         $entity = $this->versionManager->getVersionByName($version);
 
         return array_merge([
@@ -111,18 +112,20 @@ class VersionController extends Controller
     }
 
     /**
-     * @noinspection PhpUnused
+     * @publicApi
      * @throws MigrationException
      */
     public function deleteVersionAction(string $version): array
     {
-        $this->versionManager->deleteMigration($version);
+        $entity = $this->versionManager->getVersionByName($version);
+
+        $this->versionManager->deleteMigration($entity);
 
         return $this->output->getLog();
     }
 
     /**
-     * @noinspection PhpUnused
+     * @publicApi
      * @throws MigrationException
      */
     public function moveVersionAction(string $version, string $toConfig): array
@@ -134,7 +137,7 @@ class VersionController extends Controller
 
 
     /**
-     * @noinspection PhpUnused
+     * @publicApi
      * @throws MigrationException
      */
     public function moveAllAction(array $versions, string $toConfig): array
@@ -147,12 +150,13 @@ class VersionController extends Controller
 
 
     /**
-     * @noinspection PhpUnused
+     * @publicApi
      * @throws MigrationException
      */
     public function setVersionTagAction(string $version, string $settag): array
     {
-        $this->versionManager->setMigrationTag($version, $settag);
+        $entity = $this->versionManager->getVersionByName($version);
+        $this->versionManager->setMigrationTag($entity, $settag);
         $entity = $this->versionManager->getVersionByName($version);
 
         return array_merge([
@@ -161,19 +165,20 @@ class VersionController extends Controller
     }
 
     /**
-     * @noinspection PhpUnused
+     * @publicApi
      * @throws MigrationException
      */
     public function setAllTagAction(array $versions, string $settag): array
     {
         foreach ($versions as $versionName) {
-            $this->versionManager->setMigrationTag($versionName, $settag);
+            $entity = $this->versionManager->getVersionByName($versionName);
+            $this->versionManager->setMigrationTag($entity, $settag);
         }
         return $this->output->getLog();
     }
 
     /**
-     * @noinspection PhpUnused
+     * @publicApi
      * @throws MigrationException
      * @throws Throwable
      */

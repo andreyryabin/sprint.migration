@@ -153,10 +153,6 @@ class FormHelper extends Helper
     }
 
     /**
-     * @param $sid
-     *
-     * @noinspection PhpUnused
-     * @return int
      * @throws HelperException
      */
     public function getFormIdIfExists($sid): int
@@ -223,7 +219,6 @@ class FormHelper extends Helper
     }
 
     /**
-     * @noinspection PhpUnused
      * @throws HelperException
      */
     public function saveField(int $formId, array $field): int
@@ -771,7 +766,7 @@ class FormHelper extends Helper
     }
 
     /**
-     * @noinspection PhpUnused
+     * @publicApi
      * @throws HelperException
      */
     public function deleteFormIfExists(string $formSid): bool

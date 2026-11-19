@@ -24,7 +24,7 @@ class VersionFactory
      */
     public function createFromName(string $versionName, array $versionRecord = []): VersionEntity
     {
-        $this->versionConfig->tryVersionName($versionName);
+        $this->versionConfig->checkVersionName($versionName);
 
         return new VersionEntity(
             $this->fileFactory->create($versionName),

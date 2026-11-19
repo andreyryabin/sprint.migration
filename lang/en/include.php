@@ -21,21 +21,22 @@ $MESS["{$prefix}LINK_IMPROVE_TRANSLATION"] = "Improve translation to english, cr
 $MESS["{$prefix}FILE_STATUS"] = "Created";
 $MESS["{$prefix}RECORD_STATUS"] = "Installed";
 
-$MESS["{$prefix}SUMMARY_CREATED"] = "New migrations";
+$MESS["{$prefix}SUMMARY_NEW"] = "New migrations";
 $MESS["{$prefix}SUMMARY_INSTALLED"] = "Installed";
 $MESS["{$prefix}SUMMARY_UNKNOWN"] = "Unknown";
 
 $MESS["{$prefix}CREATED_SUCCESS"] = "Migration #VERSION# created";
 $MESS["{$prefix}SEARCH"] = "Search";
 $MESS["{$prefix}ADMIN_INTERFACE_HIDDEN"] = "Admin interface hidden";
-$MESS["{$prefix}CONFIG_LIST"] = "Configuration list";
+$MESS["{$prefix}CONFIG_LIST"] = "Configuration list:";
 $MESS["{$prefix}COMMAND_RUN"] = "Command execution";
 $MESS["{$prefix}COMMAND_HELP"] = "Help";
 $MESS["{$prefix}COMMAND_CONFIG"] = "View configuration";
-$MESS["{$prefix}CURRENT_USER"] = "Current user";
-$MESS["{$prefix}BITRIX_VERSION"] = "Bitrix version";
-$MESS["{$prefix}MODULE_VERSION"] = "Module version";
-$MESS["{$prefix}PHP_VERSION"] = "PHP version";
+$MESS["{$prefix}CURRENT_USER"] = "Current user: [#ID#] #LOGIN#";
+$MESS["{$prefix}MODULE_IDENTY"] = "================#ID#================";
+$MESS["{$prefix}MODULE_VERSION"] = "Module version: #NAME#";
+$MESS["{$prefix}BITRIX_VERSION"] = "Bitrix version: #NAME#";
+$MESS["{$prefix}PHP_VERSION"] = "PHP version: #NAME#";
 $MESS["{$prefix}CFG_TITLE"] = "Migrations";
 $MESS["{$prefix}CONFIG"] = "Configuration";
 
@@ -88,8 +89,8 @@ $MESS["{$prefix}CREATE"] = "Create migration";
 $MESS["{$prefix}VERSION_NOT_FOUND"] = "Migration not found";
 $MESS["{$prefix}RELEASE_TAG"] = "Release tag: [label:green]#TAG#[/]";
 $MESS["{$prefix}SETTAG"] = "Set tag";
-$MESS["{$prefix}SETTAG_OK"] = "Tag for migration #VERSION# setting";
-$MESS["{$prefix}SETTAG_ERROR1"] = "Migration #VERSION# not found";
+$MESS["{$prefix}SETTAG_OK"] = "Success setting migration tag #VERSION#";
+$MESS["{$prefix}SETTAG_ERROR"] = "Error setting migration tag #VERSION#";
 
 $MESS["{$prefix}LABEL_MODIFIED"] = "[label:yellow]Migration file was modified after install[/]";
 $MESS["{$prefix}LABEL_OLDER"] = "[label:red]Migration file created in a later version of the module #V1#[/]";
@@ -311,8 +312,6 @@ $MESS["{$prefix}ERR_JSON_NOT_SUPPORTED"] = "Install php-ext json";
 $MESS["{$prefix}ERR_PHP_NOT_SUPPORTED"] = "PHP #NAME# not supported";
 $MESS["{$prefix}ERR_EXCHANGE_DISABLED"] = "Exchange disabled, install required bitrix modules";
 $MESS["{$prefix}ERR_EXCHANGE_DISABLED_XML"] = "Exchange disabled, install php-ext XMLReader and XMLWriter";
-$MESS["{$prefix}ERR_INVALID_ARGUMENTS"] = "Invalid arguments, see help";
-$MESS["{$prefix}ERR_COMMAND_NOT_FOUND"] = "Command \"#NAME#\" not found, see help";
 
 $MESS["{$prefix}ERR_TEMPLATE_NOT_FOUND"] = "Migration template \"#NAME#\" not found";
 $MESS["{$prefix}ERR_CANT_CREATE_FILE"] = "Cant create file \"#NAME#\"";

@@ -121,25 +121,14 @@ abstract class AbstractOutput implements OutputInterface
             return;
         }
 
-        $makeRelative = function (string $path, int $depth = 0) {
-            $chunks = explode(DIRECTORY_SEPARATOR, $path);
-            $chunks = array_slice($chunks, -($depth + 1));
-
-            return '.../' . implode('/', $chunks);
-        };
-
         $this->outWarning(
             "[%s] %s (%s) in %s:%d",
             get_class($exception),
             $exception->getMessage(),
             $exception->getCode(),
-            $makeRelative($exception->getFile(), 2),
+            $this->makeRelative($exception->getFile(), 2),
             $exception->getLine(),
         );
-
-//        foreach ($exception->getTrace() as $err) {
-//            $this->out('%s:%d', $makeRelative($err['file']??'', 2), $err['line']);
-//        }
     }
 
     public function outWarning(string $msg, ...$vars): void
@@ -149,5 +138,13 @@ abstract class AbstractOutput implements OutputInterface
         $this->writeMessage($msg, 'warning');
 
         $this->logger?->warning($msg);
+    }
+
+    private function makeRelative(string $path, int $depth = 0): string
+    {
+        $chunks = explode(DIRECTORY_SEPARATOR, $path);
+        $chunks = array_slice($chunks, -($depth + 1));
+
+        return '.../' . implode('/', $chunks);
     }
 }

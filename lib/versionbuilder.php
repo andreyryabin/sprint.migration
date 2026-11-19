@@ -100,9 +100,8 @@ abstract class VersionBuilder extends Builder
         );
 
         if ($markAsInstalled) {
-            $this
-                ->getVersionManager()
-                ->markMigration($templateVars['version'], VersionEnum::STATUS_INSTALLED);
+            $entity = $this->getVersionManager()->getVersionByName($templateVars['version']);
+            $this->getVersionManager()->markMigration($entity, VersionEnum::STATUS_INSTALLED);
         }
 
         return $templateVars['version'];

@@ -21,21 +21,22 @@ $MESS["{$prefix}LINK_IMPROVE_TRANSLATION"] = "Улучшите перевод н
 $MESS["{$prefix}FILE_STATUS"] = "Создана";
 $MESS["{$prefix}RECORD_STATUS"] = "Установлена";
 
-$MESS["{$prefix}SUMMARY_CREATED"] = "Новые миграции";
+$MESS["{$prefix}SUMMARY_NEW"] = "Новые миграции";
 $MESS["{$prefix}SUMMARY_INSTALLED"] = "Установленные";
 $MESS["{$prefix}SUMMARY_UNKNOWN"] = "Неизвестные";
 
 $MESS["{$prefix}CREATED_SUCCESS"] = "Миграция #VERSION# создана";
 $MESS["{$prefix}SEARCH"] = "Поиск";
 $MESS["{$prefix}ADMIN_INTERFACE_HIDDEN"] = "Управление миграциями через админку отключено";
-$MESS["{$prefix}CONFIG_LIST"] = "Список конфигураций";
+$MESS["{$prefix}CONFIG_LIST"] = "Список конфигураций:";
 $MESS["{$prefix}COMMAND_RUN"] = "Выполнение команд";
 $MESS["{$prefix}COMMAND_HELP"] = "Помощь по командам";
 $MESS["{$prefix}COMMAND_CONFIG"] = "Просмотр конфигурации";
-$MESS["{$prefix}CURRENT_USER"] = "Текущий пользователь";
-$MESS["{$prefix}BITRIX_VERSION"] = "Версия bitrix";
-$MESS["{$prefix}MODULE_VERSION"] = "Версия модуля";
-$MESS["{$prefix}PHP_VERSION"] = "Версия php";
+$MESS["{$prefix}CURRENT_USER"] = "Текущий пользователь: [#ID#] #LOGIN#";
+$MESS["{$prefix}MODULE_IDENTY"] = "================#ID#================";
+$MESS["{$prefix}MODULE_VERSION"] = "Версия модуля: #NAME#";
+$MESS["{$prefix}BITRIX_VERSION"] = "Версия bitrix: #NAME#";
+$MESS["{$prefix}PHP_VERSION"] = "Версия php: #NAME#";
 $MESS["{$prefix}CFG_TITLE"] = "Миграции";
 $MESS["{$prefix}CONFIG"] = "Конфигурация";
 
@@ -88,8 +89,8 @@ $MESS["{$prefix}CREATE"] = "Создать миграцию";
 $MESS["{$prefix}VERSION_NOT_FOUND"] = "Миграция не найдена";
 $MESS["{$prefix}RELEASE_TAG"] = "Тег релиза: [label:green]#TAG#[/]";
 $MESS["{$prefix}SETTAG"] = "Поставить тег";
-$MESS["{$prefix}SETTAG_OK"] = "Тег для миграции #VERSION# задан";
-$MESS["{$prefix}SETTAG_ERROR1"] = "Миграция #VERSION# не найдена";
+$MESS["{$prefix}SETTAG_OK"] = "Тег миграции успешно установлен #VERSION#";
+$MESS["{$prefix}SETTAG_ERROR"] = "Ошибка установки тега миграции #VERSION#";
 
 $MESS["{$prefix}LABEL_MODIFIED"] = "[label:yellow]Файл миграции был изменен после установки[/]";
 $MESS["{$prefix}LABEL_OLDER"] = "[label:red]Файл миграции создан в более поздней версии модуля #V1#[/]";
@@ -311,8 +312,6 @@ $MESS["{$prefix}ERR_JSON_NOT_SUPPORTED"] = "Установите php-расши�
 $MESS["{$prefix}ERR_PHP_NOT_SUPPORTED"] = "PHP #NAME# не поддерживается";
 $MESS["{$prefix}ERR_EXCHANGE_DISABLED"] = "Обмен отключен, подключите недостающие модули";
 $MESS["{$prefix}ERR_EXCHANGE_DISABLED_XML"] = "Обмен отключен, установите php-расширение XMLReader и XMLWriter";
-$MESS["{$prefix}ERR_INVALID_ARGUMENTS"] = "Укажите корректные аргументы, смотрите помощь";
-$MESS["{$prefix}ERR_COMMAND_NOT_FOUND"] = "Команда \"#NAME#\" не найдена, смотрите помощь";
 
 $MESS["{$prefix}ERR_TEMPLATE_NOT_FOUND"] = "Шаблон миграции \"#NAME#\" не найден";
 $MESS["{$prefix}ERR_CANT_CREATE_FILE"] = "Ошибка создания файла \"#NAME#\"";

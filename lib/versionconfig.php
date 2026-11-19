@@ -37,7 +37,7 @@ class VersionConfig
     private string $name;
     private array $values;
     private string $path;
-    private array $triedVersionNames = [];
+    private array $checkedVersionNames = [];
 
     /**
      * @throws MigrationException
@@ -257,48 +257,81 @@ class VersionConfig
      */
     public function getVersionExchangeDir(string $versionName): string
     {
-        $this->tryVersionName($versionName);
+        $this->checkVersionName($versionName);
 
         return $this->getVal('exchange_dir') . '/' . $versionName . '_files/';
+    }
+
+    public function isVersionName(string $versionName): bool
+    {
+        try {
+            $this->checkVersionName($versionName);
+            return true;
+        } catch (MigrationException) {
+            return false;
+        }
+    }
+
+    public function isVersionStatus(string $status): bool
+    {
+        try {
+            $this->checkVersionStatus($status);
+            return true;
+        } catch (MigrationException) {
+            return false;
+        }
     }
 
     /**
      * @throws MigrationException
      */
-    public function tryVersionName(string $versionName): void
+    public function checkVersionStatus(string $status): void
     {
-        if (isset($this->triedVersionNames[$versionName])) {
+        $all = [
+            VersionEnum::STATUS_NEW,
+            VersionEnum::STATUS_INSTALLED,
+            VersionEnum::STATUS_UNKNOWN,
+        ];
+
+        if (!in_array($status, $all)) {
+            throw new MigrationException('Invalid version status');
+        }
+    }
+
+
+    /**
+     * Имя версии долджно быть валидным названием php-класса
+     * первый символ: буква или подчёркивание,
+     * далее любые буквы, цифры, подчёркивания, без разделителей пути
+     * @throws MigrationException
+     */
+    public function checkVersionName(string $versionName): void
+    {
+        if (isset($this->checkedVersionNames[$versionName])) {
             return;
         }
 
-        $ts = $this->getVersionTimestamp($versionName);
-
-        if (!$this->checkVersionName($versionName) || !$ts) {
+        if (!$versionName || !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $versionName)) {
             throw new MigrationException('Invalid version name');
         }
 
-        $this->triedVersionNames[$versionName] = $ts;
-    }
-
-    public function getVersionTimestamp(string $versionName): string
-    {
         $pattern = $this->getVal('version_timestamp_pattern');
-
         $matches = [];
-        if (preg_match($pattern, $versionName, $matches)) {
-            return end($matches);
+        if (!preg_match($pattern, $versionName, $matches)) {
+            throw new MigrationException('Invalid version timestamp');
         }
 
-        return '';
+        $this->checkedVersionNames[$versionName] = end($matches);
     }
 
-    public function checkVersionName(string $versionName): bool
+    /**
+     * @throws MigrationException
+     */
+    public function getVersionTimestamp(string $versionName): string
     {
-        //имя версии долджно быть валидным названием php-класса
-        //первый символ: буква или подчёркивание
-        //далее любые буквы, цифры, подчёркивания
-        //не должно содержать разделителей пути
-        return ($versionName && preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $versionName));
+        $this->checkVersionName($versionName);
+
+        return $this->checkedVersionNames[$versionName];
     }
 
     /**
@@ -306,7 +339,7 @@ class VersionConfig
      */
     public function getVersionFile(string $versionName): string
     {
-        $this->tryVersionName($versionName);
+        $this->checkVersionName($versionName);
 
         return $this->getVal('migration_dir') . '/' . $versionName . '.php';
     }

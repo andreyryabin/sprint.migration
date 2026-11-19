@@ -66,15 +66,6 @@ class ConsoleOutput extends AbstractOutput
         return $val;
     }
 
-    private function printStructure($field): void
-    {
-        foreach ($field['items'] as $group) {
-            $this->print('---' . $group['title']);
-            foreach ($group['items'] as $item) {
-                $this->print(' > ' . $item['value'] . ' (' . $item['title'] . ')');
-            }
-        }
-    }
 
     public function print(string $msg, ...$vars): void
     {
@@ -90,14 +81,24 @@ class ConsoleOutput extends AbstractOutput
         fwrite(STDOUT, $msg . PHP_EOL);
     }
 
+    protected function writeProgress(string $msg, int $val, int $total): void
+    {
+        fwrite(STDOUT, "\r" . $this->colorize("$msg: $val / $total", 'label'));
+        if ($val >= $total) {
+            fwrite(STDOUT, PHP_EOL);
+        }
+    }
+
     private function colorize(string $msg, string $type): string
     {
         if ($type) {
             $msg = "[$type]" . $msg . "[/]";
         }
 
-        foreach ($this->colors as $key => $val) {
-            $msg = str_replace('[' . $key . ']', $val, $msg);
+        if (str_contains($msg, '[/]')) {
+            foreach ($this->colors as $key => $val) {
+                $msg = str_replace($key, $val, $msg);
+            }
         }
 
         return $msg;
@@ -110,11 +111,14 @@ class ConsoleOutput extends AbstractOutput
         }
     }
 
-    protected function writeProgress(string $msg, int $val, int $total): void
+    private function printStructure($field): void
     {
-        fwrite(STDOUT, "\r" . $this->colorize("$msg: $val / $total", 'label'));
-        if ($val >= $total) {
-            fwrite(STDOUT, PHP_EOL);
+        foreach ($field['items'] as $group) {
+            $this->print('---' . $group['title']);
+            foreach ($group['items'] as $item) {
+                $this->print(' > ' . $item['value'] . ' (' . $item['title'] . ')');
+            }
         }
     }
+
 }

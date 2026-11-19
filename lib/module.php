@@ -140,20 +140,13 @@ class Module
     {
         if (!function_exists('json_encode')) {
             throw new MigrationException(
-                Locale::getMessage(
-                    'ERR_JSON_NOT_SUPPORTED',
-                ),
+                Locale::getMessage('ERR_JSON_NOT_SUPPORTED'),
             );
         }
 
         if (version_compare(PHP_VERSION, '8.1', '<')) {
             throw new MigrationException(
-                Locale::getMessage(
-                    'ERR_PHP_NOT_SUPPORTED',
-                    [
-                        '#NAME#' => PHP_VERSION,
-                    ],
-                ),
+                Locale::getMessage('ERR_PHP_NOT_SUPPORTED', ['#NAME#' => PHP_VERSION,]),
             );
         }
 
