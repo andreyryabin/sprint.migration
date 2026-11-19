@@ -1,9 +1,12 @@
 All console commands:
-  add                           Create new migration
-  add [desc]                    Create new migration with description
-  add [desc] [name]             Create new migration with description and name
-    --name=[name]               Set name
-    --desc=[desc]               Set description
+  add                           Create blank migration
+    --prefix=[text]             Set name
+    --description=[text]        Set description
+
+  run [builder]                 Start builder
+    --field1=[value]            Set field1 value
+    ...
+    --fieldN=[value]            Set fieldN value
 
   ls                            Show migrations
     --new                       Show only new
@@ -25,8 +28,6 @@ All console commands:
   down [version1, ...]          Uninstall selected migration
 
   redo [version1, ...]          Reinstall selected migration
-
-  run [builder]                 Run builder
 
   mark [version1, ...]          Mark migration
   mark new                      Mark all new migrations

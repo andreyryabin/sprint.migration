@@ -42,7 +42,7 @@ class VersionFilter
             search: (string) ($filter['search'] ?? ''),
             modified: (bool) ($filter['modified'] ?? false),
             older: (bool) ($filter['older'] ?? false),
-            actual: (string) ($filter['actual'] ?? ''),
+            actual: (bool) ($filter['actual'] ?? false),
             actualTs: $actualTs,
             sortDesc: ($sort === VersionEnum::SORT_DESC),
         );

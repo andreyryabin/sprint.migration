@@ -67,14 +67,6 @@ abstract class Builder implements RestartableInterface
     {
         return $this->fields;
     }
-    /** @return  AbstractField[] */
-    public function getUnbindFields(): array
-    {
-        return array_filter(
-            $this->fields,
-            fn(AbstractField $field) => !isset($this->params[$field->getCode()]),
-        );
-    }
 
     /**
      * @throws RebuildException
@@ -156,17 +148,12 @@ abstract class Builder implements RestartableInterface
 
     protected function addField(string $code, array $field): void
     {
-        $this->fields[] = FieldFactory::createFromArray($code, $field);
+        $this->fields[$code] = FieldFactory::createFromArray($code, $field);
     }
 
     protected function getFieldValue(string $code, $default = '')
     {
         return $this->params[$code] ?? $default;
-    }
-
-    public function setFieldValue(string $code, mixed $value): void
-    {
-        $this->params[$code] = $value;
     }
 
     /**

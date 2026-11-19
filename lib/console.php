@@ -23,22 +23,18 @@ class Console
     private ConsoleOutput $output;
     private array $argoptions = [];
     private BuilderManager $builderManager;
+    private string $configName;
 
     use CurrentUserTrait;
 
     /**
      * @throws MigrationException
-     * @throws ConsoleException
      */
     public function __construct($args)
     {
-        $this->script = array_shift($args);
+        $this->initializeArgs($args);
 
-        $this->command = $this->initializeArgs($args);
-
-        $this->versionConfig = ConfigManager::getInstance()->get(
-            $this->getArg('--config=', VersionEnum::CONFIG_DEFAULT),
-        );
+        $this->versionConfig = ConfigManager::getInstance()->get($this->configName);
 
         $this->output = new ConsoleOutput();
 
@@ -51,7 +47,14 @@ class Console
             $this->versionConfig,
             $this->output,
         );
+    }
 
+
+    /**
+     * @throws ConsoleException
+     */
+    public function executeConsoleCommand(): void
+    {
         $this->disableAuthHandlersIfNeed();
 
         $userlogin = $this->versionConfig->getVal('console_user');
@@ -61,21 +64,18 @@ class Console
             $userlogin = substr($userlogin, 6);
             $this->authorizeAsLogin($userlogin);
         }
-    }
 
-
-    /**
-     * @throws ConsoleException
-     */
-    public function executeConsoleCommand(): void
-    {
         if (empty($this->command)) {
             $this->commandInfo();
-        } elseif (method_exists($this, $this->command)) {
-            call_user_func([$this, $this->command]);
-        } else {
-            throw new ConsoleException("Command $this->command not found, see help");
+            return;
         }
+
+        if (method_exists($this, $this->command)) {
+            call_user_func([$this, $this->command]);
+            return;
+        }
+
+        throw new ConsoleException("Command $this->command not found, see help");
     }
 
     /**
@@ -98,20 +98,20 @@ class Console
 
         foreach (ConfigManager::getInstance()->getList() as $configItem) {
             if ($configItem->getName() == $this->versionConfig->getName()) {
-                $this->output->print('  [green]%s[/] *',$configItem->getTitle());
+                $this->output->print('  [green]%s[/] *', $configItem->getTitle());
             } else {
                 $this->output->print('  %s', $configItem->getTitle());
             }
         }
         $this->output->print('');
         $this->output->print(Locale::getMessage('COMMAND_CONFIG'));
-        $this->output->print('  php %s config',$this->script);
+        $this->output->print('  php %s config', $this->script);
         $this->output->print('');
         $this->output->print(Locale::getMessage('COMMAND_RUN'));
-        $this->output->print('  php %s <command> [<args>]',$this->script);
+        $this->output->print('  php %s <command> [<args>]', $this->script);
         $this->output->print('');
         $this->output->print(Locale::getMessage('COMMAND_HELP') . ':');
-        $this->output->print('  php %s help',$this->script);
+        $this->output->print('  php %s help', $this->script);
         $this->output->print('');
     }
 
@@ -145,15 +145,6 @@ class Console
 
     /**
      * @publicApi
-     * @throws BuilderException
-     */
-    public function commandRun(): void
-    {
-        $this->executeBuilder($this->getArg(0));
-    }
-
-    /**
-     * @publicApi
      * @throws MigrationException
      * @throws ConsoleException
      */
@@ -162,11 +153,11 @@ class Console
         $status = $this->getArg('--as=');
         $tag = $this->getArg('--add-tag=');
 
-        if (empty($status) || empty($this->getArguments())) {
+        if (empty($status) || empty($this->arguments)) {
             throw new ConsoleException("Invalid arguments, see help");
         }
 
-        foreach ($this->getArguments() as $argument) {
+        foreach ($this->arguments as $argument) {
             if ($this->versionConfig->isVersionName($argument)) {
                 $entity = $this->versionManager->getVersionByName($argument);
                 $this->versionManager->markMigration($entity, $status, $tag);
@@ -184,11 +175,11 @@ class Console
      */
     public function commandDelete(): void
     {
-        if (empty($this->getArguments())) {
+        if (empty($this->arguments)) {
             throw new ConsoleException("Invalid arguments, see help");
         }
 
-        foreach ($this->getArguments() as $argument) {
+        foreach ($this->arguments as $argument) {
             if ($this->versionConfig->isVersionName($argument)) {
                 $entity = $this->versionManager->getVersionByName($argument);
                 $this->versionManager->deleteMigration($entity);
@@ -209,11 +200,11 @@ class Console
     {
         $tag = $this->getArg('--add-tag=');
 
-        if (empty($tag) || empty($this->getArguments())) {
+        if (empty($tag) || empty($this->arguments)) {
             throw new ConsoleException("Invalid arguments, see help");
         }
 
-        foreach ($this->getArguments() as $argument) {
+        foreach ($this->arguments as $argument) {
             if ($this->versionConfig->isVersionName($argument)) {
                 $entity = $this->versionManager->getVersionByName($argument);
                 $this->versionManager->setMigrationTag($entity, $tag);
@@ -262,7 +253,7 @@ class Console
     {
         $tag = $this->getArg('--add-tag=');
 
-        foreach ($this->getArguments() as $versionName) {
+        foreach ($this->arguments as $versionName) {
             if (!$this->versionManager->executeVersion($versionName, VersionEnum::ACTION_DOWN, $tag)
                 || !$this->versionManager->executeVersion($versionName, VersionEnum::ACTION_UP, $tag)) {
                 return;
@@ -336,34 +327,26 @@ class Console
      */
     public function commandAdd(): void
     {
-        /** @compability */
-        $descr = $this->getArg(0);
-        /** @compability */
-        $prefix = $this->getArg(1);
-
-        /** @compability */
-        $prefix = $this->getArg('--prefix=', $prefix);
-
-        $prefix = $this->getArg('--name=', $prefix);
-        $descr = $this->getArg('--desc=', $descr);
-
-        $from = $this->getArg('--from=', 'BlankBuilder');
-
-        $this->executeBuilder($from, array_filter([
-            'description' => $descr,
-            'prefix'      => $prefix,
-        ]));
+        // '--prefix=' -> 'prefix'
+        $defaultValues = [];
+        foreach ($this->argoptions as $key => $val) {
+            $name = rtrim(substr($key, 2), '=');
+            $defaultValues[$name] = $val;
+        }
+        $this->executeBuilder(
+            $this->getArg(0, 'BlankBuilder'),
+            $defaultValues,
+        );
     }
 
     /**
      * @publicApi
      * @throws BuilderException
      */
-    public function commandCreate(): void
+    public function commandRun(): void
     {
         $this->commandAdd();
     }
-
 
     /**
      * @publicApi
@@ -394,42 +377,32 @@ class Console
         $this->commandMigrate();
     }
 
-    private function initializeArgs(array $args): string
+    private function initializeArgs(array $args): void
     {
-        foreach ($args as $val) {
-            $this->addArg($val);
+        $this->script = array_shift($args) ?? '';
+
+        foreach ($args as $arg) {
+            if (str_starts_with($arg, '--')) {
+                [$name, $val] = explode('=', $arg, 2);
+                if ($val !== null) {
+                    $this->argoptions[$name.'='] = $val;
+                } else {
+                    $this->argoptions[$name] = true;
+                }
+            } elseif (!str_starts_with($arg, '-')) {
+                $this->arguments[] = $arg;
+            }
         }
 
-        $command = '';
+        $this->configName = VersionEnum::CONFIG_DEFAULT;
+        if (isset($this->argoptions['--config='])) {
+            $this->configName = $this->argoptions['--config='];
+            unset($this->argoptions['--config=']);
+        }
 
         if (isset($this->arguments[0])) {
-            $command = array_shift($this->arguments);
-
-            $command = str_replace(['_', '-', ' '], '*', $command);
-            $command = explode('*', $command);
-            $tmp = [];
-            foreach ($command as $val) {
-                $tmp[] = ucfirst(strtolower($val));
-            }
-
-            $command = 'command' . implode('', $tmp);
-        }
-
-        return $command;
-    }
-
-    private function addArg($arg): void
-    {
-        [$name, $val] = explode('=', $arg);
-
-        if (str_starts_with($name, '--')) {
-            if (!is_null($val)) {
-                $this->argoptions[$name . '='] = $val;
-            } else {
-                $this->argoptions[$name] = 1;
-            }
-        } else {
-            $this->arguments[] = $name;
+            $this->command = array_shift($this->arguments);
+            $this->command = 'command' . ucfirst($this->command);
         }
     }
 
@@ -444,16 +417,17 @@ class Console
 
     /**
      * @throws BuilderException
+     * @throws ConsoleException
      */
-    private function executeBuilder(string $from, array $defaultValues = []): void
+    private function executeBuilder(string $name, $params): void
     {
-        $builder = $this->builderManager->createBuilder($from, $defaultValues);
+        $builder = $this->builderManager->createBuilder($name);
         do {
-            $this->output->print(print_r($builder->getRestartParams(), 1));
-
-            foreach ($builder->getUnbindFields() as $field) {
-                $builder->setFieldValue($field->getCode(), $field->getValueFromConsole($this->output));
+            foreach ($builder->getFields() as $field) {
+                $params[$field->getCode()] ??= $field->readValueFromConsole($this->output);
+                $params[$field->getCode()] = $field->setValueFromConsole($params[$field->getCode()]);
             }
+            $builder->setRestartParams($params);
             $result = $this->builderManager->startBuilder($builder);
         } while ($result->needRestart() || $result->needRebuild());
     }
@@ -465,16 +439,16 @@ class Console
     {
         $tag = $this->getArg('--add-tag=');
 
-        if ($this->hasArguments()) {
-            foreach ($this->getArguments() as $versionName) {
-                if (!$this->versionManager->executeVersion($versionName, $action, $tag)) {
-                    return;
-                }
-            }
+        if (empty($this->arguments)) {
+            $this->versionManager->executeAll($this->getVersionsFilterByArgs(), $action, $tag);
             return;
         }
 
-        $this->versionManager->executeAll($this->getVersionsFilterByArgs(), $action, $tag);
+        foreach ($this->arguments as $versionName) {
+            if (!$this->versionManager->executeVersion($versionName, $action, $tag)) {
+                return;
+            }
+        }
     }
 
     /**
@@ -508,16 +482,6 @@ class Console
             'older'    => $this->getArg('--older'),
             'actual'   => $this->getArg('--actual'),
         ];
-    }
-
-    private function hasArguments(): bool
-    {
-        return !empty($this->arguments);
-    }
-
-    private function getArguments(): array
-    {
-        return $this->arguments;
     }
 
     private function disableAuthHandlersIfNeed(): void

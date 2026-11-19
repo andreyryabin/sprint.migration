@@ -3,8 +3,9 @@
 namespace Sprint\Migration\Output;
 
 use Sprint\Migration\Exceptions\ConsoleException;
+use Sprint\Migration\Interfaces\ConsoleInterface;
 
-class ConsoleOutput extends AbstractOutput
+class ConsoleOutput extends AbstractOutput implements ConsoleInterface
 {
     private array $colors = [
         '[/]' => "\x1b[0m",
@@ -40,9 +41,9 @@ class ConsoleOutput extends AbstractOutput
     /**
      * @throws ConsoleException
      */
-    public function read(string $text): string
+    public function read(string $caption): string
     {
-        fwrite(STDOUT, "$text:");
+        fwrite(STDOUT, $caption);
 
         $val = fgets(STDIN);
         if ($val === false) {

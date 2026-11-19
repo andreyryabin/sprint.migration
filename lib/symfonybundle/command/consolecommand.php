@@ -14,9 +14,8 @@ class ConsoleCommand extends Command
 {
     protected function configure()
     {
-        $this
-            ->setName('sprint:migration')
-            ->setDescription('Migration console');
+        $this->setName('sprint:migration')
+             ->setDescription('Migration console');
 
         foreach ($this->getArguments() as $name) {
             $this->addArgument($name);
@@ -46,21 +45,18 @@ class ConsoleCommand extends Command
         return [
             'new',
             'installed',
+            'unknown',
             'modified',
             'older',
+            'actual',
             'down',
-            'force',
         ];
     }
 
     protected function getOptionsWithValues(): array
     {
         return [
-            'desc',
             'config',
-            'prefix',
-            'name',
-            'from',
             'as',
             'search',
             'tag',
@@ -79,10 +75,10 @@ class ConsoleCommand extends Command
 
         foreach ($input->getOptions() as $key => $val) {
             if ($val) {
-                if (in_array($key, $this->getOptionsWithValues())) {
-                    $args[] = '--' . $key . '=' . $val;
-                } else {
+                if (in_array($key, $this->getOptionsWithoutValues())) {
                     $args[] = '--' . $key;
+                } else {
+                    $args[] = '--' . $key . '=' . $val;
                 }
             }
         }

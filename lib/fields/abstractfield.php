@@ -3,7 +3,8 @@
 namespace Sprint\Migration\Fields;
 
 use ReflectionClass;
-use Sprint\Migration\Output\ConsoleOutput;
+use Sprint\Migration\Exceptions\ConsoleException;
+use Sprint\Migration\Interfaces\ConsoleInterface;
 
 abstract class AbstractField
 {
@@ -16,7 +17,18 @@ abstract class AbstractField
 
     abstract public function getDefaultValue(): mixed;
 
-    abstract public function getValueFromConsole(ConsoleOutput $output): mixed;
+    /**
+     * @throws ConsoleException
+     */
+    public function readValueFromConsole(ConsoleInterface $io): string
+    {
+        return $io->read("{$this->getTitle()} [{$this->getCode()}]: ");
+    }
+
+    public function setValueFromConsole(string $rawValue): mixed
+    {
+        return $rawValue;
+    }
 
     public function getCode(): string
     {

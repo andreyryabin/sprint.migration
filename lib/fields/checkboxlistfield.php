@@ -2,9 +2,6 @@
 
 namespace Sprint\Migration\Fields;
 
-use Sprint\Migration\Exceptions\ConsoleException;
-use Sprint\Migration\Output\ConsoleOutput;
-
 class CheckboxListField extends RadioListField
 {
     public function getDefaultValue(): array
@@ -12,13 +9,8 @@ class CheckboxListField extends RadioListField
         return [];
     }
 
-    /**
-     * @throws ConsoleException
-     */
-    public function getValueFromConsole(ConsoleOutput $output): mixed
+    public function setValueFromConsole(string $rawValue): mixed
     {
-        $value = parent::getValueFromConsole($output);
-
-        return array_filter(explode(' ', trim($value)));
+        return array_filter(explode(' ', trim($rawValue)));
     }
 }

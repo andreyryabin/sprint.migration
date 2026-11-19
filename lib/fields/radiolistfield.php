@@ -2,8 +2,7 @@
 
 namespace Sprint\Migration\Fields;
 
-use Sprint\Migration\Exceptions\ConsoleException;
-use Sprint\Migration\Output\ConsoleOutput;
+use Sprint\Migration\Interfaces\ConsoleInterface;
 
 class RadioListField extends AbstractField
 {
@@ -18,24 +17,22 @@ class RadioListField extends AbstractField
         return '';
     }
 
-    /**
-     * @throws ConsoleException
-     */
-    public function getValueFromConsole(ConsoleOutput $output): mixed
+    public function readValueFromConsole(ConsoleInterface $io): string
     {
         $grouped = $this->groupOptions($this->getProp('options', []));
 
         foreach ($grouped as $groupName => $groupItems) {
             if ($groupName !== '-') {
-                $output->print('---' . $groupName);
+                $io->print('---' . $groupName);
             }
             foreach ($groupItems as $item) {
-                $output->print(' > ' . $item['id'] . ' (' . $item['name'] . ')');
+                $io->print(' > ' . $item['id'] . ' (' . $item['name'] . ')');
             }
         }
 
-        return $output->read($this->getTitle());
+        return parent::readValueFromConsole($io);
     }
+
 
     private function groupOptions(array $options): array
     {

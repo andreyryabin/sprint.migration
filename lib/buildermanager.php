@@ -56,7 +56,7 @@ class BuilderManager
                 return $builder;
             }
         }
-        throw new BuilderException(Locale::getMessage('ERR_BUILDER_NOT_FOUND', ['#NAME#' => $builderClass]));
+        throw new BuilderException(Locale::getMessage('ERR_BUILDER_NOT_FOUND', ['#NAME#' => $builderName]));
     }
 
     /**
