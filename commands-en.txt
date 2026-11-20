@@ -8,6 +8,8 @@ All console commands:
     ...
     --fieldN=[value]            Set fieldN value
 
+  builders                      Show builders
+
   ls                            Show migrations
     --new                       Show only new
     --installed                 Show only installed

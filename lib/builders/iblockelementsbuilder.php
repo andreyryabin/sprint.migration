@@ -103,7 +103,7 @@ class IblockElementsBuilder extends VersionBuilder
             $this->rebuildField('iblock_id');
         }
 
-        return (int) $iblockId;
+        return $iblockId;
     }
 
     /**

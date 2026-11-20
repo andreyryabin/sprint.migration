@@ -22,10 +22,10 @@ abstract class AbstractField
      */
     public function readValueFromConsole(ConsoleInterface $io): string
     {
-        return $io->read("{$this->getTitle()} [{$this->getCode()}]: ");
+        return $io->read("[blue](%s) - %s:[/] ", $this->getCode(), $this->getTitle());
     }
 
-    public function setValueFromConsole(string $rawValue): mixed
+    public function setValueFromConsole(mixed $rawValue): mixed
     {
         return $rawValue;
     }

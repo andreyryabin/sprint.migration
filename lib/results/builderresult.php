@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Results;
 
+use Sprint\Migration\Module;
 use Throwable;
 
 class BuilderResult

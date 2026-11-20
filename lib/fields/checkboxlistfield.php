@@ -2,6 +2,8 @@
 
 namespace Sprint\Migration\Fields;
 
+use Sprint\Migration\Interfaces\ConsoleInterface;
+
 class CheckboxListField extends RadioListField
 {
     public function getDefaultValue(): array
@@ -9,8 +11,15 @@ class CheckboxListField extends RadioListField
         return [];
     }
 
-    public function setValueFromConsole(string $rawValue): mixed
+    public function setValueFromConsole(mixed $rawValue): mixed
     {
-        return array_filter(explode(' ', trim($rawValue)));
+        return array_filter(explode(' ', $rawValue));
+    }
+
+    public function readValueFromConsole(ConsoleInterface $io): string
+    {
+        $this->printFieldToConsole($io);
+
+        return $io->read("Select any: ");
     }
 }

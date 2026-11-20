@@ -38,7 +38,6 @@ $MESS["{$prefix}MODULE_VERSION"] = "Module version: #NAME#";
 $MESS["{$prefix}BITRIX_VERSION"] = "Bitrix version: #NAME#";
 $MESS["{$prefix}PHP_VERSION"] = "PHP version: #NAME#";
 $MESS["{$prefix}CFG_TITLE"] = "Migrations";
-$MESS["{$prefix}CONFIG"] = "Configuration";
 
 $MESS["{$prefix}BUILDER_CREATE"] = "Create";
 $MESS["{$prefix}BUILDER_RUN"] = "Run";

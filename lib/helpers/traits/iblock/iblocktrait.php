@@ -23,6 +23,10 @@ trait IblockTrait
      */
     public function getIblock(array|int|string $code, string $typeId = ''): bool|array
     {
+        if (empty($code)) {
+            return false;
+        }
+
         if (is_array($code)) {
             $filter = $code;
         } elseif (is_numeric($code)) {
@@ -196,7 +200,7 @@ trait IblockTrait
      */
     public function deleteIblock(int $iblockId): bool
     {
-        if (CIBlock::Delete($iblockId)) {
+        if ($iblockId && CIBlock::Delete($iblockId)) {
             return true;
         }
 
@@ -255,7 +259,7 @@ trait IblockTrait
      */
     public function exportIblock(int $iblockId): array
     {
-        $item = $this->getIblock($iblockId);
+        $item = $this->getIblockIfExists($iblockId);
 
         if (!empty($item['CODE'])) {
             return $this->prepareExportIblock($item);

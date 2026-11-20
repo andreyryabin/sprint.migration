@@ -41,9 +41,12 @@ class ConsoleOutput extends AbstractOutput implements ConsoleInterface
     /**
      * @throws ConsoleException
      */
-    public function read(string $caption): string
+    public function read(string $msg, ...$vars): string
     {
-        fwrite(STDOUT, $caption);
+        $msg = $this->resolve($msg, $vars);
+        $msg = $this->colorize($msg, '');
+
+        fwrite(STDOUT, $msg);
 
         $val = fgets(STDIN);
         if ($val === false) {
@@ -53,7 +56,9 @@ class ConsoleOutput extends AbstractOutput implements ConsoleInterface
                 'Input stream is closed, run the command in a terminal or pass the answers via stdin',
             );
         }
-        return $val;
+
+        //защищает от разрыва строки и т.п.
+        return trim($val);
     }
 
     public function print(string $msg, ...$vars): void

@@ -9,7 +9,7 @@ interface ConsoleInterface
     /**
      * @throws ConsoleException
      */
-    public function read(string $caption): string;
+    public function read(string $msg, ...$vars): string;
 
     /**
      * @throws ConsoleException

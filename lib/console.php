@@ -80,6 +80,7 @@ class Console
 
     /**
      * @publicApi
+     * @throws ConsoleException
      */
     public function commandInfo(): void
     {
@@ -117,14 +118,11 @@ class Console
 
     /**
      * @publicApi
+     * @throws ConsoleException
      */
     public function commandConfig(): void
     {
-        $this->output->print(
-            '%s: %s',
-            Locale::getMessage('CONFIG'),
-            $this->versionConfig->getTitle(),
-        );
+        $this->output->print($this->versionConfig->getTitle());
 
         foreach ($this->versionConfig->humanValues() as $configKey => $configValue) {
             $this->output->print('┌─');
@@ -222,7 +220,7 @@ class Console
      */
     public function commandUp(): void
     {
-        $this->executeByArgs(VersionEnum::ACTION_UP);
+        $this->executeVersionsByArgs(VersionEnum::ACTION_UP);
     }
 
     /**
@@ -231,7 +229,7 @@ class Console
      */
     public function commandDown(): void
     {
-        $this->executeByArgs(VersionEnum::ACTION_DOWN);
+        $this->executeVersionsByArgs(VersionEnum::ACTION_DOWN);
     }
 
     /**
@@ -242,7 +240,7 @@ class Console
     {
         $action = $this->getArg('--down') ? VersionEnum::ACTION_DOWN : VersionEnum::ACTION_UP;
 
-        $this->executeByArgs($action);
+        $this->executeVersionsByArgs($action);
     }
 
     /**
@@ -263,6 +261,7 @@ class Console
 
     /**
      * @publicApi
+     * @throws ConsoleException
      */
     public function commandHelp(): void
     {
@@ -275,6 +274,7 @@ class Console
 
     /**
      * @throws MigrationException
+     * @throws ConsoleException
      */
     public function commandList(): void
     {
@@ -323,25 +323,50 @@ class Console
 
     /**
      * @publicApi
+     * @throws ConsoleException
+     */
+    public function commandBuilders(): void
+    {
+        $builders = $this->builderManager->getBuilders();
+
+        $groups = [];
+        foreach ($builders as $builder) {
+            $name = $builder->getName();
+            $title = $builder->getTitle();
+            $group = $builder->getGroup();
+
+            if (!isset($groups[$group])) {
+                $groups[$group] = [];
+            }
+
+            $groups[$group][] = ['name' => $name, 'title' => $title];
+        }
+
+        foreach ($groups as $group => $items) {
+            $this->output->print("[blue]%s[/]", $group);
+            foreach ($items as $item) {
+                $this->output->print(" > (%s) - %s", $item['name'], $item['title']);
+            }
+        }
+    }
+
+    /**
+     * @publicApi
      * @throws BuilderException
+     * @throws ConsoleException
      */
     public function commandAdd(): void
     {
-        // '--prefix=' -> 'prefix'
-        $defaultValues = [];
-        foreach ($this->argoptions as $key => $val) {
-            $name = rtrim(substr($key, 2), '=');
-            $defaultValues[$name] = $val;
-        }
         $this->executeBuilder(
             $this->getArg(0, 'BlankBuilder'),
-            $defaultValues,
+            $this->getBuilderParamsByArgs(),
         );
     }
 
     /**
      * @publicApi
      * @throws BuilderException
+     * @throws ConsoleException
      */
     public function commandRun(): void
     {
@@ -351,6 +376,7 @@ class Console
     /**
      * @publicApi
      * @throws MigrationException
+     * @throws ConsoleException
      */
     public function commandLs(): void
     {
@@ -377,57 +403,19 @@ class Console
         $this->commandMigrate();
     }
 
-    private function initializeArgs(array $args): void
-    {
-        $this->script = array_shift($args) ?? '';
-
-        foreach ($args as $arg) {
-            if (str_starts_with($arg, '--')) {
-                [$name, $val] = explode('=', $arg, 2);
-                if ($val !== null) {
-                    $this->argoptions[$name.'='] = $val;
-                } else {
-                    $this->argoptions[$name] = true;
-                }
-            } elseif (!str_starts_with($arg, '-')) {
-                $this->arguments[] = $arg;
-            }
-        }
-
-        $this->configName = VersionEnum::CONFIG_DEFAULT;
-        if (isset($this->argoptions['--config='])) {
-            $this->configName = $this->argoptions['--config='];
-            unset($this->argoptions['--config=']);
-        }
-
-        if (isset($this->arguments[0])) {
-            $this->command = array_shift($this->arguments);
-            $this->command = 'command' . ucfirst($this->command);
-        }
-    }
-
-    private function getArg($name, $default = '')
-    {
-        if (is_numeric($name)) {
-            return $this->arguments[$name] ?? $default;
-        } else {
-            return $this->argoptions[$name] ?? $default;
-        }
-    }
-
     /**
      * @throws BuilderException
      * @throws ConsoleException
      */
-    private function executeBuilder(string $name, $params): void
+    private function executeBuilder(string $name, $defaultValues): void
     {
         $builder = $this->builderManager->createBuilder($name);
+        $this->output->print("%s [%s]", $builder->getTitle(), $builder->getName());
         do {
-            foreach ($builder->getFields() as $field) {
-                $params[$field->getCode()] ??= $field->readValueFromConsole($this->output);
-                $params[$field->getCode()] = $field->setValueFromConsole($params[$field->getCode()]);
+            foreach ($builder->getUnbindFields() as $field) {
+                $raw = $defaultValues[$field->getCode()] ?? $field->readValueFromConsole($this->output);
+                $builder->setFieldValue($field->getCode(), $field->setValueFromConsole($raw));
             }
-            $builder->setRestartParams($params);
             $result = $this->builderManager->startBuilder($builder);
         } while ($result->needRestart() || $result->needRebuild());
     }
@@ -435,7 +423,7 @@ class Console
     /**
      * @throws MigrationException
      */
-    private function executeByArgs($action): void
+    private function executeVersionsByArgs($action): void
     {
         $tag = $this->getArg('--add-tag=');
 
@@ -482,6 +470,55 @@ class Console
             'older'    => $this->getArg('--older'),
             'actual'   => $this->getArg('--actual'),
         ];
+    }
+
+    private function getBuilderParamsByArgs(): array
+    {
+        // '--prefix=' -> 'prefix'
+        $data = [];
+        foreach ($this->argoptions as $key => $val) {
+            $name = rtrim(substr($key, 2), '=');
+            $data[$name] = $val;
+        }
+        return $data;
+    }
+
+    private function initializeArgs(array $args): void
+    {
+        $this->script = array_shift($args) ?? '';
+
+        foreach ($args as $arg) {
+            if (str_starts_with($arg, '--')) {
+                [$name, $val] = explode('=', $arg, 2);
+                if ($val !== null) {
+                    $this->argoptions[$name . '='] = $val;
+                } else {
+                    $this->argoptions[$name] = true;
+                }
+            } elseif (!str_starts_with($arg, '-')) {
+                $this->arguments[] = $arg;
+            }
+        }
+
+        $this->configName = VersionEnum::CONFIG_DEFAULT;
+        if (isset($this->argoptions['--config='])) {
+            $this->configName = $this->argoptions['--config='];
+            unset($this->argoptions['--config=']);
+        }
+
+        if (isset($this->arguments[0])) {
+            $this->command = array_shift($this->arguments);
+            $this->command = 'command' . ucfirst($this->command);
+        }
+    }
+
+    private function getArg($name, $default = '')
+    {
+        if (is_numeric($name)) {
+            return $this->arguments[$name] ?? $default;
+        } else {
+            return $this->argoptions[$name] ?? $default;
+        }
     }
 
     private function disableAuthHandlersIfNeed(): void

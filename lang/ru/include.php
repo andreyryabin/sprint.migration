@@ -38,7 +38,6 @@ $MESS["{$prefix}MODULE_VERSION"] = "Версия модуля: #NAME#";
 $MESS["{$prefix}BITRIX_VERSION"] = "Версия bitrix: #NAME#";
 $MESS["{$prefix}PHP_VERSION"] = "Версия php: #NAME#";
 $MESS["{$prefix}CFG_TITLE"] = "Миграции";
-$MESS["{$prefix}CONFIG"] = "Конфигурация";
 
 $MESS["{$prefix}BUILDER_CREATE"] = "Создать";
 $MESS["{$prefix}BUILDER_RUN"] = "Выполнить";
@@ -104,7 +103,7 @@ $MESS["{$prefix}CONFIG_exchange_dir_absolute"] = "Абсолютный путь 
 $MESS["{$prefix}CONFIG_migration_extend_class"] = "Класс, наследуемый миграциями";
 $MESS["{$prefix}CONFIG_migration_table"] = "Таблица в бд с миграциями";
 $MESS["{$prefix}CONFIG_version_prefix"] = "Заголовок класса миграции";
-$MESS["{$prefix}CONFIG_version_builders"] = "Конструкторы";
+$MESS["{$prefix}CONFIG_version_builders"] = "Формы создания миграций";
 $MESS["{$prefix}CONFIG_show_admin_interface"] = "Показывать сервис миграций в админке";
 $MESS["{$prefix}CONFIG_console_user"] = "Пользователь, от которого запускаются миграции в консоли";
 $MESS["{$prefix}CONFIG_console_auth_events_disable"] = "Отключить обработчики авторизации в консоли";
@@ -306,7 +305,7 @@ $MESS["{$prefix}BUILDER_LanguageExport_lang_ids"] = "Выберите языки
 $MESS["{$prefix}BUILDER_LanguageExport_Info"] = "Задайте символьные коды региональным настройкам";
 
 //ERRORS
-$MESS["{$prefix}ERR_BUILDER_NOT_FOUND"] = "Конструктор \"#NAME#\" не найден";
+$MESS["{$prefix}ERR_BUILDER_NOT_FOUND"] = "Форма \"#NAME#\" не найдена";
 $MESS["{$prefix}ERR_CANT_CREATE_DIRECTORY"] = "Ошибка создания директории #NAME#";
 $MESS["{$prefix}ERR_JSON_NOT_SUPPORTED"] = "Установите php-расширение json";
 $MESS["{$prefix}ERR_PHP_NOT_SUPPORTED"] = "PHP #NAME# не поддерживается";

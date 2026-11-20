@@ -67,6 +67,14 @@ abstract class Builder implements RestartableInterface
     {
         return $this->fields;
     }
+    /** @return  AbstractField[] */
+    public function getUnbindFields(): array
+    {
+        return array_filter(
+            $this->fields,
+            fn(AbstractField $field) => !isset($this->params[$field->getCode()]),
+        );
+    }
 
     /**
      * @throws RebuildException
@@ -156,6 +164,11 @@ abstract class Builder implements RestartableInterface
         return $this->params[$code] ?? $default;
     }
 
+    public function setFieldValue(string $code, mixed $value): void
+    {
+        $this->params[$code] = $value;
+    }
+
     /**
      * @throws RebuildException
      */
@@ -164,6 +177,7 @@ abstract class Builder implements RestartableInterface
         if (isset($this->params[$code])) {
             unset($this->params[$code]);
         }
+
         throw new RebuildException();
     }
 
