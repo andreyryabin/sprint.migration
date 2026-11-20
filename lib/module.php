@@ -144,7 +144,7 @@ class Module
             );
         }
 
-        if (version_compare(PHP_VERSION, '8.1', '<')) {
+        if (version_compare(PHP_VERSION, '8.3', '<')) {
             throw new MigrationException(
                 Locale::getMessage('ERR_PHP_NOT_SUPPORTED', ['#NAME#' => PHP_VERSION,]),
             );

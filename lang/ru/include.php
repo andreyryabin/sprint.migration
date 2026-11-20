@@ -42,12 +42,9 @@ $MESS["{$prefix}CFG_TITLE"] = "Миграции";
 $MESS["{$prefix}BUILDER_CREATE"] = "Создать";
 $MESS["{$prefix}BUILDER_RUN"] = "Выполнить";
 
-$MESS["{$prefix}SELECT_ALL"] = "Выбрать все";
-$MESS["{$prefix}SELECT_ONE"] = "Выбрать";
-$MESS["{$prefix}RESTART_AGAIN"] = "Запустить снова";
 $MESS["{$prefix}WRITE_UP_CODE"] = "Укажите код установки миграции в методе up()";
 $MESS["{$prefix}WRITE_DOWN_CODE"] = "Укажите код отката миграции в методе down()";
-$MESS["{$prefix}LOADING_TEXT"] = "Загрузка...";
+
 $MESS["{$prefix}BLOG_GROUP_CREATED"] = "Группа блогов #NAME# добавлена";
 $MESS["{$prefix}BLOG_GROUP_UPDATED"] = "Группа блогов #NAME# обновлена";
 $MESS["{$prefix}BLOG_CREATED"] = "Блог #NAME# добавлен";
@@ -64,7 +61,7 @@ $MESS["{$prefix}OPTIONS_REMOVE"] = "Сбросить настройки моду
 $MESS["{$prefix}OPTIONS_REMOVE_success"] = "Настройки сброшены";
 $MESS["{$prefix}OPTIONS_SAVE_success"] = "Настройки сохранены";
 $MESS["{$prefix}MARK"] = "Отметить миграцию";
-$MESS["{$prefix}MARK_FIELD1"] = "Выбрать миграцию";
+$MESS["{$prefix}MARK_FIELD1"] = "Миграция";
 $MESS["{$prefix}MARK_FIELD2"] = "Отметить как";
 $MESS["{$prefix}MARK_VERSION"] = "Название|installed|new|unknown";
 $MESS["{$prefix}MARK_AS_NEW"] = "новую";
@@ -84,7 +81,7 @@ $MESS["{$prefix}MOVE_RECORD"] = "Перемещена запись о мигра
 $MESS["{$prefix}MOVE_FILE"] = "Перемещен файл миграции #VERSION#";
 $MESS["{$prefix}MOVE_EXCANGE"] = "Перемещена выгрузка миграции #VERSION#";
 $MESS["{$prefix}MOVE_EROR"] = "Миграции #VERSION# не перемещена";
-$MESS["{$prefix}CREATE"] = "Создать миграцию";
+
 $MESS["{$prefix}VERSION_NOT_FOUND"] = "Миграция не найдена";
 $MESS["{$prefix}RELEASE_TAG"] = "Тег релиза: [label:green]#TAG#[/]";
 $MESS["{$prefix}SETTAG"] = "Поставить тег";
@@ -117,51 +114,43 @@ $MESS["{$prefix}CONFIG_version_timestamp_pattern"] = "Регулярное вы�
 $MESS["{$prefix}CONFIG_migration_hash_algo"] = "Алгоритм подсчета хеша для проверки изменений в файле миграции";
 $MESS["{$prefix}CONFIG_logger"] = "Класс для логирования";
 
-$MESS["{$prefix}BUILDER_Transfer1"] = "Перенести миграции";
-$MESS["{$prefix}BUILDER_TransferTo"] = "Перенести в другую конфигурацию";
-$MESS["{$prefix}BUILDER_TransferAll"] = "Все";
-$MESS["{$prefix}BUILDER_TransferNew"] = "Новые";
-$MESS["{$prefix}BUILDER_TransferInstalled"] = "Установленные";
-$MESS["{$prefix}BUILDER_TransferUnknown"] = "Неизвестные";
-$MESS["{$prefix}BUILDER_TransferSelect"] = "Выбрать миграции";
+$MESS["{$prefix}BUILDER_EventExport1"] = "Миграция почтовых событий";
+$MESS["{$prefix}BUILDER_EventExport_event_types"] = "Типы почтовых событий";
 
-$MESS["{$prefix}BUILDER_EventExport1"] = "Создать миграцию для почтовых событий";
-$MESS["{$prefix}BUILDER_EventExport_event_types"] = "Выберите типы почтовых событий";
-
-$MESS["{$prefix}BUILDER_ForumExport1"] = "Создать миграцию для форумов";
-$MESS["{$prefix}BUILDER_ForumExport_group_ids"] = "Выберите группы форумов";
-$MESS["{$prefix}BUILDER_ForumExport_forum_ids"] = "Выберите форумы";
+$MESS["{$prefix}BUILDER_ForumExport1"] = "Миграция форумов";
+$MESS["{$prefix}BUILDER_ForumExport_group_ids"] = "Группы форумов";
+$MESS["{$prefix}BUILDER_ForumExport_forum_ids"] = "Форумы";
 $MESS["{$prefix}BUILDER_ForumExport_Info"] = "Группа форума переносится вместе с форумом автоматически, если она указана у выбранного форума. Если XML_ID не заполнен, он будет сгенерирован перед экспортом";
 $MESS["{$prefix}BUILDER_ForumExport_RootGroups"] = "Корневые группы";
 $MESS["{$prefix}BUILDER_ForumExport_NestedGroups"] = "Вложенные группы";
 $MESS["{$prefix}BUILDER_ForumExport_WithoutGroup"] = "Без группы";
 
-$MESS["{$prefix}BUILDER_SubscribeExport1"] = "Создать миграцию для рубрик подписок";
-$MESS["{$prefix}BUILDER_SubscribeExport_rubric_ids"] = "Выберите рубрики подписок";
+$MESS["{$prefix}BUILDER_SubscribeExport1"] = "Миграция рубрик подписок";
+$MESS["{$prefix}BUILDER_SubscribeExport_rubric_ids"] = "Рубрики подписок";
 $MESS["{$prefix}BUILDER_SubscribeExport_Info"] = "У подписки должен быть заполнен Символьный код";
 
-$MESS["{$prefix}BUILDER_AgentExport1"] = "Создать миграцию для агентов";
+$MESS["{$prefix}BUILDER_AgentExport1"] = "Миграция агентов";
 $MESS["{$prefix}BUILDER_AgentExport2"] = "Задайте модуль и функцию агента (MODULE_ID, NAME), чтобы увидеть его в списке";
-$MESS["{$prefix}BUILDER_AgentExport_agent_id"] = "Выберите агенты";
-$MESS["{$prefix}BUILDER_AgentExport_module_id"] = "Выберите модули";
+$MESS["{$prefix}BUILDER_AgentExport_agent_id"] = "Агенты";
+$MESS["{$prefix}BUILDER_AgentExport_module_id"] = "Модули";
 $MESS["{$prefix}BUILDER_AgentExport_empty_module"] = "Без модуля";
 
 $MESS["{$prefix}BUILDER_Version1"] = "Создать простую миграцию";
 
-$MESS["{$prefix}BUILDER_UserGroupExport1"] = "Создать миграцию для групп пользователей";
+$MESS["{$prefix}BUILDER_UserGroupExport1"] = "Миграция групп пользователей";
 $MESS["{$prefix}BUILDER_UserGroupExport2"] = "Задайте символьный идентификатор группы (STRING_ID), чтобы увидеть её в списке";
-$MESS["{$prefix}BUILDER_UserGroupExport_user_group"] = "Выберите группы";
+$MESS["{$prefix}BUILDER_UserGroupExport_user_group"] = "Группы";
 
-$MESS["{$prefix}BUILDER_SelectAll"] = "Выбрать все";
+$MESS["{$prefix}BUILDER_SelectAll"] = "Все";
 $MESS["{$prefix}BUILDER_SelectNone"] = "Не выбирать ничего";
-$MESS["{$prefix}BUILDER_SelectSome"] = "Выбрать несколько";
+$MESS["{$prefix}BUILDER_SelectSome"] = "Несколько";
 
-$MESS["{$prefix}BUILDER_IblockExport1"] = "Создать миграцию для инфоблока";
+$MESS["{$prefix}BUILDER_IblockExport1"] = "Миграция инфоблока";
 $MESS["{$prefix}BUILDER_IblockExport2"] = implode(PHP_EOL, [
     "Задайте символьные коды у инфоблоков и свойств, чтобы увидеть их в списке",
 ]);
-$MESS["{$prefix}BUILDER_IblockExport_IblockId"] = "Выберите инфоблок";
-$MESS["{$prefix}BUILDER_IblockExport_Properties"] = "Выберите свойства";
+$MESS["{$prefix}BUILDER_IblockExport_IblockId"] = "Инфоблок";
+$MESS["{$prefix}BUILDER_IblockExport_Properties"] = "Свойства";
 $MESS["{$prefix}BUILDER_IblockExport_What"] = "Что переносим?";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblock"] = "Инфоблок";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockType"] = "Тип инфоблока";
@@ -170,16 +159,16 @@ $MESS["{$prefix}BUILDER_IblockExport_WhatIblockProperties"] = "Свойства 
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockUserOptions"] = "Настройки формы редактирования и списка";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockPermissions"] = "Доступ к инфоблоку";
 
-$MESS["{$prefix}BUILDER_IblockElementsExport1"] = "Перенести элементы инфоблоков";
+$MESS["{$prefix}BUILDER_IblockElementsExport1"] = "Перенос элементов инфоблоков";
 $MESS["{$prefix}BUILDER_IblockElementsExport2"] = implode(PHP_EOL, [
     "Переносит элементы с полями и свойствами",
     "Переносит изображения, файлы и списки",
     "Задайте символьные коды у инфоблоков и свойств, чтобы увидеть их в списке",
 ]);
-$MESS["{$prefix}BUILDER_IblockElementsExport_IblockId"] = "Выберите инфоблок";
-$MESS["{$prefix}BUILDER_IblockElementsExport_Properties"] = "Выберите свойства";
-$MESS["{$prefix}BUILDER_IblockElementsExport_Fields"] = "Выберите поля";
-$MESS["{$prefix}BUILDER_IblockElementsExport_Filter"] = "Выберите элементы";
+$MESS["{$prefix}BUILDER_IblockElementsExport_IblockId"] = "Инфоблок";
+$MESS["{$prefix}BUILDER_IblockElementsExport_Properties"] = "Свойства для переноса";
+$MESS["{$prefix}BUILDER_IblockElementsExport_Fields"] = "Поля для переноса";
+$MESS["{$prefix}BUILDER_IblockElementsExport_Filter"] = "Элементы для переноса";
 $MESS["{$prefix}BUILDER_IblockElementsExport_SelectSomeId"] = "Указать ID элементов";
 $MESS["{$prefix}BUILDER_IblockElementsExport_FilterListId"] = "Укажите ID элементов через пробел";
 $MESS["{$prefix}BUILDER_IblockElementsExport_FilterListSectionId"] = "Укажите ID категории";
@@ -191,29 +180,29 @@ $MESS["{$prefix}BUILDER_IblockElementsExport_NotUpdate"] = "Простое до�
 $MESS["{$prefix}BUILDER_IblockElementsExport_SaveElementByCode"] = "Добавить или обновить элементы с совпадающими CODE";
 $MESS["{$prefix}BUILDER_IblockElementsExport_SaveElementByXmlId"] = "Добавить или обновить элементы с совпадающими XML_ID";
 
-$MESS["{$prefix}BUILDER_IblockCategoryExport1"] = "Перенести категории инфоблоков";
+$MESS["{$prefix}BUILDER_IblockCategoryExport1"] = "Перенос категорий инфоблоков";
 $MESS["{$prefix}BUILDER_IblockCategoryExport2"] = implode(PHP_EOL, [
     "Переносит категории инфоблоков без изображений",
     "Задайте символьные коды у инфоблоков, чтобы увидеть их в списке",
 ]);
-$MESS["{$prefix}BUILDER_IblockCategoryExport_IblockId"] = "Выберите инфоблок";
+$MESS["{$prefix}BUILDER_IblockCategoryExport_IblockId"] = "Инфоблок";
 $MESS["{$prefix}BUILDER_IblockDelete"] = "Удалить инфоблоки";
 
-$MESS["{$prefix}BUILDER_IblockPropertyExport1"] = "Создать миграцию свойств инфоблоков";
-$MESS["{$prefix}BUILDER_IblockPropertyExport_UserType"] = "Выберите тип свойства";
-$MESS["{$prefix}BUILDER_IblockPropertyExport_Properties"] = "Выберите свойства";
+$MESS["{$prefix}BUILDER_IblockPropertyExport1"] = "Миграция свойств инфоблоков";
+$MESS["{$prefix}BUILDER_IblockPropertyExport_UserType"] = "Тип свойства";
+$MESS["{$prefix}BUILDER_IblockPropertyExport_Properties"] = "Свойства";
 $MESS["{$prefix}BUILDER_IblockPropertyDelete"] = "Удалить свойства инфоблока";
 $MESS["{$prefix}BUILDER_IblockPropertyDelete_Info"] = "Удаляет выбранные свойства и свойства с указанными CODE. Отсутствие свойства не считается ошибкой.";
-$MESS["{$prefix}BUILDER_IblockPropertyDelete_Properties"] = "Выберите свойства";
+$MESS["{$prefix}BUILDER_IblockPropertyDelete_Properties"] = "Свойства";
 $MESS["{$prefix}BUILDER_IblockPropertyDelete_Codes"] = "Коды свойств для удаления";
 
-$MESS["{$prefix}BUILDER_HlblockElementsExport1"] = "Перенести элементы highload-блоков";
+$MESS["{$prefix}BUILDER_HlblockElementsExport1"] = "Перенос элементов highload-блоков";
 $MESS["{$prefix}BUILDER_HlblockElementsExport2"] = implode(PHP_EOL,[
     "Переносит элементы",
     "Переносит изображения, файлы и списки",
 ]);
-$MESS["{$prefix}BUILDER_HlblockElementsExport_HlblockId"] = "Выберите highload-блок";
-$MESS["{$prefix}BUILDER_HlblockElementsExport_Filter"] = "Выберите элементы";
+$MESS["{$prefix}BUILDER_HlblockElementsExport_HlblockId"] = "Highload-блок";
+$MESS["{$prefix}BUILDER_HlblockElementsExport_Filter"] = "Элементы";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SelectSomeId"] = "Указать ID элементов";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SelectSomeXmlId"] = "Указать XML_ID элементов";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_FilterListId"] = "Укажите ID элементов через пробел";
@@ -221,33 +210,33 @@ $MESS["{$prefix}BUILDER_HlblockElementsExport_UpdateMethod"] = "Настройк
 $MESS["{$prefix}BUILDER_HlblockElementsExport_NotUpdate"] = "Простое добавление элементов";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SaveElementWithEqualKeys"] = "Добавить или обновить элементы с совпадающими полями";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SaveElementByXmlId"] = "Добавить или обновить элементы с совпадающими XML_ID";
-$MESS["{$prefix}BUILDER_HlblockElementsExport_EqualKeys"] = "Выберите поля для сравнения";
+$MESS["{$prefix}BUILDER_HlblockElementsExport_EqualKeys"] = "Поля для сравнения";
 
-$MESS["{$prefix}BUILDER_UserOptionsExport_Title"] = "Создать миграцию для пользовательских настроек";
+$MESS["{$prefix}BUILDER_UserOptionsExport_Title"] = "Миграция пользовательских настроек";
 $MESS["{$prefix}BUILDER_UserOptionsExport_What"] = "Что переносим?";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatUserForm"] = "Настрока формы редактирования пользователей";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatUserList"] = "Настрока списка пользователей";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatGroupList"] = "Настрока списка групп";
 
-$MESS["{$prefix}BUILDER_HlblockExport1"] = "Создать миграцию для highload-блока";
-$MESS["{$prefix}BUILDER_HlblockExport_HlblockId"] = "Выберите highload-блоки";
+$MESS["{$prefix}BUILDER_HlblockExport1"] = "Миграция highload-блока";
+$MESS["{$prefix}BUILDER_HlblockExport_HlblockId"] = "Highload-блоки";
 $MESS["{$prefix}BUILDER_HlblockExport_What"] = "Что переносим?";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblock"] = "Highload-блок";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockFields"] = "Поля highload-блока";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockUserOptions"] = "Настройки формы редактирования и списка";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockPermissions"] = "Доступ к highload-блоку";
 
-$MESS["{$prefix}BUILDER_UserTypeEntities1"] = "Создать миграцию для пользовательских полей";
+$MESS["{$prefix}BUILDER_UserTypeEntities1"] = "Миграция пользовательских полей";
 $MESS["{$prefix}BUILDER_UserTypeEntities_What"] = "Что переносим?";
 $MESS["{$prefix}BUILDER_UserTypeEntities_WhatEntityId"] = "Поля по списку объектов";
 $MESS["{$prefix}BUILDER_UserTypeEntities_WhatUserTypeId"] = "Поля по типу данных";
-$MESS["{$prefix}BUILDER_UserTypeEntities_EntityId"] = "Выберите объекты";
-$MESS["{$prefix}BUILDER_UserTypeEntities_UserTypeId"] = "Выберите тип данных";
+$MESS["{$prefix}BUILDER_UserTypeEntities_EntityId"] = "Объекты";
+$MESS["{$prefix}BUILDER_UserTypeEntities_UserTypeId"] = "Тип данных";
 $MESS["{$prefix}BUILDER_UserTypeEntities_EntityFields"] = "Укажите поля для выгрузки";
 
-$MESS["{$prefix}BUILDER_OrderProperties"] = "Создать миграцию для свойств заказов";
-$MESS["{$prefix}BUILDER_OrderProperties_PersonType"] = "Выберите тип плательщика";
-$MESS["{$prefix}BUILDER_OrderProperties_Properties"] = "Выберите свойства";
+$MESS["{$prefix}BUILDER_OrderProperties"] = "Миграция свойств заказов";
+$MESS["{$prefix}BUILDER_OrderProperties_PersonType"] = "Тип плательщика";
+$MESS["{$prefix}BUILDER_OrderProperties_Properties"] = "Свойства";
 $MESS["{$prefix}BUILDER_OrderProperties_UpdateMethod"] = "Настройка переноса";
 $MESS["{$prefix}BUILDER_OrderProperties_NotUpdate"] = "Простое добавление свойств";
 $MESS["{$prefix}BUILDER_OrderProperties_SavePropertyByCode"] = "Добавить или обновить свойства с совпадающими CODE";
@@ -256,26 +245,26 @@ $MESS["{$prefix}BUILDER_OrderProperties_MigratePropertyVariants"] = "Перен�
 $MESS["{$prefix}BUILDER_OrderProperties_MigratePropertyVariants_No"] = "Не переносить";
 $MESS["{$prefix}BUILDER_OrderProperties_MigratePropertyVariants_Yes"] = "Переносить";
 
-$MESS["{$prefix}BUILDER_SaleDiscount"] = "Создать миграцию для правил корзины";
-$MESS["{$prefix}BUILDER_SaleDiscount_Discounts"] = "Выберите правила корзины";
+$MESS["{$prefix}BUILDER_SaleDiscount"] = "Миграция правил корзины";
+$MESS["{$prefix}BUILDER_SaleDiscount_Discounts"] = "Правила корзины";
 
-$MESS["{$prefix}BUILDER_FormExport1"] = "Создать миграцию для веб-формы";
-$MESS["{$prefix}BUILDER_FormExport_FormId"] = "Выберите форму";
+$MESS["{$prefix}BUILDER_FormExport1"] = "Миграция веб-формы";
+$MESS["{$prefix}BUILDER_FormExport_FormId"] = "Форму";
 $MESS["{$prefix}BUILDER_FormExport_What"] = "Что переносим?";
 $MESS["{$prefix}BUILDER_FormExport_Form"] = "Форму";
 $MESS["{$prefix}BUILDER_FormExport_Fields"] = "Поля формы";
 $MESS["{$prefix}BUILDER_FormExport_Statuses"] = "Статусы";
-$MESS["{$prefix}BUILDER_FormExport_SelectFields"] = "Выберите поля формы";
+$MESS["{$prefix}BUILDER_FormExport_SelectFields"] = "Поля формы";
 
-$MESS["{$prefix}BUILDER_VoteExport1"] = "Создать миграцию для опроса";
-$MESS["{$prefix}BUILDER_VoteExport_VoteId"] = "Выберите опрос";
+$MESS["{$prefix}BUILDER_VoteExport1"] = "Миграция опроса";
+$MESS["{$prefix}BUILDER_VoteExport_VoteId"] = "Опрос";
 $MESS["{$prefix}BUILDER_VoteExport_Info"] = "У опроса должен быть заполнен Символьный идентификатор и создан хотя бы один Список опросов";
 $MESS["{$prefix}BUILDER_VoteExport_UnknownChannel"] = "Неизвестный канал";
 
-$MESS["{$prefix}BUILDER_OptionExport1"] = "Создать миграцию для настроек модулей";
+$MESS["{$prefix}BUILDER_OptionExport1"] = "Миграция настроек модулей";
 $MESS["{$prefix}BUILDER_OptionExport_Info"] = "Переносит настройки модулей для выбранных сайтов или сайта по умолчанию (если не выбирать)";
-$MESS["{$prefix}BUILDER_OptionExport_module_id"] = "Выберите модули";
-$MESS["{$prefix}BUILDER_OptionExport_site_id"] = "Выберите сайты";
+$MESS["{$prefix}BUILDER_OptionExport_module_id"] = "Модули";
+$MESS["{$prefix}BUILDER_OptionExport_site_id"] = "Сайты";
 
 $MESS["{$prefix}BUILDER_CacheCleaner1"] = "Очистка кеша";
 $MESS["{$prefix}BUILDER_CacheCleaner2"] = "Выполнить BXClearCache(true)";
@@ -291,17 +280,17 @@ $MESS["{$prefix}BUILDER_Cleaner_config_name"] = "Название (лат бук
 $MESS["{$prefix}BUILDER_Cleaner_error"] = "Ошибка удаления конфигурации";
 $MESS["{$prefix}BUILDER_Cleaner_success"] = "Конфигурация удалена";
 
-$MESS["{$prefix}BUILDER_MedialibElements1"] = "Перенести изображения медиабиблиотеки";
+$MESS["{$prefix}BUILDER_MedialibElements1"] = "Перенос изображений медиабиблиотеки";
 $MESS["{$prefix}BUILDER_MedialibElements2"] = implode(PHP_EOL,[
     "Переносит изображения по коллекциям",
     "Создает коллекции если их не было",
     "Обновляет изображения и коллекции с таким же названием"
 ]);
-$MESS["{$prefix}BUILDER_MedialibElements_CollectionId"] = "Выбрать коллекции";
+$MESS["{$prefix}BUILDER_MedialibElements_CollectionId"] = "Коллекция";
 
 $MESS["{$prefix}BUILDER_LanguageExport"] = "Создать миграцию для языков и региональных настроек";
-$MESS["{$prefix}BUILDER_LanguageExport_cult_codes"] = "Выберите региональные настройки";
-$MESS["{$prefix}BUILDER_LanguageExport_lang_ids"] = "Выберите языки интерфейса";
+$MESS["{$prefix}BUILDER_LanguageExport_cult_codes"] = "Региональные настройки";
+$MESS["{$prefix}BUILDER_LanguageExport_lang_ids"] = "Языки интерфейса";
 $MESS["{$prefix}BUILDER_LanguageExport_Info"] = "Задайте символьные коды региональным настройкам";
 
 //ERRORS
@@ -449,15 +438,15 @@ $MESS["{$prefix}BUILDER_GROUP_Tools"] = "Инструменты";
 
 $MESS["{$prefix}BUILDER_BlogExport1"] = "Экспорт блогов";
 $MESS["{$prefix}BUILDER_BlogExport_Info"] = "Переносит группы блогов и настройки блогов.";
-$MESS["{$prefix}BUILDER_BlogExport_group_id"] = "Выберите группу блогов";
-$MESS["{$prefix}BUILDER_BlogExport_blog_ids"] = "Выберите блоги";
+$MESS["{$prefix}BUILDER_BlogExport_group_id"] = "Группа блогов";
+$MESS["{$prefix}BUILDER_BlogExport_blog_ids"] = "Блоги";
 $MESS["{$prefix}BUILDER_BlogUserTypeEntitiesExport1"] = "Экспорт пользовательских свойств блогов";
 $MESS["{$prefix}BUILDER_BlogUserTypeEntitiesExport_Info"] = "Переносит пользовательские свойства блогов.";
-$MESS["{$prefix}BUILDER_BlogUserTypeEntitiesExport_entity_fields"] = "Выберите пользовательские свойства блогов";
+$MESS["{$prefix}BUILDER_BlogUserTypeEntitiesExport_entity_fields"] = "Пользовательские свойства блогов";
 $MESS["{$prefix}BUILDER_BlogPostExport1"] = "Экспорт записей блога";
 $MESS["{$prefix}BUILDER_BlogPostExport_Info"] = "Переносит записи выбранного блога.";
-$MESS["{$prefix}BUILDER_BlogPostExport_blog_id"] = "Выберите блог";
-$MESS["{$prefix}BUILDER_BlogPostExport_filter"] = "Выберите записи";
+$MESS["{$prefix}BUILDER_BlogPostExport_blog_id"] = "Блог";
+$MESS["{$prefix}BUILDER_BlogPostExport_filter"] = "Записи";
 $MESS["{$prefix}BUILDER_BlogPostExport_SelectSomeId"] = "Список ID";
 $MESS["{$prefix}BUILDER_BlogPostExport_SelectSomeCode"] = "Список CODE";
 $MESS["{$prefix}BUILDER_BlogPostExport_FilterListId"] = "Укажите ID записей через пробел";

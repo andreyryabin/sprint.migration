@@ -144,6 +144,7 @@ class BuilderController extends Controller
                 'note'      => $field->getNote(),
                 'component' => $field->getComponentName(),
                 'props'     => $field->getProps(),
+                'auto'      => $field->hasAutoDescription(),
             ], $builder->getFields()),
         ];
     }

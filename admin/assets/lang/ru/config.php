@@ -21,6 +21,7 @@ $MESS["{$prefix}SEARCH_VERSION"] = "Название/Описание/Тег";
 $MESS["{$prefix}SEARCH_BUILDER"] = "Название/Описание";
 $MESS["{$prefix}SEARCH_BUTTON"] = "Найти";
 $MESS["{$prefix}LOADING_TEXT"] = "Загрузка...";
+$MESS["{$prefix}SELECT_ALL"] = "Выбрать все";
 $MESS["{$prefix}SUMMARY_NEW"] = "Новые";
 $MESS["{$prefix}SUMMARY_INSTALLED"] = "Установленные";
 $MESS["{$prefix}SUMMARY_BUILDERS"] = "Всего";

@@ -42,12 +42,9 @@ $MESS["{$prefix}CFG_TITLE"] = "Migrations";
 $MESS["{$prefix}BUILDER_CREATE"] = "Create";
 $MESS["{$prefix}BUILDER_RUN"] = "Run";
 
-$MESS["{$prefix}SELECT_ALL"] = "Select all";
-$MESS["{$prefix}SELECT_ONE"] = "Select one";
-$MESS["{$prefix}RESTART_AGAIN"] = "Restart again";
 $MESS["{$prefix}WRITE_UP_CODE"] = "Write migration code in method up()";
 $MESS["{$prefix}WRITE_DOWN_CODE"] = "Write migration code in method down()";
-$MESS["{$prefix}LOADING_TEXT"] = "Loading...";
+
 $MESS["{$prefix}BLOG_GROUP_CREATED"] = "Blog group #NAME# created";
 $MESS["{$prefix}BLOG_GROUP_UPDATED"] = "Blog group #NAME# updated";
 $MESS["{$prefix}BLOG_CREATED"] = "Blog #NAME# created";
@@ -64,7 +61,7 @@ $MESS["{$prefix}OPTIONS_REMOVE"] = "Reset module options";
 $MESS["{$prefix}OPTIONS_REMOVE_success"] = "Options reset";
 $MESS["{$prefix}OPTIONS_SAVE_success"] = "Options saved";
 $MESS["{$prefix}MARK"] = "Mark migration";
-$MESS["{$prefix}MARK_FIELD1"] = "Select migration";
+$MESS["{$prefix}MARK_FIELD1"] = "Migration";
 $MESS["{$prefix}MARK_FIELD2"] = "Marks as";
 $MESS["{$prefix}MARK_VERSION"] = "Name|installed|new|unknown";
 $MESS["{$prefix}MARK_AS_NEW"] = "new";
@@ -84,7 +81,7 @@ $MESS["{$prefix}MOVE_RECORD"] = "Migration record moved #VERSION#";
 $MESS["{$prefix}MOVE_FILE"] = "Migration file moved #VERSION# ";
 $MESS["{$prefix}MOVE_EXCANGE"] = "Migration exchange directory moved #VERSION#";
 $MESS["{$prefix}MOVE_EROR"] = "Migration #VERSION# not moved";
-$MESS["{$prefix}CREATE"] = "Create migration";
+
 $MESS["{$prefix}VERSION_NOT_FOUND"] = "Migration not found";
 $MESS["{$prefix}RELEASE_TAG"] = "Release tag: [label:green]#TAG#[/]";
 $MESS["{$prefix}SETTAG"] = "Set tag";
@@ -117,51 +114,43 @@ $MESS["{$prefix}CONFIG_version_timestamp_pattern"] = "Timestamp pattern for sear
 $MESS["{$prefix}CONFIG_migration_hash_algo"] = "Hash algorithm for checking changes in the migration file";
 $MESS["{$prefix}CONFIG_logger"] = "Logger class";
 
-$MESS["{$prefix}BUILDER_Transfer1"] = "Transfer migrations";
-$MESS["{$prefix}BUILDER_TransferTo"] = "Transfer в другую конфигурацию";
-$MESS["{$prefix}BUILDER_TransferAll"] = "All";
-$MESS["{$prefix}BUILDER_TransferNew"] = "New";
-$MESS["{$prefix}BUILDER_TransferInstalled"] = "Installed";
-$MESS["{$prefix}BUILDER_TransferUnknown"] = "Unknown";
-$MESS["{$prefix}BUILDER_TransferSelect"] = "Select migrations";
+$MESS["{$prefix}BUILDER_EventExport1"] = "Migration for event types";
+$MESS["{$prefix}BUILDER_EventExport_event_types"] = "Event types";
 
-$MESS["{$prefix}BUILDER_EventExport1"] = "Create migration for event types";
-$MESS["{$prefix}BUILDER_EventExport_event_types"] = "Select event types";
-
-$MESS["{$prefix}BUILDER_ForumExport1"] = "Create migration for forums";
-$MESS["{$prefix}BUILDER_ForumExport_group_ids"] = "Select forum groups";
-$MESS["{$prefix}BUILDER_ForumExport_forum_ids"] = "Select forums";
+$MESS["{$prefix}BUILDER_ForumExport1"] = "Migration for forums";
+$MESS["{$prefix}BUILDER_ForumExport_group_ids"] = "Forum groups";
+$MESS["{$prefix}BUILDER_ForumExport_forum_ids"] = "Forums";
 $MESS["{$prefix}BUILDER_ForumExport_Info"] = "Forum group is exported with the forum automatically when it is set for the selected forum. If XML_ID is empty, it will be generated before export";
 $MESS["{$prefix}BUILDER_ForumExport_RootGroups"] = "Root groups";
 $MESS["{$prefix}BUILDER_ForumExport_NestedGroups"] = "Nested groups";
 $MESS["{$prefix}BUILDER_ForumExport_WithoutGroup"] = "Without group";
 
-$MESS["{$prefix}BUILDER_SubscribeExport1"] = "Create migration for subscription rubrics";
-$MESS["{$prefix}BUILDER_SubscribeExport_rubric_ids"] = "Select subscription rubrics";
+$MESS["{$prefix}BUILDER_SubscribeExport1"] = "Migration for subscription rubrics";
+$MESS["{$prefix}BUILDER_SubscribeExport_rubric_ids"] = "Subscription rubrics";
 $MESS["{$prefix}BUILDER_SubscribeExport_Info"] = "Subscription rubric must have a symbolic code filled in";
 
-$MESS["{$prefix}BUILDER_AgentExport1"] = "Create migration for agents";
+$MESS["{$prefix}BUILDER_AgentExport1"] = "Migration for agents";
 $MESS["{$prefix}BUILDER_AgentExport2"] = "Set agent module and name (MODULE_ID, NAME), to see it in the list";
-$MESS["{$prefix}BUILDER_AgentExport_agent_id"] = "Select agents";
-$MESS["{$prefix}BUILDER_AgentExport_module_id"] = "Select modules";
+$MESS["{$prefix}BUILDER_AgentExport_agent_id"] = "Agents";
+$MESS["{$prefix}BUILDER_AgentExport_module_id"] = "Modules";
 $MESS["{$prefix}BUILDER_AgentExport_empty_module"] = "-Empty module-";
 
 $MESS["{$prefix}BUILDER_Version1"] = "Create empty migration";
 
-$MESS["{$prefix}BUILDER_UserGroupExport1"] = "Create migration for user groups";
+$MESS["{$prefix}BUILDER_UserGroupExport1"] = "Migration for user groups";
 $MESS["{$prefix}BUILDER_UserGroupExport2"] = "Set group code (STRING_ID), to see it in the list";
-$MESS["{$prefix}BUILDER_UserGroupExport_user_group"] = "Select user groups";
+$MESS["{$prefix}BUILDER_UserGroupExport_user_group"] = "User groups";
 
-$MESS["{$prefix}BUILDER_SelectAll"] = "Select all";
-$MESS["{$prefix}BUILDER_SelectNone"] = "Select none";
-$MESS["{$prefix}BUILDER_SelectSome"] = "Select some";
+$MESS["{$prefix}BUILDER_SelectAll"] = "All";
+$MESS["{$prefix}BUILDER_SelectNone"] = "None";
+$MESS["{$prefix}BUILDER_SelectSome"] = "Some";
 
-$MESS["{$prefix}BUILDER_IblockExport1"] = "Create migration for information block";
+$MESS["{$prefix}BUILDER_IblockExport1"] = "Migration for information block";
 $MESS["{$prefix}BUILDER_IblockExport2"] = implode(PHP_EOL, [
     "Set iblock codes and property codes to see them in the list"
 ]);
-$MESS["{$prefix}BUILDER_IblockExport_IblockId"] = "Select information block";
-$MESS["{$prefix}BUILDER_IblockExport_Properties"] = "Select properties";
+$MESS["{$prefix}BUILDER_IblockExport_IblockId"] = "Information block";
+$MESS["{$prefix}BUILDER_IblockExport_Properties"] = "Properties";
 $MESS["{$prefix}BUILDER_IblockExport_What"] = "What to export?";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblock"] = "Information block";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockType"] = "Information block type";
@@ -176,10 +165,10 @@ $MESS["{$prefix}BUILDER_IblockElementsExport2"] = implode(PHP_EOL, [
     "Export images, files and lists",
     "Set iblock codes and property codes to see them in the list",
 ]);
-$MESS["{$prefix}BUILDER_IblockElementsExport_IblockId"] = "Select information block";
-$MESS["{$prefix}BUILDER_IblockElementsExport_Properties"] = "Select properties";
-$MESS["{$prefix}BUILDER_IblockElementsExport_Fields"] = "Select fields";
-$MESS["{$prefix}BUILDER_IblockElementsExport_Filter"] = "Select elements";
+$MESS["{$prefix}BUILDER_IblockElementsExport_IblockId"] = "Information block";
+$MESS["{$prefix}BUILDER_IblockElementsExport_Properties"] = "Properties export";
+$MESS["{$prefix}BUILDER_IblockElementsExport_Fields"] = "Fields export";
+$MESS["{$prefix}BUILDER_IblockElementsExport_Filter"] = "Elements export";
 $MESS["{$prefix}BUILDER_IblockElementsExport_SelectSomeId"] = "Enter elements ID";
 $MESS["{$prefix}BUILDER_IblockElementsExport_FilterListId"] = "Enter elements ID by space";
 $MESS["{$prefix}BUILDER_IblockElementsExport_FilterListSectionId"] = "Enter category ID";
@@ -196,15 +185,15 @@ $MESS["{$prefix}BUILDER_IblockCategoryExport2"] = implode(PHP_EOL, [
     "Export information block categories without images",
     "Set iblock codes to see them in the list",
 ]);
-$MESS["{$prefix}BUILDER_IblockCategoryExport_IblockId"] = "Select information block";
+$MESS["{$prefix}BUILDER_IblockCategoryExport_IblockId"] = "Information block";
 $MESS["{$prefix}BUILDER_IblockDelete"] = "Delete information blocks";
 
-$MESS["{$prefix}BUILDER_IblockPropertyExport1"] = "Create migration for information block properties";
-$MESS["{$prefix}BUILDER_IblockPropertyExport_UserType"] = "Select property type";
-$MESS["{$prefix}BUILDER_IblockPropertyExport_Properties"] = "Select properties";
+$MESS["{$prefix}BUILDER_IblockPropertyExport1"] = "Migration for information block properties";
+$MESS["{$prefix}BUILDER_IblockPropertyExport_UserType"] = "Property type";
+$MESS["{$prefix}BUILDER_IblockPropertyExport_Properties"] = "Properties";
 $MESS["{$prefix}BUILDER_IblockPropertyDelete"] = "Delete information block properties";
 $MESS["{$prefix}BUILDER_IblockPropertyDelete_Info"] = "Deletes selected properties and properties with specified CODE. Missing property is not an error.";
-$MESS["{$prefix}BUILDER_IblockPropertyDelete_Properties"] = "Select properties";
+$MESS["{$prefix}BUILDER_IblockPropertyDelete_Properties"] = "Properties";
 $MESS["{$prefix}BUILDER_IblockPropertyDelete_Codes"] = "Property codes to delete";
 
 $MESS["{$prefix}BUILDER_HlblockElementsExport1"] = "Export highload block elements";
@@ -212,8 +201,8 @@ $MESS["{$prefix}BUILDER_HlblockElementsExport2"] = implode(PHP_EOL,[
     "Export highload block elements",
     "Export images, files and lists"
 ]);
-$MESS["{$prefix}BUILDER_HlblockElementsExport_HlblockId"] = "Select highload block";
-$MESS["{$prefix}BUILDER_HlblockElementsExport_Filter"] = "Select elements";
+$MESS["{$prefix}BUILDER_HlblockElementsExport_HlblockId"] = "Highload block";
+$MESS["{$prefix}BUILDER_HlblockElementsExport_Filter"] = "Elements";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SelectSomeId"] = "Enter elements ID";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SelectSomeXmlId"] = "Enter elements XML_ID";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_FilterListId"] = "Enter elements ID by space";
@@ -221,33 +210,33 @@ $MESS["{$prefix}BUILDER_HlblockElementsExport_UpdateMethod"] = "Export settings"
 $MESS["{$prefix}BUILDER_HlblockElementsExport_NotUpdate"] = "Only add elements";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SaveElementWithEqualKeys"] = "Add or update existing elements with equal fields";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SaveElementByXmlId"] = "Add or update existing elements by XML_ID";
-$MESS["{$prefix}BUILDER_HlblockElementsExport_EqualKeys"] = "Select equal fields";
+$MESS["{$prefix}BUILDER_HlblockElementsExport_EqualKeys"] = "Equal fields";
 
-$MESS["{$prefix}BUILDER_UserOptionsExport_Title"] = "Create migration for user options";
+$MESS["{$prefix}BUILDER_UserOptionsExport_Title"] = "Migration for user options";
 $MESS["{$prefix}BUILDER_UserOptionsExport_What"] = "What to export?";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatUserForm"] = "User form";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatUserList"] = "User list";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatGroupList"] = "User group list";
 
-$MESS["{$prefix}BUILDER_HlblockExport1"] = "Create migration for highload block";
-$MESS["{$prefix}BUILDER_HlblockExport_HlblockId"] = "Select highload blocks";
+$MESS["{$prefix}BUILDER_HlblockExport1"] = "Migration for highload block";
+$MESS["{$prefix}BUILDER_HlblockExport_HlblockId"] = "Highload blocks";
 $MESS["{$prefix}BUILDER_HlblockExport_What"] = "What to export?";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblock"] = "Highload block";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockFields"] = "Highload block fields";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockUserOptions"] = "User options for form and list";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockPermissions"] = "Highload block permissions";
 
-$MESS["{$prefix}BUILDER_UserTypeEntities1"] = "Create migration for user type entities";
+$MESS["{$prefix}BUILDER_UserTypeEntities1"] = "Migration for user type entities";
 $MESS["{$prefix}BUILDER_UserTypeEntities_What"] = "What to export?";
 $MESS["{$prefix}BUILDER_UserTypeEntities_WhatEntityId"] = "Fields by entities";
 $MESS["{$prefix}BUILDER_UserTypeEntities_WhatUserTypeId"] = "Fields by data type";
-$MESS["{$prefix}BUILDER_UserTypeEntities_EntityId"] = "Select entities";
-$MESS["{$prefix}BUILDER_UserTypeEntities_UserTypeId"] = "Select data type";
-$MESS["{$prefix}BUILDER_UserTypeEntities_EntityFields"] = "Select fields";
+$MESS["{$prefix}BUILDER_UserTypeEntities_EntityId"] = "Entities";
+$MESS["{$prefix}BUILDER_UserTypeEntities_UserTypeId"] = "User type";
+$MESS["{$prefix}BUILDER_UserTypeEntities_EntityFields"] = "Fields";
 
 $MESS["{$prefix}BUILDER_OrderProperties"] = "Create a migration for order properties";
-$MESS["{$prefix}BUILDER_OrderProperties_PersonType"] = "Select person type";
-$MESS["{$prefix}BUILDER_OrderProperties_Properties"] = "Select properties";
+$MESS["{$prefix}BUILDER_OrderProperties_PersonType"] = "Person type";
+$MESS["{$prefix}BUILDER_OrderProperties_Properties"] = "Properties";
 $MESS["{$prefix}BUILDER_OrderProperties_UpdateMethod"] = "Export settings";
 $MESS["{$prefix}BUILDER_OrderProperties_NotUpdate"] = "Only add elements";
 $MESS["{$prefix}BUILDER_OrderProperties_SavePropertyByCode"] = "Add or update existing elements by CODE";
@@ -257,25 +246,25 @@ $MESS["{$prefix}BUILDER_OrderProperties_MigratePropertyVariants_No"] = "Do not t
 $MESS["{$prefix}BUILDER_OrderProperties_MigratePropertyVariants_Yes"] = "Transfer";
 
 $MESS["{$prefix}BUILDER_SaleDiscount"] = "Create a migration for cart rules";
-$MESS["{$prefix}BUILDER_SaleDiscount_Discounts"] = "Select cart rules";
+$MESS["{$prefix}BUILDER_SaleDiscount_Discounts"] = "Cart rules";
 
-$MESS["{$prefix}BUILDER_FormExport1"] = "Create migration for web form";
-$MESS["{$prefix}BUILDER_FormExport_FormId"] = "Select web form";
+$MESS["{$prefix}BUILDER_FormExport1"] = "Migration for web form";
+$MESS["{$prefix}BUILDER_FormExport_FormId"] = "Web form";
 $MESS["{$prefix}BUILDER_FormExport_What"] = "What to export?";
 $MESS["{$prefix}BUILDER_FormExport_Form"] = "Form";
 $MESS["{$prefix}BUILDER_FormExport_Fields"] = "Form fields";
 $MESS["{$prefix}BUILDER_FormExport_Statuses"] = "Form statuses";
-$MESS["{$prefix}BUILDER_FormExport_SelectFields"] = "Select form fields";
+$MESS["{$prefix}BUILDER_FormExport_SelectFields"] = "Form fields";
 
-$MESS["{$prefix}BUILDER_VoteExport1"] = "Create migration for poll";
-$MESS["{$prefix}BUILDER_VoteExport_VoteId"] = "Select poll";
+$MESS["{$prefix}BUILDER_VoteExport1"] = "Migration for poll";
+$MESS["{$prefix}BUILDER_VoteExport_VoteId"] = "Poll";
 $MESS["{$prefix}BUILDER_VoteExport_Info"] = "Poll must have a symbolic identifier filled in and at least one poll list created";
 $MESS["{$prefix}BUILDER_VoteExport_UnknownChannel"] = "Unknown channel";
 
-$MESS["{$prefix}BUILDER_OptionExport1"] = "Create migration for module options";
+$MESS["{$prefix}BUILDER_OptionExport1"] = "Migration for module options";
 $MESS["{$prefix}BUILDER_OptionExport_Info"] = "Export module options, for each site";
-$MESS["{$prefix}BUILDER_OptionExport_module_id"] = "Select modules";
-$MESS["{$prefix}BUILDER_OptionExport_site_id"] = "Select sites";
+$MESS["{$prefix}BUILDER_OptionExport_module_id"] = "Modules";
+$MESS["{$prefix}BUILDER_OptionExport_site_id"] = "Sites";
 
 $MESS["{$prefix}BUILDER_CacheCleaner1"] = "Cache clean";
 $MESS["{$prefix}BUILDER_CacheCleaner2"] = "Execute BXClearCache(true)";
@@ -297,11 +286,11 @@ $MESS["{$prefix}BUILDER_MedialibElements2"] = implode(PHP_EOL,[
     "Creates a collection if none existed",
     "Updates images and collections with the same name"
 ]);
-$MESS["{$prefix}BUILDER_MedialibElements_CollectionId"] = "Select collections";
+$MESS["{$prefix}BUILDER_MedialibElements_CollectionId"] = "Collections";
 
-$MESS["{$prefix}BUILDER_LanguageExport"] = "Create migration for languages and cultures settings";
-$MESS["{$prefix}BUILDER_LanguageExport_cult_codes"] = "Select cultures";
-$MESS["{$prefix}BUILDER_LanguageExport_lang_ids"] = "Select languages";
+$MESS["{$prefix}BUILDER_LanguageExport"] = "Migration for languages and cultures settings";
+$MESS["{$prefix}BUILDER_LanguageExport_cult_codes"] = "Cultures";
+$MESS["{$prefix}BUILDER_LanguageExport_lang_ids"] = "Languages";
 $MESS["{$prefix}BUILDER_LanguageExport_Info"] = "Set culture codes to see them in the list";
 
 //ERRORS
@@ -449,15 +438,15 @@ $MESS["{$prefix}BUILDER_GROUP_Tools"] = "Tools";
 
 $MESS["{$prefix}BUILDER_BlogExport1"] = "Export blogs";
 $MESS["{$prefix}BUILDER_BlogExport_Info"] = "Transfers blog groups and blog settings.";
-$MESS["{$prefix}BUILDER_BlogExport_group_id"] = "Select blog group";
-$MESS["{$prefix}BUILDER_BlogExport_blog_ids"] = "Select blogs";
+$MESS["{$prefix}BUILDER_BlogExport_group_id"] = "Blog group";
+$MESS["{$prefix}BUILDER_BlogExport_blog_ids"] = "Blogs";
 $MESS["{$prefix}BUILDER_BlogUserTypeEntitiesExport1"] = "Export blog custom fields";
 $MESS["{$prefix}BUILDER_BlogUserTypeEntitiesExport_Info"] = "Transfers blog custom fields.";
-$MESS["{$prefix}BUILDER_BlogUserTypeEntitiesExport_entity_fields"] = "Select blog custom fields";
+$MESS["{$prefix}BUILDER_BlogUserTypeEntitiesExport_entity_fields"] = "Blog custom fields";
 $MESS["{$prefix}BUILDER_BlogPostExport1"] = "Export blog posts";
 $MESS["{$prefix}BUILDER_BlogPostExport_Info"] = "Transfers selected blog posts.";
-$MESS["{$prefix}BUILDER_BlogPostExport_blog_id"] = "Select blog";
-$MESS["{$prefix}BUILDER_BlogPostExport_filter"] = "Select posts";
+$MESS["{$prefix}BUILDER_BlogPostExport_blog_id"] = "Blog";
+$MESS["{$prefix}BUILDER_BlogPostExport_filter"] = "Posts";
 $MESS["{$prefix}BUILDER_BlogPostExport_SelectSomeId"] = "ID list";
 $MESS["{$prefix}BUILDER_BlogPostExport_SelectSomeCode"] = "CODE list";
 $MESS["{$prefix}BUILDER_BlogPostExport_FilterListId"] = "Enter post IDs separated by spaces";

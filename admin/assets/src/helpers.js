@@ -129,7 +129,7 @@ export function dumpJson(obj) {
     return JSON.stringify(obj, null, 2);
 }
 
-export function filterOptions(search, options, keys = ['id', 'name', 'group']) {
+export function optionsFilter(search, options, keys = ['id', 'name', 'group']) {
     if (search) {
         const s1 = makeString(search).toLowerCase();
         return options.filter((item) => {
@@ -143,7 +143,7 @@ export function filterOptions(search, options, keys = ['id', 'name', 'group']) {
     return options;
 }
 
-export function groupOptions(options, gKey = 'group') {
+export function optionsGroup(options, gKey = 'group') {
     let tree = {};
 
     options.forEach((item) => {
@@ -155,6 +155,12 @@ export function groupOptions(options, gKey = 'group') {
     });
 
     return tree;
+}
+export function optionsNames(options, ids) {
+    const names = options
+        .filter(item => ids.includes(item.id))
+        .map(item => item.name);
+    return names.join(', ');
 }
 
 export function extractResponse(resp, messages, progress) {

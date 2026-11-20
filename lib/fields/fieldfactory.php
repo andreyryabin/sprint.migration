@@ -33,22 +33,23 @@ class FieldFactory
 
         $obj->setTitle($field['title'] ?? '');
         $obj->setNote($field['note'] ?? '');
+        $obj->setAutoDescription($field['auto'] ?? true);
 
         return $obj;
     }
 
-    private static function addOptionsFromSelect(RadioListField $field, array $select): void
+    private static function addOptionsFromSelect(SelectField $field, array $select): void
     {
         foreach ($select as $item) {
-            $field->addOption($item['value'], $item['title']);
+            $field->addOption((string)$item['value'], $item['title']);
         }
     }
 
-    private static function addOptionsFromStructure(RadioListField $field, array $items): void
+    private static function addOptionsFromStructure(SelectField $field, array $items): void
     {
         foreach ($items as $group) {
             foreach ($group['items'] as $item) {
-                $field->addOption($item['value'], $item['title'], $group['title'] ?? '-');
+                $field->addOption((string)$item['value'], $item['title'], $group['title'] ?? '-');
             }
         }
     }

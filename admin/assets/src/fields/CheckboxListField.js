@@ -1,10 +1,6 @@
-import {filterOptions, getMessage, groupOptions} from "../helpers";
-import {CheckboxField} from "./CheckboxField";
+import {optionsFilter, getMessage, optionsGroup, optionsNames} from "../helpers";
 
 export const CheckboxListField = {
-    components: {
-        CheckboxField
-    },
     props: {
         value: {
             type: Array,
@@ -30,6 +26,7 @@ export const CheckboxListField = {
             immediate: true,
             handler(v) {
                 this.selected = Array.isArray(v) ? v.slice() : [];
+                this.$emit('update:description', optionsNames(this.options, this.selected));
             },
         },
     },
@@ -38,10 +35,10 @@ export const CheckboxListField = {
             return new Set(this.selected);
         },
         filtered() {
-            return filterOptions(this.search, this.options)
+            return optionsFilter(this.search, this.options)
         },
         grouped() {
-            return groupOptions(this.filtered);
+            return optionsGroup(this.filtered);
         },
     },
     methods: {
@@ -55,7 +52,7 @@ export const CheckboxListField = {
             }
             const ids = [...idSet];
             this.selected = ids;
-            this.$emit('update:value', ids);
+            this.emitChecked(ids);
         },
         selectAll() {
             if (this.selected.length > 0) {
@@ -63,8 +60,12 @@ export const CheckboxListField = {
             } else {
                 this.selected = this.filtered.map(item => item.id);
             }
-            this.$emit('update:value', this.selected.slice());
+            this.emitChecked(this.selected.slice());
         },
+        emitChecked(ids){
+            this.$emit('update:value', ids);
+            this.$emit('update:description', optionsNames(this.options, ids));
+        }
     },
     template: `
       <div class="sp-selector">
@@ -88,13 +89,19 @@ export const CheckboxListField = {
               v-if="groupName !== '-'"
               v-text="groupName"
           />
-          <CheckboxField
+          <label
               v-for="item in groupItems"
               :key="item.id"
-              :label="item.name"
-              :value="checklist.has(item.id)"
-              @update:value="toggle(item.id, $event)"
-          />
+          >
+            <input
+                type="checkbox"
+                :checked="checklist.has(item.id)"
+                @change="toggle(item.id, $event.target.checked)"
+            />
+            <span
+                v-text="item.name"
+            />
+          </label>
         </div>
         <div
             v-if="filtered.length > 0"

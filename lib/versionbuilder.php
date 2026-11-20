@@ -18,6 +18,7 @@ abstract class VersionBuilder extends Builder
                 'title' => Locale::getMessage('FORM_PREFIX'),
                 'value' => $this->getVersionConfig()->getVal('version_prefix'),
                 'width' => 250,
+                'auto'  => false,
             ],
         );
 
@@ -27,6 +28,7 @@ abstract class VersionBuilder extends Builder
                 'title'  => Locale::getMessage('FORM_DESCR'),
                 'width'  => 350,
                 'height' => 40,
+                'auto'   => false,
             ],
         );
     }

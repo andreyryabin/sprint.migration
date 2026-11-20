@@ -1,4 +1,4 @@
-import {filterOptions, groupOptions} from "../helpers";
+import {optionsFilter, optionsGroup, optionsNames} from "../helpers";
 
 let uid = 0;
 export const RadioListField = {
@@ -22,22 +22,30 @@ export const RadioListField = {
             name: `RadioListField${++uid}`,
         };
     },
-
+    watch: {
+        value: {
+            immediate: true,
+            handler(id) {
+                this.$emit('update:description', optionsNames(this.options, [id]));
+            },
+        },
+    },
     computed: {
         selected: {
             get() {
                 return this.value;
             },
-            set(v) {
-                this.$emit('update:value', v);
+            set(id) {
+                this.$emit('update:value', id);
             },
         },
         filtered() {
-            return filterOptions(this.search, this.options);
+            return optionsFilter(this.search, this.options);
         },
         grouped() {
-            return groupOptions(this.filtered);
+            return optionsGroup(this.filtered);
         },
+
     },
     template: `
       <div class="sp-selector">

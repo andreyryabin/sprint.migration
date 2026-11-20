@@ -4,16 +4,15 @@ import {
     colorbind,
     colorize,
     extractResponse,
-    filterOptions,
     getMessage,
-    groupOptions,
+    optionsFilter,
+    optionsGroup,
     progressMessage,
 } from "../helpers";
 
 import {StringField} from '../fields/StringField';
 import {TextareaField} from '../fields/TextareaField';
 import {SelectField} from '../fields/SelectField';
-import {CheckboxField} from '../fields/CheckboxField';
 import {CheckboxListField} from '../fields/CheckboxListField';
 import {RadioListField} from '../fields/RadioListField';
 
@@ -22,7 +21,6 @@ export const MigrationBuilders = {
         StringField,
         TextareaField,
         SelectField,
-        CheckboxField,
         CheckboxListField,
         RadioListField,
     },
@@ -47,9 +45,8 @@ export const MigrationBuilders = {
             progress: [],
             builders: [],
             selected: {},
+            autoDescription: {},
             filter: {search: ''},
-            success: false
-
         };
     },
     created() {
@@ -60,11 +57,11 @@ export const MigrationBuilders = {
 
     computed: {
         filtered() {
-            return filterOptions(this.filter.search, this.builders, ['name', 'title', 'group', 'note']);
+            return optionsFilter(this.filter.search, this.builders, ['name', 'title', 'group', 'note']);
         },
 
         grouped() {
-            return groupOptions(this.filtered, 'group');
+            return optionsGroup(this.filtered, 'group');
         },
 
         summaryLabel() {
@@ -72,7 +69,11 @@ export const MigrationBuilders = {
                 return this.filtered.length + ' / ' + this.builders.length
             }
             return this.builders.length;
-        }
+        },
+
+        autoDescriptionList() {
+            return Object.values(this.autoDescription || {}).filter(Boolean);
+        },
     },
 
     methods: {
@@ -149,8 +150,7 @@ export const MigrationBuilders = {
 
             this.loading2 = 1;
             this.execBuilder()
-                .then((success) => {
-                    this.success = success;
+                .then(() => {
                     this.loading2 = 0;
                 });
         },
@@ -158,12 +158,22 @@ export const MigrationBuilders = {
         selectBuilder(name) {
             this.messages = [];
             this.progress = [];
-            this.success = false;
+            this.selected = {};
+            this.autoDescription = {};
 
             const item = this.builders.find(item => item.name === name);
 
-            /*Object.assign нельзя item.params будут переданы по ссылке*/
-            this.selected = item ? JSON.parse(JSON.stringify(item)) : {};
+            if (item) {
+                /*Object.assign нельзя item.params будут переданы по ссылке*/
+                this.selected = JSON.parse(JSON.stringify(item));
+            }
+        },
+
+        collectAutoDescription(field, message) {
+            if (!field.auto) {
+                return;
+            }
+            this.autoDescription[field.code] = message ? field.title + ': ' + message : '';
         },
 
     },
@@ -241,7 +251,7 @@ export const MigrationBuilders = {
                 />
                 <div
                     v-for="field in selected.fields"
-                    :key="field.code"
+                    :key="selected.name +':'+ field.code"
                 >
                   <div
                       v-if="field.title"
@@ -258,14 +268,7 @@ export const MigrationBuilders = {
                       :is="field.component"
                       v-model:value="selected.params[field.code]"
                       v-bind="field.props"
-                  />
-                </div>
-                <div class="sp-builder_log">
-                  <div
-                      v-for="(item, index) in messages"
-                      :key="index"
-                      v-bind="colorbind(item.type)"
-                      v-text="item.message"
+                      @update:description="collectAutoDescription(field, $event)"
                   />
                 </div>
                 <div class="sp-migration_buttons">
@@ -293,7 +296,32 @@ export const MigrationBuilders = {
                       v-text="progressMessage(item)"
                   />
                 </div>
-
+                <div class="sp-builder_log">
+                  <div
+                      v-for="(item, index) in messages"
+                      :key="index"
+                      v-bind="colorbind(item.type)"
+                      v-text="item.message"
+                  />
+                </div>
+                <div
+                    v-if="autoDescriptionList.length"
+                    class="sp-info-message"
+                >
+                  <div
+                      class="sp-field-title"
+                      v-text="'План миграции'"
+                  />
+                  <div
+                      v-if="selected.title"
+                      v-text="selected.title"
+                  />
+                  <div
+                      v-for="(text,code) in autoDescriptionList"
+                      :key="code"
+                      v-text="text"
+                  />
+                </div>
               </div>
             </div>
           </div>

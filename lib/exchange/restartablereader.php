@@ -87,7 +87,7 @@ class RestartableReader
 
         $next = ($readCount >= $this->limit) ? $offset : 0;
 
-        if ($this->progressFn !== null) {
+        if ($this->progressFn !== null && $next < $this->totalCount) {
             ($this->progressFn)($offset, $this->totalCount);
         }
 

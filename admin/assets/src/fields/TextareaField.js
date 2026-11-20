@@ -1,4 +1,4 @@
-import {cleanAttrs, makeString} from "../helpers";
+import {cleanAttrs} from "../helpers";
 
 export const TextareaField = {
     inheritAttrs: false,
@@ -27,8 +27,9 @@ export const TextareaField = {
             get() {
                 return this.value;
             },
-            set(v) {
-                this.$emit('update:value', v);
+            set(val) {
+                this.$emit('update:value', val);
+                this.$emit('update:description', val);
             },
         },
         cleanedAttrs() {

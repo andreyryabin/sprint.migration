@@ -12,6 +12,7 @@ abstract class AbstractField
     private array $props = [];
     private string $title = '';
     private string $note = '';
+    private bool $autoDescription = true;
 
     public function __construct(private readonly string $code) {}
 
@@ -66,6 +67,16 @@ abstract class AbstractField
     {
         $this->note = $note;
         return $this;
+    }
+    public function setAutoDescription(bool $enable): static
+    {
+        $this->autoDescription = $enable;
+        return $this;
+    }
+
+    public function hasAutoDescription(): bool
+    {
+        return $this->autoDescription;
     }
 
     protected function getProp(string $name, mixed $defaultValue): mixed

@@ -1,70 +1,87 @@
+import {optionsNames} from "../helpers";
+
 export const SelectField = {
     props: {
         value: {
-            type: String,
+            type: [String, Number],
             default: '',
         },
         options: {
             type: Object,
-            default: () => ({})
+            default: () => ({}),
         },
         size: {
             type: Number,
             default: 1,
         },
-        css: {
-            type: String,
-            default: 'SelectField',
+        disabled: {
+            type: Boolean,
+            default: false,
         },
     },
-    data() {
-        return {
-            selected: '',
-            items: [],
-            isMounted: false
-        };
+
+    computed: {
+        items() {
+            return Object.entries(this.options).map(([id, name]) => ({id, name}));
+        },
+
+        ids() {
+            return this.items.map(item => item.id);
+        },
+
+        normalizedValue() {
+            if (this.ids.length === 0) {
+                return '';
+            }
+            return this.ids.includes(this.value) ? this.value : this.ids[0];
+        },
     },
 
-    created() {
-        let ids = [];
-        for (const [id, name] of Object.entries(this.options)) {
-            this.items.push({id, name});
-            ids.push(id);
-        }
-
-        if (ids.length === 0) {
-            return;
-        }
-
-        if (ids.includes(this.value)) {
-            this.selected = this.value;
-        } else {
-            this.selected = ids[0];
-            this.emitValue();
-        }
-
-        this.isMounted = true;
+    watch: {
+        value: {
+            immediate: true,
+            handler() {
+                this.syncValue();
+            },
+        },
+        normalizedValue: {
+            handler() {
+                this.syncValue();
+            },
+        },
     },
+
     methods: {
-        emitValue() {
-            this.$emit('update:value', this.selected);
+        syncValue() {
+            const next = this.normalizedValue;
+            if (next !== this.value) {
+                this.$emit('update:value', next);
+                this.$emit('update:description', optionsNames(this.options, [next]));
+            }
+        },
+
+        onChange(event) {
+            let val = event.target.value;
+            this.$emit('update:value', val);
+            this.$emit('update:description', optionsNames(this.options, [val]));
         },
     },
+
     template: `
-      <div v-if="isMounted" :class="css">
+      <div class="SelectField">
         <select
-            v-model="selected"
+            :value="normalizedValue"
             :size="size"
-            @change="emitValue"
+            :disabled="disabled"
+            @change="onChange"
         >
           <option
-              v-for="(item, index) in items"
-              :key="'key'+index"
+              v-for="item in items"
+              :key="item.id"
               :value="item.id"
               v-text="item.name"
           />
         </select>
       </div>
-    `
+    `,
 };
-

@@ -4,7 +4,7 @@ namespace Sprint\Migration\Fields;
 
 use Sprint\Migration\Interfaces\ConsoleInterface;
 
-class CheckboxListField extends RadioListField
+class CheckboxListField extends SelectField
 {
     public function getDefaultValue(): array
     {

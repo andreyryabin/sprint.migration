@@ -22,6 +22,7 @@ export const StringField = {
             },
             set(val) {
                 this.$emit('update:value', val);
+                this.$emit('update:description', val);
             }
         },
         cleanedAttrs() {

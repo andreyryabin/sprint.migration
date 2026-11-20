@@ -87,8 +87,12 @@ class RestartableWriter
 
         $offset += $fetchedCount;
 
-        $progressFn($offset, $this->totalCount);
+        $next = ($fetchedCount >= $this->limit) ? $offset : 0;
 
-        return ($fetchedCount >= $this->limit) ? $offset : 0;
+        if ($next < $this->totalCount) {
+            $progressFn($offset, $this->totalCount);
+        }
+
+        return $next;
     }
 }
