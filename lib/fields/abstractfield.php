@@ -27,7 +27,7 @@ abstract class AbstractField
 
     public function setValueFromConsole(mixed $rawValue): mixed
     {
-        return $rawValue;
+        return trim($rawValue);
     }
 
     public function getCode(): string

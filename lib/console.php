@@ -357,10 +357,7 @@ class Console
      */
     public function commandAdd(): void
     {
-        $this->executeBuilder(
-            $this->getArg(0, 'BlankBuilder'),
-            $this->getBuilderParamsByArgs(),
-        );
+        $this->executeBuilderByArgs();
     }
 
     /**
@@ -370,7 +367,7 @@ class Console
      */
     public function commandRun(): void
     {
-        $this->commandAdd();
+        $this->executeBuilderByArgs();
     }
 
     /**
@@ -407,10 +404,14 @@ class Console
      * @throws BuilderException
      * @throws ConsoleException
      */
-    private function executeBuilder(string $name, $defaultValues): void
+    private function executeBuilderByArgs(): void
     {
+        $name = $this->getArg(0, 'BlankBuilder');
+        $defaultValues = $this->getBuilderParamsByArgs();
+
         $builder = $this->builderManager->createBuilder($name);
         $this->output->print("%s [%s]", $builder->getTitle(), $builder->getName());
+
         do {
             foreach ($builder->getUnbindFields() as $field) {
                 $raw = $defaultValues[$field->getCode()] ?? $field->readValueFromConsole($this->output);
