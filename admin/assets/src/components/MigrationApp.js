@@ -32,6 +32,11 @@ export const MigrationApp = {
             default: ''
         },
     },
+    data() {
+        return {
+            activeTab: 'versions'
+        }
+    },
     methods: {
         getMessage,
 
@@ -40,19 +45,14 @@ export const MigrationApp = {
                 this.$nextTick(() => {
                     this.$refs.versions.refreshVersions();
                 });
-
-            }
-            if (tabName === 'builders') {
-                this.$nextTick(() => {
-                    this.$refs.builders.refreshBuilders();
-                });
             }
         }
     },
     template: `
       <MigrationTabs
           :items="{versions:getMessage('TAB_VERSIONS'), builders:getMessage('TAB_BUILDERS')}"
-          @select-tab="selectTab"
+          v-model:selected="activeTab"
+          @update:selected="selectTab"
       >
         <template v-slot:versions>
           <MigrationVersions

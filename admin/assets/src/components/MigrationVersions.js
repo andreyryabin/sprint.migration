@@ -66,7 +66,7 @@ export const MigrationVersions = {
     created() {
         this.createFilter();
 
-        // this.refreshVersions();
+        this.refreshVersions();
     },
 
     computed: {
@@ -127,8 +127,11 @@ export const MigrationVersions = {
 
         saveFilter() {
             localStorage.setItem('sprint_migration_filter_' + this.config, JSON.stringify(this.filter));
+        },
 
-            this.refreshVersions();
+        saveFilterAndRefresh() {
+            this.saveFilter();
+            this.refreshBuilders();
         },
 
         execAction(action, payload) {
@@ -475,19 +478,19 @@ export const MigrationVersions = {
                   <StringField
                       v-model:value="filter.search"
                       :placeholder="getMessage('SEARCH_VERSION')"
-                      @press-enter="saveFilter"
+                      @press-enter="saveFilterAndRefresh"
                   />
                   <SelectField
                       v-model:value="filter.view"
                       :options="variants"
-                      @update:value="saveFilter"
+                      @update:value="saveFilterAndRefresh"
                   />
                   <div>
                     <input
                         :value="getMessage('SEARCH_BUTTON')"
                         class="adm-btn"
                         type="button"
-                        @click="saveFilter"
+                        @click="saveFilterAndRefresh"
                     />
                   </div>
                 </div>

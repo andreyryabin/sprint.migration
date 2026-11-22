@@ -46,13 +46,15 @@ export const MigrationBuilders = {
             builders: [],
             selected: {},
             autoDescription: {},
-            filter: {search: ''},
+            filter: {search: '',builder: ''},
         };
     },
     created() {
         this.createFilter();
 
-        //this.refreshBuilders();
+        this.refreshBuilders().then(() => {
+            this.selectBuilder(this.filter.builder);
+        });
     },
 
     computed: {
@@ -83,10 +85,23 @@ export const MigrationBuilders = {
         colorbind,
 
         createFilter() {
-            this.filter.search = '';
+            try {
+                let obj = JSON.parse(
+                    localStorage.getItem('sprint_migrations_builder_' + this.config)
+                ) ?? {};
+                this.filter.builder = obj.builder ?? '';
+                this.filter.search = obj.search ?? '';
+            } catch {
+
+            }
         },
 
         saveFilter() {
+            localStorage.setItem('sprint_migrations_builder_' + this.config, JSON.stringify(this.filter));
+        },
+
+        saveFilterAndRefresh() {
+            this.saveFilter();
             this.refreshBuilders();
         },
 
@@ -104,10 +119,11 @@ export const MigrationBuilders = {
 
         refreshBuilders() {
             this.loading1 = 1;
-            this.execAction('refreshBuilders', {})
+            return this.execAction('refreshBuilders', {})
                 .then((data) => {
                     this.builders = data.builders || [];
                     this.loading1 = 0;
+                    return true;
                 });
         },
 
@@ -166,6 +182,9 @@ export const MigrationBuilders = {
             if (item) {
                 /*Object.assign нельзя item.params будут переданы по ссылке*/
                 this.selected = JSON.parse(JSON.stringify(item));
+
+                this.filter.builder = name;
+                this.saveFilter();
             }
         },
 
@@ -187,14 +206,14 @@ export const MigrationBuilders = {
                   <StringField
                       v-model:value="filter.search"
                       :placeholder="getMessage('SEARCH_BUILDER')"
-                      @press-enter="saveFilter"
+                      @press-enter="saveFilterAndRefresh"
                   />
                   <div>
                     <input
                         :value="getMessage('SEARCH_BUTTON')"
                         class="adm-btn"
                         type="button"
-                        @click="saveFilter"
+                        @click="saveFilterAndRefresh"
                     />
                   </div>
                 </div>
