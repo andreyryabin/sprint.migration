@@ -30,16 +30,16 @@ class SelectField extends AbstractField
      */
     protected function printFieldToConsole(ConsoleInterface $io): void
     {
-        $io->print("[blue](%s) - %s[/]", $this->getCode(), $this->getTitle());
+        $io->print("[pink](%s) - %s[/]", $this->getCode(), $this->getTitle());
 
         $grouped = $this->groupOptions($this->getProp('options', []));
 
         foreach ($grouped as $groupName => $groupItems) {
             if ($groupName !== '-') {
-                $io->print('---%s', $groupName);
+                $io->print('[blue]  %s[/]', $groupName);
             }
             foreach ($groupItems as $item) {
-                $io->print(' > (%s) - %s', $item['id'], $item['name']);
+                $io->print('    ([yellow]%s[/]) %s', $item['id'], $item['name']);
             }
         }
     }

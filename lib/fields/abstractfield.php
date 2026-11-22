@@ -23,7 +23,7 @@ abstract class AbstractField
      */
     public function readValueFromConsole(ConsoleInterface $io): string
     {
-        return $io->read("[blue](%s) - %s:[/] ", $this->getCode(), $this->getTitle());
+        return $io->read("[pink](%s) - %s:[/] ", $this->getCode(), $this->getTitle());
     }
 
     public function setValueFromConsole(mixed $rawValue): mixed

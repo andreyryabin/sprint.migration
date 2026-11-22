@@ -345,7 +345,7 @@ class Console
         foreach ($groups as $group => $items) {
             $this->output->print("[blue]%s[/]", $group);
             foreach ($items as $item) {
-                $this->output->print(" > (%s) - %s", $item['name'], $item['title']);
+                $this->output->print(" ([yellow]%s[/]) %s", $item['name'], $item['title']);
             }
         }
     }
@@ -359,7 +359,15 @@ class Console
     {
         $this->executeBuilderByArgs();
     }
-
+    /**
+     * @publicApi
+     * @throws BuilderException
+     * @throws ConsoleException
+     */
+    public function commandCreate(): void
+    {
+        $this->executeBuilderByArgs();
+    }
     /**
      * @publicApi
      * @throws BuilderException

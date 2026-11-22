@@ -20,6 +20,6 @@ class CheckboxListField extends SelectField
     {
         $this->printFieldToConsole($io);
 
-        return $io->read("Select any: ");
+        return $io->read("Select any (separated by space): ");
     }
 }
