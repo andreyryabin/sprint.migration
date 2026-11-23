@@ -5,6 +5,8 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
+use Sprint\Migration\Fields\RadioListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -46,44 +48,18 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
         $exhelper = $this->getExchangeHelpers();
 
-        $iblockId = (int) $this->addFieldAndReturn('iblock_id', [
-            'title' => Locale::getMessage('BUILDER_IblockExport_IblockId'),
-            'items' => $exhelper->IblockExchange()->getIblocksStructure(),
-        ]);
-
-        $properties = $this->prepareProperties($helper->Iblock()->getProperties($iblockId));
-
-        $this->addField(
-            'property_ids',
-            [
-                'title'    => Locale::getMessage('BUILDER_IblockPropertyDelete_Properties'),
-                'select'   => $this->createSelect($properties, 'ID', 'PROPERTY_TITLE'),
-                'multiple' => true,
-            ],
+        $iblockId = (int) $this->askField('iblock_id',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_IblockExport_IblockId'))
+                ->setOptions($exhelper->IblockExchange()->getIblocksSelect(), 'ID', 'TITLE', 'GROUP'),
         );
 
-        $this->addField(
+        $propertyCodes = $this->askField(
             'property_codes',
-            [
-                'title'  => Locale::getMessage('BUILDER_IblockPropertyDelete_Codes'),
-                'width'  => 350,
-                'height' => 80,
-            ],
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_IblockPropertyDelete_Properties'))
+                ->setOptions($exhelper->IblockExchange()->getIblockPropertiesSelect($iblockId), 'CODE', 'TITLE'),
         );
-
-        $propertyIds = $this->getFieldValue('property_ids', []);
-        $propertyIds = is_array($propertyIds) ? $propertyIds : [$propertyIds];
-
-        $propertyCodes = $this->getPropertyCodesByIds($properties, $propertyIds);
-        $propertyCodes = array_merge(
-            $propertyCodes,
-            $this->explodePropertyCodes((string) $this->getFieldValue('property_codes')),
-        );
-        $propertyCodes = array_values(array_unique(array_filter($propertyCodes)));
-
-        if (empty($propertyCodes)) {
-            $this->resetField('property_ids');
-        }
 
         $this->confirmVersionPlan();
 
@@ -97,46 +73,4 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
         );
     }
 
-    private function prepareProperties(array $properties): array
-    {
-        $properties = array_filter(
-            $properties,
-            fn($property) => !empty($property['CODE']),
-        );
-
-        return array_map(
-            fn($property) => array_merge(
-                $property,
-                [
-                    'PROPERTY_TITLE' => sprintf('[%s] %s', $property['CODE'], $property['NAME']),
-                ],
-            ),
-            $properties,
-        );
-    }
-
-    private function getPropertyCodesByIds(array $properties, array $propertyIds): array
-    {
-        $propertyIds = array_map('strval', $propertyIds);
-
-        return array_values(
-            array_map(
-                fn($property) => $property['CODE'],
-                array_filter(
-                    $properties,
-                    fn($property) => in_array((string) $property['ID'], $propertyIds, true),
-                ),
-            ),
-        );
-    }
-
-    private function explodePropertyCodes(string $codes): array
-    {
-        return array_filter(
-            array_map(
-                'trim',
-                preg_split('/[\s,;]+/', $codes) ?: [],
-            ),
-        );
-    }
 }

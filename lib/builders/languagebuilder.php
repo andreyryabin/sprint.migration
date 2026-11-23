@@ -5,18 +5,19 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class LanguageBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Lang()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Main'));
 
@@ -37,27 +38,24 @@ class LanguageBuilder extends VersionBuilder
      * @throws HelperException
      * @throws MigrationException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
-
-
         $allCults = $helper->Culture()->exportCultures();
 
-        $cultCodes = $this->addFieldAndReturn('cult_codes', [
-            'title'    => Locale::getMessage('BUILDER_LanguageExport_cult_codes'),
-            'select'   => $this->createSelect($allCults, 'CODE', 'NAME', true),
-            'multiple' => true,
-        ]);
-
+        $cultCodes = $this->askField('cult_codes',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_LanguageExport_cult_codes'))
+                ->setOptions($allCults, 'CODE', 'NAME'),
+        );
 
         $allLangs = $helper->Lang()->exportLangs();
 
-        $langIds = $this->addFieldAndReturn('lang_ids', [
-            'title'    => Locale::getMessage('BUILDER_LanguageExport_lang_ids'),
-            'select'   => $this->createSelect($allLangs, 'LID', 'NAME', true),
-            'multiple' => true,
-        ]);
+        $langIds = $this->askField('lang_ids',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_LanguageExport_lang_ids'))
+                ->setOptions($allLangs, 'LID', 'NAME'),
+        );
 
         $this->confirmVersionPlan();
 

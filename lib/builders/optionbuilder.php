@@ -5,18 +5,19 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class OptionBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Option()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Main'));
 
@@ -37,24 +38,22 @@ class OptionBuilder extends VersionBuilder
      * @throws HelperException
      * @throws MigrationException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
 
-        $this->addField(
+        $this->showField(
             'site_id',
-            [
-                'title'    => Locale::getMessage('BUILDER_OptionExport_site_id'),
-                'select'   => $this->createSelect($helper->Site()->getSites(), 'ID', 'NAME', true),
-                'multiple' => true,
-            ],
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_OptionExport_site_id'))
+                ->setOptions($helper->Site()->getSites(), 'ID', 'NAME'),
         );
 
-        $moduleIds = $this->addFieldAndReturn('module_id', [
-            'title'    => Locale::getMessage('BUILDER_OptionExport_module_id'),
-            'select'   => $this->createSelect($helper->Option()->getModules(), 'ID', 'ID'),
-            'multiple' => true,
-        ]);
+        $moduleIds = $this->askField('module_id',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_OptionExport_module_id'))
+                ->setOptions($helper->Option()->getModules(), 'ID', 'ID'),
+        );
 
 
         $items = [];

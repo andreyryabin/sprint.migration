@@ -11,24 +11,43 @@ class CheckboxListField extends SelectField
         return [];
     }
 
-    public function makeValueFromConsole(string $rawValue): mixed
+    public function checkRequiredValue(mixed $value): bool
+    {
+        if (!is_array($value)) {
+            return false;
+        }
+
+        $options = $this->getProp('options', []);
+        $ids = array_column($options, 'id');
+
+        foreach ($value as $v) {
+            if (!in_array($v, $ids)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function makeValueFromConsole(string $rawValue): array
     {
         return array_filter(explode(' ', $rawValue));
     }
 
     public function makePlanText(mixed $value): string
     {
-        if (is_array($value)) {
-            $names = $this->getOptionNamesByIds($value);
-            $lines = [$this->getTitle() . ': [ul]'];
-            foreach ($names as $name) {
-                $lines[] = '[li]' . $name . '[/li]';
-            }
-            $lines[] = '[/ul]';
-            return implode(PHP_EOL, $lines);
+        if (!is_array($value)) {
+            return '';
         }
-        return '';
+
+        $names = $this->getOptionNamesByIds($value);
+        $lines = [$this->getTitle() . ': [ul]'];
+        foreach ($names as $name) {
+            $lines[] = '[li]' . $name . '[/li]';
+        }
+        $lines[] = '[/ul]';
+        return implode(PHP_EOL, $lines);
     }
+
 
     public function readValueFromConsole(ConsoleInterface $io, string $code): string
     {

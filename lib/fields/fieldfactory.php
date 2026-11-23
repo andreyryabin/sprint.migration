@@ -20,7 +20,7 @@ class FieldFactory
                 self::addOptionsFromSelect($obj, $field['select']);
             }
             if (isset($field['items'])) {
-                self::addOptionsFromStructure($obj, $field['items']);
+                self::addOptionsFromItems($obj, $field['items']);
             }
         } else {
             $obj = new StringField();
@@ -46,7 +46,7 @@ class FieldFactory
         }
     }
 
-    private static function addOptionsFromStructure(SelectField $field, array $items): void
+    private static function addOptionsFromItems(SelectField $field, array $items): void
     {
         foreach ($items as $group) {
             foreach ($group['items'] as $item) {

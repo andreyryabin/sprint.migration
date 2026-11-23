@@ -5,18 +5,19 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\RadioListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class VoteBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Vote()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Vote'));
 
@@ -41,14 +42,15 @@ class VoteBuilder extends VersionBuilder
      * @throws MigrationException
      * @throws RebuildException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
 
-        $voteId = $this->addFieldAndReturn('vote_id', [
-            'title' => Locale::getMessage('BUILDER_VoteExport_VoteId'),
-            'items' => $this->getVotesStructure(),
-        ]);
+        $voteId = $this->askField('vote_id',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_VoteExport_VoteId'))
+                ->setOptions($this->getVotesSelect(), 'ID', 'TITLE', 'CHANNEL_TITLE'),
+        );
 
         $vote = $helper->Vote()->exportVoteById($voteId);
         $channel = $helper->Vote()->exportChannelById((int) $vote['CHANNEL_ID']);
@@ -68,7 +70,7 @@ class VoteBuilder extends VersionBuilder
         );
     }
 
-    private function getVotesStructure(): array
+    private function getVotesSelect(): array
     {
         $helper = $this->getHelperManager();
         $channels = [];
@@ -77,14 +79,12 @@ class VoteBuilder extends VersionBuilder
             $channels[$channel['ID']] = '[' . $channel['SYMBOLIC_NAME'] . '] ' . $channel['TITLE'];
         }
 
-        $votes = array_map(function ($vote) use ($channels) {
+        return array_map(function ($vote) use ($channels) {
             $vote['CHANNEL_TITLE'] = $channels[$vote['CHANNEL_ID']] ?? Locale::getMessage(
                 'BUILDER_VoteExport_UnknownChannel',
             );
             $vote['TITLE'] = '[' . $vote['ID'] . '] ' . $vote['TITLE'];
             return $vote;
         }, $helper->Vote()->getVotesList());
-
-        return $this->createStructure($votes, 'ID', 'TITLE', 'CHANNEL_TITLE');
     }
 }

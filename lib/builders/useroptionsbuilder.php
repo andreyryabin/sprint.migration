@@ -5,18 +5,19 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class UserOptionsBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return true;
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_UserOptionsExport_Title'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Main'));
@@ -29,28 +30,17 @@ class UserOptionsBuilder extends VersionBuilder
      * @throws HelperException
      * @throws MigrationException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
 
-        $what = $this->addFieldAndReturn('what', [
-            'title'    => Locale::getMessage('BUILDER_UserOptionsExport_What'),
-            'multiple' => true,
-            'select'   => [
-                [
-                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserForm'),
-                    'value' => 'userForm',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserList'),
-                    'value' => 'userList',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatGroupList'),
-                    'value' => 'groupList',
-                ],
-            ],
-        ]);
+        $what = $this->askField('what',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_UserOptionsExport_What'))
+                ->addOption('userForm', Locale::getMessage('BUILDER_UserOptionsExport_WhatUserForm'))
+                ->addOption('userList', Locale::getMessage('BUILDER_UserOptionsExport_WhatUserList'))
+                ->addOption('groupList', Locale::getMessage('BUILDER_UserOptionsExport_WhatGroupList')),
+        );
 
         $exportUserForm = [];
         $exportUserList = [];

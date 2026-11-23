@@ -5,6 +5,8 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
+use Sprint\Migration\Fields\RadioListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -33,21 +35,13 @@ class UserTypeEntitiesBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $what = $this->addFieldAndReturn('what', [
-            'title'   => Locale::getMessage('BUILDER_UserTypeEntities_What'),
-            'in_plan' => false,
-            'select'  => [
-                [
-                    'title' => Locale::getMessage('BUILDER_UserTypeEntities_WhatEntityId'),
-                    'value' => 'entityId',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_UserTypeEntities_WhatUserTypeId'),
-                    'value' => 'userTypeId',
-                ],
-
-            ],
-        ]);
+        $what = $this->askField('what',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_UserTypeEntities_What'))
+                ->setInPlan(false)
+                ->addOption('entityId', Locale::getMessage('BUILDER_UserTypeEntities_WhatEntityId'))
+                ->addOption('userTypeId', Locale::getMessage('BUILDER_UserTypeEntities_WhatUserTypeId')),
+        );
 
         if ($what === 'userTypeId') {
             $fields = $this->askFieldsByUserTypeId();
@@ -55,11 +49,11 @@ class UserTypeEntitiesBuilder extends VersionBuilder
             $fields = $this->askFieldsByEntityId();
         }
 
-        $fieldsIds = $this->addFieldAndReturn('entity_fields', [
-            'title'    => Locale::getMessage('BUILDER_UserTypeEntities_EntityFields'),
-            'items'    => $this->createStructure($fields, 'ID', 'FIELD_TITLE', 'ENTITY_TITLE'),
-            'multiple' => true,
-        ]);
+        $fieldsIds = $this->askField('entity_fields',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_UserTypeEntities_EntityFields'))
+                ->setOptions($fields, 'ID', 'FIELD_TITLE', 'ENTITY_TITLE'),
+        );
 
         $entities = $helper->UserTypeEntity()->exportUserTypeEntitiesByIds($fieldsIds);
 
@@ -79,11 +73,12 @@ class UserTypeEntitiesBuilder extends VersionBuilder
     {
         $userTypes = $this->getUserTypes();
 
-        $userTypeId = $this->addFieldAndReturn('user_type_id', [
-            'title'  => Locale::getMessage('BUILDER_UserTypeEntities_UserTypeId'),
-            'select' => $this->createSelect($userTypes, 'USER_TYPE_ID', 'TITLE'),
-            'in_plan' => false,
-        ]);
+        $userTypeId = $this->askField('user_type_id',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_UserTypeEntities_UserTypeId'))
+                ->setInPlan(false)
+                ->setOptions($userTypes, 'USER_TYPE_ID', 'TITLE'),
+        );
 
         return $this->getUserTypeEntitiesByFilter(['USER_TYPE_ID' => $userTypeId]);
     }
@@ -127,12 +122,12 @@ class UserTypeEntitiesBuilder extends VersionBuilder
     {
         $fields = $this->getUserTypeEntitiesByFilter();
 
-        $entityIds = $this->addFieldAndReturn('entity_id', [
-            'title'    => Locale::getMessage('BUILDER_UserTypeEntities_EntityId'),
-            'select'   => $this->createSelect($fields, 'ENTITY_ID', 'ENTITY_TITLE'),
-            'multiple' => true,
-            'in_plan' => false,
-        ]);
+        $entityIds = $this->askField('entity_id',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_UserTypeEntities_EntityId'))
+                ->setInPlan(false)
+                ->setOptions($fields, 'ENTITY_ID', 'ENTITY_TITLE'),
+        );
 
         return array_filter($fields, function ($item) use ($entityIds) {
             return in_array($item['ENTITY_ID'], $entityIds);

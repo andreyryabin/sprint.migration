@@ -5,18 +5,19 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class SubscribeBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Subscribe()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Subscribe'));
 
@@ -41,15 +42,15 @@ class SubscribeBuilder extends VersionBuilder
      * @throws RebuildException
      * @throws HelperException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
 
-        $rubricIds = $this->addFieldAndReturn('rubric_ids', [
-            'title'    => Locale::getMessage('BUILDER_SubscribeExport_rubric_ids'),
-            'items'    => $this->getRubricsStructure(),
-            'multiple' => true,
-        ]);
+        $rubricIds = $this->askField('rubric_ids',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_SubscribeExport_rubric_ids'))
+                ->setOptions($this->getRubricsSelect(), 'ID', 'TITLE', 'LID'),
+        );
 
         $items = $helper->Subscribe()->exportRubrics($rubricIds);
 
@@ -67,17 +68,15 @@ class SubscribeBuilder extends VersionBuilder
         );
     }
 
-    protected function getRubricsStructure(): array
+    protected function getRubricsSelect(): array
     {
         $items = $this->getHelperManager()->Subscribe()->getRubrics();
 
         $items = array_filter($items, fn($item) => !empty($item['CODE']));
 
-        $items = array_map(function ($item) {
+        return array_map(function ($item) {
             $item['TITLE'] = '[' . $item['CODE'] . '] ' . $item['NAME'];
             return $item;
         }, $items);
-
-        return $this->createStructure($items, 'ID', 'TITLE', 'LID');
     }
 }

@@ -181,7 +181,7 @@ abstract class Builder implements RestartableInterface
 
         $value = $this->getFieldValue($code);
 
-        if (empty($value)) {
+        if (!$field->checkRequiredValue($value)) {
             $this->resetField($code);
         }
 
@@ -232,54 +232,6 @@ abstract class Builder implements RestartableInterface
     protected function setGroup(string $group = ''): void
     {
         $this->info['group'] = $group;
-    }
-
-    protected function createSelect(
-        array $items,
-        string $idKey,
-        string $titleKey,
-        bool $withIdInTitle = false,
-    ): array {
-        $select = [];
-        foreach ($items as $item) {
-            $value = $item[$idKey];
-            $title = $withIdInTitle ? "[$value] $item[$titleKey]" : $item[$titleKey];
-
-            $select[$value] = [
-                'title' => $title,
-                'value' => $value,
-            ];
-        }
-        return $select;
-    }
-
-    protected function createStructure(
-        array $items,
-        string $idKey,
-        string $titleKey,
-        string $groupKey = '-',
-    ): array {
-        $select = [];
-        foreach ($items as $item) {
-            $groupId = $item[$groupKey] ?? 'Group';
-
-            $value = $item[$idKey];
-            $title = $item[$titleKey];
-
-            if (!isset($select[$groupId])) {
-                $select[$groupId] = [
-                    'title' => $groupId,
-                    'items' => [],
-                ];
-            }
-
-            $select[$groupId]['items'][] = [
-                'title' => $title,
-                'value' => $value,
-            ];
-        }
-
-        return $select;
     }
 
     protected function explodeString(string $string, string $delimiter = ' '): array

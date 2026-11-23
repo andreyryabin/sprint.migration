@@ -5,6 +5,7 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\RadioListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -38,10 +39,11 @@ class IblockCategoryBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
         $exhelper = $this->getExchangeHelpers();
 
-        $iblockId = $this->addFieldAndReturn('iblock_id', [
-            'title' => Locale::getMessage('BUILDER_IblockCategoryExport_IblockId'),
-            'items' => $exhelper->IblockExchange()->getIblocksStructure(),
-        ]);
+        $iblockId = (int) $this->askField('iblock_id',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_IblockCategoryExport_IblockId'))
+                ->setOptions($exhelper->IblockExchange()->getIblocksSelect(), 'ID', 'TITLE', 'GROUP'),
+        );
 
         $iblock = $helper->Iblock()->exportIblock($iblockId);
         if (empty($iblock)) {

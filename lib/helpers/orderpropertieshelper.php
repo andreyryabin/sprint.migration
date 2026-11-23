@@ -222,10 +222,13 @@ class OrderPropertiesHelper extends Helper
     {
         $result = [];
 
-        $dbPropertyVariants = OrderPropsVariantTable::query()
-                                                    ->setSelect(['*'])
-                                                    ->whereIn('ORDER_PROPS_ID', $propertyIds)
-                                                    ->exec();
+        $query = OrderPropsVariantTable::query();
+
+        $dbPropertyVariants = $query
+            ->setSelect(['*'])
+            ->whereIn('ORDER_PROPS_ID', $propertyIds)
+            ->exec();
+
         while ($propertyVariant = $dbPropertyVariants->fetch()) {
             $result[$propertyVariant['ORDER_PROPS_ID']][] = $propertyVariant;
         }

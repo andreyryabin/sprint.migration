@@ -5,18 +5,20 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
+use Sprint\Migration\Fields\RadioListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class FormBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Form()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_FormExport1'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Form'));
@@ -29,60 +31,43 @@ class FormBuilder extends VersionBuilder
      * @throws RebuildException
      * @throws HelperException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
 
-        $formId = $this->addFieldAndReturn('form_id', [
-            'title'  => Locale::getMessage('BUILDER_FormExport_FormId'),
-            'select' => $this->getFormsSelect(),
-        ]);
+        $formId = $this->askField('form_id',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_FormExport_FormId'))
+                ->setOptions($this->getFormsSelect(), 'ID', 'NAME'),
+        );
 
         $form = $helper->Form()->exportFormById($formId);
 
-        $what = $this->addFieldAndReturn('what', [
-            'title'    => Locale::getMessage('BUILDER_FormExport_What'),
-            'multiple' => true,
-            'select'   => [
-                [
-                    'title' => Locale::getMessage('BUILDER_FormExport_Form'),
-                    'value' => 'form',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_FormExport_Statuses'),
-                    'value' => 'statuses',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_FormExport_Fields'),
-                    'value' => 'fields',
-                ],
-            ],
-        ]);
+        $what = $this->askField('what',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_FormExport_What'))
+                ->addOption('form', Locale::getMessage('BUILDER_FormExport_Form'))
+                ->addOption('statuses', Locale::getMessage('BUILDER_FormExport_Statuses'))
+                ->addOption('fields', Locale::getMessage('BUILDER_FormExport_Fields')),
+        );
 
         $fields = [];
         $fieldsMode = '';
 
         if (in_array('fields', $what)) {
-            $fieldsMode = $this->addFieldAndReturn('fields_mode', [
-                'title'  => Locale::getMessage('BUILDER_FormExport_Fields'),
-                'select' => [
-                    [
-                        'title' => Locale::getMessage('BUILDER_SelectAll'),
-                        'value' => 'all',
-                    ],
-                    [
-                        'title' => Locale::getMessage('BUILDER_SelectSome'),
-                        'value' => 'some',
-                    ],
-                ],
-            ]);
+            $fieldsMode = $this->askField('fields_mode',
+                (new RadioListField())
+                    ->setTitle(Locale::getMessage('BUILDER_FormExport_Fields'))
+                    ->addOption('all', Locale::getMessage('BUILDER_SelectAll'))
+                    ->addOption('some', Locale::getMessage('BUILDER_SelectSome')),
+            );
 
             if ($fieldsMode == 'some') {
-                $fieldsSomeSids = $this->addFieldAndReturn('fields_some', [
-                    'title'    => Locale::getMessage('BUILDER_FormExport_Fields'),
-                    'select'   => $this->getFieldsSelect($formId),
-                    'multiple' => true,
-                ]);
+                $fieldsSomeSids = $this->askField('fields_some',
+                    (new CheckboxListField())
+                        ->setTitle(Locale::getMessage('BUILDER_FormExport_Fields'))
+                        ->setOptions($this->getFieldsSelect($formId), 'SID', 'TITLE'),
+                );
                 $fields = $helper->Form()->exportFormFields($formId, $fieldsSomeSids);
             }
             if ($fieldsMode == 'all') {
@@ -119,12 +104,10 @@ class FormBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
         $items = $helper->Form()->getList();
 
-        $items = array_map(function ($item) {
+        return array_map(function ($item) {
             $item['NAME'] = '[' . $item['SID'] . '] ' . $item['NAME'];
             return $item;
         }, $items);
-
-        return $this->createSelect($items, 'ID', 'NAME');
     }
 
     private function getFieldsSelect(int $formId): array
@@ -132,11 +115,9 @@ class FormBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
         $items = $helper->Form()->getFormFields($formId);
 
-        $items = array_map(function ($item) {
+        return array_map(function ($item) {
             $item['TITLE'] = '[' . $item['SID'] . '] ' . $item['TITLE'];
             return $item;
         }, $items);
-
-        return $this->createSelect($items, 'SID', 'TITLE');
     }
 }

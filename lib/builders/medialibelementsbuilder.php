@@ -7,6 +7,7 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\RestartableWriter;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -16,12 +17,12 @@ class MedialibElementsBuilder extends VersionBuilder
     /**
      * @return bool
      */
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Medialib()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_MedialibElements1'));
         $this->setDescription(Locale::getMessage('BUILDER_MedialibElements2'));
@@ -36,15 +37,15 @@ class MedialibElementsBuilder extends VersionBuilder
      * @throws RestartException
      * @throws HelperException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $exhelper = $this->getExchangeHelpers()->MedialibExchange();
 
-        $collectionIds = $this->addFieldAndReturn('collection_id', [
-            'title'    => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
-            'select'   => $exhelper->getCollectionSelect($exhelper::TYPE_IMAGE),
-            'multiple' => true,
-        ]);
+        $collectionIds = $this->askField('collection_id',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_MedialibElements_CollectionId'))
+                ->setOptions($exhelper->getCollectionSelect($exhelper::TYPE_IMAGE), 'ID', 'TITLE'),
+        );
 
         $exportFields = [
             'NAME',

@@ -10,6 +10,9 @@ class SelectField extends BuilderField
 
     public function addOption(string $id, string $name, string $group = '-'): static
     {
+        $name = $name ?: $id;
+        //$name = $name == $id ? $name : "($id) $name";
+
         return $this->addToProp('options', [
             'id'    => $id,
             'name'  => $name,
@@ -19,23 +22,27 @@ class SelectField extends BuilderField
 
     public function setOptions(array $items, string $idKey, string $nameKey, string $groupKey = '-'): static
     {
-        $options = [];
+        $this->setProp('options', []);
         foreach ($items as $item) {
             if (isset($item[$idKey])) {
-                $options[] = [
-                    'id'    => $item[$idKey],
-                    'name'  => $item[$nameKey] ?? $item[$idKey],
-                    'group' => $item[$groupKey] ?? '-',
-                ];
+                $this->addOption($item[$idKey], $item[$nameKey] ?? '', $item[$groupKey] ?? '-');
             }
         }
-        return $this->setProp('options', $options);
+        return $this;
     }
 
     public function getDefaultValue(): mixed
     {
         return '';
     }
+
+    public function checkRequiredValue(mixed $value): bool
+    {
+        $options = $this->getProp('options', []);
+        $ids = array_column($options, 'id');
+        return in_array($value, $ids);
+    }
+
 
     public function makePlanText(mixed $value): string
     {
@@ -46,20 +53,13 @@ class SelectField extends BuilderField
         return '';
     }
 
-    public function readValueFromConsole(ConsoleInterface $io, string $code): string
-    {
-        $this->printFieldToConsole($io, $code);
-
-        return $io->read("Select one: ");
-    }
-
     protected function getOptionNamesByIds(array $ids): array
     {
         $options = $this->getProp('options', []);
         $names = [];
-        foreach ($options as $option) {
-            if (in_array($option['id'], $ids)) {
-                $names[] = $option['name'];
+        foreach ($options as $item) {
+            if (in_array($item['id'], $ids)) {
+                $names[] = $item['name'];
             }
         }
         return $names;
@@ -85,15 +85,19 @@ class SelectField extends BuilderField
     }
 
 
+    public function readValueFromConsole(ConsoleInterface $io, string $code): string
+    {
+        $this->printFieldToConsole($io, $code);
+
+        return $io->read("Select one: ");
+    }
+
     private function groupOptions(array $options): array
     {
         $tree = [];
         foreach ($options as $item) {
-            $groupName = $item['group'] ?? '-';
-            if (!isset($tree[$groupName])) {
-                $tree[$groupName] = [];
-            }
-            $tree[$groupName][] = $item;
+            $group = $item['group'] ?? '-';
+            $tree[$group][] = $item;
         }
         return $tree;
     }

@@ -5,6 +5,8 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
+use Sprint\Migration\Fields\RadioListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -35,20 +37,21 @@ class IblockPropertyBuilder extends VersionBuilder
 
         $userTypes = $this->getPropertyUserTypes();
 
-        $userType = $this->addFieldAndReturn('user_type', [
-            'title'  => Locale::getMessage('BUILDER_IblockPropertyExport_UserType'),
-            'select' => $this->createSelect($userTypes, 'USER_TYPE', 'TITLE'),
-        ]);
+        $userType = $this->askField('user_type',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_IblockPropertyExport_UserType'))
+                ->setOptions($userTypes, 'USER_TYPE', 'TITLE'),
+        );
 
         $properties = $this->getPropertiesByFilter([
             'USER_TYPE' => $userType,
         ]);
 
-        $propertyIds = $this->addFieldAndReturn('export_props', [
-            'title'    => Locale::getMessage('BUILDER_IblockPropertyExport_Properties'),
-            'items'    => $this->createStructure($properties, 'ID', 'PROPERTY_TITLE', 'IBLOCK_TITLE'),
-            'multiple' => true,
-        ]);
+        $propertyIds = $this->askField('export_props',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_IblockPropertyExport_Properties'))
+                ->setOptions($properties, 'ID', 'PROPERTY_TITLE', 'IBLOCK_TITLE'),
+        );
 
         $properties = array_filter(
             $properties,

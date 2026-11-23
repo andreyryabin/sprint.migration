@@ -3,7 +3,12 @@
 namespace Sprint\Migration\Builders;
 
 use Bitrix\Main\ArgumentException;
+use Bitrix\Main\ObjectPropertyException;
 use Bitrix\Main\SystemException;
+use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
+use Sprint\Migration\Fields\RadioListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -19,7 +24,7 @@ class OrderPropertiesBuilder extends VersionBuilder
         return $this->getHelperManager()->OrderProperties()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setTitle(implode(' ', [
             Locale::getMessage('BUILDER_OrderProperties'),
@@ -38,14 +43,22 @@ class OrderPropertiesBuilder extends VersionBuilder
         $this->addVersionFields();
     }
 
+    /**
+     * @throws MigrationException
+     * @throws ObjectPropertyException
+     * @throws ArgumentException
+     * @throws RebuildException
+     * @throws SystemException
+     */
     protected function execute(): void
     {
         $helper = $this->getHelperManager();
 
-        $personTypeId = $this->addFieldAndReturn('person_type', [
-            'title'  => Locale::getMessage('BUILDER_OrderProperties_PersonType'),
-            'select' => $this->createSelect($helper->OrderProperties()->getPersonTypes(), 'ID', 'NAME'),
-        ]);
+        $personTypeId = $this->askField('person_type',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_OrderProperties_PersonType'))
+                ->setOptions($helper->OrderProperties()->getPersonTypes(), 'ID', 'NAME'),
+        );
 
         if (empty($personTypeId)) {
             return;
@@ -53,44 +66,28 @@ class OrderPropertiesBuilder extends VersionBuilder
 
         $properties = $helper->OrderProperties()->getOrderPropertiesByPersonType($personTypeId);
 
-        $propertyIds = $this->addFieldAndReturn('properties', [
-            'title'    => Locale::getMessage('BUILDER_OrderProperties_Properties'),
-            'select'   => $this->getPropertiesSelect($personTypeId),
-            'multiple' => true,
-        ]);
+        $propertyIds = $this->askField('properties',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_OrderProperties_Properties'))
+                ->setOptions($this->getPropertiesSelect($personTypeId), 'ID', 'NAME'),
+        );
 
-        $updateMethod = $this->addFieldAndReturn('update_method', [
-            'title'  => Locale::getMessage('BUILDER_OrderProperties_UpdateMethod'),
-            'select' => [
-                [
-                    'title' => Locale::getMessage('BUILDER_OrderProperties_NotUpdate'),
-                    'value' => self::UPDATE_METHOD_NOT,
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_OrderProperties_SavePropertyByCode'),
-                    'value' => self::UPDATE_METHOD_CODE,
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_OrderProperties_SavePropertyByXmlId'),
-                    'value' => self::UPDATE_METHOD_XML_ID,
-                ],
-            ],
-        ]);
+        $updateMethod = $this->askField('update_method',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_OrderProperties_UpdateMethod'))
+                ->addOption(self::UPDATE_METHOD_NOT, Locale::getMessage('BUILDER_OrderProperties_NotUpdate'))
+                ->addOption(self::UPDATE_METHOD_CODE, Locale::getMessage('BUILDER_OrderProperties_SavePropertyByCode'))
+                ->addOption(self::UPDATE_METHOD_XML_ID,
+                    Locale::getMessage('BUILDER_OrderProperties_SavePropertyByXmlId')),
+        );
 
         $propertyVariants = [];
-        $migratePropertyVariants = $this->addFieldAndReturn('migrate_property_variants', [
-            'title'  => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants'),
-            'select' => [
-                [
-                    'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_No'),
-                    'value' => 'N',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_Yes'),
-                    'value' => 'Y',
-                ],
-            ],
-        ]);
+        $migratePropertyVariants = $this->askField('migrate_property_variants',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants'))
+                ->addOption('N', Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_No'))
+                ->addOption('Y', Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_Yes')),
+        );
         if ($migratePropertyVariants === 'Y') {
             $propertyVariants = $helper->OrderProperties()->getOrderPropertyVariants($propertyIds);
         }
@@ -118,14 +115,12 @@ class OrderPropertiesBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $properties = array_map(
+        return array_map(
             fn($property) => array_merge(
                 $property,
                 ['NAME' => sprintf('[%s] %s', $property['CODE'] ?: $property['ID'], $property['NAME'])],
             ),
             $helper->OrderProperties()->getOrderPropertiesByPersonType($personTypeId),
         );
-
-        return $this->createSelect($properties, 'ID', 'NAME');
     }
 }

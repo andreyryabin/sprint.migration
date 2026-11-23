@@ -20,8 +20,8 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
     public function getCollectionSelect(int|string $typeId): array
     {
         return array_map(fn($item) => [
-            'title' => $item['DEPTH_NAME'],
-            'value' => $item['ID'],
+            'TITLE' => $item['DEPTH_NAME'],
+            'ID'    => $item['ID'],
         ], $this->getCollectionsFlatTree($typeId));
     }
 

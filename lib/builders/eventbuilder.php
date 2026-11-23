@@ -5,18 +5,19 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class EventBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return true;
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_EventExport1'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Main'));
@@ -29,15 +30,15 @@ class EventBuilder extends VersionBuilder
      * @throws MigrationException
      * @throws HelperException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
 
-        $eventTypes = $this->addFieldAndReturn('event_types', [
-            'title'    => Locale::getMessage('BUILDER_EventExport_event_types'),
-            'select'   => $this->getEventTypesSelect(),
-            'multiple' => true,
-        ]);
+        $eventTypes = $this->askField('event_types',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_EventExport_event_types'))
+                ->setOptions($this->getEventTypesSelect(), 'EVENT_NAME', 'NAME'),
+        );
 
         $result = [];
         foreach ($eventTypes as $eventName) {
@@ -69,11 +70,9 @@ class EventBuilder extends VersionBuilder
             'LID' => LANGUAGE_ID,
         ]);
 
-        $items = array_map(function ($item) {
+        return array_map(function ($item) {
             $item['NAME'] = '[' . $item['EVENT_NAME'] . '] ' . $item['NAME'];
             return $item;
         }, $items);
-
-        return $this->createSelect($items, 'EVENT_NAME', 'NAME');
     }
 }

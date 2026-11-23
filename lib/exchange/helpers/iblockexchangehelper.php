@@ -25,32 +25,18 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
         return $this->cachedProps[$key];
     }
 
-    /**
-     * Структура инфоблоков для построения выпадающего списка
-     */
-    public function getIblocksStructure(): array
+    public function getIblocksSelect(): array
     {
-        $iblockTypes = $this->getIblockTypes();
-        $iblocks = $this->getIblocks();
+        $iblocks = array_filter(
+            $this->getIblocks(),
+            fn($item) => !empty($item['CODE']),
+        );
 
-        $res = [];
-        foreach ($iblockTypes as $iblockType) {
-            $res[$iblockType['ID']] = [
-                'title' => '[' . $iblockType['ID'] . '] ' . $iblockType['LANG'][LANGUAGE_ID]['NAME'],
-                'items' => [],
-            ];
-        }
-
-        foreach ($iblocks as $iblock) {
-            if (!empty($iblock['CODE'])) {
-                $res[$iblock['IBLOCK_TYPE_ID']]['items'][] = [
-                    'title' => '[' . $iblock['CODE'] . '] ' . $iblock['NAME'],
-                    'value' => $iblock['ID'],
-                ];
-            }
-        }
-
-        return $res;
+        return array_map(fn($item) => [
+            'ID'    => $item['ID'],
+            'TITLE' => '[' . $item['CODE'] . '] ' . $item['NAME'],
+            'GROUP' => $item['IBLOCK_TYPE_ID'],
+        ], $iblocks);
     }
 
     /**
@@ -59,9 +45,10 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
     public function getIblockPropertiesSelect(int $iblockId): array
     {
         return array_map(fn($prop) => [
-            'title' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
-            'value' => $prop['CODE'],
-        ], $this->exportProperties($iblockId));
+            'ID'    => $prop['ID'],
+            'TITLE' => '[' . $prop['CODE'] . '] ' . $prop['NAME'],
+            'CODE'  => $prop['CODE'],
+        ], $this->getProperties($iblockId));
     }
 
     public function getIblockElementFieldsSelect(int $iblockId, bool $withShowCounter = false): array
@@ -77,10 +64,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
 
         $res = [];
         foreach ($fields as $fieldName => $field) {
-            $res[] = [
-                'title' => '[' . $fieldName . '] ' . $field['NAME'],
-                'value' => $fieldName,
-            ];
+            $res[] = ['ID' => $fieldName, 'TITLE' => '[' . $fieldName . '] ' . $field['NAME']];
         }
         return $res;
     }

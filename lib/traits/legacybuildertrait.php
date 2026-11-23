@@ -3,7 +3,9 @@
 namespace Sprint\Migration\Traits;
 
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Fields\FieldFactory;
+use Sprint\Migration\Fields\RadioListField;
 
 trait LegacyBuilderTrait
 {
@@ -31,5 +33,61 @@ trait LegacyBuilderTrait
     protected function rebuildField(string $code): void
     {
         $this->resetField($code);
+    }
+
+    /**
+     * @deprecated, меняем на:
+     * (new CheckboxListField())->setOptions($items, $idKey, $titleKey, $groupKey)
+     * (new RadioListField())->setOptions($items, $idKey, $titleKey, $groupKey)
+     */
+    protected function createSelect(
+        array $items,
+        string $idKey,
+        string $titleKey,
+        bool $withIdInTitle = false,
+    ): array {
+        $select = [];
+        foreach ($items as $item) {
+            $value = $item[$idKey];
+            $title = $withIdInTitle ? "[$value] $item[$titleKey]" : $item[$titleKey];
+
+            $select[$value] = [
+                'title' => $title,
+                'value' => $value,
+            ];
+        }
+        return $select;
+    }
+
+    /**
+     * @deprecated, меняем на:
+     *  (new CheckboxListField())->setOptions($items, $idKey, $titleKey, $groupKey)
+     *  (new RadioListField())->setOptions($items, $idKey, $titleKey, $groupKey)
+     */
+    protected function createStructure(
+        array $items,
+        string $idKey,
+        string $titleKey,
+        string $groupKey = '-',
+    ): array {
+        $select = [];
+        foreach ($items as $item) {
+            $groupId = $item[$groupKey] ?? 'Group';
+
+            $value = $item[$idKey];
+            $title = $item[$titleKey];
+
+            $select[$groupId] ??= [
+                'title' => $groupId,
+                'items' => [],
+            ];
+
+            $select[$groupId]['items'][] = [
+                'title' => $title,
+                'value' => $value,
+            ];
+        }
+
+        return $select;
     }
 }

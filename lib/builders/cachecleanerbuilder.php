@@ -9,19 +9,19 @@ use function BXClearCache;
 
 class CacheCleanerBuilder extends Builder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return true;
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_CacheCleaner1'));
         $this->setDescription(Locale::getMessage('BUILDER_CacheCleaner2'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Tools'));
     }
 
-    protected function execute()
+    protected function execute(): void
     {
         BXClearCache(true);
         $this->outSuccess('Success');

@@ -329,11 +329,6 @@ class Console
             $name = $builder->getName();
             $title = $builder->getTitle();
             $group = $builder->getGroup();
-
-            if (!isset($groups[$group])) {
-                $groups[$group] = [];
-            }
-
             $groups[$group][] = ['name' => $name, 'title' => $title];
         }
 
@@ -438,14 +433,13 @@ class Console
 
     private function getVersionsFilterByArgs(): array
     {
+        $status = '';
         if ($this->getArg('--new')) {
             $status = VersionEnum::STATUS_NEW;
         } elseif ($this->getArg('--installed')) {
             $status = VersionEnum::STATUS_INSTALLED;
         } elseif ($this->getArg('--unknown')) {
-            $status = VersionEnum::STATUS_INSTALLED;
-        } else {
-            $status = '';
+            $status = VersionEnum::STATUS_UNKNOWN;
         }
 
         return [

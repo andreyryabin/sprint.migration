@@ -5,6 +5,8 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
+use Sprint\Migration\Fields\RadioListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -37,20 +39,21 @@ class BlogBuilder extends VersionBuilder
      * @throws MigrationException
      * @throws RebuildException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
 
-        $groupId = $this->addFieldAndReturn('group_id', [
-            'title' => Locale::getMessage('BUILDER_BlogExport_group_id'),
-            'items' => $this->getGroupsStructure(),
-        ]);
+        $groupId = $this->askField('group_id',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_BlogExport_group_id'))
+                ->setOptions($this->getGroupsSelect(), 'ID', 'TITLE', 'SITE_ID'),
+        );
 
-        $blogIds = $this->addFieldAndReturn('blog_ids', [
-            'title'    => Locale::getMessage('BUILDER_BlogExport_blog_ids'),
-            'items'    => $this->getBlogsStructure($groupId),
-            'multiple' => true,
-        ]);
+        $blogIds = $this->askField('blog_ids',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_BlogExport_blog_ids'))
+                ->setOptions($this->getBlogsSelect($groupId), 'ID', 'TITLE', 'GROUP_TITLE'),
+        );
 
         $group = $helper->Blog()->exportGroupById($groupId);
 
@@ -67,24 +70,20 @@ class BlogBuilder extends VersionBuilder
         );
     }
 
-    protected function getGroupsStructure(): array
+    protected function getGroupsSelect(): array
     {
-        $items = array_map(function ($item) {
+        return array_map(function ($item) {
             $item['TITLE'] = '[' . $item['SITE_ID'] . '] ' . $item['NAME'];
             return $item;
         }, $this->getHelperManager()->Blog()->getGroups());
-
-        return $this->createStructure($items, 'ID', 'TITLE', 'SITE_ID');
     }
 
-    protected function getBlogsStructure(int $groupIds): array
+    protected function getBlogsSelect(int $groupIds): array
     {
-        $items = array_map(function ($item) {
+        return array_map(function ($item) {
             $item['GROUP_TITLE'] = '[' . $item['GROUP_SITE_ID'] . '] ' . $item['GROUP_NAME'];
             $item['TITLE'] = '[' . $item['URL'] . '] ' . $item['NAME'];
             return $item;
         }, $this->getHelperManager()->Blog()->getBlogs(['GROUP_ID' => $groupIds]));
-
-        return $this->createStructure($items, 'ID', 'TITLE', 'GROUP_TITLE');
     }
 }

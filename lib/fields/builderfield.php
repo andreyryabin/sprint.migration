@@ -27,14 +27,14 @@ abstract class BuilderField
         return $io->read("[pink](%s) - %s:[/] ", $code, $this->getTitle());
     }
 
-    public function makePlanText(mixed $value): string
-    {
-        return ($value) ? $this->getTitle() . ': ' . $value : '';
-    }
-
     public function makeValueFromConsole(string $rawValue): mixed
     {
         return trim($rawValue);
+    }
+
+    public function checkRequiredValue(mixed $value): bool
+    {
+        return !empty($value);
     }
 
     public function getComponentName(): string
@@ -69,6 +69,12 @@ abstract class BuilderField
         $this->note = $note;
         return $this;
     }
+
+    public function makePlanText(mixed $value): string
+    {
+        return ($value) ? $this->getTitle() . ': ' . $value : '';
+    }
+
     public function setInPlan(bool $inPlan): static
     {
         $this->inPlan = $inPlan;
@@ -89,6 +95,7 @@ abstract class BuilderField
     {
         $this->isRequired = $isRequired;
     }
+
 
     protected function getProp(string $name, mixed $defaultValue): mixed
     {

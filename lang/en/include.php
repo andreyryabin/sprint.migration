@@ -195,7 +195,7 @@ $MESS["{$prefix}BUILDER_IblockPropertyExport1"] = "Migration for information blo
 $MESS["{$prefix}BUILDER_IblockPropertyExport_UserType"] = "Property type";
 $MESS["{$prefix}BUILDER_IblockPropertyExport_Properties"] = "Properties";
 $MESS["{$prefix}BUILDER_IblockPropertyDelete"] = "Delete information block properties";
-$MESS["{$prefix}BUILDER_IblockPropertyDelete_Info"] = "Deletes selected properties and properties with specified CODE. Missing property is not an error.";
+$MESS["{$prefix}BUILDER_IblockPropertyDelete_Info"] = "Deletes selected properties and properties with specified CODE";
 $MESS["{$prefix}BUILDER_IblockPropertyDelete_Properties"] = "Properties";
 $MESS["{$prefix}BUILDER_IblockPropertyDelete_Codes"] = "Property codes to delete";
 

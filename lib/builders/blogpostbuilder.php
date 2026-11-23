@@ -7,18 +7,20 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\RestartableWriter;
+use Sprint\Migration\Fields\RadioListField;
+use Sprint\Migration\Fields\TextareaField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class BlogPostBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Blog()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Blog'));
         $this->setTitle(implode(' ', [
@@ -43,15 +45,16 @@ class BlogPostBuilder extends VersionBuilder
      * @throws RebuildException
      * @throws RestartException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
         $exhelper = $this->getExchangeHelpers();
 
-        $blogId = (int) $this->addFieldAndReturn('blog_id', [
-            'title' => Locale::getMessage('BUILDER_BlogPostExport_blog_id'),
-            'items' => $this->getBlogsStructure(),
-        ]);
+        $blogId = (int) $this->askField('blog_id',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_BlogPostExport_blog_id'))
+                ->setOptions($this->getBlogsSelect(), 'ID', 'TITLE', 'GROUP_TITLE'),
+        );
 
         $helper->Blog()->exportBlogById($blogId);
 
@@ -83,15 +86,13 @@ class BlogPostBuilder extends VersionBuilder
         $this->createVersionFile(Module::getModuleTemplateFile('BlogPostExport'));
     }
 
-    protected function getBlogsStructure(): array
+    protected function getBlogsSelect(): array
     {
-        $items = array_map(function ($item) {
+        return array_map(function ($item) {
             $item['GROUP_TITLE'] = '[' . $item['GROUP_SITE_ID'] . '] ' . $item['GROUP_NAME'];
             $item['TITLE'] = '[' . $item['URL'] . '] ' . $item['NAME'];
             return $item;
         }, $this->getHelperManager()->Blog()->getBlogs());
-
-        return $this->createStructure($items, 'ID', 'TITLE', 'GROUP_TITLE');
     }
 
     /**
@@ -99,30 +100,21 @@ class BlogPostBuilder extends VersionBuilder
      */
     protected function getPostFilter(): array
     {
-        $mode = $this->addFieldAndReturn('post_filter_mode', [
-            'title'  => Locale::getMessage('BUILDER_BlogPostExport_filter'),
-            'select' => [
-                [
-                    'title' => Locale::getMessage('BUILDER_SelectAll'),
-                    'value' => 'all',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_BlogPostExport_SelectSomeId'),
-                    'value' => 'list_id',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_BlogPostExport_SelectSomeCode'),
-                    'value' => 'list_code',
-                ],
-            ],
-        ]);
+        $mode = $this->askField('post_filter_mode',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_BlogPostExport_filter'))
+                ->addOption('all', Locale::getMessage('BUILDER_SelectAll'))
+                ->addOption('list_id', Locale::getMessage('BUILDER_BlogPostExport_SelectSomeId'))
+                ->addOption('list_code', Locale::getMessage('BUILDER_BlogPostExport_SelectSomeCode')),
+        );
 
         if ($mode === 'list_id') {
-            $ids = $this->addFieldAndReturn('post_filter_list_id', [
-                'title'  => Locale::getMessage('BUILDER_BlogPostExport_FilterListId'),
-                'width'  => 350,
-                'height' => 40,
-            ]);
+            $ids = $this->askField('post_filter_list_id',
+                (new TextareaField())
+                    ->setTitle(Locale::getMessage('BUILDER_BlogPostExport_FilterListId'))
+                    ->setCols(35)
+                    ->setRows(4),
+            );
 
             $ids = array_values(array_filter(array_map('intval', $this->explodeString($ids))));
             return empty($ids) ? ['ID' => 0] : ['@ID' => $ids];
@@ -130,11 +122,12 @@ class BlogPostBuilder extends VersionBuilder
 
         $filter = [];
         if ($mode === 'list_code') {
-            $codes = $this->addFieldAndReturn('post_filter_list_code', [
-                'title'  => Locale::getMessage('BUILDER_BlogPostExport_FilterListCode'),
-                'width'  => 350,
-                'height' => 40,
-            ]);
+            $codes = $this->askField('post_filter_list_code',
+                (new TextareaField())
+                    ->setTitle(Locale::getMessage('BUILDER_BlogPostExport_FilterListCode'))
+                    ->setCols(35)
+                    ->setRows(4),
+            );
 
             $codes = $this->explodeString($codes);
             if (empty($codes)) {

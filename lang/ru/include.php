@@ -1,4 +1,5 @@
 <?php
+
 $prefix = "SPRINT_MIGRATION_";
 
 $MESS["{$prefix}DEVELOPER_NAME"] = "Разработчик: [label:yellow]#VALUE#[/]";
@@ -194,13 +195,13 @@ $MESS["{$prefix}BUILDER_IblockDelete"] = "Удалить инфоблоки";
 $MESS["{$prefix}BUILDER_IblockPropertyExport1"] = "Миграция свойств инфоблоков";
 $MESS["{$prefix}BUILDER_IblockPropertyExport_UserType"] = "Тип свойства";
 $MESS["{$prefix}BUILDER_IblockPropertyExport_Properties"] = "Свойства";
-$MESS["{$prefix}BUILDER_IblockPropertyDelete"] = "Удалить свойства инфоблока";
-$MESS["{$prefix}BUILDER_IblockPropertyDelete_Info"] = "Удаляет выбранные свойства и свойства с указанными CODE. Отсутствие свойства не считается ошибкой.";
+$MESS["{$prefix}BUILDER_IblockPropertyDelete"] = "Удаление свойств инфоблока";
+$MESS["{$prefix}BUILDER_IblockPropertyDelete_Info"] = "Удаляет выбранные свойства по символьному коду";
 $MESS["{$prefix}BUILDER_IblockPropertyDelete_Properties"] = "Свойства";
 $MESS["{$prefix}BUILDER_IblockPropertyDelete_Codes"] = "Коды свойств для удаления";
 
 $MESS["{$prefix}BUILDER_HlblockElementsExport1"] = "Перенос элементов highload-блоков";
-$MESS["{$prefix}BUILDER_HlblockElementsExport2"] = implode(PHP_EOL,[
+$MESS["{$prefix}BUILDER_HlblockElementsExport2"] = implode(PHP_EOL, [
     "Переносит элементы",
     "Переносит изображения, файлы и списки",
 ]);
@@ -284,10 +285,10 @@ $MESS["{$prefix}BUILDER_Cleaner_error"] = "Ошибка удаления кон�
 $MESS["{$prefix}BUILDER_Cleaner_success"] = "Конфигурация удалена";
 
 $MESS["{$prefix}BUILDER_MedialibElements1"] = "Перенос изображений медиабиблиотеки";
-$MESS["{$prefix}BUILDER_MedialibElements2"] = implode(PHP_EOL,[
+$MESS["{$prefix}BUILDER_MedialibElements2"] = implode(PHP_EOL, [
     "Переносит изображения по коллекциям",
     "Создает коллекции если их не было",
-    "Обновляет изображения и коллекции с таким же названием"
+    "Обновляет изображения и коллекции с таким же названием",
 ]);
 $MESS["{$prefix}BUILDER_MedialibElements_CollectionId"] = "Коллекция";
 
@@ -345,9 +346,9 @@ $MESS["{$prefix}ERR_CANT_DELETE_IBLOCK"] = "Ошибка удаления инф
 $MESS["{$prefix}ERR_CANT_DELETE_IBLOCK_TYPE"] = "Ошибка удаления типа инфоблока \"#NAME#\"";
 $MESS["{$prefix}ERR_IB_FORM_OPTIONS_NOT_FOUND"] = "Не найдены настройки формы элемента инфоблока";
 $MESS["{$prefix}ERR_EXCHANGE_FILE_NOT_FOUND"] = "Файл с данными не найден:  #FILE#";
-$MESS["{$prefix}ERR_EXCHANGE_VERSION"] = implode(PHP_EOL,[
+$MESS["{$prefix}ERR_EXCHANGE_VERSION"] = implode(PHP_EOL, [
     "Файл для переноса данных \"#NAME#\" не поддерживается текущей версией модуля.",
-    "Пожалуйста создайте его заново."
+    "Пожалуйста создайте его заново.",
 ]);
 
 $MESS["{$prefix}ERR_IB_SECTION_ID_NOT_FOUND"] = "Категория \"#SECTION_ID#\" в инфоблоке \"#IBLOCK_ID#\" не найдена";

@@ -5,18 +5,19 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class BlogUserTypeEntitiesBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Blog()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Blog'));
         $this->setTitle(implode(' ', [
@@ -36,16 +37,16 @@ class BlogUserTypeEntitiesBuilder extends VersionBuilder
      * @throws MigrationException
      * @throws RebuildException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
         $fields = $this->getBlogUserTypeEntities();
 
-        $fieldIds = $this->addFieldAndReturn('entity_fields', [
-            'title'    => Locale::getMessage('BUILDER_BlogUserTypeEntitiesExport_entity_fields'),
-            'select'   => $this->createSelect($fields, 'ID', 'FIELD_TITLE'),
-            'multiple' => true,
-        ]);
+        $fieldIds = $this->askField('entity_fields',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_BlogUserTypeEntitiesExport_entity_fields'))
+                ->setOptions($fields, 'ID', 'FIELD_TITLE'),
+        );
 
         $entities = $helper->UserTypeEntity()->exportUserTypeEntitiesByIds($fieldIds);
 

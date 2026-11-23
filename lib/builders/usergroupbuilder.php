@@ -5,18 +5,19 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class UserGroupBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return true;
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_UserGroupExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_UserGroupExport2'));
@@ -30,15 +31,15 @@ class UserGroupBuilder extends VersionBuilder
      * @throws HelperException
      * @throws MigrationException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
 
-        $userGroups = $this->addFieldAndReturn('user_group', [
-            'title'    => Locale::getMessage('BUILDER_UserGroupExport_user_group'),
-            'select'   => $this->getUserGroupsSelect(),
-            'multiple' => true,
-        ]);
+        $userGroups = $this->askField('user_group',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_UserGroupExport_user_group'))
+                ->setOptions($this->getUserGroupsSelect(), 'ID', 'NAME'),
+        );
 
         $items = [];
         foreach ($userGroups as $groupId) {
@@ -74,11 +75,9 @@ class UserGroupBuilder extends VersionBuilder
             return !empty($item['STRING_ID']);
         });
 
-        $items = array_map(function ($item) {
+        return array_map(function ($item) {
             $item['NAME'] = '[' . $item['STRING_ID'] . '] ' . $item['NAME'];
             return $item;
         }, $items);
-
-        return $this->createSelect($items, 'ID', 'NAME');
     }
 }

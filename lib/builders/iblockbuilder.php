@@ -5,18 +5,20 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
+use Sprint\Migration\Fields\RadioListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class IblockBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Iblock()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_IblockExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_IblockExport2'));
@@ -30,51 +32,32 @@ class IblockBuilder extends VersionBuilder
      * @throws RebuildException
      * @throws MigrationException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
         $exhelper = $this->getExchangeHelpers();
 
-        $iblockId = $this->addFieldAndReturn('iblock_id', [
-            'title' => Locale::getMessage('BUILDER_IblockExport_IblockId'),
-            'items' => $exhelper->IblockExchange()->getIblocksStructure(),
-        ]);
+        $iblockId = (int) $this->askField('iblock_id',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_IblockExport_IblockId'))
+                ->setOptions($exhelper->IblockExchange()->getIblocksSelect(), 'ID', 'TITLE', 'GROUP'),
+        );
 
         $iblock = $helper->Iblock()->exportIblock($iblockId);
         if (empty($iblock)) {
             $this->resetField('iblock_id');
         }
 
-        $what = $this->addFieldAndReturn('what', [
-            'title'    => Locale::getMessage('BUILDER_IblockExport_What'),
-            'multiple' => true,
-            'select'   => [
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockType'),
-                    'value' => 'iblockType',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblock'),
-                    'value' => 'iblock',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockFields'),
-                    'value' => 'iblockFields',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockProperties'),
-                    'value' => 'iblockProperties',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockUserOptions'),
-                    'value' => 'iblockUserOptions',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockPermissions'),
-                    'value' => 'iblockPermissions',
-                ],
-            ],
-        ]);
+        $what = $this->askField('what',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_IblockExport_What'))
+                ->addOption('iblockType', Locale::getMessage('BUILDER_IblockExport_WhatIblockType'))
+                ->addOption('iblock', Locale::getMessage('BUILDER_IblockExport_WhatIblock'))
+                ->addOption('iblockFields', Locale::getMessage('BUILDER_IblockExport_WhatIblockFields'))
+                ->addOption('iblockProperties', Locale::getMessage('BUILDER_IblockExport_WhatIblockProperties'))
+                ->addOption('iblockUserOptions', Locale::getMessage('BUILDER_IblockExport_WhatIblockUserOptions'))
+                ->addOption('iblockPermissions', Locale::getMessage('BUILDER_IblockExport_WhatIblockPermissions')),
+        );
 
         $iblockExport = false;
         $iblockType = [];
@@ -102,11 +85,11 @@ class IblockBuilder extends VersionBuilder
         if (in_array('iblockProperties', $what)) {
             $propertiesSelect = $exhelper->IblockExchange()->getIblockPropertiesSelect($iblockId);
             if (!empty($propertiesSelect)) {
-                $exportProps = $this->addFieldAndReturn('export_props', [
-                    'title'    => Locale::getMessage('BUILDER_IblockExport_Properties'),
-                    'multiple' => true,
-                    'select'   => $propertiesSelect,
-                ]);
+                $exportProps = $this->askField('export_props',
+                    (new CheckboxListField())
+                        ->setTitle(Locale::getMessage('BUILDER_IblockExport_Properties'))
+                        ->setOptions($propertiesSelect, 'CODE', 'TITLE'),
+                );
 
                 $iblockProperties = $helper->Iblock()->exportProperties($iblockId);
                 $iblockProperties = array_filter(

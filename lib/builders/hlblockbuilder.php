@@ -5,18 +5,20 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
+use Sprint\Migration\Fields\RadioListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class HlblockBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Hlblock()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_HlblockExport1'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Hlblock'));
@@ -29,43 +31,30 @@ class HlblockBuilder extends VersionBuilder
      * @throws RebuildException
      * @throws MigrationException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
         $exhelper = $this->getExchangeHelpers();
 
-        $hlblockId = $this->addFieldAndReturn('hlblock_id', [
-            'title'  => Locale::getMessage('BUILDER_HlblockExport_HlblockId'),
-            'select' => $exhelper->HlblockExchange()->getHlblocksSelect(),
-        ]);
+        $hlblockId = $this->askField('hlblock_id',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('BUILDER_HlblockExport_HlblockId'))
+                ->setOptions($exhelper->HlblockExchange()->getHlblocksSelect(), 'ID', 'TITLE'),
+        );
 
         $hlblock = $helper->Hlblock()->exportHlblock($hlblockId);
         if (empty($hlblockId)) {
             $this->resetField('hlblock_id');
         }
 
-        $what = $this->addFieldAndReturn('what', [
-            'title'    => Locale::getMessage('BUILDER_HlblockExport_What'),
-            'multiple' => true,
-            'select'   => [
-                [
-                    'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblock'),
-                    'value' => 'hlblock',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblockFields'),
-                    'value' => 'hlblockFields',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblockUserOptions'),
-                    'value' => 'hlblockUserOptions',
-                ],
-                [
-                    'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblockPermissions'),
-                    'value' => 'hlblockPermissions',
-                ],
-            ],
-        ]);
+        $what = $this->askField('what',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_HlblockExport_What'))
+                ->addOption('hlblock', Locale::getMessage('BUILDER_HlblockExport_WhatHlblock'))
+                ->addOption('hlblockFields', Locale::getMessage('BUILDER_HlblockExport_WhatHlblockFields'))
+                ->addOption('hlblockUserOptions', Locale::getMessage('BUILDER_HlblockExport_WhatHlblockUserOptions'))
+                ->addOption('hlblockPermissions', Locale::getMessage('BUILDER_HlblockExport_WhatHlblockPermissions')),
+        );
 
         $hlblockExport = false;
         $hlblockFields = [];

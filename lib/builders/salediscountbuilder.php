@@ -5,6 +5,7 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -44,11 +45,11 @@ class SaleDiscountBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $discountIds = $this->addFieldAndReturn('discounts', [
-            'title'    => Locale::getMessage('BUILDER_SaleDiscount_Discounts'),
-            'items'    => $this->getDiscountsStructure(),
-            'multiple' => true,
-        ]);
+        $discountIds = $this->askField('discounts',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_SaleDiscount_Discounts'))
+                ->setOptions($this->getDiscountsSelect(), 'ID', 'TITLE', 'LID'),
+        );
 
         $items = $helper->SaleDiscount()->exportDiscounts($discountIds);
 
@@ -66,16 +67,14 @@ class SaleDiscountBuilder extends VersionBuilder
         );
     }
 
-    protected function getDiscountsStructure(): array
+    protected function getDiscountsSelect(): array
     {
         $items = $this->getHelperManager()->SaleDiscount()->getDiscounts();
         $items = $this->getHelperManager()->SaleDiscount()->ensureDiscountXmlIds($items);
 
-        $items = array_map(function ($item) {
+        return array_map(function ($item) {
             $item['TITLE'] = '[' . $item['XML_ID'] . '] ' . $item['NAME'];
             return $item;
         }, $items);
-
-        return $this->createStructure($items, 'ID', 'TITLE', 'LID');
     }
 }

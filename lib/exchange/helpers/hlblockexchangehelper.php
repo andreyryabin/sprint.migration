@@ -19,13 +19,10 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
      */
     public function getHlblocksSelect(): array
     {
-        return array_map(
-            fn($hlblock) => [
-                'title' => Locale::getMessage('HLBLOCK_TITLE', $hlblock),
-                'value' => (int) $hlblock['ID'],
-            ],
-            $this->getHlblocks(),
-        );
+        return array_map(fn($hlblock) => [
+            'ID'    => (int) $hlblock['ID'],
+            'TITLE' => Locale::getMessage('HLBLOCK_TITLE', $hlblock),
+        ], $this->getHlblocks());
     }
 
     /**
@@ -33,13 +30,10 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
      */
     public function getHlblockFieldsSelect(int $hlblockId): array
     {
-        return array_map(
-            fn($field) => [
-                'title' => Locale::getMessage('HLBLOCK_FIELD', $field),
-                'value' => $field['FIELD_NAME'],
-            ],
-            $this->getFields($hlblockId),
-        );
+        return array_map(fn($field) => [
+            'NAME'    => $field['FIELD_NAME'],
+            'TITLE' => Locale::getMessage('HLBLOCK_FIELD', $field),
+        ], $this->getFields($hlblockId));
     }
 
     /**

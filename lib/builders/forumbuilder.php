@@ -5,6 +5,7 @@ namespace Sprint\Migration\Builders;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
@@ -16,7 +17,7 @@ class ForumBuilder extends VersionBuilder
         return $this->getHelperManager()->Forum()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Forum'));
 
@@ -41,15 +42,15 @@ class ForumBuilder extends VersionBuilder
      * @throws MigrationException
      * @throws RebuildException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
 
-        $forumIds = $this->addFieldAndReturn('forum_ids', [
-            'title'    => Locale::getMessage('BUILDER_ForumExport_forum_ids'),
-            'items'    => $this->getForumsStructure(),
-            'multiple' => true,
-        ]);
+        $forumIds = $this->askField('forum_ids',
+            (new CheckboxListField())
+                ->setTitle(Locale::getMessage('BUILDER_ForumExport_forum_ids'))
+                ->setOptions($this->getForumsSelect(), 'ID', 'TITLE', 'GROUP_TITLE'),
+        );
 
         $forums = $helper->Forum()->exportForums($forumIds);
 
@@ -71,7 +72,7 @@ class ForumBuilder extends VersionBuilder
     /**
      * @throws HelperException
      */
-    protected function getForumsStructure(): array
+    protected function getForumsSelect(): array
     {
         $helper = $this->getHelperManager()->Forum();
         $groups = [];
@@ -82,14 +83,12 @@ class ForumBuilder extends VersionBuilder
 
         $items = $helper->ensureForumXmlIds($helper->getForums());
 
-        $items = array_map(function ($item) use ($groups) {
+        return array_map(function ($item) use ($groups) {
             $item['GROUP_TITLE'] = $groups[$item['FORUM_GROUP_ID']] ?? Locale::getMessage(
                 'BUILDER_ForumExport_WithoutGroup',
             );
             $item['TITLE'] = '[' . $item['XML_ID'] . '] ' . $item['NAME'];
             return $item;
         }, $items);
-
-        return $this->createStructure($items, 'ID', 'TITLE', 'GROUP_TITLE');
     }
 }
