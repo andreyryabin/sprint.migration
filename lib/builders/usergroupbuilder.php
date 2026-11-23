@@ -37,7 +37,7 @@ class UserGroupBuilder extends VersionBuilder
         $userGroups = $this->addFieldAndReturn('user_group', [
             'title'    => Locale::getMessage('BUILDER_UserGroupExport_user_group'),
             'select'   => $this->getUserGroupsSelect(),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
         $items = [];

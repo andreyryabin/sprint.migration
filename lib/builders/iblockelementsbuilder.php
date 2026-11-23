@@ -223,7 +223,7 @@ class IblockElementsBuilder extends VersionBuilder
         if ($fieldsMode == 'some') {
             $exportFields = $this->addFieldAndReturn('export_filter', [
                 'title'    => Locale::getMessage('BUILDER_IblockElementsExport_Fields'),
-                'multiple' => 1,
+                'multiple' => true,
                 'select'   => $exhelper->getIblockElementFieldsSelect($iblockId, true),
             ]);
         } elseif ($fieldsMode == 'all') {
@@ -282,7 +282,7 @@ class IblockElementsBuilder extends VersionBuilder
         if ($propsMode == 'some') {
             $exportProps = $this->addFieldAndReturn('export_props', [
                 'title'    => Locale::getMessage('BUILDER_IblockElementsExport_Properties'),
-                'multiple' => 1,
+                'multiple' => true,
                 'select'   => $exhelper->getIblockPropertiesSelect($iblockId),
             ]);
         } elseif ($propsMode == 'all') {

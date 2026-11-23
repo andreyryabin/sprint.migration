@@ -47,7 +47,7 @@ class LanguageBuilder extends VersionBuilder
         $cultCodes = $this->addFieldAndReturn('cult_codes', [
             'title'    => Locale::getMessage('BUILDER_LanguageExport_cult_codes'),
             'select'   => $this->createSelect($allCults, 'CODE', 'NAME', true),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
 
@@ -56,7 +56,7 @@ class LanguageBuilder extends VersionBuilder
         $langIds = $this->addFieldAndReturn('lang_ids', [
             'title'    => Locale::getMessage('BUILDER_LanguageExport_lang_ids'),
             'select'   => $this->createSelect($allLangs, 'LID', 'NAME', true),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
         $this->confirmVersionPlan();

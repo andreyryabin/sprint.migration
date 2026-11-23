@@ -3,8 +3,6 @@ import {Loc} from "main.core";
 import {markRaw} from "ui.vue3";
 
 const MessageColors = {
-    '[/]': '</span>',
-
     '[new]': '<span class="sp-red">',
     '[unknown]': '<span class="sp-blue">',
     '[installed]': '<span class="sp-green">',
@@ -30,6 +28,12 @@ const MessageColors = {
 
     '[b]': '<span class="sp-bold">',
     '[tab]': '<span class="sp-indent-20">',
+    '[ul]': '<ul>',
+    '[/ul]': '</ul>',
+    '[li]': '<li>',
+    '[/li]': '</li>',
+
+    '[/]': '</span>',
 }
 
 const MessageTypes = {
@@ -106,15 +110,25 @@ export function colorize(text) {
         return out
     }
     out = escapeHtml(out);
-    out = out.replace(/\r\n|\r|\n/g, '<br>');
+    //out = out.replace(/\r\n|\r|\n/g, '<br>');
     out = makeLinksHtml(out);
-    if (!out.includes('[/]')) {
+    if (!out.includes('[/')) {
         return out;
     }
     for (const [key, val] of Object.entries(MessageColors)) {
         out = out.replaceAll(key, val)
     }
     return out
+}
+
+export function lines(text) {
+
+    let lines = colorize(text, '');
+    let arr = lines
+        .split("\n")
+        .map(raw => raw.trim())
+        .filter(raw => !!raw);
+    return arr.join(' ');
 }
 
 export function colorbind(type) {
@@ -156,6 +170,7 @@ export function optionsGroup(options, gKey = 'group') {
 
     return tree;
 }
+
 export function optionsNames(options, ids) {
     const names = options
         .filter(item => ids.includes(item.id))

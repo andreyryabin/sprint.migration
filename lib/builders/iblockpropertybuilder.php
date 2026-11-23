@@ -47,7 +47,7 @@ class IblockPropertyBuilder extends VersionBuilder
         $propertyIds = $this->addFieldAndReturn('export_props', [
             'title'    => Locale::getMessage('BUILDER_IblockPropertyExport_Properties'),
             'items'    => $this->createStructure($properties, 'ID', 'PROPERTY_TITLE', 'IBLOCK_TITLE'),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
         $properties = array_filter(

@@ -42,7 +42,7 @@ class FormBuilder extends VersionBuilder
 
         $what = $this->addFieldAndReturn('what', [
             'title'    => Locale::getMessage('BUILDER_FormExport_What'),
-            'multiple' => 1,
+            'multiple' => true,
             'select'   => [
                 [
                     'title' => Locale::getMessage('BUILDER_FormExport_Form'),
@@ -81,7 +81,7 @@ class FormBuilder extends VersionBuilder
                 $fieldsSomeSids = $this->addFieldAndReturn('fields_some', [
                     'title'    => Locale::getMessage('BUILDER_FormExport_Fields'),
                     'select'   => $this->getFieldsSelect($formId),
-                    'multiple' => 1,
+                    'multiple' => true,
                 ]);
                 $fields = $helper->Form()->exportFormFields($formId, $fieldsSomeSids);
             }

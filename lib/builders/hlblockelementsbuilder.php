@@ -184,7 +184,7 @@ class HlblockElementsBuilder extends VersionBuilder
             return $this->addFieldAndReturn('equal_keys', [
                 'title'    => Locale::getMessage('BUILDER_HlblockElementsExport_EqualKeys'),
                 'select'   => $fieldsSelect,
-                'multiple' => 1,
+                'multiple' => true,
             ]);
         }
         return [];

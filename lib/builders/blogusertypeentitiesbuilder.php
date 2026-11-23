@@ -44,7 +44,7 @@ class BlogUserTypeEntitiesBuilder extends VersionBuilder
         $fieldIds = $this->addFieldAndReturn('entity_fields', [
             'title'    => Locale::getMessage('BUILDER_BlogUserTypeEntitiesExport_entity_fields'),
             'select'   => $this->createSelect($fields, 'ID', 'FIELD_TITLE'),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
         $entities = $helper->UserTypeEntity()->exportUserTypeEntitiesByIds($fieldIds);

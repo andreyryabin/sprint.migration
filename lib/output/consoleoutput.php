@@ -8,8 +8,6 @@ use Sprint\Migration\Interfaces\ConsoleInterface;
 class ConsoleOutput extends AbstractOutput implements ConsoleInterface
 {
     private array $colors = [
-        '[/]' => "\x1b[0m",
-
         '[new]'       => "\x1b[0;31m",
         '[unknown]'   => "\x1b[0;34m",
         '[installed]' => "\x1b[0;32m",
@@ -35,6 +33,12 @@ class ConsoleOutput extends AbstractOutput implements ConsoleInterface
 
         '[b]'   => "\x1b[1m",
         '[tab]' => "\x1b[0m",
+        '[ul]'  => "",
+        '[/ul]' => "",
+        '[li]'  => "  - ",
+        '[/li]' => "",
+
+        '[/]' => "\x1b[0m",
     ];
 
 
@@ -68,6 +72,19 @@ class ConsoleOutput extends AbstractOutput implements ConsoleInterface
         $this->writeMessage($msg, '');
     }
 
+    public function lines(string $msg, string $lines): void
+    {
+        $lines = $this->colorize($lines, '');
+
+        $lines = explode(PHP_EOL, $lines);
+        $lines = array_map('trim', $lines);
+        $lines = array_filter($lines);
+
+        foreach ($lines as $line) {
+            fwrite(STDOUT, $msg . $line . PHP_EOL);
+        }
+    }
+
     protected function writeMessage(string $msg, string $type): void
     {
         $msg = $this->colorize($msg, $type);
@@ -87,13 +104,11 @@ class ConsoleOutput extends AbstractOutput implements ConsoleInterface
     {
         $msg = $type ? "[$type]" . $msg . "[/]" : $msg;
 
-        if (str_contains($msg, '[/]')) {
-            foreach ($this->colors as $key => $val) {
-                $msg = str_replace($key, $val, $msg);
-            }
-        }
-
-        return $msg;
+        return str_replace(
+            array_keys($this->colors),
+            array_values($this->colors),
+            $msg,
+        );
     }
 
 }

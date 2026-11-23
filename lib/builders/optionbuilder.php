@@ -46,14 +46,14 @@ class OptionBuilder extends VersionBuilder
             [
                 'title'    => Locale::getMessage('BUILDER_OptionExport_site_id'),
                 'select'   => $this->createSelect($helper->Site()->getSites(), 'ID', 'NAME', true),
-                'multiple' => 1,
+                'multiple' => true,
             ],
         );
 
         $moduleIds = $this->addFieldAndReturn('module_id', [
             'title'    => Locale::getMessage('BUILDER_OptionExport_module_id'),
             'select'   => $this->createSelect($helper->Option()->getModules(), 'ID', 'ID'),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
 

@@ -225,6 +225,9 @@ class VersionConfig
         return $this->name;
     }
 
+    /**
+     * @return string[]
+     */
     public function humanValues(): array
     {
         $human = [];

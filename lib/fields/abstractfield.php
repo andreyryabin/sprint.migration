@@ -27,6 +27,11 @@ abstract class AbstractField
         return $io->read("[pink](%s) - %s:[/] ", $this->getCode(), $this->getTitle());
     }
 
+    public function makePlanText(mixed $value): string
+    {
+        return ($value) ? $this->getTitle() . ': ' . $value : '';
+    }
+
     public function makeValueFromConsole(string $rawValue): mixed
     {
         return trim($rawValue);
@@ -78,11 +83,6 @@ abstract class AbstractField
     public function isInPlan(): bool
     {
         return $this->inPlan;
-    }
-
-    public function makePlanText(mixed $value): string
-    {
-        return (string)$value;
     }
 
     public function isRequired(): bool

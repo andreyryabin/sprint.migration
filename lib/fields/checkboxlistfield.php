@@ -19,7 +19,13 @@ class CheckboxListField extends SelectField
     public function makePlanText(mixed $value): string
     {
         if (is_array($value)) {
-            return $this->getOptionNamesByIds($value);
+            $names = $this->getOptionNamesByIds($value);
+            $lines = [$this->getTitle() . ': [ul]'];
+            foreach ($names as $name) {
+                $lines[] = '[li]' . $name . '[/li]';
+            }
+            $lines[] = '[/ul]';
+            return implode(PHP_EOL, $lines);
         }
         return '';
     }

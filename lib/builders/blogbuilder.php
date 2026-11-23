@@ -49,7 +49,7 @@ class BlogBuilder extends VersionBuilder
         $blogIds = $this->addFieldAndReturn('blog_ids', [
             'title'    => Locale::getMessage('BUILDER_BlogExport_blog_ids'),
             'items'    => $this->getBlogsStructure($groupId),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
         $group = $helper->Blog()->exportGroupById($groupId);

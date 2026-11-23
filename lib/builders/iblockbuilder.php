@@ -47,7 +47,7 @@ class IblockBuilder extends VersionBuilder
 
         $what = $this->addFieldAndReturn('what', [
             'title'    => Locale::getMessage('BUILDER_IblockExport_What'),
-            'multiple' => 1,
+            'multiple' => true,
             'select'   => [
                 [
                     'title' => Locale::getMessage('BUILDER_IblockExport_WhatIblockType'),
@@ -104,7 +104,7 @@ class IblockBuilder extends VersionBuilder
             if (!empty($propertiesSelect)) {
                 $exportProps = $this->addFieldAndReturn('export_props', [
                     'title'    => Locale::getMessage('BUILDER_IblockExport_Properties'),
-                    'multiple' => 1,
+                    'multiple' => true,
                     'select'   => $propertiesSelect,
                 ]);
 

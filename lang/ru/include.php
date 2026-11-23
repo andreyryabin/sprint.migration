@@ -235,7 +235,7 @@ $MESS["{$prefix}BUILDER_UserTypeEntities_WhatEntityId"] = "Поля по спи�
 $MESS["{$prefix}BUILDER_UserTypeEntities_WhatUserTypeId"] = "Поля по типу данных";
 $MESS["{$prefix}BUILDER_UserTypeEntities_EntityId"] = "Объекты";
 $MESS["{$prefix}BUILDER_UserTypeEntities_UserTypeId"] = "Тип данных";
-$MESS["{$prefix}BUILDER_UserTypeEntities_EntityFields"] = "Укажите поля для выгрузки";
+$MESS["{$prefix}BUILDER_UserTypeEntities_EntityFields"] = "Поля для выгрузки";
 
 $MESS["{$prefix}BUILDER_OrderProperties"] = "Миграция свойств заказов";
 $MESS["{$prefix}BUILDER_OrderProperties_PersonType"] = "Тип плательщика";
@@ -252,9 +252,9 @@ $MESS["{$prefix}BUILDER_SaleDiscount"] = "Миграция правил корз
 $MESS["{$prefix}BUILDER_SaleDiscount_Discounts"] = "Правила корзины";
 
 $MESS["{$prefix}BUILDER_FormExport1"] = "Миграция веб-формы";
-$MESS["{$prefix}BUILDER_FormExport_FormId"] = "Форму";
+$MESS["{$prefix}BUILDER_FormExport_FormId"] = "Форма";
 $MESS["{$prefix}BUILDER_FormExport_What"] = "Что переносится";
-$MESS["{$prefix}BUILDER_FormExport_Form"] = "Форму";
+$MESS["{$prefix}BUILDER_FormExport_Form"] = "Форма";
 $MESS["{$prefix}BUILDER_FormExport_Fields"] = "Поля формы";
 $MESS["{$prefix}BUILDER_FormExport_Statuses"] = "Статусы";
 $MESS["{$prefix}BUILDER_FormExport_SelectFields"] = "Поля формы";

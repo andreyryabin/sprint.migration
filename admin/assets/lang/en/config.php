@@ -34,5 +34,6 @@ $MESS["{$prefix}TOGGLE_UNKNOWN"] = "Unknown";
 $MESS["{$prefix}TOGGLE_TAG"] = "Release tag";
 $MESS["{$prefix}TOGGLE_MODIFIED"] = "Modified";
 $MESS["{$prefix}TOGGLE_OLDER"] = "Not supported";
+$MESS["{$prefix}TOGGLE_EXCHANGE"] = "With exchange";
 $MESS["{$prefix}BUILDER_NEXT"] = "Next";
 $MESS["{$prefix}BUILDER_RESET"] = "Reset";

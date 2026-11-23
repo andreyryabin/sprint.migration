@@ -34,8 +34,9 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $what = $this->addFieldAndReturn('what', [
-            'title'  => Locale::getMessage('BUILDER_UserTypeEntities_What'),
-            'select' => [
+            'title'   => Locale::getMessage('BUILDER_UserTypeEntities_What'),
+            'in_plan' => false,
+            'select'  => [
                 [
                     'title' => Locale::getMessage('BUILDER_UserTypeEntities_WhatEntityId'),
                     'value' => 'entityId',
@@ -57,7 +58,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $fieldsIds = $this->addFieldAndReturn('entity_fields', [
             'title'    => Locale::getMessage('BUILDER_UserTypeEntities_EntityFields'),
             'items'    => $this->createStructure($fields, 'ID', 'FIELD_TITLE', 'ENTITY_TITLE'),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
         $entities = $helper->UserTypeEntity()->exportUserTypeEntitiesByIds($fieldsIds);
@@ -81,6 +82,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $userTypeId = $this->addFieldAndReturn('user_type_id', [
             'title'  => Locale::getMessage('BUILDER_UserTypeEntities_UserTypeId'),
             'select' => $this->createSelect($userTypes, 'USER_TYPE_ID', 'TITLE'),
+            'in_plan' => false,
         ]);
 
         return $this->getUserTypeEntitiesByFilter(['USER_TYPE_ID' => $userTypeId]);
@@ -128,7 +130,8 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $entityIds = $this->addFieldAndReturn('entity_id', [
             'title'    => Locale::getMessage('BUILDER_UserTypeEntities_EntityId'),
             'select'   => $this->createSelect($fields, 'ENTITY_ID', 'ENTITY_TITLE'),
-            'multiple' => 1,
+            'multiple' => true,
+            'in_plan' => false,
         ]);
 
         return array_filter($fields, function ($item) use ($entityIds) {

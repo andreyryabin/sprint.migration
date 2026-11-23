@@ -57,6 +57,7 @@ export const MigrationVersions = {
                 installed: getMessage('TOGGLE_INSTALLED'),
                 unknown: getMessage('TOGGLE_UNKNOWN'),
                 tag: getMessage('TOGGLE_TAG'),
+                exchange: getMessage('TOGGLE_EXCHANGE'),
                 modified: getMessage('TOGGLE_MODIFIED'),
                 older: getMessage('TOGGLE_OLDER'),
             }

@@ -43,7 +43,7 @@ class MedialibElementsBuilder extends VersionBuilder
         $collectionIds = $this->addFieldAndReturn('collection_id', [
             'title'    => Locale::getMessage('BUILDER_MedialibElements_CollectionId'),
             'select'   => $exhelper->getCollectionSelect($exhelper::TYPE_IMAGE),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
         $exportFields = [

@@ -170,8 +170,6 @@ table.sp-migration_table {
 td.sp-migration_table_content {
     vertical-align: top;
     text-align: left;
-    /*padding: 0 10px 10px;*/
-    /*width: 50px;*/
 }
 
 td.sp-migration_table_buttons {
@@ -181,11 +179,77 @@ td.sp-migration_table_buttons {
     width: 45px;
 }
 
-.sp-v-desc {
-    background: #eee;
-    border-top: 1px solid #ccc;
-    padding: 5px;
+.sp-migration_log > div,
+.sp-migration_table_content > div {
+    white-space: pre-line;
+    margin-bottom: 5px;
 }
+
+.sp-migration_table_content > div.sp-v-labels {
+    margin-bottom: 0;
+}
+
+.sp-v-labels .sp-label {
+    margin: 0 5px 5px 0;
+}
+
+.sp-v-desc {
+    white-space: pre-line;
+    background-color: #f9f9f9; /* Легкий фон для блока описания */
+    border-left: 3px solid #e0e0e0; /* Акцентная полоска слева */
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+.sp-v-labels {
+    margin-bottom: 12px;
+}
+
+.sp-v-file, .sp-v-record {
+    color: #666;
+}
+
+/* Список внутри описания */
+.sp-v-desc ul {
+    white-space: normal;
+    margin: 5px 0;
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* Элемент списка */
+.sp-v-desc li {
+    position: relative;
+    padding-left: 10px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.sp-v-desc li::before {
+    content: "-";
+    position: absolute;
+    left: 0;
+    color: #999;
+    font-weight: 500;
+}
+
+.sp-v-desc li b,
+.sp-v-desc li strong {
+    font-weight: 600;
+    color: #222;
+}
+
+.sp-v-desc ul ul {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    padding-left: 20px;
+}
+
+.sp-v-desc ul ul li::before {
+    content: "-";
+}
+
 .sp-search {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -335,12 +399,6 @@ a.sp-item-unknown:visited {
 .sp-disabled {
     pointer-events: none;
     opacity: 0.7;
-}
-
-.sp-migration_log > div,
-.sp-migration_table_content > div {
-    white-space: pre-wrap;
-    margin-bottom: 5px;
 }
 
 .sp-loading {

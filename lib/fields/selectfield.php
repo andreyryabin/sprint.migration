@@ -21,7 +21,8 @@ class SelectField extends AbstractField
     public function makePlanText(mixed $value): string
     {
         if (is_string($value) || is_numeric($value)) {
-            return $this->getOptionNamesByIds([$value]);
+            $names = $this->getOptionNamesByIds([$value]);
+            return $this->getTitle() . ': ' . $names[0] ?? '';
         }
         return '';
     }
@@ -33,7 +34,7 @@ class SelectField extends AbstractField
         return $io->read("Select one: ");
     }
 
-    protected function getOptionNamesByIds(array $ids): string
+    protected function getOptionNamesByIds(array $ids): array
     {
         $options = $this->getProp('options', []);
         $names = [];
@@ -42,7 +43,7 @@ class SelectField extends AbstractField
                 $names[] = $option['name'];
             }
         }
-        return implode(', ', $names);
+        return $names;
     }
 
     /**

@@ -35,7 +35,7 @@ class UserOptionsBuilder extends VersionBuilder
 
         $what = $this->addFieldAndReturn('what', [
             'title'    => Locale::getMessage('BUILDER_UserOptionsExport_What'),
-            'multiple' => 1,
+            'multiple' => true,
             'select'   => [
                 [
                     'title' => Locale::getMessage('BUILDER_UserOptionsExport_WhatUserForm'),

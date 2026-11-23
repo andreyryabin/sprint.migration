@@ -131,10 +131,7 @@ class Console
 
             if ($configValue) {
                 $this->output->print('├─');
-                $configValue = explode(PHP_EOL, $configValue);
-                foreach ($configValue as $valueStr) {
-                    $this->output->print('│ ' . $valueStr);
-                }
+                $this->output->lines('│ ', $configValue);
             }
 
             $this->output->print('└─');
@@ -307,9 +304,7 @@ class Console
 
             if ($entity->hasFile() && $entity->getFileDescription()) {
                 $this->output->print('├─');
-                foreach (explode(PHP_EOL, $entity->getFileDescription()) as $descStr) {
-                    $this->output->print('│ ' . $descStr);
-                }
+                $this->output->lines('│ ', $entity->getFileDescription());
             }
 
             $this->output->print('└─');

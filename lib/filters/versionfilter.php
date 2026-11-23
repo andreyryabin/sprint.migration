@@ -13,6 +13,7 @@ class VersionFilter
         private readonly string $search = '',
         private readonly bool $modified = false,
         private readonly bool $older = false,
+        private readonly bool $exchange = false,
         private readonly bool $actual = false,
         private readonly string $actualTs = '',
         private readonly bool $sortDesc = false,
@@ -28,6 +29,7 @@ class VersionFilter
             'installed' => ['status' => VersionEnum::STATUS_INSTALLED],
             'unknown'   => ['status' => VersionEnum::STATUS_UNKNOWN],
             'tag'       => ['tag' => $filter['search'] ?? ''],
+            'exchange'  => ['exchange' => true],
             'modified'  => ['modified' => true],
             'older'     => ['older' => true],
             'actual'    => ['actual' => true],
@@ -42,6 +44,7 @@ class VersionFilter
             search: (string) ($filter['search'] ?? ''),
             modified: (bool) ($filter['modified'] ?? false),
             older: (bool) ($filter['older'] ?? false),
+            exchange: (bool) ($filter['exchange'] ?? false),
             actual: (bool) ($filter['actual'] ?? false),
             actualTs: $actualTs,
             sortDesc: ($sort === VersionEnum::SORT_DESC),
@@ -55,6 +58,7 @@ class VersionFilter
             && $this->matchesSearch($version)
             && $this->matchesActual($version)
             && $this->matchesModified($version)
+            && $this->matchesExchange($version)
             && $this->matchesOlder($version);
     }
 
@@ -86,6 +90,11 @@ class VersionFilter
     private function matchesModified(VersionEntity $v): bool
     {
         return !$this->modified || $v->isModified();
+    }
+
+    private function matchesExchange(VersionEntity $v): bool
+    {
+        return !$this->exchange || $v->hasExchangeDir();
     }
 
     private function matchesOlder(VersionEntity $v): bool

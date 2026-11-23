@@ -36,7 +36,7 @@ class IblockDeleteBuilder extends VersionBuilder
         $iblockIds = $this->addFieldAndReturn('iblock_ids', [
             'title'    => Locale::getMessage('BUILDER_IblockExport_IblockId'),
             'items'    => $exhelper->getIblocksStructure(),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
         if (empty($iblockIds)) {

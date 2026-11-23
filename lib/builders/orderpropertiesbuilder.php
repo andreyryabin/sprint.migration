@@ -56,7 +56,7 @@ class OrderPropertiesBuilder extends VersionBuilder
         $propertyIds = $this->addFieldAndReturn('properties', [
             'title'    => Locale::getMessage('BUILDER_OrderProperties_Properties'),
             'select'   => $this->getPropertiesSelect($personTypeId),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
         $updateMethod = $this->addFieldAndReturn('update_method', [

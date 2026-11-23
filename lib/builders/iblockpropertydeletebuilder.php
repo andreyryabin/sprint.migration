@@ -58,7 +58,7 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
             [
                 'title'    => Locale::getMessage('BUILDER_IblockPropertyDelete_Properties'),
                 'select'   => $this->createSelect($properties, 'ID', 'PROPERTY_TITLE'),
-                'multiple' => 1,
+                'multiple' => true,
             ],
         );
 

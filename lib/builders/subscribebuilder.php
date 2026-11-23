@@ -48,7 +48,7 @@ class SubscribeBuilder extends VersionBuilder
         $rubricIds = $this->addFieldAndReturn('rubric_ids', [
             'title'    => Locale::getMessage('BUILDER_SubscribeExport_rubric_ids'),
             'items'    => $this->getRubricsStructure(),
-            'multiple' => 1,
+            'multiple' => true,
         ]);
 
         $items = $helper->Subscribe()->exportRubrics($rubricIds);

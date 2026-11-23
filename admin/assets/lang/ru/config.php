@@ -33,5 +33,6 @@ $MESS["{$prefix}TOGGLE_UNKNOWN"] = "Неизвестные";
 $MESS["{$prefix}TOGGLE_TAG"] = "Тег релиза";
 $MESS["{$prefix}TOGGLE_MODIFIED"] = "Измененные";
 $MESS["{$prefix}TOGGLE_OLDER"] = "Не поддерживаемые";
+$MESS["{$prefix}TOGGLE_EXCHANGE"] = "Содержат выгрузку";
 $MESS["{$prefix}BUILDER_NEXT"] = "Продолжить";
 $MESS["{$prefix}BUILDER_RESET"] = "Сбросить";

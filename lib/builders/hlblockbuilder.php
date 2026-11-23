@@ -46,7 +46,7 @@ class HlblockBuilder extends VersionBuilder
 
         $what = $this->addFieldAndReturn('what', [
             'title'    => Locale::getMessage('BUILDER_HlblockExport_What'),
-            'multiple' => 1,
+            'multiple' => true,
             'select'   => [
                 [
                     'title' => Locale::getMessage('BUILDER_HlblockExport_WhatHlblock'),

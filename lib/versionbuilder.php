@@ -40,7 +40,7 @@ abstract class VersionBuilder extends Builder
     protected function confirmVersionPlan(): void
     {
         $confirm = $this->addFieldAndReturn(
-            'confirm_plan',
+            'confirm',
             [
                 'title'   => Locale::getMessage('CONFIRM_PLAN'),
                 'select'  => [
@@ -52,7 +52,7 @@ abstract class VersionBuilder extends Builder
         );
 
         if (strtolower($confirm) !== 'y') {
-            $this->rebuildField('confirm_plan');
+            $this->rebuildField('confirm');
         }
     }
 
@@ -61,15 +61,12 @@ abstract class VersionBuilder extends Builder
         $lines = [$this->getTitle()];
         foreach ($this->getFields() as $field) {
             if ($field->isInPlan()) {
-                $desc = $field->makePlanText(
+                $lines[] = $field->makePlanText(
                     $this->getFieldValue($field->getCode()),
                 );
-                if ($desc) {
-                    $lines[] = $field->getTitle() . ": " . $desc;
-                }
             }
         }
-        return implode(PHP_EOL, $lines);
+        return implode(PHP_EOL, array_filter($lines));
     }
 
     /**
