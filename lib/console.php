@@ -355,25 +355,7 @@ class Console
      * @throws BuilderException
      * @throws ConsoleException
      */
-    public function commandAdd(): void
-    {
-        $this->executeBuilderByArgs();
-    }
-    /**
-     * @publicApi
-     * @throws BuilderException
-     * @throws ConsoleException
-     */
-    public function commandCreate(): void
-    {
-        $this->executeBuilderByArgs();
-    }
-    /**
-     * @publicApi
-     * @throws BuilderException
-     * @throws ConsoleException
-     */
-    public function commandRun(): void
+    public function commandMake(): void
     {
         $this->executeBuilderByArgs();
     }

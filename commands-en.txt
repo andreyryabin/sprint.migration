@@ -1,14 +1,10 @@
 All console commands:
-  add                           Create blank migration
-    --prefix=[text]             Set name
-    --description=[text]        Set description
+  builders                      Show builders
 
-  run [builder]                 Start builder
+  make [builder]                Start builder
     --field1=[value]            Set field1 value
     ...
     --fieldN=[value]            Set fieldN value
-
-  builders                      Show builders
 
   ls                            Show migrations
     --new                       Show only new
