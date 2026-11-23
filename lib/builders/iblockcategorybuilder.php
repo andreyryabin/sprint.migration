@@ -50,6 +50,8 @@ class IblockCategoryBuilder extends VersionBuilder
 
         $sectionTree = $helper->Iblock()->exportSectionsTree($iblockId);
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockCategoryExport'),
             [

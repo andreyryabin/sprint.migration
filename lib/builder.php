@@ -144,6 +144,8 @@ abstract class Builder implements RestartableInterface
      */
     protected function addFieldAndReturn(string $code, array $field)
     {
+        $field['required'] = true;
+
         $this->addField($code, $field);
 
         $value = $this->getFieldValue($code);

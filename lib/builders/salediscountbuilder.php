@@ -56,6 +56,8 @@ class SaleDiscountBuilder extends VersionBuilder
             $this->rebuildField('discounts');
         }
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('SaleDiscountExport'),
             [

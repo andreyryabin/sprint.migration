@@ -62,6 +62,8 @@ class UserTypeEntitiesBuilder extends VersionBuilder
 
         $entities = $helper->UserTypeEntity()->exportUserTypeEntitiesByIds($fieldsIds);
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('UserTypeEntities'),
             ['entities' => $entities],

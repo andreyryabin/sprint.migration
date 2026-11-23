@@ -260,7 +260,7 @@ export const MigrationBuilders = {
                 >
                   <div
                       v-if="field.title"
-                      class="sp-field-title"
+                      :class="{'sp-field-required': field.required}"
                       v-html="colorize(field.title)"
                   />
                   <div

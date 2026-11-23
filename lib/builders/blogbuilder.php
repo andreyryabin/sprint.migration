@@ -56,6 +56,8 @@ class BlogBuilder extends VersionBuilder
 
         $blogs = $helper->Blog()->exportBlogs($blogIds);
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('BlogExport'),
             [

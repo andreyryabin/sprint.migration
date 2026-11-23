@@ -154,7 +154,7 @@ $MESS["{$prefix}BUILDER_IblockExport2"] = implode(PHP_EOL, [
 ]);
 $MESS["{$prefix}BUILDER_IblockExport_IblockId"] = "Инфоблок";
 $MESS["{$prefix}BUILDER_IblockExport_Properties"] = "Свойства";
-$MESS["{$prefix}BUILDER_IblockExport_What"] = "Что переносим?";
+$MESS["{$prefix}BUILDER_IblockExport_What"] = "Что переносится";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblock"] = "Инфоблок";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockType"] = "Тип инфоблока";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockFields"] = "Поля инфоблока";
@@ -216,21 +216,21 @@ $MESS["{$prefix}BUILDER_HlblockElementsExport_SaveElementByXmlId"] = "Добав
 $MESS["{$prefix}BUILDER_HlblockElementsExport_EqualKeys"] = "Поля для сравнения";
 
 $MESS["{$prefix}BUILDER_UserOptionsExport_Title"] = "Миграция пользовательских настроек";
-$MESS["{$prefix}BUILDER_UserOptionsExport_What"] = "Что переносим?";
+$MESS["{$prefix}BUILDER_UserOptionsExport_What"] = "Что переносится";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatUserForm"] = "Настрока формы редактирования пользователей";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatUserList"] = "Настрока списка пользователей";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatGroupList"] = "Настрока списка групп";
 
 $MESS["{$prefix}BUILDER_HlblockExport1"] = "Миграция highload-блока";
 $MESS["{$prefix}BUILDER_HlblockExport_HlblockId"] = "Highload-блоки";
-$MESS["{$prefix}BUILDER_HlblockExport_What"] = "Что переносим?";
+$MESS["{$prefix}BUILDER_HlblockExport_What"] = "Что переносится";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblock"] = "Highload-блок";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockFields"] = "Поля highload-блока";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockUserOptions"] = "Настройки формы редактирования и списка";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockPermissions"] = "Доступ к highload-блоку";
 
 $MESS["{$prefix}BUILDER_UserTypeEntities1"] = "Миграция пользовательских полей";
-$MESS["{$prefix}BUILDER_UserTypeEntities_What"] = "Что переносим?";
+$MESS["{$prefix}BUILDER_UserTypeEntities_What"] = "Что переносится";
 $MESS["{$prefix}BUILDER_UserTypeEntities_WhatEntityId"] = "Поля по списку объектов";
 $MESS["{$prefix}BUILDER_UserTypeEntities_WhatUserTypeId"] = "Поля по типу данных";
 $MESS["{$prefix}BUILDER_UserTypeEntities_EntityId"] = "Объекты";
@@ -253,7 +253,7 @@ $MESS["{$prefix}BUILDER_SaleDiscount_Discounts"] = "Правила корзин�
 
 $MESS["{$prefix}BUILDER_FormExport1"] = "Миграция веб-формы";
 $MESS["{$prefix}BUILDER_FormExport_FormId"] = "Форму";
-$MESS["{$prefix}BUILDER_FormExport_What"] = "Что переносим?";
+$MESS["{$prefix}BUILDER_FormExport_What"] = "Что переносится";
 $MESS["{$prefix}BUILDER_FormExport_Form"] = "Форму";
 $MESS["{$prefix}BUILDER_FormExport_Fields"] = "Поля формы";
 $MESS["{$prefix}BUILDER_FormExport_Statuses"] = "Статусы";

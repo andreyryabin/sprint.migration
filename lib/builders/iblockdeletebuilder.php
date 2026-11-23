@@ -48,6 +48,8 @@ class IblockDeleteBuilder extends VersionBuilder
             $selectedIblocks[] = $exhelper->exportIblock($iblockId);
         }
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockDelete'),
             [

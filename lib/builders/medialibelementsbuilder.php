@@ -54,6 +54,8 @@ class MedialibElementsBuilder extends VersionBuilder
             'SOURCE_ID',
         ];
 
+        $this->confirmVersionPlan();
+
         (new RestartableWriter($this, $this->getVersionExchangeDir()))
             ->setExchangeResource('medialib_elements.xml')
             ->execute(

@@ -74,6 +74,8 @@ class UserOptionsBuilder extends VersionBuilder
             );
         }
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('UserOptionsExport'),
             [

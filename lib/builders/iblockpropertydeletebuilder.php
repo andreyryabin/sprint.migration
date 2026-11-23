@@ -85,6 +85,8 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
             $this->rebuildField('property_ids');
         }
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockPropertyDelete'),
             [

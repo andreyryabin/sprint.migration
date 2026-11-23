@@ -95,6 +95,8 @@ class OrderPropertiesBuilder extends VersionBuilder
             $propertyVariants = $helper->OrderProperties()->getOrderPropertyVariants($propertyIds);
         }
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('OrderPropertiesExport'),
             [

@@ -100,6 +100,8 @@ class FormBuilder extends VersionBuilder
             $statuses = $helper->Form()->exportFormStatuses($formId);
         }
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('FormExport'),
             [

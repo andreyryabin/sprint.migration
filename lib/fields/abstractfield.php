@@ -12,7 +12,8 @@ abstract class AbstractField
     private array $props = [];
     private string $title = '';
     private string $note = '';
-    private bool $autoDescription = true;
+    private bool $inPlan = true;
+    private bool $isRequired = false;
 
     public function __construct(private readonly string $code) {}
 
@@ -68,20 +69,30 @@ abstract class AbstractField
         $this->note = $note;
         return $this;
     }
-    public function setAutoDescription(bool $enable): static
+    public function setInPlan(bool $inPlan): static
     {
-        $this->autoDescription = $enable;
+        $this->inPlan = $inPlan;
         return $this;
     }
 
-    public function hasAutoDescription(): bool
+    public function isInPlan(): bool
     {
-        return $this->autoDescription;
+        return $this->inPlan;
     }
 
-    public function makeAutoDescription(mixed $value): string
+    public function makePlanText(mixed $value): string
     {
         return (string)$value;
+    }
+
+    public function isRequired(): bool
+    {
+        return $this->isRequired;
+    }
+
+    public function setRequired(bool $isRequired): void
+    {
+        $this->isRequired = $isRequired;
     }
 
     protected function getProp(string $name, mixed $defaultValue): mixed

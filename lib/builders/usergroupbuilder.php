@@ -56,6 +56,8 @@ class UserGroupBuilder extends VersionBuilder
             $this->rebuildField('user_group');
         }
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('UserGroupExport'),
             [

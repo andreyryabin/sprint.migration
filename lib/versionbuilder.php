@@ -16,20 +16,20 @@ abstract class VersionBuilder extends Builder
         $this->addField(
             'prefix',
             [
-                'title' => Locale::getMessage('FORM_PREFIX'),
-                'value' => $this->getVersionConfig()->getVal('version_prefix'),
-                'width' => 250,
-                'auto'  => false,
+                'title'   => Locale::getMessage('FORM_PREFIX'),
+                'value'   => $this->getVersionConfig()->getVal('version_prefix'),
+                'width'   => 250,
+                'in_plan' => false,
             ],
         );
 
         $this->addField(
             'description',
             [
-                'title'  => Locale::getMessage('FORM_DESCR'),
-                'width'  => 350,
-                'height' => 40,
-                'auto'   => false,
+                'title'   => Locale::getMessage('FORM_DESCR'),
+                'width'   => 350,
+                'height'  => 40,
+                'in_plan' => false,
             ],
         );
     }
@@ -42,13 +42,12 @@ abstract class VersionBuilder extends Builder
         $confirm = $this->addFieldAndReturn(
             'confirm_plan',
             [
-                'title'  => Locale::getMessage('CONFIRM_PLAN'),
-                'note'   => $this->makeVersionPlan(),
-                'select' => [
+                'title'   => Locale::getMessage('CONFIRM_PLAN'),
+                'select'  => [
                     ['title' => Locale::getMessage('CONFIRM_PLAN_YES'), 'value' => 'y'],
                     ['title' => Locale::getMessage('CONFIRM_PLAN_NO'), 'value' => 'n'],
                 ],
-                'auto'   => false,
+                'in_plan' => false,
             ],
         );
 
@@ -57,12 +56,12 @@ abstract class VersionBuilder extends Builder
         }
     }
 
-    protected function makeVersionPlan(): string
+    protected function getVersionPlan(): string
     {
         $lines = [$this->getTitle()];
         foreach ($this->getFields() as $field) {
-            if ($field->hasAutoDescription()) {
-                $desc = $field->makeAutoDescription(
+            if ($field->isInPlan()) {
+                $desc = $field->makePlanText(
                     $this->getFieldValue($field->getCode()),
                 );
                 if ($desc) {
@@ -81,12 +80,12 @@ abstract class VersionBuilder extends Builder
         array $templateVars = [],
         bool $markAsInstalled = true,
     ): string {
-        $plan = $this->getField('confirm_plan')?->getNote();
+        $desc = array_filter([
+            $this->getFieldValue('description'),
+            $this->getVersionPlan(),
+        ]);
 
-        $templateVars['description'] = $this->addslashes(
-            $this->getFieldValue('description')
-            . ($plan ? PHP_EOL . $plan : ''),
-        );
+        $templateVars['description'] = $this->addslashes(implode(PHP_EOL, $desc));
 
         $templateVars['author'] = $this->addslashes(
             $this->getCurrentUserLogin(),

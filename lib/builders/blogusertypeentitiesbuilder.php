@@ -53,6 +53,8 @@ class BlogUserTypeEntitiesBuilder extends VersionBuilder
             $this->rebuildField('entity_fields');
         }
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('UserTypeEntities'),
             ['entities' => $entities],

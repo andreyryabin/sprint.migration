@@ -18,7 +18,7 @@ class SelectField extends AbstractField
         return '';
     }
 
-    public function makeAutoDescription(mixed $value): string
+    public function makePlanText(mixed $value): string
     {
         if (is_string($value) || is_numeric($value)) {
             return $this->getOptionNamesByIds([$value]);

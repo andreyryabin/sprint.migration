@@ -16,7 +16,7 @@ class CheckboxListField extends SelectField
         return array_filter(explode(' ', $rawValue));
     }
 
-    public function makeAutoDescription(mixed $value): string
+    public function makePlanText(mixed $value): string
     {
         if (is_array($value)) {
             return $this->getOptionNamesByIds($value);

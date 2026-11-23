@@ -75,6 +75,8 @@ class OptionBuilder extends VersionBuilder
             $this->rebuildField('module_id');
         }
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('OptionExport'),
             [

@@ -154,7 +154,7 @@ $MESS["{$prefix}BUILDER_IblockExport2"] = implode(PHP_EOL, [
 ]);
 $MESS["{$prefix}BUILDER_IblockExport_IblockId"] = "Information block";
 $MESS["{$prefix}BUILDER_IblockExport_Properties"] = "Properties";
-$MESS["{$prefix}BUILDER_IblockExport_What"] = "What to export?";
+$MESS["{$prefix}BUILDER_IblockExport_What"] = "What it exports";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblock"] = "Information block";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockType"] = "Information block type";
 $MESS["{$prefix}BUILDER_IblockExport_WhatIblockFields"] = "Information block fields";
@@ -216,21 +216,21 @@ $MESS["{$prefix}BUILDER_HlblockElementsExport_SaveElementByXmlId"] = "Add or upd
 $MESS["{$prefix}BUILDER_HlblockElementsExport_EqualKeys"] = "Equal fields";
 
 $MESS["{$prefix}BUILDER_UserOptionsExport_Title"] = "Migration for user options";
-$MESS["{$prefix}BUILDER_UserOptionsExport_What"] = "What to export?";
+$MESS["{$prefix}BUILDER_UserOptionsExport_What"] = "What it exports";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatUserForm"] = "User form";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatUserList"] = "User list";
 $MESS["{$prefix}BUILDER_UserOptionsExport_WhatGroupList"] = "User group list";
 
 $MESS["{$prefix}BUILDER_HlblockExport1"] = "Migration for highload block";
 $MESS["{$prefix}BUILDER_HlblockExport_HlblockId"] = "Highload blocks";
-$MESS["{$prefix}BUILDER_HlblockExport_What"] = "What to export?";
+$MESS["{$prefix}BUILDER_HlblockExport_What"] = "What it exports";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblock"] = "Highload block";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockFields"] = "Highload block fields";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockUserOptions"] = "User options for form and list";
 $MESS["{$prefix}BUILDER_HlblockExport_WhatHlblockPermissions"] = "Highload block permissions";
 
 $MESS["{$prefix}BUILDER_UserTypeEntities1"] = "Migration for user type entities";
-$MESS["{$prefix}BUILDER_UserTypeEntities_What"] = "What to export?";
+$MESS["{$prefix}BUILDER_UserTypeEntities_What"] = "What it exports";
 $MESS["{$prefix}BUILDER_UserTypeEntities_WhatEntityId"] = "Fields by entities";
 $MESS["{$prefix}BUILDER_UserTypeEntities_WhatUserTypeId"] = "Fields by data type";
 $MESS["{$prefix}BUILDER_UserTypeEntities_EntityId"] = "Entities";

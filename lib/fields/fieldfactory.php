@@ -33,7 +33,8 @@ class FieldFactory
 
         $obj->setTitle($field['title'] ?? '');
         $obj->setNote($field['note'] ?? '');
-        $obj->setAutoDescription($field['auto'] ?? true);
+        $obj->setInPlan($field['in_plan'] ?? true);
+        $obj->setRequired($field['required'] ?? false);
 
         return $obj;
     }

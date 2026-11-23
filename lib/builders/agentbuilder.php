@@ -47,6 +47,8 @@ class AgentBuilder extends VersionBuilder
             $this->rebuildField('agent_id');
         }
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('AgentExport'),
             [

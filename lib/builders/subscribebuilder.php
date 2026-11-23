@@ -57,6 +57,8 @@ class SubscribeBuilder extends VersionBuilder
             $this->rebuildField('rubric_ids');
         }
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('SubscribeExport'),
             [

@@ -142,6 +142,7 @@ class BuilderController extends Controller
                 'code'      => $field->getCode(),
                 'title'     => $field->getTitle(),
                 'note'      => $field->getNote(),
+                'required'  => $field->isRequired(),
                 'component' => $field->getComponentName(),
                 'props'     => $field->getProps(),
             ], $builder->getFields()),

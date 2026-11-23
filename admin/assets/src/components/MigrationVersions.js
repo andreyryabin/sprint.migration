@@ -131,7 +131,7 @@ export const MigrationVersions = {
 
         saveFilterAndRefresh() {
             this.saveFilter();
-            this.refreshBuilders();
+            this.refreshVersions();
         },
 
         execAction(action, payload) {
@@ -517,22 +517,22 @@ export const MigrationVersions = {
           <div class="sp-row2">
             <div class="sp-col sp-col-p0 sp-white">
               <div class="sp-migration_list" ref="migration_list">
-                <table v-if="versions.length > 0" class="sp-list">
+                <table v-if="versions.length > 0" class="sp-migration_table">
                   <tr v-for="item in versions" :key="item.version">
-                    <td class="sp-list_buttons">
+                    <td class="sp-migration_table_buttons">
                     <span
                         :class="{'adm-btn': true, 'sp-disabled':running}"
                         v-text="'&equiv;'"
                         @click="makeVersionMenu($event, item)"
                     />
                     </td>
-                    <td class="sp-list_content">
+                    <td class="sp-migration_table_content">
                       <div v-bind="colorbind(item.status)" v-text="item.version"/>
-                      <div v-if="item.file_status" v-text="item.file_status"/>
-                      <div v-if="item.record_status" v-text="item.record_status"/>
-                      <div v-if="item.tag_status" v-html="colorize(item.tag_status)"/>
-                      <div v-if="item.labels" v-html="colorize(item.labels)"/>
-                      <div v-if="item.description" v-html="colorize(item.description)"/>
+                      <div v-if="item.file_status" v-text="item.file_status" class="sp-v-file"/>
+                      <div v-if="item.record_status" v-text="item.record_status" class="sp-v-record"/>
+                      <div v-if="item.tag_status" v-html="colorize(item.tag_status)" class="sp-v-tag"/>
+                      <div v-if="item.labels" v-html="colorize(item.labels)" class="sp-v-labels"/>
+                      <div v-if="item.description" v-html="colorize(item.description)" class="sp-v-desc"/>
                     </td>
                   </tr>
                 </table>

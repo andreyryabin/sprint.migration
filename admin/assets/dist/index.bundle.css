@@ -163,24 +163,29 @@ table.sp-config td {
     padding: 5px;
 }
 
-table.sp-list {
+table.sp-migration_table {
     border-collapse: collapse;
 }
 
-td.sp-list_content {
+td.sp-migration_table_content {
     vertical-align: top;
     text-align: left;
     /*padding: 0 10px 10px;*/
     /*width: 50px;*/
 }
 
-td.sp-list_buttons {
+td.sp-migration_table_buttons {
     white-space: nowrap;
     /*text-align: right;*/
     vertical-align: top;
     width: 45px;
 }
 
+.sp-v-desc {
+    background: #eee;
+    border-top: 1px solid #ccc;
+    padding: 5px;
+}
 .sp-search {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -303,7 +308,7 @@ a.sp-item-unknown:visited {
 .sp-builder-title {
 }
 
-.sp-field-title {
+.sp-field-required {
     font-weight: bold;
 }
 
@@ -333,7 +338,7 @@ a.sp-item-unknown:visited {
 }
 
 .sp-migration_log > div,
-.sp-list_content > div {
+.sp-migration_table_content > div {
     white-space: pre-wrap;
     margin-bottom: 5px;
 }
