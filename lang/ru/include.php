@@ -25,6 +25,9 @@ $MESS["{$prefix}SUMMARY_NEW"] = "Новые миграции";
 $MESS["{$prefix}SUMMARY_INSTALLED"] = "Установленные";
 $MESS["{$prefix}SUMMARY_UNKNOWN"] = "Неизвестные";
 
+$MESS["{$prefix}CONFIRM_PLAN"] = "План миграции";
+$MESS["{$prefix}CONFIRM_PLAN_YES"] = "Подтверждаю, создать файл";
+$MESS["{$prefix}CONFIRM_PLAN_NO"] = "Нет";
 $MESS["{$prefix}CREATED_SUCCESS"] = "Миграция #VERSION# создана";
 $MESS["{$prefix}SEARCH"] = "Поиск";
 $MESS["{$prefix}ADMIN_INTERFACE_HIDDEN"] = "Управление миграциями через админку отключено";
@@ -38,6 +41,8 @@ $MESS["{$prefix}MODULE_VERSION"] = "Версия модуля: #NAME#";
 $MESS["{$prefix}BITRIX_VERSION"] = "Версия bitrix: #NAME#";
 $MESS["{$prefix}PHP_VERSION"] = "Версия php: #NAME#";
 $MESS["{$prefix}CFG_TITLE"] = "Миграции";
+$MESS["{$prefix}LABEL_YES"] = "Да";
+$MESS["{$prefix}LABEL_NO"] = "Нет";
 
 $MESS["{$prefix}BUILDER_CREATE"] = "Создать";
 $MESS["{$prefix}BUILDER_RUN"] = "Выполнить";
@@ -106,8 +111,6 @@ $MESS["{$prefix}CONFIG_console_user"] = "Пользователь, от кото
 $MESS["{$prefix}CONFIG_console_auth_events_disable"] = "Отключить обработчики авторизации в консоли";
 $MESS["{$prefix}CONFIG_config_file"] = "Файл конфигурации";
 $MESS["{$prefix}CONFIG_title"] = "Название конфигурации";
-$MESS["{$prefix}CONFIG_yes"] = "да";
-$MESS["{$prefix}CONFIG_no"] = "нет";
 $MESS["{$prefix}CONFIG_version_name_template"] = "Шаблон названия миграции";
 $MESS["{$prefix}CONFIG_version_timestamp_format"] = "Формат даты для создания файла миграции";
 $MESS["{$prefix}CONFIG_version_timestamp_pattern"] = "Регулярное выражение для поиска миграций по формату даты";
@@ -135,7 +138,7 @@ $MESS["{$prefix}BUILDER_AgentExport_agent_id"] = "Агенты";
 $MESS["{$prefix}BUILDER_AgentExport_module_id"] = "Модули";
 $MESS["{$prefix}BUILDER_AgentExport_empty_module"] = "Без модуля";
 
-$MESS["{$prefix}BUILDER_Version1"] = "Создать простую миграцию";
+$MESS["{$prefix}BUILDER_Version1"] = "Пустая миграция";
 
 $MESS["{$prefix}BUILDER_UserGroupExport1"] = "Миграция групп пользователей";
 $MESS["{$prefix}BUILDER_UserGroupExport2"] = "Задайте символьный идентификатор группы (STRING_ID), чтобы увидеть её в списке";
@@ -288,7 +291,7 @@ $MESS["{$prefix}BUILDER_MedialibElements2"] = implode(PHP_EOL,[
 ]);
 $MESS["{$prefix}BUILDER_MedialibElements_CollectionId"] = "Коллекция";
 
-$MESS["{$prefix}BUILDER_LanguageExport"] = "Создать миграцию для языков и региональных настроек";
+$MESS["{$prefix}BUILDER_LanguageExport"] = "Миграция для языков и региональных настроек";
 $MESS["{$prefix}BUILDER_LanguageExport_cult_codes"] = "Региональные настройки";
 $MESS["{$prefix}BUILDER_LanguageExport_lang_ids"] = "Языки интерфейса";
 $MESS["{$prefix}BUILDER_LanguageExport_Info"] = "Задайте символьные коды региональным настройкам";

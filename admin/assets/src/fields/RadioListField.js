@@ -1,4 +1,4 @@
-import {optionsFilter, optionsGroup, optionsNames} from "../helpers";
+import {optionsFilter, optionsGroup} from "../helpers";
 
 let uid = 0;
 export const RadioListField = {
@@ -21,14 +21,6 @@ export const RadioListField = {
             search: '',
             name: `RadioListField${++uid}`,
         };
-    },
-    watch: {
-        value: {
-            immediate: true,
-            handler(id) {
-                this.$emit('update:description', optionsNames(this.options, [id]));
-            },
-        },
     },
     computed: {
         selected: {

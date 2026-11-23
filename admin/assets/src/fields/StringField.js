@@ -1,4 +1,4 @@
-import {cleanAttrs, makeString} from "../helpers";
+import {cleanAttrs} from "../helpers";
 
 export const StringField = {
     props: {
@@ -22,7 +22,6 @@ export const StringField = {
             },
             set(val) {
                 this.$emit('update:value', val);
-                this.$emit('update:description', val);
             }
         },
         cleanedAttrs() {

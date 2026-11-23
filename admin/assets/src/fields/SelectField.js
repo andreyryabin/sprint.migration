@@ -1,5 +1,3 @@
-import {optionsNames} from "../helpers";
-
 export const SelectField = {
     props: {
         value: {
@@ -56,14 +54,12 @@ export const SelectField = {
             const next = this.normalizedValue;
             if (next !== this.value) {
                 this.$emit('update:value', next);
-                this.$emit('update:description', optionsNames(this.options, [next]));
             }
         },
 
         onChange(event) {
             let val = event.target.value;
             this.$emit('update:value', val);
-            this.$emit('update:description', optionsNames(this.options, [val]));
         },
     },
 

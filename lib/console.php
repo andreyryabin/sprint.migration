@@ -423,7 +423,7 @@ class Console
         do {
             foreach ($builder->getUnbindFields() as $field) {
                 $raw = $defaultValues[$field->getCode()] ?? $field->readValueFromConsole($this->output);
-                $builder->setFieldValue($field->getCode(), $field->setValueFromConsole($raw));
+                $builder->setFieldValue($field->getCode(), $field->makeValueFromConsole($raw));
             }
             $result = $this->builderManager->startBuilder($builder);
         } while ($result->needRestart() || $result->needRebuild());

@@ -57,6 +57,9 @@ class HlblockElementsBuilder extends VersionBuilder
 
         $equalKeys = $this->getFieldValueEqualKeys($updateMethod, $fieldsSelect);
 
+
+        $this->confirmVersionPlan();
+
         (new RestartableWriter($this, $this->getVersionExchangeDir()))
             ->setExchangeResource('hlblock_elements.xml')
             ->execute(

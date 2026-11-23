@@ -29,7 +29,6 @@ export const TextareaField = {
             },
             set(val) {
                 this.$emit('update:value', val);
-                this.$emit('update:description', val);
             },
         },
         cleanedAttrs() {

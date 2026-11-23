@@ -11,9 +11,17 @@ class CheckboxListField extends SelectField
         return [];
     }
 
-    public function setValueFromConsole(mixed $rawValue): mixed
+    public function makeValueFromConsole(string $rawValue): mixed
     {
         return array_filter(explode(' ', $rawValue));
+    }
+
+    public function makeAutoDescription(mixed $value): string
+    {
+        if (is_array($value)) {
+            return $this->getOptionNamesByIds($value);
+        }
+        return '';
     }
 
     public function readValueFromConsole(ConsoleInterface $io): string

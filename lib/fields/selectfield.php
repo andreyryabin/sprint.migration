@@ -18,11 +18,31 @@ class SelectField extends AbstractField
         return '';
     }
 
+    public function makeAutoDescription(mixed $value): string
+    {
+        if (is_string($value) || is_numeric($value)) {
+            return $this->getOptionNamesByIds([$value]);
+        }
+        return '';
+    }
+
     public function readValueFromConsole(ConsoleInterface $io): string
     {
         $this->printFieldToConsole($io);
 
         return $io->read("Select one: ");
+    }
+
+    protected function getOptionNamesByIds(array $ids): string
+    {
+        $options = $this->getProp('options', []);
+        $names = [];
+        foreach ($options as $option) {
+            if (in_array($option['id'], $ids)) {
+                $names[] = $option['name'];
+            }
+        }
+        return implode(', ', $names);
     }
 
     /**

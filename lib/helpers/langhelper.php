@@ -26,10 +26,7 @@ class LangHelper extends Helper
 
     public function getLangs(array $filter = []): array
     {
-        $by = 'def';
-        $order = 'desc';
-
-        return $this->fetchAll(CLanguage::GetList($by, $order, $filter));
+        return $this->fetchAll(CLanguage::GetList('sort', 'asc', $filter));
     }
 
     /**
@@ -47,10 +44,7 @@ class LangHelper extends Helper
 
     public function getDefaultLang(): array|false
     {
-        $by = 'def';
-        $order = 'desc';
-
-        return CLanguage::GetList($by, $order, ['ACTIVE' => 'Y'])->Fetch();
+        return CLanguage::GetList('def', 'desc', ['ACTIVE' => 'Y'])->Fetch();
     }
 
     public function exportLangs(array $filter = []): array

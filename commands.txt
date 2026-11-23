@@ -3,7 +3,7 @@
     --prefix=[text]             Задать имя
     --description=[text]        Задать описание
 
-  run [builder]                 Запустить форму создания
+  create [builder]              Запустить форму создания
     --field1=[value]            Задать значения поля
     ...
     --fieldN=[value]            Задать значения поля

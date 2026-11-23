@@ -4,6 +4,7 @@ namespace Sprint\Migration;
 
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Traits\CurrentUserTrait;
 
 abstract class VersionBuilder extends Builder
@@ -34,6 +35,45 @@ abstract class VersionBuilder extends Builder
     }
 
     /**
+     * @throws RebuildException
+     */
+    protected function confirmVersionPlan(): void
+    {
+        $confirm = $this->addFieldAndReturn(
+            'confirm_plan',
+            [
+                'title'  => Locale::getMessage('CONFIRM_PLAN'),
+                'note'   => $this->makeVersionPlan(),
+                'select' => [
+                    ['title' => Locale::getMessage('CONFIRM_PLAN_YES'), 'value' => 'y'],
+                    ['title' => Locale::getMessage('CONFIRM_PLAN_NO'), 'value' => 'n'],
+                ],
+                'auto'   => false,
+            ],
+        );
+
+        if (strtolower($confirm) !== 'y') {
+            $this->rebuildField('confirm_plan');
+        }
+    }
+
+    protected function makeVersionPlan(): string
+    {
+        $lines = [$this->getTitle()];
+        foreach ($this->getFields() as $field) {
+            if ($field->hasAutoDescription()) {
+                $desc = $field->makeAutoDescription(
+                    $this->getFieldValue($field->getCode()),
+                );
+                if ($desc) {
+                    $lines[] = $field->getTitle() . ": " . $desc;
+                }
+            }
+        }
+        return implode(PHP_EOL, $lines);
+    }
+
+    /**
      * @throws MigrationException
      */
     protected function createVersionFile(
@@ -41,9 +81,13 @@ abstract class VersionBuilder extends Builder
         array $templateVars = [],
         bool $markAsInstalled = true,
     ): string {
+        $plan = $this->getField('confirm_plan')?->getNote();
+
         $templateVars['description'] = $this->addslashes(
-            $this->getFieldValue('description'),
+            $this->getFieldValue('description')
+            . ($plan ? PHP_EOL . $plan : ''),
         );
+
         $templateVars['author'] = $this->addslashes(
             $this->getCurrentUserLogin(),
         );

@@ -1,4 +1,4 @@
-import {optionsFilter, getMessage, optionsGroup, optionsNames} from "../helpers";
+import {optionsFilter, getMessage, optionsGroup} from "../helpers";
 
 export const CheckboxListField = {
     props: {
@@ -26,7 +26,6 @@ export const CheckboxListField = {
             immediate: true,
             handler(v) {
                 this.selected = Array.isArray(v) ? v.slice() : [];
-                this.$emit('update:description', optionsNames(this.options, this.selected));
             },
         },
     },
@@ -64,7 +63,6 @@ export const CheckboxListField = {
         },
         emitChecked(ids){
             this.$emit('update:value', ids);
-            this.$emit('update:description', optionsNames(this.options, ids));
         }
     },
     template: `

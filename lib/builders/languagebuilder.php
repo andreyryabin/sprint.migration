@@ -59,6 +59,8 @@ class LanguageBuilder extends VersionBuilder
             'multiple' => 1,
         ]);
 
+        $this->confirmVersionPlan();
+
         $this->createVersionFile(
             Module::getModuleTemplateFile('LanguageExport'),
             [

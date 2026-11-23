@@ -231,8 +231,7 @@ class VersionConfig
 
         foreach ($this->getValues() as $key => $val) {
             if ($val === true || $val === false) {
-                $val = ($val) ? 'yes' : 'no';
-                $val = Locale::getMessage('CONFIG_' . $val);
+                $val = Locale::getMessage(($val) ? 'LABEL_YES' : 'LABEL_NO');
             } elseif (is_array($val)) {
                 $fres = [];
                 foreach ($val as $fkey => $fval) {

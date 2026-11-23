@@ -67,6 +67,7 @@ abstract class Builder implements RestartableInterface
     {
         return $this->fields;
     }
+
     /** @return  AbstractField[] */
     public function getUnbindFields(): array
     {
@@ -157,6 +158,11 @@ abstract class Builder implements RestartableInterface
     protected function addField(string $code, array $field): void
     {
         $this->fields[$code] = FieldFactory::createFromArray($code, $field);
+    }
+
+    protected function getField(string $code): ?AbstractField
+    {
+        return $this->fields[$code] ?? null;
     }
 
     protected function getFieldValue(string $code, $default = '')

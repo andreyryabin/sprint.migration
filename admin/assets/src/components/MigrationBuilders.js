@@ -45,7 +45,6 @@ export const MigrationBuilders = {
             progress: [],
             builders: [],
             selected: {},
-            autoDescription: {},
             filter: {search: '',builder: ''},
         };
     },
@@ -71,10 +70,6 @@ export const MigrationBuilders = {
                 return this.filtered.length + ' / ' + this.builders.length
             }
             return this.builders.length;
-        },
-
-        autoDescriptionList() {
-            return Object.values(this.autoDescription || {}).filter(Boolean);
         },
     },
 
@@ -175,7 +170,6 @@ export const MigrationBuilders = {
             this.messages = [];
             this.progress = [];
             this.selected = {};
-            this.autoDescription = {};
 
             const item = this.builders.find(item => item.name === name);
 
@@ -187,14 +181,6 @@ export const MigrationBuilders = {
                 this.saveFilter();
             }
         },
-
-        collectAutoDescription(field, message) {
-            if (!field.auto) {
-                return;
-            }
-            this.autoDescription[field.code] = message ? field.title + ': ' + message : '';
-        },
-
     },
     template: `
       <div>
@@ -279,7 +265,7 @@ export const MigrationBuilders = {
                   />
                   <div
                       v-if="field.note"
-                      class="sp-field-note"
+                      class="sp-info-message"
                       v-html="colorize(field.note)"
                   />
                   <component
@@ -287,7 +273,6 @@ export const MigrationBuilders = {
                       :is="field.component"
                       v-model:value="selected.params[field.code]"
                       v-bind="field.props"
-                      @update:description="collectAutoDescription(field, $event)"
                   />
                 </div>
                 <div class="sp-migration_buttons">
@@ -321,24 +306,6 @@ export const MigrationBuilders = {
                       :key="index"
                       v-bind="colorbind(item.type)"
                       v-text="item.message"
-                  />
-                </div>
-                <div
-                    v-if="autoDescriptionList.length"
-                    class="sp-info-message"
-                >
-                  <div
-                      class="sp-field-title"
-                      v-text="'План миграции'"
-                  />
-                  <div
-                      v-if="selected.title"
-                      v-text="selected.title"
-                  />
-                  <div
-                      v-for="(text,code) in autoDescriptionList"
-                      :key="code"
-                      v-text="text"
                   />
                 </div>
               </div>

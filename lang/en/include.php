@@ -25,6 +25,9 @@ $MESS["{$prefix}SUMMARY_NEW"] = "New migrations";
 $MESS["{$prefix}SUMMARY_INSTALLED"] = "Installed";
 $MESS["{$prefix}SUMMARY_UNKNOWN"] = "Unknown";
 
+$MESS["{$prefix}CONFIRM_PLAN"] = "Migration plan";
+$MESS["{$prefix}CONFIRM_PLAN_YES"] = "Confirm, create file!";
+$MESS["{$prefix}CONFIRM_PLAN_NO"] = "No";
 $MESS["{$prefix}CREATED_SUCCESS"] = "Migration #VERSION# created";
 $MESS["{$prefix}SEARCH"] = "Search";
 $MESS["{$prefix}ADMIN_INTERFACE_HIDDEN"] = "Admin interface hidden";
@@ -38,6 +41,8 @@ $MESS["{$prefix}MODULE_VERSION"] = "Module version: #NAME#";
 $MESS["{$prefix}BITRIX_VERSION"] = "Bitrix version: #NAME#";
 $MESS["{$prefix}PHP_VERSION"] = "PHP version: #NAME#";
 $MESS["{$prefix}CFG_TITLE"] = "Migrations";
+$MESS["{$prefix}LABEL_YES"] = "yes";
+$MESS["{$prefix}LABEL_NO"] = "no";
 
 $MESS["{$prefix}BUILDER_CREATE"] = "Create";
 $MESS["{$prefix}BUILDER_RUN"] = "Run";
@@ -106,8 +111,6 @@ $MESS["{$prefix}CONFIG_console_user"] = "User who run migrations from console";
 $MESS["{$prefix}CONFIG_console_auth_events_disable"] = "Disable auth events in console";
 $MESS["{$prefix}CONFIG_config_file"] = "Config file";
 $MESS["{$prefix}CONFIG_title"] = "Config name";
-$MESS["{$prefix}CONFIG_yes"] = "yes";
-$MESS["{$prefix}CONFIG_no"] = "no";
 $MESS["{$prefix}CONFIG_version_name_template"] = "Version name template";
 $MESS["{$prefix}CONFIG_version_timestamp_format"] = "Timestamp format for creating migration file";
 $MESS["{$prefix}CONFIG_version_timestamp_pattern"] = "Timestamp pattern for search migration files by timestamp format";
@@ -135,7 +138,7 @@ $MESS["{$prefix}BUILDER_AgentExport_agent_id"] = "Agents";
 $MESS["{$prefix}BUILDER_AgentExport_module_id"] = "Modules";
 $MESS["{$prefix}BUILDER_AgentExport_empty_module"] = "-Empty module-";
 
-$MESS["{$prefix}BUILDER_Version1"] = "Create empty migration";
+$MESS["{$prefix}BUILDER_Version1"] = "Empty migration";
 
 $MESS["{$prefix}BUILDER_UserGroupExport1"] = "Migration for user groups";
 $MESS["{$prefix}BUILDER_UserGroupExport2"] = "Set group code (STRING_ID), to see it in the list";

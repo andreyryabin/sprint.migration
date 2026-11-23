@@ -26,7 +26,7 @@ abstract class AbstractField
         return $io->read("[pink](%s) - %s:[/] ", $this->getCode(), $this->getTitle());
     }
 
-    public function setValueFromConsole(mixed $rawValue): mixed
+    public function makeValueFromConsole(string $rawValue): mixed
     {
         return trim($rawValue);
     }
@@ -77,6 +77,11 @@ abstract class AbstractField
     public function hasAutoDescription(): bool
     {
         return $this->autoDescription;
+    }
+
+    public function makeAutoDescription(mixed $value): string
+    {
+        return (string)$value;
     }
 
     protected function getProp(string $name, mixed $defaultValue): mixed
