@@ -38,9 +38,9 @@ class SelectField extends BuilderField
 
     public function checkRequiredValue(mixed $value): bool
     {
-        $options = $this->getProp('options', []);
-        $ids = array_column($options, 'id');
-        return in_array($value, $ids);
+        $ids = array_column($this->getProp('options', []), 'id');
+
+        return in_array($value, $ids, true);
     }
 
 

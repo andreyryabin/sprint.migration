@@ -13,18 +13,19 @@ class CheckboxListField extends SelectField
 
     public function checkRequiredValue(mixed $value): bool
     {
-        if (!is_array($value)) {
+        if (!is_array($value) || empty($value)) {
+            //Пустой список невалиден: отвергаем vacuous truth
             return false;
         }
 
-        $options = $this->getProp('options', []);
-        $ids = array_column($options, 'id');
+        $ids = array_column($this->getProp('options', []), 'id');
 
         foreach ($value as $v) {
-            if (!in_array($v, $ids)) {
+            if (!in_array($v, $ids, true)) {
                 return false;
             }
         }
+
         return true;
     }
 
