@@ -54,7 +54,7 @@ class SubscribeBuilder extends VersionBuilder
         $items = $helper->Subscribe()->exportRubrics($rubricIds);
 
         if (empty($items)) {
-            $this->rebuildField('rubric_ids');
+            $this->resetField('rubric_ids');
         }
 
         $this->confirmVersionPlan();

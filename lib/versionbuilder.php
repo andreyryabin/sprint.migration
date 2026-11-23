@@ -5,6 +5,9 @@ namespace Sprint\Migration;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\RadioListField;
+use Sprint\Migration\Fields\StringField;
+use Sprint\Migration\Fields\TextareaField;
 use Sprint\Migration\Traits\CurrentUserTrait;
 
 abstract class VersionBuilder extends Builder
@@ -13,24 +16,20 @@ abstract class VersionBuilder extends Builder
 
     protected function addVersionFields(): void
     {
-        $this->addField(
-            'prefix',
-            [
-                'title'   => Locale::getMessage('FORM_PREFIX'),
-                'value'   => $this->getVersionConfig()->getVal('version_prefix'),
-                'width'   => 250,
-                'in_plan' => false,
-            ],
+        $this->showField('prefix',
+            (new StringField())
+                ->setTitle(Locale::getMessage('FORM_PREFIX'))
+                ->setDefaultValue($this->getVersionConfig()->getVal('version_prefix'))
+                ->setSize(35)
+                ->setInPlan(false),
         );
 
-        $this->addField(
-            'description',
-            [
-                'title'   => Locale::getMessage('FORM_DESCR'),
-                'width'   => 350,
-                'height'  => 40,
-                'in_plan' => false,
-            ],
+        $this->showField('description',
+            (new TextareaField())
+                ->setTitle(Locale::getMessage('FORM_DESCR'))
+                ->setCols(35)
+                ->setRows(4)
+                ->setInPlan(false),
         );
     }
 
@@ -39,30 +38,26 @@ abstract class VersionBuilder extends Builder
      */
     protected function confirmVersionPlan(): void
     {
-        $confirm = $this->addFieldAndReturn(
-            'confirm',
-            [
-                'title'   => Locale::getMessage('CONFIRM_PLAN'),
-                'select'  => [
-                    ['title' => Locale::getMessage('CONFIRM_PLAN_YES'), 'value' => 'y'],
-                    ['title' => Locale::getMessage('CONFIRM_PLAN_NO'), 'value' => 'n'],
-                ],
-                'in_plan' => false,
-            ],
+        $confirm = $this->askField('confirm',
+            (new RadioListField())
+                ->setTitle(Locale::getMessage('CONFIRM_PLAN'))
+                ->addOption('y', Locale::getMessage('CONFIRM_PLAN_YES'))
+                ->addOption('n', Locale::getMessage('CONFIRM_PLAN_NO'))
+                ->setInPlan(false),
         );
 
         if (strtolower($confirm) !== 'y') {
-            $this->rebuildField('confirm');
+            $this->resetField('confirm');
         }
     }
 
     protected function getVersionPlan(): string
     {
         $lines = [$this->getTitle()];
-        foreach ($this->getFields() as $field) {
+        foreach ($this->getFields() as $code => $field) {
             if ($field->isInPlan()) {
                 $lines[] = $field->makePlanText(
-                    $this->getFieldValue($field->getCode()),
+                    $this->getFieldValue($code),
                 );
             }
         }
@@ -190,6 +185,9 @@ abstract class VersionBuilder extends Builder
         return $ts;
     }
 
+    /**
+     * @throws MigrationException
+     */
     protected function getVersionExchangeDir(): string
     {
         return $this->getVersionConfig()->getVersionExchangeDir(

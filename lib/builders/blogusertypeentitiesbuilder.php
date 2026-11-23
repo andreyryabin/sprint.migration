@@ -50,7 +50,7 @@ class BlogUserTypeEntitiesBuilder extends VersionBuilder
         $entities = $helper->UserTypeEntity()->exportUserTypeEntitiesByIds($fieldIds);
 
         if (empty($entities)) {
-            $this->rebuildField('entity_fields');
+            $this->resetField('entity_fields');
         }
 
         $this->confirmVersionPlan();

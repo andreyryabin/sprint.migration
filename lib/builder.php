@@ -7,10 +7,10 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
 use Sprint\Migration\Exchange\ExchangeHelpers;
-use Sprint\Migration\Fields\AbstractField;
-use Sprint\Migration\Fields\FieldFactory;
+use Sprint\Migration\Fields\BuilderField;
 use Sprint\Migration\Interfaces\RestartableInterface;
 use Sprint\Migration\Output\OutputTrait;
+use Sprint\Migration\Traits\LegacyBuilderTrait;
 use Sprint\Migration\Traits\RestartableTrait;
 use Sprint\Migration\Traits\VersionConfigTrait;
 
@@ -20,6 +20,7 @@ abstract class Builder implements RestartableInterface
     use OutputTrait;
     use RestartableTrait;
     use VersionConfigTrait;
+    use LegacyBuilderTrait;
 
     private array $info = [
         'title'       => '',
@@ -27,7 +28,7 @@ abstract class Builder implements RestartableInterface
         'group'       => '',
     ];
 
-    /** @var AbstractField[] */
+    /** @var BuilderField[] */
     private array $fields = [];
 
     private HelperManager $helperManager;
@@ -43,6 +44,7 @@ abstract class Builder implements RestartableInterface
 
         $this->initialize();
     }
+
 
     abstract protected function initialize();
 
@@ -62,19 +64,48 @@ abstract class Builder implements RestartableInterface
 
     abstract protected function isBuilderEnabled();
 
-    /** @return  AbstractField[] */
+    /** @return  BuilderField[] */
     public function getFields(): array
     {
         return $this->fields;
     }
 
-    /** @return  AbstractField[] */
+    /** @return  BuilderField[] */
     public function getUnbindFields(): array
     {
         return array_filter(
             $this->fields,
-            fn(AbstractField $field) => !isset($this->params[$field->getCode()]),
+            fn(string $code) => !isset($this->params[$code]),
+            ARRAY_FILTER_USE_KEY,
         );
+    }
+
+    /**
+     * @throws RebuildException
+     */
+    private function checkUnbindFields(): void
+    {
+        foreach ($this->fields as $code => $field) {
+            if (!isset($this->params[$code])) {
+                throw new RebuildException();
+            }
+        }
+    }
+
+    public function cleanParamsSkipFields(): void
+    {
+        $cleaned = [];
+        foreach ($this->getFields() as $code => $field) {
+            $cleaned[$code] = $this->params[$code] ?? $field->getDefaultValue();
+        }
+        $this->setRestartParams($cleaned);
+    }
+
+    public function mergeParamsWithFields(): void
+    {
+        foreach ($this->getFields() as $code => $field) {
+            $this->params[$code] ??= $field->getDefaultValue();
+        }
     }
 
     /**
@@ -83,22 +114,11 @@ abstract class Builder implements RestartableInterface
      */
     public function start(): void
     {
-        $this->checkBindedFields();
+        $this->checkUnbindFields();
 
         $this->execute();
     }
 
-    /**
-     * @throws RebuildException
-     */
-    private function checkBindedFields(): void
-    {
-        foreach ($this->fields as $field) {
-            if (!isset($this->params[$field->getCode()])) {
-                throw new RebuildException();
-            }
-        }
-    }
 
     /**
      * @throws RebuildException
@@ -140,29 +160,50 @@ abstract class Builder implements RestartableInterface
     }
 
     /**
+     * Показать поле в форме (без возврата значения).
+     * Используйте, когда нужно добавить несколько несвязанных полей.
+     */
+    protected function showField(string $code, BuilderField $field): void
+    {
+        $this->fields[$code] = $field;
+    }
+
+    /**
+     * Показать поле и вернуть его значение (спросить пользователя).
+     * Форма не пропустит этот шаг, пока поле не будет заполнено
      * @throws RebuildException
      */
-    protected function addFieldAndReturn(string $code, array $field)
+    protected function askField(string $code, BuilderField $field): mixed
     {
-        $field['required'] = true;
+        $field->setRequired(true);
 
-        $this->addField($code, $field);
+        $this->showField($code, $field);
 
         $value = $this->getFieldValue($code);
 
         if (empty($value)) {
-            $this->rebuildField($code);
+            $this->resetField($code);
         }
 
         return $value;
     }
 
-    protected function addField(string $code, array $field): void
+    /**
+     * Сбрасывает значение поля и переспрашивает пользователя.
+     * Вызывает перестройку форму в админке или повтор ввода в консоли
+     * @throws RebuildException
+     */
+    protected function resetField(string $code)
     {
-        $this->fields[$code] = FieldFactory::createFromArray($code, $field);
+        if (isset($this->params[$code])) {
+            unset($this->params[$code]);
+        }
+
+        throw new RebuildException();
     }
 
-    protected function getField(string $code): ?AbstractField
+
+    protected function getField(string $code): ?BuilderField
     {
         return $this->fields[$code] ?? null;
     }
@@ -177,17 +218,6 @@ abstract class Builder implements RestartableInterface
         $this->params[$code] = $value;
     }
 
-    /**
-     * @throws RebuildException
-     */
-    protected function rebuildField(string $code)
-    {
-        if (isset($this->params[$code])) {
-            unset($this->params[$code]);
-        }
-
-        throw new RebuildException();
-    }
 
     protected function setTitle(string $title = ''): void
     {

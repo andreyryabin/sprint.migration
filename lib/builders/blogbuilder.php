@@ -11,12 +11,12 @@ use Sprint\Migration\VersionBuilder;
 
 class BlogBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Blog()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Blog'));
 

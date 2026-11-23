@@ -102,7 +102,7 @@ class IblockElementsBuilder extends VersionBuilder
 
         $iblock = $exhelper->exportIblock($iblockId);
         if (empty($iblock)) {
-            $this->rebuildField('iblock_id');
+            $this->resetField('iblock_id');
         }
 
         return $iblockId;

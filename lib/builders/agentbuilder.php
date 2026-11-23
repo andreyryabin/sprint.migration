@@ -2,18 +2,22 @@
 
 namespace Sprint\Migration\Builders;
 
+use Sprint\Migration\Exceptions\HelperException;
+use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Exceptions\RebuildException;
+use Sprint\Migration\Fields\CheckboxListField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\VersionBuilder;
 
 class AgentBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled()
+    protected function isBuilderEnabled(): bool
     {
         return true;
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_AgentExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_AgentExport2'));
@@ -22,7 +26,12 @@ class AgentBuilder extends VersionBuilder
         $this->addVersionFields();
     }
 
-    protected function execute()
+    /**
+     * @throws MigrationException
+     * @throws RebuildException
+     * @throws HelperException
+     */
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
 
@@ -32,11 +41,11 @@ class AgentBuilder extends VersionBuilder
             'NAME'      => $item['NAME'],
         ], $helper->Agent()->getList());
 
-        $agentIds = $this->addFieldAndReturn('agent_id', [
-            'title'    => Locale::getMessage('BUILDER_AgentExport_agent_id'),
-            'items'    => $this->createStructure($agents, 'ID', 'NAME', 'MODULE_ID'),
-            'multiple' => true,
-        ]);
+        $agentIds = $this->askField('agent_id',
+            (new CheckboxListField())
+            ->setTitle(Locale::getMessage('BUILDER_AgentExport_agent_id'))
+            ->setOptions($agents, 'ID', 'NAME', 'MODULE_ID')
+        );
 
         $items = array_map(
             fn($agentId) => $helper->Agent()->exportAgentById($agentId),
@@ -44,7 +53,7 @@ class AgentBuilder extends VersionBuilder
         );
 
         if (empty($items)) {
-            $this->rebuildField('agent_id');
+            $this->resetField('agent_id');
         }
 
         $this->confirmVersionPlan();

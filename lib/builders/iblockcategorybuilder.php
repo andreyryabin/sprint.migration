@@ -45,7 +45,7 @@ class IblockCategoryBuilder extends VersionBuilder
 
         $iblock = $helper->Iblock()->exportIblock($iblockId);
         if (empty($iblock)) {
-            $this->rebuildField('iblock_id');
+            $this->resetField('iblock_id');
         }
 
         $sectionTree = $helper->Iblock()->exportSectionsTree($iblockId);

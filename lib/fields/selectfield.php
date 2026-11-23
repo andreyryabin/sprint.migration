@@ -5,12 +5,31 @@ namespace Sprint\Migration\Fields;
 use Sprint\Migration\Exceptions\ConsoleException;
 use Sprint\Migration\Interfaces\ConsoleInterface;
 
-class SelectField extends AbstractField
+class SelectField extends BuilderField
 {
 
     public function addOption(string $id, string $name, string $group = '-'): static
     {
-        return $this->addToProp('options', ['id' => $id, 'name' => $name, 'group' => $group]);
+        return $this->addToProp('options', [
+            'id'    => $id,
+            'name'  => $name,
+            'group' => $group,
+        ]);
+    }
+
+    public function setOptions(array $items, string $idKey, string $nameKey, string $groupKey = '-'): static
+    {
+        $options = [];
+        foreach ($items as $item) {
+            if (isset($item[$idKey])) {
+                $options[] = [
+                    'id'    => $item[$idKey],
+                    'name'  => $item[$nameKey] ?? $item[$idKey],
+                    'group' => $item[$groupKey] ?? '-',
+                ];
+            }
+        }
+        return $this->setProp('options', $options);
     }
 
     public function getDefaultValue(): mixed
@@ -27,9 +46,9 @@ class SelectField extends AbstractField
         return '';
     }
 
-    public function readValueFromConsole(ConsoleInterface $io): string
+    public function readValueFromConsole(ConsoleInterface $io, string $code): string
     {
-        $this->printFieldToConsole($io);
+        $this->printFieldToConsole($io, $code);
 
         return $io->read("Select one: ");
     }
@@ -49,9 +68,9 @@ class SelectField extends AbstractField
     /**
      * @throws ConsoleException
      */
-    protected function printFieldToConsole(ConsoleInterface $io): void
+    protected function printFieldToConsole(ConsoleInterface $io, string $code): void
     {
-        $io->print("[pink](%s) - %s[/]", $this->getCode(), $this->getTitle());
+        $io->print("[pink](%s) - %s[/]", $code, $this->getTitle());
 
         $grouped = $this->groupOptions($this->getProp('options', []));
 

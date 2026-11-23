@@ -53,7 +53,7 @@ class SaleDiscountBuilder extends VersionBuilder
         $items = $helper->SaleDiscount()->exportDiscounts($discountIds);
 
         if (empty($items)) {
-            $this->rebuildField('discounts');
+            $this->resetField('discounts');
         }
 
         $this->confirmVersionPlan();

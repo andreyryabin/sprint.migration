@@ -5,17 +5,17 @@ namespace Sprint\Migration\Fields;
 class FieldFactory
 {
 
-    public static function createFromArray(string $code, array $field): AbstractField
+    public static function createFromArray(array $field): BuilderField
     {
         if (!empty($field['height'])) {
-            $obj = new TextareaField($code);
+            $obj = new TextareaField();
             $obj->setPlaceholder($field['placeholder'] ?? '');
             $obj->setRows(round($field['height'] / 10));
             if (isset($field['width'])) {
                 $obj->setCols(round($field['width'] / 10));
             }
         } elseif (isset($field['select']) || isset($field['items'])) {
-            $obj = $field['multiple'] ? new CheckboxListField($code) : new RadioListField($code);
+            $obj = $field['multiple'] ? new CheckboxListField() : new RadioListField();
             if (isset($field['select'])) {
                 self::addOptionsFromSelect($obj, $field['select']);
             }
@@ -23,7 +23,7 @@ class FieldFactory
                 self::addOptionsFromStructure($obj, $field['items']);
             }
         } else {
-            $obj = new StringField($code);
+            $obj = new StringField();
             $obj->setDefaultValue($field['value'] ?? '');
             $obj->setPlaceholder($field['placeholder'] ?? '');
             if (isset($field['width'])) {
@@ -42,7 +42,7 @@ class FieldFactory
     private static function addOptionsFromSelect(SelectField $field, array $select): void
     {
         foreach ($select as $item) {
-            $field->addOption((string)$item['value'], $item['title']);
+            $field->addOption((string) $item['value'], $item['title']);
         }
     }
 
@@ -50,10 +50,8 @@ class FieldFactory
     {
         foreach ($items as $group) {
             foreach ($group['items'] as $item) {
-                $field->addOption((string)$item['value'], $item['title'], $group['title'] ?? '-');
+                $field->addOption((string) $item['value'], $item['title'], $group['title'] ?? '-');
             }
         }
     }
-
-
 }

@@ -30,9 +30,9 @@ class CheckboxListField extends SelectField
         return '';
     }
 
-    public function readValueFromConsole(ConsoleInterface $io): string
+    public function readValueFromConsole(ConsoleInterface $io, string $code): string
     {
-        $this->printFieldToConsole($io);
+        $this->printFieldToConsole($io, $code);
 
         return $io->read("Select any (separated by space): ");
     }

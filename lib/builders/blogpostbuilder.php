@@ -57,7 +57,7 @@ class BlogPostBuilder extends VersionBuilder
 
         $filter = $this->getPostFilter();
         if (!$exhelper->BlogExchange()->getWriterRecordsCount($blogId, $filter)) {
-            $this->rebuildField('post_filter_mode');
+            $this->resetField('post_filter_mode');
         }
 
         $this->confirmVersionPlan();

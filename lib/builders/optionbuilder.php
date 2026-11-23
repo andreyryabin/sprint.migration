@@ -72,7 +72,7 @@ class OptionBuilder extends VersionBuilder
         }
 
         if (empty($items)) {
-            $this->rebuildField('module_id');
+            $this->resetField('module_id');
         }
 
         $this->confirmVersionPlan();

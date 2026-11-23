@@ -41,7 +41,7 @@ class HlblockBuilder extends VersionBuilder
 
         $hlblock = $helper->Hlblock()->exportHlblock($hlblockId);
         if (empty($hlblockId)) {
-            $this->rebuildField('hlblock_id');
+            $this->resetField('hlblock_id');
         }
 
         $what = $this->addFieldAndReturn('what', [

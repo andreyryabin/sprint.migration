@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration\Fields;
 
-class TextareaField extends AbstractField
+class TextareaField extends BuilderField
 {
 
     public function setRows(int $rowsCnt): static

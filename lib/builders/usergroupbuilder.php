@@ -53,7 +53,7 @@ class UserGroupBuilder extends VersionBuilder
         }
 
         if (empty($items)) {
-            $this->rebuildField('user_group');
+            $this->resetField('user_group');
         }
 
         $this->confirmVersionPlan();

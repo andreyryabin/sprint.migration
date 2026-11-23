@@ -14,7 +14,6 @@ use Sprint\Migration\BuilderManager;
 use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\MigrationException;
-use Sprint\Migration\Fields\AbstractField;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\Output\RestOutput;
@@ -103,49 +102,35 @@ class BuilderController extends Controller
     private function getBuilderForm(Builder $builder, bool $newform): array
     {
         if ($newform) {
-            $this->cleanParams($builder);
+            $builder->cleanParamsSkipFields();
         } else {
-            $this->mergeParams($builder);
+            $builder->mergeParamsWithFields();
         }
 
         return $this->builderToArray($builder);
     }
 
-    private function cleanParams(Builder $builder): void
-    {
-        $params = $builder->getRestartParams();
-        $cleaned = [];
-        foreach ($builder->getFields() as $field) {
-            $cleaned[$field->getCode()] = $params[$field->getCode()] ?? $field->getDefaultValue();
-        }
-        $builder->setRestartParams($cleaned);
-    }
-
-    private function mergeParams(Builder $builder): void
-    {
-        $params = $builder->getRestartParams();
-        foreach ($builder->getFields() as $field) {
-            $params[$field->getCode()] ??= $field->getDefaultValue();
-        }
-        $builder->setRestartParams($params);
-    }
-
     private function builderToArray(Builder $builder): array
     {
+        $fields = [];
+        foreach ($builder->getFields() as $code => $field) {
+            $fields[] = [
+                'code'      => $code,
+                'title'     => $field->getTitle(),
+                'note'      => $field->getNote(),
+                'required'  => $field->isRequired(),
+                'component' => $field->getComponentName(),
+                'props'     => $field->getProps(),
+            ];
+        }
+
         return [
             'name'   => $builder->getName(),
             'title'  => $builder->getTitle(),
             'group'  => $builder->getGroup(),
             'note'   => $builder->getDescription(),
             'params' => $builder->getRestartParams(),
-            'fields' => array_map(fn(AbstractField $field) => [
-                'code'      => $field->getCode(),
-                'title'     => $field->getTitle(),
-                'note'      => $field->getNote(),
-                'required'  => $field->isRequired(),
-                'component' => $field->getComponentName(),
-                'props'     => $field->getProps(),
-            ], $builder->getFields()),
+            'fields' => $fields,
         ];
     }
 

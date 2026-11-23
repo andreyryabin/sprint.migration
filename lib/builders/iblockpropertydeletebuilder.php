@@ -82,7 +82,7 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
         $propertyCodes = array_values(array_unique(array_filter($propertyCodes)));
 
         if (empty($propertyCodes)) {
-            $this->rebuildField('property_ids');
+            $this->resetField('property_ids');
         }
 
         $this->confirmVersionPlan();

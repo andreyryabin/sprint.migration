@@ -40,7 +40,7 @@ class IblockDeleteBuilder extends VersionBuilder
         ]);
 
         if (empty($iblockIds)) {
-            $this->rebuildField('iblock_ids');
+            $this->resetField('iblock_ids');
         }
 
         $selectedIblocks = [];

@@ -54,7 +54,7 @@ class ForumBuilder extends VersionBuilder
         $forums = $helper->Forum()->exportForums($forumIds);
 
         if (empty($forums)) {
-            $this->rebuildField('forum_ids');
+            $this->resetField('forum_ids');
         }
 
         $this->confirmVersionPlan();

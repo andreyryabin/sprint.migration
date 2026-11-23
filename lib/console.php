@@ -398,9 +398,9 @@ class Console
         $this->output->print("%s [%s]", $builder->getTitle(), $builder->getName());
 
         do {
-            foreach ($builder->getUnbindFields() as $field) {
-                $raw = $defaultValues[$field->getCode()] ?? $field->readValueFromConsole($this->output);
-                $builder->setFieldValue($field->getCode(), $field->makeValueFromConsole($raw));
+            foreach ($builder->getUnbindFields() as $code => $field) {
+                $raw = $defaultValues[$code] ?? $field->readValueFromConsole($this->output, $code);
+                $builder->setFieldValue($code, $field->makeValueFromConsole($raw));
             }
             $result = $this->builderManager->startBuilder($builder);
         } while ($result->needRestart() || $result->needRebuild());
@@ -441,7 +441,7 @@ class Console
         if ($this->getArg('--new')) {
             $status = VersionEnum::STATUS_NEW;
         } elseif ($this->getArg('--installed')) {
-            $status = VersionEnum::STATUS_UNKNOWN;
+            $status = VersionEnum::STATUS_INSTALLED;
         } elseif ($this->getArg('--unknown')) {
             $status = VersionEnum::STATUS_INSTALLED;
         } else {

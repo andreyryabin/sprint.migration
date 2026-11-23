@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration\Fields;
 
-class StringField extends AbstractField
+class StringField extends BuilderField
 {
     private string $defaultValue = '';
 

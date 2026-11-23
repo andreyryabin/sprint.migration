@@ -6,7 +6,7 @@ use ReflectionClass;
 use Sprint\Migration\Exceptions\ConsoleException;
 use Sprint\Migration\Interfaces\ConsoleInterface;
 
-abstract class AbstractField
+abstract class BuilderField
 {
     private string $name;
     private array $props = [];
@@ -15,16 +15,16 @@ abstract class AbstractField
     private bool $inPlan = true;
     private bool $isRequired = false;
 
-    public function __construct(private readonly string $code) {}
+    public function __construct() {}
 
     abstract public function getDefaultValue(): mixed;
 
     /**
      * @throws ConsoleException
      */
-    public function readValueFromConsole(ConsoleInterface $io): string
+    public function readValueFromConsole(ConsoleInterface $io, string $code): string
     {
-        return $io->read("[pink](%s) - %s:[/] ", $this->getCode(), $this->getTitle());
+        return $io->read("[pink](%s) - %s:[/] ", $code, $this->getTitle());
     }
 
     public function makePlanText(mixed $value): string
@@ -35,11 +35,6 @@ abstract class AbstractField
     public function makeValueFromConsole(string $rawValue): mixed
     {
         return trim($rawValue);
-    }
-
-    public function getCode(): string
-    {
-        return $this->code;
     }
 
     public function getComponentName(): string
