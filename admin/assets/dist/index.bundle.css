@@ -361,6 +361,10 @@ a.sp-item-unknown:visited {
     margin-bottom: 10px;
 }
 
+.sp-selector_row:last-child {
+    margin-bottom: 0;
+}
+
 .sp-selector_row label {
     display: block;
 }
