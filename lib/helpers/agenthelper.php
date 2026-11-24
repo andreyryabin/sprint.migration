@@ -110,6 +110,8 @@ class AgentHelper extends Helper
     public function deleteAgent(string $moduleId, string $name): bool
     {
         CAgent::RemoveAgent($name, $moduleId);
+
+        $this->outNotice(Locale::getMessage('AGENT_DELETED', ['#NAME#' => $name]));
         return true;
     }
 

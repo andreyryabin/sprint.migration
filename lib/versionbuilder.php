@@ -47,7 +47,8 @@ abstract class VersionBuilder extends Builder
         );
 
         if (strtolower($confirm) !== 'y') {
-            $this->resetField('confirm');
+            $this->resetBuilder();
+            throw new RebuildException();
         }
     }
 

@@ -25,9 +25,9 @@ $MESS["{$prefix}SUMMARY_NEW"] = "New migrations";
 $MESS["{$prefix}SUMMARY_INSTALLED"] = "Installed";
 $MESS["{$prefix}SUMMARY_UNKNOWN"] = "Unknown";
 
-$MESS["{$prefix}CONFIRM_PLAN"] = "Migration plan";
-$MESS["{$prefix}CONFIRM_PLAN_YES"] = "Confirm, create file!";
-$MESS["{$prefix}CONFIRM_PLAN_NO"] = "No";
+$MESS["{$prefix}CONFIRM_PLAN"] = "Create migration?";
+$MESS["{$prefix}CONFIRM_PLAN_YES"] = "Yes, create file";
+$MESS["{$prefix}CONFIRM_PLAN_NO"] = "No, reset form";
 $MESS["{$prefix}CREATED_SUCCESS"] = "Migration #VERSION# created";
 $MESS["{$prefix}SEARCH"] = "Search";
 $MESS["{$prefix}ADMIN_INTERFACE_HIDDEN"] = "Admin interface hidden";

@@ -26,9 +26,9 @@ $MESS["{$prefix}SUMMARY_NEW"] = "Новые миграции";
 $MESS["{$prefix}SUMMARY_INSTALLED"] = "Установленные";
 $MESS["{$prefix}SUMMARY_UNKNOWN"] = "Неизвестные";
 
-$MESS["{$prefix}CONFIRM_PLAN"] = "План миграции";
-$MESS["{$prefix}CONFIRM_PLAN_YES"] = "Подтверждаю, создать файл";
-$MESS["{$prefix}CONFIRM_PLAN_NO"] = "Нет";
+$MESS["{$prefix}CONFIRM_PLAN"] = "Создать миграцию с этими настройками?";
+$MESS["{$prefix}CONFIRM_PLAN_YES"] = "Да, создать файл";
+$MESS["{$prefix}CONFIRM_PLAN_NO"] = "Нет, очистить форму";
 $MESS["{$prefix}CREATED_SUCCESS"] = "Миграция #VERSION# создана";
 $MESS["{$prefix}SEARCH"] = "Поиск";
 $MESS["{$prefix}ADMIN_INTERFACE_HIDDEN"] = "Управление миграциями через админку отключено";

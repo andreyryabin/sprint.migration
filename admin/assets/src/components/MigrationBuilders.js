@@ -282,12 +282,6 @@ export const MigrationBuilders = {
                       :value="getMessage(running ? 'PAUSE' : 'BUILDER_NEXT')"
                       @click="replayBuilder"
                   />
-                  <input
-                      :class="{'adm-btn': true,'sp-disabled':running}"
-                      type="button"
-                      :value="getMessage('BUILDER_RESET')"
-                      @click="selectBuilder(selected.name)"
-                  />
                   <span
                       v-if="loading2"
                       class="sp-loading"

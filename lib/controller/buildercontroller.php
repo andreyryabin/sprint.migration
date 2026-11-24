@@ -102,9 +102,9 @@ class BuilderController extends Controller
     private function getBuilderForm(Builder $builder, bool $newform): array
     {
         if ($newform) {
-            $builder->cleanParamsSkipFields();
+            $builder->cleanParamsExceptFieldValues();
         } else {
-            $builder->mergeParamsWithFields();
+            $builder->mergeParamsWithFieldValue();
         }
 
         return $this->builderToArray($builder);

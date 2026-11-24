@@ -92,7 +92,7 @@ abstract class Builder implements RestartableInterface
         }
     }
 
-    public function cleanParamsSkipFields(): void
+    public function cleanParamsExceptFieldValues(): void
     {
         $cleaned = [];
         foreach ($this->getFields() as $code => $field) {
@@ -101,11 +101,18 @@ abstract class Builder implements RestartableInterface
         $this->setRestartParams($cleaned);
     }
 
-    public function mergeParamsWithFields(): void
+    public function mergeParamsWithFieldValue(): void
     {
         foreach ($this->getFields() as $code => $field) {
             $this->params[$code] ??= $field->getDefaultValue();
         }
+    }
+
+    public function resetBuilder(): void
+    {
+        $this->fields = [];
+        $this->params = [];
+        $this->initialize();
     }
 
     /**

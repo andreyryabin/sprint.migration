@@ -16,4 +16,8 @@ interface ConsoleInterface
      */
     public function print(string $msg, ...$vars): void;
 
+    /**
+     * @throws ConsoleException
+     */
+    public function lines(string $msg, string $lines): void;
 }
