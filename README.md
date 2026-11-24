@@ -44,6 +44,13 @@
 [https://github.com/andreyryabin/sprint.migration/wiki/Работа-в-консоли](https://github.com/andreyryabin/sprint.migration/wiki/Работа-в-консоли)
 
 
+Консоль битрикс
+-------------------------
+```
+php bitrix.php sprint:migration --config=ddd up
+php bitrix.php sprint:migration make UserGroupBuilder --prefix=3333 --description="" --user_group="4 5" --confirm=y
+```
+
 Скриншоты
 -------------------------
 Админка миграций

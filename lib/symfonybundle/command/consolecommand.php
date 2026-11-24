@@ -6,88 +6,30 @@ use Sprint\Migration\Console;
 use Sprint\Migration\Module;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 class ConsoleCommand extends Command
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('sprint:migration')
-             ->setDescription('Migration console');
-
-        foreach ($this->getArguments() as $name) {
-            $this->addArgument($name);
-        }
-
-        foreach ($this->getOptionsWithoutValues() as $name) {
-            $this->addOption($name);
-        }
-        foreach ($this->getOptionsWithValues() as $name) {
-            $this->addOption($name, null, InputOption::VALUE_REQUIRED);
-        }
-    }
-
-    protected function getArguments(): array
-    {
-        return [
-            'arg1',
-            'arg2',
-            'arg3',
-            'arg4',
-            'arg5',
-        ];
-    }
-
-    protected function getOptionsWithoutValues(): array
-    {
-        return [
-            'new',
-            'installed',
-            'unknown',
-            'modified',
-            'older',
-            'actual',
-            'down',
-        ];
-    }
-
-    protected function getOptionsWithValues(): array
-    {
-        return [
-            'config',
-            'as',
-            'search',
-            'tag',
-            'add-tag',
-        ];
+             ->setDescription('Migration console')
+             ->ignoreValidationErrors();;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $args = [];
-        foreach ($input->getArguments() as $val) {
-            if ($val) {
-                $args[] = $val;
-            }
-        }
+        $script = $_SERVER['argv'][0] . ' ' . $_SERVER['argv'][1];
 
-        foreach ($input->getOptions() as $key => $val) {
-            if ($val) {
-                if (in_array($key, $this->getOptionsWithoutValues())) {
-                    $args[] = '--' . $key;
-                } else {
-                    $args[] = '--' . $key . '=' . $val;
-                }
-            }
-        }
+        $args = [$script, ...array_slice($_SERVER['argv'], 2)];
+
         try {
             Module::checkHealth();
             $console = new Console($args);
             $console->executeConsoleCommand();
             return self::SUCCESS;
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return self::FAILURE;
         }
     }

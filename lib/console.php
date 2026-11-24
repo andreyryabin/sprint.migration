@@ -12,6 +12,7 @@ use Sprint\Migration\Exceptions\ConsoleException;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Output\ConsoleOutput;
 use Sprint\Migration\Traits\CurrentUserTrait;
+use Sprint\Migration\Traits\LegacyConsoleTrait;
 
 class Console
 {
@@ -26,6 +27,7 @@ class Console
     private string $configName;
 
     use CurrentUserTrait;
+    use LegacyConsoleTrait;
 
     /**
      * @throws MigrationException
@@ -270,10 +272,11 @@ class Console
     }
 
     /**
+     * @publicApi
      * @throws MigrationException
      * @throws ConsoleException
      */
-    public function commandList(): void
+    public function commandLs(): void
     {
         $versions = $this->getVersionsByArgs();
 
@@ -350,35 +353,6 @@ class Console
         $this->executeBuilderByArgs();
     }
 
-    /**
-     * @publicApi
-     * @throws MigrationException
-     * @throws ConsoleException
-     */
-    public function commandLs(): void
-    {
-        $this->commandList();
-    }
-
-    /**
-     * @throws MigrationException
-     * @throws ConsoleException
-     * @publicApi
-     */
-    public function commandDel(): void
-    {
-        $this->commandDelete();
-    }
-
-    /**
-     * @publicApi
-     * @throws MigrationException
-     */
-    public function commandMi(): void
-    {
-        /** @compability */
-        $this->commandMigrate();
-    }
 
     /**
      * @throws BuilderException
