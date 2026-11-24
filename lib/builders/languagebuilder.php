@@ -57,7 +57,7 @@ class LanguageBuilder extends VersionBuilder
                 ->setOptions($allLangs, 'LID', 'NAME'),
         );
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('LanguageExport'),

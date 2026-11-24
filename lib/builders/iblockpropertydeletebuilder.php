@@ -61,7 +61,7 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
                 ->setOptions($exhelper->IblockExchange()->getIblockPropertiesSelect($iblockId), 'CODE', 'TITLE'),
         );
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockPropertyDelete'),

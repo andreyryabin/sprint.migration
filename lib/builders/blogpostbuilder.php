@@ -63,7 +63,7 @@ class BlogPostBuilder extends VersionBuilder
             $this->resetField('post_filter_mode');
         }
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         (new RestartableWriter($this, $this->getVersionExchangeDir()))
             ->setExchangeResource('blog_posts.xml')

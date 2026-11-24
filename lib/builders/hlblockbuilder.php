@@ -78,7 +78,7 @@ class HlblockBuilder extends VersionBuilder
             $exportElementList = $helper->UserOptions()->exportHlblockList($hlblockId);
         }
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('HlblockExport'),

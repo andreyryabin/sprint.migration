@@ -36,13 +36,13 @@ abstract class VersionBuilder extends Builder
     /**
      * @throws RebuildException
      */
-    protected function confirmVersionPlan(): void
+    protected function confirmCreateVersion(): void
     {
         $confirm = $this->askField('confirm',
             (new RadioListField())
-                ->setTitle(Locale::getMessage('CONFIRM_PLAN'))
-                ->addOption('y', Locale::getMessage('CONFIRM_PLAN_YES'))
-                ->addOption('n', Locale::getMessage('CONFIRM_PLAN_NO'))
+                ->setTitle(Locale::getMessage('CONFIRM_CREATE'))
+                ->addOption('y', Locale::getMessage('CONFIRM_CREATE_YES'))
+                ->addOption('n', Locale::getMessage('CONFIRM_CREATE_NO'))
                 ->setInPlan(false),
         );
 

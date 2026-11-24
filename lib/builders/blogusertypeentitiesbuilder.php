@@ -54,7 +54,7 @@ class BlogUserTypeEntitiesBuilder extends VersionBuilder
             $this->resetField('entity_fields');
         }
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('UserTypeEntities'),

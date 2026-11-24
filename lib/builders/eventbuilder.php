@@ -54,7 +54,7 @@ class EventBuilder extends VersionBuilder
             ];
         }
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('EventExport'),

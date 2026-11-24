@@ -58,7 +58,7 @@ class ForumBuilder extends VersionBuilder
             $this->resetField('forum_ids');
         }
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('ForumExport'),

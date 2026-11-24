@@ -66,7 +66,7 @@ class IblockPropertyBuilder extends VersionBuilder
             $properties,
         );
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockPropertyExport'),

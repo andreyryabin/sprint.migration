@@ -56,7 +56,7 @@ class IblockElementsBuilder extends VersionBuilder
         $exportFields = $this->getFieldValueExportFields($iblockId, $updateMethod, $exportFilter);
         $exportProps = $this->getFieldValueExportProps($iblockId);
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         (new RestartableWriter($this, $this->getVersionExchangeDir()))
             ->setExchangeResource('iblock_elements.xml')

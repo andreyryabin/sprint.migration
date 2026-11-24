@@ -58,7 +58,7 @@ class VoteBuilder extends VersionBuilder
 
         unset($vote['CHANNEL_ID']);
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('VoteExport'),

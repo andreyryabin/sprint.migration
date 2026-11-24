@@ -64,7 +64,7 @@ class UserOptionsBuilder extends VersionBuilder
             );
         }
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('UserOptionsExport'),

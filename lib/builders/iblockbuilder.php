@@ -123,7 +123,7 @@ class IblockBuilder extends VersionBuilder
             $exportSectionGrid = $helper->UserOptions()->exportSectionGrid($iblockId);
         }
 
-        $this->confirmVersionPlan();
+        $this->confirmCreateVersion();
 
         $this->createVersionFile(
             Module::getModuleTemplateFile('IblockExport'),
