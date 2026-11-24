@@ -101,6 +101,7 @@ class BlogPostBuilder extends VersionBuilder
     {
         $mode = $this->askField('post_filter_mode',
             (new RadioListField(Locale::getMessage('BUILDER_BlogPostExport_filter')))
+                ->setInPlanForValues('all')
                 ->addOption('all', Locale::getMessage('BUILDER_SelectAll'))
                 ->addOption('list_id', Locale::getMessage('BUILDER_BlogPostExport_SelectSomeId'))
                 ->addOption('list_code', Locale::getMessage('BUILDER_BlogPostExport_SelectSomeCode')),
@@ -109,6 +110,7 @@ class BlogPostBuilder extends VersionBuilder
         if ($mode === 'list_id') {
             $ids = $this->askField('post_filter_list_id',
                 (new TextareaField(Locale::getMessage('BUILDER_BlogPostExport_FilterListId')))
+                    ->setPlaceholder(Locale::getMessage('BY_SPACE'))
                     ->setCols(35)
                     ->setRows(4),
             );
@@ -121,6 +123,7 @@ class BlogPostBuilder extends VersionBuilder
         if ($mode === 'list_code') {
             $codes = $this->askField('post_filter_list_code',
                 (new TextareaField(Locale::getMessage('BUILDER_BlogPostExport_FilterListCode')))
+                    ->setPlaceholder(Locale::getMessage('BY_SPACE'))
                     ->setCols(35)
                     ->setRows(4),
             );

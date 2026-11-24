@@ -263,16 +263,15 @@ export const MigrationBuilders = {
                       :class="{'sp-field-required': field.required}"
                       v-html="colorize(field.title)"
                   />
-                  <div
-                      v-if="field.note"
-                      class="sp-info-message"
-                      v-html="colorize(field.note)"
-                  />
                   <component
                       v-if="field.component"
                       :is="field.component"
                       v-model:value="selected.params[field.code]"
                       v-bind="field.props"
+                  />
+                  <div
+                      v-if="field.note"
+                      v-html="colorize(field.note)"
                   />
                 </div>
                 <div class="sp-migration_buttons">

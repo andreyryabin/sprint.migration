@@ -44,7 +44,7 @@ class SelectField extends BuilderField
     }
 
 
-    public function makePlanText(mixed $value): string
+    protected function makePlanForValue(mixed $value): string
     {
         if (is_string($value) || is_numeric($value)) {
             $names = $this->getOptionNamesByIds([$value]);

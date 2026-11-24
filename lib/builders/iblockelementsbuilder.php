@@ -119,6 +119,7 @@ class IblockElementsBuilder extends VersionBuilder
     {
         $filterMode = $this->askField('filter_mode',
             (new RadioListField(Locale::getMessage('BUILDER_IblockElementsExport_Filter')))
+                ->setInPlanForValues('all')
                 ->addOption('all', Locale::getMessage('BUILDER_SelectAll'))
                 ->addOption('list_id', Locale::getMessage('BUILDER_IblockElementsExport_SelectSomeId'))
                 ->addOption('list_xml_id', Locale::getMessage('BUILDER_IblockElementsExport_SelectSomeXmlId'))
@@ -128,6 +129,7 @@ class IblockElementsBuilder extends VersionBuilder
         if ($filterMode == 'list_id') {
             $filterIds = $this->askField('export_filter_list_id',
                 (new TextareaField(Locale::getMessage('BUILDER_IblockElementsExport_FilterListId')))
+                    ->setPlaceholder(Locale::getMessage('BY_SPACE'))
                     ->setCols(35)
                     ->setRows(4),
             );
@@ -147,6 +149,7 @@ class IblockElementsBuilder extends VersionBuilder
         } elseif ($filterMode == 'list_xml_id') {
             $filterXmlIds = $this->askField('export_filter_list_xml_id',
                 (new TextareaField(Locale::getMessage('BUILDER_IblockElementsExport_FilterListXmlId')))
+                    ->setPlaceholder(Locale::getMessage('BY_SPACE'))
                     ->setCols(35)
                     ->setRows(4),
             );
@@ -185,6 +188,7 @@ class IblockElementsBuilder extends VersionBuilder
 
         $fieldsMode = $this->askField('fields_mode',
             (new RadioListField(Locale::getMessage('BUILDER_IblockElementsExport_Fields')))
+                ->setInPlanForValues('all', 'none')
                 ->addOption('all', Locale::getMessage('BUILDER_SelectAll'))
                 ->addOption('none', Locale::getMessage('BUILDER_SelectNone'))
                 ->addOption('some', Locale::getMessage('BUILDER_SelectSome')),
@@ -232,6 +236,7 @@ class IblockElementsBuilder extends VersionBuilder
 
         $propsMode = $this->askField('props_mode',
             (new RadioListField(Locale::getMessage('BUILDER_IblockElementsExport_Properties')))
+                ->setInPlanForValues('all', 'none')
                 ->addOption('all', Locale::getMessage('BUILDER_SelectAll'))
                 ->addOption('none', Locale::getMessage('BUILDER_SelectNone'))
                 ->addOption('some', Locale::getMessage('BUILDER_SelectSome')),

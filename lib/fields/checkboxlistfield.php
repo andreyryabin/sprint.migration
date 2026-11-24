@@ -34,7 +34,7 @@ class CheckboxListField extends SelectField
         return array_filter(explode(' ', $rawValue));
     }
 
-    public function makePlanText(mixed $value): string
+    protected function makePlanForValue(mixed $value): string
     {
         if (!is_array($value)) {
             return '';
@@ -46,6 +46,7 @@ class CheckboxListField extends SelectField
             $lines[] = '[li]' . $name . '[/li]';
         }
         $lines[] = '[/ul]';
+
         return implode(PHP_EOL, $lines);
     }
 

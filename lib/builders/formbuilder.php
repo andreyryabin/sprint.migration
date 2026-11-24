@@ -55,6 +55,7 @@ class FormBuilder extends VersionBuilder
         if (in_array('fields', $what)) {
             $fieldsMode = $this->askField('fields_mode',
                 (new RadioListField(Locale::getMessage('BUILDER_FormExport_Fields')))
+                    ->setInPlanForValues('all')
                     ->addOption('all', Locale::getMessage('BUILDER_SelectAll'))
                     ->addOption('some', Locale::getMessage('BUILDER_SelectSome')),
             );

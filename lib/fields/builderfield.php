@@ -13,6 +13,7 @@ abstract class BuilderField
     private string $note = '';
     private bool $inPlan = true;
     private bool $isRequired = false;
+    private array $inPlanValues = [];
 
     public function __construct(private string $title = '') {}
 
@@ -69,7 +70,19 @@ abstract class BuilderField
         return $this;
     }
 
-    public function makePlanText(mixed $value): string
+    public function getPlanForValue(mixed $value): string
+    {
+        if (!empty($this->inPlanValues)) {
+            $values = is_array($value) ? $value : [$value];
+            $allowed = !empty(array_intersect($values, $this->inPlanValues));
+        } else {
+            $allowed = $this->inPlan;
+        }
+
+        return $allowed ? $this->makePlanForValue($value) : '';
+    }
+
+    protected function makePlanForValue(string $value): string
     {
         return ($value) ? $this->getTitle() . ': ' . $value : '';
     }
@@ -80,9 +93,15 @@ abstract class BuilderField
         return $this;
     }
 
-    public function isInPlan(): bool
+    /**
+     * Установить значения, для которых поле попадает в план.
+     *   ->setInPlanForValues('all') - только для 'all'
+     *   ->setInPlanForValues('all', 'some') - для 'all' или 'some'
+     */
+    public function setInPlanForValues(mixed ...$values): static
     {
-        return $this->inPlan;
+        $this->inPlanValues = $values;
+        return $this;
     }
 
     public function isRequired(): bool

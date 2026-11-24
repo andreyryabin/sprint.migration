@@ -100,7 +100,7 @@ class HlblockElementsBuilder extends VersionBuilder
     protected function getFieldValueExportFilter(array $exportFields): array
     {
         $filterModeSelect = (new RadioListField(Locale::getMessage('BUILDER_HlblockElementsExport_Filter')));
-
+        $filterModeSelect->setInPlanForValues('all');
         $filterModeSelect->addOption('all', Locale::getMessage('BUILDER_SelectAll'));
         $filterModeSelect->addOption('list_id', Locale::getMessage('BUILDER_HlblockElementsExport_SelectSomeId'));
 
@@ -114,6 +114,7 @@ class HlblockElementsBuilder extends VersionBuilder
         if ($filterMode == 'list_id') {
             $filterIds = $this->askField('export_filter_list_id',
                 (new TextareaField(Locale::getMessage('BUILDER_HlblockElementsExport_FilterListId')))
+                    ->setPlaceholder(Locale::getMessage('BY_SPACE'))
                     ->setCols(35)
                     ->setRows(3),
             );
