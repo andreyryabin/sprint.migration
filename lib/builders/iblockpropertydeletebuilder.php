@@ -49,15 +49,13 @@ class IblockPropertyDeleteBuilder extends VersionBuilder
         $exhelper = $this->getExchangeHelpers();
 
         $iblockId = (int) $this->askField('iblock_id',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_IblockExport_IblockId'))
+            (new RadioListField(Locale::getMessage('BUILDER_IblockExport_IblockId')))
                 ->setOptions($exhelper->IblockExchange()->getIblocksSelect(), 'ID', 'TITLE', 'GROUP'),
         );
 
         $propertyCodes = $this->askField(
             'property_codes',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_IblockPropertyDelete_Properties'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_IblockPropertyDelete_Properties')))
                 ->setOptions($exhelper->IblockExchange()->getIblockPropertiesSelect($iblockId), 'CODE', 'TITLE'),
         );
 

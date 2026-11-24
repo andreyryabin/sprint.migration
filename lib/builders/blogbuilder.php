@@ -44,14 +44,12 @@ class BlogBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $groupId = $this->askField('group_id',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_BlogExport_group_id'))
+            (new RadioListField(Locale::getMessage('BUILDER_BlogExport_group_id')))
                 ->setOptions($this->getGroupsSelect(), 'ID', 'TITLE', 'SITE_ID'),
         );
 
         $blogIds = $this->askField('blog_ids',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_BlogExport_blog_ids'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_BlogExport_blog_ids')))
                 ->setOptions($this->getBlogsSelect($groupId), 'ID', 'TITLE', 'GROUP_TITLE'),
         );
 

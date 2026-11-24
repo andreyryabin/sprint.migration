@@ -36,16 +36,14 @@ class FormBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $formId = $this->askField('form_id',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_FormExport_FormId'))
+            (new RadioListField(Locale::getMessage('BUILDER_FormExport_FormId')))
                 ->setOptions($this->getFormsSelect(), 'ID', 'NAME'),
         );
 
         $form = $helper->Form()->exportFormById($formId);
 
         $what = $this->askField('what',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_FormExport_What'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_FormExport_What')))
                 ->addOption('form', Locale::getMessage('BUILDER_FormExport_Form'))
                 ->addOption('statuses', Locale::getMessage('BUILDER_FormExport_Statuses'))
                 ->addOption('fields', Locale::getMessage('BUILDER_FormExport_Fields')),
@@ -56,16 +54,14 @@ class FormBuilder extends VersionBuilder
 
         if (in_array('fields', $what)) {
             $fieldsMode = $this->askField('fields_mode',
-                (new RadioListField())
-                    ->setTitle(Locale::getMessage('BUILDER_FormExport_Fields'))
+                (new RadioListField(Locale::getMessage('BUILDER_FormExport_Fields')))
                     ->addOption('all', Locale::getMessage('BUILDER_SelectAll'))
                     ->addOption('some', Locale::getMessage('BUILDER_SelectSome')),
             );
 
             if ($fieldsMode == 'some') {
                 $fieldsSomeSids = $this->askField('fields_some',
-                    (new CheckboxListField())
-                        ->setTitle(Locale::getMessage('BUILDER_FormExport_Fields'))
+                    (new CheckboxListField(Locale::getMessage('BUILDER_FormExport_Fields')))
                         ->setOptions($this->getFieldsSelect($formId), 'SID', 'TITLE'),
                 );
                 $fields = $helper->Form()->exportFormFields($formId, $fieldsSomeSids);

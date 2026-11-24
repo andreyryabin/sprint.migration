@@ -38,8 +38,7 @@ class IblockBuilder extends VersionBuilder
         $exhelper = $this->getExchangeHelpers();
 
         $iblockId = (int) $this->askField('iblock_id',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_IblockExport_IblockId'))
+            (new RadioListField(Locale::getMessage('BUILDER_IblockExport_IblockId')))
                 ->setOptions($exhelper->IblockExchange()->getIblocksSelect(), 'ID', 'TITLE', 'GROUP'),
         );
 
@@ -49,8 +48,7 @@ class IblockBuilder extends VersionBuilder
         }
 
         $what = $this->askField('what',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_IblockExport_What'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_IblockExport_What')))
                 ->addOption('iblockType', Locale::getMessage('BUILDER_IblockExport_WhatIblockType'))
                 ->addOption('iblock', Locale::getMessage('BUILDER_IblockExport_WhatIblock'))
                 ->addOption('iblockFields', Locale::getMessage('BUILDER_IblockExport_WhatIblockFields'))
@@ -86,8 +84,7 @@ class IblockBuilder extends VersionBuilder
             $propertiesSelect = $exhelper->IblockExchange()->getIblockPropertiesSelect($iblockId);
             if (!empty($propertiesSelect)) {
                 $exportProps = $this->askField('export_props',
-                    (new CheckboxListField())
-                        ->setTitle(Locale::getMessage('BUILDER_IblockExport_Properties'))
+                    (new CheckboxListField(Locale::getMessage('BUILDER_IblockExport_Properties')))
                         ->setOptions($propertiesSelect, 'CODE', 'TITLE'),
                 );
 

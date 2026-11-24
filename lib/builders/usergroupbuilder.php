@@ -36,8 +36,7 @@ class UserGroupBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $userGroups = $this->askField('user_group',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_UserGroupExport_user_group'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_UserGroupExport_user_group')))
                 ->setOptions($this->getUserGroupsSelect(), 'ID', 'NAME'),
         );
 

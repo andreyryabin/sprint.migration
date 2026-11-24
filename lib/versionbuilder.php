@@ -17,8 +17,7 @@ abstract class VersionBuilder extends Builder
     protected function addVersionFields(): void
     {
         $this->showField('prefix',
-            (new StringField())
-                ->setTitle(Locale::getMessage('FORM_PREFIX'))
+            (new StringField(Locale::getMessage('FORM_PREFIX')))
                 ->setDefaultValue($this->getVersionConfig()->getVal('version_prefix'))
                 ->setSize(35)
                 ->setInPlan(false),
@@ -39,8 +38,7 @@ abstract class VersionBuilder extends Builder
     protected function confirmCreateVersion(): void
     {
         $confirm = $this->askField('confirm',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('CONFIRM_CREATE'))
+            (new RadioListField(Locale::getMessage('CONFIRM_CREATE')))
                 ->addOption('y', Locale::getMessage('CONFIRM_CREATE_YES'))
                 ->addOption('n', Locale::getMessage('CONFIRM_CREATE_NO'))
                 ->setInPlan(false),
@@ -103,12 +101,7 @@ abstract class VersionBuilder extends Builder
 
         if (!is_file($templateFile)) {
             throw new MigrationException(
-                Locale::getMessage(
-                    'ERR_TEMPLATE_NOT_FOUND',
-                    [
-                        '#NAME#' => $templateFile,
-                    ],
-                ),
+                Locale::getMessage('ERR_TEMPLATE_NOT_FOUND', ['#NAME#' => $templateFile]),
             );
         }
 
@@ -150,15 +143,12 @@ abstract class VersionBuilder extends Builder
 
     protected function createVersionName(): string
     {
-        return strtr(
-            $this->getVersionConfig()->getVal('version_name_template'),
-            [
-                '#NAME#'      => $this->purifyPrefix($this->getFieldValue('prefix')),
-                '#TIMESTAMP#' => $this->getTimestamp(
-                    $this->getVersionConfig()->getVal('version_timestamp_format'),
-                ),
-            ],
-        );
+        $tpl = $this->getVersionConfig()->getVal('version_name_template');
+        $format = $this->getVersionConfig()->getVal('version_timestamp_format');
+        $ts = $this->getTimestamp($format);
+        $prefix = $this->purifyPrefix($this->getFieldValue('prefix'));
+
+        return strtr($tpl, ['#NAME#' => $prefix, '#TIMESTAMP#' => $ts]);
     }
 
     protected function purifyPrefix(string $prefix = ''): string

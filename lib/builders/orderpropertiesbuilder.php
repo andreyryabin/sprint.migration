@@ -55,8 +55,7 @@ class OrderPropertiesBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $personTypeId = $this->askField('person_type',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_OrderProperties_PersonType'))
+            (new RadioListField(Locale::getMessage('BUILDER_OrderProperties_PersonType')))
                 ->setOptions($helper->OrderProperties()->getPersonTypes(), 'ID', 'NAME'),
         );
 
@@ -67,14 +66,12 @@ class OrderPropertiesBuilder extends VersionBuilder
         $properties = $helper->OrderProperties()->getOrderPropertiesByPersonType($personTypeId);
 
         $propertyIds = $this->askField('properties',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_OrderProperties_Properties'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_OrderProperties_Properties')))
                 ->setOptions($this->getPropertiesSelect($personTypeId), 'ID', 'NAME'),
         );
 
         $updateMethod = $this->askField('update_method',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_OrderProperties_UpdateMethod'))
+            (new RadioListField(Locale::getMessage('BUILDER_OrderProperties_UpdateMethod')))
                 ->addOption(self::UPDATE_METHOD_NOT, Locale::getMessage('BUILDER_OrderProperties_NotUpdate'))
                 ->addOption(self::UPDATE_METHOD_CODE, Locale::getMessage('BUILDER_OrderProperties_SavePropertyByCode'))
                 ->addOption(self::UPDATE_METHOD_XML_ID,
@@ -83,8 +80,7 @@ class OrderPropertiesBuilder extends VersionBuilder
 
         $propertyVariants = [];
         $migratePropertyVariants = $this->askField('migrate_property_variants',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants'))
+            (new RadioListField(Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants')))
                 ->addOption('N', Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_No'))
                 ->addOption('Y', Locale::getMessage('BUILDER_OrderProperties_MigratePropertyVariants_Yes')),
         );

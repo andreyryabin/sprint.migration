@@ -47,8 +47,7 @@ class VoteBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $voteId = $this->askField('vote_id',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_VoteExport_VoteId'))
+            (new RadioListField(Locale::getMessage('BUILDER_VoteExport_VoteId')))
                 ->setOptions($this->getVotesSelect(), 'ID', 'TITLE', 'CHANNEL_TITLE'),
         );
 

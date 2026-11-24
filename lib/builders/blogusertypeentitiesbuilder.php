@@ -43,8 +43,7 @@ class BlogUserTypeEntitiesBuilder extends VersionBuilder
         $fields = $this->getBlogUserTypeEntities();
 
         $fieldIds = $this->askField('entity_fields',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_BlogUserTypeEntitiesExport_entity_fields'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_BlogUserTypeEntitiesExport_entity_fields')))
                 ->setOptions($fields, 'ID', 'FIELD_TITLE'),
         );
 

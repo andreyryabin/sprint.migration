@@ -12,15 +12,13 @@ use Sprint\Migration\VersionBuilder;
 
 class IblockCategoryBuilder extends VersionBuilder
 {
-    /**
-     * @return bool
-     */
-    protected function isBuilderEnabled()
+
+    protected function isBuilderEnabled(): bool
     {
         return $this->getHelperManager()->Iblock()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_IblockCategoryExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_IblockCategoryExport2'));
@@ -34,14 +32,13 @@ class IblockCategoryBuilder extends VersionBuilder
      * @throws RebuildException
      * @throws MigrationException
      */
-    protected function execute()
+    protected function execute(): void
     {
         $helper = $this->getHelperManager();
         $exhelper = $this->getExchangeHelpers();
 
         $iblockId = (int) $this->askField('iblock_id',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_IblockCategoryExport_IblockId'))
+            (new RadioListField(Locale::getMessage('BUILDER_IblockCategoryExport_IblockId')))
                 ->setOptions($exhelper->IblockExchange()->getIblocksSelect(), 'ID', 'TITLE', 'GROUP'),
         );
 

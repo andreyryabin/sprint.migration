@@ -44,16 +44,14 @@ class LanguageBuilder extends VersionBuilder
         $allCults = $helper->Culture()->exportCultures();
 
         $cultCodes = $this->askField('cult_codes',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_LanguageExport_cult_codes'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_LanguageExport_cult_codes')))
                 ->setOptions($allCults, 'CODE', 'NAME'),
         );
 
         $allLangs = $helper->Lang()->exportLangs();
 
         $langIds = $this->askField('lang_ids',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_LanguageExport_lang_ids'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_LanguageExport_lang_ids')))
                 ->setOptions($allLangs, 'LID', 'NAME'),
         );
 

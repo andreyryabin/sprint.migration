@@ -10,12 +10,11 @@ abstract class BuilderField
 {
     private string $name;
     private array $props = [];
-    private string $title = '';
     private string $note = '';
     private bool $inPlan = true;
     private bool $isRequired = false;
 
-    public function __construct() {}
+    public function __construct(private string $title = '') {}
 
     abstract public function getDefaultValue(): mixed;
 

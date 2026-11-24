@@ -51,8 +51,7 @@ class BlogPostBuilder extends VersionBuilder
         $exhelper = $this->getExchangeHelpers();
 
         $blogId = (int) $this->askField('blog_id',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_BlogPostExport_blog_id'))
+            (new RadioListField(Locale::getMessage('BUILDER_BlogPostExport_blog_id')))
                 ->setOptions($this->getBlogsSelect(), 'ID', 'TITLE', 'GROUP_TITLE'),
         );
 
@@ -101,8 +100,7 @@ class BlogPostBuilder extends VersionBuilder
     protected function getPostFilter(): array
     {
         $mode = $this->askField('post_filter_mode',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_BlogPostExport_filter'))
+            (new RadioListField(Locale::getMessage('BUILDER_BlogPostExport_filter')))
                 ->addOption('all', Locale::getMessage('BUILDER_SelectAll'))
                 ->addOption('list_id', Locale::getMessage('BUILDER_BlogPostExport_SelectSomeId'))
                 ->addOption('list_code', Locale::getMessage('BUILDER_BlogPostExport_SelectSomeCode')),
@@ -110,8 +108,7 @@ class BlogPostBuilder extends VersionBuilder
 
         if ($mode === 'list_id') {
             $ids = $this->askField('post_filter_list_id',
-                (new TextareaField())
-                    ->setTitle(Locale::getMessage('BUILDER_BlogPostExport_FilterListId'))
+                (new TextareaField(Locale::getMessage('BUILDER_BlogPostExport_FilterListId')))
                     ->setCols(35)
                     ->setRows(4),
             );
@@ -123,8 +120,7 @@ class BlogPostBuilder extends VersionBuilder
         $filter = [];
         if ($mode === 'list_code') {
             $codes = $this->askField('post_filter_list_code',
-                (new TextareaField())
-                    ->setTitle(Locale::getMessage('BUILDER_BlogPostExport_FilterListCode'))
+                (new TextareaField(Locale::getMessage('BUILDER_BlogPostExport_FilterListCode')))
                     ->setCols(35)
                     ->setRows(4),
             );

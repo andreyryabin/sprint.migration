@@ -35,8 +35,7 @@ class UserOptionsBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $what = $this->askField('what',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_UserOptionsExport_What'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_UserOptionsExport_What')))
                 ->addOption('userForm', Locale::getMessage('BUILDER_UserOptionsExport_WhatUserForm'))
                 ->addOption('userList', Locale::getMessage('BUILDER_UserOptionsExport_WhatUserList'))
                 ->addOption('groupList', Locale::getMessage('BUILDER_UserOptionsExport_WhatGroupList')),

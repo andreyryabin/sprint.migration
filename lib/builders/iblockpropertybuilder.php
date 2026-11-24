@@ -38,8 +38,7 @@ class IblockPropertyBuilder extends VersionBuilder
         $userTypes = $this->getPropertyUserTypes();
 
         $userType = $this->askField('user_type',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_IblockPropertyExport_UserType'))
+            (new RadioListField(Locale::getMessage('BUILDER_IblockPropertyExport_UserType')))
                 ->setOptions($userTypes, 'USER_TYPE', 'TITLE'),
         );
 
@@ -48,8 +47,7 @@ class IblockPropertyBuilder extends VersionBuilder
         ]);
 
         $propertyIds = $this->askField('export_props',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_IblockPropertyExport_Properties'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_IblockPropertyExport_Properties')))
                 ->setOptions($properties, 'ID', 'PROPERTY_TITLE', 'IBLOCK_TITLE'),
         );
 

@@ -36,8 +36,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $what = $this->askField('what',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_UserTypeEntities_What'))
+            (new RadioListField(Locale::getMessage('BUILDER_UserTypeEntities_What')))
                 ->setInPlan(false)
                 ->addOption('entityId', Locale::getMessage('BUILDER_UserTypeEntities_WhatEntityId'))
                 ->addOption('userTypeId', Locale::getMessage('BUILDER_UserTypeEntities_WhatUserTypeId')),
@@ -50,8 +49,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         }
 
         $fieldsIds = $this->askField('entity_fields',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_UserTypeEntities_EntityFields'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_UserTypeEntities_EntityFields')))
                 ->setOptions($fields, 'ID', 'FIELD_TITLE', 'ENTITY_TITLE'),
         );
 
@@ -74,8 +72,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $userTypes = $this->getUserTypes();
 
         $userTypeId = $this->askField('user_type_id',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_UserTypeEntities_UserTypeId'))
+            (new RadioListField(Locale::getMessage('BUILDER_UserTypeEntities_UserTypeId')))
                 ->setInPlan(false)
                 ->setOptions($userTypes, 'USER_TYPE_ID', 'TITLE'),
         );
@@ -123,8 +120,7 @@ class UserTypeEntitiesBuilder extends VersionBuilder
         $fields = $this->getUserTypeEntitiesByFilter();
 
         $entityIds = $this->askField('entity_id',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_UserTypeEntities_EntityId'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_UserTypeEntities_EntityId')))
                 ->setInPlan(false)
                 ->setOptions($fields, 'ENTITY_ID', 'ENTITY_TITLE'),
         );

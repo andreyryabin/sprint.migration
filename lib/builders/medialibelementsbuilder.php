@@ -42,8 +42,7 @@ class MedialibElementsBuilder extends VersionBuilder
         $exhelper = $this->getExchangeHelpers()->MedialibExchange();
 
         $collectionIds = $this->askField('collection_id',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_MedialibElements_CollectionId'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_MedialibElements_CollectionId')))
                 ->setOptions($exhelper->getCollectionSelect($exhelper::TYPE_IMAGE), 'ID', 'TITLE'),
         );
 

@@ -44,14 +44,12 @@ class OptionBuilder extends VersionBuilder
 
         $this->showField(
             'site_id',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_OptionExport_site_id'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_OptionExport_site_id')))
                 ->setOptions($helper->Site()->getSites(), 'ID', 'NAME'),
         );
 
         $moduleIds = $this->askField('module_id',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_OptionExport_module_id'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_OptionExport_module_id')))
                 ->setOptions($helper->Option()->getModules(), 'ID', 'ID'),
         );
 

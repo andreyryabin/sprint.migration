@@ -17,7 +17,7 @@ class SaleDiscountBuilder extends VersionBuilder
         return $this->getHelperManager()->SaleDiscount()->isEnabled();
     }
 
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Sale'));
 
@@ -46,8 +46,7 @@ class SaleDiscountBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $discountIds = $this->askField('discounts',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_SaleDiscount_Discounts'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_SaleDiscount_Discounts')))
                 ->setOptions($this->getDiscountsSelect(), 'ID', 'TITLE', 'LID'),
         );
 
@@ -67,6 +66,9 @@ class SaleDiscountBuilder extends VersionBuilder
         );
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function getDiscountsSelect(): array
     {
         $items = $this->getHelperManager()->SaleDiscount()->getDiscounts();

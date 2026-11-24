@@ -35,8 +35,7 @@ class EventBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $eventTypes = $this->askField('event_types',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_EventExport_event_types'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_EventExport_event_types')))
                 ->setOptions($this->getEventTypesSelect(), 'EVENT_NAME', 'NAME'),
         );
 

@@ -48,8 +48,7 @@ class HlblockElementsBuilder extends VersionBuilder
         $exhelper = $this->getExchangeHelpers();
 
         $hlblockId = $this->askField('hlblock_id',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId'))
+            (new RadioListField(Locale::getMessage('BUILDER_HlblockElementsExport_HlblockId')))
                 ->setOptions($exhelper->HlblockExchange()->getHlblocksSelect(), 'ID', 'TITLE'),
         );
 
@@ -100,8 +99,7 @@ class HlblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueExportFilter(array $exportFields): array
     {
-        $filterModeSelect = (new RadioListField())
-            ->setTitle(Locale::getMessage('BUILDER_HlblockElementsExport_Filter'));
+        $filterModeSelect = (new RadioListField(Locale::getMessage('BUILDER_HlblockElementsExport_Filter')));
 
         $filterModeSelect->addOption('all', Locale::getMessage('BUILDER_SelectAll'));
         $filterModeSelect->addOption('list_id', Locale::getMessage('BUILDER_HlblockElementsExport_SelectSomeId'));
@@ -115,8 +113,7 @@ class HlblockElementsBuilder extends VersionBuilder
 
         if ($filterMode == 'list_id') {
             $filterIds = $this->askField('export_filter_list_id',
-                (new TextareaField())
-                    ->setTitle(Locale::getMessage('BUILDER_HlblockElementsExport_FilterListId'))
+                (new TextareaField(Locale::getMessage('BUILDER_HlblockElementsExport_FilterListId')))
                     ->setCols(35)
                     ->setRows(3),
             );
@@ -124,8 +121,7 @@ class HlblockElementsBuilder extends VersionBuilder
             $exportFilter = ['ID' => $this->explodeString($filterIds)];
         } elseif ($filterMode == 'list_xml_id') {
             $filterXmlIds = $this->askField('export_filter_list_xml_id',
-                (new TextareaField())
-                    ->setTitle(Locale::getMessage('BUILDER_HlblockElementsExport_FilterListXmlId'))
+                (new TextareaField(Locale::getMessage('BUILDER_HlblockElementsExport_FilterListXmlId')))
                     ->setCols(35)
                     ->setRows(3),
             );
@@ -143,8 +139,7 @@ class HlblockElementsBuilder extends VersionBuilder
      */
     protected function getFieldValueUpdateMethod(array $exportFields)
     {
-        $updateMethodSelect = (new RadioListField())
-            ->setTitle(Locale::getMessage('BUILDER_HlblockElementsExport_UpdateMethod'));
+        $updateMethodSelect = (new RadioListField(Locale::getMessage('BUILDER_HlblockElementsExport_UpdateMethod')));
 
         $updateMethodSelect->addOption(self::UPDATE_METHOD_NOT,
             Locale::getMessage('BUILDER_HlblockElementsExport_NotUpdate'));
@@ -166,8 +161,7 @@ class HlblockElementsBuilder extends VersionBuilder
     {
         if ($updateMethod == self::UPDATE_METHOD_EQUAL_KEYS) {
             return $this->askField('equal_keys',
-                (new CheckboxListField())
-                    ->setTitle(Locale::getMessage('BUILDER_HlblockElementsExport_EqualKeys'))
+                (new CheckboxListField(Locale::getMessage('BUILDER_HlblockElementsExport_EqualKeys')))
                     ->setOptions($fieldsSelect, 'NAME', 'TITLE'),
             );
         }

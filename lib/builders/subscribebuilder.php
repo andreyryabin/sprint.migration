@@ -47,8 +47,7 @@ class SubscribeBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $rubricIds = $this->askField('rubric_ids',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_SubscribeExport_rubric_ids'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_SubscribeExport_rubric_ids')))
                 ->setOptions($this->getRubricsSelect(), 'ID', 'TITLE', 'LID'),
         );
 

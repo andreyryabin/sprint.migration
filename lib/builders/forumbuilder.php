@@ -47,8 +47,7 @@ class ForumBuilder extends VersionBuilder
         $helper = $this->getHelperManager();
 
         $forumIds = $this->askField('forum_ids',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_ForumExport_forum_ids'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_ForumExport_forum_ids')))
                 ->setOptions($this->getForumsSelect(), 'ID', 'TITLE', 'GROUP_TITLE'),
         );
 

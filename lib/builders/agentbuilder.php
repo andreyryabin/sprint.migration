@@ -42,8 +42,7 @@ class AgentBuilder extends VersionBuilder
         ], $helper->Agent()->getList());
 
         $agentIds = $this->askField('agent_id',
-            (new CheckboxListField())
-            ->setTitle(Locale::getMessage('BUILDER_AgentExport_agent_id'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_AgentExport_agent_id')))
             ->setOptions($agents, 'ID', 'NAME', 'MODULE_ID')
         );
 

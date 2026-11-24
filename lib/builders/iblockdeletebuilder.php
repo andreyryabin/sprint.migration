@@ -35,8 +35,7 @@ class IblockDeleteBuilder extends VersionBuilder
         $exhelper = $this->getExchangeHelpers();
 
         $iblockIds = $this->askField('iblock_ids',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_IblockExport_IblockId'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_IblockExport_IblockId')))
                 ->setOptions($exhelper->IblockExchange()->getIblocksSelect(), 'ID', 'TITLE', 'GROUP'),
         );
 

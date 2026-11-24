@@ -37,8 +37,7 @@ class HlblockBuilder extends VersionBuilder
         $exhelper = $this->getExchangeHelpers();
 
         $hlblockId = $this->askField('hlblock_id',
-            (new RadioListField())
-                ->setTitle(Locale::getMessage('BUILDER_HlblockExport_HlblockId'))
+            (new RadioListField(Locale::getMessage('BUILDER_HlblockExport_HlblockId')))
                 ->setOptions($exhelper->HlblockExchange()->getHlblocksSelect(), 'ID', 'TITLE'),
         );
 
@@ -48,8 +47,7 @@ class HlblockBuilder extends VersionBuilder
         }
 
         $what = $this->askField('what',
-            (new CheckboxListField())
-                ->setTitle(Locale::getMessage('BUILDER_HlblockExport_What'))
+            (new CheckboxListField(Locale::getMessage('BUILDER_HlblockExport_What')))
                 ->addOption('hlblock', Locale::getMessage('BUILDER_HlblockExport_WhatHlblock'))
                 ->addOption('hlblockFields', Locale::getMessage('BUILDER_HlblockExport_WhatHlblockFields'))
                 ->addOption('hlblockUserOptions', Locale::getMessage('BUILDER_HlblockExport_WhatHlblockUserOptions'))
