@@ -40,11 +40,10 @@ class BlogUserTypeEntitiesBuilder extends VersionBuilder
     protected function execute(): void
     {
         $helper = $this->getHelperManager();
-        $fields = $this->getBlogUserTypeEntities();
 
         $fieldIds = $this->askField('entity_fields',
             (new CheckboxListField(Locale::getMessage('BUILDER_BlogUserTypeEntitiesExport_entity_fields')))
-                ->setOptions($fields, 'ID', 'FIELD_TITLE'),
+                ->setOptions($this->getBlogUserTypeEntitiesSelect(), 'ID', 'FIELD_TITLE'),
         );
 
         $entities = $helper->UserTypeEntity()->exportUserTypeEntitiesByIds($fieldIds);
@@ -64,7 +63,7 @@ class BlogUserTypeEntitiesBuilder extends VersionBuilder
     /**
      * @throws HelperException
      */
-    protected function getBlogUserTypeEntities(): array
+    protected function getBlogUserTypeEntitiesSelect(): array
     {
         return array_map(function ($field) {
             $field['FIELD_TITLE'] = sprintf('[%s] %s', $field['FIELD_NAME'], $field['TITLE']);

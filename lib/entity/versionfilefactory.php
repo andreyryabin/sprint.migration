@@ -58,9 +58,7 @@ class VersionFileFactory
                 throw new MigrationException("Class $versionName not instance of Version");
             }
 
-            $description = $this->stripslashes(
-                $versionObj->getDescription(),
-            );
+            $description = $this->stripslashes($versionObj->getDescription());
 
             $createdAt = DateTime::createFromFormat(
                 $timestampFormat,

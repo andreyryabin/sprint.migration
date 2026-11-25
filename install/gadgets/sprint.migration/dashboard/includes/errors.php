@@ -1,6 +1,6 @@
-<?
+<?php
 /** @var $e Exception */
 ?>
 <div class="sp-db-wrap">
-    <?= $e->getMessage(); ?>
+    <?= htmlspecialcharsbx($e->getMessage()); ?>
 </div>

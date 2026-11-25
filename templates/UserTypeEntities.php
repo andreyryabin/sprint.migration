@@ -1,17 +1,18 @@
 <?php
-
 /**
- * @var $version
- * @var $description
- * @var $extendUse
- * @var $extendClass
- * @var $entities
- * @var $moduleVersion
- * @var $author
- * @formatter:off
+ * @var string $version
+ * @var string $description
+ * @var string $extendUse
+ * @var string $extendClass
+ * @var string $moduleVersion
+ * @var string $author
  */
 
-?><?php echo "<?php\n" ?>
+/**
+ * @var $entities
+ */
+
+/** @formatter:off */?><?php echo "<?php\n" ?>
 
 namespace Sprint\Migration;
 
@@ -20,11 +21,11 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-    protected $author = "<?php echo $author ?>";
+    protected $author = <?php echo var_export($author, true) ?>;
 
-    protected $description = "<?php echo $description ?>";
+    protected $description = <?php echo var_export($description, true) ?>;
 
-    protected $moduleVersion = "<?php echo $moduleVersion ?>";
+    protected $moduleVersion = <?php echo var_export($moduleVersion, true) ?>;
 
     /**
      * @throws Exceptions\HelperException

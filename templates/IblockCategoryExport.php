@@ -1,17 +1,19 @@
 <?php
 /**
- * @var $version
- * @var $description
- * @var $extendUse
- * @var $extendClass
- * @var $moduleVersion
- * @var $iblock
- * @var $sectionTree
- * @var $author
- * @formatter:off
+ * @var string $version
+ * @var string $description
+ * @var string $extendUse
+ * @var string $extendClass
+ * @var string $moduleVersion
+ * @var string $author
  */
 
-?><?php echo "<?php\n" ?>
+/**
+ * @var $iblock
+ * @var $sectionTree
+ */
+
+/** @formatter:off */?><?php echo "<?php\n" ?>
 
 namespace Sprint\Migration;
 
@@ -20,11 +22,11 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-    protected $author = "<?php echo $author ?>";
+    protected $author = <?php echo var_export($author, true) ?>;
 
-    protected $description = "<?php echo $description ?>";
+    protected $description = <?php echo var_export($description, true) ?>;
 
-    protected $moduleVersion = "<?php echo $moduleVersion ?>";
+    protected $moduleVersion = <?php echo var_export($moduleVersion, true) ?>;
 
     /**
      * @throws Exceptions\HelperException
@@ -35,13 +37,13 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper = $this->getHelperManager();
 
         $iblockId = $helper->Iblock()->getIblockIdIfExists(
-            '<?php echo $iblock['CODE'] ?>',
-            '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>'
+            <?php echo var_export($iblock['CODE'],true) ?>,
+            <?php echo var_export($iblock['IBLOCK_TYPE_ID'],true) ?>
         );
 
         $helper->Iblock()->saveSectionsFromTree(
             $iblockId,
-            <?php echo var_export($sectionTree, 1) ?>
+            <?php echo var_export($sectionTree, true) ?>
         );
     }
 }

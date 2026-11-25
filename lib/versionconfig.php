@@ -313,7 +313,7 @@ class VersionConfig
             return;
         }
 
-        if (!$versionName || !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $versionName)) {
+        if (!$versionName || !$this->isVersionPrefix($versionName)) {
             throw new MigrationException('Invalid version name');
         }
 
@@ -324,6 +324,11 @@ class VersionConfig
         }
 
         $this->checkedVersionNames[$versionName] = end($matches);
+    }
+
+    public function isVersionPrefix(string $prefix): bool
+    {
+        return preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $prefix);
     }
 
     /**

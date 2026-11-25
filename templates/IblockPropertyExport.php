@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @var string $version
  * @var string $description
@@ -7,11 +6,13 @@
  * @var string $extendClass
  * @var string $moduleVersion
  * @var string $author
- * @var array $exports
- * @formatter:off
  */
 
-?><?php echo "<?php\n" ?>
+/**
+ * @var array $exports
+ */
+
+/** @formatter:off */?><?php echo "<?php\n" ?>
 
 namespace Sprint\Migration;
 
@@ -20,11 +21,11 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-    protected $author = "<?php echo $author ?>";
+    protected $author = <?php echo var_export($author, true) ?>;
 
-    protected $description = "<?php echo $description ?>";
+    protected $description = <?php echo var_export($description, true) ?>;
 
-    protected $moduleVersion = "<?php echo $moduleVersion ?>";
+    protected $moduleVersion = <?php echo var_export($moduleVersion, true) ?>;
 
     /**
      * @throws Exceptions\HelperException
@@ -36,7 +37,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 <?php foreach ($exports as $export) {?>
         $helper->Iblock()->saveProperty(
-            $helper->Iblock()->getIblockIdIfExists('<?php echo $export['iblock']['CODE'] ?>', '<?php echo $export['iblock']['IBLOCK_TYPE_ID'] ?>'),
+            $helper->Iblock()->getIblockIdIfExists(<?php echo var_export($export['iblock']['CODE'], true) ?>, <?php echo var_export($export['iblock']['IBLOCK_TYPE_ID'], true) ?>),
             <?php echo var_export($export['prop'], 1) ?>
         );
 <?php } ?>

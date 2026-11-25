@@ -1,17 +1,18 @@
 <?php
-
 /**
- * @var $version
- * @var $description
- * @var $items
- * @var $extendUse
- * @var $extendClass
- * @var $moduleVersion
- * @var $author
- * @formatter:off
+ * @var string $version
+ * @var string $description
+ * @var string $extendUse
+ * @var string $extendClass
+ * @var string $moduleVersion
+ * @var string $author
  */
 
-?><?php echo "<?php\n" ?>
+/**
+ * @var $items
+ */
+
+/** @formatter:off */?><?php echo "<?php\n" ?>
 
 namespace Sprint\Migration;
 
@@ -20,11 +21,11 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-    protected $author = "<?php echo $author ?>";
+    protected $author = <?php echo var_export($author, true) ?>;
 
-    protected $description = "<?php echo $description ?>";
+    protected $description = <?php echo var_export($description, true) ?>;
 
-    protected $moduleVersion = "<?php echo $moduleVersion ?>";
+    protected $moduleVersion = <?php echo var_export($moduleVersion, true) ?>;
 
     /**
      * @throws Exceptions\HelperException
@@ -35,7 +36,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
         $helper = $this->getHelperManager();
 
 <?php foreach ($items as $item) { ?>
-        $helper->UserGroup()->saveGroup('<?php echo $item['STRING_ID'] ?>',<?php echo var_export($item['FIELDS'], 1) ?>);
+        $helper->UserGroup()->saveGroup(<?php echo var_export($item['STRING_ID'], true) ?>,<?php echo var_export($item['FIELDS'], 1) ?>);
 <?php } ?>
     }
 

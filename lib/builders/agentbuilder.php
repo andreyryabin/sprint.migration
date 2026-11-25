@@ -35,16 +35,16 @@ class AgentBuilder extends VersionBuilder
     {
         $helper = $this->getHelperManager();
 
-        $agents = array_map(fn($item) => [
-            'MODULE_ID' => $item['MODULE_ID'] ?: Locale::getMessage('BUILDER_AgentExport_empty_module'),
-            'ID'        => $item['ID'],
-            'NAME'      => $item['NAME'],
-        ], $helper->Agent()->getList());
+        $field1 = (new CheckboxListField(Locale::getMessage('BUILDER_AgentExport_agent_id')));
+        foreach ($helper->Agent()->getList() as $item) {
+            $field1->addOption(
+                $item['ID'],
+                $item['NAME'],
+                $item['MODULE_ID'] ?: Locale::getMessage('BUILDER_AgentExport_empty_module'),
+            );
+        }
 
-        $agentIds = $this->askField('agent_id',
-            (new CheckboxListField(Locale::getMessage('BUILDER_AgentExport_agent_id')))
-            ->setOptions($agents, 'ID', 'NAME', 'MODULE_ID')
-        );
+        $agentIds = $this->askField('agent_id', $field1);
 
         $items = array_map(
             fn($agentId) => $helper->Agent()->exportAgentById($agentId),

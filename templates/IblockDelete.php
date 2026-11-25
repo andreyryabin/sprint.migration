@@ -1,18 +1,19 @@
 <?php
-
 /**
- * @var       $version
- * @var       $description
- * @var       $items
- * @var       $extendUse
- * @var       $extendClass
- * @var       $moduleVersion
- * @var       $author
- * @var array $iblocks
- * @formatter:off
+ * @var string $version
+ * @var string $description
+ * @var string $extendUse
+ * @var string $extendClass
+ * @var string $moduleVersion
+ * @var string $author
  */
 
-?><?php echo "<?php\n" ?>
+/**
+ * @var array $items
+ * @var array $iblocks
+ */
+
+/** @formatter:off */?><?php echo "<?php\n" ?>
 
 namespace Sprint\Migration;
 
@@ -21,18 +22,18 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-    protected $author = "<?php echo $author ?>";
+    protected $author = <?php echo var_export($author, true) ?>;
 
-    protected $description = "<?php echo $description ?>";
+    protected $description = <?php echo var_export($description, true) ?>;
 
-    protected $moduleVersion = "<?php echo $moduleVersion ?>";
+    protected $moduleVersion = <?php echo var_export($moduleVersion, true) ?>;
 
     public function up()
     {
         $helper = $this->getHelperManager();
 
 <?php foreach ($iblocks as $iblock){?>
-        $helper->Iblock()->deleteIblockIfExists('<?php echo $iblock['CODE']?>', '<?php echo $iblock['IBLOCK_TYPE_ID']?>');
+        $helper->Iblock()->deleteIblockIfExists(<?php echo var_export($iblock['CODE'], true)?>, <?php echo var_export($iblock['IBLOCK_TYPE_ID'], true)?>);
 <?php } ?>
     }
 }

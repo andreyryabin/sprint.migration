@@ -1,22 +1,23 @@
 <?php
+/**
+ * @var string $version
+ * @var string $description
+ * @var string $extendUse
+ * @var string $extendClass
+ * @var string $moduleVersion
+ * @var string $author
+ */
 
 /**
- * @var $version
- * @var $description
- * @var $extendUse
- * @var $extendClass
- * @var $moduleVersion
  * @var $hlblockExport
  * @var $hlblock
  * @var $hlblockFields
  * @var $hlblockPermissions
  * @var $exportElementForm
  * @var $exportElementList
- * @var $author
- * @formatter:off
  */
 
-?><?php echo "<?php\n" ?>
+/** @formatter:off */?><?php echo "<?php\n" ?>
 
 namespace Sprint\Migration;
 
@@ -25,11 +26,11 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-    protected $author = "<?php echo $author ?>";
+    protected $author = <?php echo var_export($author, true) ?>;
 
-    protected $description = "<?php echo $description ?>";
+    protected $description = <?php echo var_export($description, true) ?>;
 
-    protected $moduleVersion = "<?php echo $moduleVersion ?>";
+    protected $moduleVersion = <?php echo var_export($moduleVersion, true) ?>;
 
     /**
      * @throws Exceptions\HelperException
@@ -41,7 +42,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 <?php if (!empty($hlblockExport)): ?>
     $hlblockId = $helper->Hlblock()->saveHlblock(<?php echo var_export($hlblock, 1) ?>);
 <?php else:?>
-    $hlblockId = $helper->Hlblock()->getHlblockIdIfExists('<?php echo $hlblock['NAME'] ?>');
+    $hlblockId = $helper->Hlblock()->getHlblockIdIfExists(<?php echo var_export($hlblock['NAME'], true) ?>);
 <?php endif; ?>
 <?php if (!empty($hlblockPermissions)): ?>
     $helper->Hlblock()->saveExtendedPermissions($hlblockId, <?php echo var_export($hlblockPermissions, 1) ?>);

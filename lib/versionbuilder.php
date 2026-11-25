@@ -55,7 +55,7 @@ abstract class VersionBuilder extends Builder
         $lines = [$this->getTitle()];
         foreach ($this->getFields() as $code => $field) {
             $lines[] = $field->getPlanForValue(
-                $this->getFieldValue($code)
+                $this->getFieldValue($code),
             );
         }
         return implode(PHP_EOL, array_filter($lines));
@@ -74,11 +74,9 @@ abstract class VersionBuilder extends Builder
             $this->getVersionPlan(),
         ]);
 
-        $templateVars['description'] = $this->addslashes(implode(PHP_EOL, $desc));
+        $templateVars['description'] = $this->purifyText(implode(PHP_EOL, $desc));
 
-        $templateVars['author'] = $this->addslashes(
-            $this->getCurrentUserLogin(),
-        );
+        $templateVars['author'] = $this->purifyText($this->getCurrentUserLogin());
 
         $templateVars['version'] ??= $this->getVersionName();
 
@@ -126,11 +124,6 @@ abstract class VersionBuilder extends Builder
         return $templateVars['version'];
     }
 
-    protected function addslashes(string $descr = ''): string
-    {
-        return addslashes(strip_tags(trim($descr)));
-    }
-
     protected function getVersionName(): string
     {
         if (!isset($this->params['~version_name'])) {
@@ -149,20 +142,16 @@ abstract class VersionBuilder extends Builder
         return strtr($tpl, ['#NAME#' => $prefix, '#TIMESTAMP#' => $ts]);
     }
 
-    protected function purifyPrefix(string $prefix = ''): string
+    protected function purifyText(string $text): string
+    {
+        return strip_tags(trim($text));
+    }
+
+    protected function purifyPrefix(string $prefix): string
     {
         $prefix = trim($prefix);
-        if (empty($prefix)) {
-            $prefix = $this->getVersionConfig()->getVal('version_prefix');
-            $prefix = trim($prefix);
-        }
-
-        $prefix = preg_replace("/[^a-z0-9_]/i", '', $prefix);
-        if (empty($prefix) || preg_match('/^\d/', $prefix)) {
-            return 'Version';
-        }
-
-        return $prefix;
+        $prefix = $prefix ?: $this->getVersionConfig()->getVal('version_prefix');
+        return $this->getVersionConfig()->isVersionPrefix($prefix) ? $prefix : 'Version';
     }
 
     protected function getTimestamp($versionTimestampFormat): string

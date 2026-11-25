@@ -36,7 +36,7 @@ class EventBuilder extends VersionBuilder
 
         $eventTypes = $this->askField('event_types',
             (new CheckboxListField(Locale::getMessage('BUILDER_EventExport_event_types')))
-                ->setOptions($this->getEventTypesSelect(), 'EVENT_NAME', 'NAME'),
+                ->setOptions($this->getEventTypesSelect(), 'EVENT_NAME', 'NAME', 'GROUP'),
         );
 
         $result = [];
@@ -70,6 +70,8 @@ class EventBuilder extends VersionBuilder
         ]);
 
         return array_map(function ($item) {
+            [$group] = explode('_', $item['EVENT_NAME'], 2);
+            $item['GROUP'] = $group ?: '-';
             $item['NAME'] = '[' . $item['EVENT_NAME'] . '] ' . $item['NAME'];
             return $item;
         }, $items);

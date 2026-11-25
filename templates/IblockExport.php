@@ -1,17 +1,18 @@
 <?php
-
 /**
- * @var $version
- * @var $description
- * @var $iblock
- * @var $extendUse
- * @var $extendClass
- * @var $moduleVersion
- * @var $author
- * @formatter:off
+ * @var string $version
+ * @var string $description
+ * @var string $extendUse
+ * @var string $extendClass
+ * @var string $moduleVersion
+ * @var string $author
  */
 
-?><?php echo "<?php\n" ?>
+/**
+ * @var $iblock
+ */
+
+/** @formatter:off */?><?php echo "<?php\n" ?>
 
 namespace Sprint\Migration;
 
@@ -20,11 +21,11 @@ namespace Sprint\Migration;
 class <?php echo $version ?> extends <?php echo $extendClass ?>
 
 {
-    protected $author = "<?php echo $author ?>";
+    protected $author = <?php echo var_export($author, true) ?>;
 
-    protected $description = "<?php echo $description ?>";
+    protected $description = <?php echo var_export($description, true) ?>;
 
-    protected $moduleVersion = "<?php echo $moduleVersion ?>";
+    protected $moduleVersion = <?php echo var_export($moduleVersion, true) ?>;
 
     /**
      * @throws Exceptions\HelperException
@@ -39,7 +40,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
 <?php if (!empty($iblockExport)): ?>
         $iblockId = $helper->Iblock()->saveIblock(<?php echo var_export($iblock, 1) ?>);
 <?php else:?>
-        $iblockId = $helper->Iblock()->getIblockIdIfExists('<?php echo $iblock['CODE'] ?>', '<?php echo $iblock['IBLOCK_TYPE_ID'] ?>');
+        $iblockId = $helper->Iblock()->getIblockIdIfExists(<?php echo var_export($iblock['CODE'],true) ?>, <?php echo var_export(['IBLOCK_TYPE_ID'],true) ?>);
 <?php endif; ?>
 <?php if (!empty($iblockFields)): ?>
         $helper->Iblock()->saveIblockFields($iblockId, <?php echo var_export($iblockFields, 1) ?>);
