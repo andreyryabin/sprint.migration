@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration\Helpers\Traits\Iblock;
 
+use Bitrix\Iblock\Helpers\Admin\Property;
 use Bitrix\Iblock\Model\PropertyFeature;
 use Bitrix\Iblock\PropertyFeatureTable;
 use Bitrix\Iblock\SectionPropertyTable;
@@ -13,17 +14,20 @@ use Sprint\Migration\Locale;
 
 trait IblockPropertyTrait
 {
-    public function getPropertyUserTypes(): array
+    public function getPropertyTypes(): array
     {
-        return array_map(
-            fn($userType) => $this->preparePropertyUserType($userType),
-            CIBlockProperty::GetUserType(),
-        );
-    }
+        $baseTypes = Property::getBaseTypeList(true);
+        $userTypes = CIBlockProperty::GetUserType();
 
-    private function preparePropertyUserType(array $userType): array
-    {
-        return $userType;
+        $items = [];
+        foreach ($baseTypes as $id => $title) {
+            $items[] = ['ID' => $id, 'TITLE' => $title];
+        }
+        foreach ($userTypes as $item) {
+            $id = $item['PROPERTY_TYPE'] . ':' . $item['USER_TYPE'];
+            $items[] = ['ID' => $id, 'TITLE' => $item['DESCRIPTION'], 'GROUP' => $item['PROPERTY_TYPE']];
+        }
+        return $items;
     }
 
     /**
@@ -263,7 +267,7 @@ trait IblockPropertyTrait
         $fields = array_replace_recursive($default, $fields);
 
         if (str_contains($fields['PROPERTY_TYPE'], ':')) {
-            [$ptype, $utype] = explode(':', $fields['PROPERTY_TYPE']);
+            [$ptype, $utype] = explode(':', $fields['PROPERTY_TYPE'], 2);
             $fields['PROPERTY_TYPE'] = $ptype;
             $fields['USER_TYPE'] = $utype;
         }
@@ -304,7 +308,7 @@ trait IblockPropertyTrait
         }
 
         if (str_contains($fields['PROPERTY_TYPE'], ':')) {
-            [$ptype, $utype] = explode(':', $fields['PROPERTY_TYPE']);
+            [$ptype, $utype] = explode(':', $fields['PROPERTY_TYPE'], 2);
             $fields['PROPERTY_TYPE'] = $ptype;
             $fields['USER_TYPE'] = $utype;
         }
@@ -416,15 +420,9 @@ trait IblockPropertyTrait
      */
     public function exportPropertiesByFilter(array $filter = []): array
     {
-        $properties = array_filter(
-            $this->getPropertiesByFilter($filter),
-            fn($item) => !empty($item['CODE']),
-        );
+        $properties = array_filter($this->getPropertiesByFilter($filter), fn($item) => !empty($item['CODE']));
 
-        return array_map(
-            fn($item) => $this->prepareExportProperty($item),
-            $properties,
-        );
+        return array_map(fn($item) => $this->prepareExportProperty($item), $properties);
     }
 
     /**
@@ -434,21 +432,37 @@ trait IblockPropertyTrait
     {
         $filter['CHECK_PERMISSIONS'] = 'N';
 
-        $filterIds = false;
+        $propertyIds = [];
         if (isset($filter['ID']) && is_array($filter['ID'])) {
-            $filterIds = $filter['ID'];
+            $propertyIds = $filter['ID'];
             unset($filter['ID']);
         }
 
-        $dbres = CIBlockProperty::GetList(['SORT' => 'ASC', 'ID' => 'ASC'], $filter);
-
-        $properties = array_map(fn($item) => $this->prepareProperty($item), $this->fetchAll($dbres));
-
-        if ($filterIds) {
-            return array_filter($properties, fn($item) => in_array($item['ID'], $filterIds));
+        $propertyTypes = [];
+        if (isset($filter['PROPERTY_TYPE']) && is_array($filter['PROPERTY_TYPE'])) {
+            $propertyTypes = $filter['PROPERTY_TYPE'];
+            unset($filter['PROPERTY_TYPE']);
         }
 
-        return $properties;
+        $dbres = CIBlockProperty::GetList(['SORT' => 'ASC', 'ID' => 'ASC'], $filter);
+        $all = $this->fetchAll($dbres);
+
+        if (!empty($propertyIds)) {
+            $all = array_filter($all, fn($item) => in_array($item['ID'], $propertyIds));
+        }
+
+        if (!empty($propertyTypes)) {
+            $all = array_filter($all, function ($item) use ($propertyTypes) {
+                $pt = $item['PROPERTY_TYPE'] ?? '';
+                $ut = $item['USER_TYPE'] ?? '';
+
+                $pt = $ut ? "$pt:$ut" : $pt;
+
+                return in_array($pt, $propertyTypes);
+            });
+        }
+
+        return array_map(fn($item) => $this->prepareProperty($item), $all);
     }
 
     /**
