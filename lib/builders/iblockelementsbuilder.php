@@ -134,18 +134,14 @@ class IblockElementsBuilder extends VersionBuilder
                     ->setRows(4),
             );
 
-            $exportFilter = [
-                'ID' => $this->explodeString($filterIds),
-            ];
+            $exportFilter = ['ID' => $this->explodeString($filterIds)];
         } elseif ($filterMode == 'list_section_id') {
             $filterSectionId = $this->askField('export_filter_list_section_id',
                 (new StringField(Locale::getMessage('BUILDER_IblockElementsExport_FilterListSectionId')))
                     ->setSize(10),
             );
 
-            $exportFilter = [
-                'IBLOCK_SECTION_ID' => (int) $filterSectionId,
-            ];
+            $exportFilter = ['IBLOCK_SECTION_ID' => (int) $filterSectionId];
         } elseif ($filterMode == 'list_xml_id') {
             $filterXmlIds = $this->askField('export_filter_list_xml_id',
                 (new TextareaField(Locale::getMessage('BUILDER_IblockElementsExport_FilterListXmlId')))
@@ -154,9 +150,7 @@ class IblockElementsBuilder extends VersionBuilder
                     ->setRows(4),
             );
 
-            $exportFilter = [
-                'XML_ID' => $this->explodeString($filterXmlIds),
-            ];
+            $exportFilter = ['XML_ID' => $this->explodeString($filterXmlIds)];
         } else {
             $exportFilter = [];
         }

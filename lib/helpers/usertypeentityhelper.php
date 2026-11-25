@@ -16,15 +16,21 @@ class UserTypeEntityHelper extends Helper
      */
     public function getUserTypes(): array
     {
-        return array_map(
-            fn($userType) => $this->prepareUserType($userType),
-            $this->getUserFieldManager()->GetUserType(),
-        );
+        return $this->getUserFieldManager()->GetUserType();
     }
 
-    private function prepareUserType(array $userType): array
+    /**
+     * @throws HelperException
+     */
+    public function getUserEntityIds(): array
     {
-        return $userType;
+        $entityIds = [];
+        $dbres = CUserTypeEntity::GetList([]);
+        while ($row = $dbres->Fetch()) {
+            $entityIds[$row['ENTITY_ID']] = $row['ENTITY_ID'];
+        }
+
+        return array_values($entityIds);
     }
 
     /**
@@ -86,8 +92,16 @@ class UserTypeEntityHelper extends Helper
     }
 
     /**
-     * @deprecated
+     * Получает пользовательские поля у объекта
      */
+    public function getUserTypeEntities(string $entityId, array $filter = []): array
+    {
+        $filter['ENTITY_ID'] = $entityId;
+
+        return $this->getUserTypeEntitiesByFilter($filter);
+    }
+
+    /** @deprecated, use getUserTypeEntitiesByFilter($filter) */
     public function getList(array $filter = []): array
     {
         return $this->getUserTypeEntitiesByFilter($filter);
@@ -95,11 +109,30 @@ class UserTypeEntityHelper extends Helper
 
     public function getUserTypeEntitiesByFilter(array $filter = []): array
     {
+        $entityIds = [];
+        if (isset($filter['ENTITY_ID']) && is_array($filter['ENTITY_ID'])) {
+            $entityIds = $filter['ENTITY_ID'];
+            unset($filter['ENTITY_ID']);
+        }
+
+        $userTypeIds = [];
+        if (isset($filter['USER_TYPE_ID']) && is_array($filter['USER_TYPE_ID'])) {
+            $userTypeIds = $filter['USER_TYPE_ID'];
+            unset($filter['USER_TYPE_ID']);
+        }
+
         $dbres = CUserTypeEntity::GetList([], $filter);
-        return array_map(
-            fn($item) => $this->getUserTypeEntityById($item['ID']),
-            $this->fetchAll($dbres),
-        );
+        $all = $this->fetchAll($dbres);
+
+        if (!empty($entityIds)) {
+            $all = array_filter($all, fn($item) => in_array($item['ENTITY_ID'], $entityIds));
+        }
+
+        if (!empty($userTypeIds)) {
+            $all = array_filter($all, fn($item) => in_array($item['USER_TYPE_ID'], $userTypeIds));
+        }
+
+        return array_map(fn($item) => $this->getUserTypeEntityById($item['ID']), $all);
     }
 
     /**
@@ -243,7 +276,7 @@ class UserTypeEntityHelper extends Helper
         }
     }
 
-    private function revertEnums(&$fields)
+    private function revertEnums(&$fields): array
     {
         $enums = [];
         if (isset($fields['ENUM_VALUES'])) {
@@ -399,10 +432,7 @@ class UserTypeEntityHelper extends Helper
      */
     public function exportUserTypeEntitiesByIds(array $fieldIds): array
     {
-        $result = array_map(
-            fn($fieldId) => $this->exportUserTypeEntity($fieldId),
-            $fieldIds,
-        );
+        $result = array_map(fn($fieldId) => $this->exportUserTypeEntity($fieldId), $fieldIds);
 
         return array_filter($result);
     }
@@ -526,15 +556,6 @@ class UserTypeEntityHelper extends Helper
         );
     }
 
-    /**
-     * Получает пользовательские поля у объекта
-     */
-    public function getUserTypeEntities(string $entityId, array $filter = []): array
-    {
-        $filter['ENTITY_ID'] = $entityId;
-
-        return $this->getUserTypeEntitiesByFilter($filter);
-    }
 
     /**
      * Удаляет пользовательское поле у объекта

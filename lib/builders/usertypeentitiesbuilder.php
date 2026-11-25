@@ -42,10 +42,10 @@ class UserTypeEntitiesBuilder extends VersionBuilder
                 ->addOption('userTypeId', Locale::getMessage('BUILDER_UserTypeEntities_WhatUserTypeId')),
         );
 
-        if ($what === 'userTypeId') {
-            $fields = $this->askFieldsByUserTypeId();
-        } else {
+        if ($what === 'entityId') {
             $fields = $this->askFieldsByEntityId();
+        } else {
+            $fields = $this->askFieldsByUserTypeId();
         }
 
         $fieldsIds = $this->askField('entity_fields',
@@ -69,36 +69,34 @@ class UserTypeEntitiesBuilder extends VersionBuilder
      */
     private function askFieldsByUserTypeId(): array
     {
-        $userTypes = $this->getUserTypes();
-
         $userTypeId = $this->askField('user_type_id',
-            (new RadioListField(Locale::getMessage('BUILDER_UserTypeEntities_UserTypeId')))
+            (new CheckboxListField(Locale::getMessage('BUILDER_UserTypeEntities_UserTypeId')))
                 ->setInPlan(false)
-                ->setOptions($userTypes, 'USER_TYPE_ID', 'TITLE'),
+                ->setOptions($this->getUserTypesSelect(), 'USER_TYPE_ID', 'USER_TITLE'),
         );
 
-        return $this->getUserTypeEntitiesByFilter(['USER_TYPE_ID' => $userTypeId]);
+        return $this->getUserTypeEntities(['USER_TYPE_ID' => $userTypeId]);
     }
 
     /**
+     * @throws RebuildException
      * @throws HelperException
      */
-    private function getUserTypes(): array
+    private function askFieldsByEntityId(): array
     {
-        $entityHelper = $this->getHelperManager()->UserTypeEntity();
-
-        return array_map(
-            fn($field) => array_merge($field, [
-                'TITLE' => sprintf('[%s] %s', $field['USER_TYPE_ID'], $field['DESCRIPTION']),
-            ]),
-            $entityHelper->getUserTypes(),
+        $entityIds = $this->askField('entity_id',
+            (new CheckboxListField(Locale::getMessage('BUILDER_UserTypeEntities_EntityId')))
+                ->setInPlan(false)
+                ->setOptions($this->getUserEntitiesSelect(), 'ENTITY_ID', 'ENTITY_TITLE', 'ENTITY_GROUP'),
         );
+
+        return $this->getUserTypeEntities(['ENTITY_ID' => $entityIds]);
     }
 
     /**
      * @throws HelperException
      */
-    private function getUserTypeEntitiesByFilter(array $filter = []): array
+    private function getUserTypeEntities(array $filter = []): array
     {
         $entityHelper = $this->getHelperManager()->UserTypeEntity();
 
@@ -112,21 +110,32 @@ class UserTypeEntitiesBuilder extends VersionBuilder
     }
 
     /**
-     * @throws RebuildException
      * @throws HelperException
      */
-    private function askFieldsByEntityId(): array
+    public function getUserEntitiesSelect(): array
     {
-        $fields = $this->getUserTypeEntitiesByFilter();
+        $entityHelper = $this->getHelperManager()->UserTypeEntity();
 
-        $entityIds = $this->askField('entity_id',
-            (new CheckboxListField(Locale::getMessage('BUILDER_UserTypeEntities_EntityId')))
-                ->setInPlan(false)
-                ->setOptions($fields, 'ENTITY_ID', 'ENTITY_TITLE'),
-        );
+        return array_map(function ($entityId) use ($entityHelper) {
+            [$group] = explode('_', $entityId, 2);
+            return [
+                'ENTITY_GROUP' => $group ?: '-',
+                'ENTITY_ID'    => $entityId,
+                'ENTITY_TITLE' => $entityHelper->getEntityTitle($entityId),
+            ];
+        }, $entityHelper->getUserEntityIds());
+    }
 
-        return array_filter($fields, function ($item) use ($entityIds) {
-            return in_array($item['ENTITY_ID'], $entityIds);
-        });
+    /**
+     * @throws HelperException
+     */
+    private function getUserTypesSelect(): array
+    {
+        $entityHelper = $this->getHelperManager()->UserTypeEntity();
+
+        return array_map(function ($item) {
+            $item['USER_TITLE'] = sprintf('[%s] %s', $item['USER_TYPE_ID'], $item['DESCRIPTION']);
+            return $item;
+        }, $entityHelper->getUserTypes());
     }
 }
