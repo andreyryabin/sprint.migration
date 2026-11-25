@@ -18,6 +18,13 @@ abstract class AbstractOutput implements OutputInterface
         $this->logger?->debug($msg);
     }
 
+    public function print(string $msg, ...$vars): void
+    {
+        $msg = $this->resolve($msg, $vars);
+
+        $this->writeMessage($msg, '');
+    }
+
     protected function resolve(string $msg, array $vars): string
     {
         return $vars ? vsprintf($msg, $vars) : $msg;
@@ -79,12 +86,12 @@ abstract class AbstractOutput implements OutputInterface
         foreach (array_merge($exists1, $fields1) as $k => $v) {
             if (isset($exists1[$k]) && isset($fields1[$k])) {
                 if ($exists1[$k] !== $fields1[$k]) {
-                    $this->writeDiff('%s: [red]"%s"[/] -> [green]"%s"[/]', $k, $exists1[$k], $fields1[$k]);
+                    $this->print('%s: [red]"%s"[/] -> [green]"%s"[/]', $k, $exists1[$k], $fields1[$k]);
                 }
             } elseif (isset($exists1[$k])) {
-                $this->writeDiff('%s: [red]"%s"[/]', $k, $exists1[$k]);
+                $this->print('%s: [red]"%s"[/]', $k, $exists1[$k]);
             } elseif (isset($fields1[$k])) {
-                $this->writeDiff('%s: [green]"%s"[/]', $k, $fields1[$k]);
+                $this->print('%s: [green]"%s"[/]', $k, $fields1[$k]);
             }
         }
     }
@@ -105,14 +112,6 @@ abstract class AbstractOutput implements OutputInterface
                 $out[$key . $k] = $v;
             }
         }
-    }
-
-    private function writeDiff(string $msg, ...$vars): void
-    {
-        $msg = $this->resolve($msg, $vars);
-
-        $this->writeMessage($msg, '');
-        //without log
     }
 
     public function outException(?Throwable $exception = null): void

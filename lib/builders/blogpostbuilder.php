@@ -76,7 +76,7 @@ class BlogPostBuilder extends VersionBuilder
                     $filter,
                 ),
                 progressFn: fn($value, $totalCount) => $this->outProgress(
-                    'Progress',
+                    Locale::getMessage('PROGRESS'),
                     $value,
                     $totalCount,
                 ),
@@ -115,7 +115,7 @@ class BlogPostBuilder extends VersionBuilder
                     ->setRows(4),
             );
 
-            $ids = array_values(array_filter(array_map('intval', $this->explodeString($ids))));
+            $ids = $this->getHelperManager()->Text()->explodeSeparatedValues($ids, numeric: true);
             return empty($ids) ? ['ID' => 0] : ['@ID' => $ids];
         }
 
@@ -128,7 +128,7 @@ class BlogPostBuilder extends VersionBuilder
                     ->setRows(4),
             );
 
-            $codes = $this->explodeString($codes);
+            $codes = $this->getHelperManager()->Text()->explodeSeparatedValues($codes);
             if (empty($codes)) {
                 return ['ID' => 0];
             }

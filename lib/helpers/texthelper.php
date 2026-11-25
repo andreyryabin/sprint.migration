@@ -6,15 +6,23 @@ use Sprint\Migration\Helper;
 
 class TextHelper extends Helper
 {
-    public function htmlspecialcharsDecodeRecursive($data)
-    {
-        if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                $data[$key] = $this->htmlspecialcharsDecodeRecursive($value);
-            }
-        } else {
-            $data = htmlspecialchars_decode($data);
+
+    public function explodeSeparatedValues(
+        string $input,
+        string $separator = ' ',
+        bool $numeric = false,
+        bool $unique = true,
+    ): array {
+        $values = array_filter(explode($separator, trim($input)), fn($v) => $v !== '');
+
+        if ($numeric) {
+            $values = array_map('intval', array_filter($values, 'ctype_digit'));
         }
-        return $data;
+
+        if ($unique) {
+            $values = array_unique($values);
+        }
+
+        return array_values($values);
     }
 }

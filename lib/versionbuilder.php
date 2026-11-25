@@ -102,18 +102,17 @@ abstract class VersionBuilder extends Builder
         }
 
         $fileName = $this->getVersionConfig()->getVersionFile($templateVars['version']);
-        $fileContent = Module::templater($templateFile, $templateVars);
 
-        file_put_contents($fileName, $fileContent);
+        $fileContent = Module::createTemplateContent($templateFile, $templateVars);
 
-        if (!is_file($fileName)) {
+        if (!file_put_contents($fileName, $fileContent) || !is_file($fileName)) {
             throw new MigrationException(
-                Locale::getMessage('ERR_CANT_CREATE_FILE', ['#NAME#' => $fileName,]),
+                Locale::getMessage('ERR_CANT_CREATE_FILE', ['#NAME#' => $fileName]),
             );
         }
 
         $this->outSuccess(
-            Locale::getMessage('CREATED_SUCCESS', ['#VERSION#' => $templateVars['version'],]),
+            Locale::getMessage('CREATED_SUCCESS', ['#VERSION#' => $templateVars['version']]),
         );
 
         if ($markAsInstalled) {

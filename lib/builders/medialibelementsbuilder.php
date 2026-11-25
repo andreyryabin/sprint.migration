@@ -68,7 +68,7 @@ class MedialibElementsBuilder extends VersionBuilder
                     $exportFields,
                 ),
                 progressFn: fn($value, $totalCount) => $this->outProgress(
-                    'Progress',
+                    Locale::getMessage('PROGRESS'),
                     $value,
                     $totalCount,
                 ),

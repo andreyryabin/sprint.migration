@@ -4,6 +4,7 @@ namespace Sprint\Migration\Exchange;
 
 use Closure;
 use Sprint\Migration\Interfaces\RestartableInterface;
+use Sprint\Migration\Locale;
 use Sprint\Migration\Output\OutputInterface;
 
 class ExchangeManager
@@ -31,7 +32,7 @@ class ExchangeManager
     private function getProgressFn(): Closure
     {
         return function ($value, $totalCount) {
-            $this->output?->outProgress('Progress', $value, $totalCount);
+            $this->output?->outProgress(Locale::getMessage('PROGRESS'), $value, $totalCount);
         };
     }
 

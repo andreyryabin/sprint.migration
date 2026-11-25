@@ -79,7 +79,7 @@ class HlblockElementsBuilder extends VersionBuilder
                     $exportFields,
                 ),
                 progressFn: fn($value, $totalCount) => $this->outProgress(
-                    'Progress',
+                    Locale::getMessage('PROGRESS'),
                     $value,
                     $totalCount,
                 ),
@@ -119,7 +119,7 @@ class HlblockElementsBuilder extends VersionBuilder
                     ->setRows(3),
             );
 
-            $exportFilter = ['ID' => $this->explodeString($filterIds)];
+            $exportFilter = ['ID' => $this->getHelperManager()->Text()->explodeSeparatedValues($filterIds, numeric: true)];
         } elseif ($filterMode == 'list_xml_id') {
             $filterXmlIds = $this->askField('export_filter_list_xml_id',
                 (new TextareaField(Locale::getMessage('BUILDER_HlblockElementsExport_FilterListXmlId')))
@@ -127,7 +127,7 @@ class HlblockElementsBuilder extends VersionBuilder
                     ->setRows(3),
             );
 
-            $exportFilter = ['UF_XML_ID' => $this->explodeString($filterXmlIds)];
+            $exportFilter = ['UF_XML_ID' => $this->getHelperManager()->Text()->explodeSeparatedValues($filterXmlIds)];
         } else {
             $exportFilter = [];
         }

@@ -2,8 +2,8 @@
 
 namespace Sprint\Migration\Helpers;
 
+use Bitrix\Main\Config\Option;
 use CAgent;
-use COption;
 use CRubric;
 use Sprint\Migration\Exceptions\HelperException;
 use Sprint\Migration\Helper;
@@ -61,6 +61,9 @@ class SubscribeHelper extends Helper
         return CRubric::GetByID($rubricId)->Fetch();
     }
 
+    /**
+     * @throws HelperException
+     */
     protected function prepareExportRubric(array $item): array
     {
         $this->checkRequiredKeys($item, ['LID', 'CODE', 'NAME']);
@@ -189,7 +192,7 @@ class SubscribeHelper extends Helper
         if (
             ($item['ACTIVE'] ?? '') === 'Y'
             && ($item['AUTO'] ?? '') === 'Y'
-            && COption::GetOptionString('subscribe', 'subscribe_template_method') !== 'cron'
+            && Option::get('subscribe', 'subscribe_template_method') !== 'cron'
         ) {
             CAgent::RemoveAgent('CPostingTemplate::Execute();', 'subscribe');
         }

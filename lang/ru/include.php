@@ -45,6 +45,7 @@ $MESS["{$prefix}CFG_TITLE"] = "Миграции";
 $MESS["{$prefix}LABEL_YES"] = "Да";
 $MESS["{$prefix}LABEL_NO"] = "Нет";
 $MESS["{$prefix}BY_SPACE"] = "через пробел";
+$MESS["{$prefix}PROGRESS"] = "Выполнено";
 
 $MESS["{$prefix}BUILDER_CREATE"] = "Создать";
 $MESS["{$prefix}BUILDER_RUN"] = "Выполнить";

@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration;
 
-use COption;
+use Bitrix\Main\Config\Option;
 use Sprint\Migration\Exceptions\MigrationException;
 
 class Module
@@ -11,26 +11,26 @@ class Module
     const EXCHANGE_VERSION = 2;
     private static string $version = '';
 
-    public static function getDbOption($name, $default = '')
+    public static function getDbOption($name, $default = ''): string
     {
-        return COption::GetOptionString(Module::ID, $name, $default);
+        return Option::get(Module::ID, $name, $default);
     }
 
-    public static function setDbOption($name, $value)
+    public static function setDbOption($name, $value): void
     {
-        if ($value != COption::GetOptionString(Module::ID, $name)) {
-            COption::SetOptionString(Module::ID, $name, $value);
+        if ($value != Option::get(Module::ID, $name)) {
+            Option::set(Module::ID, $name, $value);
         }
     }
 
-    public static function removeDbOption($name)
+    public static function removeDbOption($name): void
     {
-        COption::RemoveOption(Module::ID, $name);
+        Option::delete(Module::ID, ['name' => $name]);
     }
 
-    public static function removeDbOptions()
+    public static function removeDbOptions(): void
     {
-        COption::RemoveOption(Module::ID);
+        Option::delete(Module::ID);
     }
 
     public static function getPhpInterfaceDir($absolute = true): string
@@ -65,16 +65,16 @@ class Module
         }
     }
 
-    public static function templater($file, $vars = []): string
+    public static function createTemplateContent($templateFile, $templateVars = []): string
     {
-        if (is_array($vars)) {
-            extract($vars, EXTR_SKIP);
+        if (is_array($templateVars)) {
+            extract($templateVars, EXTR_SKIP);
         }
 
         ob_start();
 
-        if (is_file($file)) {
-            include $file;
+        if (is_file($templateFile)) {
+            include $templateFile;
         }
 
         return ob_get_clean();
@@ -91,12 +91,7 @@ class Module
 
         if (!is_dir($dir)) {
             throw new MigrationException(
-                Locale::getMessage(
-                    'ERR_CANT_CREATE_DIRECTORY',
-                    [
-                        '#NAME#' => $dir,
-                    ],
-                ),
+                Locale::getMessage('ERR_CANT_CREATE_DIRECTORY', ['#NAME#' => $dir]),
             );
         }
 
@@ -146,7 +141,7 @@ class Module
 
         if (version_compare(PHP_VERSION, '8.3', '<')) {
             throw new MigrationException(
-                Locale::getMessage('ERR_PHP_NOT_SUPPORTED', ['#NAME#' => PHP_VERSION,]),
+                Locale::getMessage('ERR_PHP_NOT_SUPPORTED', ['#NAME#' => PHP_VERSION]),
             );
         }
 

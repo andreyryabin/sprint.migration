@@ -44,6 +44,7 @@ $MESS["{$prefix}CFG_TITLE"] = "Migrations";
 $MESS["{$prefix}LABEL_YES"] = "yes";
 $MESS["{$prefix}LABEL_NO"] = "no";
 $MESS["{$prefix}BY_SPACE"] = "by space";
+$MESS["{$prefix}PROGRESS"] = "Progress";
 
 $MESS["{$prefix}BUILDER_CREATE"] = "Create";
 $MESS["{$prefix}BUILDER_RUN"] = "Run";

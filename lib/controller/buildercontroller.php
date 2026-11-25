@@ -19,6 +19,7 @@ use Sprint\Migration\Module;
 use Sprint\Migration\Output\RestOutput;
 
 /**
+ * @publicApi
  * controller: sprint:migration.controller.buildercontroller
  */
 class BuilderController extends Controller
@@ -62,7 +63,7 @@ class BuilderController extends Controller
     public function refreshBuildersAction(): array
     {
         $builders = array_map(
-            fn(Builder $builder) => $this->getBuilderForm($builder, true),
+            fn(Builder $builder) => $this->builderToArray($builder),
             $this->builderManager->getBuilders(),
         );
 
@@ -84,7 +85,7 @@ class BuilderController extends Controller
                 'restart' => $result->needRestart(),
                 'success' => $result->isSuccess(),
             ],
-            $this->getBuilderForm($builder, $result->isSuccess()),
+            $this->builderToArray($builder, $result->isSuccess()),
             $this->output->getLog(),
         );
     }
@@ -99,19 +100,14 @@ class BuilderController extends Controller
         return parent::processBeforeAction($action);
     }
 
-    private function getBuilderForm(Builder $builder, bool $newform): array
+    private function builderToArray(Builder $builder, bool $clean = true): array
     {
-        if ($newform) {
-            $builder->cleanParamsExceptFieldValues();
-        } else {
-            $builder->mergeParamsWithFieldValue();
+        //bind vue model, clean tmp params
+        $params = $clean ? [] : $builder->getRestartParams();
+        foreach ($builder->getFields() as $code => $field) {
+            $params[$code] = $params[$code] ?? $field->getDefaultValue();
         }
 
-        return $this->builderToArray($builder);
-    }
-
-    private function builderToArray(Builder $builder): array
-    {
         $fields = [];
         foreach ($builder->getFields() as $code => $field) {
             $fields[] = [
@@ -129,7 +125,7 @@ class BuilderController extends Controller
             'title'  => $builder->getTitle(),
             'group'  => $builder->getGroup(),
             'note'   => $builder->getDescription(),
-            'params' => $builder->getRestartParams(),
+            'params' => $params,
             'fields' => $fields,
         ];
     }

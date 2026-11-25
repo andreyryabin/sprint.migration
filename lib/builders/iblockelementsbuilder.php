@@ -77,7 +77,7 @@ class IblockElementsBuilder extends VersionBuilder
                     $exportProps,
                 ),
                 progressFn: fn($value, $totalCount) => $this->outProgress(
-                    'Progress',
+                    Locale::getMessage('PROGRESS'),
                     $value,
                     $totalCount,
                 ),
@@ -134,7 +134,7 @@ class IblockElementsBuilder extends VersionBuilder
                     ->setRows(4),
             );
 
-            $exportFilter = ['ID' => $this->explodeString($filterIds)];
+            $exportFilter = ['ID' => $this->getHelperManager()->Text()->explodeSeparatedValues($filterIds, numeric: true)];
         } elseif ($filterMode == 'list_section_id') {
             $filterSectionId = $this->askField('export_filter_list_section_id',
                 (new StringField(Locale::getMessage('BUILDER_IblockElementsExport_FilterListSectionId')))
@@ -150,7 +150,7 @@ class IblockElementsBuilder extends VersionBuilder
                     ->setRows(4),
             );
 
-            $exportFilter = ['XML_ID' => $this->explodeString($filterXmlIds)];
+            $exportFilter = ['XML_ID' => $this->getHelperManager()->Text()->explodeSeparatedValues($filterXmlIds)];
         } else {
             $exportFilter = [];
         }

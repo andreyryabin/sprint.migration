@@ -45,7 +45,6 @@ abstract class Builder implements RestartableInterface
         $this->initialize();
     }
 
-
     abstract protected function initialize();
 
     public function getName(): string
@@ -92,22 +91,6 @@ abstract class Builder implements RestartableInterface
         }
     }
 
-    public function cleanParamsExceptFieldValues(): void
-    {
-        $cleaned = [];
-        foreach ($this->getFields() as $code => $field) {
-            $cleaned[$code] = $this->params[$code] ?? $field->getDefaultValue();
-        }
-        $this->setRestartParams($cleaned);
-    }
-
-    public function mergeParamsWithFieldValue(): void
-    {
-        foreach ($this->getFields() as $code => $field) {
-            $this->params[$code] ??= $field->getDefaultValue();
-        }
-    }
-
     public function resetBuilder(): void
     {
         $this->fields = [];
@@ -125,7 +108,6 @@ abstract class Builder implements RestartableInterface
 
         $this->execute();
     }
-
 
     /**
      * @throws RebuildException
@@ -209,7 +191,6 @@ abstract class Builder implements RestartableInterface
         throw new RebuildException();
     }
 
-
     protected function getField(string $code): ?BuilderField
     {
         return $this->fields[$code] ?? null;
@@ -225,7 +206,6 @@ abstract class Builder implements RestartableInterface
         $this->params[$code] = $value;
     }
 
-
     protected function setTitle(string $title = ''): void
     {
         $this->info['title'] = $title;
@@ -239,12 +219,5 @@ abstract class Builder implements RestartableInterface
     protected function setGroup(string $group = ''): void
     {
         $this->info['group'] = $group;
-    }
-
-    protected function explodeString(string $string, string $delimiter = ' '): array
-    {
-        return array_filter(
-            explode($delimiter, trim($string)),
-        );
     }
 }

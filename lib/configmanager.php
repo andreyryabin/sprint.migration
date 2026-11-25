@@ -18,10 +18,9 @@ class ConfigManager
      */
     public function __construct()
     {
-        $this
-            ->addFromEventHandlers()
-            ->addDefault()
-            ->resort();
+        $this->addFromEventHandlers()
+             ->addDefault()
+             ->resort();
     }
 
     private function resort(): void
@@ -157,7 +156,7 @@ class ConfigManager
         }
 
         $configValues = [
-            'migration_dir'   => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
+            'migration_dir' => Module::getPhpInterfaceDir(false) . '/migrations.' . $configName,
             'migration_table' => 'sprint_migration_' . $configName,
         ];
 

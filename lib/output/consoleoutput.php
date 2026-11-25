@@ -49,7 +49,6 @@ class ConsoleOutput extends AbstractOutput implements ConsoleInterface
     {
         $msg = $this->resolve($msg, $vars);
         $msg = $this->colorize($msg, '');
-
         fwrite(STDOUT, $msg);
 
         $val = fgets(STDIN);
@@ -63,13 +62,6 @@ class ConsoleOutput extends AbstractOutput implements ConsoleInterface
 
         //защищает от разрыва строки и т.п.
         return trim($val);
-    }
-
-    public function print(string $msg, ...$vars): void
-    {
-        $msg = $this->resolve($msg, $vars);
-
-        $this->writeMessage($msg, '');
     }
 
     public function lines(string $msg, string $lines): void
@@ -94,7 +86,9 @@ class ConsoleOutput extends AbstractOutput implements ConsoleInterface
 
     protected function writeProgress(string $msg, int $val, int $total): void
     {
-        fwrite(STDOUT, "\r" . $this->colorize("$msg: $val / $total", 'label'));
+        $msg = $this->colorize("$msg: $val / $total", 'label');
+
+        fwrite(STDOUT, "\r" . $msg);
         if ($val >= $total) {
             fwrite(STDOUT, PHP_EOL);
         }
@@ -102,12 +96,10 @@ class ConsoleOutput extends AbstractOutput implements ConsoleInterface
 
     private function colorize(string $msg, string $type): string
     {
-        $msg = $type ? "[$type]" . $msg . "[/]" : $msg;
-
         return str_replace(
             array_keys($this->colors),
             array_values($this->colors),
-            $msg,
+            $type ? "[$type]{$msg}[/]" : $msg,
         );
     }
 

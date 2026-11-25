@@ -568,9 +568,7 @@ class SaleDiscountHelper extends Helper
     protected function getPropertyByExportedClassId(string $classId): array
     {
         $parts = explode(':', $classId, 4);
-        if (count(
-                $parts,
-            ) !== 4
+        if (count($parts) !== 4
             || $parts[0] !== 'CondIBPropUid'
             || $parts[1] === ''
             || $parts[2] === ''
