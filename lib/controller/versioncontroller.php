@@ -15,6 +15,7 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\Output\RestOutput;
+use Sprint\Migration\VersionConfig;
 use Sprint\Migration\VersionManager;
 use Throwable;
 
@@ -27,6 +28,7 @@ class VersionController extends Controller
     protected VersionManager $versionManager;
     protected RestOutput $output;
     private ConfigManager $configManager;
+    private VersionConfig $versionConfig;
 
     /**
      * @throws MigrationException
@@ -41,16 +43,16 @@ class VersionController extends Controller
 
         $this->configManager = ConfigManager::getInstance();
 
-        $versionConfig = $this->configManager->get(
+        $this->versionConfig = $this->configManager->get(
             $this->getRequest()->get('config'),
         );
 
         $this->output = new RestOutput(
-            $versionConfig->getLogger(),
+            $this->versionConfig->getLogger(),
         );
 
         $this->versionManager = new VersionManager(
-            $versionConfig,
+            $this->versionConfig,
             $this->output,
         );
     }
@@ -197,6 +199,11 @@ class VersionController extends Controller
     {
         if (CMain::GetUserRight(Module::ID) == 'D') {
             $this->addError(new Error('ACCESS_DENIED'));
+            return false;
+        }
+
+        if (!$this->versionConfig->showAdminInterface()) {
+            $this->addError(new Error('INTERFACE_DISABLED'));
             return false;
         }
 

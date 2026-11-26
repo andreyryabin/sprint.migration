@@ -17,6 +17,7 @@ use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Locale;
 use Sprint\Migration\Module;
 use Sprint\Migration\Output\RestOutput;
+use Sprint\Migration\VersionConfig;
 
 /**
  * @publicApi
@@ -26,6 +27,7 @@ class BuilderController extends Controller
 {
     protected BuilderManager $builderManager;
     protected RestOutput $output;
+    private VersionConfig $versionConfig;
 
     /**
      * @throws MigrationException
@@ -38,16 +40,16 @@ class BuilderController extends Controller
             $this->getRequest()->get('lang') ?? Locale::getDefaultLang(),
         );
 
-        $versionConfig = ConfigManager::getInstance()->get(
+        $this->versionConfig = ConfigManager::getInstance()->get(
             $this->getRequest()->get('config'),
         );
 
         $this->output = new RestOutput(
-            $versionConfig->getLogger(),
+            $this->versionConfig->getLogger(),
         );
 
         $this->builderManager = new BuilderManager(
-            $versionConfig,
+            $this->versionConfig,
             $this->output,
         );
     }
@@ -94,6 +96,11 @@ class BuilderController extends Controller
     {
         if (CMain::GetUserRight(Module::ID) == 'D') {
             $this->addError(new Error('ACCESS_DENIED'));
+            return false;
+        }
+
+        if (!$this->versionConfig->showAdminInterface()) {
+            $this->addError(new Error('INTERFACE_DISABLED'));
             return false;
         }
 

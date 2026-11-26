@@ -32,7 +32,7 @@ try {
 
     $APPLICATION->SetTitle($versionConfig->getTitle());
 
-    if ($versionConfig->getVal('show_admin_interface')) {
+    if ($versionConfig->showAdminInterface()) {
         include __DIR__ . '/assets/script.php';
     } else {
         $sperrors[] = Locale::getMessage('ADMIN_INTERFACE_HIDDEN');

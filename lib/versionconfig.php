@@ -375,5 +375,9 @@ class VersionConfig
         return date($this->getVal('version_timestamp_format'), time() - 8 * 3600);
     }
 
+    public function showAdminInterface(): bool
+    {
+        return $this->getVal('show_admin_interface', true);
+    }
 
 }
