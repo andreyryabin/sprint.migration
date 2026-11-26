@@ -94,6 +94,10 @@
     top: 10px
 }
 
+.sp-w120 {
+    width: 120px;
+}
+
 .sp-noblock_body {
     display: block;
 }
@@ -407,11 +411,6 @@ a.sp-item-unknown:visited {
 .sp-migration_buttons .sp-progress {
     margin: 2px;
 }
-
-input.adm-btn.sp-play {
-    width: 120px;
-}
-
 
 .sp-tabs_tabs {
     display: -webkit-box;

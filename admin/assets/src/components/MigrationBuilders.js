@@ -276,7 +276,7 @@ export const MigrationBuilders = {
                 </div>
                 <div class="sp-migration_buttons">
                   <input
-                      :class="['adm-btn','sp-play']"
+                      :class="['adm-btn-green','sp-w120']"
                       type="button"
                       :value="getMessage(running ? 'PAUSE' : 'BUILDER_NEXT')"
                       @click="replayBuilder"

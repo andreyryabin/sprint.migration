@@ -129,7 +129,7 @@ class IblockElementsBuilder extends VersionBuilder
         if ($filterMode == 'list_id') {
             $filterIds = $this->askField('export_filter_list_id',
                 (new TextareaField(Locale::getMessage('BUILDER_IblockElementsExport_FilterListId')))
-                    ->setPlaceholder(Locale::getMessage('BY_SPACE'))
+                    ->setPlaceholder(Locale::getMessage('BY_SPACE_NUMERIC'))
                     ->explodeToNumeric()
                     ->setCols(35)
                     ->setRows(4),
@@ -150,7 +150,7 @@ class IblockElementsBuilder extends VersionBuilder
         } elseif ($filterMode == 'list_xml') {
             $filterXmlIds = $this->askField('export_filter_list_xml',
                 (new TextareaField(Locale::getMessage('BUILDER_IblockElementsExport_FilterListXmlId')))
-                    ->setPlaceholder(Locale::getMessage('BY_SPACE'))
+                    ->setPlaceholder(Locale::getMessage('BY_SPACE_NUMERIC'))
                     ->explodeToStrings()
                     ->setCols(35)
                     ->setRows(4),

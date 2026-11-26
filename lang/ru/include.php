@@ -44,7 +44,8 @@ $MESS["{$prefix}PHP_VERSION"] = "Версия php: #NAME#";
 $MESS["{$prefix}CFG_TITLE"] = "Миграции";
 $MESS["{$prefix}LABEL_YES"] = "Да";
 $MESS["{$prefix}LABEL_NO"] = "Нет";
-$MESS["{$prefix}BY_SPACE"] = "через пробел";
+$MESS["{$prefix}BY_SPACE_STRINGS"] = "Значения через пробел";
+$MESS["{$prefix}BY_SPACE_NUMERIC"] = "Числа через пробел";
 $MESS["{$prefix}PROGRESS"] = "Выполнено";
 
 $MESS["{$prefix}BUILDER_CREATE"] = "Создать";

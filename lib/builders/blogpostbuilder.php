@@ -110,7 +110,7 @@ class BlogPostBuilder extends VersionBuilder
         if ($mode === 'list_id') {
             $ids = $this->askField('post_filter_list_id',
                 (new TextareaField(Locale::getMessage('BUILDER_BlogPostExport_FilterListId')))
-                    ->setPlaceholder(Locale::getMessage('BY_SPACE'))
+                    ->setPlaceholder(Locale::getMessage('BY_SPACE_NUMERIC'))
                     ->explodeToNumeric()
                     ->setCols(35)
                     ->setRows(4),
@@ -123,7 +123,7 @@ class BlogPostBuilder extends VersionBuilder
         if ($mode === 'list_code') {
             $codes = $this->askField('post_filter_list_code',
                 (new TextareaField(Locale::getMessage('BUILDER_BlogPostExport_FilterListCode')))
-                    ->setPlaceholder(Locale::getMessage('BY_SPACE'))
+                    ->setPlaceholder(Locale::getMessage('BY_SPACE_STRINGS'))
                     ->explodeToStrings()
                     ->setCols(35)
                     ->setRows(4),

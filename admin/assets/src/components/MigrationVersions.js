@@ -577,7 +577,7 @@ export const MigrationVersions = {
                   v-if="replay && replay.version"
                   :value="getMessage(running ? 'PAUSE' : 'CONTINUE')"
                   type="button"
-                  :class="['adm-btn', 'sp-play']"
+                  :class="['adm-btn', 'sp-w120']"
                   @click="replayVersion"
               />
               <span

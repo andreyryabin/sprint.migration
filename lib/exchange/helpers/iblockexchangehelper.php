@@ -144,7 +144,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                             'IBLOCK_ID' => $iblockId,
                         ]),
                     );
-                } catch (WriterException $e) {
+                } catch (WriterException|HelperException $e) {
                     throw new HelperException(
                         $e->getMessage() . " in " . print_r([
                             'IBLOCK_ID' => $iblockId,
@@ -162,7 +162,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                     $item->addChild(
                         $this->createWriterPropertyTag($prop),
                     );
-                } catch (WriterException $e) {
+                } catch (WriterException|HelperException $e) {
                     throw new HelperException(
                         $e->getMessage() . " in " . print_r([
                             'IBLOCK_ID' => $iblockId,

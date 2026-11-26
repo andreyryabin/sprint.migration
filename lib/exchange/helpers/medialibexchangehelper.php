@@ -53,7 +53,6 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
 
     /**
      * @throws HelperException
-     * @throws WriterException
      */
     public function getWriterRecordsTag(int $offset, int $limit, ...$vars): WriterTag
     {
@@ -69,12 +68,21 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
 
         $tag = new WriterTag('tmp');
         foreach ($elements as $element) {
-            $tag->addChild(
-                $this->createWriterRecordTag(
-                    $element,
-                    $exportFields,
-                ),
-            );
+            try {
+                $tag->addChild(
+                    $this->createWriterRecordTag(
+                        $element,
+                        $exportFields,
+                    ),
+                );
+            } catch (WriterException|HelperException $e) {
+                throw new HelperException(
+                    $e->getMessage() . " in " . print_r([
+                        'ID'   => $element['ID'],
+                        'NAME' => $element['NAME'],
+                    ], true),
+                );
+            }
         }
         return $tag;
     }
