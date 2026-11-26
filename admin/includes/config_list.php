@@ -9,7 +9,7 @@ use Sprint\Migration\ConfigManager;
     <div class="sp-table">
         <div class="sp-row">
             <div class="sp-col sp-white">
-                <h3><?= Locale::getMessage('CONFIG') ?>: <?= htmlspecialcharsbx($configItem->getTitle()) ?></h3>
+                <h3><?= htmlspecialcharsbx($configItem->getTitle()) ?></h3>
                 <table class="sp-config">
                     <?php foreach ($configItem->humanValues() as $key => $val) { ?>
                         <tr>

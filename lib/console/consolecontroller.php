@@ -149,6 +149,9 @@ class ConsoleController
      */
     public function commandMark(): void
     {
+        $versionNames = $this->getVnamesByArgs();
+        $status = $this->getStatusByArgs();
+
         $newStatus = $this->getArg('--as=');
         $tag = $this->getArg('--add-tag=');
 
@@ -156,16 +159,11 @@ class ConsoleController
             throw new ConsoleException("Invalid arguments, see help");
         }
 
-
-        if (!empty($this->arguments)) {
-            foreach ($this->arguments as $argument) {
-                $entity = $this->versionManager->getVersionByName($argument);
-                $this->versionManager->markMigration($entity, $newStatus, $tag);
-            }
-            return;
+        foreach ($versionNames as $versionName) {
+            $this->versionManager->markMigrationByName($versionName, $newStatus, $tag);
         }
 
-        if ($status = $this->getStatusByArgs()) {
+        if (empty($versionNames) && $status) {
             foreach ($this->getVersionsByArgs(['status' => $status]) as $entity) {
                 $this->versionManager->markMigration($entity, $newStatus, $tag);
             }
@@ -179,6 +177,9 @@ class ConsoleController
      */
     public function commandMove(): void
     {
+        $versionNames = $this->getVnamesByArgs();
+        $status = $this->getStatusByArgs();
+
         $toConfig = $this->getArg('--to=');
 
         if (empty($toConfig)) {
@@ -187,15 +188,11 @@ class ConsoleController
 
         $toConfig = $this->configManager->get($toConfig);
 
-        if (!empty($this->arguments)) {
-            foreach ($this->arguments as $argument) {
-                $entity = $this->versionManager->getVersionByName($argument);
-                $this->versionManager->moveMigration($entity, $toConfig);
-            }
-            return;
+        foreach ($versionNames as $versionName) {
+            $this->versionManager->moveMigrationByName($versionName, $toConfig);
         }
 
-        if ($status = $this->getStatusByArgs()) {
+        if (empty($versionNames) && $status) {
             foreach ($this->getVersionsByArgs(['status' => $status]) as $entity) {
                 $this->versionManager->moveMigration($entity, $toConfig);
             }
@@ -208,15 +205,14 @@ class ConsoleController
      */
     public function commandDelete(): void
     {
-        if (!empty($this->arguments)) {
-            foreach ($this->arguments as $argument) {
-                $entity = $this->versionManager->getVersionByName($argument);
-                $this->versionManager->deleteMigration($entity);
-            }
-            return;
+        $versionNames = $this->getVnamesByArgs();
+        $status = $this->getStatusByArgs();
+
+        foreach ($versionNames as $versionName) {
+            $this->versionManager->deleteMigrationByName($versionName);
         }
 
-        if ($status = $this->getStatusByArgs()) {
+        if (empty($versionNames) && $status) {
             foreach ($this->getVersionsByArgs(['status' => $status]) as $entity) {
                 $this->versionManager->deleteMigration($entity);
             }
@@ -230,21 +226,19 @@ class ConsoleController
      */
     public function commandSettag(): void
     {
+        $versionNames = $this->getVnamesByArgs();
+        $status = $this->getStatusByArgs();
         $tag = $this->getArg('--add-tag=');
 
         if (empty($tag)) {
             throw new ConsoleException("Invalid arguments, see help");
         }
 
-        if (!empty($this->arguments)) {
-            foreach ($this->arguments as $argument) {
-                $entity = $this->versionManager->getVersionByName($argument);
-                $this->versionManager->setMigrationTag($entity, $tag);
-            }
-            return;
+        foreach ($versionNames as $versionName) {
+            $this->versionManager->setMigrationTagByName($versionName, $tag);
         }
 
-        if ($status = $this->getStatusByArgs()) {
+        if (empty($versionNames) && $status) {
             foreach ($this->getVersionsByArgs(['status' => $status]) as $entity) {
                 $this->versionManager->setMigrationTag($entity, $tag);
             }
@@ -424,7 +418,7 @@ class ConsoleController
         $tag = $this->getArg('--add-tag=');
 
         if (empty($this->arguments)) {
-            $this->versionManager->executeAll($this->getVersionsFilterByArgs(), $action, $tag);
+            $this->versionManager->executeAll($this->getVersionFilterByArgs(), $action, $tag);
             return;
         }
 
@@ -442,7 +436,7 @@ class ConsoleController
     private function getVersionsByArgs(array $filter = []): array
     {
         return $this->versionManager->getVersions(
-            array_merge($this->getVersionsFilterByArgs(), $filter),
+            array_merge($this->getVersionFilterByArgs(), $filter),
         );
     }
 
@@ -458,7 +452,15 @@ class ConsoleController
         return '';
     }
 
-    private function getVersionsFilterByArgs(): array
+    private function getVnamesByArgs(): array
+    {
+        return array_filter(
+            $this->arguments,
+            fn($v) => $this->versionConfig->isVersionName($v),
+        );
+    }
+
+    private function getVersionFilterByArgs(): array
     {
         return [
             'status'   => $this->getStatusByArgs(),

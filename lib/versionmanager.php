@@ -39,6 +39,16 @@ class VersionManager
         $this->output ??= OutputFactory::create($this->versionConfig);
     }
 
+    public function getVersionConfig(): VersionConfig
+    {
+        return $this->versionConfig;
+    }
+
+    public function getVersionTable(): VersionTable
+    {
+        return $this->versionTable;
+    }
+
     /**
      * @throws MigrationException
      */
@@ -59,6 +69,15 @@ class VersionManager
                 return;
             }
         }
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function executeVersion(string $versionName, string $action, string $tag = ''): bool
+    {
+        $entity = $this->getVersionByName($versionName);
+        return $this->executeEntity($entity, $action, $tag);
     }
 
     /**
@@ -124,10 +143,6 @@ class VersionManager
         return $result;
     }
 
-    public function getVersionTable(): VersionTable
-    {
-        return $this->versionTable;
-    }
 
     /**
      * @return VersionFile[]
@@ -248,7 +263,7 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    protected function checkResultAfterStart($ok): void
+    private function checkResultAfterStart($ok): void
     {
         /* @global $APPLICATION CMain */
         global $APPLICATION;
@@ -262,14 +277,6 @@ class VersionManager
         }
     }
 
-    /**
-     * @throws MigrationException
-     */
-    public function executeVersion(string $versionName, string $action, string $tag = ''): bool
-    {
-        $entity = $this->getVersionByName($versionName);
-        return $this->executeEntity($entity, $action, $tag);
-    }
 
     /**
      * @throws MigrationException
@@ -335,6 +342,14 @@ class VersionManager
     /**
      * @throws MigrationException
      */
+    public function deleteMigrationByName(string $versionName): bool
+    {
+        return $this->deleteMigration($this->getVersionByName($versionName));
+    }
+
+    /**
+     * @throws MigrationException
+     */
     public function moveMigration(VersionEntity $entity, VersionConfig $toConfig): bool
     {
         $versionName = $entity->getVersionName();
@@ -386,9 +401,12 @@ class VersionManager
         return ($success > 0);
     }
 
-    public function getVersionConfig(): VersionConfig
+    /**
+     * @throws MigrationException
+     */
+    public function moveMigrationByName(string $versionName, VersionConfig $toConfig): bool
     {
-        return $this->versionConfig;
+        return $this->moveMigration($this->getVersionByName($versionName), $toConfig);
     }
 
     /**
@@ -425,6 +443,14 @@ class VersionManager
     /**
      * @throws MigrationException
      */
+    public function markMigrationByName(string $versionName, string $newStatus, string $tag = ''): bool
+    {
+        return $this->markMigration($this->getVersionByName($versionName), $newStatus, $tag);
+    }
+
+    /**
+     * @throws MigrationException
+     */
     public function setMigrationTag(VersionEntity $entity, string $tag): bool
     {
         $versionName = $entity->getVersionName();
@@ -436,6 +462,14 @@ class VersionManager
             $this->output->outWarning(Locale::getMessage('SETTAG_ERROR', ['#VERSION#' => $versionName]));
         }
         return $success;
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    public function setMigrationTagByName(string $versionName, string $tag): bool
+    {
+        return $this->setMigrationTag($this->getVersionByName($versionName), $tag);
     }
 
     /**
@@ -457,57 +491,4 @@ class VersionManager
             }
         }
     }
-
-    protected function containsFilterTag($meta, $filter): bool
-    {
-        if (empty($filter['tag'])) {
-            return true;
-        }
-
-        return ($meta['tag'] == $filter['tag']);
-    }
-
-    protected function containsFilterModified($meta, $filter)
-    {
-        if (empty($filter['modified'])) {
-            return true;
-        }
-
-        return ($meta['modified']);
-    }
-
-    protected function containsFilterOlder($meta, $filter)
-    {
-        if (empty($filter['older'])) {
-            return true;
-        }
-
-        return ($meta['older']);
-    }
-
-    protected function containsFilterSearch($meta, $filter): bool
-    {
-        if (empty($filter['search'])) {
-            return true;
-        }
-
-        $textindex = $meta['version'] . $meta['description'] . $meta['tag'];
-        $searchword = trim($filter['search']);
-
-        return (false !== mb_stripos($textindex, $searchword, null, 'utf-8'));
-    }
-
-    protected function containsFilterStatus($meta, $filter): bool
-    {
-        if (empty($filter['status'])) {
-            return true;
-        }
-
-        if ($filter['status'] == $meta['status']) {
-            return true;
-        }
-
-        return false;
-    }
-
 }

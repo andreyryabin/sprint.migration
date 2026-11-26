@@ -82,13 +82,9 @@ class VersionController extends Controller
      */
     public function markVersionAction(string $version, string $status): array
     {
-        $entity = $this->versionManager->getVersionByName($version);
-        $this->versionManager->markMigration($entity, $status);
-        $entity = $this->versionManager->getVersionByName($version);
+        $this->versionManager->markMigrationByName($version, $status);
 
-        return array_merge([
-            'meta' => $this->versionToArray($entity),
-        ], $this->output->getLog());
+        return array_merge(['meta' => $this->versionToArrayByName($version)], $this->output->getLog());
     }
 
     /**
@@ -97,9 +93,7 @@ class VersionController extends Controller
      */
     public function deleteVersionAction(string $version): array
     {
-        $entity = $this->versionManager->getVersionByName($version);
-
-        $this->versionManager->deleteMigration($entity);
+        $this->versionManager->deleteMigrationByName($version);
 
         return $this->output->getLog();
     }
@@ -110,11 +104,10 @@ class VersionController extends Controller
      */
     public function moveVersionAction(string $version, string $toConfig): array
     {
-        $entity = $this->versionManager->getVersionByName($version);
-
-        $toConfig = $this->configManager->get($toConfig);
-
-        $this->versionManager->moveMigration($entity, $toConfig);
+        $this->versionManager->moveMigrationByName(
+            $version,
+            $this->configManager->get($toConfig),
+        );
 
         return $this->output->getLog();
     }
@@ -128,8 +121,7 @@ class VersionController extends Controller
         $toConfig = $this->configManager->get($toConfig);
 
         foreach ($versions as $version) {
-            $entity = $this->versionManager->getVersionByName($version);
-            $this->versionManager->moveMigration($entity, $toConfig);
+            $this->versionManager->moveMigrationByName($version, $toConfig);
         }
         return $this->output->getLog();
     }
@@ -140,13 +132,9 @@ class VersionController extends Controller
      */
     public function setVersionTagAction(string $version, string $settag): array
     {
-        $entity = $this->versionManager->getVersionByName($version);
-        $this->versionManager->setMigrationTag($entity, $settag);
-        $entity = $this->versionManager->getVersionByName($version);
+        $this->versionManager->setMigrationTagByName($version, $settag);
 
-        return array_merge([
-            'meta' => $this->versionToArray($entity),
-        ], $this->output->getLog());
+        return array_merge(['meta' => $this->versionToArrayByName($version)], $this->output->getLog());
     }
 
     /**
@@ -156,8 +144,7 @@ class VersionController extends Controller
     public function setAllTagAction(array $versions, string $settag): array
     {
         foreach ($versions as $versionName) {
-            $entity = $this->versionManager->getVersionByName($versionName);
-            $this->versionManager->setMigrationTag($entity, $settag);
+            $this->versionManager->setMigrationTagByName($versionName, $settag);
         }
         return $this->output->getLog();
     }
@@ -188,8 +175,7 @@ class VersionController extends Controller
 
         if ($result->isSuccess()) {
             //перезапрашиваем информацию о миграции так как она выполнилась
-            $entity = $this->versionManager->getVersionByName($version);
-            $dto['meta'] = $this->versionToArray($entity);
+            $dto['meta'] = $this->versionToArrayByName($version);
         }
 
         return array_merge($dto, $this->output->getLog());
@@ -208,6 +194,16 @@ class VersionController extends Controller
         }
 
         return parent::processBeforeAction($action);
+    }
+
+    /**
+     * @throws MigrationException
+     */
+    private function versionToArrayByName(string $versionName): array
+    {
+        $entity = $this->versionManager->getVersionByName($versionName);
+
+        return $this->versionToArray($entity);
     }
 
     /**

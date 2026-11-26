@@ -1,12 +1,12 @@
 All console commands:
-  builders                      Show builders
+  builders,bs                   Show builders
 
   make [builder]                Start builder
     --field1=[value]            Set field1 value
     ...
     --fieldN=[value]            Set fieldN value
 
-  ls                            Show migrations
+  list,ls                       Show migrations
     --new                       Show only new
     --installed                 Show only installed
     --search=[text]             Filter by name, description or tag
@@ -28,30 +28,30 @@ All console commands:
   redo [version1, ...]          Reinstall selected migration
 
   mark [version1, ...]          Mark migration
-  mark --new                    Mark all new migrations
-  mark --installed              Mark all installed migrations
-  mark --unknown                Mark all unknown migrations
+    --new                       Mark all new migrations
+    --installed                 Mark all installed migrations
+    --unknown                   Mark all unknown migrations
     --as=installed              As installed (skip install)
     --as=new                    As new (skip uninstall)
     --add-tag=[text]            Set tag (if installed)
 
   settag [version1, ...]        Set migration tag
-  settag --installed            Set tag all installed migrations
-  settag --unknown              Set tag all unknown migrations
-      --add-tag=[text]          Tag name
+    --installed                 Set tag all installed migrations
+    --unknown                   Set tag all unknown migrations
+    --add-tag=[text]            Tag name
 
   move [version, ...]           Move migrations to config
-  move --new                    Move all new migrations to config
-  move --installed              Move all installed migrations to config
-  move --unknown                Move all unknown migrations to config
-      --to=[config]             Config name
+    --new                       Move all new migrations to config
+    --installed                 Move all installed migrations to config
+    --unknown                   Move all unknown migrations to config
+    --to=[config]               Config name
 
-  delete [version, ...]         Delete migration
-  delete --new                  Delete all new migrations
-  delete --installed            Delete all installed migrations
-  delete --unknown              Delete all unknown migrations
+  delete,del [version, ...]     Delete migration
+    --new                       Delete all new migrations
+    --installed                 Delete all installed migrations
+    --unknown                   Delete all unknown migrations
 
   config                        Show config
-  --config=[name]               Switch config
+    --config=[name]             Switch config
 
   help                          Help
