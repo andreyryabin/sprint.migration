@@ -109,8 +109,10 @@ class BuilderController extends Controller
 
     private function builderToArray(Builder $builder): array
     {
+        $params = $builder->getRestartParams();
         $fields = [];
         foreach ($builder->getFields() as $code => $field) {
+            $params[$code] ??= null;
             $fields[] = [
                 'code'      => $code,
                 'title'     => $field->getTitle(),
@@ -126,7 +128,7 @@ class BuilderController extends Controller
             'title'  => $builder->getTitle(),
             'group'  => $builder->getGroup(),
             'note'   => $builder->getDescription(),
-            'params' => $builder->getRestartParams(),
+            'params' => $params,
             'fields' => $fields,
         ];
     }

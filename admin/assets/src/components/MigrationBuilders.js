@@ -72,7 +72,6 @@ export const MigrationBuilders = {
             return this.builders.length;
         },
     },
-
     methods: {
         getMessage,
         progressMessage,
@@ -109,6 +108,7 @@ export const MigrationBuilders = {
                 return response.data;
             }).catch((response) => {
                 extractResponse(response, this.messages, this.progress);
+                return {success: false}
             });
         },
 

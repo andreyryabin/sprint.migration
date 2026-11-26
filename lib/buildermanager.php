@@ -97,11 +97,13 @@ class BuilderManager
 
     private function keepFieldValues(Builder $builder): void
     {
-        $cleanded = [];
-        $params = $builder->getRestartParams();
-        foreach ($builder->getFields() as $code => $field) {
-            $cleanded[$code] = $field->createValidValue($params[$code] ?? null);
+        $keeps = [];
+        $fields = $builder->getFields();
+        foreach ($builder->getRestartParams() as $code => $param) {
+            if (isset($fields[$code])) {
+                $keeps[$code] = $param;
+            }
         }
-        $builder->setRestartParams($cleanded);
+        $builder->setRestartParams($keeps);
     }
 }
