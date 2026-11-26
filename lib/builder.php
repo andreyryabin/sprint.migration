@@ -135,6 +135,9 @@ abstract class Builder implements RestartableInterface
     protected function showField(string $code, BuilderField $field): void
     {
         $this->fields[$code] = $field;
+        if (isset($this->params[$code])) {
+            $this->params[$code] = $field->decodeValue($this->params[$code]);
+        }
     }
 
     /**

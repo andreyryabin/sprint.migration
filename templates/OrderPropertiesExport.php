@@ -38,7 +38,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
     {
         $helper = $this->getHelperManager();
 <?php foreach ($properties as $property) { ?>
-    <?php $updateMethod = $updateMethod !== OrderPropertiesBuilder::UPDATE_METHOD_NOT ? $updateMethod : null;?>
+    <?php $updateMethod = $updateMethod !== OrderPropertiesBuilder::UPDATE_METHOD_ADD ? $updateMethod : null;?>
     <?php $variants = $propertyVariants[$property['ID']];?>
     <?php if(!empty($variants)) {?>
     $propertyId = $helper->OrderProperties()->saveOrderProperty(<?php echo var_export($property, 1) ?>, <?php echo var_export($updateMethod, 1)?>);

@@ -111,11 +111,11 @@ class BlogPostBuilder extends VersionBuilder
             $ids = $this->askField('post_filter_list_id',
                 (new TextareaField(Locale::getMessage('BUILDER_BlogPostExport_FilterListId')))
                     ->setPlaceholder(Locale::getMessage('BY_SPACE'))
+                    ->explodeToNumeric()
                     ->setCols(35)
                     ->setRows(4),
             );
 
-            $ids = $this->getHelperManager()->Text()->explodeSeparatedValues($ids, numeric: true);
             return empty($ids) ? ['ID' => 0] : ['@ID' => $ids];
         }
 
@@ -124,11 +124,11 @@ class BlogPostBuilder extends VersionBuilder
             $codes = $this->askField('post_filter_list_code',
                 (new TextareaField(Locale::getMessage('BUILDER_BlogPostExport_FilterListCode')))
                     ->setPlaceholder(Locale::getMessage('BY_SPACE'))
+                    ->explodeToStrings()
                     ->setCols(35)
                     ->setRows(4),
             );
 
-            $codes = $this->getHelperManager()->Text()->explodeSeparatedValues($codes);
             if (empty($codes)) {
                 return ['ID' => 0];
             }

@@ -19,17 +19,22 @@ class StringField extends BuilderField
         return $this->setProp('defaultValue', $value);
     }
 
-    public function createValidValue(mixed $rawValue): string
+    public function decodeValue(mixed $rawValue): string
     {
-        return trim((string)$rawValue);
+        return (string) $rawValue;
     }
 
-    public function createPlanForValue(mixed $validValue): string
+    public function planValue(mixed $validValue): string
     {
         if (!$this->isPlanAllowed($validValue)) {
             return '';
         }
 
         return $this->getTitle() . ': ' . $validValue;
+    }
+
+    public function encodeValue(mixed $validValue): mixed
+    {
+        return (string) $validValue;
     }
 }

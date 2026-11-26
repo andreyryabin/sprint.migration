@@ -20,16 +20,12 @@ export const TextareaField = {
             type: Number,
             default: 40,
         },
-        defaultValue: {
-            type: String,
-            default: '',
-        },
     },
 
     computed: {
         collected: {
             get() {
-                return this.value || this.defaultValue;
+                return this.value;
             },
             set(val) {
                 this.$emit('update:value', val);

@@ -212,6 +212,7 @@ $MESS["{$prefix}BUILDER_HlblockElementsExport_Filter"] = "Элементы";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SelectSomeId"] = "ID элементов";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SelectSomeXmlId"] = "XML_ID элементов";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_FilterListId"] = "ID элементов";
+$MESS["{$prefix}BUILDER_HlblockElementsExport_FilterListXmlId"] = "XML_ID элементов";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_UpdateMethod"] = "Способ";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_NotUpdate"] = "Простое добавление элементов";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SaveElementWithEqualKeys"] = "Добавить или обновить элементы с совпадающими полями";

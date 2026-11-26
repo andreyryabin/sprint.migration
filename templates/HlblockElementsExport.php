@@ -49,7 +49,7 @@ class <?php echo $version ?> extends <?php echo $extendClass ?>
                           $item['hlblock_id'],
                           $item['fields']
                       );
-<?php } elseif($updateMethod == HlblockElementsBuilder::UPDATE_METHOD_EQUAL_KEYS) { ?>
+<?php } elseif($updateMethod == HlblockElementsBuilder::UPDATE_METHOD_EQUAL) { ?>
                  $this->getHelperManager()
                       ->Hlblock()
                       ->saveElementWithEqualKeys(

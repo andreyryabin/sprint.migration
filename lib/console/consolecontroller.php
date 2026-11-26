@@ -402,18 +402,14 @@ class ConsoleController
         $builder = $this->builderManager->createBuilder($name);
         $this->output->print("%s [%s]", $builder->getTitle(), $builder->getName());
 
+        $builder->setRestartParams($args);
         do {
             $params = $builder->getRestartParams();
-
             foreach ($builder->getFields() as $code => $field) {
                 if (!isset($params[$code])) {
-                    $params[$code] = $args[$code] ?? $this->output->readFieldValue($field, $code);
-
-                    //забрали и забыли, иначе рекурсия при невалидных аргументах
-                    unset($args[$code]);
+                    $params[$code] = $this->output->readFieldValue($field, $code);
                 }
             }
-
             $builder->setRestartParams($params);
 
             $result = $this->builderManager->startBuilder($builder);

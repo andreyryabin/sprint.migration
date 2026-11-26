@@ -6,12 +6,12 @@ use Sprint\Migration\Helpers\TextHelper;
 
 class CheckboxListField extends SelectField
 {
-    public function createValidValue(mixed $rawValue): mixed
+    public function decodeValue(mixed $rawValue): mixed
     {
         if (is_string($rawValue)) {
             //из консоли приходит строка разделённая пробелами
             //нужно уметь с ней работать
-            $value = (new TextHelper())->explodeSeparatedValues($rawValue);
+            $value = (new TextHelper())->explodeValues($rawValue);
         } else {
             $value = is_array($rawValue) ? $rawValue : [];
         }
@@ -28,7 +28,7 @@ class CheckboxListField extends SelectField
         return $value;
     }
 
-    public function createPlanForValue(mixed $validValue): string
+    public function planValue(mixed $validValue): string
     {
         if (!$this->isPlanAllowed($validValue)) {
             return '';

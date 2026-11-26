@@ -112,6 +112,7 @@ class BuilderController extends Controller
         $params = $builder->getRestartParams();
         $fields = [];
         foreach ($builder->getFields() as $code => $field) {
+            //bind vue model
             $params[$code] ??= null;
             $fields[] = [
                 'code'      => $code,

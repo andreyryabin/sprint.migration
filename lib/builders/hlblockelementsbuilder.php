@@ -16,9 +16,9 @@ use Sprint\Migration\VersionBuilder;
 
 class HlblockElementsBuilder extends VersionBuilder
 {
-    const UPDATE_METHOD_NOT = 'not';
+    const UPDATE_METHOD_ADD = 'add';
     const UPDATE_METHOD_XML_ID = 'xml_id';
-    const UPDATE_METHOD_EQUAL_KEYS = 'equal_keys';
+    const UPDATE_METHOD_EQUAL = 'equal';
 
     /**
      * @return bool
@@ -105,7 +105,7 @@ class HlblockElementsBuilder extends VersionBuilder
         $filterModeSelect->addOption('list_id', Locale::getMessage('BUILDER_HlblockElementsExport_SelectSomeId'));
 
         if (in_array('UF_XML_ID', $exportFields)) {
-            $filterModeSelect->addOption('list_xml_id',
+            $filterModeSelect->addOption('list_xml',
                 Locale::getMessage('BUILDER_HlblockElementsExport_SelectSomeXmlId'));
         }
 
@@ -115,19 +115,22 @@ class HlblockElementsBuilder extends VersionBuilder
             $filterIds = $this->askField('export_filter_list_id',
                 (new TextareaField(Locale::getMessage('BUILDER_HlblockElementsExport_FilterListId')))
                     ->setPlaceholder(Locale::getMessage('BY_SPACE'))
+                    ->explodeToNumeric()
                     ->setCols(35)
                     ->setRows(3),
             );
 
-            $exportFilter = ['ID' => $this->getHelperManager()->Text()->explodeSeparatedValues($filterIds, numeric: true)];
-        } elseif ($filterMode == 'list_xml_id') {
-            $filterXmlIds = $this->askField('export_filter_list_xml_id',
+            $exportFilter = ['ID' => $filterIds];
+        } elseif ($filterMode == 'list_xml') {
+            $filterXmlIds = $this->askField('export_filter_list_xml',
                 (new TextareaField(Locale::getMessage('BUILDER_HlblockElementsExport_FilterListXmlId')))
+                    ->setPlaceholder(Locale::getMessage('BY_SPACE'))
+                    ->explodeToStrings()
                     ->setCols(35)
                     ->setRows(3),
             );
 
-            $exportFilter = ['UF_XML_ID' => $this->getHelperManager()->Text()->explodeSeparatedValues($filterXmlIds)];
+            $exportFilter = ['UF_XML_ID' => $filterXmlIds];
         } else {
             $exportFilter = [];
         }
@@ -142,9 +145,9 @@ class HlblockElementsBuilder extends VersionBuilder
     {
         $updateMethodSelect = (new RadioListField(Locale::getMessage('BUILDER_HlblockElementsExport_UpdateMethod')));
 
-        $updateMethodSelect->addOption(self::UPDATE_METHOD_NOT,
+        $updateMethodSelect->addOption(self::UPDATE_METHOD_ADD,
             Locale::getMessage('BUILDER_HlblockElementsExport_NotUpdate'));
-        $updateMethodSelect->addOption(self::UPDATE_METHOD_EQUAL_KEYS,
+        $updateMethodSelect->addOption(self::UPDATE_METHOD_EQUAL,
             Locale::getMessage('BUILDER_HlblockElementsExport_SaveElementWithEqualKeys'));
 
         if (in_array('UF_XML_ID', $exportFields)) {
@@ -160,7 +163,7 @@ class HlblockElementsBuilder extends VersionBuilder
      */
     private function getFieldValueEqualKeys($updateMethod, $fieldsSelect)
     {
-        if ($updateMethod == self::UPDATE_METHOD_EQUAL_KEYS) {
+        if ($updateMethod == self::UPDATE_METHOD_EQUAL) {
             return $this->askField('equal_keys',
                 (new CheckboxListField(Locale::getMessage('BUILDER_HlblockElementsExport_EqualKeys')))
                     ->setOptions($fieldsSelect, 'NAME', 'TITLE'),

@@ -15,9 +15,10 @@ abstract class BuilderField
 
     public function __construct(private string $title = '') {}
 
-    abstract public function createValidValue(mixed $rawValue): mixed;
+    abstract public function decodeValue(mixed $rawValue): mixed;
+    abstract public function encodeValue(mixed $validValue): mixed;
 
-    abstract public function createPlanForValue(mixed $validValue): string;
+    abstract public function planValue(mixed $validValue): string;
 
     public function getName(): string
     {

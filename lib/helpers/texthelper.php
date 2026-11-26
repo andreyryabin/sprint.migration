@@ -7,7 +7,7 @@ use Sprint\Migration\Helper;
 class TextHelper extends Helper
 {
 
-    public function explodeSeparatedValues(
+    public function explodeValues(
         string $input,
         string $separator = ' ',
         bool $numeric = false,

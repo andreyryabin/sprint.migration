@@ -66,8 +66,6 @@ class BuilderManager
         $builderResult = new BuilderResult();
         $builder->setOutput($this->output);
 
-        $this->validateFieldValues($builder);
-
         try {
             $builder->start();
         } catch (RebuildException) {
@@ -79,31 +77,35 @@ class BuilderManager
             $this->output->outException($e);
         }
 
+        $this->encodeFieldValues($builder);
+
         if ($builderResult->isSuccess()) {
-            $this->keepFieldValues($builder);
+            $this->cleanRestartParams($builder);
         }
 
         return $builderResult;
     }
 
-    private function validateFieldValues(Builder $builder): void
+    private function encodeFieldValues(Builder $builder): void
     {
         $params = $builder->getRestartParams();
         foreach ($builder->getFields() as $code => $field) {
-            $params[$code] = $field->createValidValue($params[$code] ?? null);
+            if (isset($params[$code])) {
+                $params[$code] = $field->encodeValue($params[$code]);
+            }
         }
         $builder->setRestartParams($params);
     }
 
-    private function keepFieldValues(Builder $builder): void
+    private function cleanRestartParams(Builder $builder): void
     {
-        $keeps = [];
+        $keep = [];
         $fields = $builder->getFields();
         foreach ($builder->getRestartParams() as $code => $param) {
             if (isset($fields[$code])) {
-                $keeps[$code] = $param;
+                $keep[$code] = $param;
             }
         }
-        $builder->setRestartParams($keeps);
+        $builder->setRestartParams($keep);
     }
 }

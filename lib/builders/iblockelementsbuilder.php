@@ -17,7 +17,7 @@ use Sprint\Migration\VersionBuilder;
 
 class IblockElementsBuilder extends VersionBuilder
 {
-    const UPDATE_METHOD_NOT = 'not';
+    const UPDATE_METHOD_ADD = 'add';
     const UPDATE_METHOD_CODE = 'code';
     const UPDATE_METHOD_XML_ID = 'xml_id';
 
@@ -122,35 +122,41 @@ class IblockElementsBuilder extends VersionBuilder
                 ->setInPlanForValues('all')
                 ->addOption('all', Locale::getMessage('BUILDER_SelectAll'))
                 ->addOption('list_id', Locale::getMessage('BUILDER_IblockElementsExport_SelectSomeId'))
-                ->addOption('list_xml_id', Locale::getMessage('BUILDER_IblockElementsExport_SelectSomeXmlId'))
-                ->addOption('list_section_id', Locale::getMessage('BUILDER_IblockElementsExport_SelectSomeSectionId')),
+                ->addOption('list_xml', Locale::getMessage('BUILDER_IblockElementsExport_SelectSomeXmlId'))
+                ->addOption('list_sid', Locale::getMessage('BUILDER_IblockElementsExport_SelectSomeSectionId')),
         );
 
         if ($filterMode == 'list_id') {
             $filterIds = $this->askField('export_filter_list_id',
                 (new TextareaField(Locale::getMessage('BUILDER_IblockElementsExport_FilterListId')))
                     ->setPlaceholder(Locale::getMessage('BY_SPACE'))
+                    ->explodeToNumeric()
                     ->setCols(35)
                     ->setRows(4),
             );
 
-            $exportFilter = ['ID' => $this->getHelperManager()->Text()->explodeSeparatedValues($filterIds, numeric: true)];
-        } elseif ($filterMode == 'list_section_id') {
-            $filterSectionId = $this->askField('export_filter_list_section_id',
+            $exportFilter = ['ID' => $filterIds];
+        } elseif ($filterMode == 'list_sid') {
+            $filterSectionId = (int) $this->askField('export_filter_list_sid',
                 (new StringField(Locale::getMessage('BUILDER_IblockElementsExport_FilterListSectionId')))
                     ->setSize(10),
             );
 
-            $exportFilter = ['IBLOCK_SECTION_ID' => (int) $filterSectionId];
-        } elseif ($filterMode == 'list_xml_id') {
-            $filterXmlIds = $this->askField('export_filter_list_xml_id',
+            if ($filterSectionId <= 0) {
+                $this->resetField('export_filter_list_sid');
+            }
+
+            $exportFilter = ['IBLOCK_SECTION_ID' => $filterSectionId];
+        } elseif ($filterMode == 'list_xml') {
+            $filterXmlIds = $this->askField('export_filter_list_xml',
                 (new TextareaField(Locale::getMessage('BUILDER_IblockElementsExport_FilterListXmlId')))
                     ->setPlaceholder(Locale::getMessage('BY_SPACE'))
+                    ->explodeToStrings()
                     ->setCols(35)
                     ->setRows(4),
             );
 
-            $exportFilter = ['XML_ID' => $this->getHelperManager()->Text()->explodeSeparatedValues($filterXmlIds)];
+            $exportFilter = ['XML_ID' => $filterXmlIds];
         } else {
             $exportFilter = [];
         }
@@ -165,7 +171,7 @@ class IblockElementsBuilder extends VersionBuilder
     {
         return $this->askField('update_method',
             (new RadioListField(Locale::getMessage('BUILDER_IblockElementsExport_UpdateMethod')))
-                ->addOption(self::UPDATE_METHOD_NOT, Locale::getMessage('BUILDER_IblockElementsExport_NotUpdate'))
+                ->addOption(self::UPDATE_METHOD_ADD, Locale::getMessage('BUILDER_IblockElementsExport_NotUpdate'))
                 ->addOption(self::UPDATE_METHOD_CODE,
                     Locale::getMessage('BUILDER_IblockElementsExport_SaveElementByCode'))
                 ->addOption(self::UPDATE_METHOD_XML_ID,

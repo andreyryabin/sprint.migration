@@ -4,13 +4,18 @@ namespace Sprint\Migration\Fields;
 
 class SelectField extends BuilderField
 {
-    public function createValidValue(mixed $rawValue): mixed
+    public function decodeValue(mixed $rawValue): mixed
     {
-        $value =  trim((string) $rawValue);
+        $value = (string) $rawValue;
 
         $ids = $this->getOptionIds();
 
         return in_array($value, $ids, true) ? $value : '';
+    }
+
+    public function encodeValue(mixed $validValue): mixed
+    {
+        return $validValue;
     }
 
     public function addOption(string $id, string $name, string $group = '-'): static
@@ -38,7 +43,7 @@ class SelectField extends BuilderField
     }
 
 
-    public function createPlanForValue(mixed $validValue): string
+    public function planValue(mixed $validValue): string
     {
         if (!$this->isPlanAllowed($validValue)) {
             return '';

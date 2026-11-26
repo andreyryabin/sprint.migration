@@ -53,7 +53,7 @@ abstract class VersionBuilder extends Builder
     {
         $lines = [$this->getTitle()];
         foreach ($this->getFields() as $code => $field) {
-            $lines[] = $field->createPlanForValue($this->getFieldValue($code));
+            $lines[] = $field->planValue($this->getFieldValue($code));
         }
         return implode(PHP_EOL, array_filter($lines));
     }

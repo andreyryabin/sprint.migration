@@ -15,7 +15,7 @@ use Sprint\Migration\VersionBuilder;
 
 class OrderPropertiesBuilder extends VersionBuilder
 {
-    const UPDATE_METHOD_NOT = 'not';
+    const UPDATE_METHOD_ADD = 'add';
     const UPDATE_METHOD_CODE = 'code';
     const UPDATE_METHOD_XML_ID = 'xml_id';
 
@@ -72,7 +72,7 @@ class OrderPropertiesBuilder extends VersionBuilder
 
         $updateMethod = $this->askField('update_method',
             (new RadioListField(Locale::getMessage('BUILDER_OrderProperties_UpdateMethod')))
-                ->addOption(self::UPDATE_METHOD_NOT, Locale::getMessage('BUILDER_OrderProperties_NotUpdate'))
+                ->addOption(self::UPDATE_METHOD_ADD, Locale::getMessage('BUILDER_OrderProperties_NotUpdate'))
                 ->addOption(self::UPDATE_METHOD_CODE, Locale::getMessage('BUILDER_OrderProperties_SavePropertyByCode'))
                 ->addOption(self::UPDATE_METHOD_XML_ID,
                     Locale::getMessage('BUILDER_OrderProperties_SavePropertyByXmlId')),

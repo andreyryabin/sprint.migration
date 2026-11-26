@@ -211,6 +211,7 @@ $MESS["{$prefix}BUILDER_HlblockElementsExport_Filter"] = "Elements";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SelectSomeId"] = "ID elements";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SelectSomeXmlId"] = "XML_ID elements";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_FilterListId"] = "ID elements";
+$MESS["{$prefix}BUILDER_HlblockElementsExport_FilterListXmlId"] = "XML_ID elements";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_UpdateMethod"] = "Method";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_NotUpdate"] = "Only add elements";
 $MESS["{$prefix}BUILDER_HlblockElementsExport_SaveElementWithEqualKeys"] = "Add or update existing elements with equal fields";
