@@ -22,12 +22,12 @@ class BuilderManager
     /**
      * @throws BuilderException
      */
-    public function createBuilder(string $builderName, array $defaultValues = []): Builder
+    public function createBuilder(string $builderName, array $params = []): Builder
     {
         $builders = $this->versionConfig->getBuilders();
         $builderClass = $builders[$builderName] ?? '';
 
-        return $this->createBuilderByClass($builderClass, $builderName, $defaultValues);
+        return $this->createBuilderByClass($builderClass, $builderName, $params);
     }
 
     /**
@@ -48,10 +48,10 @@ class BuilderManager
     /**
      * @throws BuilderException
      */
-    private function createBuilderByClass(string $builderClass, string $builderName, array $defaultValues = []): Builder
+    private function createBuilderByClass(string $builderClass, string $builderName, array $params = []): Builder
     {
         if ($builderClass && class_exists($builderClass) && is_subclass_of($builderClass, Builder::class)) {
-            $builder = new $builderClass($this->versionConfig, $builderName, $defaultValues);
+            $builder = new $builderClass($this->versionConfig, $builderName, $params);
             if ($builder->isEnabled()) {
                 return $builder;
             }
@@ -66,6 +66,8 @@ class BuilderManager
         $builderResult = new BuilderResult();
         $builder->setOutput($this->output);
 
+        $this->validateFieldValues($builder);
+
         try {
             $builder->start();
         } catch (RebuildException) {
@@ -77,7 +79,29 @@ class BuilderManager
             $this->output->outException($e);
         }
 
+        if ($builderResult->isSuccess()) {
+            $this->keepFieldValues($builder);
+        }
+
         return $builderResult;
     }
 
+    private function validateFieldValues(Builder $builder): void
+    {
+        $params = $builder->getRestartParams();
+        foreach ($builder->getFields() as $code => $field) {
+            $params[$code] = $field->createValidValue($params[$code] ?? null);
+        }
+        $builder->setRestartParams($params);
+    }
+
+    private function keepFieldValues(Builder $builder): void
+    {
+        $cleanded = [];
+        $params = $builder->getRestartParams();
+        foreach ($builder->getFields() as $code => $field) {
+            $cleanded[$code] = $field->createValidValue($params[$code] ?? null);
+        }
+        $builder->setRestartParams($cleanded);
+    }
 }

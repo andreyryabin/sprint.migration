@@ -2,11 +2,16 @@
 
 namespace Sprint\Migration\Fields;
 
-use Sprint\Migration\Exceptions\ConsoleException;
-use Sprint\Migration\Interfaces\ConsoleInterface;
-
 class SelectField extends BuilderField
 {
+    public function createValidValue(mixed $rawValue): mixed
+    {
+        $value =  trim((string) $rawValue);
+
+        $ids = $this->getOptionIds();
+
+        return in_array($value, $ids, true) ? $value : '';
+    }
 
     public function addOption(string $id, string $name, string $group = '-'): static
     {
@@ -23,6 +28,7 @@ class SelectField extends BuilderField
     public function setOptions(array $items, string $idKey, string $nameKey, string $groupKey = '-'): static
     {
         $this->setProp('options', []);
+
         foreach ($items as $item) {
             if (isset($item[$idKey])) {
                 $this->addOption($item[$idKey], $item[$nameKey] ?? '', $item[$groupKey] ?? '-');
@@ -31,74 +37,34 @@ class SelectField extends BuilderField
         return $this;
     }
 
-    public function getDefaultValue(): mixed
+
+    public function createPlanForValue(mixed $validValue): string
     {
-        return '';
-    }
-
-    public function checkRequiredValue(mixed $value): bool
-    {
-        $ids = array_column($this->getProp('options', []), 'id');
-
-        return in_array($value, $ids, true);
-    }
-
-
-    protected function makePlanForValue(mixed $value): string
-    {
-        if (is_string($value) || is_numeric($value)) {
-            $names = $this->getOptionNamesByIds([$value]);
-            return $this->getTitle() . ': ' . $names[0] ?? '';
+        if (!$this->isPlanAllowed($validValue)) {
+            return '';
         }
-        return '';
+        $names = $this->getOptionNamesByIds([$validValue]);
+
+        return $this->getTitle() . ': ' . $names[0] ?? '';
+    }
+
+    public function getOptions(): array
+    {
+        $opt = $this->getProp('options', []);
+
+        return is_array($opt) ? $opt : [];
+    }
+
+    protected function getOptionIds(): array
+    {
+        return array_column($this->getOptions(), 'id');
     }
 
     protected function getOptionNamesByIds(array $ids): array
     {
-        $options = $this->getProp('options', []);
-        $names = [];
-        foreach ($options as $item) {
-            if (in_array($item['id'], $ids)) {
-                $names[] = $item['name'];
-            }
-        }
-        return $names;
+        $filtered = array_filter($this->getOptions(), fn($item) => in_array($item['id'], $ids));
+
+        return array_column($filtered, 'name');
     }
 
-    /**
-     * @throws ConsoleException
-     */
-    protected function printFieldToConsole(ConsoleInterface $io, string $code): void
-    {
-        $io->print("[pink](%s) - %s[/]", $code, $this->getTitle());
-
-        $grouped = $this->groupOptions($this->getProp('options', []));
-
-        foreach ($grouped as $groupName => $groupItems) {
-            if ($groupName !== '-') {
-                $io->print('[blue]  %s[/]', $groupName);
-            }
-            foreach ($groupItems as $item) {
-                $io->print('    ([yellow]%s[/]) %s', $item['id'], $item['name']);
-            }
-        }
-    }
-
-
-    public function readValueFromConsole(ConsoleInterface $io, string $code): string
-    {
-        $this->printFieldToConsole($io, $code);
-
-        return $io->read("Select one: ");
-    }
-
-    private function groupOptions(array $options): array
-    {
-        $tree = [];
-        foreach ($options as $item) {
-            $group = $item['group'] ?? '-';
-            $tree[$group][] = $item;
-        }
-        return $tree;
-    }
 }

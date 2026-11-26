@@ -3,8 +3,6 @@
 namespace Sprint\Migration\Fields;
 
 use ReflectionClass;
-use Sprint\Migration\Exceptions\ConsoleException;
-use Sprint\Migration\Interfaces\ConsoleInterface;
 
 abstract class BuilderField
 {
@@ -17,27 +15,11 @@ abstract class BuilderField
 
     public function __construct(private string $title = '') {}
 
-    abstract public function getDefaultValue(): mixed;
+    abstract public function createValidValue(mixed $rawValue): mixed;
 
-    /**
-     * @throws ConsoleException
-     */
-    public function readValueFromConsole(ConsoleInterface $io, string $code): string
-    {
-        return $io->read("[pink](%s) - %s:[/] ", $code, $this->getTitle());
-    }
+    abstract public function createPlanForValue(mixed $validValue): string;
 
-    public function makeValueFromConsole(string $rawValue): mixed
-    {
-        return trim($rawValue);
-    }
-
-    public function checkRequiredValue(mixed $value): bool
-    {
-        return !empty($value);
-    }
-
-    public function getComponentName(): string
+    public function getName(): string
     {
         return $this->name ??= (new ReflectionClass($this))->getShortName();
     }
@@ -46,7 +28,6 @@ abstract class BuilderField
     {
         return $this->props;
     }
-
 
     public function getTitle(): string
     {
@@ -68,23 +49,6 @@ abstract class BuilderField
     {
         $this->note = $note;
         return $this;
-    }
-
-    public function getPlanForValue(mixed $value): string
-    {
-        if (!empty($this->inPlanValues)) {
-            $values = is_array($value) ? $value : [$value];
-            $allowed = !empty(array_intersect($values, $this->inPlanValues));
-        } else {
-            $allowed = $this->inPlan;
-        }
-
-        return $allowed ? $this->makePlanForValue($value) : '';
-    }
-
-    protected function makePlanForValue(string $value): string
-    {
-        return ($value) ? $this->getTitle() . ': ' . $value : '';
     }
 
     public function setInPlan(bool $inPlan): static
@@ -114,6 +78,16 @@ abstract class BuilderField
         $this->isRequired = $isRequired;
     }
 
+    protected function isPlanAllowed(mixed $validValue): bool
+    {
+        if (!empty($this->inPlanValues)) {
+            $values = is_array($validValue) ? $validValue : [$validValue];
+            $allowed = !empty(array_intersect($values, $this->inPlanValues));
+        } else {
+            $allowed = $this->inPlan && !empty($validValue);
+        }
+        return $allowed;
+    }
 
     protected function getProp(string $name, mixed $defaultValue): mixed
     {
@@ -135,6 +109,5 @@ abstract class BuilderField
         }
         return $this;
     }
-
 
 }

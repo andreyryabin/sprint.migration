@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration\SymfonyBundle\Command;
 
-use Sprint\Migration\Console;
+use Sprint\Migration\Console\ConsoleController;
 use Sprint\Migration\Module;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +15,7 @@ class ConsoleCommand extends Command
     {
         $this->setName('sprint:migration')
              ->setDescription('Migration console')
-             ->ignoreValidationErrors();;
+             ->ignoreValidationErrors();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -26,10 +26,11 @@ class ConsoleCommand extends Command
 
         try {
             Module::checkHealth();
-            $console = new Console($args);
+            $console = new ConsoleController($args);
             $console->executeConsoleCommand();
             return self::SUCCESS;
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            $output->writeln($e->getMessage());
             return self::FAILURE;
         }
     }

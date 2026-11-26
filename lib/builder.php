@@ -45,7 +45,15 @@ abstract class Builder implements RestartableInterface
         $this->initialize();
     }
 
+    abstract protected function isBuilderEnabled();
+
     abstract protected function initialize();
+
+    /**
+     * @throws RebuildException
+     * @throws RestartException
+     */
+    abstract protected function execute();
 
     public function getName(): string
     {
@@ -61,41 +69,21 @@ abstract class Builder implements RestartableInterface
         }
     }
 
-    abstract protected function isBuilderEnabled();
-
     /** @return  BuilderField[] */
     public function getFields(): array
     {
         return $this->fields;
     }
 
-    /** @return  BuilderField[] */
-    public function getUnbindFields(): array
-    {
-        return array_filter(
-            $this->fields,
-            fn(string $code) => !isset($this->params[$code]),
-            ARRAY_FILTER_USE_KEY,
-        );
-    }
-
     /**
      * @throws RebuildException
      */
-    private function checkUnbindFields(): void
-    {
-        foreach ($this->fields as $code => $field) {
-            if (!isset($this->params[$code])) {
-                throw new RebuildException();
-            }
-        }
-    }
-
     public function resetBuilder(): void
     {
         $this->fields = [];
         $this->params = [];
         $this->initialize();
+        throw new RebuildException();
     }
 
     /**
@@ -104,16 +92,8 @@ abstract class Builder implements RestartableInterface
      */
     public function start(): void
     {
-        $this->checkUnbindFields();
-
         $this->execute();
     }
-
-    /**
-     * @throws RebuildException
-     * @throws RestartException
-     */
-    abstract protected function execute();
 
     public function getTitle(): string
     {
@@ -170,11 +150,12 @@ abstract class Builder implements RestartableInterface
 
         $value = $this->getFieldValue($code);
 
-        if (!$field->checkRequiredValue($value)) {
-            $this->resetField($code);
+        //пока нет необходимости делать метод checkRequiredValue
+        if (!empty($value)) {
+            return $value;
         }
 
-        return $value;
+        $this->resetField($code);
     }
 
     /**
@@ -187,7 +168,6 @@ abstract class Builder implements RestartableInterface
         if (isset($this->params[$code])) {
             unset($this->params[$code]);
         }
-
         throw new RebuildException();
     }
 
@@ -199,11 +179,6 @@ abstract class Builder implements RestartableInterface
     protected function getFieldValue(string $code, $default = '')
     {
         return $this->params[$code] ?? $default;
-    }
-
-    public function setFieldValue(string $code, mixed $value): void
-    {
-        $this->params[$code] = $value;
     }
 
     protected function setTitle(string $title = ''): void

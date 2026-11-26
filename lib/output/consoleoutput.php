@@ -3,6 +3,10 @@
 namespace Sprint\Migration\Output;
 
 use Sprint\Migration\Exceptions\ConsoleException;
+use Sprint\Migration\Fields\BuilderField;
+use Sprint\Migration\Fields\CheckboxListField;
+use Sprint\Migration\Fields\RadioListField;
+use Sprint\Migration\Fields\SelectField;
 use Sprint\Migration\Interfaces\ConsoleInterface;
 
 class ConsoleOutput extends AbstractOutput implements ConsoleInterface
@@ -31,12 +35,8 @@ class ConsoleOutput extends AbstractOutput implements ConsoleInterface
         '[label:green]'  => "\x1b[102;30m",
         '[label:yellow]' => "\x1b[103;30m",
 
-        '[b]'   => "\x1b[1m",
-        '[tab]' => "\x1b[0m",
-        '[ul]'  => "",
-        '[/ul]' => "",
-        '[li]'  => "  - ",
-        '[/li]' => "",
+        '[b]' => "\x1b[1m",
+        '[-]' => " - ",
 
         '[/]' => "\x1b[0m",
     ];
@@ -66,14 +66,56 @@ class ConsoleOutput extends AbstractOutput implements ConsoleInterface
 
     public function lines(string $msg, string $lines): void
     {
+        //консольный white-space: pre-line;
+
         $lines = $this->colorize($lines, '');
 
-        $lines = explode(PHP_EOL, $lines);
-        $lines = array_map('trim', $lines);
-        $lines = array_filter($lines);
+        $lines = array_filter(explode(PHP_EOL, trim($lines)), fn($v) => $v !== '');
 
         foreach ($lines as $line) {
             fwrite(STDOUT, $msg . $line . PHP_EOL);
+        }
+    }
+
+    /**
+     * @throws ConsoleException
+     */
+    public function readFieldValue(BuilderField $field, string $code): string
+    {
+        if ($field instanceof CheckboxListField) {
+            $this->printSelectField($field, $code);
+            return $this->read("Select any (separated by space): ");
+        }
+
+        if ($field instanceof RadioListField) {
+            $this->printSelectField($field, $code);
+            return $this->read("Select one: ");
+        }
+
+        if ($field instanceof SelectField) {
+            $this->printSelectField($field, $code);
+            return $this->read("Select one: ");
+        }
+
+        return $this->read("[pink](%s) - %s:[/] ", $code, $field->getTitle());
+    }
+
+    private function printSelectField(SelectField $field, string $code): void
+    {
+        $this->print("[pink](%s) - %s[/]", $code, $field->getTitle());
+        $grouped = [];
+        foreach ($field->getOptions() as $item) {
+            $group = $item['group'] ?? '-';
+            $grouped[$group][] = $item;
+        }
+
+        foreach ($grouped as $groupName => $groupItems) {
+            if ($groupName !== '-') {
+                $this->print('[blue]  %s[/]', $groupName);
+            }
+            foreach ($groupItems as $item) {
+                $this->print('    ([yellow]%s[/]) %s', $item['id'], $item['name']);
+            }
         }
     }
 

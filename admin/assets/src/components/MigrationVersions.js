@@ -144,6 +144,7 @@ export const MigrationVersions = {
                 return response.data;
             }).catch((response) => {
                 extractResponse(response, this.messages, this.progress);
+                return {success: false}
             });
         },
 

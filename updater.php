@@ -37,6 +37,8 @@ if ($updater && $updater instanceof CUpdater) {
         '/admin/assets/script.js',
         '/admin/assets/style.css',
         '/admin/assets/version.php',
+
+        '/lib/console.php',
     ];
 
     foreach ($pathsToRemove as $path) {

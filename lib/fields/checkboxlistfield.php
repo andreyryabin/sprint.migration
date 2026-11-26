@@ -2,59 +2,44 @@
 
 namespace Sprint\Migration\Fields;
 
-use Sprint\Migration\Interfaces\ConsoleInterface;
+use Sprint\Migration\Helpers\TextHelper;
 
 class CheckboxListField extends SelectField
 {
-    public function getDefaultValue(): array
+    public function createValidValue(mixed $rawValue): mixed
     {
-        return [];
-    }
-
-    public function checkRequiredValue(mixed $value): bool
-    {
-        if (!is_array($value) || empty($value)) {
-            //Пустой список невалиден: отвергаем vacuous truth
-            return false;
+        if (is_string($rawValue)) {
+            //из консоли приходит строка разделённая пробелами
+            //нужно уметь с ней работать
+            $value = (new TextHelper())->explodeSeparatedValues($rawValue);
+        } else {
+            $value = is_array($rawValue) ? $rawValue : [];
         }
 
-        $ids = array_column($this->getProp('options', []), 'id');
+        $ids = $this->getOptionIds();
 
+        //пропускаем если все значения валидные
         foreach ($value as $v) {
             if (!in_array($v, $ids, true)) {
-                return false;
+                return [];
             }
         }
 
-        return true;
+        return $value;
     }
 
-    public function makeValueFromConsole(string $rawValue): array
+    public function createPlanForValue(mixed $validValue): string
     {
-        return array_filter(explode(' ', $rawValue));
-    }
-
-    protected function makePlanForValue(mixed $value): string
-    {
-        if (!is_array($value)) {
+        if (!$this->isPlanAllowed($validValue)) {
             return '';
         }
 
-        $names = $this->getOptionNamesByIds($value);
-        $lines = [$this->getTitle() . ': [ul]'];
+        $names = $this->getOptionNamesByIds($validValue);
+
+        $lines = [$this->getTitle() . ':'];
         foreach ($names as $name) {
-            $lines[] = '[li]' . $name . '[/li]';
+            $lines[] = '[-]' . $name . '[/]';
         }
-        $lines[] = '[/ul]';
-
         return implode(PHP_EOL, $lines);
-    }
-
-
-    public function readValueFromConsole(ConsoleInterface $io, string $code): string
-    {
-        $this->printFieldToConsole($io, $code);
-
-        return $io->read("Select any (separated by space): ");
     }
 }

@@ -37,7 +37,7 @@ try {
 
     Sprint\Migration\Module::checkHealth();
 
-    $console = new Sprint\Migration\Console($argv);
+    $console = new Sprint\Migration\Console\ConsoleController($argv);
     $console->executeConsoleCommand();
 
 

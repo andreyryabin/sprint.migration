@@ -28,22 +28,28 @@ All console commands:
   redo [version1, ...]          Reinstall selected migration
 
   mark [version1, ...]          Mark migration
-  mark new                      Mark all new migrations
-  mark installed                Mark all installed migrations
-  mark unknown                  Mark all unknown migrations
+  mark --new                    Mark all new migrations
+  mark --installed              Mark all installed migrations
+  mark --unknown                Mark all unknown migrations
     --as=installed              As installed (skip install)
     --as=new                    As new (skip uninstall)
     --add-tag=[text]            Set tag (if installed)
 
   settag [version1, ...]        Set migration tag
-  settag installed              Set tag all installed migrations
-  settag unknown                Set tag all unknown migrations
+  settag --installed            Set tag all installed migrations
+  settag --unknown              Set tag all unknown migrations
       --add-tag=[text]          Tag name
 
+  move [version, ...]           Move migrations to config
+  move --new                    Move all new migrations to config
+  move --installed              Move all installed migrations to config
+  move --unknown                Move all unknown migrations to config
+      --to=[config]             Config name
+
   delete [version, ...]         Delete migration
-  delete new                    Delete all new migrations
-  delete installed              Delete all installed migrations
-  delete unknown                Delete all unknown migrations
+  delete --new                  Delete all new migrations
+  delete --installed            Delete all installed migrations
+  delete --unknown              Delete all unknown migrations
 
   config                        Show config
   --config=[name]               Switch config

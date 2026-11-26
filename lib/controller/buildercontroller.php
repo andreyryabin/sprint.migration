@@ -85,7 +85,7 @@ class BuilderController extends Controller
                 'restart' => $result->needRestart(),
                 'success' => $result->isSuccess(),
             ],
-            $this->builderToArray($builder, $result->isSuccess()),
+            $this->builderToArray($builder),
             $this->output->getLog(),
         );
     }
@@ -100,14 +100,8 @@ class BuilderController extends Controller
         return parent::processBeforeAction($action);
     }
 
-    private function builderToArray(Builder $builder, bool $clean = true): array
+    private function builderToArray(Builder $builder): array
     {
-        //bind vue model, clean tmp params
-        $params = $clean ? [] : $builder->getRestartParams();
-        foreach ($builder->getFields() as $code => $field) {
-            $params[$code] = $params[$code] ?? $field->getDefaultValue();
-        }
-
         $fields = [];
         foreach ($builder->getFields() as $code => $field) {
             $fields[] = [
@@ -115,7 +109,7 @@ class BuilderController extends Controller
                 'title'     => $field->getTitle(),
                 'note'      => $field->getNote(),
                 'required'  => $field->isRequired(),
-                'component' => $field->getComponentName(),
+                'component' => $field->getName(),
                 'props'     => $field->getProps(),
             ];
         }
@@ -125,10 +119,9 @@ class BuilderController extends Controller
             'title'  => $builder->getTitle(),
             'group'  => $builder->getGroup(),
             'note'   => $builder->getDescription(),
-            'params' => $params,
+            'params' => $builder->getRestartParams(),
             'fields' => $fields,
         ];
     }
-
 
 }

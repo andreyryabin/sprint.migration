@@ -36,7 +36,8 @@ class IblockPropertyBuilder extends VersionBuilder
 
         $propertyType = $this->askField('property_type',
             (new CheckboxListField(Locale::getMessage('BUILDER_IblockPropertyExport_UserType')))
-                ->setOptions($this->getPropertyTypesSelect(), 'ID', 'TITLE','GROUP'),
+                ->setOptions($this->getPropertyTypesSelect(), 'ID', 'TITLE', 'GROUP')
+                ->setInPlan(false),
         );
 
         $properties = $this->getPropertiesByFilter(['PROPERTY_TYPE' => $propertyType]);

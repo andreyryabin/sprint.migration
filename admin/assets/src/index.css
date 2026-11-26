@@ -24,12 +24,24 @@
     color: #000
 }
 
-.sp-indent-10 {
-    padding-left: 10px
+.sp-list-item {
+    margin-left: 15px;
+    list-style-type: none;
+    position: relative;
+    color: #333;
 }
 
-.sp-indent-20 {
-    padding-left: 20px
+.sp-list-item::before {
+    content: "-";
+    position: absolute;
+    left: -12px;
+    color: #999;
+    font-weight: 500;
+}
+
+.sp-list-item .sp-bold {
+    font-weight: 600;
+    color: #222;
 }
 
 .sp-col {
@@ -192,8 +204,8 @@ td.sp-migration_table_buttons {
 
 .sp-v-desc {
     white-space: pre-line;
-    background-color: #f9f9f9; /* Легкий фон для блока описания */
-    border-left: 3px solid #e0e0e0; /* Акцентная полоска слева */
+    background-color: #f9f9f9;
+    border-left: 3px solid #e0e0e0;
     padding: 5px 10px;
     border-radius: 5px;
     font-size: 13px;
@@ -208,44 +220,6 @@ td.sp-migration_table_buttons {
 }
 
 /* Список внутри описания */
-.sp-v-desc ul {
-    white-space: normal;
-    margin: 5px 0;
-    padding-left: 0;
-    list-style-type: none;
-}
-
-/* Элемент списка */
-.sp-v-desc li {
-    position: relative;
-    padding-left: 10px;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-.sp-v-desc li::before {
-    content: "-";
-    position: absolute;
-    left: 0;
-    color: #999;
-    font-weight: 500;
-}
-
-.sp-v-desc li b,
-.sp-v-desc li strong {
-    font-weight: 600;
-    color: #222;
-}
-
-.sp-v-desc ul ul {
-    margin-top: 4px;
-    margin-bottom: 4px;
-    padding-left: 20px;
-}
-
-.sp-v-desc ul ul li::before {
-    content: "-";
-}
 
 .sp-search {
     display: flex;

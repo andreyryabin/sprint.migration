@@ -1,20 +1,26 @@
 <?php
 
-namespace Sprint\Migration;
+namespace Sprint\Migration\Console;
 
 use Bitrix\Main\EventManager;
 use CGroup;
 use CUser;
+use Sprint\Migration\BuilderManager;
+use Sprint\Migration\ConfigManager;
 use Sprint\Migration\Entity\VersionEntity;
 use Sprint\Migration\Enum\VersionEnum;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\ConsoleException;
 use Sprint\Migration\Exceptions\MigrationException;
+use Sprint\Migration\Locale;
+use Sprint\Migration\Module;
 use Sprint\Migration\Output\ConsoleOutput;
 use Sprint\Migration\Traits\CurrentUserTrait;
 use Sprint\Migration\Traits\LegacyConsoleTrait;
+use Sprint\Migration\VersionConfig;
+use Sprint\Migration\VersionManager;
 
-class Console
+class ConsoleController
 {
     private string $script;
     private string $command;
@@ -24,6 +30,7 @@ class Console
     private ConsoleOutput $output;
     private array $argoptions = [];
     private BuilderManager $builderManager;
+    private ConfigManager $configManager;
     private string $configName;
 
     use CurrentUserTrait;
@@ -36,7 +43,9 @@ class Console
     {
         $this->initializeArgs($args);
 
-        $this->versionConfig = ConfigManager::getInstance()->get($this->configName);
+        $this->configManager = ConfigManager::getInstance();
+
+        $this->versionConfig = $this->configManager->get($this->configName);
 
         $this->output = new ConsoleOutput();
 
@@ -82,7 +91,6 @@ class Console
 
     /**
      * @publicApi
-     * @throws ConsoleException
      */
     public function commandInfo(): void
     {
@@ -99,7 +107,7 @@ class Console
         $this->output->print('');
         $this->output->print(Locale::getMessage('CONFIG_LIST'));
 
-        foreach (ConfigManager::getInstance()->getList() as $configItem) {
+        foreach ($this->configManager->getList() as $configItem) {
             if ($configItem->getName() == $this->versionConfig->getName()) {
                 $this->output->print('  [green]%s[/] *', $configItem->getTitle());
             } else {
@@ -120,22 +128,16 @@ class Console
 
     /**
      * @publicApi
-     * @throws ConsoleException
      */
     public function commandConfig(): void
     {
         $this->output->print($this->versionConfig->getTitle());
-
         foreach ($this->versionConfig->humanValues() as $configKey => $configValue) {
             $this->output->print('┌─');
             $this->output->print('│ ' . Locale::getMessage('CONFIG_' . $configKey));
             $this->output->print('│ ' . $configKey);
-
-            if ($configValue) {
-                $this->output->print('├─');
-                $this->output->lines('│ ', $configValue);
-            }
-
+            $this->output->print('├─');
+            $this->output->lines('│ ', $configValue);
             $this->output->print('└─');
         }
     }
@@ -147,21 +149,55 @@ class Console
      */
     public function commandMark(): void
     {
-        $status = $this->getArg('--as=');
+        $newStatus = $this->getArg('--as=');
         $tag = $this->getArg('--add-tag=');
 
-        if (empty($status) || empty($this->arguments)) {
+        if (empty($newStatus)) {
             throw new ConsoleException("Invalid arguments, see help");
         }
 
-        foreach ($this->arguments as $argument) {
-            if ($this->versionConfig->isVersionName($argument)) {
+
+        if (!empty($this->arguments)) {
+            foreach ($this->arguments as $argument) {
                 $entity = $this->versionManager->getVersionByName($argument);
-                $this->versionManager->markMigration($entity, $status, $tag);
-            } elseif ($this->versionConfig->isVersionStatus($argument)) {
-                foreach ($this->getVersionsByArgs(['status' => $argument]) as $entity) {
-                    $this->versionManager->markMigration($entity, $status, $tag);
-                }
+                $this->versionManager->markMigration($entity, $newStatus, $tag);
+            }
+            return;
+        }
+
+        if ($status = $this->getStatusByArgs()) {
+            foreach ($this->getVersionsByArgs(['status' => $status]) as $entity) {
+                $this->versionManager->markMigration($entity, $newStatus, $tag);
+            }
+        }
+    }
+
+    /**
+     * @publicApi
+     * @throws MigrationException
+     * @throws ConsoleException
+     */
+    public function commandMove(): void
+    {
+        $toConfig = $this->getArg('--to=');
+
+        if (empty($toConfig)) {
+            throw new ConsoleException("Invalid arguments, see help");
+        }
+
+        $toConfig = $this->configManager->get($toConfig);
+
+        if (!empty($this->arguments)) {
+            foreach ($this->arguments as $argument) {
+                $entity = $this->versionManager->getVersionByName($argument);
+                $this->versionManager->moveMigration($entity, $toConfig);
+            }
+            return;
+        }
+
+        if ($status = $this->getStatusByArgs()) {
+            foreach ($this->getVersionsByArgs(['status' => $status]) as $entity) {
+                $this->versionManager->moveMigration($entity, $toConfig);
             }
         }
     }
@@ -172,18 +208,17 @@ class Console
      */
     public function commandDelete(): void
     {
-        if (empty($this->arguments)) {
-            throw new ConsoleException("Invalid arguments, see help");
-        }
-
-        foreach ($this->arguments as $argument) {
-            if ($this->versionConfig->isVersionName($argument)) {
+        if (!empty($this->arguments)) {
+            foreach ($this->arguments as $argument) {
                 $entity = $this->versionManager->getVersionByName($argument);
                 $this->versionManager->deleteMigration($entity);
-            } elseif ($this->versionConfig->isVersionStatus($argument)) {
-                foreach ($this->getVersionsByArgs(['status' => $argument]) as $entity) {
-                    $this->versionManager->deleteMigration($entity);
-                }
+            }
+            return;
+        }
+
+        if ($status = $this->getStatusByArgs()) {
+            foreach ($this->getVersionsByArgs(['status' => $status]) as $entity) {
+                $this->versionManager->deleteMigration($entity);
             }
         }
     }
@@ -197,18 +232,21 @@ class Console
     {
         $tag = $this->getArg('--add-tag=');
 
-        if (empty($tag) || empty($this->arguments)) {
+        if (empty($tag)) {
             throw new ConsoleException("Invalid arguments, see help");
         }
 
-        foreach ($this->arguments as $argument) {
-            if ($this->versionConfig->isVersionName($argument)) {
+        if (!empty($this->arguments)) {
+            foreach ($this->arguments as $argument) {
                 $entity = $this->versionManager->getVersionByName($argument);
                 $this->versionManager->setMigrationTag($entity, $tag);
-            } elseif ($this->versionConfig->isVersionStatus($argument)) {
-                foreach ($this->getVersionsByArgs(['status' => $argument]) as $entity) {
-                    $this->versionManager->setMigrationTag($entity, $tag);
-                }
+            }
+            return;
+        }
+
+        if ($status = $this->getStatusByArgs()) {
+            foreach ($this->getVersionsByArgs(['status' => $status]) as $entity) {
+                $this->versionManager->setMigrationTag($entity, $tag);
             }
         }
     }
@@ -260,7 +298,6 @@ class Console
 
     /**
      * @publicApi
-     * @throws ConsoleException
      */
     public function commandHelp(): void
     {
@@ -276,7 +313,7 @@ class Console
      * @throws MigrationException
      * @throws ConsoleException
      */
-    public function commandLs(): void
+    public function commandList(): void
     {
         $versions = $this->getVersionsByArgs();
 
@@ -321,7 +358,6 @@ class Console
 
     /**
      * @publicApi
-     * @throws ConsoleException
      */
     public function commandBuilders(): void
     {
@@ -361,16 +397,25 @@ class Console
     private function executeBuilderByArgs(): void
     {
         $name = $this->getArg(0, 'BlankBuilder');
-        $defaultValues = $this->getBuilderParamsByArgs();
+        $args = $this->getBuilderParamsByArgs();
 
         $builder = $this->builderManager->createBuilder($name);
         $this->output->print("%s [%s]", $builder->getTitle(), $builder->getName());
 
         do {
-            foreach ($builder->getUnbindFields() as $code => $field) {
-                $raw = $defaultValues[$code] ?? $field->readValueFromConsole($this->output, $code);
-                $builder->setFieldValue($code, $field->makeValueFromConsole($raw));
+            $params = $builder->getRestartParams();
+
+            foreach ($builder->getFields() as $code => $field) {
+                if (!isset($params[$code])) {
+                    $params[$code] = $args[$code] ?? $this->output->readFieldValue($field, $code);
+
+                    //забрали и забыли, иначе рекурсия при невалидных аргументах
+                    unset($args[$code]);
+                }
             }
+
+            $builder->setRestartParams($params);
+
             $result = $this->builderManager->startBuilder($builder);
         } while ($result->needRestart() || $result->needRebuild());
     }
@@ -405,19 +450,22 @@ class Console
         );
     }
 
+    private function getStatusByArgs(): string
+    {
+        if ($this->getArg('--new')) {
+            return VersionEnum::STATUS_NEW;
+        } elseif ($this->getArg('--installed')) {
+            return VersionEnum::STATUS_INSTALLED;
+        } elseif ($this->getArg('--unknown')) {
+            return VersionEnum::STATUS_UNKNOWN;
+        }
+        return '';
+    }
+
     private function getVersionsFilterByArgs(): array
     {
-        $status = '';
-        if ($this->getArg('--new')) {
-            $status = VersionEnum::STATUS_NEW;
-        } elseif ($this->getArg('--installed')) {
-            $status = VersionEnum::STATUS_INSTALLED;
-        } elseif ($this->getArg('--unknown')) {
-            $status = VersionEnum::STATUS_UNKNOWN;
-        }
-
         return [
-            'status'   => $status,
+            'status'   => $this->getStatusByArgs(),
             'tag'      => $this->getArg('--tag='),
             'search'   => $this->getArg('--search='),
             'modified' => $this->getArg('--modified'),

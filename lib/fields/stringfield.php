@@ -4,8 +4,6 @@ namespace Sprint\Migration\Fields;
 
 class StringField extends BuilderField
 {
-    private string $defaultValue = '';
-
     public function setSize(int $size): static
     {
         return $this->setProp('size', $size);
@@ -13,18 +11,25 @@ class StringField extends BuilderField
 
     public function setPlaceholder(string $placeholder): static
     {
-        return $this->setProp('placeholder', "$placeholder");
-    }
-
-    public function getDefaultValue(): string
-    {
-        return $this->defaultValue;
+        return $this->setProp('placeholder', $placeholder);
     }
 
     public function setDefaultValue(string $value): static
     {
-        $this->defaultValue = $value;
-        return $this;
+        return $this->setProp('defaultValue', $value);
     }
 
+    public function createValidValue(mixed $rawValue): string
+    {
+        return trim((string)$rawValue);
+    }
+
+    public function createPlanForValue(mixed $validValue): string
+    {
+        if (!$this->isPlanAllowed($validValue)) {
+            return '';
+        }
+
+        return $this->getTitle() . ': ' . $validValue;
+    }
 }

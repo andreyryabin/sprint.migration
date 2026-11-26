@@ -335,20 +335,17 @@ class VersionManager
     /**
      * @throws MigrationException
      */
-    public function moveMigration(string $versionName, string $toConfig): bool
+    public function moveMigration(VersionEntity $entity, VersionConfig $toConfig): bool
     {
-        $vmTo = new VersionManager(
-            ConfigManager::getInstance()->get($toConfig),
-            $this->output,
-        );
+        $versionName = $entity->getVersionName();
+
+        $vmTo = new VersionManager($toConfig, $this->output);
 
         if ($this->getVersionConfig()->getName() == $vmTo->getVersionConfig()->getName()) {
             return false;
         }
 
         $success = 0;
-
-        $entity = $this->getVersionByName($versionName);
 
         if ($entity->hasFile()) {
             Module::movePath(

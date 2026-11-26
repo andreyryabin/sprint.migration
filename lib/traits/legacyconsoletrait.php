@@ -38,29 +38,32 @@ trait LegacyConsoleTrait
      * @publicApi
      * @throws MigrationException
      * @throws ConsoleException
-     * @deprecated
      */
-    public function commandList(): void
+    public function commandLs(): void
     {
-        $this->output->outWarning('deprecated, use ls');
-        $this->commandLs();
+        $this->commandList();
+    }
+
+    /**
+     * @publicApi
+     */
+    public function commandBs(): void
+    {
+        $this->commandBuilders();
     }
 
     /**
      * @throws MigrationException
      * @throws ConsoleException
      * @publicApi
-     * @deprecated
      */
     public function commandDel(): void
     {
-        $this->output->outWarning('deprecated, use delete');
         $this->commandDelete();
     }
 
     /**
      * @publicApi
-     * @deprecated
      * @throws MigrationException
      */
     public function commandMi(): void

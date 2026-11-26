@@ -26,6 +26,7 @@ class VersionController extends Controller
 {
     protected VersionManager $versionManager;
     protected RestOutput $output;
+    private ConfigManager $configManager;
 
     /**
      * @throws MigrationException
@@ -38,7 +39,9 @@ class VersionController extends Controller
             $this->getRequest()->get('lang') ?? Locale::getDefaultLang(),
         );
 
-        $versionConfig = ConfigManager::getInstance()->get(
+        $this->configManager = ConfigManager::getInstance();
+
+        $versionConfig = $this->configManager->get(
             $this->getRequest()->get('config'),
         );
 
@@ -105,7 +108,11 @@ class VersionController extends Controller
      */
     public function moveVersionAction(string $version, string $toConfig): array
     {
-        $this->versionManager->moveMigration($version, $toConfig);
+        $entity = $this->versionManager->getVersionByName($version);
+
+        $toConfig = $this->configManager->get($toConfig);
+
+        $this->versionManager->moveMigration($entity, $toConfig);
 
         return $this->output->getLog();
     }
@@ -116,8 +123,11 @@ class VersionController extends Controller
      */
     public function moveAllAction(array $versions, string $toConfig): array
     {
-        foreach ($versions as $versionName) {
-            $this->versionManager->moveMigration($versionName, $toConfig);
+        $toConfig = $this->configManager->get($toConfig);
+
+        foreach ($versions as $version) {
+            $entity = $this->versionManager->getVersionByName($version);
+            $this->versionManager->moveMigration($entity, $toConfig);
         }
         return $this->output->getLog();
     }

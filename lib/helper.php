@@ -20,21 +20,12 @@ class Helper
     public function __construct()
     {
         if (!$this->isEnabled()) {
-            throw new HelperException(
-                Locale::getMessage(
-                    'ERR_HELPER_DISABLED',
-                    [
-                        '#NAME#' => $this->getHelperName(),
-                    ],
-                ),
-            );
+            $name = $this->getHelperName();
+            throw new HelperException("Helper $name is disabled");
         }
     }
 
-    /**
-     * @return bool
-     */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return true;
     }

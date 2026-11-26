@@ -27,11 +27,7 @@ const MessageColors = {
     '[label:yellow]': '<span class="sp-label sp-label-yellow">',
 
     '[b]': '<span class="sp-bold">',
-    '[tab]': '<span class="sp-indent-20">',
-    '[ul]': '<ul>',
-    '[/ul]': '</ul>',
-    '[li]': '<li>',
-    '[/li]': '</li>',
+    '[-]': '<span class="sp-list-item">',
 
     '[/]': '</span>',
 }
@@ -119,16 +115,6 @@ export function colorize(text) {
         out = out.replaceAll(key, val)
     }
     return out
-}
-
-export function lines(text) {
-
-    let lines = colorize(text, '');
-    let arr = lines
-        .split("\n")
-        .map(raw => raw.trim())
-        .filter(raw => !!raw);
-    return arr.join(' ');
 }
 
 export function colorbind(type) {

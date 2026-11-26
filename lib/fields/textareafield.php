@@ -2,7 +2,7 @@
 
 namespace Sprint\Migration\Fields;
 
-class TextareaField extends BuilderField
+class TextareaField extends StringField
 {
 
     public function setRows(int $rowsCnt): static
@@ -15,13 +15,8 @@ class TextareaField extends BuilderField
         return $this->setProp('cols', $colsCnt);
     }
 
-    public function setPlaceholder(string $placeholder): static
+    public function setSize(int $size): static
     {
-        return $this->setProp('placeholder', "$placeholder");
-    }
-
-    public function getDefaultValue(): string
-    {
-        return '';
+        return $this->setCols($size);
     }
 }

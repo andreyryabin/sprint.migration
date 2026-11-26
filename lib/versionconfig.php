@@ -86,7 +86,7 @@ class VersionConfig
             }
         }
 
-        if (empty($values['version_prefix'])) {
+        if (empty($values['version_prefix']) || !$this->isVersionPrefix($values['version_prefix'])) {
             $values['version_prefix'] = 'Version';
         }
 

@@ -14,11 +14,15 @@ export const StringField = {
             type: Number,
             default: 0,
         },
+        defaultValue: {
+            type: String,
+            default: '',
+        },
     },
     computed: {
         collected: {
             get() {
-                return this.value;
+                return this.value || this.defaultValue;
             },
             set(val) {
                 this.$emit('update:value', val);

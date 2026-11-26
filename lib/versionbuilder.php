@@ -46,7 +46,6 @@ abstract class VersionBuilder extends Builder
 
         if (strtolower($confirm) !== 'y') {
             $this->resetBuilder();
-            throw new RebuildException();
         }
     }
 
@@ -54,9 +53,7 @@ abstract class VersionBuilder extends Builder
     {
         $lines = [$this->getTitle()];
         foreach ($this->getFields() as $code => $field) {
-            $lines[] = $field->getPlanForValue(
-                $this->getFieldValue($code),
-            );
+            $lines[] = $field->createPlanForValue($this->getFieldValue($code));
         }
         return implode(PHP_EOL, array_filter($lines));
     }
@@ -148,9 +145,10 @@ abstract class VersionBuilder extends Builder
 
     protected function purifyPrefix(string $prefix): string
     {
-        $prefix = trim($prefix);
-        $prefix = $prefix ?: $this->getVersionConfig()->getVal('version_prefix');
-        return $this->getVersionConfig()->isVersionPrefix($prefix) ? $prefix : 'Version';
+        if ($this->getVersionConfig()->isVersionPrefix($prefix)){
+            return $prefix;
+        }
+        return $this->getVersionConfig()->getVal('version_prefix');
     }
 
     protected function getTimestamp($versionTimestampFormat): string
