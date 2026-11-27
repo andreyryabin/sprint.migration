@@ -2,7 +2,6 @@
 
 namespace Sprint\Migration;
 
-use Exception;
 use Sprint\Migration\Exceptions\MigrationException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
@@ -26,6 +25,7 @@ abstract class Builder implements RestartableInterface
         'title'       => '',
         'description' => '',
         'group'       => '',
+        'enabled'     => true,
     ];
 
     /** @var BuilderField[] */
@@ -45,11 +45,14 @@ abstract class Builder implements RestartableInterface
         $this->initialize();
     }
 
-    abstract protected function isBuilderEnabled();
-
+    /**
+     * Внимание, метод вызывается в __construct.
+     * Выполняется при отображении списка форм
+     */
     abstract protected function initialize();
 
     /**
+     * Метод вызывается при нажатии кнопки "Продолжить"
      * @throws RebuildException
      * @throws RestartException
      */
@@ -62,11 +65,7 @@ abstract class Builder implements RestartableInterface
 
     public function isEnabled(): bool
     {
-        try {
-            return (bool) $this->isBuilderEnabled();
-        } catch (Exception) {
-            return false;
-        }
+        return (bool) $this->info['enabled'];
     }
 
     /** @return  BuilderField[] */
@@ -197,5 +196,10 @@ abstract class Builder implements RestartableInterface
     protected function setGroup(string $group = ''): void
     {
         $this->info['group'] = $group;
+    }
+
+    protected function setEnabled(bool $enabled): void
+    {
+        $this->info['enabled'] = $enabled;
     }
 }

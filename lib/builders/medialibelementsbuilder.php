@@ -14,16 +14,9 @@ use Sprint\Migration\VersionBuilder;
 
 class MedialibElementsBuilder extends VersionBuilder
 {
-    /**
-     * @return bool
-     */
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Medialib()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Medialib()->isEnabled());
         $this->setTitle(Locale::getMessage('BUILDER_MedialibElements1'));
         $this->setDescription(Locale::getMessage('BUILDER_MedialibElements2'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Medialib'));

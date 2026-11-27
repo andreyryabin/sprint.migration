@@ -9,11 +9,6 @@ use function BXClearCache;
 
 class CacheCleanerBuilder extends Builder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return true;
-    }
-
     protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_CacheCleaner1'));

@@ -12,13 +12,10 @@ use Sprint\Migration\VersionBuilder;
 
 class BlogUserTypeEntitiesBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Blog()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Blog()->isEnabled());
+
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Blog'));
         $this->setTitle(implode(' ', [
             Locale::getMessage('BUILDER_BlogUserTypeEntitiesExport1'),

@@ -12,13 +12,9 @@ use Sprint\Migration\VersionBuilder;
 
 class LanguageBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Lang()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Lang()->isEnabled());
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Main'));
 
         $this->setTitle(implode(' ', [

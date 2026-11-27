@@ -269,7 +269,10 @@ export const MigrationBuilders = {
                         v-html="colorize(field.note)"
                     />
                   </div>
-                  <div class="sp-migration_buttons">
+                  <div
+                      v-if="selected.enabled"
+                      class="sp-migration_buttons"
+                  >
                     <input
                         :class="['adm-btn-green','sp-w120']"
                         type="button"

@@ -12,13 +12,9 @@ use Sprint\Migration\VersionBuilder;
 
 class SaleDiscountBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->SaleDiscount()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->SaleDiscount()->isEnabled());
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Sale'));
 
         $this->setTitle(implode(' ', [

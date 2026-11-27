@@ -13,13 +13,10 @@ use Sprint\Migration\VersionBuilder;
 
 class FormBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Form()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Form()->isEnabled());
+
         $this->setTitle(Locale::getMessage('BUILDER_FormExport1'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Form'));
 

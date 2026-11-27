@@ -12,13 +12,9 @@ use Sprint\Migration\VersionBuilder;
 
 class OptionBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Option()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Option()->isEnabled());
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Main'));
 
         $this->setTitle(implode(' ', [

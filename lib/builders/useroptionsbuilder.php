@@ -12,11 +12,6 @@ use Sprint\Migration\VersionBuilder;
 
 class UserOptionsBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return true;
-    }
-
     protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_UserOptionsExport_Title'));

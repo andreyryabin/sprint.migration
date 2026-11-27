@@ -12,13 +12,9 @@ use Sprint\Migration\VersionBuilder;
 
 class VoteBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Vote()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Vote()->isEnabled());
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Vote'));
 
         $this->setTitle(implode(' ', [

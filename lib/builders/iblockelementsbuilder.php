@@ -21,16 +21,9 @@ class IblockElementsBuilder extends VersionBuilder
     const UPDATE_METHOD_CODE = 'code';
     const UPDATE_METHOD_XML_ID = 'xml_id';
 
-    /**
-     * @return bool
-     */
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Iblock()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Iblock()->isEnabled());
         $this->setTitle(Locale::getMessage('BUILDER_IblockElementsExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_IblockElementsExport2'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Iblock'));

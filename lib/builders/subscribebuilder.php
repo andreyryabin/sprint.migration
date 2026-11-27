@@ -12,13 +12,9 @@ use Sprint\Migration\VersionBuilder;
 
 class SubscribeBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Subscribe()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Subscribe()->isEnabled());
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Subscribe'));
 
         $this->setTitle(implode(' ', [

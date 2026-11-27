@@ -19,13 +19,9 @@ class OrderPropertiesBuilder extends VersionBuilder
     const UPDATE_METHOD_CODE = 'code';
     const UPDATE_METHOD_XML_ID = 'xml_id';
 
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->OrderProperties()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->OrderProperties()->isEnabled());
         $this->setTitle(implode(' ', [
             Locale::getMessage('BUILDER_OrderProperties'),
         ]));

@@ -13,11 +13,6 @@ use Sprint\Migration\VersionBuilder;
 
 class UserTypeEntitiesBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return true;
-    }
-
     protected function initialize(): void
     {
         $this->setTitle(Locale::getMessage('BUILDER_UserTypeEntities1'));

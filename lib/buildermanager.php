@@ -2,6 +2,7 @@
 
 namespace Sprint\Migration;
 
+use Sprint\Migration\Builders\BrokenBuilder;
 use Sprint\Migration\Exceptions\BuilderException;
 use Sprint\Migration\Exceptions\RebuildException;
 use Sprint\Migration\Exceptions\RestartException;
@@ -39,9 +40,9 @@ class BuilderManager
         foreach ($this->versionConfig->getBuilders() as $builderName => $builderClass) {
             try {
                 $collection[] = $this->createBuilderByClass($builderClass, $builderName);
-            } catch (BuilderException) {
-                //скрываем сломанные формы из списка, или показать заглушку с ошибкой, хм..."
-                //$this->output->outException($e);
+            } catch (BuilderException $e) {
+                $collection[] = (new BrokenBuilder($this->versionConfig, $builderName, []))
+                    ->setOriginClass($builderClass, $e->getPrevious()->getMessage());
             }
         }
         return $collection;
@@ -54,12 +55,12 @@ class BuilderManager
     {
         if ($builderClass && class_exists($builderClass) && is_subclass_of($builderClass, Builder::class)) {
             try {
-                //ошибка в классе
                 $builder = new $builderClass($this->versionConfig, $builderName, $params);
                 if ($builder->isEnabled()) {
                     return $builder;
                 }
             } catch (Throwable $e) {
+                //ошибка в классе
                 throw new BuilderException($e->getMessage(), $e->getCode(), $e);
             }
         }

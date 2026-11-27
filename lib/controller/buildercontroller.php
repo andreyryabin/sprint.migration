@@ -128,12 +128,13 @@ class BuilderController extends Controller
         }
 
         return [
-            'name'   => $builder->getName(),
-            'title'  => $builder->getTitle(),
-            'group'  => $builder->getGroup(),
-            'note'   => $builder->getDescription(),
-            'params' => $params,
-            'fields' => $fields,
+            'name'    => $builder->getName(),
+            'title'   => $builder->getTitle(),
+            'group'   => $builder->getGroup(),
+            'note'    => $builder->getDescription(),
+            'enabled' => $builder->isEnabled(),
+            'params'  => $params,
+            'fields'  => $fields,
         ];
     }
 

@@ -13,13 +13,9 @@ use Sprint\Migration\VersionBuilder;
 
 class IblockBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Iblock()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Iblock()->isEnabled());
         $this->setTitle(Locale::getMessage('BUILDER_IblockExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_IblockExport2'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Iblock'));

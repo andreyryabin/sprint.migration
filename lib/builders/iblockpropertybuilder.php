@@ -12,13 +12,9 @@ use Sprint\Migration\VersionBuilder;
 
 class IblockPropertyBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Iblock()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Iblock()->isEnabled());
         $this->setTitle(Locale::getMessage('BUILDER_IblockPropertyExport1'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Iblock'));
 

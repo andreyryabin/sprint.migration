@@ -12,14 +12,9 @@ use Sprint\Migration\VersionBuilder;
 
 class IblockCategoryBuilder extends VersionBuilder
 {
-
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Iblock()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Iblock()->isEnabled());
         $this->setTitle(Locale::getMessage('BUILDER_IblockCategoryExport1'));
         $this->setDescription(Locale::getMessage('BUILDER_IblockCategoryExport2'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Iblock'));

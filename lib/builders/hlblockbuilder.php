@@ -13,13 +13,9 @@ use Sprint\Migration\VersionBuilder;
 
 class HlblockBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Hlblock()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Hlblock()->isEnabled());
         $this->setTitle(Locale::getMessage('BUILDER_HlblockExport1'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Hlblock'));
 

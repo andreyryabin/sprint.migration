@@ -12,13 +12,9 @@ use Sprint\Migration\VersionBuilder;
 
 class IblockDeleteBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Iblock()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Iblock()->isEnabled());
         $this->setTitle(Locale::getMessage('BUILDER_IblockDelete'));
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Iblock'));
 

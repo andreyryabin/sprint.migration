@@ -12,13 +12,10 @@ use Sprint\Migration\VersionBuilder;
 
 class ForumBuilder extends VersionBuilder
 {
-    protected function isBuilderEnabled(): bool
-    {
-        return $this->getHelperManager()->Forum()->isEnabled();
-    }
-
     protected function initialize(): void
     {
+        $this->setEnabled($this->getHelperManager()->Forum()->isEnabled());
+
         $this->setGroup(Locale::getMessage('BUILDER_GROUP_Forum'));
 
         $this->setTitle(implode(' ', [
