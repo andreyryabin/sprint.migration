@@ -80,11 +80,11 @@ export function showContextMenu(node, menu) {
 }
 
 export function makeLinksHtml(msg) {
-    if (!msg.includes('http')) {
+    if (!msg.includes('http') && !msg.includes('[baseUrl]')) {
         return msg;
     }
-
-    return msg.replace(
+    const baseUrl = window.location.origin || '';
+    return msg.replaceAll('[baseUrl]', baseUrl).replace(
         /(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,6}(\/[^\s()\[\]{}<>"'`]*)?/g,
         (url) => `<a target="_blank" rel="noopener noreferrer" href="${url}">${url}</a>`
     );
