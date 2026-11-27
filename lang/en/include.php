@@ -8,7 +8,7 @@ $MESS["{$prefix}ACCESS_DENIED"] = "Access denied";
 $MESS["{$prefix}MENU_SPRINT"] = "Migrations for developers";
 $MESS["{$prefix}TITLE"] = "Migrations";
 $MESS["{$prefix}FORM_DESCR"] = "Description";
-$MESS["{$prefix}FORM_PREFIX"] = "Name prefix";
+$MESS["{$prefix}FORM_PREFIX"] = "File prefix";
 
 $MESS["{$prefix}LINK_MP"] = "Marketplace";
 $MESS["{$prefix}LINK_DOC"] = "Documentation";
@@ -107,7 +107,7 @@ $MESS["{$prefix}CONFIG_exchange_dir"] = "Directory for exchange files";
 $MESS["{$prefix}CONFIG_exchange_dir_absolute"] = "Is absolute path exchange_dir";
 $MESS["{$prefix}CONFIG_migration_extend_class"] = "Class to inherit by migrations";
 $MESS["{$prefix}CONFIG_migration_table"] = "Table in the database with migrations";
-$MESS["{$prefix}CONFIG_version_prefix"] = "Name prefix for migrations";
+$MESS["{$prefix}CONFIG_version_prefix"] = "Version file name (without timestamp)";
 $MESS["{$prefix}CONFIG_version_builders"] = "Builders";
 $MESS["{$prefix}CONFIG_show_admin_interface"] = "Show admin interface";
 $MESS["{$prefix}CONFIG_console_user"] = "User who run migrations from console";

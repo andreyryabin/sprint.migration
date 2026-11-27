@@ -22,7 +22,7 @@ export const StringField = {
     computed: {
         collected: {
             get() {
-                return this.value || this.defaultValue;
+                return this.value ?? this.defaultValue;
             },
             set(val) {
                 this.$emit('update:value', val);

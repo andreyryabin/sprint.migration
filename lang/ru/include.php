@@ -9,7 +9,7 @@ $MESS["{$prefix}ACCESS_DENIED"] = "Доступ запрещен";
 $MESS["{$prefix}MENU_SPRINT"] = "Миграции для разработчиков";
 $MESS["{$prefix}TITLE"] = "Миграции";
 $MESS["{$prefix}FORM_DESCR"] = "Описание";
-$MESS["{$prefix}FORM_PREFIX"] = "Заголовок";
+$MESS["{$prefix}FORM_PREFIX"] = "Имя файла";
 
 $MESS["{$prefix}LINK_MP"] = "Маркетплейс";
 $MESS["{$prefix}LINK_DOC"] = "Документация";
@@ -108,7 +108,7 @@ $MESS["{$prefix}CONFIG_exchange_dir"] = "Директория для файло�
 $MESS["{$prefix}CONFIG_exchange_dir_absolute"] = "Абсолютный путь до exchange_dir";
 $MESS["{$prefix}CONFIG_migration_extend_class"] = "Класс, наследуемый миграциями";
 $MESS["{$prefix}CONFIG_migration_table"] = "Таблица в бд с миграциями";
-$MESS["{$prefix}CONFIG_version_prefix"] = "Заголовок класса миграции";
+$MESS["{$prefix}CONFIG_version_prefix"] = "Имя файла миграции (без временной метки)";
 $MESS["{$prefix}CONFIG_version_builders"] = "Формы создания миграций";
 $MESS["{$prefix}CONFIG_show_admin_interface"] = "Показывать сервис миграций в админке";
 $MESS["{$prefix}CONFIG_console_user"] = "Пользователь, от которого запускаются миграции в консоли";

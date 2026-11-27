@@ -19,6 +19,7 @@ abstract class VersionBuilder extends Builder
         $this->showField('prefix',
             (new StringField(Locale::getMessage('FORM_PREFIX')))
                 ->setDefaultValue($this->getVersionConfig()->getVal('version_prefix'))
+                ->setPlaceholder(Locale::getMessage('CONFIG_version_prefix'))
                 ->setSize(35)
                 ->setInPlan(false),
         );
