@@ -83,17 +83,16 @@ export function makeLinksHtml(msg) {
     if (!msg.includes('http') && !msg.includes('[baseUrl]')) {
         return msg;
     }
-    const baseUrl = window.location.origin || '';
+    const baseUrl = escapeHtml(window.location.origin || '');
     return msg.replaceAll('[baseUrl]', baseUrl).replace(
         /(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,6}(\/[^\s()\[\]{}<>"'`]*)?/g,
         (url) => `<a target="_blank" rel="noopener noreferrer" href="${url}">${url}</a>`
     );
-
 }
 
 export function escapeHtml(str) {
     return str
-        // .replace(/&/g, '&amp;')
+        .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         // .replace(/"/g, '&quot;')
@@ -106,7 +105,6 @@ export function colorize(text) {
         return out
     }
     out = escapeHtml(out);
-    //out = out.replace(/\r\n|\r|\n/g, '<br>');
     out = makeLinksHtml(out);
     if (!out.includes('[/')) {
         return out;
