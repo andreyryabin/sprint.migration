@@ -73,7 +73,10 @@ class VersionController extends Controller
             $this->versionManager->getVersions($filter),
         );
 
-        return ['versions' => $versions];
+        return array_merge(
+            ['versions' => $versions],
+            $this->output->getLog(),
+        );
     }
 
     /**

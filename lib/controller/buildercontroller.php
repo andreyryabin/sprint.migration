@@ -69,7 +69,10 @@ class BuilderController extends Controller
             $this->builderManager->getBuilders(),
         );
 
-        return ['builders' => $builders];
+        return array_merge(
+            ['builders' => $builders],
+            $this->output->getLog(),
+        );
     }
 
     /**

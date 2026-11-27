@@ -40,6 +40,8 @@ class BuilderManager
             try {
                 $collection[] = $this->createBuilderByClass($builderClass, $builderName);
             } catch (BuilderException) {
+                //скрываем сломанные формы из списка, или показать заглушку с ошибкой, хм..."
+                //$this->output->outException($e);
             }
         }
         return $collection;
@@ -51,9 +53,14 @@ class BuilderManager
     private function createBuilderByClass(string $builderClass, string $builderName, array $params = []): Builder
     {
         if ($builderClass && class_exists($builderClass) && is_subclass_of($builderClass, Builder::class)) {
-            $builder = new $builderClass($this->versionConfig, $builderName, $params);
-            if ($builder->isEnabled()) {
-                return $builder;
+            try {
+                //ошибка в классе
+                $builder = new $builderClass($this->versionConfig, $builderName, $params);
+                if ($builder->isEnabled()) {
+                    return $builder;
+                }
+            } catch (Throwable $e) {
+                throw new BuilderException($e->getMessage(), $e->getCode(), $e);
             }
         }
         throw new BuilderException(Locale::getMessage('ERR_BUILDER_NOT_FOUND', ['#NAME#' => $builderName]));
