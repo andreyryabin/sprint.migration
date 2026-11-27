@@ -42,8 +42,7 @@ export const MigrationVersions = {
 
     data() {
         return {
-            loading1: 0,
-            loading2: 0,
+            loading: false,
             running: false,
             replay: {},
             versions: [],
@@ -136,29 +135,31 @@ export const MigrationVersions = {
         },
 
         execAction(action, payload) {
-            return ajax.runAction(
+            this.loading = true;
+            return Promise.resolve(ajax.runAction(
                 'sprint:migration.controller.versioncontroller.' + action,
                 {data: payload, getParameters: {config: this.config, lang: this.lang}}
-            ).then((response) => {
+            )).then((response) => {
                 extractResponse(response, this.messages, this.progress);
                 return response.data;
             }).catch((response) => {
                 extractResponse(response, this.messages, this.progress);
-                return {success: false}
+                throw response;
+            }).finally(() => {
+                this.loading = false;
             });
         },
 
         refreshVersions() {
-            this.loading1 = 1;
-            this.execAction('refreshVersions', {filter: this.filter})
-                .then((data) => {
-                    this.versions = data.versions || [];
-                    this.loading1 = 0;
-                });
+            this.execAction('refreshVersions', {filter: this.filter}
+            ).then((data) => {
+                this.versions = data.versions || [];
+            }).catch(() => {
+            });
+
         },
 
         async execVersion(version, action, params, settag) {
-            this.loading2 = 1;
             this.running = true;
             this.replay = {version, action, params, settag};
 
@@ -184,9 +185,10 @@ export const MigrationVersions = {
                 }
                 return data.success;
 
+            } catch {
+                return false;
             } finally {
                 this.running = false;
-                this.loading2 = 0;
             }
         },
 
@@ -291,26 +293,24 @@ export const MigrationVersions = {
 
 
         markVersion(version, status) {
-            this.loading2 = 1;
             this.execAction('markVersion', {
                 version: version,
                 status: status,
             }).then((data) => {
                 this.pickVersion(data.meta);
-                this.loading2 = 0;
+            }).catch(() => {
             });
         },
 
         setVersionTag(version, defaultTag) {
             let settag = prompt('Set migration tag', defaultTag);
             if (settag) {
-                this.loading2 = 1;
                 this.execAction('setVersionTag', {
                     version: version,
                     settag: settag
                 }).then((data) => {
                     this.pickVersion(data.meta);
-                    this.loading2 = 0;
+                }).catch(() => {
                 });
             }
         },
@@ -323,49 +323,45 @@ export const MigrationVersions = {
 
             let settag = prompt('Set migrations tag', '');
             if (settag) {
-                this.loading2 = 1;
                 this.execAction('setAllTag', {
                     versions: installed,
                     settag: settag
                 }).then(() => {
                     this.refreshVersions();
-                    this.loading2 = 0;
+                }).catch(() => {
                 });
             }
         },
 
         moveVersion(version, toConfig) {
-            this.loading2 = 1;
             this.execAction('moveVersion', {
                 version: version,
                 toConfig: toConfig,
             }).then(() => {
                 this.refreshVersions();
-                this.loading2 = 0;
+            }).catch(() => {
             });
         },
 
         moveAll(toConfig) {
             if (confirm('Confirm move migrations')) {
-                this.loading2 = 1;
                 this.execAction('moveAll', {
                     versions: this.getVersionNames(),
                     toConfig: toConfig
                 }).then(() => {
                     this.refreshVersions();
-                    this.loading2 = 0;
+                }).catch(() => {
                 });
             }
         },
 
         deleteVersion(version) {
             if (confirm('Confirm delete migration file')) {
-                this.loading2 = 1;
                 this.execAction('deleteVersion', {
                     version: version,
                 }).then(() => {
                     this.refreshVersions();
-                    this.loading2 = 0;
+                }).catch(() => {
                 });
             }
         },
@@ -498,7 +494,7 @@ export const MigrationVersions = {
                 </div>
                 <div class="sp-search_summary">
                   <span
-                      v-if="loading1"
+                      v-if="loading && !running"
                       class="sp-loading"
                       v-text="getMessage('LOADING_TEXT')"
                   />
@@ -567,7 +563,7 @@ export const MigrationVersions = {
                   @click="makeCommonMenu($event)"
               />
               <span
-                  v-if="loading2"
+                  v-if="running"
                   class="sp-loading"
                   v-text="getMessage('LOADING_TEXT')"
               />

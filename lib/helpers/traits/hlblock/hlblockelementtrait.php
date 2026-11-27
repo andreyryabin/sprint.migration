@@ -186,7 +186,7 @@ trait HlblockElementTrait
 
         throw new HelperException(
             Locale::getMessage(
-                'ERR_ERR_HLBLOCK_ELEMENT_NOT_FOUND',
+                'ERR_HLBLOCK_ELEMENT_NOT_FOUND',
                 [
                     '#HLBLOCK_ID#' => $hlblockName,
                     '#ELEMENT_ID#' => print_r($filter, true),

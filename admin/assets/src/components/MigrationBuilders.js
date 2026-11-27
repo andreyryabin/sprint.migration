@@ -38,14 +38,13 @@ export const MigrationBuilders = {
 
     data() {
         return {
-            loading1: 0,
-            loading2: 0,
+            loading: false,
             running: false,
             messages: [],
             progress: [],
             builders: [],
             selected: {},
-            filter: {search: '',builder: ''},
+            filter: {search: '', builder: ''},
         };
     },
     created() {
@@ -100,25 +99,28 @@ export const MigrationBuilders = {
         },
 
         execAction(action, payload) {
-            return ajax.runAction(
+            this.loading = true;
+            return Promise.resolve(ajax.runAction(
                 'sprint:migration.controller.BuilderController.' + action,
                 {data: payload, getParameters: {config: this.config, lang: this.lang}}
-            ).then((response) => {
+            )).then((response) => {
                 extractResponse(response, this.messages, this.progress);
                 return response.data;
             }).catch((response) => {
                 extractResponse(response, this.messages, this.progress);
-                return {success: false}
+                throw response;
+            }).finally(() => {
+                this.loading = false;
             });
         },
 
         refreshBuilders() {
-            this.loading1 = 1;
             return this.execAction('refreshBuilders', {})
                 .then((data) => {
                     this.builders = data.builders || [];
-                    this.loading1 = 0;
                     return true;
+                }).catch(() => {
+                    return false;
                 });
         },
 
@@ -147,6 +149,8 @@ export const MigrationBuilders = {
                 } while (data.restart)
 
                 return data.success;
+            } catch {
+                return false;
             } finally {
                 this.running = false;
             }
@@ -155,28 +159,21 @@ export const MigrationBuilders = {
         replayBuilder() {
             if (this.running) {
                 this.running = false;
-                this.loading2 = 0;
                 return;
             }
 
-            this.loading2 = 1;
             this.execBuilder()
                 .then(() => {
-                    this.loading2 = 0;
                 });
         },
 
         selectBuilder(name) {
-            this.messages = [];
-            this.progress = [];
-            this.selected = {};
-
             const item = this.builders.find(item => item.name === name);
-
             if (item) {
                 /*Object.assign нельзя item.params будут переданы по ссылке*/
                 this.selected = JSON.parse(JSON.stringify(item));
-
+                this.messages = [];
+                this.progress = [];
                 this.filter.builder = name;
                 this.saveFilter();
             }
@@ -205,7 +202,7 @@ export const MigrationBuilders = {
                 </div>
                 <div class="sp-search_summary">
                   <span
-                      v-if="loading1"
+                      v-if="loading && !running"
                       class="sp-loading"
                       v-text="getMessage('LOADING_TEXT')"
                   />
@@ -241,57 +238,56 @@ export const MigrationBuilders = {
               </div>
             </div>
             <div class="sp-col sp-col-p0 sp-relative">
-              <div
-                  v-if="selected && selected.name"
-                  class="sp-builder_form sp-sticky"
-              >
-                <div
-                    v-html="colorize(selected.title)"
-                    class="sp-builder-title"
-                />
-                <div
-                    v-if="selected.note"
-                    class="sp-info-message"
-                    v-html="colorize(selected.note)"
-                />
-                <div
-                    v-for="field in selected.fields"
-                    :key="selected.name +':'+ field.code"
-                >
+              <div class="sp-sticky sp-builder_sticky">
+                <div v-if="selected && selected.name" class="sp-builder_form">
                   <div
-                      v-if="field.title"
-                      :class="{'sp-field-required': field.required}"
-                      v-html="colorize(field.title)"
-                  />
-                  <component
-                      v-if="field.component"
-                      :is="field.component"
-                      v-model:value="selected.params[field.code]"
-                      v-bind="field.props"
+                      v-html="colorize(selected.title)"
+                      class="sp-builder-title"
                   />
                   <div
-                      v-if="field.note"
-                      v-html="colorize(field.note)"
+                      v-if="selected.note"
+                      class="sp-info-message"
+                      v-html="colorize(selected.note)"
                   />
-                </div>
-                <div class="sp-migration_buttons">
-                  <input
-                      :class="['adm-btn-green','sp-w120']"
-                      type="button"
-                      :value="getMessage(running ? 'PAUSE' : 'BUILDER_NEXT')"
-                      @click="replayBuilder"
-                  />
-                  <span
-                      v-if="loading2"
-                      class="sp-loading"
-                      v-text="getMessage('LOADING_TEXT')"
-                  />
-                  <span
-                      v-for="(item, index) in progress"
-                      :key="index"
-                      class="sp-progress"
-                      v-text="progressMessage(item)"
-                  />
+                  <div
+                      v-for="field in selected.fields"
+                      :key="selected.name +':'+ field.code"
+                  >
+                    <div
+                        v-if="field.title"
+                        :class="{'sp-field-required': field.required}"
+                        v-html="colorize(field.title)"
+                    />
+                    <component
+                        v-if="field.component"
+                        :is="field.component"
+                        v-model:value="selected.params[field.code]"
+                        v-bind="field.props"
+                    />
+                    <div
+                        v-if="field.note"
+                        v-html="colorize(field.note)"
+                    />
+                  </div>
+                  <div class="sp-migration_buttons">
+                    <input
+                        :class="['adm-btn-green','sp-w120']"
+                        type="button"
+                        :value="getMessage(running ? 'PAUSE' : 'BUILDER_NEXT')"
+                        @click="replayBuilder"
+                    />
+                    <span
+                        v-if="running"
+                        class="sp-loading"
+                        v-text="getMessage('LOADING_TEXT')"
+                    />
+                    <span
+                        v-for="(item, index) in progress"
+                        :key="index"
+                        class="sp-progress"
+                        v-text="progressMessage(item)"
+                    />
+                  </div>
                 </div>
                 <div class="sp-builder_log">
                   <div
