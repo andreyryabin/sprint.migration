@@ -8,7 +8,7 @@ class BrokenBuilder extends Builder
 {
     public function setOriginClass(string $originClass, string $message): static
     {
-        $this->setTitle("[label:red]{$this->getName()}[/] $originClass ");
+        $this->setTitle("[label:red]{$this->getName()}[/] $originClass");
         $this->setDescription($message);
         $this->setEnabled(false);
 
