@@ -191,7 +191,12 @@ class UserGroupHelper extends Helper
             return (int) $groupId;
         }
 
-        throw new HelperException($group->LAST_ERROR);
+        throw new HelperException(
+            $group->LAST_ERROR . " in " . var_export([
+                'STRING_ID' => $code,
+                'NAME'      => $fields['NAME'],
+            ], true),
+        );
     }
 
     protected function prepareFields($fields)
@@ -222,7 +227,12 @@ class UserGroupHelper extends Helper
             return $groupId;
         }
 
-        throw new HelperException($group->LAST_ERROR);
+        throw new HelperException(
+            $group->LAST_ERROR . " in " . var_export([
+                'ID'   => $groupId,
+                'NAME' => $fields['NAME'] ?? '',
+            ], true),
+        );
     }
 
     /**

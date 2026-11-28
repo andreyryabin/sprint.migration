@@ -289,7 +289,12 @@ trait IblockPropertyTrait
             return (int) $propertyId;
         }
 
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'NAME' => $fields['NAME'],
+                'CODE' => $fields['CODE'],
+            ], true),
+        );
     }
 
     /**
@@ -353,7 +358,12 @@ trait IblockPropertyTrait
             return $propertyId;
         }
 
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'ID'   => $propertyId,
+                'CODE' => $fields['CODE'],
+            ], true),
+        );
     }
 
     /**
@@ -509,7 +519,11 @@ trait IblockPropertyTrait
             return true;
         }
 
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'ID'   => $propertyId,
+            ], true),
+        );
     }
 
     /**

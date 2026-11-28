@@ -146,7 +146,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                     );
                 } catch (WriterException|HelperException $e) {
                     throw new HelperException(
-                        $e->getMessage() . " in " . print_r([
+                        $e->getMessage() . " in " . var_export([
                             'IBLOCK_ID' => $iblockId,
                             'ID'        => $fields['ID'],
                             'FIELD'     => $code,
@@ -164,7 +164,7 @@ class IblockExchangeHelper extends IblockHelper implements ReaderHelperInterface
                     );
                 } catch (WriterException|HelperException $e) {
                     throw new HelperException(
-                        $e->getMessage() . " in " . print_r([
+                        $e->getMessage() . " in " . var_export([
                             'IBLOCK_ID' => $iblockId,
                             'ID'        => $fields['ID'],
                             'PROPERTY'  => $prop['CODE'],

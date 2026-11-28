@@ -35,7 +35,7 @@ trait IblockElementTrait
                 'ERR_IB_ELEMENT_ID_NOT_FOUND',
                 [
                     '#IBLOCK_ID#'  => $iblockId,
-                    '#ELEMENT_ID#' => print_r($code, true),
+                    '#ELEMENT_ID#' => var_export($code, true),
                 ],
             ),
         );
@@ -245,7 +245,12 @@ trait IblockElementTrait
         if (!empty($fields)) {
             $ib = new CIBlockElement();
             if (!$ib->Update($elementId, $fields)) {
-                throw new HelperException($ib->LAST_ERROR);
+                throw new HelperException(
+                    $ib->LAST_ERROR . " in " . var_export([
+                        'ID'   => $elementId,
+                        'NAME' => $fields['NAME'] ?? '',
+                    ], true),
+                );
             }
         }
 
@@ -284,8 +289,13 @@ trait IblockElementTrait
         if ($elementId) {
             return (int) $elementId;
         }
-
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'IBLOCK_ID' => $iblockId,
+                'NAME'      => $fields['NAME'],
+                'CODE'      => $fields['CODE'] ?? '',
+            ], true),
+        );
     }
 
     /**
@@ -363,7 +373,11 @@ trait IblockElementTrait
             return true;
         }
 
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'ID' => $elementId,
+            ], true),
+        );
     }
 
     /**

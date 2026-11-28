@@ -126,7 +126,12 @@ trait HlblockTrait
             return $field['FIELD_NAME'];
         }
 
-        throw new HelperException(Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND'));
+        throw new HelperException(
+            Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND') . " in " . var_export([
+                'HLBLOCK' => $hlblockId,
+                'FIELD'   => $fieldId,
+            ], true),
+        );
     }
 
     /**
@@ -202,7 +207,12 @@ trait HlblockTrait
             return $field;
         }
 
-        throw new HelperException(Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND'));
+        throw new HelperException(
+            Locale::getMessage('ERR_HLBLOCK_FIELD_NOT_FOUND') . " in " . var_export([
+                'HLBLOCK' => $hlblockName,
+                'FIELD'   => $fieldName,
+            ], true),
+        );
     }
 
     /**
@@ -624,10 +634,7 @@ trait HlblockTrait
         }
 
         throw new HelperException(
-            Locale::getMessage(
-                'ERR_HLBLOCK_NOT_FOUND',
-                ['#HLBLOCK#' => is_array($hlblockName) ? print_r($hlblockName, true) : $hlblockName],
-            ),
+            Locale::getMessage('ERR_HLBLOCK_NOT_FOUND', ['#HLBLOCK#' => var_export($hlblockName, true)]),
         );
     }
 

@@ -396,7 +396,10 @@ class EventHelper extends Helper
             return $id;
         }
 
-        throw new HelperException($event->LAST_ERROR);
+        throw new HelperException(
+            $event->LAST_ERROR . " in " . var_export([
+                'ID' => $id,
+            ], true));
     }
 
     /**

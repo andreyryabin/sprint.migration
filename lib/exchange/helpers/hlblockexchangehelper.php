@@ -274,7 +274,7 @@ class HlblockExchangeHelper extends HlblockHelper implements ReaderHelperInterfa
                     );
                 } catch (WriterException|HelperException $e) {
                     throw new HelperException(
-                        $e->getMessage() . " in " . print_r([
+                        $e->getMessage() . " in " . var_export([
                             'HLBLOCK_ID' => $hlblockId,
                             'ID'         => $element['ID'],
                             'FIELD'      => $code,

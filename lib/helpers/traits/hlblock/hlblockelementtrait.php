@@ -189,7 +189,7 @@ trait HlblockElementTrait
                 'ERR_HLBLOCK_ELEMENT_NOT_FOUND',
                 [
                     '#HLBLOCK_ID#' => $hlblockName,
-                    '#ELEMENT_ID#' => print_r($filter, true),
+                    '#ELEMENT_ID#' => var_export($filter, true),
                 ],
             ),
         );

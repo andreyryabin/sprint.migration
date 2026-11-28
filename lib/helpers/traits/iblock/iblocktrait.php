@@ -146,7 +146,12 @@ trait IblockTrait
             return (int) $iblockId;
         }
 
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'IBLOCK_TYPE_ID' => $fields['IBLOCK_TYPE_ID'],
+                'CODE'           => $fields['CODE'],
+            ], true),
+        );
     }
 
     /**
@@ -176,7 +181,12 @@ trait IblockTrait
             return $iblockId;
         }
 
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'ID'   => $iblockId,
+                'CODE' => $fields['CODE'] ?? '',
+            ], true),
+        );
     }
 
     /**
@@ -333,10 +343,7 @@ trait IblockTrait
             return $item;
         }
         throw new HelperException(
-            Locale::getMessage(
-                'ERR_IB_NOT_FOUND',
-                ['#IBLOCK#' => print_r($code, true)],
-            ),
+            Locale::getMessage('ERR_IB_NOT_FOUND', ['#IBLOCK#' => var_export($code, true)]),
         );
     }
 

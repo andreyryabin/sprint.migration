@@ -96,7 +96,12 @@ trait IblockSectionTrait
             return $sectionId;
         }
 
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'ID'   => $sectionId,
+                'NAME' => $fields['NAME'] ?? '',
+            ], true),
+        );
     }
 
     /**
@@ -127,7 +132,13 @@ trait IblockSectionTrait
             return $id;
         }
 
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'IBLOCK_ID' => $iblockId,
+                'CODE'      => $fields['CODE'] ?? '',
+                'NAME'      => $fields['NAME'] ?? '',
+            ], true),
+        );
     }
 
     /**
@@ -194,7 +205,11 @@ trait IblockSectionTrait
             return true;
         }
 
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'ID' => $sectionId,
+            ], true),
+        );
     }
 
     /**
@@ -242,7 +257,7 @@ trait IblockSectionTrait
                 'ERR_IB_SECTION_ID_NOT_FOUND',
                 [
                     '#IBLOCK_ID#'  => $iblockId,
-                    '#SECTION_ID#' => print_r($code, true),
+                    '#SECTION_ID#' => var_export($code, true),
                 ],
             ),
         );

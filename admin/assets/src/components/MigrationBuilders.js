@@ -40,6 +40,7 @@ export const MigrationBuilders = {
         return {
             loading: false,
             running: false,
+            working: false,
             messages: [],
             progress: [],
             builders: [],
@@ -99,7 +100,6 @@ export const MigrationBuilders = {
         },
 
         execAction(action, payload) {
-            this.loading = true;
             return Promise.resolve(ajax.runAction(
                 'sprint:migration.controller.BuilderController.' + action,
                 {data: payload, getParameters: {config: this.config, lang: this.lang}}
@@ -109,27 +109,29 @@ export const MigrationBuilders = {
             }).catch((response) => {
                 extractResponse(response, this.messages, this.progress);
                 throw response;
-            }).finally(() => {
-                this.loading = false;
             });
         },
 
         refreshBuilders() {
+            this.loading = true;
             return this.execAction('refreshBuilders', {})
                 .then((data) => {
                     this.builders = data.builders || [];
                     return true;
                 }).catch(() => {
                     return false;
+                }).finally(() => {
+                    this.loading = false;
                 });
         },
 
         async execBuilder() {
-            if (!this.selected || !this.selected.name) {
-                return;
+            if (this.working || !this.selected || !this.selected.name) {
+                return false;
             }
 
             this.running = true;
+            this.working = true;
 
             let data;
             try {
@@ -152,6 +154,7 @@ export const MigrationBuilders = {
             } catch {
                 return false;
             } finally {
+                this.working = false;
                 this.running = false;
             }
         },
@@ -169,7 +172,7 @@ export const MigrationBuilders = {
 
         selectBuilder(name) {
             const item = this.builders.find(item => item.name === name);
-            if (item) {
+            if (item && !this.working) {
                 /*Object.assign нельзя item.params будут переданы по ссылке*/
                 this.selected = JSON.parse(JSON.stringify(item));
                 this.messages = [];
@@ -185,7 +188,7 @@ export const MigrationBuilders = {
           <div class="sp-row">
             <div class="sp-col">
               <div class="sp-search">
-                <div class="sp-search_filter">
+                <div :class="{'sp-search_filter':true,'sp-disabled':working }">
                   <StringField
                       v-model:value="filter.search"
                       :placeholder="getMessage('SEARCH_BUILDER')"
@@ -202,9 +205,9 @@ export const MigrationBuilders = {
                 </div>
                 <div class="sp-search_summary">
                   <span
-                      v-if="loading && !running"
-                      class="sp-loading"
-                      v-text="getMessage('LOADING_TEXT')"
+                      v-if="loading"
+                      class="sp-wait"
+                      v-text="getMessage('WAIT_TEXT')"
                   />
                   {{ getMessage('SUMMARY_BUILDERS') }}:
                   <span
@@ -252,6 +255,7 @@ export const MigrationBuilders = {
                   <div
                       v-for="field in selected.fields"
                       :key="selected.name +':'+ field.code"
+                      :class="{'sp-disabled':working }"
                   >
                     <div
                         v-if="field.title"
@@ -275,14 +279,15 @@ export const MigrationBuilders = {
                   >
                     <input
                         :class="['adm-btn-green','sp-w120']"
-                        type="button"
                         :value="getMessage(running ? 'PAUSE' : 'BUILDER_NEXT')"
+                        :disabled="working && !running"
+                        type="button"
                         @click="replayBuilder"
                     />
                     <span
-                        v-if="running"
-                        class="sp-loading"
-                        v-text="getMessage('LOADING_TEXT')"
+                        v-if="working"
+                        class="sp-wait"
+                        v-text="getMessage('WAIT_TEXT')"
                     />
                     <span
                         v-for="(item, index) in progress"

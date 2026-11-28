@@ -164,7 +164,11 @@ trait IblockTypeTrait
             return (string) $fields['ID'];
         }
 
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'ID' => $fields['ID'] ?? '',
+            ], true),
+        );
     }
 
     /**
@@ -237,7 +241,11 @@ trait IblockTypeTrait
             return $typeId;
         }
 
-        throw new HelperException($ib->LAST_ERROR);
+        throw new HelperException(
+            $ib->LAST_ERROR . " in " . var_export([
+                'ID' => $typeId,
+            ], true),
+        );
     }
 
     /**

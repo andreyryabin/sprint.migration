@@ -106,7 +106,7 @@ export function colorize(text) {
     }
     out = escapeHtml(out);
     out = makeLinksHtml(out);
-    if (!out.includes('[/')) {
+    if (!out.includes('[/]')) {
         return out;
     }
     for (const [key, val] of Object.entries(MessageColors)) {

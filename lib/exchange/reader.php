@@ -89,7 +89,9 @@ class Reader
         $record['properties'] = [];
 
         do {
-            $reader->read();
+            if (!$reader->read()) {
+                break;
+            }
             if ($this->isOpenTag($reader, 'field')) {
                 $record['fields'][] = $this->readRecordField($reader, 'field');
             }
@@ -118,7 +120,9 @@ class Reader
         $field['value'] = [];
 
         do {
-            $reader->read();
+            if (!$reader->read()) {
+                break;
+            }
             if ($this->isOpenTag($reader, 'value')) {
                 $field['value'][] = $this->readRecordValue($reader);
             }

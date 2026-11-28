@@ -44,6 +44,7 @@ export const MigrationVersions = {
         return {
             loading: false,
             running: false,
+            working: false,
             replay: {},
             versions: [],
             messages: [],
@@ -135,7 +136,7 @@ export const MigrationVersions = {
         },
 
         execAction(action, payload) {
-            this.loading = true;
+            if (action !== 'execVersion') this.loading = true;
             return Promise.resolve(ajax.runAction(
                 'sprint:migration.controller.versioncontroller.' + action,
                 {data: payload, getParameters: {config: this.config, lang: this.lang}}
@@ -146,7 +147,7 @@ export const MigrationVersions = {
                 extractResponse(response, this.messages, this.progress);
                 throw response;
             }).finally(() => {
-                this.loading = false;
+                if (action !== 'execVersion') this.loading = false;
             });
         },
 
@@ -160,7 +161,12 @@ export const MigrationVersions = {
         },
 
         async execVersion(version, action, params, settag) {
+            if (this.working) {
+                return false;
+            }
+
             this.running = true;
+            this.working = true;
             this.replay = {version, action, params, settag};
 
             let data;
@@ -188,6 +194,7 @@ export const MigrationVersions = {
             } catch {
                 return false;
             } finally {
+                this.working = false;
                 this.running = false;
             }
         },
@@ -472,7 +479,7 @@ export const MigrationVersions = {
           <div class="sp-row">
             <div class="sp-col">
               <div class="sp-search">
-                <div :class="{'sp-search_filter':true,'sp-disabled':running }">
+                <div :class="{'sp-search_filter':true,'sp-disabled':working }">
                   <StringField
                       v-model:value="filter.search"
                       :placeholder="getMessage('SEARCH_VERSION')"
@@ -494,9 +501,9 @@ export const MigrationVersions = {
                 </div>
                 <div class="sp-search_summary">
                   <span
-                      v-if="loading && !running"
-                      class="sp-loading"
-                      v-text="getMessage('LOADING_TEXT')"
+                      v-if="loading"
+                      class="sp-wait"
+                      v-text="getMessage('WAIT_TEXT')"
                   />
                   {{ getMessage('SUMMARY_NEW') }}:
                   <span
@@ -519,7 +526,7 @@ export const MigrationVersions = {
                   <tr v-for="item in versions" :key="item.version">
                     <td class="sp-migration_table_buttons">
                     <span
-                        :class="{'adm-btn': true, 'sp-disabled':running}"
+                        :class="{'adm-btn': true, 'sp-disabled':working}"
                         v-text="'&equiv;'"
                         @click="makeVersionMenu($event, item)"
                     />
@@ -553,27 +560,29 @@ export const MigrationVersions = {
             <div class="sp-col">
               <input
                   :value="getMessage('UP_START')"
+                  :class="['adm-btn-green']"
+                  :disabled="(working || summaryCount.new === 0)"
                   type="button"
-                  :class="{'adm-btn-green': true,'sp-disabled':(running || summaryCount.new === 0)}"
                   @click="upAll"
               />
               <span
-                  :class="{'adm-btn': true,'sp-disabled':running }"
+                  :class="{'adm-btn': true,'sp-disabled':working }"
                   v-text="'&equiv;'"
                   @click="makeCommonMenu($event)"
               />
               <span
-                  v-if="running"
-                  class="sp-loading"
-                  v-text="getMessage('LOADING_TEXT')"
+                  v-if="working"
+                  class="sp-wait"
+                  v-text="getMessage('WAIT_TEXT')"
               />
             </div>
             <div class="sp-col sp-migration_buttons">
               <input
                   v-if="replay && replay.version"
-                  :value="getMessage(running ? 'PAUSE' : 'CONTINUE')"
-                  type="button"
                   :class="['adm-btn', 'sp-w120']"
+                  :value="getMessage(running ? 'PAUSE' : 'CONTINUE')"
+                  :disabled="working && !running"
+                  type="button"
                   @click="replayVersion"
               />
               <span

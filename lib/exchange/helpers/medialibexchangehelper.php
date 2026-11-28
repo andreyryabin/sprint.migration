@@ -77,7 +77,7 @@ class MedialibExchangeHelper extends MedialibHelper implements ReaderHelperInter
                 );
             } catch (WriterException|HelperException $e) {
                 throw new HelperException(
-                    $e->getMessage() . " in " . print_r([
+                    $e->getMessage() . " in " . var_export([
                         'ID'   => $element['ID'],
                         'NAME' => $element['NAME'],
                     ], true),
