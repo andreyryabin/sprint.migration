@@ -7,3 +7,4 @@
 6) Обновленные формы создания миграций, классы для полей ввода (StringField, TextareaField, CheckboxListField и др.) <br/>
 7) В формах методы initialize() и execute() объявлены абстрактными <br/>
 8) В формах убран isBuilderEnabled, добавлен $this->setEnabled(), вызывать в методе initialize()<br/>
+9) Устранено зависание при чтении сломанных xml выгрузок<br/>
